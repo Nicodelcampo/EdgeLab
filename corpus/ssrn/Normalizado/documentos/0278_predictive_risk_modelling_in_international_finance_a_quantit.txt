@@ -1,0 +1,614 @@
+1 
+ 
+ 
+ 
+ 
+ 
+PREDICTIVE RISK MODELLING IN INTERNATIONAL 
+FINANCE: A QUANTITATIVE ANALYSIS 
+ 
+Author Name: Pratikbhai Patel 
+ 
+
+2 
+ 
+Acknowledgment 
+I would like to state that I would like to extend my heartfelt gratitude to my supervisor and 
+academic instructors who gave constant guidance and support to me during the preparation of this 
+research paper. Their useful comments and scholarly ideas assisted me to make the research goals 
+more specific, enhance the research methodology, and better the general analytical strategy of the 
+given study. I also want to acknowledge my academic institution which has made available 
+research resources, digital libraries and analytical tools that have been used to complete this 
+research. These sources helped me to study the literature on the topic and implement quantitative 
+methods to study the financial risk trends. Furthermore, I would like to recognize the authors and 
+academics whose published article on predictive analytics, financial forecasting and risk modelling 
+was used as a theoretical basis of this study. Their works aided in the development of conceptual 
+framework and methodological approach of this study. Lastly, I appreciate my peers and other 
+colleagues who supported me in the research by way of encouragement and constructive 
+discussions. Their assistance and feedback were significant in enabling me to finish this study 
+successfully. 
+ 
+
+3 
+ 
+Abstract 
+Financial risk forecasting is a paramount challenge in global finance because of the growing 
+complication of global financial environments and the swift development of online financial 
+operations. The growth in financial technology and data-driven financial services has greatly 
+contributed to the growth in the amount of financial data that is produced by any global financial 
+system, which has led to the possibility of predictive modelling and sophisticated financial risk 
+analysis. The article examines how regression-based predictive modelling is applicable in 
+examining financial risk severity on the basis of transaction-level financial data. 
+The method of quantitative research was chosen with the help of a dataset of financial transactions 
+and risk management received on Kaggle. The correlation analysis and multiple regression 
+modelling to assess the relationships among the variables transaction behaviour, system 
+performance indicators and the severity of financial risk was applied using Python. The findings 
+demonstrate that the regression model has a rather low explanatory power with the R-squared at 
+0.004 that means that the chosen variables can only explain a minor percentage of the change in 
+the severity of incidences. Out of the variables that were analysed, the frequency of logins has a 
+statistically significant correlation with risk severity, whereas the number of transactions, system 
+latency, and failed authentication attempts have a limited predictive value. 
+The results demonstrate the weaknesses of simple regression models to predict the financial risks 
+and indicate that less complicated predictive modelling techniques might be essential to forecast 
+the complex processes that can contribute to the occurrence of the financial risks in global financial 
+systems. The paper advances the body of existing research on predictive risk modelling in the 
+finance field and provides an indication on the possible application of analytical methods based on 
+data in enhancing financial risk management practices. 
+Keywords: Predictive risk modelling, financial transactions, regression analysis, financial risk 
+management, international finance. 
+ 
+
+4 
+ 
+Table of Contents 
+1. Introduction ................................................................................................................................. 5 
+1.1 Global Currency Market Context .......................................................................................... 5 
+1.2 Research Problem .................................................................................................................. 5 
+1.3 Research Aim ........................................................................................................................ 6 
+1.4 Research Objectives .............................................................................................................. 6 
+1.5 Research Questions ............................................................................................................... 6 
+2. Literature Review........................................................................................................................ 7 
+2.1 Exchange Rate Determination Theory .................................................................................. 7 
+2.2 Currency Volatility in International Finance ........................................................................ 7 
+2.3 Interest Rates and International Capital Flows ..................................................................... 8 
+2.4 Predictive Risk Modelling in Financial Markets................................................................... 9 
+2.5 Empirical Studies on Interest Rates and Exchange Rates ..................................................... 9 
+2.6 Literature Gap ..................................................................................................................... 10 
+3. Research Methodology ............................................................................................................. 10 
+3.1 Research Design .................................................................................................................. 10 
+3.2 Data Sources and Variables................................................................................................. 11 
+3.3 Sample Period and Data Selection ...................................................................................... 11 
+3.4 Regression Model Specification.......................................................................................... 12 
+3.5 Data Analysis Techniques ................................................................................................... 12 
+4. Data Analysis and Results ........................................................................................................ 12 
+4.1 Descriptive Statistics ........................................................................................................... 12 
+4.2 Correlation Analysis ............................................................................................................ 13 
+4.3 Regression Analysis Results ............................................................................................... 15 
+4.4 Model Predictive Accuracy ................................................................................................. 16 
+5. Discussion ................................................................................................................................. 17 
+6. Implications for International Finance ...................................................................................... 18 
+7. Conclusion ................................................................................................................................ 18 
+Reference List ............................................................................................................................... 20 
+ 
+ 
+ 
+
+5 
+ 
+1. Introduction 
+1.1 Global Currency Market Context 
+The international finance is a dynamic international currency market place where the exchange 
+rate movement has a strong impact on international investment decision-making, capital allocation 
+and financial exposure. The world foreign exchange market is the biggest financial market across 
+the world supporting cross-border trade, international portfolio investments and multinational 
+corporate business. The increasing digitalisation of financial systems and the growth of global 
+trade networks have greatly contributed to the increase in the number of currency transaction and 
+the exposure of financial risk linked to exchange rate fluctuation. The instrument of predictive 
+financial modelling has thus turned out to be a key instrument in the uncertainty management and 
+potential risk pattern identification in foreign markets (Broby, 2022). 
+The combination of sophisticated analytical tools and data-driven financial systems has 
+revolutionised the manner in which financial institutions examine risk and behaviour of 
+investment. Predictive analytics methods used by financial organisations are becoming more 
+important, to analyse large volumes of data and identify patterns that drive asset prices and 
+currency trends. Predictive analytics is a type of statistical models, machine learning algorithms 
+and quantitative replication to make predictions that can be used to make financial decisions and 
+reduce risks (Bahoo et al., 2024). The emergent speed of artificial intelligence applications in 
+finance illustrates how enhanced data modelling methods may enhance predictive precision and 
+stability in the financial market by enhancing the risk assessment system(s) (Bahoo et al., 2024). 
+1.2 Research Problem 
+Although predictive modelling techniques in finance are getting more and more popular, predicting 
+currency fluctuations is a challenging task because of the complexity of financial systems in the 
+world and the interplay between various macroeconomic variables. The financial markets produce 
+both structured and unstructured volumes of data in huge quantity, and it has been challenging to 
+come up with credible forecasts of exchange rate volatility through the conventional financial 
+analysis tools. The use of machine learning and statistical modelling methods in financial risk 
+prediction has thus gained more and more popularity to enhance the accuracy of the forecast and 
+to assist in making investment decisions (Leo et al., 2019). 
+Empirical studies reveal that financial risk prediction model has mainly concentrated on credit 
+risk, Bankruptcy forecasting and default prediction but not exchange rate forecasting, which 
+
+6 
+ 
+implies an absence of application of predictive modelling in international finance (Shi and Li, 
+2019). Besides, the current macroeconomic prediction models of financial risk tend to be based on 
+a limited number of macroeconomic variables, and fail to incorporate sophisticated analytical tools 
+to isolate the complex financial relationships of large data sets. The systematic review of predictive 
+risk modelling shows that the accuracy of financial forecasting can be increased dramatically with 
+the use of high-dimensional financial data processing via machine learning and advanced data 
+analytics (Shi et al., 2022). 
+In addition, most of the literature is focused on corporate financial risk instead of macro-financial 
+risk variables that determine currency fluctuations in the global markets. The studies of the 
+financial prediction models show that the combination of quantitative modelling methods with 
+macroeconomic variables like interest rates can enhance the risk assessment and forecasting 
+significantly (Ciampi et al., 2021). This is the limitation of the existing literature that leads to the 
+necessity of a data-based quantitative study that studies the correlation between interest rate 
+changes and the currency fluctuations via statistical modelling. 
+1.3 Research Aim 
+The aim of the research is to establish a quantitative predictive risk model to examine the 
+relationship between changes in interest rates and fluctuations of the currency market in the 
+international finance through the statistical analysis of regression. 
+1.4 Research Objectives 
+ To examine how predictive analytics can be used in financial risk modelling in the international 
+financial markets. 
+ To test the association between interest rate fluctuations and the currency changes by the use 
+of quantitative modelling. 
+ To model a predictive model through regression, based on the financial transaction and risk 
+management data. 
+ To determine how good predictive modelling methods are in predicting patterns of financial 
+risks in the international markets. 
+1.5 Research Questions 
+RQ1: What is the effect of fluctuation in interest rates on currency fluctuations in the global 
+financial markets? 
+
+7 
+ 
+RQ2: How far can predictive risk modelling methods enhance the prediction of financial risk 
+patterns in international finance? 
+RQ3: To what extent can it be stated that regression-based models are efficient in predicting 
+financial risk indicators using financial transaction datasets? 
+2. Literature Review 
+2.1 Exchange Rate Determination Theory 
+Determination of exchange rates has been a highly discussed issue that has been subject to 
+macroeconomic models that interrelate the movement of the currency as well as with economic 
+variables like inflation rates, interest rates and capital flows. These theoretical explanations 
+indicate that fluctuations in macroeconomic environment have effects on investor expectations and 
+cross-border capital movements which further have impacts on the exchange rate behaviour. 
+According to Kovacova et al. (2019), the models of financial modelling have contributed to the 
+increasing number of macroeconomic variables that can be used to expound on the patterns of 
+financial risk and the economic correlations in complex financial systems. Nonetheless, 
+Veganzones and Severin (2021) stipulate that the historical financial theories cannot be considered 
+sufficient to describe the current behaviour of financial markets since global financial 
+marketplaces now produce considerable amount of economic data, which need quantitative 
+modelling methods. Financial studies are thus becoming more and more a combination of 
+theoretical frameworks in finance and predictive modelling to enhance the dynamics of financial 
+markets. Kovacova et al. (2019) also note that the predictive financial models enable the researcher 
+to examine the relationship between two or more variables in the economy at once, which enhances 
+the comprehension of financial risk and market behaviour. On the same note, Veganzones and 
+Severin (2021) report that predictive modelling techniques will have more substantial empirical 
+explanation of the financial results than purely theoretical frameworks. Consequently, quantitative 
+financial modelling, which is a combination of quantitative economic theory and statistical 
+analysis of data, is becoming a popular tool in determining exchange rates. 
+2.2 Currency Volatility in International Finance 
+Currency volatility is a significant cause of financial uncertainty due to the exposure of exchange 
+rates in the competitiveness of international trade, decision-making on multinational investment 
+and monetary market stability. Financial markets are typified by nonstop interactions involving 
+economic shocks, investor expectations and policy choices that form intricate patterns in the 
+
+8 
+ 
+behaviour of the exchange rate. According to Sonkavde et al. (2023), the application of financial 
+forecasting models to the examination of the financial market volatility is becoming frequent due 
+to the fact that the contemporary financial markets generate vast amounts of data that cannot be 
+effectively interpreted without the application of sophisticated analytical methods. Nevertheless, 
+Yang et al. (2023) claim that the conventional financial forecasting models do not strongly 
+represent nonlinear dynamics and intricate connections in financial data which restricts their 
+capabilities in predicting volatility. The recent trend in predictive modelling has thus been to 
+incorporate sophisticated approach in financial forecasting in order to enhance its accuracy. As 
+Sonkavde et al. (2023) add, machine learning and data-driven forecasting models can find hidden 
+trends in financial information that can affect market volatility. Conversely, Baryannis et al. (2019) 
+indicate that predictive modelling strategies should also take into account the macro-economic 
+setting and various risk factors due to the frequent financial instability that is the result of the 
+globalized systems of the global economy. These results indicate that the currency volatility 
+studies are gradually taking the significance of predictive modelling models in studying financial 
+risk in the global markets. 
+2.3 Interest Rates and International Capital Flows 
+The interest rate differentials are significant in the international capital flows as investors tend to 
+commit capital in the financial markets that have higher anticipated returns. National interest rates 
+differ, and this impacts on investment and international portfolio flows which in turn affect 
+currency demand and behaviour of the exchange rates. According to Kovacova et al. (2019), 
+predictive financial models often use macroeconomic variables like interest rates and the rate of 
+inflation to predictive financial risk and investment patterns within global markets. Nonetheless, 
+Veganzones and Severin (2021) reiterate that financial prediction models should incorporate 
+various economic factors to ensure that the relationships which shape financial market behaviour 
+are captured. The study on predictive modelling also points out that the financial risk forecasting 
+operations demand strong statistical modelling frameworks that can enable interactions among 
+variables in the economy. According to Luo et al. (2023), the recent trend in predictive risk models 
+is that they combine both artificial intelligence and statistical analysis to assess the financial risk 
+patterns and enhance forecasting performance. However, Baryannis et al. (2019) warn that to 
+guarantee quality forecasting results, predictive models should include the relevant economic 
+factors and indicators of risk. These views show that the interest rate analysis is still a critical part 
+
+9 
+ 
+of predictive modelling models applied in the assessment of the behaviour of financial markets 
+across international jurisdictions. 
+2.4 Predictive Risk Modelling in Financial Markets 
+The predictive risk modelling has been a critical analytical tool of financial studies due to the fact 
+that financial markets are complex systems that are typified by uncertainty and data volumes. The 
+contemporary financial institutions are becoming more dependent on predictive modelling 
+frameworks to find out the financial risk trends and predict future market results. As described by 
+Yang et al. (2023), machine learning methods have greatly empowered risk management systems 
+because it allowed financial analysts to handle significant volumes of data and discern complicated 
+interactions among financial variables. Nevertheless, Baryannis et al. (2019) emphasize that to 
+develop relevant predictive modelling systems, structured datasets and suitable risk indicators are 
+required to make correct forecasts in the context of financial risk management. The principles of 
+predictive modelling can be used in a variety of industries in which risk prediction and forecasting 
+are key to decision making. According to Wynants et al. (2020), predictive models should be tested 
+in terms of rigorous validation frameworks to be able to guarantee their reliability and 
+generalisability to other datasets. On the same note, Spinu et al. (2020) note that predictive 
+modelling techniques need unequivocal causal associations among variables and results to make 
+sound risk forecasts. Such views indicate that predictive modelling frameworks are becoming 
+appreciated as helpful analytical tools that can be used to examine the trend patterns in financial 
+risks and predict economic performance in the global financial markets. 
+2.5 Empirical Studies on Interest Rates and Exchange Rates 
+Empirical financial studies are increasingly concerned with the formulation of predictive models 
+which have the potential of analysing back and forward relationships between macroeconomic 
+variables and behaviour of financial markets. According to Sonkavde et al. (2023), statistical and 
+machine learning forecasting models have been massively applied to forecast the behaviour of the 
+financial market and draw patterns that can impact the price of assets and financial risks indicators. 
+Nevertheless, Veganzone and Severin (2021) claim that most predictive financial models are 
+preoccupied with predicting the financial performance of firms at the corporate level and not with 
+macroeconomic factors affecting the international financial markets. Recent empirical studies also 
+focus on the increased significance of data-driven modelling systems to analyse financial systems. 
+As Luo et al. (2023) emphasize, financial risk forecasting can be enhanced with the help of 
+
+10 
+ 
+predictive modelling frameworks that utilise the idea of artificial intelligence to forecast financial 
+risks by studying several variables at the same time. Contrary to this, according to Yang et al. 
+(2023), predictive financial models should be provided to combine macroeconomic and 
+microeconomic variables to guarantee effective forecasting results. Such results show that more 
+empirical studies are being used to justify the use of predictive modelling methods in financial 
+market analysis. 
+2.6 Literature Gap 
+In the current literature on the topic of international financial risk modelling, some gaps are 
+observed even though there is a remarkable progress in the research of predictive modelling and 
+financial forecasting. According to Kovacova et al. (2019), the majority of the studies that involve 
+predictive modelling analysis look at the prediction of corporates bankruptcy and financial risk on 
+the firm level instead of macroeconomic variables that relate to fluctuations in the currency of the 
+global financial markets. Likewise, Veganzones and Severin (2021) emphasize that the research 
+of predictive modelling has mainly been oriented to predictive financial forecasting in corporations 
+but little has been done to forecast macroeconomic financial risks using predictive models. 
+Additionally, predictive modelling frameworks have been extensively used in other areas like 
+healthcare and biomedical risk prediction but they have not been used extensively in international 
+finance. Wynants et al. (2020) state that predictive models need organized datasets, value frames 
+and adequate variable identification to give trustworthy forecasting outcomes.  
+3. Research Methodology 
+3.1 Research Design 
+The study will follow a quantitative research approach to investigate the connection between the 
+fluctuations in interest rates and the pattern of financial risks in the global financial markets. The 
+quantitative type of research design is the most common type of research design in financial 
+modelling research as it enables the researcher to examine structured data sets through statistical 
+and computational methods. Statistical modelling methods allow determination of relationships 
+among financial variables as well as give quantifiable information about financial risk behaviour. 
+According to Chopra and Sharma (2021), quantitative analytical models have been extensively 
+used in financial forecasting studies since they enable the large financial datasets to be analysed 
+through statistical and machine learning methods that enhance predictive accuracy. Research in 
+predictive modelling also highlights the fact that forecasting financial risks would necessitate 
+
+11 
+ 
+organized modelling framework which can help to forecast complex financial relationships among 
+several variables. As Hammad et al. (2020) observe, statistical modelling techniques are often used 
+to predict the future in economic and financial systems as such techniques enable a researcher to 
+assess the relationship between past trends in the history of variables and the future. Besides this, 
+predictive modelling models allow researchers to check the relevance of various economic 
+variables in establishing financial results. Hence, the quantitative modelling technique of 
+regression is deemed suitable to study the trend of financial risks in relation to international 
+currency variations. 
+3.2 Data Sources and Variables 
+Dataset 
+Link: 
+https://www.kaggle.com/datasets/ziya07/financial-transaction-and-riskmanagement-dataset  
+The dataset that will be used in this analysis is the Financial Transaction and Risk Management 
+Dataset that is available in Kaggle. This data is structured financial information related to financial 
+transactions and risk indicators which can be viewed through the predictive modelling methods. 
+Big financial datasets are becoming popular in predictive modelling research since they enable 
+investigators to establish trends among financial measures and their economic consequences. 
+Chopra and Sharma (2021) note that the contemporary financial modelling literature is more 
+dependent on the big data to analyse the transaction-level data and financial risk factors to create 
+more predictive models. The data set is a combination of various variables pertaining to financial 
+transactions, risk assessment indicators and patterns of financial activities.  
+3.3 Sample Period and Data Selection 
+The data to be used in this research is the financial transaction data that is gathered at various 
+periods that reflect the financial operations in the global financial markets. The use of data 
+selection in predictive modelling studies is significant due to the fact that the degree of forecasting 
+models relies on the quality and representativeness of the data with which the study is carried out. 
+Hammad et al. (2020) contend that forecasting models need past data which reflects fluctuation in 
+the economic and financial situations to make accurate forecasts. The chosen dataset has several 
+transaction records and the financial risk indicators, and the number of records is big enough; 
+therefore, the analysis could detect the differences in financial behaviour and risk patterns. Preprocessing of the data will be done before the analysis to eliminate the missing data, detect the 
+outliers and also to make sure that it is appropriate in analysis where it will be modelled 
+
+12 
+ 
+statistically. Correct data preparation enhances the predictive model by making the dataset to 
+reflect the financial trends in the market. Chopra and Sharma (2021) further indicate that financial 
+forecasting models need the right data preprocessing methods since the low quality of data may 
+decrease the predictive ability of statistical models significantly. 
+3.4 Regression Model Specification 
+The paper uses multiple regression model to analyse the correlation between the changes in interest 
+rate and financial risk indicators derived on the basis of the set data. Financial forecasting studies 
+have embraced the application of regression models due to the ability of the researcher to estimate 
+the magnitude and the direction of the relationships between dependent and independent variables. 
+Quantitative regression analysis offers a statistical fact in the impact of the change of the economic 
+variables on financial results. According to Chopra and Sharma (2021), regression modelling is 
+one of the most commonly used statistical methods in financial forecasting studies because it is 
+capable of estimating the correlation between financial variables and the economic indicators. The 
+regression equation applied in the study is as follows: 
+ 
+Where: Risk = financial risk measure formulated based on the data. InterestRate = rate variable of 
+interest that affects financial activity. TV = financial transactions value. TransactionFrequency = 
+financial transactions frequency. ε = error term Regression coefficients will show the value and 
+direction of the relationship between the explanatory variables and the financial risk indicators. 
+3.5 Data Analysis Techniques 
+This research will be analyzed using Python that has advanced libraries to do statistical modelling 
+and analysis of financial data. The entertainment of finances Python is employed across various 
+discursive scenarios, such as the capacity to operate beyond large data volumes and apply 
+predictive modelling algorithms effectively. According to Chopra and Sharma (2021), the Python 
+programming language allows financial analysts to use statistical models, machine learning 
+methods and data visualisation software to process financial data and provide predictive 
+information. The analysis will involve a number of statistical methods. Financial variables will be 
+analyzed using descriptive statistical analysis to investigate the distribution of the financial 
+variables of the dataset.  
+4. Data Analysis and Results 
+4.1 Descriptive Statistics 
+
+13 
+ 
+ 
+Figure 1: Descriptive Statistics 
+The descriptive statistics gives a summary of the distribution of the financial risk variables to be 
+included in the regression model. The data set has 10,000 observations which suggest that it is 
+large enough to use in quantitative modelling. As illustrated in Figure 1, the mean of the transaction 
+values is 4988.75 and a standard deviation of 2890.16, implying that there is a wide range of values 
+of transactions in the dataset. The lowest and highest transaction values are 12.13 to 9999.54 which 
+is also an affirmation of both big and small financial transactions in the system. The mean latency 
+of the system is 300.98 milliseconds with a standard deviation of 115.01 indicating that there is a 
+medium variability in system processing time when responding to transactions. The frequency of 
+logins has a mean of 5.49 logins, with a range of 1 to 10 which means that the activity of the users 
+in the system is not the same. The mean of the failed login attempts is 2.49 which indicates that 
+the majority of the accounts have a relatively low rate of account authentication failure. The binary 
+risk incident variable has mean value of 0.1448 which means that about 14.48 percent of the 
+transactions are found to be related with risk incidents which brings out the occurrence of financial 
+risk events in the dataset. 
+4.2 Correlation Analysis 
+
+14 
+ 
+ 
+ 
+Figure 2: Correlation Analysis 
+The correlation analysis will look at the strength of the relationship and the direction of 
+relationships between the independent variables and the risk severity indicator. Figure 2 shows 
+that the values of the correlation between the variables are not strong in general. There is a minimal 
+positive correlation between the amount of a transaction and the severity of an incident (r = 0.010), 
+which means that the number of transactions does not significantly affect the events of risk 
+
+15 
+ 
+severity. On the same note, system latency is positively correlated with incident severity (r = 0.017) 
+such that, the performance delay by the system can be in low relation with the financial risk 
+phenomena. The strongest correlation with incident severity is found with the variables of login 
+frequency (r = 0.053), but the value is low. There is also a weak correlation between the severity 
+of an incident and failed attempts of being logged in (r = 0.019). In general, results of correlation 
+show that the explanatory variables have very low linear relation with the risk severity which is an 
+indication that risk events concerning financial risks could be affected by other variables that were 
+not taken into consideration in the model. 
+4.3 Regression Analysis Results 
+ 
+Figure 3: Regression Analysis 
+The regression analysis determines whether transaction behaviour and system variables have any 
+effect on the severity of financial risks. The regression findings shown in Figure 3 suggest that the 
+total explanatory power of the model is not that high. The model yields an R-squared of 0.004 that 
+implies that at most 0.4 percent of the change in the severity of incidents is accounted by the 
+independent variables in the model. The value of adjusted R-squared 0.001 also confirms the fact 
+that the predictive ability of the model is limited. The independent variables with statistical 
+significance at the level of 5% significance (p = 0.042) include the only variable, which is the 
+
+16 
+ 
+frequency of logins. The positive coefficient ( 0.0149 ) indicates that the greater the level of logins, 
+the higher the probability is that the level of incident severity can be increased slightly. Conversely, 
+transaction amount, system latency and failed attempts do not have statistically significant 
+correlations with incident severity, with the p-value of all three more than the standard significance 
+value of 0.05. 
+4.4 Model Predictive Accuracy 
+ 
+ 
+Figure 4: Model Predictive Accuracy 
+Figure 4 above was used to measure the predictive power of the regression model by using the 
+Mean Squared Error (MSE) and the R-squared performance measure. The model gives an MSE 
+value of 0.6469 that is the mean squared error between the values of incident severity predicted 
+and actual. The value of predictive R-squared using the test data is 0.0036, which proves that the 
+regression model has minimal predictive power of the severity of financial risk. The Actual vs 
+Predicted Risk Severity plot also shows that the projected values are concentrated in a small range 
+which means that the model is not capable of clearly differentiating the various levels of incident 
+severity. This trend indicates that the independent variables chosen might not be effective in 
+
+17 
+ 
+capturing the underlying factors of financial risk occurrences. Thus, more complicated predictive 
+modelling strategies or more explanatory variables can be needed to enhance the predictive power 
+of the risk modelling framework. 
+5. Discussion 
+According to the results of the regression analysis, the predictive ability of the chosen financial 
+variables used in determining the incident severity is not very high. The model generated a value 
+of R-squared of 0.004, which implies that the explanatory variables used in the regression model 
+explain less than one percent of the change in the severity of financial risk. Such a result suggests 
+that the events of financial risks in the data set can be affected by a wider scope of variables other 
+than transaction value, system latency, login behaviour and authentication failures. According to 
+Chopra and Sharma (2021), complex datasets and the presence of various explanatory factors are 
+usually needed to substantiate financial forecasting models because a financial system and market 
+behaviour are dynamic. The regression output also indicates that the only variable that proves to 
+be statistically significant at the 5% level of significance is the frequency of logins. The positive 
+correlation between the quantification of the login activity and the severity of incidents can also 
+be taken as evidence that the higher the interaction of the system, the more risk incidents in the 
+system are likely to happen.  
+The intensity of this relationship is however not very significant. Hammad et al. (2020) stress that 
+predictive models that are created on the premise of limited variables have quite low explanatory 
+power since complex systems are usually characterised by nonlinear interplay of several 
+predictors. The low correlations that exist among the variables and the severity of the incident also 
+demonstrate the conclusion that more elaborate modelling frameworks are needed to predict the 
+issue of a financial risk. Kureljusic and Karger (2024) state that financial forecasting is becoming 
+more and more based on the artificial intelligence (AI) and machine learning models due to the 
+ability to interpret complicated data set structures and the potential to find patterns that are not 
+necessarily detected by traditional statistical models. On the same note, Debray et al. (2019) point 
+out that predictive modelling models should have an effective validation and use of more than one 
+predictive variable in order to enhance forecasting. Moreover, a body of research on predictive 
+modelling in diverse fields suggests that application of predictive models in diverse datasets must 
+be undertaken with a high degree of care in selecting the variables and adjusting the model. 
+
+18 
+ 
+According to Kachuri et al. (2024), predictor risk models should be configured to match the data 
+characteristics to enable accurate and reliable forecasting in a variety of settings. 
+6. Implications for International Finance 
+This study has a number of implications on international finance and in financial risk management. 
+First, the results indicate that basic regression frameworks relying on a small number of financial 
+variables are not likely to be effective in forecasting complex patterns of financial risks in the 
+world of financial systems. Financial markets entails relationships between various macroeconomic, behavioural and technological factors that determine the financial risk outcomes. 
+Second, the findings demonstrate the significance of embracing more sophisticated predictive 
+modelling methods in financial risk management mechanisms. Machine learning and artificial 
+intelligence can potentially scan massive amounts of data in the financial sector and identify 
+undiscovered insights that can enhance the predictability of the financial sector. According to 
+Chopra and Sharma (2021), the use of superior analytical models can considerably improve the 
+financial risk prediction through the inclusion of numerous economic and behavioural metrics. 
+Lastly, financial institutions that are involved in international markets ought to contemplate the 
+incorporation of predictive analytics systems into their risk management systems as a means of 
+enhancing the ability to early detect the occurrence of financial risk events and enhance the 
+stability of financial systems. 
+7. Conclusion 
+This paper has discussed the use of predictive modelling on the severity of financial risk based on 
+regression with a financial transaction dataset. The descriptive statistics showed that there was a 
+great difference in the values of transactions and user activity pattern within the dataset, and the 
+correlation analysis showed weak relationships that existed between the chosen financial variables 
+and the severity of the incidents. The regression analysis also showed that the model has a weak 
+explanatory power, as its R-squared causes the changes at a low percentage with R-squared being 
+0.004 giving the indicators that the independent variables can explain very little of the changes in 
+the severity of financial risks. The only variable that proved to be statistically significant among 
+the analysed variables was the frequency of logging in, but its impact on the severity of an incident 
+was comparatively insignificant. This implies that financial risk forecasting in global financial 
+systems needs more elaborate modelling systems, which involve the use of more financial, 
+behavioural and macroeconomic variables. The area of future research should be the combination 
+
+19 
+ 
+of machine learning and artificial intelligence in order to increase predictive accuracy and the 
+forecasting of financial risks in the global financial markets. 
+ 
+ 
+ 
+
+20 
+ 
+Reference List 
+Bahoo, S., Cucculelli, M., Goga, X. and Mondolo, J., 2024. Artificial intelligence in Finance: a 
+comprehensive review through bibliometric and content analysis. SN Business & Economics, 4(2), 
+p.23. https://link.springer.com/article/10.1007/s43546-023-00618-x 
+Baryannis, G., Validi, S., Dani, S. and Antoniou, G., 2019. Supply chain risk management and 
+artificial intelligence: state of the art and future research directions. International journal of 
+production 
+research, 57(7), 
+pp.2179-2202. 
+https://www.tandfonline.com/doi/abs/10.1080/00207543.2018.1530476 
+Broby, D., 2022. The use of predictive analytics in finance. The Journal of Finance and Data 
+Science, 8, pp.145-161. https://www.sciencedirect.com/science/article/pii/S2405918822000071 
+Chopra, R. and Sharma, G.D., 2021. Application of artificial intelligence in stock market 
+forecasting: a critique, review, and research agenda. Journal of risk and financial 
+management, 14(11), p.526. https://www.mdpi.com/1911-8074/14/11/526 
+Ciampi, F., Giannozzi, A., Marzi, G. and Altman, E.I., 2021. Rethinking SME default prediction: 
+a systematic literature review and future perspectives. Scientometrics, 126(3), pp.2141-2188. 
+https://link.springer.com/article/10.1007/s11192-020-03856-0 
+Debray, T.P., Damen, J.A., Riley, R.D., Snell, K., Reitsma, J.B., Hooft, L., Collins, G.S. and 
+Moons, K.G., 2019. A framework for meta-analysis of prediction model studies with binary and 
+time-to-event outcomes. Statistical methods in medical research, 28(9), pp.2768-2786. 
+https://journals.sagepub.com/doi/abs/10.1177/0962280218785504 
+Hammad, M.A., Jereb, B., Rosi, B. and Dragan, D., 2020. Methods and models for electric load 
+forecasting: a comprehensive review. Logistics, Supply Chain, Sustainability and Global 
+Challenges, 11(1), 
+pp.51-76. 
+https://sciendo.com/2/v2/download/article/10.2478/jlst-20200004.pdf 
+Kachuri, L., Chatterjee, N., Hirbo, J., Schaid, D.J., Martin, I., Kullo, I.J., Kenny, E.E., Pasaniuc, 
+B., Polygenic Risk Methods in Diverse Populations (PRIMED) Consortium Methods Working 
+Group Auer Paul L. 20 Conomos Matthew P. 21 Conti David V. 22 23 Ding Yi 24 Wang Ying 19 
+25 26 Zhang Haoyu 27 28 Zhang Yuji 29, Witte, J.S. and Ge, T., 2024. Principles and methods for 
+transferring polygenic risk scores across global populations. Nature Reviews Genetics, 25(1), 
+pp.8-25. https://www.nature.com/articles/s41576-023-00637-2 
+
+21 
+ 
+Kovacova, M., Kliestik, T., Valaskova, K., Durana, P. and Juhaszova, Z., 2019. Systematic review 
+of variables applied in bankruptcy prediction models of Visegrad group countries. Oeconomia 
+Copernicana, 10(4), pp.743-772. https://www.ceeol.com/search/article-detail?id=991871 
+Kureljusic, M. and Karger, E., 2024. Forecasting in financial accounting with artificial 
+intelligence–A systematic literature review and future research agenda. Journal of Applied 
+Accounting Research, 25(1), pp.81-104. https://www.emerald.com/jaar/article/25/1/81/1215794 
+Leo, M., Sharma, S. and Maddulety, K., 2019. Machine learning in banking risk management: A 
+literature review. Risks, 7(1), p.29. https://www.mdpi.com/2227-9091/7/1/29 
+Luo, N., Yu, H., You, Z., Li, Y., Zhou, T., Jiao, Y., Han, N., Liu, C., Jiang, Z. and Qiao, S., 2023. 
+Fuzzy logic and neural network-based risk assessment model for import and export enterprises: A 
+review. Journal 
+of 
+Data 
+Science 
+and 
+Intelligent 
+Systems, 1(1), 
+pp.2-11. 
+http://ojs.bonviewpress.com/index.php/jdsis/article/view/1078 
+Shi, Y. and Li, X., 2019. A bibliometric study on intelligent techniques of bankruptcy prediction 
+for corporate firms. Heliyon, 5(12). https://www.cell.com/heliyon/fulltext/S2405-8440(19)366563 
+Shi, S., Tse, R., Luo, W., D’Addona, S. and Pau, G., 2022. Machine learning-driven credit risk: a 
+systemic 
+review. Neural 
+Computing 
+and 
+Applications, 34(17), 
+pp.14327-14339. 
+https://link.springer.com/article/10.1007/s00521-022-07472-2 
+Sonkavde, G., Dharrao, D.S., Bongale, A.M., Deokate, S.T., Doreswamy, D. and Bhat, S.K., 2023. 
+Forecasting stock market prices using machine learning and deep learning models: A systematic 
+review, performance analysis and discussion of implications. International Journal of Financial 
+Studies, 11(3), p.94. https://www.mdpi.com/2227-7072/11/3/94 
+Spinu, N., Cronin, M.T., Enoch, S.J., Madden, J.C. and Worth, A.P., 2020. Quantitative adverse 
+outcome pathway (qAOP) models for toxicity prediction. Archives of Toxicology, 94(5), pp.14971510. https://link.springer.com/article/10.1007/s00204-020-02774-7 
+Veganzones, D. and Severin, E., 2021. Corporate failure prediction models in the twenty-first 
+century: 
+a 
+review. European 
+Business 
+Review, 33(2), 
+pp.204-226. 
+https://www.emerald.com/ebr/article/33/2/204/41436 
+Wynants, L., Van Calster, B., Collins, G.S., Riley, R.D., Heinze, G., Schuit, E., Albu, E., Arshi, 
+B., Bellou, V., Bonten, M.M. and Dahly, D.L., 2020. Prediction models for diagnosis and 
+
+22 
+ 
+prognosis 
+of 
+covid-19: 
+systematic 
+review 
+and 
+critical 
+appraisal. bmj, 369. 
+https://www.bmj.com/content/369/bmj.m1328.abstract 
+Yang, M., Lim, M.K., Qu, Y., Ni, D. and Xiao, Z., 2023. Supply chain risk management with 
+machine learning technology: A literature review and future research directions. Computers & 
+Industrial 
+Engineering, 175, 
+p.108859. 
+https://www.sciencedirect.com/science/article/pii/S0360835222008476 
+ 

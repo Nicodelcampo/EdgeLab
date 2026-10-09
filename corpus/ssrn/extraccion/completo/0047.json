@@ -1,0 +1,231 @@
+{
+  "doc_id": 47,
+  "titulo": "Algorithmic Trading with Learning",
+  "resumen_operativo": "Propone un modelo de control óptimo estocástico donde un trader algorítmico forma una vista (prior) sobre el precio futuro de uno o varios activos y la actualiza dinámicamente ('aprende') a partir de las innovaciones de precio, decidiendo la mezcla óptima de órdenes market y limit. Cuantifica mediante simulación cuánto mejora el P&L (media y desvío) de un trader informado y que aprende frente a uno que no aprende o tiene peor información, y muestra que la volatilidad alta degrada la capacidad de aprender salvo que se aprenda de activos que co-mueven. Aporta principalmente un marco teórico y de simulación (Brownian bridge aleatorizado + QVI) más que evidencia empírica de mercado real.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "informed trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El paper modela un trader informado (IT) que tiene una vista superior sobre la distribución futura de precios y actualiza continuamente sus predicciones, generando una estrategia direccional con mezcla de órdenes.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "limit order book"},
+        {"tipo": "MEJORA_A", "objeto": "market making"}
+      ],
+      "cita_textual": "an informed trader (IT) who has conceived a view of the market encoded in a prior on price changes, devises a strategy to trade in a single stock or group of stocks to maximize expected profits"
+    },
+    {
+      "nombre": "randomized Brownian bridge",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso usado para modelar la dinámica del midprice, conectando el precio actual con una distribución de precio futuro (prior del trader); generaliza el movimiento browniano aritmético estándar de la literatura de HFT.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Kalman filter"},
+        {"tipo": "MEJORA_A", "objeto": "arithmetic Brownian motion"}
+      ],
+      "cita_textual": "we assume that the midprice process is a randomized Brownian bridge (rBb) connecting the current midprice to the future midprice"
+    },
+    {
+      "nombre": "market making",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de cotizar en ambos lados del libro para capturar el spread; en el paper el trader no informado (UT) termina comportándose como un market maker clásico porque no tiene vista direccional.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "limit order book"},
+        {"tipo": "SE_OPONE_A", "objeto": "informed trading"}
+      ],
+      "cita_textual": "the UT’s strategy becomes that of an investor who is providing liquidity similar to the market maker models described in the extant literature"
+    },
+    {
+      "nombre": "inventory risk",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de mantener posiciones abiertas, penalizado en la función objetivo del trader mediante un término de penalización corriente (running penalty) sobre el cuadrado del inventario.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "position sizing"},
+        {"tipo": "PARTE_DE", "objeto": "market making"}
+      ],
+      "cita_textual": "her strategy behaves like that of a market maker who wishes to bear very little inventory risk – passive orders are sent in such a way to ensure that inventories never stray too far away from zero"
+    },
+    {
+      "nombre": "adverse selection",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Efecto por el cual las órdenes market de otros participantes empujan el precio en la dirección de la operación, perjudicando al trader cuya orden límite fue ejecutada por un contraparte mejor informada.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "bid-ask spread"},
+        {"tipo": "PARTE_DE", "objeto": "informed trading"}
+      ],
+      "cita_textual": "after a limit order purchase, the price goes down because the IT’s limit order was matched by a very fast informed trader who makes profits from ultra-fast short-term predictions"
+    },
+    {
+      "nombre": "optimal execution",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Problema de decidir la mezcla óptima entre órdenes market (ejecución garantizada pero costosa) y órdenes limit (más baratas pero con ejecución incierta) para entrar y salir de posiciones.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "limit order book"},
+        {"tipo": "REQUIERE", "objeto": "queue position"}
+      ],
+      "cita_textual": "Trading aggressively with market orders is expensive, but guarantees execution, whereas a more passive and cheaper alternative is limit orders, but the time of execution is uncertain"
+    },
+    {
+      "nombre": "queue position",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Para simplificar el modelo se asume que las órdenes límite del trader están siempre al frente de la cola de ejecución cuando llega una orden market, es decir se ejecutan con probabilidad determinada.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "REQUIERE", "objeto": "order book depth"}
+      ],
+      "cita_textual": "we assume that the limit orders are always at the front of the queue"
+    },
+    {
+      "nombre": "market impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costo lineal capturado por el parámetro α que penaliza la liquidación final del inventario remanente, sumado a cruzar el spread y pagar comisiones de liquidez.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "transaction costs"},
+        {"tipo": "PARTE_DE", "objeto": "optimal execution"}
+      ],
+      "cita_textual": "picks up the costs of crossing the spread, as well as any other costs including liquidity taking fees and (linear) market impact, both of which are captured by the parameter αi"
+    },
+    {
+      "nombre": "volatility clustering",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "No se modela clustering propiamente, pero el paper muestra que niveles más altos de volatilidad de precios deterioran severamente la capacidad del trader de extraer información de las innovaciones de precio, tornando la estrategia más conservadora.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "inventory risk"}
+      ],
+      "cita_textual": "the higher the volatility, the more difficult it becomes to extract information from innovations in prices and the strategy turns much more conservative"
+    },
+    {
+      "nombre": "cointegration",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El drift no lineal A(t,S) del proceso de precios captura una relación de co-integración no lineal entre los precios de los activos cuando el trader aprende de un colectivo de activos.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order flow imbalance"},
+        {"tipo": "PARTE_DE", "objeto": "regime switching"}
+      ],
+      "cita_textual": "the drift term A(t, S) is non-linear and captures the (non-linear) co-integration relationship between asset prices"
+    },
+    {
+      "nombre": "cross-asset learning",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de actualizar el prior sobre un activo usando la dinámica de precios de otros activos que co-mueven, incluso si no se toma posición en ellos; el paper muestra que esto mitiga el efecto adverso de la alta volatilidad.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "volatility clustering"},
+        {"tipo": "USA", "objeto": "cointegration"},
+        {"tipo": "MEJORA_A", "objeto": "informed trading"}
+      ],
+      "cita_textual": "this adverse effect can be circumvented by learning from a collection of assets that co-move"
+    },
+    {
+      "nombre": "quasi-variational inequality",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Ecuación derivada vía programación dinámica que caracteriza la función valor del trader; se resuelve numéricamente y se demuestra convergencia del esquema a la solución de viscosidad.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "stochastic control"}
+      ],
+      "cita_textual": "we adopt the dynamic programming principle to derive a quasi-variational inequality (QVI) which we solve numerically"
+    },
+    {
+      "nombre": "stochastic control",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Marco matemático usado para resolver el problema de mezcla óptima de órdenes limit/market bajo un prior dinámico sobre el precio futuro; el paper afirma ser el primero en incorporar aprendizaje dinámico bajo este marco en trading algorítmico.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "optimal execution"}
+      ],
+      "cita_textual": "It is the first paper, to the authors’ knowledge, that incorporates information and dynamic learning in an algorithmic trading problem by using stochastic control methods"
+    },
+    {
+      "nombre": "viscosity solution",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Noción de solución débil usada para garantizar que el esquema numérico de diferencias finitas converge a la solución única de la QVI, incluso con inventarios discretos.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "quasi-variational inequality"}
+      ],
+      "cita_textual": "we provide a proof of convergence of the numerical scheme to the viscosity solution of the dynamic programming equations which uses new results for systems of PDEs"
+    },
+    {
+      "nombre": "second-order stochastic dominance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Criterio usado para afirmar que la estrategia del trader informado domina a las de los otros dos traders simultáneamente en media y desvío estándar del P&L.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "informed trading"}
+      ],
+      "cita_textual": "the IT’s strategy is superior in both (higher) mean and (lower) standard deviation of profits; the IT’s strategy second-order stochastically dominates the other traders’ strategies"
+    },
+    {
+      "nombre": "risk-reward profile",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Gráfico de media contra desvío estándar del P&L simulado para distintos niveles de cota de inventario y de penalización de inventario, usado para comparar a los tres tipos de trader.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "inventory risk"}
+      ],
+      "cita_textual": "we show the risk-reward profiles for the three traders for different values of the maximum and minimum inventory that they are willing to bear"
+    },
+    {
+      "nombre": "running inventory penalty",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Término φ que penaliza la integral cuadrática del inventario en la función objetivo, controlando la exposición al riesgo de inventario; a mayor penalización, la estrategia se vuelve más conservadora y las ganancias de tener mejor información disminuyen.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "inventory risk"},
+        {"tipo": "PARTE_DE", "objeto": "quasi-variational inequality"}
+      ],
+      "cita_textual": "if the running inventory penalty is increased, the gains from better information decrease because the higher the penalty, the more conservative is the strategy"
+    },
+    {
+      "nombre": "spread capture",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Fuente de ganancia por publicar órdenes en ambos lados y cobrar el spread; el paper muestra que incluso el trader direccional (IT) obtiene una parte relevante de sus ganancias por esta vía, además de la apreciación de capital del inventario.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market making"}
+      ],
+      "cita_textual": "the sources of profits are both from making the spread as well as capital appreciation of inventories"
+    },
+    {
+      "nombre": "regime switching",
+      "tipo": "concepto",
+      "definicion_en_contexto": "No es un régimen discreto explícito, pero el comportamiento de la estrategia cambia cualitativamente: a volatilidad muy alta el trader informado pierde su ventaja de aprendizaje y su estrategia colapsa a la de un trader que asume movimiento browniano puro.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "volatility clustering"}
+      ],
+      "cita_textual": "if volatility increases past a certain critical level, processing information does not give her any advantage and her strategy becomes the same as that of a trader who sees the asset evolve like an arithmetic Brownian motion"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "El paper reconoce explícitamente que no analiza los costos de adquisición/procesamiento de información, un supuesto que limita la validez práctica de comparar las ganancias del trader informado sin descontar ese costo.",
+      "relaciones": [],
+      "cita_textual": "traders must take into account the costs of processing and acquiring information and compare these to the profits that this information generate"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "En simulación, el trader informado (IT) domina simultáneamente en media y desvío estándar del P&L a un trader no informado que asume browniano puro (UT) y a un trader con prior simétrico que también aprende (UL); esta dominancia se amplifica cuanto mayores son los límites de inventario permitidos.",
+      "mercado": "activo simulado (rBb, no mercado real)",
+      "periodo": "no especificado (simulación con horizonte T=1)",
+      "magnitud": "dominancia estocástica de segundo orden en media y desvío de P&L; ganancias intensificadas al aumentar cotas de inventario de 1 a 25 unidades",
+      "condiciones": "simulación numérica (10^4 trayectorias de midprice), sin datos de mercado real, sin costos de transacción explícitos aparte de spread/comisión del modelo, sin validación out-of-sample en datos empíricos",
+      "robustez": "baja",
+      "cita_textual": "the IT’s strategy is superior in both (higher) mean and (lower) standard deviation of profits; the IT’s strategy second-order stochastically dominates the other traders’ strategies"
+    },
+    {
+      "afirmacion": "Aprender de un segundo activo que co-mueve incrementa la rentabilidad de la estrategia al operar en el activo de mayor volatilidad, compensando el deterioro de la capacidad de aprendizaje que produce la alta volatilidad.",
+      "mercado": "dos activos simulados con σ1=0.02 (alta vol) y σ2=0.01 (baja vol)",
+      "periodo": "no especificado (simulación con horizonte T=1)",
+      "magnitud": "mejora del perfil riesgo-retorno (mayor P&L medio para igual desvío) frente a aprender de un solo activo, mostrado en Figura 6 para penalización de inventario φ de 0 a 4·10⁻³",
+      "condiciones": "simulación con distribución Gaussiana mixta bivariada calibrada arbitrariamente (Tabla 1), sin datos reales de mercado ni costos de adquisición de información",
+      "robustez": "baja",
+      "cita_textual": "learning from both assets increases the profitability of the strategy"
+    },
+    {
+      "afirmacion": "Cuanto peor es la calidad de la información/prior del trader, más se asemeja su estrategia a la de un market maker puro que solo busca capturar spread sin apostar por dirección.",
+      "mercado": "activo simulado (rBb)",
+      "periodo": "no especificado",
+      "magnitud": "comparación cualitativa del número promedio de órdenes market vs limit por subintervalo (Figura 4), sin estadístico numérico agregado reportado",
+      "condiciones": "promedios sobre 10^4 trayectorias simuladas de midprice, sin mercado real",
+      "robustez": "baja",
+      "cita_textual": "It is clear that the lesser the quality of the information used by the trader, the closer the strategy to that of a market maker who aims at making the spread and not to bet on any particular direction the asset price might take"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper es un modelo teórico de control óptimo con simulaciones sintéticas (Brownian bridge, sin datos reales de ES ni costos realistas); aporta marco conceptual sobre trade-off limit/market condicionado a la calidad de la señal direccional, pero no resultados directamente testeables en el ecosistema ES sin adaptación sustancial y datos empíricos."
+  }
+}

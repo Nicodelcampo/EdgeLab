@@ -1,0 +1,2707 @@
+ Electronic copy available at: https://ssrn.com/abstract=2695705 
+Market order ﬂows, limit order ﬂows and returns:
+Theory and evidence*
+Roman Kozhan
+University of Warwick
+Michael Moore
+Warwick Business School
+Richard Payne§
+Cass Business School
+March 26, 2018
+Abstract
+We study the relation between limit order ﬂow, market order ﬂow and returns.
+We develop a model where market-makers face inventory risk and adverse
+selection and show how prices depend on market and limit order ﬂows. In the
+model, market-makers receive information through trade with customers and
+optimally split their subsequent trading between market and limit orders so as
+to exploit this information while controlling risk. Both types of order convey
+information and impact prices. Empirically, we show that adding limit order
+ﬂows to regressions of (FX and equity) returns on market order ﬂows greatly
+improves explanatory power.
+The price impact of limit orders is positive
+and smaller than that of market orders. Omitting limit order ﬂows from the
+regression causes a large downward bias in the price impact of market orders.
+Thus there is evidence that traders speculate using a combination of limit
+orders and market orders.
+Keywords: Market order ﬂow, limit order ﬂow, price discovery.
+JEL Classiﬁcation: F31, G12, G15.
+*We would like to thank Martin Evans, Dagﬁnn Rime and Gideon Saar for their insightful comments, and seminar participants and discussants at the 5th EMG Workshop on the Microstructure
+of Financial Markets at Cass Business School, the Warwick Business School Frontiers of Finance
+conference, the Annual Central Bank Workshop on the Microstructure of Financial Markets and
+the X Seminar on Risk, Financial Stability and Banking, Sao Paulo. All remaining errors are the
+responsibility of the authors. The work was funded by a Leverhulme Trust Research Project grant,
+RPG-2013-192: ”The Finance Microstructure Approach to the Economics of Exchange Rates”.
+Warwick Business School, University of Warwick, Coventry CV4 7AL, United Kingdom, Email: Roman.Kozhan@wbs.ac.uk
+Warwick Business School, University of Warwick, Coventry CV4 7AL, United Kingdom, Email: Michael.Moore@wbs.ac.uk
+§Cass Business School, City, University of London, E-mail: richard.payne@city.ac.uk
+1
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+ Electronic copy available at: https://ssrn.com/abstract=2695705 
+1
+Introduction
+In recent years, market order ﬂow, deﬁned as net, signed trading activity in a security
+or currency, has been shown to have a strong positive correlation with returns on
+that security.1
+This relation is often explained through there being asymmetric
+information problems in markets, such that aggressive trading carries information,
+and sometimes through dealers’ management of inventory risk.2 In this paper we
+build a theoretical model which shows that to understand the manner in which
+dealers respond to information and inventory shocks, to focus only on market order
+ﬂows is inadequate. Dealers exploit their information and manage their risk using
+both market and limit orders and thus both market and limit order ﬂows are relevant
+for price determination. The implications of our model are then shown to have strong
+support in three separate sets of equity and FX data where we show that limit order
+ﬂows have signiﬁcant, positive price impacts, but smaller impacts than market order
+ﬂows.
+The theoretical foundation of the paper is an equilibrium model of how prices
+react to market and limit order ﬂow when market makers have inventory and adverse
+selection concerns. It embeds an optimal order choice problem for (a subset of)
+traders and we solve for its linear rational expectations equilibrium in closed form.
+In the model, some market makers receive information through trade with customers
+and in their subsequent inter-dealer trading exploit this information and manage
+inventory risk using an optimal mix of limit and market orders. Their counterparties
+(uninformed market makers) can partially retrieve this information by observing the
+market and limit orders ﬂows of the informed market makers but also take on some
+1The research in this area spans inter-dealer trade in currencies (Evans and Lyons 2002; Payne
+2003; Rime, Sarno, and Sojli 2010), equities (Hasbrouck and Seppi 2001; Chordia, Roll, and Subrahmanyam 2002; Chordia and Subrahmanyam 2004; Dunne, Hau, and Moore 2010) and bonds
+(Back and Crotty 2015).
+2See Kyle (1985), Subrahmanyam (1991), Naik, Neuberger, and Viswanathan (1999), Evans
+and Lyons (2002), Chordia and Subrahmanyam (2004), Back and Crotty (2015) among others.
+1
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+of the inventory risk. This leads to a positive price reaction to both types of orders.
+The solution to the model generates a number of new testable results. First,
+as one would expect, it is optimal for dealers to use both market and limit orders
+when exploiting their information advantage. Second, as in the existing theoretical
+literature, market order ﬂow is positively correlated with returns.3 Third, our model
+predicts that net new limit order ﬂow from dealers should also be positively related
+to returns. Net new limit order ﬂow (limit order ﬂow hereafter) is deﬁned as the
+total quantity of limit buy orders posted by dealers less the total quantity of limit
+sell orders.4
+Fourth, in equilibrium, the model predicts that the price impact of
+market orders will exceed that of limit orders and we characterize the fundamental
+determinants of this price impact diﬀerential. Finally, due to the fact that both
+market and limit order ﬂows impact prices and they are (almost always) correlated,
+regressions of returns on market order ﬂows alone are mis-speciﬁed and the estimated
+price impact of market order ﬂows from such regressions will be biased.
+These theoretical predictions are conﬁrmed when our model is applied to three
+separate sets of data using several diﬀerent sampling frequencies. We employ two
+FX data sets (both obtained from Reuters Dealing systems) and a 3 month span
+of intra-day UK equities data (also obtained from Thomson Reuters). We present
+results at the daily, hourly and 30 minute sampling frequencies and in all cases the
+main results of our model are veriﬁed. Limit order ﬂows usually greatly improve
+the explanatory power of regressions of returns on market order ﬂows (e.g. in the
+equities sample from less than 10% to over 50% on average). Also, as the model
+predicts, the coeﬃcients on limit order ﬂows are signiﬁcantly positive and in most
+cases signiﬁcantly smaller than those on corresponding market order ﬂows. Finally,
+3For the remainder of the paper we use the term ‘market’ order ﬂow to signify what is normally
+referred to as order ﬂow. This is to distinguish it from the novel concept of this paper i.e limit
+order ﬂow.
+4It is worth emphasizing that limit order ﬂow is not the buy/sell imbalance in the limit order
+book. It is one component of the ﬁrst diﬀerence of order book imbalance.
+2
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+the empirical bias to the price impact of market order ﬂows created by omitting
+limit order ﬂows from regressions is usually negative and is economically large. In
+the equities data, for example, the true coeﬃcient is biased downwards by around
+25% on average.
+Our work builds on several contributions to equity microstructure theory that
+study optimal order choice (i.e. market versus limit orders) in markets with riskneutral informed traders (see, for example Kumar and Seppi 1994; Chakravarty
+and Holden 1995; Bloomﬁeld, O’Hara, and Saar 2005; Kaniel and Liu 2006; Goettler, Parlour, and Rajan 2007; Rosu 2009).5 In these papers, the informed agents
+are essentially choosing between costly market orders with guaranteed execution and
+cheaper limit orders that suﬀer from execution risk. Earlier theoretical contributions
+that also examine optimal order choice include Parlour (1998), Foucault (1999) and
+Foucault, Kadan, and Kandel (2005), but do so in settings with symmetric information. Rosu (2015) is closest in spirit to our analysis: he studies a dynamic limit order
+book setting within which traders can choose between market and limit orders and
+concludes that the price impact of limit orders is less than that of market orders. It
+is worth noting, though, that unlike the model contained here, none of the papers
+above present a framework in which dealers suﬀer from both adverse selection and
+inventory management problems. Also, earlier papers model order submission as a
+choice problem with a penalty for non-immediate execution of limit orders, while
+in our paper this penalty arises endogenously via inventory risk and traders’ risk
+aversion.6 Furthermore, unlike some papers in which the model requires a numerical
+solution (see Kumar and Seppi 1994; Goettler, Parlour, and Rajan 2007), we provide
+5Easley and O’Hara (1991), Harris (1994), Foucault (1999) also model an informed investor’s
+optimal strategy for choosing between market and limit orders.
+But all these models require
+investors to choose one or the other – never both market and limit orders.
+6For example, Rosu (2009) explicitly embeds the patience coeﬃcient ˜r into the expected utility
+of a trader Et[Pτ −˜r(τ −t)], where τ is a random time of order execution and ¶τ is the price of
+the asset obtained at time τ.
+3
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+an analytic solution for the equilibrium price impacts of market and limit orders.
+Our paper also ﬁts into the literature that studies how time-series variation in
+market conditions (e.g. spreads, depth and volatility) aﬀects limit order submissions
+(e.g. Parlour 1998; Foucault 1999; Foucault, Kadan, and Kandel 2005; Goettler,
+Parlour, and Rajan 2005, 2009; Rindi 2008; Rosu 2009, 2015). We contribute to this
+literature by showing how changes in deep economic parameters, e.g. the quantity
+of uninformed trading and the level of dealer risk aversion, aﬀect order submission
+strategies which, in turn, change the market and limit order ﬂows and equilibrium
+price impacts.
+Empirical research on the informational content of limit orders is mixed. Several
+papers show that the diﬀerence in the stocks of outstanding limit buys and sells
+has positive predictive power for security returns while others show that net limit
+order ﬂows also predict returns (Biais, Hillon, and Spatt 1995; Cao, Hansch, and
+Wang 2009; Harris and Panchapagesan 2005; Kozhan and Salmon 2012; Latza and
+Payne 2013). Kaniel and Liu (2006) ﬁnd evidence that informed traders use limit
+orders more frequently than market orders and Beber and Caglio (2004) ﬁnd that the
+direction of limit order ﬂow is correlated with news contained in corporate earnings
+announcements. On the other hand, Griﬃths, Smith, Turnbull, and White (2000)
+ﬁnd a signiﬁcant negative price impact of non-marketable limit orders (i.e. prices
+tend to fall after the submission of non-marketable limit buys).
+There is also a
+sizeable empirical literature that characterizes the relationship between limit order
+submissions and changes in spreads, depth, volatility and other market conditions.
+(e.g. Holliﬁeld and Miller 2004; Anand, Chakravarty, and Martell 2005; Ellul, Holden,
+Jain, and Jennings 2007; Foucault, Moinas, and Theissen 2007; Lo and Sapp 2008;
+Hasbrouck and Saar 2009; Menkhoﬀ, Osler, and Schmeling 2010).
+Our ﬁndings
+very strongly support the hypothesis that (signed, non-marketable) limit orders are
+positively related to price changes i.e. more new buy than sell limit orders causes
+4
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+prices to rise on average.
+The area in which order ﬂow analysis has received most traction, though, is
+in the microstructure approach to exchange rate determination, which has become
+an important part of international ﬁnance. This approach is based on the robust
+ﬁnding that FX market order ﬂow has strong explanatory power for exchange rate
+returns at both high (e.g. minutely) and low (macroeconomically relevant) sampling
+frequencies (Lyons 1995; Evans and Lyons 2002; Payne 2003; Bj¨onnes and Rime 2005;
+Killeen, Lyons, , and Moore 2006; Lyons and Moore 2009; Kozhan and Tham 2012).
+Our analysis reﬁnes and extends the research in this area by showing that focussing
+only on market order ﬂows is misguided and that ignoring limit order ﬂows leads to
+one’s assessment of the price impact of market order ﬂow being biased downwards
+to an economically large degree.
+The rest of the paper is structured as follows. Section 2 presents a theoretical
+model which generates empirical implications for the relation between price movements and order ﬂows. Section 3 describes the data. Section 4 documents the empirical time-series links between returns and order ﬂow variables and tests the model’s
+predictions. Section 5 concludes. An Appendix contains proofs of the propositions
+laid out in Section 2.
+2
+Model
+2.1
+Basic setup
+We extend the model of Naik, Neuberger, and Viswanathan (1999) by allowing
+dealers to use limit orders alongside market orders in their trading. We consider a
+two-tier dealership market with K + 2 identical market makers. All market-makers
+are mean-variance optimizers with a risk aversion coeﬃcient θ and all possess zero
+5
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+starting inventory.
+Trading in a particular risky asset takes place in two stages. In the ﬁrst stage,
+two market-makers trade with customers. One of the market-makers (we call him
+MM0) receives a buy order for y shares from his customer base which contains some
+information. MM0 demands a price p1 per share from the customer for the order of
+y shares. A second dealer, MM1 also receives a customer order that is known to be
+uninformed. MM1 charges the uninformed customer a price of ˜p1
+In round two, MM0 trades with the other market makers in an inter-dealer
+market. He can use market and limit orders to do so. Speciﬁcally, he trades DM
+shares by market order, with the other side of these orders taken by the K dealers
+who did not receive any customer order in round 1. These K market makers behave
+competitively.
+He also posts a limit order of size DL.
+This limit order may be
+executed by a market order coming from the dealer with uninformed customer order,
+MM1. We assume that the probability of execution of the limit order is exogenous
+and equal to q.7 The price at which both market and limit orders execute in the
+second round is p2. A description of the model can be seen in Figure 1.
+Insert Figure 1 about here
+It is worth noting that one can re-interpret our model as a one-tier rather than
+a two-tier framework. In the one-tier structure that is equivalent to our model, the
+informative customer trade y received by MM0 can be re-imagined as an exogenously
+given signal of fundamental value that MM0 observes. The uninformed customer
+trade that MM1 receives can be interpreted as a pure inventory shock. Finally, what
+we described above as trading round two becomes the only round of trading. All
+of the equations of the model are unchanged under this alternative interpretation.
+7Obviously, this probability will depend, in reality, on the likelihood that MM0’s limit order
+and MM1’s market order match, which is turn is likely to depend on the correlation between their
+customers’ orders. For tractability, we abstract from these considerations.
+6
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+Thus one can think of the model as applicable to markets with both one and two
+tier structures.
+2.2
+The informed market-maker’s optimization
+MM0 receives a customer order (y) in round one from which he learns some information about the asset’s fundamental value (w). We assume that fundamental value
+is normally distributed with a zero mean and a variance of σ2
+w. The customer order
+is the sum of two components x and u:
+y = x + u,
+where x is the informative component and u is a liquidity component. The component x is informative in that it is a noisy signal of fundamental value:
+x = w + v.
+MM0 observes x and hence knows more than is conveyed by the order size alone,
+although his signal of fundamental value is still imprecise. We assume that v and u
+are independent and normally distributed with zero mean and variances of σ2
+v and
+σ2
+u respectively. They are also assumed to be independent of w.
+Given the information structure of the problem outlined above, upon receiving
+the customer order MM0 updates his belief regarding the value of the asset to
+E [w|x] = φx = cov[w, x]
+var[x] x =
+σ2
+w
+σ2
+w + σ2
+v
+x
+and his assessment of the conditional variance of the true value of the asset given
+7
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+his information is equal to
+σ2
+I = σ2
+w −φ2σ2
+x =
+σ2
+wσ2
+v
+σ2
+w + σ2
+v
+.
+We will use backwards induction to solve for a linear equilibrium of the model
+and thus we begin by looking for equilibrium in the second stage of trading. We
+assume that MM0 faces a price schedule from the other K market makers of the
+following form:
+p2 = α + βDM + δDL.
+(1)
+MM0 must then choose DM and DL to maximize
+E [U(DM, DL)|x, u] = (DM + qDL) (φx−p2)+y(p1−φx)−1
+2θσ2 (DM, DL, x, u) (2)
+The ﬁrst term on the right-hand side is the expected gain from MM0’s market
+and (expected) limit order purchases at a price of p2, where we have accounted for
+the fact that limit orders execute with probability q. For simplicity we assume that
+the limit orders execute either in full, with probability q, or do not execute at all,
+with probability 1 −q. The second term is the expected gain from his sale of y to
+the customer at a price of p1.
+The ﬁnal term on the right-hand side of equation (2) is the expected utility contribution from the risk of MM0’s position and the conditional variance σ2 (DM, DL, x, u)
+is computed as follows. The inventory that MM0 is left with at the end of the second stage is either DM −y (if the limit orders do not execute), or DM + DL −y
+(if the limit order executes).
+Hence, inventory is a mixture of two Normal distributions with means µ1 = φx(DM + DL −y) and µ2 = φx(DM −y), variances
+σ2
+1 = σ2
+I (DM + DL −y)2 and σ2
+2 = σ2
+I (DM −y)2 and where the mixing probability
+equals q. The mean value of this mixture of Normals is µ = φx (DM + qDL −y) and
+8
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+the variance is equal to
+σ2 (DM, DL, x, u)
+=
+q
+ (µ1 −µ)2 + σ2
+1
+
++ (1 −q)
+ (µ2 −µ)2 + σ2
+2
+
+(3)
+=
+φ2x2D2
+L + σ2
+I
+ q (DM + DL −y)2 + (1 −q) (DM −y)2
+.
+Equation (4) shows that the risk associated with submitting market and limit
+orders consists of two components. The ﬁrst component measures the opportunity
+costs that MM0 faces due to non-execution of the limit orders. It is increasing with
+(φx)2, that is, the higher is the expected value of the asset, the more MM0 will
+miss out in the case of limit order non-execution. The second part measures the
+inventory risk faced by MM0. This component is a probability-weighted average
+of the squared inventory values in the cases where limit orders execute and do not
+execute respectively.
+Taking the ﬁrst order conditions of MM0’s expected utility with respect to DM
+and DL and solving (see Appendix A.1 for details) yields
+DL
+=
+(z1 −α) (βq −δ)
+
+q(1 −q) (β + θσ2
+I)2 −q (β −δ)2 −(1 −q)δ2 + θ (2β + θσ2
+I) z2
+,
+(4)
+DM
+=
+−α −DL (βq + δ + qθσ2
+I) + z1
+2β + θσ2
+I
+,
+(5)
+where z1 = φx+θσ2
+Iy and z2 = φ2x2. At this point, we can say little about these
+expressions as, for example, the signs of the coeﬃcients in the pricing equation (1)
+are unknown. However, some features are noteworthy. First, limit order demand
+is directly aﬀected by z1. Decomposing z1 we can see that it has two inﬂuences.
+The term φx is MM0’s best guess of the fundamental value of the asset based on
+the informative component of the trade (x). Thus this component is speculative
+trading. The term θσ2
+Iy is MM0’s risk aversion multiplied by the risk associated
+9
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+with the total inventory of y that he has obtained via his customer trade. This
+component is an inventory risk management term, where we would expect MM0,
+due to his risk aversion, to try to follow a customer purchase from his inventory with
+a purchase of his own to replenish inventory. The fact that speculative trading and
+trading to manage inventory only ever appear in the equations above as part of z1
+means that other traders cannot distinguish between the speculative and hedging
+activities of MM0.
+The numerator of the expression for the optimal market order also depends positively on z1 and, as such, is also driven by speculation and inventory management.
+However it also depends negatively on DL. Thus MM0 substitutes between market and limit orders, optimally choosing the mix depending on factors such as the
+probability of limit order execution (q) and the price impacts of limit and market
+orders (β and δ). It is worth noting, though, that the sum of DL and DM is always
+positively correlated with MM0’s signal, x, such that MM0’s desire to purchase the
+asset is positively correlated with his signal of value.8
+Inspection of the expression for DL shows that it depends on the square of x
+through z2, and therefore so does DM. This term has the eﬀect of scaling the limit
+order trade down when information is stronger (i.e. when x is further away from
+zero). It arises due to dependence of the risk that MM0 bears on the execution
+uncertainty of limit orders. This in turn leads MM0’s assessment of risk to depend
+on a term involving the square of x and the square of DL (see equation (4)). So,
+the solution for DL is such that when MM0’s information is particularly strong he
+substitutes away from limit orders towards market orders so as to reduce risk.
+Finally, it is worth noting that we have said nothing, at this point, about the
+price that MM0 charges the customer (p1). We can solve for this by assuming that
+all bargaining power resides with the customer due to potential competition among
+8This result is proved in Appendix A.5.
+10
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+market-makers and equating the expected utility of MM0 to zero. Given our main
+focus is in the second trading round (in the inter-dealer market) we leave this out
+in the interest of space.
+2.3
+The optimization of the market-makers who receive no
+customer trade
+The remaining K market-makers do not receive a customer order in the ﬁrst stage
+of trading and behave competitively in their trading in the inter-dealer market (i.e.
+the second round). Therefore the price that is set in the inter-dealer market is based
+on information that the dealers can extract from MM0’s market and limit order
+ﬂow and imposes a zero expected utility condition (see Subrahmanyam 1991; Naik,
+Neuberger, and Viswanathan 1999).
+From observing the demands DM and DL the market makers cannot infer variables x and y directly. However, they can deduce variables z1 and z2 through knowledge of the parameters of the model and observation of the order ﬂows. One can
+show that;
+z1 = α + DM
+ 2β + θσ2
+I
+
++ DL
+ βq + δ + qθσ2
+I
+
+(6)
+z2 = DL (βq −δ)2 −α (βq −δ) + z1
+q(1 −q)θ (2β + θσ2
+I) DL
+−σ2
+I.
+(7)
+We conjecture a linear pricing schedule of the following form:
+E [w|DM, DL] = E [w|z1, z2] = ηz1 + ξz2.
+(8)
+Noting that the covariance between z1 and z2 is zero, we get
+η = cov[w, z1]
+var[z1]
+=
+σ2
+w (φ + θσ2
+I)
+σ2
+x (φ + θσ2
+I)2 + (θσ2
+I)2 σ2
+u
+,
+11
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+ξ = cov[w, z2]
+var[z2]
+= φ2cov [w, x2]
+var[z2]
+= φ2E [w3] + 2φ2E [w2v] + φ2E [wv2]
+var[z2]
+= 0,
+where the penultimate equality in the expression for ξ comes from noting that x =
+w + v and w is zero mean. The ﬁnal equality is due to the fact that w has a zero
+third moment and w and v are independent.
+The market-makers who receive no customer orders are committed to absorb all
+market orders submitted by dealer MM0. We assume that they share the market
+order equally so that each of the K dealers absorbs a ﬂow of size DM/K.
+The
+equilibrium execution price is then set such that expected utility is zero:
+DM
+K (p2 −ηz1) −1
+2θσ2
+U
+D2
+M
+K2 = 0,
+(9)
+where σ2
+U = σ2
+w −η2σ2
+z1 is the uncertainty in the asset value from the perspective
+of the uninformed dealers.
+Using the expression for z1 in equation (6), we can
+re-arrange equation (9) to give the optimal pricing rule
+p2
+=
+θσ2
+UDM
+2K
++ ηz1 = θσ2
+UDM
+2K
++ ηα + ηDM
+ 2β + θσ2
+I
+
++ ηDL
+ βq + δ + qθσ2
+I
+
+=
+ηα + DM
+
+2βη + θησ2
+I + θσ2
+U
+2K
+
++ DLη
+ βq + δ + qθσ2
+I
+
+.
+Comparing this expression to equation (1), and matching the corresponding coeﬃcients we get
+α = ηα ⇒α = 0,
+(10)
+β = θ(σ2
+U/K + 2ησ2
+I)
+2 (1 −2η)
+,
+(11)
+δ = qη (β + θσ2
+I)
+1 −η
+= qβ −qθσ2
+U/K
+2(1 −η)
+(12)
+Given these optimal pricing rule coeﬃcients, we show in Appendix A.1 that the
+12
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+second order conditions of the informed investor are satisﬁed if
+φσx
+θσ2
+I
+< σy.
+(13)
+
+η < 1
+2 and q ≤˜q
+
+or
+
+η < 1
+2 and q > ˜q and (φx)2 > ˜x2(q)
+
+,
+(14)
+where
+˜q ≡
+4(1 −η)2σ2
+I (σ2
+I + σ2
+U)
+(2(1 −η)σ2
+I + σ2
+U) (2(1 −η)σ2
+I + (1 −2η)σ2
+U)
+and
+˜x2(q) ≡q
+
+q(1 −2η)σ4
+U
+4(1 −η)2 (σ2
+I + σ2
+U) −(1 −q)σ2
+I
+
+.
+These are suﬃcient conditions for equilibrium to exist and can be interpreted as
+follows. Inequality (13) is similar to the second-order conditions in Naik, Neuberger,
+and Viswanathan (1999). It states that the market breaks down if the signal-to-noise
+ratio in the ﬁrst stage of trading is too high. The left-hand side of the inequality
+measures the standard deviation of the aggregate position that the market-maker
+would take given his available private information (φx), risk aversion (θ) and the
+expected variance of the fundamental value (σ2
+I). The right-hand side measures the
+standard deviation of the total order ﬂow in the ﬁrst stage and is thus related to
+noise in customer order ﬂow.
+The second-order condition (14) relates the existence of equilibrium to the execution risk of limit orders. Speciﬁcally, it says that the market breaks down if either
+x2 is suﬃciently small or q is suﬃciently large. In both cases, the risk arising from
+non-execution of limit orders is small. If q is very large then limit orders execute with
+high probability and become very like market orders but with lower price impact
+and this cannot be sustained in equilibrium. If, however, x2 is also large enough, the
+opportunity costs associated with non-execution risk become larger and this allows
+13
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+the equilibrium to exist.
+2.4
+The market-maker who receives an uninformed customer
+order
+Market-maker, MM1, receives an uninformed customer trade, for which he charges
+price ˜p1 per unit. As we have seen, subsequently, he submits a market order to
+MM0 which executes in full against MM0’s limit order with a probability of q and
+fails to execute with probability 1 −q. Thus, MM1 may be left with some inventory
+after inter-dealer trade but we assume that MM1 determines the price he charges his
+customers (˜p1) to ensure that, overall, his expected utility is equal to zero. In order
+to conserve space, and because it is tangential to the main message of the model,
+we do not solve for the equilibrium value of ˜p1.
+2.5
+Empirical predictions and interpretation
+In this section we present comparative statics of price impact coeﬃcients with respect
+to primitive parameters of the model, discuss intuition behind these relations and
+set up our empirical predictions. Proposition 1 summarizes the main implications
+of the model.
+Proposition 1: Whenever the equilibrium exists (i.e. when the second-order
+conditions hold) we have:
+1. Price impacts for market order ﬂows (β) and limit order ﬂows (δ) are positive;
+2. The price impact of market order ﬂow is larger than the price impact of limit
+order ﬂow (i.e. β > δ);
+3. The ratio of the price impact of limit order ﬂow to that of market order ﬂow
+is bounded above by q and approaches this limit as K →∞.
+14
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+4. The ratio of the price impact of limit order ﬂow to that of market order ﬂow
+declines as dealer risk-aversion increases.
+Proof: see the Appendix.
+The main implication of the model is that due to the informed component of
+MM0’s trade, his purchases (sales) via both market and limit order tend to drive
+prices upwards (downwards). Thus, prices in round 2 depend on both the limit and
+market orders submitted by MM0.
+The diﬀerence between the impacts of market and limit order ﬂows has two
+components. The ﬁrst is an information eﬀect. The informed dealer relies more
+heavily on market orders as they are certain to execute, while limit orders run the
+risk of non-execution. Thus market orders are more impactful than limit orders. This
+can be seen by comparing equations (11) and (12) and noting the linear dependence
+of δ on q while the equation for β shows no such dependence.
+The second contributor to the diﬀerence is uninformed dealer risk-aversion. Execution of the market orders of MM0 pushes inventory onto other dealers who, as
+they are risk averse, charge a premium for bearing this inventory. This premium is
+smaller when the number of dealers is larger (as then each dealer suﬀers a smaller inventory shift) and smaller when those dealers are less risk averse. This risk aversion
+channel does not eﬀect MM0’s limit order ﬂows as the counterparties to those ﬂows
+are divesting themselves of inventory, rather than acquiring it. Again, comparing
+equations (11) and (12), one can see that the limit order impact is reduced relative
+to δβ by a term that reﬂects the inventory risk premium that uninformed dealers
+demand for absorbing market orders.
+In equilibrium, the ratio of the price impact of limit orders to that of market
+orders is at most equal to the limit order execution probability, q, and, other things
+equal, a rise in q will increase the ratio δ/β. So, because market and limit orders
+execute at the same price, when their execution probabilities converge then so do
+15
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+their price impacts. When limit orders bear some execution risk, however, their
+impact will always be below that of market orders. The ratio δ/β approaches q
+when the inventory management costs of MM0 disappear, either because dealer risk
+aversion declines towards zero (so that all trading by MM0 is information motivated)
+or when the size of the uninformed dealer crowd, K, becomes large (as then the
+inventory implication of MM0’s trade for each counterparty is trivial).
+The ratio δ/β is also aﬀected by the precision of MM0’s signal and the noise in
+the round-one customer order. Figure 2 plots δ/β as a function of σ2
+u for diﬀerent
+values of θ, σ2
+w and σ2
+v.
+Insert Figure 2 about here
+The price impact of market orders increases relative to the price impact of limit
+orders as the informational content of MM0’s demand declines (i.e. as σ2
+u, the variance of the noise component of MM0’s customer order (y) increases). An increase
+in σ2
+u has two eﬀects on β and δ. On one hand, it decreases the value of η (the
+information content of the combined ﬂow variable z1 from perspective of the outside
+dealers) and hence reduces the price impacts. On the other hand, an increase in σ2
+u
+increases the conditional variance of the fundamental value from the perspective of
+the uninformed dealers (σ2
+U). As the risk they face increases, they charge higher risk
+premia and hence increase price impacts. The latter eﬀect dominates the determination of the price impact of market orders and hence the ratio of δ/β declines with
+σ2
+u.
+Given that we can now characterize the relative price impacts of market and limit
+orders, we can return to analysis of the optimal choice of limit and market orders
+by the informed dealer and how these choices depend on the signal MM0 receives.
+In the Appendix we show that the covariance of limit order ﬂow and the expected
+fundamental value of the asset is always positive: cov[DL, x] > 0 Thus, the more
+16
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+positive the signal received by the informed dealer, the more positive is the limit
+order he submits.
+This is, however, not necessarily the case with the optimal market order trade.
+The covariance between market orders and the expected fundamental value can be
+positive or negative depending on the model parameter. For example, when the
+informational advantage of MM0 becomes extremely large (i.e., σ2
+u is large), the
+price impact of market orders becomes substantially bigger than that of limit orders
+(see Figure 2) and MM0 optimally decides to substitute limit orders for market
+orders.
+Second, the covariance between market orders and the expected fundamental
+value also depends on the probability of execution, q. The higher q is, the smaller
+the execution risk the informed dealer faces when submitting limit orders. Hence,
+for large enough values of q, increases in x trigger increase in demand for limit orders
+and decrease in demand for market orders.
+In order to more clearly demonstrate how the covariance between market and
+limit order ﬂow is determined, we compute it numerically for a large set of possible
+parameter values and display the results in Figure 3. It is worth noting that the
+covariance tends to be positive when the variance of the noise component of the
+customer trade that MM0 receives is small and also when the execution probability
+of limit orders is small. Negative values of the covariance between DM and DL tend
+to arise when either the execution probability of MM0’s limit orders is very large
+and also when the variance of the noise component of the customer trade that MM0
+receives is large.
+Insert Figure 3 about here
+The fact that the correlation between market and limit order ﬂows is, in general,
+non-zero, means that our model has an important empirical implication. It implies
+17
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+the existence of an omitted variable bias when the limit order ﬂow variable is not
+included as an explanatory variable in a regression model of return determination.
+This bias can become economically very large, especially when the execution probability of limit orders is large. Figure 5 plots the magnitude of the bias from a
+simple regression of returns on market order ﬂows only as a function of the model
+parameters.
+Insert Figure 4 about here
+The bias in linear in the correlation between market and limit order ﬂows and
+can thus be positive or negative. The magnitude of the bias increases sharply with
+the probability of execution. When q is high, the bias becomes negative and reaches
+almost −100%. Thus ignoring limit order ﬂow in the return-order ﬂow relation can
+lead to a substantial underestimation of the price impact coeﬃcient of market order
+ﬂow. In the next section we provide empirical analysis which allows us to estimate
+the size of the omitted variable bias.
+3
+Data sources and variable deﬁnitions
+In this section we describe the datasets we use to test our hypotheses. In order
+to show that the predictions of the model are general enough to apply to diﬀerent
+markets, we perform our empirical tests using data from both FX and equity markets.
+3.1
+FX sample
+Our sample includes tick by tick data from the Reuters Dealing 3000 trading system.
+As Reuters is the dominant inter-dealer trading platform for sterling-related pairs,
+these data genuinely represent a sizeable fraction of total inter-dealer trading activity.
+18
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+We use two diﬀerent samples of FX data. The ﬁrst sample consists of two currency pairs: US dollar per pound sterling and pound sterling per euro (hereafter
+GBP/USD, and GBP/EUR, respectively) and the sample period runs from January
+2, 2003 to December 30, 2004. The data analyzed consist of a continuous 24 hour
+record of transactions and orders. Each limit order has a unique identiﬁer and price,
+size and direction are all available. Order events (e.g. cancellations or executions)
+are timed to the hundredth of a second and can be linked back to the original order
+entry. The minimum trade size in Dealing 3000 is 1 million units of the base currency. This extremely detailed data set makes it possible to continuously reconstruct
+the limit order book and both market and limit order ﬂows. We exclude weekends
+(between 21:00 GMT Friday until 21:00 GMT Sunday) and the following holidays:
+US Independence Day (July 4 2003 and July 5 2004), Christmas (December 24-26)
+and New Years (December 31-January 2).
+We also remove moving holidays like
+Good Friday, Easter Monday, Memorial Day, Thanksgiving and the day after and
+Labor Day from our sample. We aggregate the data to daily and hourly levels.
+We denote by pt the log of the closing level of the exchange rate at 21:00 GMT
+on day t for daily data and the last traded price during the corresponding hour for
+hourly data. The exchange rate return, ∆pt, is calculated as the diﬀerence in log
+midquotes from time t −1 to t, expressed in basis points. Market order ﬂow mot
+from period t −1 to t is measured as the aggregated diﬀerence between the trade
+quantities initiated by buyers and the trade quantities initiated by sellers. We deﬁne
+limit order ﬂow lot as follows. Net new limit order ﬂow is deﬁned as the sum of all
+bid order quantities arriving between time t −1 and t at the best price (either price
+improving or best price matching) minus the sum of all oﬀer order quantities at the
+best price over the corresponding period. Next, net cancellation ﬂow is computed
+as the sum of all bid order cancellations between time t −1 and t at the best price
+minus the sum of all oﬀer order cancellations at the best price over the corresponding
+19
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+period. Note that cancellations do not include orders that have been executed. Then
+lot is net new limit order ﬂow minus net cancellation order ﬂow.9
+Clearly our net limit order ﬂow measure must be related to the dynamics of
+order book depth.
+Buy and sell depth refer to the stocks of limit buy and sell
+orders outstanding on an order book at a point in time. The order book depth
+imbalance is usually deﬁned as the diﬀerence between buy and sell depth. Changes
+in imbalance can come from submission of new orders, cancellation of existing orders
+or executions of existing orders. Our limit order ﬂow measure reﬂects the ﬁrst two
+of these components and thus it is closely related to (but not identical to) changes
+in imbalance (the diﬀerence between them being due to traded volume).
+The second sample contains a wider cross-section of exchange rates and longer
+time period. We use Thomson Reuters tick history data covering the period from
+January 2, 2003 to February 28, 2014 (excluding weekends as deﬁned previously)
+for the following currency pairs: AUD/USD, CAD/USD, EUR/CHF, EUR/NOK,
+EUR/SEK, EUR/USD, GBP/USD, GBP/EUR, HKD/USD, JPY/USD, MXN/USD,
+NZD/USD, SGD/USD, and ZAR/USD. The data consist of intra-day information
+on transactions with the direction of trade plus best bid and ask quotes from Dealing
+3000. It should be noted that these data do not contain the quantities traded or the
+depth at the best quotes and, therefore, we cannot measure either our daily market
+or limit order ﬂow variables precisely.
+For this sample we construct a proxy for daily market order ﬂow simply by
+counting the number of market buys on a day and subtracting the count of that
+day’s market sells. Previous research has demonstrated that order ﬂows based on
+the number of trades carries much the same information as market order ﬂow based
+9In our shorter sample we observe the entire limit order book and thus limit orders submitted
+and cancelled outside of the best bid and ask prices.
+We have experimented with using these
+subsidiary limit orders to contribute to our limit order ﬂow measure. If we include them in limit
+order ﬂows our results do not change in any qualitative way.
+20
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+on trade sizes (Rime, Sarno, and Sojli 2010). Measuring limit order ﬂow is less easy.
+Without depth information, we resort simply to computing lot as the number of
+best price (either bid or ask) increases that are not due to a transaction minus the
+number of best price decreases between time t−1 and t. This measure is clearly not
+perfectly correlated with limit order ﬂows at the best price as it only counts those
+ﬂows that change the quote, not those that add to or subtract depth at a given price.
+Our main regression analysis is conducted at daily and hourly frequencies and it
+is worth spending a little time justifying the choice of these frequencies. First, we
+are interested in the eﬀects of microstructure variables at sampling frequencies that
+begin to matter to macroeconomists. We are not concerned with the dynamics of
+individual order placements and executions and market reactions to those events.
+Both of these points suggest that we should not look at our data at the highest
+frequency but at some aggregated level. Given the time-series span of our data, a
+daily sampling frequency would seem to ﬁt the bill. However, it is worth thinking
+about the three trading rounds structure of our model and how that might map
+onto a typical dealer’s activity.
+Thus, we also apply the model to hourly data.
+Indeed, given the speed of trading in modern markets, we feel that the model is
+most appropriate in the hourly context.
+Insert Table 1 about here
+Table 1 contains descriptive statistics on exchange rate returns and order ﬂow
+variables for our data at daily frequency. The average change in the log exchange
+rate is 1.614 bp for the GBP/EUR and 3.454 bp for the GBP/USD (see Panel A).
+The average daily log return over the longer sample varies from -1.547 bp to 1.300 bp.
+Average market order ﬂow for both currency pairs in Panel A is positive, while mean
+limit order ﬂow is negative. During the long sample (see Panel B), market order ﬂow
+is positive on average (aside from JPY/USD) and limit order ﬂow is predominantly
+21
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+negative (except JPY/USD and MXN/USD).10
+Panel A of Table 2 shows a statistically signiﬁcant positive correlation between
+changes in log exchange rates and both market and limit order ﬂows for both currency pairs. The correlation between market and limit order ﬂow is negative and
+statistically signiﬁcant at the 1% level. Similar results hold for the long sample (see
+Panel B of Table 2). The correlation between market and limit order ﬂow is negative
+and signiﬁcant in 13 of the 14 cases. In the model, a negative correlation arises when
+either the execution probability is large or when the variance of the noise component
+of the customer trade is large. Given that, in our data, average execution probabilities are moderate, we conclude that the negative sign of the correlation between
+market and order ﬂow variables provides evidence that customer trade with dealers
+contains a large uninformed component.
+Insert Table 2 about here
+3.2
+Equity sample
+Our equity data comprise three months worth of tick data on the FTSE-100 stocks
+from the ﬁrst quarter of 2015. The data come from Thomson Reuters TRTH and
+consist of trades and order book data from the London Stock Exchange. We have
+the ﬁrst two levels of the order book, i.e. the best bid and oﬀer prices and the second
+best prices on each side, with associated quantities. For trades we have prices and
+sizes. Trade directions are inferred by matching (by time stamp, price and quantity)
+the trade information to the updates in the order book data. We remove the opening
+and closing periods from the data and aggregate the data to a 30 minute sampling
+10We also compute execution probabilities for limit orders from our detailed FX sample. Given
+that our model requires a reasonably predictable execution probability, it is worth checking this in
+the data. The average probability of limit order execution was 0.362 for the GBP/USD and 0.274
+for GBP/EUR. The daily variation in these numbers is small, suggesting that traders can estimate
+execution probabilities with some precision.
+22
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+frequency.
+The variables used in our analysis are as in the FX sample.
+The dependent
+variable is the return on a stock over a 30 minute interval, measured in basis points.
+We measure market order ﬂow in a half-hour period in units of 100,000s of shares
+and it is equal to the number of shares executed against resting limit sell orders less
+the number of shares executed against resting limit buys. As with the ﬁrst sample
+of FX data, we measure limit order ﬂow within a 30 minute period as the net new
+limit order ﬂow minus net limit order cancellation ﬂow.
+As we are studying 102 stocks, we do not present summary statistics on ∆pt,
+mot and lot separately for each stock. They are however available on request. In the
+analysis that follows we do not present stock-by-stock results, but average results
+within terciles of our stock universe where the terciles are constructed on the basis
+of total trading activity in the stocks.11
+Panel C of Table 2 shows (average) correlations between returns and ﬂows for our
+stock terciles. As with the FX data, market order ﬂows and returns are signiﬁcantly
+positively correlated, as are limit order ﬂows and returns. Limit and market order
+ﬂows are negatively correlated with each other on average.
+4
+Empirical results
+Our model provides us with two testable hypotheses. These are:
+Hypothesis 1: Price impacts of market and limit orders are positive and statistically signiﬁcant.
+Hypothesis 2: The price impact of market order ﬂow is larger than the price
+impact of limit order ﬂow.
+11Speciﬁcally, we rank stocks according to the total amount traded, in GBP, during our sample
+period, and allocate the least heavily traded third of the universe to Tercile 1, the most heavily
+traded third to Tercile 3 and the remainder to Tercile 2.
+23
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+4.1
+FX tests
+We begin testing the Hypothesis 1 by estimating the following regression model:
+∆pt = β0 + βir∆irt + βmomot + βlolot + ut
+(15)
+Table 3 presents the results from estimating this equation by OLS for the shorter
+sample (Panel A) and longer sample (Panel B) using daily data. Across the two
+Panels, The price impact of market order ﬂow is positive and statistically signiﬁcant,
+as expected. When we include the limit order ﬂow variable, the coeﬃcients for both
+order ﬂow variables are always positive and statistically signiﬁcant, as predicted by
+the model. Averaging across exchange rates, the price impact of market order ﬂow
+(when limit orders are omitted from the regression) is 253.2 basis points for a one
+billion base currency order. This value increases to 281.3 basis points once limit
+orders are included into the model. The price impact of limit orders is 108.2 basis
+points which means that empirically the δ/β ratio is 0.38.
+The price impact of market orders tends to increase substantially when limit
+order ﬂow is included in the model.
+This suggests that, as discussed in Section
+2.5, a regression in which exchange rates are determined by market order ﬂow only
+is misspeciﬁed and, due to an omitted variable bias, substantially underestimates
+the price impact of market order ﬂow. This downward bias is consistent with the
+negative correlations between market and limit order ﬂows shown in Table 2. We
+discuss the magnitudes of this bias later in Section 4.3 after we summarize the equity
+results. Finally, explanatory power, as measured by adjusted R2, tends to increase
+substantially and signiﬁcantly with the inclusion of limit order ﬂow.
+Insert Table 3 about here
+We repeat the same exercise at an hourly frequency (see Table 4). All of the
+24
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+conclusions reported above remain unchanged. The average price impact of market
+order ﬂow is 314.5 basis points per billion of base currency traded while the price
+impact of limit orders is 156.2 basis points. Thus the estimated value for δ/β is 0.50.
+As before, the price impact of market order ﬂow is biased downwards when limit
+orders are omitted from the regression.
+Insert Table 4 about here
+Our regressions might suﬀer from endogeneity problems.
+Within an interval,
+ﬂows of new and cancelled limit orders and price changes are likely to be simultaneously determined. Evans and Lyons (2002) argue that market orders do not
+suﬀer from such a problem, however. In order to correct for potential endogeneity
+we re-estimate the model using instrumental variables. We identify instruments by
+estimating ﬁrst-stage regressions of limit order ﬂows on lags (up to ﬁfth order) of
+limit and market order ﬂows and price changes from both exchange rates. We keep a
+variable as an instrument if it is signiﬁcant at a 5% level in the ﬁrst-stage regressions.
+Insert Table 5 about here
+As shown in Table 5 the daily IV estimation results are qualitatively similar to the
+OLS results. The price impacts of market orders are always statistically signiﬁcant
+at the 1% level, while the price impacts of limit orders are positive and statistically
+signiﬁcant at least at the 10% level for the majority of the currency pairs (the
+exceptions are EUR/USD, NZD/USD and SGD/USD in Panel B). Price impacts of
+market orders are again larger when limit orders are included in the regression. We
+also report the Cragg-Donald test for weak instruments along with the Stock and
+Yogo size levels (see Stock and Yogo 2005). Given that Stock and Yogo size levels
+are around 5% to 30%, the results suggest that our instruments are indeed weak
+for majority of currency pairs. We also perform the Durbin-Wu-Hausman test for
+25
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+regressor endogeneity based on the diﬀerences of J statistics (see Hausman 1978).
+Its null hypothesis is that the limit order ﬂow variable is exogenous and we cannot
+reject this null for most of the exchange rates. The only exception is EUR/NOK
+where we reject the null hypothesis at 10% level. This leads us to favor the OLS
+results over the IV analysis.
+We repeat the same exercise at an hourly frequency (see Table 6) and the same
+qualitative results emerge. For the short sample, however, our instruments are weak
+in the hourly data as well - Stock and Yogo size levels are 20% for the GBP/USD
+exchange rate and 10% for GBP/EUR. But, for the longer sample most of our
+instruments pass the test at the 1% level. We reject the null hypothesis of exogeneity
+of the limit order ﬂow variable at 5% level only for EUR/CHF, MXN/USD and
+SGD/USD exchange rates.
+Insert Table 6 about here
+To test Hypothesis 2, we perform a Wald t-test of the following null hypothesis:
+H0 :
+βmo = βlo vs. H1 :
+βmo > βlo.
+(16)
+Results are given in the ﬁnal column of Tables 3 to 6. In the vast majority of cases,
+the empirical evidence supports the prediction we derive from our theoretical model.
+The OLS test results are very strong and the IV results slightly less so. The daily
+test results, especially using IV, are slightly stronger than their hourly counterparts.
+Overall, though, empirical evidence is strongly supportive of Hypothesis 2.
+4.2
+Equity tests
+Finally, Tables 7 and 8 present results from our equity sample, where the sampling
+frequency is 30 minutes. The speciﬁcation is a little simpler here, as we omit the
+26
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+interest rate diﬀerential from the model for equities. Thus the model is
+∆pt = β0 + βmomot + βlolot + ut
+(17)
+Table 7 presents average OLS estimates of this model for each of our stock terciles.
+It also contains estimates for the simpler model which excludes limit order ﬂows. The
+implications of the results are in broad agreement with those derived from our FX
+data. All price impact coeﬃcients are signiﬁcant (on average) and in each tercile the
+average market order ﬂow coeﬃcient is around 25% larger than the average limit
+order ﬂow coeﬃcient. The Wald tests indicate that one can decisively reject the null
+that the market and limit order price impacts are the same. Finally, comparing the
+results of the full speciﬁcation with that of the speciﬁcation containing only market
+order ﬂows on the right-hand side, one can see that (as one would expect given the
+correlation structure between ﬂows) omitting limit order ﬂows causes the market
+order ﬂow coeﬃcient to be biased towards zero.
+Insert Tables 7 and 8 about here
+Moving to an IV estimator, where we instrument possibly endogenous limit order
+ﬂow with up to 10 lags of each ﬂow variable, does not change the preceding conclusions at all. The t-statistics drop a little, but all price impacts are still signiﬁcant. It
+is still the case that the average market order price impact is above the average limit
+order impact, although in the IV results the average market order ﬂow coeﬃcient is
+around 50% larger than the average limit order ﬂow coeﬃcient.
+4.3
+Magnitude of omitted variable bias
+Our results have important methodological implications for measuring price impact
+of order ﬂow using return-order ﬂow regressions. The majority of microstructure
+27
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+work on ﬂows and some of the empirical asset pricing literature estimate the price
+impacts of market order ﬂows from univariate regressions. Our results clearly demonstrate that ignoring limit order ﬂow biases the estimator of the market order price
+impact. This bias is statistically signiﬁcant as indicated above. More importantly,
+the bias is economically large. Figure 5 demonstrates this bias for both FX (see
+Panel A) and equity (Panel B) samples in absolute and percentage change terms.
+Insert Figure 5 about here
+As expected from our model, the bias is on average negative. When limit order
+ﬂow is ignored in the return-order ﬂow regression, the market order ﬂow price impact
+is underestimated by an average of 28.05 basis points per billion traded for the FX
+sample. In percentage terms, the average price impact of order ﬂow is about 12.89%
+higher when limit order ﬂow is included. For the equity sample, the bias is 15.77
+basis points per 100,000 shares trades or 24.03% in percentage terms.
+5
+Conclusions
+We build a model in which market-makers face both adverse selection and inventory
+risk and we allow them to use both via limit and market orders in inter-dealer
+trading. We show that informed dealers optimally split trading between both order
+types and thus equilibrium returns depend on both market order ﬂows and limit
+order ﬂows. The equilibrium is such that the price impacts of both market and limit
+orders are positive, but the price impact of market orders is greater than that of limit
+orders. The ﬁrst prediction is due to the fact that both order ﬂows carry fundamental
+information due to informed trading. The second prediction comes from the fact that
+the informed market maker relies more heavily on market orders as they are certain
+to execute as compared to limit orders. Furthermore, market orders are typically
+28
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+absorbed by other risk averse market makers who charge a premium for bearing
+this inventory, while limit orders execute against counterparties who are typically
+divesting themselves of excess inventory.
+We test these propositions using three data sets: two years of detailed interdealer FX order data drawn from the Reuters Dealing 3000 platform for GBP/USD
+and GBP/EUR, thirteen years of FX data also from Dealing 3000 for 14 major exchange rates and 3 months of equity data from the London Stock exchange covering
+102 stocks. Our empirical tests are consistent with the theoretical predictions. Coeﬃcients on market and limit order ﬂows are always positive. In almost all cases
+price impacts of limit order ﬂows are smaller than those on market order ﬂows.
+More importantly, limit order ﬂows add signiﬁcant explanatory power to all of our
+regressions. Finally, we show that univariate regressions of returns on market order
+ﬂows lead to market order ﬂow price impact coeﬃcients being downward biased by
+between 20% and 50%.
+From a microstructure perspective, this paper can be viewed as supporting the
+recent literature, which argues that traders use limit orders as well as market orders to exploit private information (Bloomﬁeld, O’Hara, and Saar 2005; Kaniel and
+Liu 2006; Rosu 2009, 2015) and reinforcing empirical work that investigates the information content of limit order data (Cao, Hansch, and Wang 2009; Harris and
+Panchapagesan 2005; Kozhan and Salmon 2012; Latza and Payne 2013). Our analysis underscores the importance of limit order ﬂow as a measure of trading activity,
+and emphasizes the impact of microstructure eﬀects on short-horizon returns. From
+a practical standpoint, our results suggest that access to information about limit
+order ﬂow could be valuable for designing trading strategies. From an international
+ﬁnance/macroeconomics perspective, the paper provides robust evidence that another key microstructure variable, limit order ﬂow, can explain exchange rates at
+the relatively low frequencies that are typically of most interest to macroeconomists.
+29
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+References
+Anand, A., S. Chakravarty, and T. Martell, 2005, “Empirical evidence on the evolution of liquidity: choice of market versus limit orders by informed and uninformed
+traders,” Journal of Financial Markets, 8, 288–308.
+Back, K., and K. Crotty, 2015, “The informational role of stock and bond volume,”
+Review of Financial Studies, 28, 1381–1427.
+Beber, A., and C. Caglio, 2004, “Order submission strategies and information: empirical evidence from the NYSE,” Working paper.
+Biais, B., P. Hillon, and C. Spatt, 1995, “An empirical analysis of the limit order
+book and the order ﬂow in the paris bourse,” Journal of Finance, 50, 1655–1689.
+Bj¨onnes, G., and D. Rime, 2005, “Dealer behavior and trading systems in foreign
+exchange markets,” Journal of Financial Economics, 75, 571–605.
+Bloomﬁeld, R., M. O’Hara, and G. Saar, 2005, “The ’make or take’ decision in an
+electronic market: evidence on the evolution of liquidity,” Journal of Financial
+Economics, 75, 165–199.
+Cao, C., O. Hansch, and X. Wang, 2009, “The informational content of an open
+limit order book,” Journal of Futures Markets, 29, 16–41.
+Chakravarty, S., and C. Holden, 1995, “An integrated model of market and limit
+orders,” Journal of Financial Intermediation, 4, 213–241.
+Chordia, T., R. Roll, and A. Subrahmanyam, 2002, “Order imbalance, liquidity, and
+market returns,” Journal of Financial Economics, 65, 111–130.
+Chordia, T., and A. Subrahmanyam, 2004, “Order imbalance and individual stock
+returns: theory and evidence,” Journal of Financial Economics, 72(3), 485–518.
+Dunne, P., H. Hau, and M. Moore, 2010, “International order ﬂows: explaining
+equity and exchange rate returns,” Journal of International Money and Finance,
+29(2), 358–386.
+Easley, D., and M. O’Hara, 1991, “Order form and information in security markets,”
+Journal of Finance, 47, 577–606.
+Ellul, A., C. Holden, P. Jain, and R. Jennings, 2007, “Order dynamics: recent
+evidence from the NYSE,” Journal of Empirical Finance, 14, 636–661.
+Evans, M., and R. Lyons, 2002, “Order ﬂow and exchange rate dynamics,” Journal
+of Political Economy, 110(1), 170–180.
+Foucault, T., 1999, “Order ﬂow composition and trading costs in a dynamic limit
+order market,” Journal of Financial Markets, 2, 99–134.
+30
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+Foucault, T., O. Kadan, and E. Kandel, 2005, “The limit order book as a market
+for liquidity,” Review of Financial Studies, 18, 1171–1217.
+Foucault, T., S. Moinas, and E. Theissen, 2007, “Does anonymity matter in electronic limit order markets?,” Review of Financial Studies, 20, 1707–1747.
+Goettler, R., C. Parlour, and U. Rajan, 2005, “Equilibrium in a dynamic limit order
+market,” Journal of Finance, 60, 2149–2192.
+, 2007, “Microstructure eﬀects and asset pricing,” Working paper.
+, 2009, “Informed traders and limit order markets,” Journal of Financial
+Economics, 93, 67–87.
+Griﬃths, M., B. Smith, A. Turnbull, and R. White, 2000, “The costs and determinants of order aggressiveness,” Journal of Financial Economics, 56, 65–88.
+Harris, L., 1994, “Minimum price variations, discrete bid-ask spreads and quotation
+sizes,” Review of Financial Studies, 7, 149–178.
+Harris, L., and V. Panchapagesan, 2005, “The information content of the limit order
+book, evidence from NYSE specialist trading decisions,” Journal of Financial
+Markets, 8, 25–67.
+Hasbrouck, J., and G. Saar, 2009, “Technology and liquidity provision: the blurring
+of traditional deﬁnitions,” Journal of Financial Markets, 12, 143–172.
+Hasbrouck, J., and D. Seppi, 2001, “Common factors in prices, order ﬂows, and
+liquidity,” Journal of Financial Economics, 59(3), 383–411.
+Hausman, J., 1978, “Speciﬁcation tests in econometrics,” Econometrica, 46(6), 1251–
+1271.
+Holliﬁeld, B., and P. S. Miller, 2004, “Empirical analysis of limit order markets,”
+Review of Economic Studies, 71, 1027–1063.
+Kaniel, R., and H. Liu, 2006, “What orders do informed traders used?,” Journal of
+Business, 79, 1867–1913.
+Killeen, W., R. Lyons, , and M. Moore, 2006, “Fixed versus ﬂexible: lessons from
+EMS order ﬂow,” Journal of International Money and Finance, 25, 551–579.
+Kozhan, R., and M. Salmon, 2012, “The information content of a limit order book:
+the case of an FX market,” Journal of Financial Markets, 5(1), 1–28.
+Kozhan, R., and W. Tham, 2012, “Execution risk in high-frequency arbitrage,”
+Management Science, 58(11), 2131–2149.
+Kumar, P., and D. Seppi, 1994, “Limit and market orders with optimizing traders,”
+Working paper.
+31
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+Kyle, A., 1985, “Continuous auctions and insider trading,” Econometrica, 53, 1315–
+1335.
+Latza, T., and R. Payne, 2013, “The information content of high-frequency limit
+order ﬂows,” Working paper.
+Lo, I., and S. Sapp, 2008, “The submission of limit orders or market orders: The role
+of timing and information in the Reuters D20002 system,” Journal of International
+Money and Finance, 27, 1056–1073.
+Lyons, R., 1995, “Tests of microstructural hypotheses in the foreign exchange market,” Journal of Financial Economics, 39, 321–351.
+Lyons, R., and M. Moore, 2009, “An information approach to international currencies,” Journal of International Economics, 79(2), 211–221.
+Menkhoﬀ, L., C. Osler, and M. Schmeling, 2010, “Limit-order submission strategies
+under asymmetric information,” Journal of Banking and Finance, 34, 2665–2677.
+Naik, N., A. Neuberger, and S. Viswanathan, 1999, “Trade disclosure regulation in
+markets with negotiated trades,” Review of Financial Studies, 12(4), 873–900.
+Parlour, C., 1998, “Price dynamics in limit order markets,” Review of Financial
+Studies, 11, 789–816.
+Payne, R., 2003, “Information transmission in inter-dealer foreign exchange transactions,” Journal of International Economics, 61, 307–329.
+Rime, D., L. Sarno, and E. Sojli, 2010, “Exchange rate forecasting, order ﬂow and
+macroeconomic information,” Journal of International Economics, 80(1), 72–88.
+Rindi, B., 2008, “Informed traders as liquidity providers: anonymity, liquidity and
+price formation,” Review of Finance, 12, 497–532.
+Rosu, I., 2009, “A dynamic model of the limit order book,” Review of Financial
+Studies, 22, 4601–4641.
+, 2015, “Liquidity and information in order driven markets,” Working paper.
+Stock, J., and M. Yogo, 2005, “Testing for weak instruments in linear IV regression,”
+in Identiﬁcation and inference for econometric models: essays in honor of Thomas
+Rothenberg, ed. by D. Andrews, and J. Stock. Cambridge: Cambridge University
+Press, pp. 485–518.
+Subrahmanyam, A., 1991, “Risk Aversion, Market Liquidity and Price Eﬃciency,”
+Review of Financial Studies, 4, 417–441.
+32
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+Figures and Tables
+Figure 1: Model timeline
+Round 1: customerdealer trade
+Round 2: interdealer trade
+Trade between uninformed customer and
+MM1 (price = ˜p1)
+Trade between informed customer and
+MM0 (price = p1)
+MM0 submits market
+orders that execute against
+limit orders from K
+other dealers (price = p2)
+MM0 posts limit order
+that executes against
+MM1’s market order with
+probability q (price = p2)
+33
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+Figure 2: Ratio of δ/β.
+The ﬁgure plots ratio of δ/β as a function of σ2
+u for diﬀerent parameter values σ2
+w, σ2
+v and θ. All
+plots are based on the probability of execution q = 0.5.
+σ2
+w = 0.2, σ2
+v = 0.2
+σ2
+w = 0.2, σ2
+v = 0.5
+σ2
+w = 0.2, σ2
+v = 1
+σ2
+w = 0.2, σ2
+v = 5
+σ2
+w = 0.2, σ2
+v = 10
+σ2
+w = 0.5, σ2
+v = 0.2
+σ2
+w = 0.5, σ2
+v = 0.5
+σ2
+w = 0.5, σ2
+v = 1
+σ2
+w = 0.5, σ2
+v = 5
+σ2
+w = 0.5, σ2
+v = 10
+σ2
+w = 1, σ2
+v = 0.2
+σ2
+w = 1, σ2
+v = 0.5
+σ2
+w = 1, σ2
+v = 1
+σ2
+w = 1, σ2
+v = 5
+σ2
+w = 1, σ2
+v = 10
+σ2
+w = 5, σ2
+v = 0.2
+σ2
+w = 5, σ2
+v = 0.5
+σ2
+w = 5, σ2
+v = 1
+σ2
+w = 5, σ2
+v = 5
+σ2
+w = 5, σ2
+v = 10
+σ2
+w = 10, σ2
+v = 0.2
+σ2
+w = 10, σ2
+v = 0.5
+σ2
+w = 10, σ2
+v = 1
+σ2
+w = 10, σ2
+v = 5
+σ2
+w = 10, σ2
+v = 10
+34
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+Figure 3: Covariance between market and limit order ﬂow.
+The ﬁgure plots combinations of parameter values corresponding to positive covariance between
+market and limit order ﬂows cov(DM, DL) > 0 (dark gray) and negative covariance between market
+and limit order ﬂows cov(DM, DL) < 0 (light gray) based on our model’s predictions. In each plot,
+the horizontal axis gives the probability of execution q and vertical axis corresponds to the variance
+of the fundamental value σ2
+w. All plots are based on a risk aversion coeﬃcient of θ = 5.
+σ2
+v = 0.2, σ2
+u = 0.2
+σ2
+v = 0.2, σ2
+u = 0.5
+σ2
+v = 0.2, σ2
+u = 1
+σ2
+v = 0.2, σ2
+u = 5
+σ2
+v = 0.2, σ2
+u = 10
+σ2
+v = 0.5, σ2
+u = 0.2
+σ2
+v = 0.5, σ2
+u = 0.5
+σ2
+v = 0.5, σ2
+u = 1
+σ2
+v = 0.5, σ2
+u = 5
+σ2
+v = 0.5, σ2
+u = 10
+σ2
+v = 1, σ2
+u = 0.2
+σ2
+v = 1, σ2
+u = 0.5
+σ2
+v = 1, σ2
+u = 1
+σ2
+v = 1, σ2
+u = 5
+σ2
+v = 1, σ2
+u = 10
+σ2
+v = 5, σ2
+u = 0.2
+σ2
+v = 5, σ2
+u = 0.5
+σ2
+v = 5, σ2
+u = 1
+σ2
+v = 5, σ2
+u = 5
+σ2
+v = 5, σ2
+u = 10
+σ2
+v = 10, σ2
+u = 0.2
+σ2
+v = 10, σ2
+u = 0.5
+σ2
+v = 10, σ2
+u = 1
+σ2
+v = 10, σ2
+u = 5
+σ2
+v = 10, σ2
+u = 10
+35
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+Figure 4: Relative bias of β estimator.
+The ﬁgure plots the relative bias of β coeﬃcient when DL is omitted from the return-order ﬂow
+regression. We compute this bias as δ
+β
+cov[DM,DL]
+var[DM]
+as a function of σ2
+u for diﬀerent parameter values
+σ2
+w, σ2
+v and q. All plots are based on the coeﬃcient of risk aversion θ = 5.
+σ2
+w = 0.2, σ2
+v = 0.2
+σ2
+w = 0.2, σ2
+v = 0.5
+σ2
+w = 0.2, σ2
+v = 1
+σ2
+w = 0.2, σ2
+v = 5
+σ2
+w = 0.2, σ2
+v = 10
+σ2
+w = 0.5, σ2
+v = 0.2
+σ2
+w = 0.5, σ2
+v = 0.5
+σ2
+w = 0.5, σ2
+v = 1
+σ2
+w = 0.5, σ2
+v = 5
+σ2
+w = 0.5, σ2
+v = 10
+σ2
+w = 1, σ2
+v = 0.2
+σ2
+w = 1, σ2
+v = 0.5
+σ2
+w = 1, σ2
+v = 1
+σ2
+w = 1, σ2
+v = 5
+σ2
+w = 1, σ2
+v = 10
+σ2
+w = 5, σ2
+v = 0.2
+σ2
+w = 5, σ2
+v = 0.5
+σ2
+w = 5, σ2
+v = 1
+σ2
+w = 5, σ2
+v = 5
+σ2
+w = 5, σ2
+v = 10
+σ2
+w = 10, σ2
+v = 0.2
+σ2
+w = 10, σ2
+v = 0.5
+σ2
+w = 10, σ2
+v = 1
+σ2
+w = 10, σ2
+v = 5
+σ2
+w = 10, σ2
+v = 10
+36
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+Figure 5: Magnitude of omitted variable bias.
+The ﬁgure plots histogram of the magnitude of the bias in market order ﬂow coeﬃcient when
+limit order ﬂow variable is ignored in the return-order ﬂow regressions. Speciﬁcally, we estimate
+∆pt = β1
+0 + β1
+momot + ut and ∆pt = β2
+0 + β2
+momot + β2
+lolot + ut OLS regressions independently for
+each asset in our sample. Left hand side plots present histograms of β1
+mo −β2
+mo (in basis points)
+while the right hand side plots present histograms of (β1
+mo −β2
+mo)/β2
+mo (in percent).
+Panel A
+corresponds for the both FX samples, while Panel B uses equity sample.
+Panel A: FX sample
+Panel B: Equity sample
+37
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+Table 1: Summary statistics
+This table presents descriptive statistics for on exchange rate returns and order ﬂow variables at the daily frequency.
+Panel A describes variables for GBP/USD and GBP/EUR currency pairs from January 2, 2003 to December 30, 2004;
+Panel B describes variables for AUD/USD, CAD/USD, EUR/CHF, EUR/NOK, EUR/SEK, EUR/USD, GBP/USD,
+GBP/EUR, HKD/USD, JPY/USD, MXN/USD, NZD/USD, SGD/USD and ZAR/USD currency pairs from January
+2, 2003 to February 28, 2014. ∆pt (bp) is the change in log exchange rates measured in basis points; market order
+ﬂow mot is the aggregated diﬀerence between the trade quantities initiated by sellers and the of trade quantities
+initiated by buyers for the foreign (base) currency over the day; limit order ﬂow lot is net new limit orders less net
+cancelled orders at the best over the day. Both order ﬂow variables are measured in billions of the base currency. q
+is the probability of limit order execution which is deﬁned as the ratio of the total quantity of limit orders executed
+during the day to the total quantity of limit orders submitted during the same day.
+Panel A: 2003-2004 sample
+∆pt
+mot
+lot
+GBP/USD
+3.464 [56.80]
+0.077 [0.285]
+-0.079 [0.351]
+GBP/EUR
+1.614 [46.05]
+0.046 [0.266]
+-0.102 [0.317]
+Panel B: 2003-2014 sample
+∆pt
+mot
+lot
+AUD/USD
+0.805 [89.80]
+0.059 [0.354]
+-0.021 [0.128]
+CAD/USD
+-0.647 [63.06]
+0.079 [0.240]
+-0.020 [0.115]
+EUR/CHF
+-1.547 [72.99]
+0.001 [0.011]
+-0.005 [0.055]
+EUR/NOK
+0.595 [48.93]
+0.010 [0.087]
+-0.102 [0.389]
+EUR/SEK
+-0.206 [46.04]
+0.021 [0.087]
+-0.009 [0.403]
+EUR/USD
+1.259 [64.88]
+0.021 [0.112]
+-0.022 [0.113]
+GBP/USD
+0.215 [59.70]
+0.042 [0.227]
+-0.024 [0.123]
+GBP/EUR
+0.279 [50.28]
+0.039 [0.181]
+-0.008 [0.125]
+HKD/USD
+-0.061 [3.360]
+0.009 [0.061]
+-0.004 [0.030]
+JPY/USD
+0.216 [71.53]
+-0.002 [0.038]
+0.005 [0.074]
+MXN/USD
+-0.295 [76.52]
+0.040 [0.154]
+0.037 [0.467]
+NZD/USD
+1.300 [90.90]
+0.024 [0.126]
+-0.001 [0.102]
+SGD/USD
+-1.058 [35.23]
+0.029 [0.096]
+-0.022 [0.066]
+ZAR/USD
+0.878 [118.0]
+0.057 [0.118]
+-0.012 [0.381]
+38
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+Table 2: Correlations
+This table presents descriptive statistics for returns and order ﬂow variables.
+Panel A describes variables for
+GBP/USD and EUR/GBP currency pairs from January 2, 2003 to December 30, 2004, sampled daily; Panel
+B describes variables for AUD/USD, CAD/USD, EUR/CHF, EUR/NOK, EUR/SEK, EUR/USD, GBP/USD,
+GBP/EUR, HKD/USD, JPY/USD, MXN/USD, NZD/USD, SGD/USD and ZAR/USD currency pairs from January 2, 2003 to February 28, 2014, again at a daily sampling. Panel C is constructed from our FTSE-100 stock data
+covering the ﬁrst quarter of 2015 and uses a 30 minute sampling frequency. We present average results for three
+turnover-based terciles of the stock universe. ∆pt is the change in log exchange rates; market order ﬂow mot is the
+aggregated diﬀerence between the trade quantities initiated by sellers and the trade quantities initiated by buyers;
+limit order ﬂow lot is net new limit orders less net cancelled orders at the best over the day. For the currency data
+order ﬂow variables are measured in billions of the base currency while for the equity data they are in 10,000s of
+shares. ∗∗∗, ∗∗, and ∗indicate signiﬁcance at the 1%, 5%, and 10% level, respectively.
+Panel A: 2003-2004 sample
+corr(∆pt, mot) corr(∆pt, lot)
+corr(mot, lot)
+GBP/USD
+0.389∗∗∗
+0.475∗∗∗
+-0.350∗∗∗
+GBP/EUR
+0.286∗∗∗
+0.425∗∗∗
+-0.516∗∗∗
+Panel B: 2003-2014 sample
+corr(∆pt, mot) corr(∆pt, lot)
+corr(mot, lot)
+AUD/USD
+0.536∗∗∗
+-0.054∗∗∗
+-0.389∗∗∗
+CAD/USD
+0.518∗∗∗
+0.096∗∗∗
+-0.295∗∗∗
+EUR/CHF
+0.121∗∗∗
+0.272∗∗∗
+-0.076∗∗∗
+EUR/NOK
+0.509∗∗∗
+0.080∗∗∗
+0.054∗∗∗
+EUR/SEK
+0.464∗∗∗
+0.063∗∗∗
+-0.047∗∗
+EUR/USD
+0.563∗∗∗
+0.191∗∗∗
+-0.204∗∗∗
+HKD/USD
+0.453∗∗∗
+0.037∗
+-0.178∗∗∗
+GBP/USD
+0.559∗∗∗
+-0.025
+-0.339∗∗∗
+GBP/EUR
+0.399∗∗∗
+0.048∗∗
+-0.195∗∗∗
+JPY/USD
+0.246∗∗∗
+0.334∗∗∗
+-0.090∗∗∗
+MXN/USD
+0.302∗∗∗
+0.077∗∗∗
+0.038∗
+NZD/USD
+0.475∗∗∗
+0.092∗∗∗
+-0.301∗∗∗
+SGD/USD
+0.514∗∗∗
+0.108∗∗∗
+-0.395∗∗∗
+ZAR/USD
+0.506∗∗∗
+0.034
+-0.040∗
+Panel C: Equity data sample (30 minute sampling)
+corr(∆pt, mot) corr(∆pt, lot)
+corr(mot, lot)
+Tercile 1
+0.267∗∗∗
+0.668∗∗∗
+-0.107∗∗∗
+Tercile 2
+0.280∗∗∗
+0.637∗∗∗
+-0.134∗∗∗
+Tercile 3
+0.254∗∗∗
+0.602∗∗∗
+-0.167∗∗∗
+39
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+Table 3: Daily regressions of FX returns on market and limit order ﬂows: OLS
+Estimation
+This table presents OLS estimation results of the return-order ﬂow regression ∆pt = β0 + βir∆irt + βmomot + ut
+and then the model ∆pt = β0 + βir∆irt + βmomot + βlolot + ut based on daily data for diﬀerent exchange rates.
+Here ∆pt is the change in log exchange rates (in basis points), mot is market ﬂow deﬁnes as the aggregated diﬀerence
+between the number of trades initiated by sellers and the number of trades initiated by buyers (oﬀer minus bid) for
+the foreign (base) currency over the day (in billions), lot is limit order ﬂow deﬁnes as the net number of new limit
+orders less the net number of cancelled orders at the best price over the day (in billions), ∆irt is the changes in
+corresponding interest rate diﬀerential (coeﬃcients β0 and βir are not reported for brevity and are available upon
+request). Panel A presents estimation results for the two sterling exchange rates using shorter but more detailed
+sample from January 2, 2003 to December 30, 2004; Panel B presents estimation results for broader cross-section
+of currency pairs using longer sample from January 2, 2003 to February 28, 2014. Panel C presents averages of
+the coeﬃcient estimates and R2s over both samples. T-statistics are given in parentheses and are computed based
+on standard errors are adjusted for autocorrelation and heteroscedasticity. The Wald test column presents t-test
+statistics and p-values (in squared brackets) for the null that the coeﬃcients on market and limit order ﬂow are the
+same.
+Panel A: 2003-2004 sample
+mot
+¯R2
+mot
+lot
+¯R2
+Wald test
+GBP/USD
+76.53 (9.35)
+14.80%
+125.2 (20.1)
+112.3 (22.2)
+57.61%
+1.98 (0.02)
+GBP/EUR
+49.23 (6.57)
+8.22%
+119.2 (19.0)
+113.3 (21.6)
+52.89%
+1.03 (0.15)
+Panel B: 2003-2014 sample
+mot
+¯R2
+mot
+lot
+¯R2
+Wald test
+AUD/USD
+137.2 (25.9)
+29.56%
+151.8 (23.5)
+106.1 (3.63)
+31.47%
+1.21 (0.11)
+CAD/USD
+137.1 (26.8)
+27.18%
+158.3 (26.6)
+143.9 (7.54)
+33.42%
+0.44 (0.33)
+EUR/CHF
+937.1 (5.83)
+5.16%
+999.9 (6.50)
+122.5 (5.81)
+7.22%
+5.88 (0.00)
+EUR/NOK
+283.9 (20.9)
+27.17%
+282.5 (20.7)
+6.17 (2.62)
+27.37%
+19.2 (0.00)
+EUR/SEK
+242.8 (17.5)
+21.93%
+244.8 (17.7)
+12.68 (3.65)
+22.77%
+16.6 (0.00)
+EUR/USD
+322.2 (28.4)
+31.55%
+358.5 (32.1)
+177.0 (11.7)
+40.70%
+10.4 (0.00)
+GBP/USD
+126.7 (31.3)
+33.37%
+140.3 (35.7)
+73.7 (7.32)
+36.27%
+6.67 (0.00)
+GBP/EUR
+96.72 (16.8)
+16.09%
+103.3 (17.4)
+50.09 (4.30)
+17.78%
+4.72 (0.00)
+HKD/USD
+24.99 (13.4)
+21.96%
+26.2 (13.4)
+14.14 (3.35)
+23.48%
+3.12 (0.00)
+JPY/USD
+444.5 (8.20)
+5.89%
+503.7 (9.76)
+343.3 (12.9)
+18.42%
+3.17 (0.00)
+MXN/USD
+140.4 (11.4)
+8.84%
+138.8 (11.2)
+12.43 (2.93)
+9.44%
+9.56 (0.00)
+NZD/USD
+347.1 (21.7)
+22.95%
+408.6 (26.1)
+237.3 (10.6)
+29.41%
+7.80 (0.00)
+SGD/USD
+182.9 (17.8)
+25.73%
+234.9 (21.9)
+192.2 (10.7)
+36.95%
+3.14 (0.00)
+ZAR/USD
+502.6 (19.0)
+25.69%
+504.8 (19.2)
+13.85 (2.60)
+25.86%
+17.8 (0.00)
+Panel C: Averages
+mot
+¯R2
+mot
+lot
+¯R2
+Average
+253.2
+20.38%
+281.3
+108.19
+29.44%
+40
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+Table 4: Hourly regressions of FX returns on market and limit order ﬂows: OLS
+This table presents OLS estimation results of the return-order ﬂow regression ∆pt = β0 + βir∆irt + βmomot + ut
+and then the model ∆pt = β0 + βir∆irt + βmomot + βlolot + ut based on hourly data for diﬀerent exchange rates.
+Here ∆pt is the change in log exchange rates (in basis points), mot is market ﬂow deﬁnes as the aggregated diﬀerence
+between the number of trades initiated by sellers and the number of trades initiated by buyers (oﬀer minus bid) for
+the foreign (base) currency over the hour (in billions), lot is limit order ﬂow deﬁnes as the net number of new limit
+orders less the net number of cancelled orders at the best price over the hour (in billions), ∆irt is the changes in
+corresponding interest rate diﬀerential (coeﬃcients β0 and βir are not reported for brevity and are available upon
+request). Panel A presents estimation results for the two sterling exchange rates using shorter but more detailed
+sample from January 2, 2003 to December 30, 2004; Panel B presents estimation results for broader cross-section
+of currency pairs using longer sample from January 2, 2003 to February 28, 2014. Panel C presents averages of
+the coeﬃcient estimates and R2s over both samples. T-statistics are given in parentheses and are computed based
+on standard errors are adjusted for autocorrelation and heteroscedasticity. The Wald test column presents t-test
+statistics and p-values (in squared brackets) for the null that the coeﬃcients on market and limit order ﬂow are the
+same.
+Panel A: 2003-2004 sample
+mot
+¯R2
+mot
+lot
+¯R2
+Wald test
+GBP/USD
+90.36 (50.5)
+17.80%
+140.8 (98.1)
+113.9 (95.3)
+53.12%
+17.9 [0.00]
+GBP/EUR
+69.53 (41.0)
+12.40%
+130.8 (82.3)
+103.6 (77.8)
+41.73%
+18.3 [0.00]
+Panel B: 2003-2014 sample
+mot
+¯R2
+mot
+lot
+¯R2
+Wald test
+AUD/USD
+194.7 (77.7)
+30.19%
+217.6 (80.7)
+198.1 (40.5)
+34.84%
+3.98 [0.00]
+CAD/USD
+182.6 (76.0)
+27.79%
+209.6 (80.5)
+215.3 (44.9)
+36.35%
+-1.25 [0.21]
+EUR/CHF
+1105.4 (7.31)
+6.33%
+1171.9 (7.92)
+234.7 (8.47)
+8.66%
+6.16 [0.00]
+EUR/NOK
+356.0 (62.0)
+23.73%
+355.1 (61.7)
+13.08 (11.6)
+24.10%
+58.4 [0.00]
+EUR/SEK
+311.3 (61.7)
+24.19%
+312.3 (61.9)
+13.24 (7.00)
+24.67%
+55.9 [0.00]
+EUR/USD
+345.5 (82.1)
+24.02%
+372.3 (91.0)
+283.5 (72.4)
+42.22%
+15.1 [0.00]
+GBP/USD
+159.3 (75.8)
+25.94%
+180.5 (81.9)
+168.5 (48.9)
+35.48%
+3.51 [0.00]
+GBP/EUR
+122.9 (47.7)
+14.41%
+132.1 (50.4)
+146.1 (38.0)
+20.71%
+-3.39 [0.00]
+HKD/USD
+34.63 (49.9)
+22.96%
+38.55 (45.3)
+28.19 (18.2)
+26.49%
+8.19 [0.00]
+JPY/USD
+489.4 (20.2)
+4.33%
+543.3 (23.7)
+405.8 (59.3)
+20.72%
+5.69 [0.00]
+MXN/USD
+244.9 (17.3)
+14.83%
+242.2 (17.1)
+21.63 (8.16)
+16.63%
+15.2 [0.00]
+NZD/USD
+406.9 (62.2)
+18.89%
+484.0 (70.5)
+349.6 (48.0)
+28.17%
+15.8 [0.00]
+SGD/USD
+245.6 (70.0)
+26.86%
+291.6 (60.5)
+178.3 (15.7)
+32.68%
+12.8 [0.00]
+ZAR/USD
+673.6 (62.8)
+24.30%
+676.4 (62.8)
+25.49 (11.4)
+24.73%
+59.8 [0.00]
+Panel C: Averages
+mot
+¯R2
+mot
+lot
+¯R2
+Average
+314.5
+19.94%
+343.7
+156.2
+25.79%
+41
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+Table 5: Daily regressions of FX returns on market and limit order ﬂows: IV GMM
+This table presents estimation results of the return-order ﬂow regression ∆pt = β0 +βir∆irt +βmomot +βlolot +ut
+based on daily data. Here ∆pt is the change in log exchange rates (in basis points), mot is market ﬂow deﬁnes
+as the aggregated diﬀerence between the number of trades initiated by sellers and the number of trades initiated
+by buyers (oﬀer minus bid) for the foreign (base) currency over the day (in billions), lot is limit order ﬂow deﬁnes
+as the net number of new limit orders less the net number of cancelled orders at the best price over the day (in
+billions), ∆irt is the changes in corresponding interest rate diﬀerential (coeﬃcients β0 and βir are not reported for
+brevity and are available upon request). The models are estimated using the instrumental variable GMM approach.
+We use up to ﬁve lags of market and net new limit order ﬂow variables across all markets, which are statistically
+signiﬁcant in the ﬁrst-stage regressions at the 5% level. Panel A presents estimation results for the two sterling
+exchange rates using shorter but more detailed sample from January 2, 2003 to December 30, 2004; Panel B presents
+estimation results for broader cross-section of currency pairs using longer sample from January 2, 2003 to February
+28, 2014. Panel C presents averages of the coeﬃcient estimates and R2s over both samples. T-statistics are given
+in parentheses and are computed based on standard errors are adjusted for autocorrelation and heteroscedasticity.
+The Weak instruments test row presents the Cragg-Donald test statistics along with the Stock and Yogo size levels.
+The row labelled Endogeneity test presents values of the Durbin-Wu-Hausman test statistic (based on diﬀerences
+of J statistics) and corresponding p-values of the regressor endogeneity test for the limit order ﬂow variable. The
+null hypothesis is that the lo variable is exogenous. The Wald test column presents t-test statistics and p-values (in
+squared brackets) for the null that the coeﬃcients on market and limit order ﬂow are the same.
+Panel A: 2003-2004 sample
+mot
+lot
+¯R2
+Weak instr.
+test
+Endogeneity
+test
+Wald test
+GBP/USD
+115.12 (5.12)
+88.17 (1.65)
+55.33%
+6.63 [0.25]
+0.16 [0.69]
+0.83 [0.20]
+GBP/EUR
+145.67 (4.64)
+156.22 (3.14)
+46.30%
+5.28 [0.25]
+0.80 [0.19]
+-0.54 [0.30]
+Panel B: 2003-2014 sample
+mot
+lot
+¯R2
+Weak instr.
+test
+Endogeneity
+test
+Wald test
+AUD/USD
+167.35 (11.0)
+178.10 (2.02)
+33.41%
+7.56 [0.20]
+0.39 [0.53]
+-0.14 [0.44]
+CAD/USD
+164.78 (13.0)
+161.30 (1.93)
+36.15%
+5.33 [0.30]
+0.02 [0.88]
+0.05 [0.48]
+EUR/CHF
+916.93 (5.05)
+137.70 (2.00)
+7.03%
+10.5 [0.20]
+0.25 [0.62]
+4.21 [0.00]
+EUR/NOK
+280.19 (16.0)
+30.15 (2.20)
+25.33%
+31.2 [0.05]
+2.74 [0.10]
+11.0 [0.00]
+EUR/SEK
+266.26 (12.3)
+27.79 (2.20)
+22.65%
+24.5 [0.05]
+2.05 [0.15]
+10.4 [0.00]
+EUR/USD
+349.93 (8.30)
+40.87 (0.24)
+34.95%
+5.03 [0.30]
+0.49 [0.48]
+2.39 [0.02]
+GBP/USD
+155.71 (13.5)
+144.70 (2.34)
+35.21%
+7.77 [0.20]
+1.26 [0.26]
+0.21 [0.83]
+GBP/EUR
+110.41 (10.5)
+101.97 (1.78)
+15.61%
+8.56 [0.20]
+0.80 [0.19]
+-0.54 [0.30]
+HKD/USD
+32.62 (9.30)
+36.79 (1.69)
+20.76%
+10.9 [0.10]
+0.90 [0.34]
+-0.21 [0.42]
+JPY/USD
+514.14 (7.40)
+349.39 (2.31)
+14.73%
+9.15 [0.20]
+0.04 [0.85]
+1.21 [0.11]
+MXN/USD
+137.00 (6.16)
+40.09 (1.72)
+7.28%
+15.7 [0.10]
+0.64 [0.43]
+2.98 [0.00]
+NZD/USD
+382.67 (8.99)
+182.97 (1.17)
+25.08%
+7.55 [0.20]
+0.01 [0.94]
+1.68 [0.05]
+SGD/USD
+200.74 (7.31)
+44.12 (0.57)
+33.82%
+8.38 [0.20]
+1.40 [0.24]
+2.88 [0.00]
+ZAR/USD
+495.63 (15.4)
+48.84 (2.15)
+25.09%
+14.3 [0.10]
+1.18 [0.14]
+13.6 [0.00]
+Panel C: Averages
+mot
+lot
+¯R2
+Average
+277.2
+110.6
+27.42%
+42
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+Table 6: Hourly regressions of FX returns on market and limit order ﬂows: IV GMM
+This table presents estimation results of the return-order ﬂow regression ∆pt = β0 +βir∆irt +βmomot +βlolot +ut
+based on hourly data. Here ∆p is the change in log exchange rates (in basis points), mot is market ﬂow deﬁnes
+as the aggregated diﬀerence between the number of trades initiated by sellers and the number of trades initiated
+by buyers (oﬀer minus bid) for the foreign (base) currency over the day (in billions), lo is limit order ﬂow deﬁnes
+as the net number of new limit orders less the net number of cancelled orders at the best price over the day (in
+billions), ∆ir is the changes in corresponding interest rate diﬀerential (coeﬃcients β0 and βir are not reported for
+brevity and are available upon request). The models are estimated using the instrumental variable GMM approach.
+We use up to ﬁve lags of market and net new limit order ﬂow variables across all markets, which are statistically
+signiﬁcant in the ﬁrst-stage regressions at the 5% level. Panel A presents estimation results for the two sterling
+exchange rates using shorter but more detailed sample from January 2, 2003 to December 30, 2004; Panel B presents
+estimation results for broader cross-section of currency pairs using longer sample from January 2, 2003 to February
+28, 2014. Panel C presents averages of the coeﬃcient estimates and R2s over both samples. T-statistics are given
+in parentheses and are computed based on standard errors are adjusted for autocorrelation and heteroscedasticity.
+The Weak instruments test row presents the Cragg-Donald test statistics along with the Stock and Yogo size levels.
+The row labelled Endogeneity test presents values of the Durbin-Wu-Hausman test statistic (based on diﬀerences
+of J statistics) and corresponding p-values of the regressor endogeneity test for the limit order ﬂow variable. The
+null hypothesis is that the lo variable is exogenous. The Wald test column presents t-test statistics and p-values (in
+squared brackets) for the for the null that the coeﬃcients on market and limit order ﬂow are the same.
+Panel A: 2003-2004 sample
+mot
+lot
+¯R2
+Weak instr.
+test
+Endogeneity
+test
+Wald test
+GBP/USD
+132.49 (12.2)
+93.98 (3.90)
+52.13%
+9.21 [0.20]
+0.54 [0.46]
+2.81 [0.00]
+GBP/EUR
+119.84 (4.98)
+85.06 (2.09)
+40.81%
+16.51 [0.10]
+0.21 [0.65]
+2.05 [0.02]
+Panel B: 2003-2014 sample
+mot
+lot
+¯R2
+Weak instr.
+test
+Endogeneity
+test
+Wald test
+AUD/USD
+225.32 (41.2)
+264.65 (6.46)
+34.36%
+318.1 [0.01]
+2.75 [0.10]
+-1.08 [0.28]
+CAD/USD
+208.01 (41.1)
+204.14 (5.77)
+36.38%
+355.7 [0.01]
+0.10 [0.75]
+0.12 [0.90]
+EUR/CHF
+1510.0 (6.29)
+858.17 (3.26)
+0.00%
+12.44 [0.10]
+8.95 [0.00]
+1.86 [0.06]
+EUR/NOK
+345.32 (58.4)
+9.78 (1.65)
+25.15%
+493.7 [0.01]
+0.96 [0.33]
+38.4 [0.00]
+EUR/SEK
+282.87 (54.4)
+12.38 (54.4)
+24.76%
+615.2 [0.01]
+1.62 [0.20]
+36.7 [0.00]
+EUR/USD
+373.59 (81.0)
+298.62 (15.5)
+44.51%
+185.0 [0.01]
+0.56 [0.45]
+4.12 [0.00]
+GBP/USD
+176.28 (41.4)
+142.07 (4.68)
+35.26%
+161.4 [0.01]
+0.75 [0.39]
+1.28 [0.20]
+GBP/EUR
+131.98 (38.3)
+168.56 (5.25)
+24.70%
+108.3 [0.01]
+0.30 [0.58]
+-1.22 [0.22]
+HKD/USD
+35.91 (13.3)
+12.15 (0.56)
+25.35%
+87.44 [0.01]
+0.67 [0.41]
+1.24 [0.22]
+JPY/USD
+549.66 (22.1)
+432.71 (4.38)
+23.80%
+39.04 [0.05]
+0.04 [0.83]
+1.32 [0.19]
+MXN/USD
+221.30 (48.1)
+7.02 (1.67)
+16.97%
+1647.9 [0.01]
+11.1 [0.00]
+32.8 [0.00]
+NZD/USD
+529.19 (16.0)
+544.09 (3.76)
+25.35%
+36.17 [0.05]
+1.83 [0.18]
+-0.13 [0.89]
+SGD/USD
+319.71 (32.3)
+301.34 (8.70)
+30.25%
+229.3 [0.01]
+10.6 [0.00]
+0.71 [0.48]
+ZAR/USD
+649.40 (58.5)
+16.22 (2.10)
+25.03%
+507.5 [0.00]
+1.48 [0.22]
+44.4 [0.00]
+Panel C: Averages
+mot
+lot
+¯R2
+Average
+363.2
+215.7
+29.05%
+43
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+Table 7: Half-hourly regressions of equity returns on market and limit order ﬂows:
+OLS
+This table presents OLS estimation results of the return-order ﬂow regression ∆pt = β0 + βmomot + ut and then
+the model ∆pt = β0 + βmomot + βlolot + ut based on data aggregated to a 30 minute level individually for our 102
+stocks. Here ∆pt is the change in log stock price (in basis points), mot is market ﬂow deﬁned as the aggregated
+diﬀerence between the number of shares traded initiated by sellers and the number of shares traded initiated by
+buyers (oﬀer minus bid), lo is limit order ﬂow deﬁnes as the net number of new limit orders less the net number
+of cancelled orders at the best price over the day. Both ﬂow measures are expressed in units of 100,000 shares.
+T-statistics are given in parentheses and are computed based on standard errors are adjusted for autocorrelation
+and heteroscedasticity. The Wald test column presents average t-test statistics for the null that the coeﬃcients on
+market order ﬂow minus that on limit order ﬂow is zero. We split stocks into turnover-based terciles and present
+average results separately for the three groups.
+mot
+¯R2
+mot
+lot
+¯R2
+Wald test
+Tercile 1
+89.6 (6.05)
+8.48%
+109.4 (9.87)
+86.9 (21.6)
+56.92%
+3.26
+Tercile 2
+69.0 (6.13)
+8.56%
+87.5 (10.9)
+61.8 (23.1)
+55.01%
+4.63
+Tercile 3
+27.1 (5.71)
+6.92%
+36.3 (10.7)
+26.5 (21.9)
+49.84%
+4.23
+44
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+Table 8: Half-hourly regressions of equity returns on market and limit order ﬂows:
+IV GMM
+This table presents estimation results of the return-order ﬂow regression ∆pt = β0 + βmomot + βlolot + ut based
+on data aggregated to a 30 minute level. Here ∆pt is the change in log stock price (in basis points), mot is market
+ﬂow deﬁned as the aggregated diﬀerence between the number of shares traded initiated by sellers and the number
+of shares traded initiated by buyers (oﬀer minus bid), lo is limit order ﬂow deﬁnes as the net number of new limit
+orders less the net number of cancelled orders at the best price over the day. Both ﬂow measures are expressed in
+units of 100,000 shares. The models are estimated using IV with robust standard errors individually for our 102
+stocks. We allow up to 10 lags of the ﬂow variables to be used as instruments. The Wald test column presents
+average t-test statistics for the null that the coeﬃcients on market order ﬂow minus that on limit order ﬂow is zero.
+We split stocks into turnover-based terciles and present average results separately for the three groups.
+mot
+lot
+¯R2
+Wald test
+Tercile 1
+99.1 (7.83)
+64.3 (4.53)
+51.42%
+3.30
+Tercile 2
+81.8 (8.36)
+50.8 (4.12)
+48.39%
+4.03
+Tercile 3
+31.6 (7.19)
+18.7 (3.66)
+41.64%
+4.17
+45
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+A
+Proofs and additional derivations
+A.1
+Solving the informed trader’s problem
+The ﬁrst-order condition of the expected utility expression with respect to DM is
+φx −α −2βDM −δDL −qβDL −θσ2
+I (DM + qDL −y) = 0
+(18)
+and the ﬁrst-order condition with respect to DL is
+qφx −δDM −qα −qβDM −2qδDL −θq
+ (1 −q)φ2x2DL + σ2
+I (DM + DL −y)
+
+= 0.
+(19)
+Combining the ﬁrst order conditions gives equations (4) and (5). The second-order
+conditions are
+2β + θσ2
+I > 0
+and
+(20)
+ 2β + θσ2
+I
+  2qδ + qθσ2
+I + θx2σ2
+I
+
+>
+ qβ + δ + qθσ2
+I
+2 .
+(21)
+Once the optimal pricing rule coeﬃcients α, β and δ have been determined, we can
+substitute equations (10) – (12) into the second order conditions (18) and (19) to
+yield
+η < 1
+2
+(22)
+and
+q(1 −q)σ2
+I (σ2
+I + σ2
+U)
+(1 −2η)
+−
+q2σ4
+U
+4 (1 −η)2 + φ2x2 (σ2
+I + σ2
+U)
+(1 −2η)
+> 0.
+(23)
+From here we can see that, once inequality (22) holds, inequality (23) holds as well
+as long as either x2 is suﬃciently large or q is suﬃciently small. More speciﬁcally,
+deﬁne
+˜q ≡
+4(1 −η)2σ2
+I (σ2
+I + σ2
+U)
+(2(1 −η)σ2
+I + σ2
+U) (2(1 −η)σ2
+I + (1 −2η)σ2
+U)
+(24)
+46
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+and
+˜x2(q) ≡q
+
+q(1 −2η)σ4
+U
+4(1 −η)2 (σ2
+I + σ2
+U) −(1 −q)σ2
+I
+
+.
+(25)
+Then, the second-order condition can be rewritten as
+
+η < 1
+2 and q ≤˜q
+
+or
+
+η < 1
+2 and q > ˜q and (φx)2 > ˜x2
+
+.
+(26)
+Finally, substituting the expression for η into (22) gives equation (13) in the text.
+A.2
+Determining the covariance between z1 and z2
+To show that the covariance between z1 and z2 is zero, we have
+cov [z1, z2]
+=
+E [z1z2] = φ3E
+
+x3
++ φ2θσ2
+IE
+
+yx2
+=
+φ3E
+
+x3
++ φ2θσ2
+IE
+
+x3
++ φ2θσ2
+IE
+
+ux2
+= 0.
+A.3
+Proof of Proposition 1
+1) The statement is a trivial implication of the second order conditions.
+2) Let us ﬁnd the conditions for which the following ratio is less than one;
+δ
+β = θqη(σ2
+U/K + 2σ2
+I(1 −η))
+2(1 −2η)(1 −η)
+×
+2(1 −2η)
+2θησ2
+I + θσ2
+U/K = qη(σ2
+U/K + 2σ2
+I(1 −η))
+(1 −η)(σ2
+U/K + 2ησ2
+I)
+(27)
+Given that 0 < η < 1
+2, this is equivalent to
+2ησ2
+I (1 −η) (1 −q) + (1 −qη −η) σ2
+U/K > 0.
+(28)
+The second order condition η < 1
+2 and the fact that q is a probability, and
+thus is less or equal than one, imply 1 −qη −η = 1 −η(1 + q) > 0 and hence,
+47
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+subsequently (28).
+3) First note that we can write the ratio of price impacts as;
+δ
+β = q
+ησ2
+U/K + 2σ2
+Iη(1 −η)
+(1 −η)σ2
+U/K + 2σ2
+Iη(1 −η) ≤q.
+(29)
+The ﬁnal inequality holds as the second terms in both numerator and denominator are identical while, given that in equilibrium η < 1
+2, the ﬁrst term in the
+numerator is smaller than the ﬁrst term in the denominator.
+From equation (29) it is easy to see that as K →∞, the ﬁrst terms in the
+numerator and denominator vanish such that the fraction tends to unity and
+thus the entire expression tends to q.
+4) Note, that η is a decreasing function of θ. Indeed, ∂η
+∂θ = −
+σ2
+wσ2
+I(σ2
+z1+2θφσ2
+Iσ2
+u)
+σ4z1
+< 0.
+Moreover, η goes to zero as θ goes to inﬁnity.
+Furthermore, σ2
+U = σ2
+w −
+σ4
+w
+σ2x+
+σ4
+I σ2u
+(φ/θ+σ2
+I )2
+, which is increasing with θ and goes to
+σ2
+w(σ2
+v+σ2
+u)
+σ2w+σ2v+σ2u as θ goes to
+inﬁnity. As a result, as θ goes to inﬁnity, the numerator of the right-hand
+side of equation (29) goes to zero and the denominator is ﬁnite so the entire
+expression tends to zero.
+A.4
+The covariance between DM and DL
+Substituting expressions (10)-(12) for α, β and δ into equations (4) and (5) yields
+DM = −qDL
+2 (1 −η) σ2
+I + σ2
+U
+2 (1 −η) (σ2
+I + σ2
+U) +
+(1 −2η)
+θ (σ2
+I + σ2
+U)z1 = −ADL + Bz1
+(30)
+DL =
+z1
+θ
+
+2(1−q)σ2
+I(σ2
+I+σ2
+U)(1−η)
+σ2
+U(1−2η)
+−
+qσ2
+U
+2(1−η)
+
++
+2θ(σ2
+I+σ2
+U)(1−η)
+qσ2
+U(1−2η)
+z2
+=
+z1
+C + Dz2
+,
+(31)
+48
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+and hence,
+Cov [DM, DL] = −A Var [DL] + B Cov [DL, z1]
+(32)
+where
+Var [DL]
+=
+E
+"
+z1
+C + Dz2
+2#
+−E
+
+z1
+C + Dz2
+2
+=
+ φ + θσ2
+I
+2 E
+
+x2
+(C + Dφ2x2)2
+
++
+ θσ2
+I
+2 σ2
+uE
+
+1
+(C + Dφ2x2)2
+
+(33)
+and
+Cov [DL, z1]
+=
+E
+
+z1 ×
+z1
+C + Dz2
+
+−E
+
+z1
+C + Dz2
+
+E [z1]
+=
+ φ + θσ2
+I
+2 E
+
+x2
+C + Dφ2x2
+
++
+ θσ2
+I
+2 σ2
+uE
+
+1
+C + Dφ2x2
+
+. (34)
+Here we have used the facts that variables u and x are independent and E [x] =
+E [u] = 0. Note, that the parameters C and D are always positive, as long as the
+second order conditions (20) and (21) are satisﬁed, hence the expectations in (33)
+and (34) always exist.
+A.5
+The covariance between DM + DL and z1
+Equation (30) implies that DM + DL = (1 −A)DL + Bz1, where
+1 −A = 1 −q 2 (1 −η) σ2
+I + σ2
+U
+2 (1 −η) (σ2
+I + σ2
+U) = 1 −q + q
+σ2
+U (1 −2η)
+2 (1 −η) (σ2
+I + σ2
+U) > 0
+and
+B =
+(1 −2η)
+θ (σ2
+I + σ2
+U) > 0.
+49
+Electronic copy available at: https://ssrn.com/abstract=2695705
+
+Equation (31) together with the fact that under the second order conditions the
+parameters C and D are always positive imply that
+Cov [DL, x]
+=
+E
+
+x ×
+z1
+C + Dz2
+
+−E
+
+z1
+C + Dz2
+
+E [x]
+=
+ φ + θσ2
+I
+
+E
+
+x2
+C + Dφ2x2
+
+> 0
+(35)
+and
+Cov [z1, x] =
+ φ + θσ2
+I
+  σ2
+w + σ2
+v
+
+> 0.
+(36)
+Hence,
+Cov [DM + DL, x] = (1 −A)Cov [DL, x] + BCov [z1, x] > 0.
+(37)
+50
+Electronic copy available at: https://ssrn.com/abstract=2695705

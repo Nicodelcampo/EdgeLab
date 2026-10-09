@@ -1,0 +1,109 @@
+{
+  "doc_id": 61,
+  "titulo": "Are Pairs Trading Profits Robust to Trading Costs?",
+  "resumen_operativo": "Demuestra que la rentabilidad estándar del pairs trading desaparece tras incorporar de manera rigurosa costos de transacción. Sin embargo, propone filtros de emparejamiento industrial y reversión histórica (oscilación) que devuelven a la estrategia un alpha positivo y estadísticamente significativo, de gran utilidad para auditar sistemas similares.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia contrarian de corto plazo que busca explotar las violaciones a la ley de un solo precio entre sustitutos económicos cercanos.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "short-term reversal"}
+      ],
+      "cita_textual": "Pairs trading is a special form of short-term contrarian strategy that seeks to exploit violations of the “law of one price”."
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costos totales de ejecutar la estrategia, que en este estudio incluyen explícitamente comisiones por ida y vuelta, costos de venta en corto e impacto de mercado implícito.",
+      "relaciones": [],
+      "cita_textual": "Explicit trading costs in a pairs trading program comprise two roundtrip commissions per pair trade, and short selling fees; and the implicit cost of the market impact."
+    },
+    {
+      "nombre": "market impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costo de ejecución implícito que se estima observando los movimientos de precios exactos que ocurren inmediatamente después de las señales de divergencia operables.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "we measure exact price movements which occur immediately after the divergence signals that are picked up by our algorithms."
+    },
+    {
+      "nombre": "short-term reversal",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Anomalía del mercado donde los retornos a corto plazo revierten su dirección; el pairs trading puede ser una forma disfrazada de explotar este efecto.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "There is a possibility that pairs trading is merely a disguised way of exploiting short-term return reversals widely documented in the literature"
+    },
+    {
+      "nombre": "intra-industry reversal",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia contrarian que compra perdedores y vende ganadores ordenando las acciones dentro de sus mismos grupos industriales.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "short-term reversal"}
+      ],
+      "cita_textual": "Hameed et al (2010) document a stronger reversal effect by sorting winners and losers within same industry groups instead of across all stocks in the market."
+    },
+    {
+      "nombre": "bid-ask bounce",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fricción microestructural debida al diferencial entre oferta y demanda que puede consumir las ganancias esperadas cuando los márgenes de divergencia son pequeños.",
+      "relaciones": [],
+      "cita_textual": "making it likely to open a trade at a point that is insufficient to cover bid-ask bounce and transaction costs even when stocks converge."
+    },
+    {
+      "nombre": "liquidity",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Característica del activo que influye notablemente en el efecto de reversión de corto plazo, presentándose las reversiones más fuertes en las acciones ilíquidas.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "short-term reversal"}
+      ],
+      "cita_textual": "liquidity has been known to contribute significantly to the short-term reversal effect. Avramov et al (2006) find that the strongest reversal occurs amongst illiquid stocks"
+    },
+    {
+      "nombre": "commissions",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Tarifas de intermediación explícitas cobradas al ejecutar las posiciones largas y cortas, que constituyen una carga directa en la rentabilidad de las estrategias.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "we construct return time series by subtracting two roundtrips of commissions and market impact for each completed pair trade"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El pairs trading clásico no es rentable una vez que se incluyen todos los costos de transacción (comisiones, impacto de mercado y comisiones de venta en corto).",
+      "mercado": "US equities",
+      "periodo": "1963-2009",
+      "magnitud": "exceso de retorno cae de 93 bps a 12 bps",
+      "condiciones": "algoritmo base de Gatev et al (2006) con costos de transacción aplicados",
+      "robustez": "alta",
+      "cita_textual": "On average, pairs trading is unprofitable, with the monthly excess return dropping from 93 bps to just 12 bps, once transaction costs are included."
+    },
+    {
+      "afirmacion": "Las carteras que emparejan acciones de la misma industria y con alta reversión histórica mantienen una ganancia estadísticamente significativa luego de costos.",
+      "mercado": "US equities",
+      "periodo": "1963-2009",
+      "magnitud": "retorno ajustado por riesgo de ~30 bps por mes",
+      "condiciones": "emparejamiento intra-industrial refinado y después de costos de transacción",
+      "robustez": "alta",
+      "cita_textual": "Portfolios of better matched pairs that are formed within refined industry groups produce a risk-adjusted return of about 30 bps per month over the period 1963-2009."
+    },
+    {
+      "afirmacion": "El pairs trading presenta menor rentabilidad pero también mucha menor volatilidad y riesgo que las estrategias contrarian basadas en reversión de retornos dentro de una misma industria.",
+      "mercado": "US equities",
+      "periodo": "1963-2009",
+      "magnitud": "la desviación estándar de la estrategia contrarian duplica a la de los pares",
+      "condiciones": "después de costos de transacción",
+      "robustez": "alta",
+      "cita_textual": "pairs strategies offer a lower risk and lower return profile compared to Hameed et al's (2010) similar contrarian strategy that buys extreme losers and sells extreme winners"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "La metodología rigurosa para computar comisiones y market impact es directamente aplicable para depurar backtests de alta frecuencia en ES."
+  }
+}

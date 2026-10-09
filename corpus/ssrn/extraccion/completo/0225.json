@@ -1,0 +1,211 @@
+{
+  "doc_id": 225,
+  "titulo": "Market Microstructure of Non Fungible Tokens",
+  "resumen_operativo": "El artículo analiza la microestructura del mercado de NFTs, cubriendo formación de precios (precio fijo vs. subasta inglesa/holandesa), estructura del mercado (segmentos por proyecto y nivel de propiedad), transparencia pre/post-trade y manipulación mediante wash-trading. Se examinan cuatro motivos de wash-trade (market making, rate making, incentivizing, project promotion) y patrones de actividad anormal y recurrente identificados en la blockchain de Ethereum. El trabajo concluye con una guía de due-diligence para inversores y la aplicación del Howey test para determinar si ciertos NFTs califican como valores (securities), además de cubrir implicaciones legales en propiedad intelectual y fiscalidad.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "market microstructure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Análisis del proceso mediante el cual las demandas latentes de los inversores se traducen en transacciones ejecutadas, enfocado en formación de precios, estructura de mercado, transparencia y costo de trading.",
+      "relaciones": [
+        { "tipo": "APLICA_A", "objeto": "non-fungible tokens" },
+        { "tipo": "USA", "objeto": "transparency" }
+      ],
+      "cita_textual": "Market microstructure analyze the process by which investors' latent demands are translated into executed trades"
+    },
+    {
+      "nombre": "non-fungible tokens",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Coleccionables digitales únicos y escasos asegurados sobre una blockchain, que proveen autenticidad de origen, propiedad, unicidad (escasez) y permanencia para un ítem particular. Su oferta máxima es 1.",
+      "relaciones": [
+        { "tipo": "REQUIERE", "objeto": "blockchain" },
+        { "tipo": "SE_OPONE_A", "objeto": "fungible cryptocurrencies" }
+      ],
+      "cita_textual": "NFTs are unique and rare digital collectibles which are secured over a blockchain. An NFT provides authenticity of origin, ownership, uniqueness (scarcity), and permanence for any particular item."
+    },
+    {
+      "nombre": "price formation",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Proceso por el cual los precios incorporan nueva información. En NFTs se realiza mediante dos mecanismos principales: precio fijo (7 a 180 días) y subasta cronometrada (inglesa u holandesa).",
+      "relaciones": [
+        { "tipo": "PARTE_DE", "objeto": "market microstructure" },
+        { "tipo": "USA", "objeto": "English auction" },
+        { "tipo": "USA", "objeto": "Dutch auction" }
+      ],
+      "cita_textual": "Price formation is the process by which prices confine new information. NFTs are generally traded in two ways - Fixed Price and Timed Auction."
+    },
+    {
+      "nombre": "price discovery",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Culminación del sentimiento de mercado de compradores y vendedores en un punto fijo del tiempo, es decir, el precio al que un NFT cambia de propiedad. En el mercado NFT está impulsado por hype y sesgo de legado de los inversores, no como en un mercado de subasta única.",
+      "relaciones": [
+        { "tipo": "PARTE_DE", "objeto": "market microstructure" },
+        { "tipo": "EQUIVALE_A", "objeto": "market order price" }
+      ],
+      "cita_textual": "Price discovery is the culmination of market sentiment from buyer and seller at a fixed point in time. Price discovery at NFT marketplace is currently hype-driven with a combination of legacy bias of investors."
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "El diferencial entre precio de compra y venta contiene un componente atribuible a información asimétrica. El market maker pierde frente a traders informados en promedio, pero recupera esas pérdidas en operaciones con traders motivados por liquidez.",
+      "relaciones": [
+        { "tipo": "MIDE", "objeto": "information asymmetry" },
+        { "tipo": "PARTE_DE", "objeto": "liquidity" }
+      ],
+      "cita_textual": "Bid-ask spreads contain a component attributable to asymmetrical information."
+    },
+    {
+      "nombre": "wash trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Manipulación de mercado que consiste en generar un gran volumen de transacciones artificiales con cuatro motivos principales: market making (inflar precio de un activo), rate making (aumentar valor del artista), incentivizing (aprovechar recompensas por trade) y project promotion (mejorar ranking para atraer inversores orgánicos).",
+      "relaciones": [
+        { "tipo": "CAUSA", "objeto": "market manipulation" },
+        { "tipo": "MITIGA", "objeto": "due diligence" }
+      ],
+      "cita_textual": "Manipulating a market involves generating a large volume of transactions, which incurs costs and can be very expensive. Four key reasons that motivates Wash-Trade: Market Making, Rate Making, Incentivizing, Project Promotion."
+    },
+    {
+      "nombre": "gas fees",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Tarifa de minería inherente para realizar transacciones descentralizadas entre dos partes, distinta de la comisión institucional. No es consumida por el marketplace sino que sirve como fee de minería en la blockchain. Plataformas como Polygon intentan anular este costo.",
+      "relaciones": [
+        { "tipo": "REQUIERE", "objeto": "decentralized exchange" },
+        { "tipo": "PARTE_DE", "objeto": "Ethereum" }
+      ],
+      "cita_textual": "Gas fee is something different from institutional commission as it is a fee that is not consumed by the marketplace for facilitating NFT trade but serves as an inherent mining fee for actually making the decentralized transaction between two parties."
+    },
+    {
+      "nombre": "transparency",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Disponibilidad de información de mercado para los participantes. Tiene dos dimensiones: pre-trade (difusión de cotizaciones bid-ask actuales y desequilibrios de órdenes grandes) y post-trade (divulgación pública oportuna de información sobre transacciones pasadas). Mayor transparencia se asocia con precios más informativos, pero la transparencia total no siempre es beneficiosa.",
+      "relaciones": [
+        { "tipo": "MEJORA_A", "objeto": "price efficiency" },
+        { "tipo": "MEJORA_A", "objeto": "liquidity" }
+      ],
+      "cita_textual": "Transparency deals with the availability of market information to the market participants. Greater transparency, both pre- and posttrade, is generally associated with more informative prices. Complete transparency is not always beneficial to the operation of the market."
+    },
+    {
+      "nombre": "TUSD",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Volumen total negociado en dólares en el mercado NFT, dividido en USDS (valor transferido entre comprador y vendedor en ventas primarias y secundarias) y USDD (volumen que incluye todas las interacciones con smart contracts, incluyendo financieras). El gap creciente entre USDD y USDS indica madurez de la industria.",
+      "relaciones": [
+        { "tipo": "MIDE", "objeto": "market sustainability" },
+        { "tipo": "PARTE_DE", "objeto": "USDS" },
+        { "tipo": "PARTE_DE", "objeto": "USDD" }
+      ],
+      "cita_textual": "Traded in US Dollar (TUSD) represents the total volume traded in the NFT market which is an important parameter of market sustainability. As the USDD increases and widens the gap from USDS, the NFT industry, as a whole, move more towards mature industry and player engagement and away from hype-driven speculative store-of-value."
+    },
+    {
+      "nombre": "Howey test",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Test legal de cuatro factores establecido por la Corte Suprema de EE.UU. en 1946 (SEC v. W. J. Howey Co.) para determinar si una inversión constituye un valor (security): inversión de dinero, en una empresa común, con expectativa de ganancia, derivada del esfuerzo de un promotor o tercero. Aplicado a NFTs sugiere que la mayoría no son securities, pero NFTs fraccionales sí podrían serlo.",
+      "relaciones": [
+        { "tipo": "APLICA_A", "objeto": "non-fungible tokens" },
+        { "tipo": "PREDICE", "objeto": "security classification" }
+      ],
+      "cita_textual": "The Supreme Court outlined four factors for determining whether an investment is a security, that became the Howey test: 1. An investment of money 2. In a common enterprise 3. With the expectation of profit 4. To be derived from the efforts of a promoter or other third party"
+    },
+    {
+      "nombre": "liquidity",
+      "tipo": "concepto",
+      "definicion_en_contexto": "La estructura de mercado afecta la velocidad y calidad de la liquidez. El análisis técnico puede ayudar a los traders a descubrir liquidez oculta en horizontes cortos. La liquidez es uno de los parámetros clave impactados por la transparencia pre- y post-trade.",
+      "relaciones": [
+        { "tipo": "PARTE_DE", "objeto": "market microstructure" },
+        { "tipo": "REQUIERE", "objeto": "transparency" }
+      ],
+      "cita_textual": "Market structure affects the speed and quality of price discovery, liquidity, and the cost of trading. Technical analysis might help traders discover hidden liquidity, over short horizons."
+    },
+    {
+      "nombre": "active wallets",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Entidades o personas que han interactuado con un smart contract de NFT. Se distinguen tres tipos de actores en el ecosistema: active wallets, buyers (compraron al menos un NFT en el año) y sellers (vendieron al menos un NFT en el año). Un individuo puede poseer más de una wallet.",
+      "relaciones": [
+        { "tipo": "MIDE", "objeto": "market participation" },
+        { "tipo": "PARTE_DE", "objeto": "market structure" }
+      ],
+      "cita_textual": "Active wallet means those entities or person who have interacted with NFT smart contract. Buyers are the number of wallets that bought atleast one NFT across the year. Sellers are the number of wallets that sold atleast one NFT across the year."
+    },
+    {
+      "nombre": "secondary market royalties",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Componente único del mercado NFT, ausente en el trading de valores tradicional, que otorga regalías al creador original por cada venta en el mercado secundario. Junto con las gas fees, son los dos componentes vitales que distinguen al mercado NFT del mercado de valores convencional.",
+      "relaciones": [
+        { "tipo": "PARTE_DE", "objeto": "NFT marketplace" },
+        { "tipo": "USA", "objeto": "smart contract" }
+      ],
+      "cita_textual": "Two vital components of NFT marketplace, that are not found in vanilla securities trading, are secondary market royalties to original creator and gas fee."
+    },
+    {
+      "nombre": "HODL",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Comportamiento del inversor que consiste en no vender impulsivamente un token cuando su precio cae o sube drásticamente (Hold On for Dear Life). Un mercado secundario inexistente puede indicar que los propietarios están haciendo HODL esperando el momento oportuno para vender, o bien reflejar una comunidad abandonada.",
+      "relaciones": [
+        { "tipo": "CAUSA", "objeto": "nonexistent secondary market" },
+        { "tipo": "SE_OPONE_A", "objeto": "wash trading" }
+      ],
+      "cita_textual": "Hold on for dear life or HODL is an investor behaviour where people do not impulsively sell a token when its price drops or rises dramatically. A nonexistent secondary market may indicate that owners HODL their assets, waiting for the opportune moment to sell."
+    },
+    {
+      "nombre": "due diligence",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso de verificación para distinguir proyectos NFT auténticos de estafas y modas pasajeras, basado en cinco preguntas clave: verificación del proyecto, identidad del equipo, fuente de valor del activo, descentralización genuina y escasez real. Es la principal herramienta propuesta para mitigar el riesgo de wash-trading ante la imposibilidad de regular blockchains públicas descentralizadas.",
+      "relaciones": [
+        { "tipo": "MITIGA", "objeto": "wash trading" },
+        { "tipo": "REQUIERE", "objeto": "Howey test" }
+      ],
+      "cita_textual": "Five basic questions can serve as an initial checklist for identifying authentic NFT projects from scams and fads. Whistleblowing, raising awareness, and due-diligence are the best way to empower NFT ecosystem."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La varianza durante períodos de trading es 20 veces mayor que la varianza durante períodos sin trading en base horaria, sugiriendo que el propio acto de negociar es una fuente importante de volatilidad.",
+      "mercado": "equities (general)",
+      "periodo": "1986 (French & Roll)",
+      "magnitud": "20 veces (ratio de varianza trading vs. no-trading)",
+      "condiciones": "Datos horarios; hallazgo de French y Roll (1986) citado como referencia de microestructura clásica.",
+      "robustez": "alta",
+      "cita_textual": "French and Roll (1986) found that, on an hourly basis, the variance during trading periods is 20 times larger than the variance during nontrading periods."
+    },
+    {
+      "afirmacion": "La oferta máxima de cualquier NFT es 1 por definición, lo que los caracteriza como activos digitales no fungibles (a diferencia de Bitcoin o Ethereum) e invalida la aplicación del modelo de inventario de Garman para market makers.",
+      "mercado": "NFTs",
+      "periodo": "Estructural (definición del estándar ERC-721, 2017 en adelante)",
+      "magnitud": "Oferta máxima = 1 por NFT",
+      "condiciones": "Estándar ERC-721; no aplica a NFTs fraccionales ni ediciones múltiples.",
+      "robustez": "alta",
+      "cita_textual": "Unlike Bitcoin or Ethereum, the maximum supply of any NFT is 1. So, NFT are traded as assets rather than securities. Garman's Logic of market maker's inventory would not work for NFT."
+    },
+    {
+      "afirmacion": "Se identifican cuatro motivos de wash-trading en el mercado NFT: market making (inflar artificialmente el precio), rate making (aumentar valor del artista para ventas futuras), incentivizing (aprovechar recompensas por transacción que superan el costo del wash-trade) y project promotion (mejorar ranking por volumen para atraer inversores orgánicos).",
+      "mercado": "NFTs (Ethereum blockchain)",
+      "periodo": "2018-2021 (seguimiento de NonFungible Corporation)",
+      "magnitud": "4 motivos principales; 2 tipos de patrones de firma (actividad anormal y actividad recurrente)",
+      "condiciones": "Datos on-chain de Ethereum analizados por NonFungible Corporation; la naturaleza descentralizada impide la regulación directa.",
+      "robustez": "media",
+      "cita_textual": "Four key reasons that motivates Wash-Trade: 1. Market Making 2. Rate Making 3. Incentivizing 4. Project Promotion. The main signature of identifying patterns are of two kinds - abnormal transaction activity and recurring transaction activity."
+    },
+    {
+      "afirmacion": "El gap creciente entre USDD (volumen total incluyendo interacciones con smart contracts) y USDS (volumen de ventas primarias/secundarias) es un indicador de madurez del mercado NFT, señalando transición desde un store-of-value especulativo hacia una industria con engagement genuino de los participantes.",
+      "mercado": "NFTs",
+      "periodo": "2021 (observación transversal)",
+      "magnitud": "Relación USDD/USDS como indicador cualitativo (no se reportan valores numéricos específicos)",
+      "condiciones": "Métrica propuesta por los autores como health indicator del mercado; requiere series temporales para validación.",
+      "robustez": "baja",
+      "cita_textual": "As the USDD increases and widens the gap from USDS, the NFT industry, as a whole, move more towards mature industry and player engagement and away from hype-driven speculative store-of-value."
+    },
+    {
+      "afirmacion": "El mercado NFT se segmenta en seis categorías a nivel de proyecto (Art, Collectibles, Sports, Utility, Metaverse, Games) y en dos niveles de propiedad (mercado primario y secundario), con Arte y Coleccionables capturando los segmentos mayoritarios en volumen de transacciones durante 2021.",
+      "mercado": "NFTs",
+      "periodo": "2021 (enero a septiembre)",
+      "magnitud": "6 segmentos de proyecto; 2 niveles de propiedad; Art y Collectibles dominan en volumen",
+      "condiciones": "Observación basada en datos agregados de mercado de plataformas como OpenSea, Rarible, WazirX, Binance, Mintable.",
+      "robustez": "media",
+      "cita_textual": "Art and collectibles captures the major market segments with large volume of trades and major events in 2021."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "nula",
+    "nota": "El artículo es una revisión conceptual de microestructura del mercado NFT sin datos tick-a-tick ni análisis intradía; cita hallazgos de French & Roll (1986) sobre varianza horaria pero no realiza ni propone estrategias intradía propias."
+  }
+}

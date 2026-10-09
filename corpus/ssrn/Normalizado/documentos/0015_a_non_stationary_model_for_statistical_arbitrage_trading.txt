@@ -1,0 +1,1055 @@
+A non-stationary model for statistical
+arbitrage trading
+W.K. Bertram a,∗
+aITG Australia Limited, Level 41, 1 Macquarie Place, Sydney NSW 2000,
+Australia
+Abstract
+In this paper we present a non-stationary model for statistical arbitrage trading.
+This model represents the security price as the sum of an arithmetic Brownian
+motion and an Ornstein-Uhlenbeck process. A continuous time trading strategy is
+derived for the process and expressions for the expected value and the variance of
+the return are formulated. Analytic solutions to problem are obtained in the case
+where the non-stationary component has zero drift.
+Key words: Econophysics, Stochastic Processes, Analytic Solutions
+PACS: 89.65.Gh, 05.45.Tp, 05.40.Jc
+1
+Introduction
+Statistical based trading strategies have become widely used by the ﬁnancial
+industry over the past decade [1–8]. Such strategies seek to proﬁt by identifying and exploiting predictable behaviour in ﬁnancial data, for example, short
+term dependencies in security prices due to ineﬃciencies such as liquidity.
+Since the returns on individual trades are usually small, the beneﬁt of a systematic approach lies in being able to perform hundreds or thousands of trades
+per day, gaining proﬁtability from executing the trade many times. Such an
+approach incurs a high level of trading cost and can only be implemented by
+investment banks and specialist market-makers whose transaction costs are
+virtually negligible. In the context of formulating optimal trading strategies
+it is essential to model real world data with a stochastic process that reﬂects
+the appropriate physical properties of the data. A signiﬁcant part of designing
+∗Corresponding author.
+Email address: william.bertram@yahoo.com.au (W.K. Bertram).
+Preprint submitted to PhysicaA
+30 June 2010
+Electronic copy available at: https://ssrn.com/abstract=1632718
+
+and implementing a strategy involves the use of phenomenological models for
+price dynamics to model the observed behaviour of the market.
+A common approach to statistical based trading attempts to proﬁt from so
+called mean-reversion trading where traders aim to proﬁt from temporary
+extremes in pricing, entering a trade when the security reaches an extreme
+value and exiting when it reverts to some equilibrium level. In this approach,
+participants form linear combinations of stocks, futures, options and other
+derivatives in order to produce a synthetic asset whose price follows a meanreverting stochastic process. The ability to identify the optimal trading points
+is central to employing such a strategy successfully. There have been several
+studies of such trading strategies in recent years [1,3,5,8]. Many of these studies
+model the log-price of the traded securities as stationary processes, such as the
+Ornstein-Uhlenbeck process. This assumption allows the use of common time
+invariant statistical measures to estimate trade entry and exit points. However,
+when the data exhibits non-stationary eﬀects the entry and exit points cannot
+be reliably determined using methods and models based on stationary time
+series.
+Given a stationary time series it is relatively straightforward to determine
+whether a given observation represents an extreme value. For data that displays non-stationary behaviour, the task of identifying extreme events becomes
+more diﬃcult since one must distinguish transient extreme moves from nonstationary shifts in the data. Non-stationary behaviour is a widely observed
+phenomenon in ﬁnancial time series [9–19]. Methods such as cointegration [20]
+have been proposed in order to remove non-stationary eﬀects from time series
+data, so that analysis may be performed using common statistics based on
+assumptions of stationarity. In the context of formulating trading strategies,
+synthetic assets are constructed to remove non-stationary behaviour from price
+series. In cases such as dual-listed securities, where the same stock is traded
+on multiple exchanges, or index arbitrage, where a basket of stocks is traded
+against an index futures contract, the removal of non-stationary behaviour is
+possible due to the existence of a deterministic relationship between the assets
+being traded. However, in more general cases such as the popular method of
+pairs trading, when two similar securities are traded in oﬀsetting positions,
+it is not possible to guarantee the complete removal of all non-stationary behaviour. If a synthetic asset is constructed when a deterministic relationship
+does not exist between the component assets, the resulting asset may still
+retain residual non-stationary behaviour. The magnitude of the remaining
+non-stationary behaviour may have a signiﬁcant eﬀect on the return and risk
+of the strategy.
+In this paper we present a method for the construction of optimal trading
+strategies on non-stationary securities. We consider the price of the security
+to be a combination of stationary and non-stationary components. We propose
+2
+Electronic copy available at: https://ssrn.com/abstract=1632718
+
+a model for asset dynamics as an Ornstein-Uhlenbeck process with stochastic mean. The model exhibits mean-reverting behaviour around an arithmetic
+Brownian motion. The optimal trading strategy is calculated for the chosen
+stochastic process under the framework described in [7,8]. Under this model,
+the expected trade length is independent of the non-stationary behaviour. Expressions for the expected proﬁt rate and its variance are presented. In this
+case the expected proﬁt rate is shown to be a function of the drift of the nonstationary component, while the variance of the proﬁt rate is shown to be a
+function of the instantaneous variance of the non-stationary component. We
+derive analytic solutions for the expected return and the variance of the return for the strategy in the case where the non-stationary component has zero
+drift. The expected return is shown to be independent of the non-stationary
+behaviour while the variance is shown to be a linear function of the instantaneous variance of the non-stationary component. We derive analytic solutions
+for the strategy that maximises the expected return. We derive a closed form
+solution for the variance associated with this optimal case. The results for
+the mean and variance of the strategy are used to derive an expression for
+the signal-to-noise ratio of the strategy. This ratio is used to determine an
+optimal strategy in terms of the strength of the non-stationary component.
+The model is illustrated with a real-world example where the stationary and
+non-stationary components are directly observable. The results for the optimal
+strategies are calculated for this example.
+The rest of the paper is as follows. In the following section we present the
+model and deﬁne the continuous trading strategy for the process. In Section
+3 we derive analytic solutions for the expected return and the variance of
+the return. An analytic solution for the problem of maximising the expected
+return is also presented. Section 4 presents the results of applying the model
+to real world data. Section 5 summarises the main results and concludes.
+2
+Non-stationary model for trading
+In order to address the potential existence of non-stationary behaviour we
+assume that a synthetic asset consists of two components: a stationary process
+that provides transient mean-reversion eﬀects over short time scales; and nonstationary process that drives the long term behaviour of the asset. We express
+the price of the synthetic security pt as,
+pt = eSt,
+3
+Electronic copy available at: https://ssrn.com/abstract=1632718
+
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+−0.2
+−0.1
+0
+0.1
+0.2
+Model
+St
+t
+ 
+ 
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+−0.2
+−0.1
+0
+0.1
+0.2
+Stationary component
+Xt
+t
+St
+Mt
+Fig. 1. A sample path for the model showing the non-stationary and stationary
+components. This example uses parameters α = 200, η = 0.5, γ = 0, and θ = 0.2
+with ∆t = 1/250.
+and propose modelling the observed log-price, St, as a superposition of stochastic processes,
+St = Xt + Mt,
+(1)
+where Xt and Mt satisfy the stochastic diﬀerential equations,
+dXt = −αXtdt + ηdWt,
+(2)
+dMt = γdt + θdZt.
+(3)
+Here Zt and Wt are independent Wiener processes,
+corr(Wt, Zt) = 0.
+A simulated sample path of the process St is displayed in Figure 1. In this
+ﬁgure we can see that the process displays mean-reversion behaviour around
+a non-stationary random walk. While the process St is non-stationary, it displays local stationary behaviour on small time scales. A strategy that attempts
+4
+Electronic copy available at: https://ssrn.com/abstract=1632718
+
+to proﬁt from this localised stationary behaviour can be constructed by identifying extreme deviation of the process Xt.
+We consider a trading strategy that enters a trade by either buying the asset
+when it is cheap, or by selling the asset when it is expensive. Since we are
+seeking to exploit the stationary component of St, the trade entry and exit
+points, b1, b2 with b1 < b2 are expressed in terms of Xt. The continuous time
+trading strategy we deﬁne for this process consists of two types of trades. The
+ﬁrst type corresponds to buying the security and is deﬁned by entering a trade
+when Xt = b1, exiting the trade at Xt = b2, where b1 < b2. The second type
+corresponds to selling the security and is deﬁned by entering when Xt = b2,
+exiting the trade when Xt = b1. When these two types are combined, the
+resulting sequence of trades completes a trading cycle that starts and ﬁnishes
+at the value Xt = b1. Such a strategy can be thought of as periodic, since
+the actions are repeated between trade entry points. However, since Xt is a
+stochastic process, the time taken to complete the trade cycle will be a random
+variable T . We refer to T as the total trade length. Thus, the behaviour of T
+will largely determine the properties of the strategy.
+We decompose the total trade length into sub intervals,
+T = T1 + T2,
+where T1 is the time taken for the process Xt to travel from b1 to b2, completing
+a buy-trade, and T2 is the time taken from b2 back to b1, completing a selltrade. Here the variables T1, T2 can be identiﬁed as ﬁrst-passage times for
+the process Xt. Furthermore, since Xt is a Markov process, the passage times
+T1, T2 are independent.
+Expressions for the return per unit time and variance of the return per unit
+time of the strategy, can be formulated in terms of the trading frequency. Let
+r(b1, b2, c) be the return for the trading cycle as a function of entry and exit
+levels and transaction cost, c. Then, the expected value and the variance of
+the return for the strategy are given by,
+µ(b1, b2, c) = E [r(b1, b2, c)/T ] ,
+(4)
+σ2(b1, b2, c) = V [r(b1, b2, c)/T ] .
+(5)
+The signal to trade is generated by the stationary process Xt, however the
+return for the trading cycle is a function of St. This means that in this case,
+unlike the Ornstein-Uhlenbeck process [8], the return over the trade cycle will
+be stochastic. To calculate the return for the trading cycle we consider the
+return over T1 and the return over T2,
+5
+Electronic copy available at: https://ssrn.com/abstract=1632718
+
+r(b1, b2, c) = (St+T1 −St) −(St+T1+T2 −St+T1),
+d= 2(b2 −b1 −c) + MT1 −MT2,
+d= 2(b2 −b1 −c) + γ(T1 −T2) + θ
+q
+T1 + T2ε,
+(6)
+where
+d= denotes equality in distribution and ε ∼N(0, 1). Thus the return
+over a single trade cycle is given by the diﬀerence between the entry and exit
+points, minus transaction costs, plus any movement in the spread due to the
+non-stationary eﬀects.
+Using Eqs. (4), (5) and (6), the expected return for the strategy can be formulated as,
+µ(b1, b2, c) = E
+"2(b2 −b1 −c) + γ(T1 −T2) + θ√T1 + T2ε
+T1 + T2
+#
+,
+= E
+"2(b2 −b1 −c) + γ(T1 −T2)
+T1 + T2
+#
+,
+and the variance of the return as,
+σ2(b1, b2, c) = E
+
+
+Ã2(b2 −b1 −c) + γ(T1 −T2) + θ√T1 + T2ε
+T1 + T2
+!2
+−µ2,
+= V
+"2(b2 −b1 −c) + γ(T1 −T2)
+T1 + T2
+#
++ E
+"
+θ2
+T1 + T2
+#
+.
+It is clear from these equations that the non-stationary component of the
+model contributes to the expected return only though the drift parameter,
+γ. However, the variance of the return is aﬀected by both the drift and the
+instantaneous variance of the non-stationary component. These equations can
+be solved numerically using either Monte-Carlo simulation or quadrature, after
+obtaining the distribution of T1 and T2 by solving the corresponding FokkerPlanck equations as described in [7]. However, the equations for the expected
+return and the variance of the return can be treated analytically in the case
+where the non-stationary component has zero drift, i.e. γ = 0.
+3
+Analytic solutions for the case γ = 0
+In the case where the non-stationary component Mt has zero drift, the equations for the mean and variance of the strategy return reduce to,
+µ(b1, b2, c) = 2(b2 −b1 −c)E [1/T ] ,
+6
+Electronic copy available at: https://ssrn.com/abstract=1632718
+
+σ2(b1, b2, c) = 4(b2 −b1 −c)2V [1/T ] + θ2E [1/T ] .
+Since the value of T is independent for each trade cycle, the trade frequency
+is a renewal process and we can make use of the following results from renewal
+theory [21],
+E [1/T ] ∼1/E[T ],
+V [1/T ] ∼V[T ]/E[T ]3,
+to obtain
+µ(b1, b2, c) = 2(b2 −b1 −c)/E [T ] ,
+(7)
+σ2(b1, b2, c) = 4(b2 −b1 −c)2V [T ] /E [T ]3 + θ2/E [T ] .
+(8)
+Closed form solutions for the expected value and the variance of the length of
+the trade cycle T are given by [8] as,
+E [T ] = π
+α
+³
+Erﬁ
+³
+b2
+√α/η
+´
+−Erﬁ
+³
+b1
+√α/η
+´´
+,
+(9)
+V[T ] =
+³
+w1
+³
+b2
+√
+2α
+η
+´
+−w1
+³
+b1
+√
+2α
+η
+´
+−w2
+³
+b2
+√
+2α
+η
+´
++ w2
+³
+b1
+√
+2α
+η
+´´
+α2
+,
+(10)
+where
+w1(z) =
+Ã1
+2
+∞
+X
+k=1
+Γ (k/2)
+³√
+2z
+´k /k!
+!2
+−
+Ã1
+2
+∞
+X
+k=1
+(−1)kΓ (k/2)
+³√
+2z
+´k /k!
+!2
+,
+w2(z) =
+∞
+X
+k=1
+Γ ((2k −1)/2) Ψ ((2k −1)/2)
+³√
+2z
+´(2k−1) /(2k −1)!,
+and Ψ(x) = ψ(x) −ψ(1) and ψ(x) is the digamma function,
+ψ(z) =
+1
+Γ(z)
+d
+dzΓ(z).
+Using Eqs. (7), and (9) we can obtain the analytic form of the expected return
+for the strategy,
+µ(b1, b2, c) =
+2α(b2 −b1 −c)
+π
+³
+Erﬁ
+³b2
+√α
+η
+´
+−Erﬁ
+³b1
+√α
+η
+´´.
+(11)
+Likewise from Eqs. (8), (10) and (9), the variance of the strategy return is,
+7
+Electronic copy available at: https://ssrn.com/abstract=1632718
+
+−0.015 −0.01
+−0.005 0
+0.005
+0.01
+0.015
+−0.01
+0
+0.01
+0
+0.5
+1
+b1
+E[Return]
+b2
+µ(b1,b2,c)
+−0.015 −0.01
+−0.005 0
+0.005
+0.01
+0.015
+−0.01
+0
+0.01
+0
+0.5
+1
+1.5
+b1
+SD[Return]
+b2
+σ(b1,b2,c)
+Fig. 2. Surfaces plots for the expected return and the variance of the return in the
+region b2 −b1 ≥c for the case of zero drift. The variance surface has a singularity
+at b1 = b2. This example uses parameter values α = 199.9159, η = 0.1185, γ = 0,
+θ = 0.0943 and c = 0.001.
+σ2(b1, b2, c) = 4α(b2 −b1 −c)2
+×
+³
+w1
+³
+b2
+√
+2α
+η
+´
+−w1
+³
+b1
+√
+2α
+η
+´
+−w2
+³
+b2
+√
+2α
+η
+´
++ w2
+³
+b1
+√
+2α
+η
+´´
+π3
+³
+Erﬁ
+³b2
+√α
+η
+´
+−Erﬁ
+³ b1
+√α
+η
+´´3
++
+αθ2
+π
+³
+Erﬁ
+³b2
+√α
+η
+´
+−Erﬁ
+³b1
+√α
+η
+´´.
+(12)
+These analytic formulae, for the mean and variance, determine the properties
+of the strategy in terms of the trade entry and exit levels and transaction
+costs. The results obtained above are almost identical to those obtained for
+the Ornstein-Uhlenbeck process by [8], the only signiﬁcant diﬀerence being an
+additive term in the equation for the variance of the return. Figure 2 displays
+surface plots of the expected value and the variance of the return in the region
+b2 −b1 ≥c. This region does not include the since the singularity in the return
+variance which occurs at b1 = b2 and therefore is not displayed in the ﬁgure.
+As in [8] the optimal strategy that maximises the expected return occurs when
+b2 = −b1 with b1 < 0. Accordingly the maximum expected return is given by,
+8
+Electronic copy available at: https://ssrn.com/abstract=1632718
+
+µ∗(b1, c) =
+α(2b1 + c)
+πErﬁ(b1
+√α/η),
+(13)
+where the optimal value of a satisﬁes the following equation,
+e
+αb2
+1
+η2 (2b1 + c) −η
+r π
+4αErﬁ
+³
+b1
+√α/η
+´
+= 0.
+Further, using the identities, w1(z) = −w1(−z), w2(z) = −w2(−z) the corresponding variance of the return in the optimal case is given by,
+σ2(b1, c) = α(2b1 + c)2
+³
+w1
+³
+b1
+√
+2α
+η
+´
+−w2
+³
+b1
+√
+2α
+η
+´´
+π3Erﬁ
+³b1
+√α
+η
+´3
+−
+αθ2
+2πErﬁ
+³b1
+√α
+η
+´.
+(14)
+Note that maximising the expected return does not take into account the behaviour of the non-stationary component of the model. Equations (12) and
+(14) show that the variance of the return is a linear function of the variance
+of the non-stationary term, θ2. By considering the variance of the return as
+a measure of risk, it is clear that as θ2 increases, the non-stationary component tends to dominate the risk associated with the strategy. This result
+indicates that a more suitable choice of objective function should incorporate
+the variance of the return.
+In order to include the variance of the strategy into the problem of determining an optimal strategy, we consider an objective function that measures the
+magnitude of the expected return with respect to the variance. Accordingly,
+we deﬁne the objective function as the following signal-to-noise ratio,
+S(b1, b2, c) =
+q
+µ2(b1, b2, c)/σ2(b1, b2, c),
+=
+v
+u
+u
+t
+4(b2 −b1 −c)2E[T ]
+4(b2 −b1 −c)2V[T ] + θE[T ]2.
+(15)
+Since we are only considering the region b2 −b1 ≥c, then this measure is
+analogous to the Sharpe ratio [22] with zero risk free rate. The non-stationary
+behaviour of the model has clear eﬀect in Eq. (15) though the parameter θ,
+as evidenced by the fact that S(b1, b2, c) →0 as θ →∞. By considering the
+expected value and the variance of T as functions of b1 and b2, we can use the
+derivatives, ∂S
+∂b1 = ∂S
+∂b2 = 0, to obtain the following equations,
+2(b1 −b2 + c)4
+Ã
+θE[T ]2
+(b1 −b2 + c) + 2V[T ] ∂
+∂b1
+E[T ] −2E[T ] ∂
+∂b1
+V[T ]
+!
+= 0,
+9
+Electronic copy available at: https://ssrn.com/abstract=1632718
+
+−2(b1 −b2 + c)4
+Ã
+θE[T ]2
+(b1 −b2 + c) −2V[T ] ∂
+∂b1
+E[T ] + 2E[T ] ∂
+∂b1
+V[T ]
+!
+= 0.
+From the equations for the expected time Eq. (9) and variance Eq. (10) we
+have,
+∂
+∂b1
+E[T ] = −∂
+∂b2
+E[T ],
+∂
+∂b1
+V[T ] = −∂
+∂b2
+V[T ].
+Thus, it is clear that we must again have b1 < 0 and b2 = −b1 as a condition
+to optimise the strategy. Using Eqs. (15), (9), (10) and noting that w1(−z) =
+−w1(z) and w2(−z) = −w2(z), we can write the signal-to-noise ratio as,
+S∗(b1, c) =
+v
+u
+u
+u
+u
+t
+(2b1 + c)2απErﬁ
+³ b1
+√α
+η
+´
+(2b1 + c)2
+³
+w1
+³
+b1
+√
+2α
+η
+´
++ w2
+³
+b1
+√
+2α
+η
+´´
+−1
+2θπ2Erﬁ
+³ b1
+√α
+η
+´2.(16)
+which may be maximised to ﬁnd b1 by applying a straightforward optimisation
+routine.
+4
+Results
+We illustrate the results of the previous section with an example synthetic asset constructed from the dual-listed pair of securities, ANZ.AX and ANZ.NZ.
+The issued securities are for the same company but are quoted in diﬀerent
+currencies on the diﬀerent exchanges. The non-stationary behaviour is due
+primarily to changes in the foreign exchange rate and is therefore directly
+observable. This scenario presented in this example is somewhat superﬂuous,
+since the synthetic security can be made stationary by trading the exchange
+rate as in [7,8]. However, this example provides a straightforward way to illustrate and test the model. The synthetic asset is constructed as a linear
+combination of the two securities such that the log-price is given by,
+St = log p1 −log p2.
+where p1, p2 are the prices of ANZ.AX and ANZ.NZ respectively. Figure 3
+displays the log-price, St of the synthetic asset and the non-stationary and
+stationary components, Mt and Xt. This ﬁgure clearly shows that the FX rate
+accounts for all of the non-stationary behaviour of St. The residual component,
+10
+Electronic copy available at: https://ssrn.com/abstract=1632718
+
+2003
+2004
+2005
+2006
+2007
+−0.2
+−0.1
+0
+t
+St
+Synthetic Asset
+2003
+2004
+2005
+2006
+2007
+−0.2
+−0.1
+0
+t
+Mt
+Non−Stationary Component
+2003
+2004
+2005
+2006
+2007
+−0.04
+−0.02
+0
+0.02
+0.04
+t
+Xt
+Stationary Component
+Fig. 3. Example synthetic asset constructed from ANZ dual listed securities. The
+stationary component is obtained by subtracting the foreign exchange rate log-price.
+α
+η
+γ
+θ
+Estimate:
+199.9159
+0.1185
+0.0012
+0.0943
+Std Error:
+7.5118
+0.0247
+0.0459
+0.0197
+Table 1
+Parameter estimates for the stationary and non-stationary components.
+Xt, clearly displays stationary behaviour. By ﬁtting the model to the observed
+components we can obtain estimates for α, η, γ and θ. Table 1 displays estimated parameter values for the example obtained via maximum likelihood
+estimation on Eqs. (2) and (3). The standard error for the estimates is also
+included in the table.
+The estimated value of the non-stationary drift parameter γ = 0.0012±0.0459
+justiﬁes making the approximation, γ ≈0. Therefore, for this example, we may
+consider the strategy for the zero drift case as presented in Section 3. Figure 4
+displays the maximum expected return and corresponding variance obtained
+by solving Eq. (13) and (14). Table 2 presents the corresponding values for
+diﬀerent transaction costs.
+11
+Electronic copy available at: https://ssrn.com/abstract=1632718
+
+0
+0.001
+0.002
+0.003
+0.004
+0.005
+0.006
+0.007
+0.008
+0.009
+0.01
+0.2
+0.4
+0.6
+0.8
+1
+Max E[Return] vs Trans. Costs
+µ*(b1,c)
+c
+0
+0.001
+0.002
+0.003
+0.004
+0.005
+0.006
+0.007
+0.008
+0.009
+0.01
+0
+0.5
+1
+1.5
+2
+V[Return] vs Trans. Costs
+σ2(b1,c)
+c
+Fig. 4. Optimal expected return and variance as a function of transaction cost. This
+example uses parameters α = 199.9159, η = 0.1185, γ = 0 and θ = 0.0943.
+c
+b1
+µ∗(b1, c)
+σ2(b1, c)
+0.001
+-0.0038540
+0.76512
+0.51212
+0.002
+-0.0049403
+0.66782
+0.38110
+0.003
+-0.0057415
+0.59122
+0.31368
+0.004
+-0.0064086
+0.52678
+0.26900
+0.005
+-0.0069964
+0.47089
+0.23581
+0.006
+-0.0075315
+0.42155
+0.20947
+0.007
+-0.0080294
+0.37753
+0.18766
+0.008
+-0.0084998
+0.33796
+0.16907
+0.009
+-0.0089495
+0.30224
+0.15287
+0.010
+-0.0093831
+0.26990
+0.13854
+Table 2
+Results for maximising the expected return for diﬀerent values of c with α =
+199.9159, η = 0.1185, γ = 0, θ = 0.0943
+12
+Electronic copy available at: https://ssrn.com/abstract=1632718
+
+0
+0.01
+0.02
+0.03
+0.04
+0.05
+0.06
+0.07
+0.08
+0.09
+0.1
+2
+4
+6
+8
+10
+Max Sharpe Ratio vs Nonstationary St.Dev
+S*(b1,c)
+θ
+0
+0.01
+0.02
+0.03
+0.04
+0.05
+0.06
+0.07
+0.08
+0.09
+0.1
+−1.4
+−1.2
+−1
+−0.8
+−0.6
+−0.4
+−0.2
+Optimal Trade Entry vs Nonstationary St.Dev
+b1
+θ
+Fig. 5. Optimal values for S(b1, c) and b1 as a function of θ. This example uses
+parameters α = 199.9159, η = 0.1185, γ = 0, and c = 0.001.
+θ
+b1
+S∗(b1, c)
+µ(b1, c)
+σ2(b1, c)
+0.01
+-0.0050832
+7.63855
+0.74933
+0.00962
+0.02
+-0.0066953
+5.27058
+0.69393
+0.01734
+0.03
+-0.0075676
+3.95730
+0.65226
+0.02717
+0.04
+-0.0080860
+3.14332
+0.62444
+0.03947
+0.05
+-0.0084128
+2.59607
+0.60589
+0.05447
+0.06
+-0.0086287
+2.20569
+0.59325
+0.07234
+0.07
+-0.0087771
+1.91451
+0.58440
+0.09318
+0.08
+-0.0088825
+1.68964
+0.57803
+0.11703
+0.09
+-0.0089597
+1.51110
+0.57333
+0.14396
+0.10
+-0.0090176
+1.36610
+0.56978
+0.17396
+Table 3
+Results for maximising the Sharpe ratio for diﬀerent values of θ with α = 199.9159,
+η = 0.1185, γ = 0, c = 0.001..
+13
+Electronic copy available at: https://ssrn.com/abstract=1632718
+
+b1
+µ(b1, c)
+σ2(b1, c)
+S(b1, c)
+maxµ
+-0.0038540
+0.76512
+0.51212
+1.0692
+maxS
+-0.0089865
+0.57169
+0.15648
+1.4452
+Table 4
+Comparison of results for maximising the expected return and the Sharpe ratio for
+α = 199.9159, η = 0.1185, γ = 0, θ = 0.0943, c = 0.001.
+Figure 5 shows the results of maximising the Sharpe ratio for diﬀerent values
+of θ. The optimal Sharpe ratio decreases rapidly as the strength of the nonstationary noise is increased though the term θ. Likewise the optimal trading
+bands widen rapidly with θ. This eﬀect illustrates how the optimal strategy
+requires a higher return per trade to oﬀset the variance due to the increasing
+strength of the non-stationary behaviour. Table 4 provides a comparison of the
+results of maximising the two objective functions using the same data. We can
+see that the variance of the returns is much higher for the case of maxmising
+the expected return. The optimal trading bands are approximately three times
+wider in the case of maximising the Sharpe ratio. This suggests that in the
+presence of non-stationary behaviour, a wider set of bands increases the return
+per unit risk of the strategy. In this case, the return per trade that is obtained
+from using wider trading bands tends to oﬀset some of the variance due to
+non-stationary behaviour. These results are signiﬁcant in a practical sense
+since the show how proﬁtability and risk of such a strategy are aﬀected by the
+strength of any non-stationary behaviour in the traded security. Further, the
+results illustrate the large diﬀerence between optimising diﬀerent objective
+functions and highlights the importance that non-stationary behaviour can
+have in choosing a suitable objective function.
+For more general synthetic securities, neither of the processes Mt and Xt are
+directly observable. In cases where the components are not observable, the
+model parameters may be estimated by employing methods such as statespace ﬁltering [23].
+5
+Summary
+In this paper we have presented method for constructing statistical arbitrage
+trading strategies for assets displaying non-stationary data. This model represents an attempt to explicitly incorporate the eﬀects of non-stationary behaviour on a trading strategy that exploits extreme movements in price over
+short time scales. We proposed a model for asset price dynamics that is constructed as a linear combination of stationary and non-stationary processes.
+The model exhibits mean reverting behaviour around a non-stationary ran14
+Electronic copy available at: https://ssrn.com/abstract=1632718
+
+dom walk. The stationary component was modelled as an Ornstein-Uhlenbeck
+process, while the non-stationary component was modelled by an arithmetic
+Brownian motion. Non-stationary behaviour is an important feature to consider in the construction of statistical based trading strategies. A continuous time trading strategy was formulated for the model and expressions for
+the expected return and the variance of the return were formulated. These
+expressions show that the expected return is a function of the drift of the
+non-stationary component, while the return variance is a linear function of
+the instantaneous variance of the non-stationary component. We obtained
+analytic solutions for expected return an it’s variance In the case where the
+non-stationary component exhibits zero drift. These closed form solutions represent measures for the return and the risk of the strategy. It was shown that
+in the zero drift case the expected return is independent of the non-stationary
+term. An analytic solution to the problem of maximising the expected return
+was presented together with an expression for the variance of the return in this
+case. An expression for the signal-to-noise ratio of the strategy was derived.
+This ratio allows for the determination of optimal strategies in terms of the
+variance of the non-stationary behaviour of the traded asset. The model and
+strategy were illustrated with a real-world example where the stationary and
+non-stationary components are observable. In general, these two components
+will not be observable.
+The methods described in this paper, in particular the analytic solutions,
+provide a way to investigate and understand the behaviour of statistical trading strategies. It is well known that ﬁnancial data are not well described by
+Gaussian processes [9,10,24–30]. However, this study attempts to describe the
+behaviour of the expected return and the variance of a trading strategy when
+the price dynamics of an asset is governed by known stochastic processes. This
+approach paints a picture of how the major system variables relate to each
+other. More realistic and complex behaviour can be addressed by considering
+alternative processes for the underlying price dynamics and this is the focus
+of future study.
+Acknowledgements
+The author would like to thank Jim Clark and Ivan Kaverzine.
+References
+[1] R.J. Elliott, J. van der Hoek, and W.P. Malcolm, Quant. Finance 5, 271 (2005).
+15
+Electronic copy available at: https://ssrn.com/abstract=1632718
+
+[2] A. Trapletti, A. Geyer, and F. Leisch, J. Forecasting 21, 151 (2002).
+[3] E. Gatev, W.N. Goetzmann, and K.G. Rouwenhorst, Rev. Fin. Studies 19, 797
+(2006).
+[4] C. Alexander and A. Dimitriu, Discussion Paper 2002-08, IMSA Centre
+Discussion Papers in Finance Series (2002).
+[5] G. Vidyamurthy, Pairs Trading: Quantitative Methods and Analysis (Wiley
+Finance, 2004).
+[6] L. Kestner, Quantitative Trading Strategies (McGraw Hill, 2003).
+[7] W.K. Bertram, Physica A 388, 2865 (2009).
+[8] W.K. Bertram, Physica A 389, 2234 (2010).
+[9] R.N. Mantegna, H.E. Stanley, Introduction to Econophysics: Correlation and
+Complexity in Finance, Cambridge University Press, Cambridge, 1999.
+[10] W.K. Bertram, Physica A 341, 533 (2004).
+[11] W.K. Bertram, Physica A, 387, 3183 (2008).
+[12] A. Carbone, G. Castelli, H.E. Stanley, Time-dependent Hurst exponent in
+ﬁnancial time series, Physica A 344 (2004) 267.
+[13] C.W. Cheong, Time-varying volatility in Malaysian stock exchange: An
+empirical study using multiple-volatility-shift fractionally integrated model,
+Physica A, 2007, doi:10.1016/j.physa.2007.10.025.
+[14] T. Bollerslev, Generalised autoregressive conditional heteroskedasticity, Journal
+of Econometrics, 31, 1986, 307.
+[15] A. Harvey, E. Ruiz, N. Shephard, Multivariate stochastic variance models, The
+Review of Economic Studies, 61(2), 1994, 247.
+[16] R.N. Mantegna, Hierarchical structure in ﬁnancial markets, Eur.Phys. J. B, 11,
+1999, 193.
+[17] L. Laloux, P. Cizeau, J.-P. Bouchard, M. Potters, Noise dressing of ﬁnancial
+correlation matricies, Phys. Rev. Lett, 83, 1999, 1467.
+[18] S. Galluccio, J.-P. Bouchard, M. Potters, Rational decisions, random matricies
+and spin glasses, Physica A, 259, 1998, 449.
+[19] P. Gopikrishnan, V. Plerou, Y. Liu, L.A.N. Amaral, X. Gabaix, H.E. Stanley,
+An Scaling and correlation in ﬁnancial time series, Physica A, 287, 1999, 362.
+[20] R.F.
+Engle
+and
+C.W.J.
+Granger,
+Co-integration
+and
+error
+correction:
+Representation, estimation and testing, Econometrica 55, 251 (1987).
+[21] D. R. Cox and H. D. Miller, The theory of stochastic processes (Chapman &
+Hall/CRC, 1977).
+16
+Electronic copy available at: https://ssrn.com/abstract=1632718
+
+[22] W. F. Sharpe, J. Portfolio Management 21, 49 (1994).
+[23] D. Simon, Optimal State Estimation. Kalman, H∞, and Nonlinear Approaches,
+John Wiley & Sons, New Jersey, 2006.
+[24] H. Gemen and T. Ane, Risk 9, 146 (1996).
+[25] M.M. Dacorogna, R. Gencay, U.A. Muller, R.B. Olsen, and O.V. Pictet, An
+Introduction to High Frequency Finance (Academic Press, London, 2001).
+[26] E. Scalas, R. Gorenﬂo, and F. Mainardi, Physica A 284, 376 (2000).
+[27] E. Scalas, T. Kaizoji, M. Kirchler, J. Huber, and A. Tedeschi, Physica A 366,
+463 (2006).
+[28] E. Scalas, R. Gorenﬂo, H. Luckock, F. Mainardi, M. Mantelli, and M. Raberto,
+Quant. Finance 4, 695 (2004).
+[29] N. Sazuka, J. Inoue, and E. Scalas, Physica A 388, 2838 (2009).
+[30] Z. Eisler, J. Kertesz, Size matters: some stylised facts of the stock market
+revisited, Eur. Phys. J. B, 51, 2006 145.
+17
+Electronic copy available at: https://ssrn.com/abstract=1632718

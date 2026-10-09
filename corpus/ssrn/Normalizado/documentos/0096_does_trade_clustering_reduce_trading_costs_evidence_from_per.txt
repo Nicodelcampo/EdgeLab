@@ -1,0 +1,3305 @@
+ 
+Does Trade Clustering Reduce Trading Costs? 
+Evidence from Periodicity in Algorithmic Trading* 
+ 
+Dmitriy Muravyev 
+Michigan State University 
+ 
+Joerg Picard 
+Grand Valley State University 
+This Draft: June 2022 
+Abstract 
+We study how trading activity affects liquidity and volatility by 
+introducing two periodicities in trading activity. First, trades and 
+quote updates are much more frequent within the first 100 
+milliseconds of a second than during its remainder. Second, trading 
+activity often spikes at intervals of exactly one second. For these two 
+periodicities, higher trade and quote intensities lead to higher 
+volatility, but they do not significantly affect stock liquidity. These 
+periodicities are likely caused by algorithms that trade predictably by 
+repeating instructions in loops with round start times and time 
+increments. Such predictable behavior is exploitable and may provide 
+an example of behavioral biases in trading algorithms. 
+ 
+Keywords: trading seasonality, trading activity, liquidity, algorithmic trading,
+algorithmic biases 
+ 
+* Email addresses: muravyev@msu.edu (D. Muravyev), picardj@gvsu.edu (J. Picard). 
+We thank Bing Han, Andy Puckett, Andrei Simonov, anonymous referees, and seminar or 
+conference participants at Michigan State University and the Financial Management 
+Association Meeting for their comments and suggestions. We thank NASDAQ OMX (especially 
+Frank Hathaway) for providing the HFT data and Nanex (especially Eric Hunsader) for 
+providing the intraday equity trading data. We also thank Research Services at Boston College 
+(especially Barry Schaudt) and Michigan State University for computational support. 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+1 
+ 
+1. Introduction 
+The relation between trading activity, volatility, and liquidity is at the core of every 
+financial market. But trading activity is so intertwined with other market variables that it is 
+difficult to identify its effect on volatility and liquidity. E.g., volume, volatility, and the bid-ask 
+spread all spike when news arrives. An ideal test would compare liquidity between two 
+periods that differ in trading activity but are otherwise similar. Classic intra-day and intraweek volume seasonality studies come close to this ideal test and show that trading activity 
+and the bid-ask spread are higher during the start and end of a day.1 Unfortunately, news also 
+exhibits an intraday periodicity; news accumulates overnight and are processed at the open 
+(Hong and Wang (2000)) causing a trading activity spike. Thus, these low-frequency 
+periodicities cannot easily separate the effects of news and trading activity. 
+We introduce two high-frequency periodicities in trading activity to study the 
+relations among trading activity, volatility, and liquidity. In short, execution algorithms trade 
+predictably and are much more likely to submit orders in a narrow interval within the next 
+second. First, for the absolute periodicity, trading activity is higher at the start of a second, 
+e.g., between 11h:11m:11s:000ms and 11h:11m:11s:099ms. About 40% more trades and 
+quote updates arrive within the first 100 milliseconds (ms) compared to the preceding 
+100 ms and other 100 ms intervals—a sharp discontinuity at the start of a second. After this 
+initial spike, trading activity quickly reverts to its average and stays there for the rest of the 
+second.2 Similar to the U-shaped intraday volume seasonality, this absolute periodicity is 
+ 
+1 E.g., Jain and Joh (1988), Wood, McInish, et al. (1985), Harris (1986), Oldfield and Rogalski (1980), 
+French and Roll (1986), Stoll and Whaley (1990), McInish and Wood (1992). 
+2 This subsecond periodicity has been first documented by Hasbrouck and Saar (2013), but they do not 
+explore its implications. 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+2 
+ 
+unconditional in a sense that average trading activity is higher during certain times. Second, 
+for the relative periodicity, trading activity spikes are likely to repeat at exactly one-second 
+frequencies. E.g., if trading activity spikes at 11s.300ms, it will likely spike again in exactly 
+one second at 12s.300ms relative to 100 ms before or after (12.200 or 12.400). The absolute 
+periodicity focuses on the first 100 ms of a second, while the relative periodicity focuses on 
+the 100ms one second after a large activity spike.3 Both periodicities are of similar magnitude 
+and likely share the same underlying mechanism. We confirm these periodicities in two 
+independent datasets, the NASDAQ dataset and the Nanex dataset. 
+What explains the two periodicities? Patterns in the data suggest that algorithms 
+execute trades in a one-second loop. Some trading algorithms are only active during the start 
+of a second because their code uses loops with rounded-second start times or time steps. Due 
+to a programmer’s psychological preference for round numbers, a time loop often starts at a 
+round time, such as 9:30am, and repeats at rounded-time intervals, such as one second.4 
+Every second, an algorithm wakes up, checks market conditions, adjusts quotes or initiates 
+trades, and deactivates until the next iteration. The relative periodicity is likely driven by the 
+one-second loops with non-round starting time perhaps because the algorithm’s clock is not 
+synchronized with the exchange. Humans are too slow for such subsecond trading and thus 
+cannot cause this periodicity; it takes us at least 200ms to respond to a visual stimulus. 
+These two periodicities produce large and concentrated spikes in trading and quoting 
+activity while market conditions and news arrivals remain unchanged. The only difference is 
+ 
+3 For the absolute periodicity, the spike is always between 0 ms and 100 ms. For the relative periodicity, 
+the spike can be for any of the 100 ms bins depending on which 100ms bin contained initial spike during the 
+previous second. 
+4 It is hard to find an academic study that does not use a similar rounded-time grid; in fact, we fell victim 
+ourselves by choosing to split one second into ten 100 ms time bins. 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+3 
+ 
+that investors are more likely to trade at certain times that we identify.  These periodicities 
+identify shocks to trading activity while trying to hold everything else equal. 
+To study how these predictable activity spikes affect liquidity and volatility, we 
+compare a 100ms time bin with high ex-ante expected trading activity with two adjacent 
+100ms bins with lower expected activity.  The absolute periodicity implies higher activity at 
+the start of a second, while the relative periodicity implies higher activity exactly one second 
+after an activity spike. Volatility is about 20% higher at the start of a second, which is 
+comparable to the increase in trading activity; but liquidity—as measured by Kyle’s lambda 
+(Kyle 1985)—and the bid-ask spread, does not change significantly. The results are similar 
+for the relative periodicity. Trading activity and volatility both spike, but liquidity does not 
+change. 
+How do high-frequency traders (HFTs), for whom one second is an eternity, respond 
+to these activity spikes? In general, many HFTs act as market-makers and provide liquidity, 
+while some HFTs take liquidity trading on short-term signals. We find that HFTs provide as 
+much liquidity as other investors during activity spikes; that is, the share of trades for which 
+HFTs provide liquidity (versus non-HFT liquidity providers) remain constant over a second. 
+But HFTs take less liquidity than non-HFTs during the activity spikes. Thus, HFTs mostly 
+provide liquidity during activity spikes, and the spikes are caused primarily by non-HFTs. 
+How do investors respond to the activity shock as to generate the observed patterns? 
+Models of strategic trading can guide us on how investors may respond to the spikes. We do 
+not explicitly test the models and merely seek to interpret our results through their lenses. 
+In these theories, informed investors respond to spikes in uninformed trading. In the Back 
+and Pedersen (1998) model, informed investors are flexible with timing, and thus they would 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+4 
+ 
+shift their trading to the uninformed activity spikes until the bid-ask spread becomes 
+constant over a second, which matches what we find. In the Admati and Pfleiderer (1988) 
+model, informed investors are inflexible, perhaps because their signals are short-lived, and 
+thus they cannot easily shift trading to the uninformed spikes. This model implies lower bidask spreads during the expected activity spikes as a higher fraction of trades is uninformed. 
+While strategic informed trading is not directly observed, our results are consistent with the 
+share of informed traders being constant over a second. Finally, market-makers may prefer 
+quoting stable bid-ask spreads because investors dislike flickering quotes (Hasbrouck 
+(2013)). Market makers cross-subsidize between spike and non-spike periods, which is also 
+consistent with our empirical results.  
+The subsecond periodicities shed light on how shocks to volume affect volatility and 
+liquidity. But do these results generalize to longer horizons that institutional investors care 
+about? We show that the results hold for a regular spike in trading activity on the first day of 
+a month. Etula, Rinne, Suominen, and Vaittinen (2019) show that investment funds deploy 
+cash inflows on the first day of the month causing a 11% higher volume than on other days. 
+This volume spike leads to higher volatility, but the bid-ask spread is similar to other days. 
+Overall, these results are consistent with our subsecond periodicity findings.  
+Do some execution algorithms behave irrationally? Behavioral finance focuses on 
+retail and institutional investors. We propose that trading algorithms can also display unique 
+behavioral biases. The two periodicities imply that execution algorithms trade predictably in 
+a one-second loop. Such predictable behavior should expose algorithms to front running and 
+predatory trading. Instead of checking the market only at the start of a second, an algorithm 
+can simply check the market more often. Such changes are easy and cheap to make. We show 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+5 
+ 
+that algorithms trade predictably, but our data are not sufficiently granular to quantify the 
+costs that these exploitable algorithms incur. 
+Besides the relation between trading activity, volatility, and liquidity, we also 
+contribute to several other literatures: We connect the literatures on behavioral finance and 
+high-frequency trading by showing that trading algorithms can be susceptible to behavioral 
+biases. We raise the idea that the biases of trading algorithms, which reflect human 
+programmers’ biases, should be considered. E.g., our results suggest that the flickering quote 
+puzzle proposed by Hasbrouck (2013) might have a “behavioral” explanation: An HFT reacts 
+to its own quote updates and thus creates a self-reinforcing circle of flickering quotes. 
+Hasbrouck and Saar (2013) find that HFTS trigger spikes in low-latency activity. We extend 
+their findings by introducing another periodicity; we find that activity spikes lead to higher 
+volatility and unchanged liquidity. Harris (1991) shows that investors prefer round stock 
+prices. We show that trading algorithm prefer round times and time intervals. The prior 
+literature focuses on the intraday relation between activity, liquidity, and volatility. Our turnof-the-month test studies this relation beyond simple daily correlations. 
+In theory, investors can benefit from coordinating their trading. But how exactly they 
+coordinate is unclear. The subsecond periodicities provide a rare example of such a 
+synchronization mechanism in action. Algorithms that check the market only at the turn of a 
+second trigger the initial distortion, and other trading algorithms respond to this rhythm. 
+We proceed as follows: In Section 2, we describe the data. Section 3 introduces the 
+two trading periodicities. In Section 4, we show that the activity spikes affect volatility but 
+not liquidity. Section 5 studies how HFTs respond to the periodicities. Section 6 confirms our 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+6 
+ 
+results for the start-of-the-month periodicity. Section 7 discusses the potential behavioral 
+biases of trading algorithms. Section 8 concludes. 
+2. Data Description and Variable Construction 
+Our main data are provided by NASDAQ. They include trade and quote data for 120 
+stocks between 1 January 2008 and 31 December 2009. Although trade records are available 
+for all trading days, the best quoted prices or inside quotes (BBO) are only available for 44 
+selected trading days within the 2-year period. This dataset is extensively used in the HFT 
+literature, and Brogaard, Hendershott, et al. (2014) describe it in detail. Because most of our 
+market metrics require matched quotes and trades, we limit our sample to the 44 trading 
+days with available quotes. 
+Several data features are worth noting: First, the timestamps are synchronized with a 
+1ms precision, which lets us study subsecond periodicity. Second, transactions by dark pools 
+and internal crosses are excluded, so our results are not affected by indirect market 
+participants. Finally, trade records are marked by the trade direction and by the trader type—
+HFT or non-HFT that takes or provides liquidity—which lets us study the strategies of HFTs. 
+These data are only for NASDAQ transactions and not for other exchanges. 
+To ensure the robustness of our results, we also use more recent equity market data 
+that include all US exchanges and is analogous to TAQ. The data are provided by Nanex, which 
+consolidates price and quote information across exchanges with synchronized timestamps 
+of 25 ms precision. We construct a sample selecting trades and NBBO quotes for the same 
+120 stocks as in the NASDAQ sample for the 67 trading days between 1 February 2013 and 
+15 May 2013. This dataset does neither provide trade direction nor HFT flag. Some tickers 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+7 
+ 
+were no longer traded in 2013; these were omitted (these tickers are ABD, BARE, CHTT, 
+GENZ, KNOL, KTII, PPD, and RVI). 
+We apply mild data filters to the NASDAQ and Nanex data: Because of the special 
+opening and closing procedures for most exchanges, we exclude the first and last fifteen 
+minutes of regular trading hours. We also eliminate quotes and trades that appear to be too 
+far from the current best quotes by imposing a maximum 3% range for the quoted and 
+effective bid-ask spread. Less than 1 in 100,000 trades are dropped. The final sample include 
+49,942,427 trades for the NASDAQ dataset and 79,524,334 trades for the Nanex dataset. 
+Trade specific variables, such as trade size, are supplemented with the pre-trade best quotes.  
+We aggregate intraday data into a sample with a single observation for each stock-day 
+and each consecutive 100 ms time bin. For each 100 ms time bin, the bid and ask price and 
+size are recorded at the middle of the bin (e.g., at 9h:40m:41s:050ms). The results are robust 
+to using end-of-bin bid-ask spreads. Returns, volatility, and price jumps are computed with 
+end-of-bin quotes. Table 1 lists variable definitions; see Bessembinder and Venkataraman 
+(2010) for details about how we choose and construct some of these metrics. Thus, for each 
+variable, we have 10 observations per stock-day-second, one per each 100 ms bin. 
+In Table 2, we present descriptive statistics. For the NASDAQ trade data (Panel A), 
+trades take place earlier within each second (an average of 489 ms versus 500 ms implied by 
+a uniform distribution). The average effective bid-ask spread of 2.60 basis points (bp) comes 
+with a large standard deviation of 3.96 bp, and the average quoted bid-ask spread is more 
+than twice the average effective spread with almost 7 bp. HFTS participate in about 75% of 
+the trades and provide more liquidity than they take (the 𝐴𝑐𝑡𝑖𝑣𝑒𝐻𝐹𝑇 indicator is 0.43 versus 
+the 𝑃𝑎𝑠𝑠𝑖𝑣𝑒𝐻𝐹𝑇 of 0.51), because many HFTS act as de facto market makers. Quote updates 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+8 
+ 
+and trades are relatively infrequent (1 update per 285 ms and 1 trade every 2.3 seconds). But 
+the standard deviations are high (2.79 for quotes and 0.66 for trades).  
+When tracking the same 120 stocks half a decade later in the Nanex dataset, we 
+observe similar statistics, as shown in Table 2, Panel B. The average trade arrives a little bit 
+earlier in a second than in 2008 and 2009 (478 ms versus 489 ms), the average spreads have 
+tightened from 2.60 bp (in 2008 and 2009) to 1.84 bp (in 2013). Activity has increased, with 
+one quote update per 133 ms and one trade every two seconds. 
+3. Periodicities in Trading Activity 
+We first show that the order arrival rates exhibit striking periodicities. We call the first 
+periodicity “absolute” because it is anchored around full seconds in absolute time. Within the 
+first 25 ms of a second, trade and quote arrival rates jump from below average to 40% above 
+average before retreating to the average around the half-second mark, as shown in Panel A 
+of Figure 1. This pattern is even stronger in 2013 for the Nanex data (Panel B of Figure 1). 
+Regression results in Table 3 confirm that the periodicities are statistically and economically 
+significant. 
+Are trades during the first 100 ms, when trade intensity is high, special and differ from 
+other trades? We regress a sub-period indicator of whether a given trade is executed at the 
+start of a second on trade characteristics such as trade size and direction: 
+𝐹𝑖𝑟𝑠𝑡100𝑚𝑠𝑡= ∑𝑋𝑖,𝑡
+𝑠,𝑑× 𝛽𝑖
+𝑠,𝑑
+𝑖
++ 𝛼+ 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟+ 𝜖𝑡, 
+(1)
+where 𝑡 denotes the time bin and 𝑖 the parameter to be estimated. The superscripts 𝑠 
+and 𝑑 stand for stock and day. While more sophisticated statistical methods can also describe 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+9 
+ 
+periodicities (flexible Fourier transform, wavelets, etc.), a simple linear regression makes it 
+easier to establish and interpret that link between trading activity to volatility and liquidity. 
+Due to the large size of transaction level data, we first estimate the 𝛽𝑠,𝑑 parameters 
+with ordinary least squares (OLS) separately for each stock and day. We then compute and 
+report the average of these stock-by-day estimates in an intercept only regression (see 
+Appendix A for details) and cluster standard errors by stock and day.  
+Table 3 shows that trades at the start of the second (first 100 ms) are similar to other 
+trades in size, direction, and other characteristics. The only difference is that HFTs participate 
+less in the first 100 ms trades and are more likely to provide liquidity if they participate.  
+ 
+In the relative periodicity, trading spikes repeat every one second after an initial spike. 
+We estimate this periodicity in an autoregressive model that regresses the number of trades 
+(quotes) within each 100 ms time bin on their lags. The absolute time bin indicator variables 
+control for calendar seasonalities including the absolute periodicity. The coefficients on the 
+lagged activity reflect a relative periodic pattern independent of the clock time. The relative 
+periodicity predicts that the 10th lag should stand out compared to the 9th or 11th lags. 
+#𝑇𝑟𝑎𝑑𝑒𝑠𝑡
+𝑠,𝑑= ∑L𝑡(#𝑇𝑟𝑎𝑑𝑒𝑠𝑡
+𝑠,𝑑) × 𝛽𝑙
+𝑠,𝑑
+101
+l=1
++ ∑𝐵𝑖𝑛𝑏,𝑡× 𝛿𝑠,𝑑
+10
+b=1
++ α + 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟
++ 𝜖𝑡
+𝑠,𝑑 
+(2. 1)
+#𝑄𝑢𝑜𝑡𝑒𝑠𝑡
+𝑠,𝑑= ∑L𝑡(#𝑄𝑢𝑜𝑡𝑒𝑠𝑡
+𝑠,𝑑) × 𝛽𝑙
+𝑠,𝑑
+101
+l=1
++ ∑𝐵𝑖𝑛𝑏,𝑡× 𝛿𝑠,𝑑
+10
+b=1
++ α + 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟
++ 𝜖𝑡
+𝑠,𝑑. 
+(2. 2)
+Panels A of Figure 2 and Table 4 show the average lag coefficients for the NASDAQ 
+sample. Quote and trade activity spike on a one-second cycle and to a lesser degree on a halfElectronic copy available at: https://ssrn.com/abstract=2496669
+
+10 
+ 
+second cycle. For example, the autoregressive coefficient for 10th lag (one-second cycle) is 
+1.85 and is significantly larger than 1.11 and 0.90, the coefficients for 9th and 11th lags (900 
+ms and 1100 ms cycles). Quote updates are 85% more likely on one-second cycles than on 
+900 ms or 1100 ms cycles. Similar round-time coefficient discontinuities are observed for 
+20th, 30th, 40th, and up to 100th lags. This relative periodicity differs from the absolute 
+periodicity, as the regression controls for 100 ms bins in absolute time (that are highly 
+significant). We quantify the relative periodicity by the difference between the estimates of 
+lags divisible by 10 (𝑙𝑎𝑔10, 𝑙𝑎𝑔20, …, 𝑙𝑎𝑔100) and the average of adjacent lags 
+((𝑙𝑎𝑔9 + 𝑙𝑎𝑔11) 2
+⁄ , (𝑙𝑎𝑔19 + 𝑙𝑎𝑔21) 2
+⁄ , …). The difference is 0.31 for quotes and 0.08 for 
+trades with 𝑡-statistics of 13.0 and 13.1, respectively.  
+Panels B of Figure 2 and Table 4 show similar results for the Nanex data. Coefficient 
+estimates and 𝑡-statistics are much higher for lags divisible by 10 (one second), especially for 
+quoting activity. The joint test of differences between lags divisible by 10 and the average of 
+its neighbors (lags 9/11, 19/21, …) has 𝑡-statistics of 14.4 for quotes and 19.9 for trades. For 
+example, the 10th lag has a coefficient of 2.19 versus 0.44 and 1.52 for the 9th and 11th lags. 
+What causes these periodicities? The sharp discontinuity at the turn of a second is 
+consistent with algorithms repeating instructions in loops with round start times and round 
+time steps; i.e., programs “wake up” at the start of the second and place trade and quote 
+orders (the spike) before “going back to sleep” (the decay). Software programmers, like all 
+humans, prefer round numbers and programmed algorithms to check the market once a 
+second. Even if the programmers are not explicitly aware of the one-second periodicities, 
+their algorithm may implicitly respond to the activity spikes and thus amplify the effect. 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+11 
+ 
+We also rule out two explanations related to data artifacts. No significant amount of 
+trading occurs at exactly millisecond zero, thus ruling out that missing or otherwise 
+compromised subsecond timestamps are filled in with a hard zero; the subsecond periodicity 
+is not caused by a missing value substitution. To ensure the periodicity is not driven by a 
+particular sample, data provider, or time period, we confirm our results in an independent 
+sample of the same 120 NASDAQ stocks during 67 trading days in early 2013. Some data 
+feeds provide information at one-second or lower frequencies. This hypothetical argument 
+can affect the absolute one-second periodicity but not the relative periodicity. Finally, does 
+news arrival exhibit the one-second periodicity? Using a large database of news events with 
+millisecond time stamps, we find that news arrive equally likely throughout a second. We do 
+find that news arrival spikes within the first minute of an hour and the first second of a 
+minute, but if anything, the two subsecond periodicities are weaker during the first minute 
+and the first second. The results are also robust to excluding every minute divisible by five 
+from the sample. Overall, most likely these subsecond periodicities in trading activity are 
+triggered by algorithmic traders’ preference for round numbers. 
+We focus on the subsecond time scale because (i) most trading algorithms operate at 
+this or shorter frequencies and (ii) most trading is conducted by execution algorithms, 
+making them the dominant market players. One second may seem short, but it is an eternity 
+for trading algorithms. For example, HFTs rarely hold positions for more than a second, and 
+they are willing to pay millions of dollars to reduce latency by few milliseconds.5  
+ 
+5 Perhaps slower algorithms with frequencies of one minute or one hour operate independently of 
+faster algorithms with a 1-second frequency, and they simply attenuate the first 100 ms bin effect at first-second 
+and first-minute periods. More importantly, since corporate and macro news is more likely released during the 
+beginning of a minute and hour, this independence in trade intensity confirms that higher activity during the 
+first 100 ms time bin is not driven by algorithms that front run news. For the Nanex data, there is a high 
+correlation between activity during the first second of a minute and the first 100 ms of a second. This could be 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+12 
+ 
+4. Does Trade Clustering Affect Volatility and Liquidity? 
+Does trade clustering affect volatility? We find that volatility increases almost one-forone with trading activity; periodicity in activity creates periodicity in volatility. We measure 
+volatility in two ways: (i) as the absolute return computed from 100 ms quote midpoints and 
+(ii) as an indicator variable for whether the absolute return exceeds a 0.1% threshold. Such 
+large price changes are rare (0.2% of the sample) and can be considered price jumps. They 
+are less prone to microstructure noise than the absolute midquote returns. The subsecond 
+periodicity of these price jumps closely follows the pattern of the trading and quoting activity 
+(Figure 3): the jump intensity increases by 15% at the turn of a second. 
+To quantify how higher trading activity translates into higher volatility, we can divide 
+the relative increase in volatility at the turn of a second by the relative increase in trading 
+activity at the same time.  An instrumental variables regression implements this intuition 
+and does inference. In the first stage, trading (quoting) activity is instrumented by an 
+indicator for the first 100 ms bin. This stage reflects the absolute periodicity in trading 
+activity (Section 3). In the second stage, volatility is regressed on the instrumented trading 
+activity. Modern statistical packages estimate both stages jointly.  Due to data size, we first 
+run the estimation for each stock and day and then aggregate the coefficient estimates 
+clustering them by stock and by day. Equations (3.1) and (3.2) summarize the 2SLS setup: 
+1st stage: #𝑇𝑟𝑎𝑑𝑒𝑠𝑡
+𝑠,𝑑= 𝐵𝑖𝑛1,𝑡× 𝛿𝑠,𝑑+ 𝐹𝑖𝑟𝑠𝑡𝑆𝑒𝑐𝑜𝑛𝑑𝑡× 𝛾11
+𝑠,𝑑+ 𝐹𝑖𝑟𝑠𝑡𝑀𝑖𝑛𝑢𝑡𝑒𝑡× 𝛾12
+𝑠,𝑑+
+𝛼+ 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟+ 𝜖1,𝑡
+ 
+(3.1)
+ 
+driven by slower algorithms that activate one time each whole minute (at the whole second) and boost the fullsecond frequency. 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+13 
+ 
+2nd stage: 𝐷𝑒𝑝𝑡
+𝑠,𝑑= #𝑇𝑟𝑎𝑑𝑒𝑠𝑡
+𝑠,𝑑̂ × 𝛽𝑠,𝑑+ 𝐹𝑖𝑟𝑠𝑡𝑆𝑒𝑐𝑜𝑛𝑑𝑡× 𝛾21
+𝑠,𝑑+ 𝐹𝑖𝑟𝑠𝑡𝑀𝑖𝑛𝑢𝑡𝑒𝑡× 𝛾22
+𝑠,𝑑
++𝛼+ 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟+ 𝜖2,𝑡,
+ 
+(3.2)
+where 𝐷𝑒𝑝𝑡
+𝑠,𝑑 variables are volatility measured as absolute return or price jump intensity. 
+Indicator 𝐵𝑖𝑛1 corresponds to the first 100 ms of a second. Indicators for the other nine bins 
+are omitted and serve as the reference level. Hour fixed effects account for intra-day 
+seasonality. We also try #𝑄𝑢𝑜𝑡𝑒𝑠 instead of #𝑇𝑟𝑎𝑑𝑒𝑠 in the above model. 
+In Panel A of Table 5, the coefficient estimates for first 100 ms indicator in the first 
+stage confirm the spikes of trading activity in Figure 1; 𝑡-statistics are large (7.0 and 8.0). The 
+second-stage results show that higher trading and quoting activity rates lead to higher 
+volatility. Price jumps are more frequent, and volatility is higher if activity is high; the 
+coefficients are significant at 1% and 10% level, respectively. We find similar results in the 
+Nanex data as reported in Panel B of Table 5. Trade and quote intensities increase by 13.6% 
+and 16.6%, respectively, with t-statistics of 6.9 and 8.9. Higher instrumented quote intensity 
+leads to higher volatility and jump intensity with the corresponding t-statistics of 6.7 and 2.9.  
+We use the same setup to study the effect of trading activity on liquidity measured as 
+the relative bid-ask spread and dollar market depth. Panel A of Table 5 shows that measures 
+of liquidity are not significantly related to higher trading activity in the first 100 ms of a 
+second. The t-statistics range from 1.1 to −1.4. We find similar results in the Nanex data in 
+Panel B except that most coefficients are positive insignificant, so if anything the point 
+estimates are more consistent with lower liquidity during high trading activity. 
+After studying the effect of absolute periodicity on volatility and liquidity, we turn to 
+the relative periodicity. This periodicity addresses concerns that the first 100 ms of the 
+second are special due to data artifacts. We estimate the relative periodicity in an 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+14 
+ 
+autoregressive model described by Equations (2.1) and (2.2), which controls for the absolute 
+periodicity. Using estimates from this model, we create one-second relative spike measures 
+as the average difference between every 10th (one-second) lag and its neighbors: 
+𝑆𝑝𝑖𝑘𝑒𝑙
+𝑠,𝑑≔#𝑇𝑟𝑎𝑑𝑒𝑠𝑙
+𝑠,𝑑−[#𝑇𝑟𝑎𝑑𝑒𝑠𝑙−1
+𝑠,𝑑+ #𝑇𝑟𝑎𝑑𝑒𝑠𝑙+1
+𝑠,𝑑] 2
+⁄ 
+(4)
+for 𝑙∈{10,20, … ,100} 
+These ten spike variables serve as instruments, similar to Equations (3.1) and (3.2): 
+1st stage: 
+#𝑇𝑟𝑎𝑑𝑒𝑠𝑡
+𝑠,𝑑= ∑𝛿𝑙
+𝑠,𝑑× 𝑆𝑝𝑖𝑘𝑒10𝑙 
+10
+l=1
++ ∑𝜙𝑙× Lj(#𝑇𝑟𝑎𝑑𝑒𝑠𝑡
+𝑠,𝑑)
+6
+j=1
++ ∑𝐵𝑖𝑛𝑏,𝑡× 𝛾𝑏
+9
+b=1
++ 𝛼+ 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟+ 𝜖1,𝑡 
+(5.1)
+2nd stage: 
+𝐷𝑒𝑝𝑒𝑛𝑑𝑒𝑛𝑡𝑡
+𝑠,𝑑= #𝑇𝑟𝑎𝑑𝑒𝑠𝑡
+𝑠,𝑑̂ × 𝛽𝑠,𝑑+ ∑𝜙𝑙× Lj(#𝑇𝑟𝑎𝑑𝑒𝑠𝑡
+𝑠,𝑑)
+6
+j=1
++ ∑𝐵𝑖𝑛𝑏,𝑡× 𝛾𝑏
+9
+b=1
++ 𝛼+ 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟+ 𝜖2,𝑡.
+ 
+(5.2)
+where controls include 100 ms bin indicators to account for the absolute periodicity and six 
+trading activity lags to account for the positive autocorrelation. 
+The results for the first stage in Table 6, Panel A confirm that the relative periodicity 
+for each of the ten spike variables is individually significant. The one-second periodicity is 
+accompanied by the 10-second periodicity as the 10th spike (which corresponds to a 10second cycle) is half the size of the 1st spike: 0.084 versus 0.158. A large trade is often 
+followed by another large trade exactly one second later (or multiples of one second), which 
+is consistent with execution algorithms slicing large parent orders into smaller child orders 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+15 
+ 
+and submitting them with a round time step. In the second stage, higher quote activity leads 
+to higher volatility and jump intensity with t-statistics of 8.4 and 7.5. Although the increase 
+in quoted spreads is statistically significant, its economic impact is small (0.34 versus a mean 
+of 13.77). 
+Table 6, Panel B reports similar results for the Nanex data. All instrument coefficients 
+in the first-stage are significant and exceed the mean of the dependent variable by a factor of 
+more than 10. This result confirms the relative periodicity in this independent sample. In the 
+second stage, we find that volatility (a 𝑡-statistic of 3.8) and price jumps (a 𝑡-statistic of 3.7) 
+are significantly affected by trade activity. The bid-ask spread and market depth do not 
+change significantly. For quote activity, volatility and jump intensity increase (t-statistics of 
+8.7 and 6.3), market depth does not change. Surprisingly, the bid-ask spread even increases 
+rather than decreases (a t-statistic of 5.0).  
+Next, we study how trading activity affects Kyle’s lambda, a popular liquidity measure. 
+Kyle’s lambda is measured following the approach of Hasbrouck (2009) modified to our highfrequency setup. Is Kyle’s lambda larger during the start of the second? We test this 
+hypothesis with a regression model that compares price impact across 100 ms bins: 
+𝑅𝑒𝑡𝑢𝑟𝑛𝑡= ∑
+𝑂𝑟𝑑𝑒𝑟𝐼𝑚𝑏𝑡,𝐵𝑖𝑛(𝑖) × 𝛽𝑖
+9
+𝑖=1
++ 𝑂𝑟𝑑𝑒𝑟𝐼𝑚𝑏𝑡× 𝛽0 + α + 𝜖𝑡, 
+(6)
+where, return and order imbalances over a 5-minute interval, 𝑡, are supplemented with order 
+imbalances for 100 ms sub-periods within this range. This specification can compare price 
+impacts across 100 ms time bins. The indicator for the last 100 ms bin is omitted and thus 
+serves as a benchmark. Following Hasbrouck (2009), the order imbalance is measured as the 
+square root of the dollar order imbalance (𝑂𝑟𝑑𝑒𝑟𝐼𝑚𝑏 = sign(𝐼𝑚𝑏𝐷𝑜𝑙𝑙𝑎𝑟𝑠𝑡,𝐵𝑖𝑛(𝑖)) ×
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+16 
+ 
+|𝐼𝑚𝑏𝐷𝑜𝑙𝑙𝑎𝑟𝑠𝑡,𝐵𝑖𝑛(𝑖)|
+1 2
+⁄ ). We also try a linear version of the order imbalance and obtain 
+similar results. 
+As expected, stock prices move in the direction of the order imbalance. Table 7 reports 
+a coefficient for total order imbalance of 55.9 with a 𝑡-statistic of 10.12. Price impact does 
+not change within a second. In particular, the coefficient for the first 100 ms bin order 
+imbalance, which measures the difference between the Kyle’s lambda for the first and last 
+100 ms of a second, is small (only 2.8% of the total price impact) and statistically insignificant 
+(𝑡-statistic of 0.52). Liquidity, as measured by Kyle’s lambda, is not affected by the periodic 
+trade spikes.  
+Overall, trade clustering increases volatility and jump intensity; but it does not affect 
+liquidity and trading costs. 
+5. Trade Clustering and High-Frequency Trading 
+How do HFTS respond to trade clustering? The NASDAQ data provide the HFT and 
+liquidity taker flags that are not included in public datasets like TAQ. HFTs are sophisticated, 
+typically hold positions for less than one second, and often act as de facto market-makers.  
+They are arguably the most informed investors at the subsecond horizon and can potentially 
+front-run investors who trade predictably in one-second cycles. Alternatively, they can 
+provide more liquidity and trade against this uninformed order flow. We find that HFTs are 
+less likely to take liquidity than non-HFTs during the activity spikes. HFTs mostly provide 
+liquidity during the spikes, and the spikes are caused primarily by non-HFTs.  
+Consistent with the results in Section 3, trading activity spikes for all four investor 
+types (active/passive by HFT/non-HFT) at the turn of the second. But liquidity taking by nonElectronic copy available at: https://ssrn.com/abstract=2496669
+
+17 
+ 
+HFTs spike the most, while liquidity taking by HFTs spike the least, as shown in Panel A of 
+Figure 4. Panel A compares trading activity across subsecond intervals, while Panel B focuses 
+on investor composition within each 25 ms bin. It shows how the share of all trades by a 
+given investor type (across all trades within each 25 ms bin) deviates from 25% (equal split 
+across the four types). Composition of investor, who provide liquidity, changes little over a 
+second, HFTs provide slightly more liquidity than non-HFTs for all 25 ms bins (51% of total 
+liquidity provision). In contrast, for taking liquidity, non-HFTs take significantly more 
+liquidity than HFTs; and non-HFT’s share increases significantly at the start of the second. 
+Overall, this figure suggests that non-HFTs, who take liquidity, initiate the activity spikes; 
+HFTs respond by providing more and take less liquidity during spikes.  
+We also study how the variation in the HFT activity around the first 100 ms affects 
+volatility and liquidity. Consistent with HFTs responding rather than causing the spikes, we 
+find no significant relation between the periodicity in HFT activity and market variables. 
+Table 8 shows the results for the two-stage methodology in Equations (3.1) and (3.2) applied 
+to all, active, and passive HFT trades. Results for the first stage show that HFT activity 
+mechanically increases at the start of the second, as HFTs mostly provide liquidity to satisfy 
+non-HFT demand. In the second stage, with one exception, market variables are not 
+significantly related to the instrumented HFT activity. 
+6. Daily Periodicity 
+After we study the relation between trading activity, volatility, liquidity using 
+subsecond periodicities, we show that this relation also holds for longer horizons that 
+institutional investors are interested in. While institutional investors rely on execution 
+algorithms that potentially cause the subsecond periodicities, these investors typically 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+18 
+ 
+operate at daily or longer frequencies.  The literature focuses on the intraday relation 
+between activity, liquidity, and volatility. Thus, the low-frequency tests in this section extend 
+the time horizon typically used in the literature. 
+Etula, et al. (2019) show that investment funds deploy cash inflows on the first day of 
+the month causing a 11% higher volume than on other days. Thus, trading activity is higher 
+on the first day of the month, similar to how it is higher for the first 100 ms of a second (only 
+the magnitude is lower, 11% versus 40%). Investors primarily trade to deploy funds rather 
+than to exploit private information on this day. 
+We compute trading volume, volatility, and liquidity from daily CRSP data. The sample 
+includes all common stocks (share codes 10, 11, and 12) with a price of at least $5 and market 
+capitalization of more than $100 million; the sample period is from 2000 to 2019. Microcaps 
+are of little interest to institutional investors. The final sample consists of 15,289,956 stockdays for 10,004 unique stocks. Trading activity is measured as the logarithm of daily dollar 
+volume or as turnover defined as share volume over number of shares outstanding. The bidask spread (spread over midquote) measures liquidity. Volatility is measured as the absolute 
+daily return and as the logarithm of high-to-low prices. All variables are winsorized at the 
+0.05% level to avoid outliers. Table 9 reports summary statistics.  
+We estimate the effect of higher trading activity on market variables with an IV 
+regression as in Equations (3.1) and (3.2) applied to the daily sample. In the first stage, log 
+volume is instrumented with the first day of a month. In the second stage, instrumented 
+trading volume affects the bid-ask spread and volatility. The regressions include stock fixed 
+effects. Standard errors are clustered by stock and day. 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+19 
+ 
+The first stage results in Table 10 confirm higher trading activity at the first day of a 
+month. The coefficients of first stage regressions of trading volume and turnover on a dummy 
+for the first day of the month is positive and significant at the 1% level. For example, trading 
+volume is 11.1% higher on the first day of the month. The second stage results are consistent 
+with our high-frequency conclusions. The coefficients for the bid-ask spread are 
+economically small and not statistically significant (t-statistics of 0.19). Volatility, however, 
+increases significantly. The coefficients for absolute returns and high-low ratio are 
+economically and statistically significant (t-statistics ranging from 2.08 to 3.09) 
+Overall, trading activity spikes on the first day of a month. Using this low-frequency 
+periodicity, we show that higher trading volume leads to higher volatility but has little effect 
+on liquidity. These findings confirm our high-frequency results. 
+7. Cognitive Bias in Algorithmic Trading? 
+Cognitive biases have been extensively studied including their effect on the economy 
+and financial markets.6 Three prominent contributors to this field, Daniel Kahneman, Robert 
+Shiller, and Richard Thaler, have been awarded Nobel Prizes. Behavioral finance so far 
+focused on biases of individual and institutional investors. For example, uncertainty, stress, 
+peer pressure, anchoring, and mental heuristics all contribute to irrational investor 
+decisions. On the other hand, most trading nowadays is done by execution algorithms. Can 
+ 
+6 The term cognitive bias was introduced by Kahneman and Tversky (1972) while Kahneman (2011) 
+provides a more modern treatment. Ritter (2003) describes behavioral finance as “the paradigm where 
+financial markets are studied using models that are less narrow than those based on Von Neumann 
+Morgenstern expected utility theory and arbitrage assumptions”. The following is a brief list for further reading: 
+Barber and Odean (2012), Barberis and Thaler (2003), Bhattacharya, Holden, et al. (2012), DellaVigna (2009), 
+Rosch (1975), and Tversky and Kahneman (1974). 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+20 
+ 
+these algorithms behave irrationally? To our knowledge, we are the first to raise this question 
+and provide a tentative example of such a bias.  
+Machines themselves, of course, do not suffer from cognitive biases since they 
+deterministically process an input into an output. But a human programmer must decide on 
+how to implement an algorithm, and she is subject to cognitive biases. She employs mental 
+heuristics as a shortcut for complex decisions. For example, the programmer’s task is to 
+design an execution algorithm that checks market conditions and trades. This is a complex 
+problem without a known optimal solution. The programmer may resort to mental heuristics 
+and check the market once per second, starting every day with the market opening at exactly 
+9:30am. Harris (1991) finds that trade prices cluster on round stock prices, because human 
+traders use a round number mental shortcut to reduce mental costs of choosing an optimal 
+price. Human programmers apply a similar shortcut while designing a trading algorithm. 
+Can this clustering of activity at rounded-time intervals be exploited? In untabulated 
+results, we confirm that rounded-time algorithms generate persistent order imbalances. 
+Buying at the start of a second is followed by more buying at the start of the next second. 
+Front runners can exploit this order imbalance persistence by trading ahead of round-time 
+algorithms. However, our data do not allow us to directly show that round-time traders suffer 
+negative consequences of their predictive behavior. 
+We connect algorithmic trading and behavioral finance. Cognitive biases in trading 
+algorithms are common and deserve greater attention. For example, these biases are 
+correlated across investors and thus may pose a systematic risk to financial markets. 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+21 
+ 
+8. Conclusion 
+We introduce two high-frequency periodicities in trading activity and use them to 
+study the relation between trading activity, volatility, and liquidity. Trading activity spikes (i) 
+at the start of a second compared to its end and (ii) exactly one second after a prior activity 
+spike. These periodicities are likely driven by programmers’ preference for round numbers, 
+which causes their algorithms to activate only at the start of a second. Using the two 
+periodicities, we find that higher trading activity leads to higher volatility but does not affect 
+liquidity and trading costs. Non-HFTs take more liquidity during the periodic spikes, while 
+HFTs provide more liquidity. Trading activity affects volatility but not liquidity during turnof-the-month, a low-frequency activity periodicity that supplements our high-frequency 
+results. We interpret these results in the context of models of strategic trading. The 
+subsecond periodicity provides a rare example of how investors synchronize their trading in 
+practice. We show that trading algorithms may behave irrationally and argue that behavioral 
+algorithmic trading requires more academic research. 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+22 
+ 
+References 
+Admati, A. R. and P. Pfleiderer (1988). "A Theory of Intraday Patterns: Volume and Price 
+Variability." Review of Financial Studies 1(1): 3-40. 
+Back, K. (1992). "Insider Trading in Continuous Time." Review of Financial Studies 5(3): 387409. 
+Back, K. and H. Pedersen (1998). "Long-lived information and intraday patterns." Journal of 
+Financial Markets 1(3-4): 385-402. 
+Barber, B. M. and T. Odean (2012). The Behavior of Individual Investors. SSRN. Rochester. 
+Barberis, N. and R. Thaler (2003). A Survey of Behavioral Finance. Handbook of the 
+Economics of Finance: Financial Markets and Asset Pricing. G. M. Constantinides, M. Harris, 
+R. M. Stulz and N. Barberis, Elsevier B.V.: 1053-1128. 
+Bessembinder, H. and K. Venkataraman (2010). Bid-Ask Spreads: Measuring Trade Execution 
+Costs in Financial Markets. Encyclopedia of Quantitative Finance, Wiley-Blackwell. 
+Bhattacharya, U., C. W. Holden and S. Jacobsen (2012). "Penny Wise, Dollar Foolish: Buy-Sell 
+Imbalances On and Around Round Numbers." Management Science 58(2): 413-431. 
+Brogaard, J., T. Hendershott and R. Riordan (2014). "High-Frequency Trading and Price 
+Discovery." Review of Financial Studies 27(8): 2267-2306. 
+Collin-Dufresne, P. and V. Fos (2015). "Do Prices Reveal the Presence of Informed Trading?" 
+Journal of Finance 70(4): 1555-1582. 
+DellaVigna, S. (2009). "Psychology and Economics: Evidence from the Field." Journal of 
+Economic Literature 47(2): 315-372. 
+Etula, E., Rinne, K., Suominen, M. and Vaittinen, L., 2020. Dash for cash: Monthly market 
+impact of institutional liquidity needs. The Review of Financial Studies, 33(1), pp.75-111. 
+Foster, F. D. and S. Viswanathan (1993). "The Effect of Public Information and Competition on 
+Trading Volume and Price Volatility." Review of Financial Studies 6(1): 23-56. 
+French, K. R. and R. Roll (1986). "Stock Return Variances: The Arrival of Information and the 
+Reaction of Traders." Journal of Financial Economics 17(1): 5. 
+Harris, L. (1986). "A transaction data study of weekly and intradaily patterns in stock 
+returns." Journal of Financial Economics 16(1): 99-117. 
+Harris, L. (1991). "Stock Price Clustering and Discreteness." Review of Financial Studies 4(3): 
+389-415. 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+23 
+ 
+Hasbrouck, J. (2009). "Trading Costs and Returns for U.S. Equities: Estimating Effective Costs 
+from Daily Data." Journal of Finance 64(3): 1445-1477. 
+Hasbrouck, J. (2013). High Frequency Quoting: Short-Term Volatility in Bids and Offers. SSRN. 
+Hasbrouck, J. and G. Saar (2013). "Low-latency trading." Journal of Financial Markets 16(4): 
+646-679. 
+Heston, S. L., R. A. Korajczyk and R. Sadka (2010). "Intraday Patterns in the Cross-Section of 
+Stock Returns." Journal of Finance 65(4): 1369-1407. 
+Hong, H. and J. Wang (2000). "Trading and Returns under Periodic Market Closures." Journal 
+of Finance 55(1): 297-354. 
+Jain, P. C. and G.-H. Joh (1988). "The Dependence between Hourly Prices and Trading Volume." 
+Journal of Financial and Quantitative Analysis 23(3): 269-283. 
+Kahneman, D. (2011). Thinking, fast and slow, Farrar, Straus and Giroux, New York, NY. 
+Kahneman, D. and A. Tversky (1972). "Subjective probability: A judgment of 
+representativeness." Cognitive Psychology 3(3): 430-454. 
+Kyle, A. S. (1985). "Continuous Auctions and Insider Trading." Econometrica 53(6): 13151315. 
+McInish, T. H. and R. A. Wood (1992). "An Analysis of Intraday Patterns in Bid/Ask Spreads 
+for NYSE Stocks." Journal of Finance 47(2): 753-764. 
+Oldfield, G. S., Jr. and R. J. Rogalski (1980). "A Theory of Common Stock Returns Over Trading 
+and Non-Trading Periods." Journal of Finance 35(3): 729-751. 
+Ritter, J. R. (2003). "Behavioral Finance." Pacific-Basin Finance Journal 11(4): 429-437. 
+Rosch, E. (1975). "Cognitive reference points." Cognitive Psychology 7(4): 532-547. 
+Stoll, H. R. and R. E. Whaley (1990). "The Dynamics of Stock Index and Stock Index Futures 
+Returns." Journal of Financial and Quantitative Analysis 25(4): 441-441. 
+Tversky, A. and D. Kahneman (1974). "Judgment under Uncertainty: Heuristics and Biases." 
+Science 185(4157): 1124-1131. 
+Wood, R. A., T. H. McInish and J. K. Ord (1985). "An Investigation of Transactions Data for NYSE 
+Stocks." Journal of Finance 40(3): 723-739. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+24 
+ 
+Figure 1: Periodicity in Trading and Quoting Activity (Absolute Periodicity). 
+Periodicity in trade (dashed red) and quote update (solid blue) frequency within a second using a bin size of 
+25 ms. The frequency is normalized to report deviations from a uniform distribution; e.g., the first 25 ms bin 
+has 40% more trades than is expected of activity arriving uniformly across all 40 bins. Activity measures exhibit 
+a sharp discontinuity at the turn of a second. 
+Panel A: NASDAQ HFT (2008, 2009 Data). 
+ 
+Panel B: Nanex (2013 Data). 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+25 
+ 
+Figure 2: Autoregressive Periodicity in Trading Activity (Relative Periodicity). 
+The chart shows point estimates of the coefficients of lags of quotes and trades on an autoregressive model for 
+the number of quotes and trades on its 100 ms aggregated lags with controls for whole hour, whole minute, and 
+whole seconds. The whole second dummy absorbs the round second activity effect established in Figure 1. We 
+estimate separate autoregression models for each day and stock and then show the averages of these results. 
+In general, the model decays quickly within a few seconds, but it exhibits whole-second (and to a lesser degree 
+half-second) periodicities independent of absolute time. 
+Panel A: NASDAQ HFT (2008, 2009 Data). 
+ 
+Panel B: Nanex (2013 Data). 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+26 
+ 
+Figure 3: Periodicity of Volatility. 
+Subsecond periodicity of observations of price jumps (100 ms returns exceeding 0.1%) and centered quoted 
+spreads within 100 ms time bins for the NASDAQ data. The 𝑦-axis shows the number of price jumps scaled by 
+10,000 (Panel A) and quoted spreads in basis points (Panel B) across a whole second. Volatility (as measured 
+by price jumps) spikes right at the beginning of the second; quoted spreads are essentially flat, with an 
+economically insignificant rise at the beginning of the second. 
+Panel A: Price Jumps. 
+ 
+Panel B: Quoted Spreads. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+27 
+ 
+Figure 4: Subsecond Trading Periodicity and High-Frequency Traders. 
+The figures show how HFTs behave during the sub-periodicities. Similar to Figure 1, they plot the deviations 
+from a uniform activity for 1-second intervals, i.e. the spike around 0 ms for active non-HFT is about  25% higher 
+than expected. The data is separated by the type of trader (HFT or non-HFT) and the side that initiated the trade 
+(active or passive). The charts indicate that the subsecond periodicity is driven primarily by non-HFTs. The type 
+of trader is only available for the NASDAQ data and not for the more recent Nanex data. 
+Panel A: Deviation from Uniform Distribution Across All Trades 
+ 
+Panel B: Deviation (in %) From 25% Expected Value for Each 25 Millisecond Time Bin 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+28 
+ 
+Table 1: Definition of Variables. 
+Most variables are defined only for either the event time or the bin time dataset, so the time index 𝑡 may denote 
+real time in the case of trade events or a particular 100 ms time period in the case of quote snapshots. 
+Variable 
+Description 
+𝑡 
+Time in milliseconds since midnight (event time) or 100 ms time bin index.  
+𝑠 
+Superscript for one of the 120 stock symbols. 
+𝑑 
+Superscript for one of the 44 trading days. 
+ℎ𝑜𝑢𝑟 
+Superscript for hour of the day for fixed effects. 
+𝑀𝑖𝑙𝑙𝑖𝑆𝑒𝑐𝑡 
+∈{0,1, … ,999}, millisecond of the second. 
+𝐹𝑖𝑟𝑠𝑡𝑆𝑒𝑐𝑜𝑛𝑑𝑡 
+Dummy for the first second of a minute. 
+𝐹𝑖𝑟𝑠𝑡𝑀𝑖𝑛𝑢𝑡𝑒𝑡 
+Dummy for the first minute of an hour. 
+𝐵𝑖𝑛 
+= 1 + ⌊(𝑡mod 1000) 100
+⁄
+⌋∈{1, … ,10}. 100 ms time bin within a second. 
+𝐵𝑖𝑛𝑖 
+= 1{𝐵𝑖𝑛= 𝑖}, 𝑖∈{1, … ,10}. Time bin dummy. 
+𝐹𝑖𝑟𝑠𝑡100𝑚𝑠 
+= 𝐵𝑖𝑛1. 
+#〖𝑄𝑢𝑜𝑡𝑒𝑠〗
+(
+)
+Number of quote updates within a 100 ms time bin. 
+#〖𝑇𝑟𝑎𝑑𝑒𝑠〗
+(
+)
+Number of trades within a 100 ms time bin. 
+𝑆𝑝𝑖𝑘𝑒𝑙
+𝑠,𝑑 
+[(#𝑇𝑟𝑎𝑑𝑒𝑠𝑙
+𝑠,𝑑−#𝑇𝑟𝑎𝑑𝑒𝑠𝑙−1
+𝑠,𝑑) + (#𝑇𝑟𝑎𝑑𝑒𝑠𝑙
+𝑠,𝑑−#𝑇𝑟𝑎𝑑𝑒𝑠𝑙+1
+𝑠,𝑑)] 2
+⁄ , similar for #𝑞𝑢𝑜𝑡𝑒𝑠. 
+𝐵𝑖𝑑𝑡
+𝑠,𝑑, 𝐴𝑠𝑘𝑡
+𝑠,𝑑 
+𝐵𝑆𝑖𝑧𝑒𝑡
+𝑠,𝑑, 𝐴𝑆𝑖𝑧𝑒𝑡
+𝑠,𝑑 
+Best bid and ask prices (in dollars) and their respective sizes (in number of shares) 
+updated at time 𝑡. 
+𝑀𝑖𝑑𝑡
+𝑠,𝑑 
+= (𝐵𝑖𝑑𝑡
+𝑠,𝑑+ 𝐴𝑠𝑘𝑡
+𝑠,𝑑) 2
+⁄ , the quote midpoint in dollars. 
+𝑄𝑢𝑜𝑡𝑒𝑑𝑆𝑝𝑟𝑒𝑎𝑑𝑡
+𝑠,𝑑 
+= 10,000 × (𝐵𝑖𝑑𝑡
+𝑠,𝑑−𝐴𝑠𝑘𝑡
+𝑠,𝑑) 𝑀𝑖𝑑𝑡
+𝑠,𝑑
+⁄
+, quoted spread expressed in basis points. 
+𝐷𝑒𝑝𝑡ℎ𝑡
+𝑠,𝑑 
+= (𝐵𝑆𝑖𝑧𝑒𝑡
+𝑠,𝑑× 𝐵𝑖𝑑𝑡
+𝑠,𝑑+ 𝐴𝑆𝑖𝑧𝑒𝑡
+𝑠,𝑑× 𝐴𝑠𝑘𝑡
+𝑠,𝑑) 2
+⁄ . 
+Depth of inside quotes measured at the center of each time bin (50ms, 150ms, …). 
+𝐵𝑒𝑔𝑀𝑖𝑑𝑡
+𝑠,𝑑, 𝐸𝑛𝑑𝑀𝑖𝑑𝑡
+𝑠,𝑑 Mid quotes at beginning and end of time bin 𝑡. 
+𝑅𝑒𝑡𝑢𝑟𝑛𝑡
+𝑠,𝑑 
+= 10,000 × [log(𝐸𝑛𝑑𝑀𝑖𝑑𝑡
+𝑠,𝑑) −log(𝐵𝑒𝑔𝑀𝑖𝑑𝑡
+𝑠,𝑑)], quote change during time bin 𝑡. 
+|𝑅𝑒𝑡𝑢𝑟𝑛|𝑡
+𝑠,𝑑 
+= |𝑅𝑒𝑡𝑢𝑟𝑛𝑡
+𝑠,𝑑|, volatility of time bin 𝑡. 
+𝑃𝑟𝑖𝑐𝑒𝐽𝑢𝑚𝑝𝑡
+𝑠,𝑑 
+Set to 1 if absolute return for time bin exceeds 0.1%, otherwise 0. 
+𝐼𝑚𝑏𝐷𝑜𝑙𝑙𝑎𝑟𝑠𝑡
+𝑠,𝑡 
+Order imbalance: Number of active buyer-initiated trades less active seller-initiated 
+trades within a 100 ms time bin measured in dollar volume. 
+𝑂𝑟𝑑𝐼𝑚𝑏𝑡
+𝑠,𝑑 
+= (𝐼𝑚𝑏𝐷𝑜𝑙𝑙𝑎𝑟𝑠𝑡
+𝑠,𝑑)
+1 2
+⁄ , following Hasbrouck (2009). 
+𝑆𝑡𝑘𝑃𝑟𝑖𝑐𝑒𝑡
+𝑠,𝑑 
+Trade price of stock 𝑠 on day 𝑑 at time 𝑡 in dollars. 
+𝑇𝑆𝑡
+𝑠,𝑑 
+Trade sign, +1 for buyer-, −1 for seller-initiated trades. 
+𝐸𝑓𝑓𝑆𝑝𝑟𝑒𝑎𝑑𝑡
+𝑠,𝑑 
+= 10,000 × 𝑇𝑆𝑡
+𝑠,𝑑× (𝑃𝑟𝑖𝑐𝑒𝑡
+𝑠,𝑑−𝑀𝑖𝑑𝑡
+𝑠,𝑑) 𝑀𝑖𝑑𝑡
+𝑠,𝑑
+⁄
+, effective half-spread in bp. 
+𝑆ℎ𝑎𝑟𝑒𝑠𝑡
+𝑠,𝑑 
+Number of shares traded at time 𝑡. 
+𝑆𝑖𝑧𝑒𝑡
+𝑠,𝑑 
+= 𝑃𝑟𝑖𝑐𝑒𝑡
+𝑠,𝑑× 𝑆ℎ𝑎𝑟𝑒𝑠𝑡
+𝑠,𝑑, trade size in dollars. 
+𝐴𝑐𝑡𝑖𝑣𝑒𝐻𝐹𝑇𝑡
+𝑠,𝑑 
+Dummy for active trade by high-frequency trader (liquidity taker). 
+𝑃𝑎𝑠𝑠𝑖𝑣𝑒𝐻𝐹𝑇𝑡
+𝑠,𝑑 
+Same as above for passive trade (liquidity provider). 
+𝐻𝐹𝑇𝑡
+𝑠,𝑑 
+Equals 1 if high-frequency trader was involved on any side of the transaction. 
+𝐵𝑢𝑦𝑡
+𝑠,𝑑 
+Dummy for trade actively initiated by buyer. 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+29 
+ 
+Table 2: Summary Statistics. 
+Sample averages, standard deviations, and 1st, 50th, and 99th percentiles for a pooled sample across all 120 
+stocks for the NASDAQ HFT and Nanex dataset. See Table 1 for definition of variables. 
+Panel A: NASDAQ data. 
+The sample size for the NASDAQ dataset is about 49.9 million for trades, and about 1.14 billion (44 trading days 
+× 120 stocks × 6 trading hours × 3,600 seconds × 10 100 ms time bins) for the 100 ms time bins. 
+Variable 
+Average 
+Std. Dev. 
+Q(1%) 
+Median 
+Q(99%) 
+Trades: 
+ 
+ 
+ 
+ 
+ 
+𝑀𝑖𝑙𝑙𝑖𝑆𝑒𝑐 
+488.51 
+290.91 
+9 
+484 
+989 
+𝐵𝑖𝑛 
+5.39 
+2.89 
+1 
+5 
+10 
+𝐸𝑓𝑓𝑆𝑝𝑟𝑒𝑎𝑑 in bp. 
+2.60 
+3.96 
+−2.25 
+2.23 
+15.33 
+𝑄𝑢𝑜𝑡𝑒𝑑𝑆𝑝𝑟𝑒𝑎𝑑 in bp. 
+6.92 
+8.70 
+1.07 
+5.21 
+38.33 
+𝐷𝑒𝑝𝑡ℎ in $ 
+968.61 
+1,635 
+22.53 
+430.66 
+6,577 
+𝑆ℎ𝑎𝑟𝑒𝑠 
+184.84 
+405.68 
+2 
+100 
+1,300 
+𝑆𝑖𝑧𝑒 in $ 
+7,026 
+15,378 
+74.73 
+3,717 
+56,480 
+𝐵𝑢𝑦 
+0.4975 
+0.5000 
+0 
+0 
+1 
+𝐴𝑐𝑡𝑖𝑣𝑒𝐻𝐹𝑇 
+0.4343 
+0.4957 
+0 
+0 
+1 
+𝑃𝑎𝑠𝑠𝑖𝑣𝑒𝐻𝐹𝑇 
+0.5105 
+0.4999 
+0 
+1 
+1 
+𝐻𝐹𝑇 
+0.7554 
+0.4298 
+0 
+1 
+1 
+100 ms Time Bins: 
+ 
+ 
+ 
+ 
+#𝑄𝑢𝑜𝑡𝑒𝑠 
+0.3504 
+2.7897 
+0 
+0 
+8 
+#𝑇𝑟𝑎𝑑𝑒𝑠 
+0.0439 
+0.6599 
+0 
+0 
+1 
+𝑂𝑟𝑑𝐼𝑚𝑏 
+−0.0002 
+0.6071 
+0.00 
+0.00 
+0.00 
+𝐼𝑚𝑏𝐷𝑜𝑙𝑙𝑎𝑟𝑠 
+−1.36 
+5,960 
+0.00 
+0.00 
+0.00 
+𝑆𝑡𝑘𝑃𝑟𝑖𝑐𝑒 in $ 
+35.39 
+49.64 
+2.54 
+23.57 
+276.71 
+𝑅𝑒𝑡𝑢𝑟𝑛 in bp. 
+−0.0005 
+5.43 
+−1.07 
+0.00 
+1.06 
+|𝑅𝑒𝑡𝑢𝑟𝑛| in bp. 
+0.0997 
+4.44 
+0.00 
+0.00 
+2.73 
+𝑃𝑟𝑖𝑐𝑒𝐽𝑢𝑚𝑝× 10,000 
+18.39 
+428.40 
+0 
+0 
+0 
+𝑄𝑢𝑜𝑡𝑒𝑑𝑆𝑝𝑟𝑒𝑎𝑑 in bp 
+13.77 
+19.14 
+0.84 
+7.10 
+104.42 
+𝐷𝑒𝑝𝑡ℎ in $ 
+303.60 
+823.57 
+4.85 
+74.71 
+4,000 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+30 
+ 
+Panel B: Nanex Data. 
+The sample size for the Nanex dataset is about 79.5 million for trades, and about 1.61 billion (67 trading days 
+× 120 stocks × 6 trading hours × 3,600 seconds × 10 100 ms time bins; actual number is smaller because data 
+are not available for all 120 stocks at all times) for the 100 ms time bins. 
+ 
+Variable 
+Average 
+Std. Dev. 
+Q(1%) 
+Median 
+Q(99%) 
+Trades: 
+ 
+ 
+ 
+ 
+ 
+𝑀𝑖𝑙𝑙𝑖𝑆𝑒𝑐 
+477.6 
+291.0 
+0 
+475 
+975 
+𝐵𝑖𝑛 
+5.400 
+2.900 
+1 
+5 
+10 
+𝐸𝑓𝑓𝑆𝑝𝑟𝑒𝑎𝑑 in bp. 
+1.842 
+2.148 
+0.000 
+1.413 
+9.339 
+𝑄𝑢𝑜𝑡𝑒𝑑𝑆𝑝𝑟𝑒𝑎𝑑 in bp. 
+4.177 
+4.198 
+0.000 
+3.231 
+19.22 
+𝐷𝑒𝑝𝑡ℎ in $ 
+1,719 
+3,034 
+30.91 
+721.0 
+10,089 
+𝑆ℎ𝑎𝑟𝑒𝑠 
+242.7 
+2,249 
+100 
+100 
+2,000 
+𝑆𝑖𝑧𝑒 in $ 
+13,404 
+67,430 
+830 
+5,442 
+129,899 
+𝐵𝑢𝑦 
+0.4605 
+0.4984 
+0 
+0 
+1 
+100 ms Time Bins: 
+#𝑄𝑢𝑜𝑡𝑒𝑠 
+0.7497 
+8.429 
+0 
+0 
+14 
+#𝑇𝑟𝑎𝑑𝑒𝑠 
+0.0505 
+1.051 
+0 
+0 
+1 
+𝑂𝑟𝑑𝐼𝑚𝑏 
+−0.0040 
+0.788 
+0.000 
+0.000 
+0.000 
+𝐼𝑚𝑏𝐷𝑜𝑙𝑙𝑎𝑟𝑠 
+−32.96 
+19,751 
+0.000 
+0.000 
+0.000 
+𝑆𝑡𝑘𝑃𝑟𝑖𝑐𝑒 in $ 
+57.14 
+99.88 
+5.03 
+34.76 
+572.7 
+𝑅𝑒𝑡𝑢𝑟𝑛 in bp. 
+0 
+0.3423 
+0.000 
+0.000 
+0.000 
+|𝑅𝑒𝑡𝑢𝑟𝑛| in bp. 
+0.0190 
+0.3418 
+0.000 
+0.000 
+0.1150 
+𝑃𝑟𝑖𝑐𝑒𝐽𝑢𝑚𝑝× 10,000 
+1.822 
+135.0 
+0 
+0 
+0 
+𝑄𝑢𝑜𝑡𝑒𝑑𝑆𝑝𝑟𝑒𝑎𝑑 in bp 
+6.281 
+7.574 
+0.4792 
+3.702 
+36.78 
+𝐷𝑒𝑝𝑡ℎ in $ 
+500.8 
+1,302 
+11.88 
+125.3 
+5,992 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+31 
+ 
+Table 3: Which Trades Are Executed at the Start of a Second? 
+Determinants of trades for NASDAQ HFT and Nanex data executed during the first 100 ms compared to an 
+average trade. Dummy variable 𝐹𝑖𝑟𝑠𝑡100𝑚𝑠 equals 1 for trades recorded within the first 100 ms of each second. 
+For the regressions, we scaled this dummy by 100. Similarly, 𝐹𝑖𝑟𝑠𝑡𝑆𝑒𝑐𝑜𝑛𝑑 and 𝐹𝑖𝑟𝑠𝑡𝑀𝑖𝑛𝑢𝑡𝑒 are dummies for 
+the first second of each minute and the first minute of each hour. Table lists estimates of a two-stage regression 
+design: In the first stage, parameters are estimated separately for each stock and day by OLS using hour fixed 
+effects (not listed); these estimates then are regressed against a constant where errors are clustered by day and 
+stock; their 𝑡-statistics are listed in parentheses. The trade sample of the first stage includes 49.9 million 
+observations. *, **, *** denote significance at the 10%, 5%, and 1% levels, respectively, of the double-clustered 
+errors of the aggregation regression. 
+ 
+ 
+𝐹𝑖𝑟𝑠𝑡100𝑚𝑠100
+⁄
+ 
+ 
+NASDAQ HFT 
+Nanex 
+𝐹𝑖𝑟𝑠𝑡𝑆𝑒𝑐𝑜𝑛𝑑 
+−0.0627 
+(−0.28) 
+0.4320** 
+(2.11) 
+𝐹𝑖𝑟𝑠𝑡𝑀𝑖𝑛𝑢𝑡𝑒 
+−0.2311 
+(−1.16) 
+0.1098 
+(0.52) 
+𝑆𝑖𝑧𝑒, $ 
+−0.0516 
+(−1.12) 
+−0.0028** 
+(−2.04) 
+√𝑆𝑖𝑧𝑒 
+2.263 
+(1.07) 
+0.4266 
+(1.57) 
+𝐻𝐹𝑇 
+−1.058*** 
+(−3.00) 
+ 
+𝑃𝑎𝑠𝑠𝑖𝑣𝑒𝐻𝐹𝑇 
+0.800*** 
+(7.12) 
+ 
+𝐵𝑢𝑦 
+0.0599 
+(0.74) 
+ 
+FE: 𝐻𝑜𝑢𝑟× 𝐷𝑎𝑦× 𝑆𝑡𝑜𝑐𝑘 
+Yes 
+Yes 
+𝑁 
+5,270 
+7,336 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+32 
+ 
+Table 4: Autoregressive Periodicity in Trading Activity. 
+The table lists selected point estimates of Figure 2 of the coefficients of lags of quotes (trades) on an 
+autoregressive model for the number of quotes (trades) on its 100 ms lags. The 100 ms time bin dummies 
+absorb the round second activity effect established in Figure 1. We estimate separate autoregression models 
+for each day and stock and then show the averages of these results. In general, the model decays quickly within 
+a few seconds, but it exhibits full-second (and, to a lesser degree, half-second) periodicities independent of 
+absolute time. The joint test of difference among estimates of lags divisible by 10 (10, 20, 30, …, 100) and the 
+average of adjacent lags (9/11, 19/21,…,99/101) yields a difference of 0.3146 for the number of quotes and 
+0.0805 for the number of trades. The day and stock clustered 𝑡-stats for these differences are 13.06 for quotes 
+and 13.12 for trades. 
+Panel A: NASDAQ data. 
+Lag 
+#𝑄𝑢𝑜𝑡𝑒𝑠100
+⁄
+ 
+#𝑇𝑟𝑎𝑑𝑒𝑠100
+⁄
+ 
+1 
+20.69 (32.74) 
+7.51 (25.71) 
+2 
+5.28 (40.98) 
+3.14 (28.69) 
+3 
+4.76 (29.55) 
+2.11 (30.34) 
+4 
+2.64 (28.87) 
+1.36 (24.91) 
+5 
+2.59 (20.40) 
+1.13 (24.68) 
+6 
+1.65 (34.99) 
+0.89 (27.75) 
+7 
+1.27 (30.00) 
+0.73 (26.48) 
+8 
+1.27 (27.95) 
+0.63 (25.40) 
+9 
+1.11 (31.84) 
+0.61 (34.01) 
+10 
+1.85 (22.12) 
+0.81 (31.17) 
+11 
+0.90 (30.08) 
+0.56 (30.71) 
+⋮ 
+⋮ 
+⋮ 
+14 
+0.52 (33.08) 
+0.34 (31.74) 
+15 
+0.69 (16.52) 
+0.36 (30.86) 
+16 
+0.43 (30.41) 
+0.32 (30.46) 
+⋮ 
+⋮ 
+⋮ 
+19 
+0.36 (27.60) 
+0.29 (28.42) 
+20 
+1.02 (23.59) 
+0.50 (33.09) 
+21 
+0.52 (31.57) 
+0.37 (30.23) 
+⋮ 
+⋮ 
+⋮ 
+24 
+0.27 (21.40) 
+0.20 (23.95) 
+25 
+0.42 (20.36) 
+0.22 (24.41) 
+26 
+0.29 (25.10) 
+0.20 (28.73) 
+⋮ 
+⋮ 
+⋮ 
+29 
+0.24 (20.92) 
+0.18 (21.43) 
+30 
+0.54 (20.01) 
+0.25 (24.53) 
+31 
+0.32 (28.61) 
+0.21 (22.86) 
+⋮ 
+⋮ 
+⋮ 
+34 
+0.19 (16.66) 
+0.15 (25.04) 
+35 
+0.27 (20.37) 
+0.16 (25.80) 
+36 
+0.19 (24.17) 
+0.14 (23.37) 
+⋮ 
+⋮ 
+⋮ 
+39 
+0.19 (16.92) 
+0.16 (28.45) 
+40 
+0.41 (17.54) 
+0.22 (23.86) 
+41 
+0.25 (28.92) 
+0.19 (19.51) 
+⋮ 
+⋮ 
+⋮ 
+44 
+0.13 (16.60) 
+0.13 (23.71) 
+45 
+0.21 (18.81) 
+0.13 (19.50) 
+46 
+0.15 (14.93) 
+0.12 (18.13) 
+⋮ 
+⋮ 
+⋮ 
+49 
+0.22 (16.54) 
+0.14 (17.34) 
+50 
+0.75 (16.86) 
+0.24 (17.63) 
+51 
+0.29 (22.09) 
+0.18 (19.72) 
+⋮ 
+⋮ 
+⋮ 
+54 
+0.12 (15.71) 
+0.12 (17.39) 
+55 
+0.19 (19.04) 
+0.13 (17.97) 
+56 
+0.15 (17.98) 
+0.10 (18.03) 
+⋮ 
+⋮ 
+⋮ 
+99 
+0.20 (21.38) 
+0.12 (16.03) 
+100 
+0.65 (16.63) 
+0.26 (18.52) 
+101 
+0.28 (20.56) 
+0.16 (20.00) 
+ 
+ 
+ 
+Bin 
+#𝑄𝑢𝑜𝑡𝑒𝑠100
+⁄
+ 
+#𝑇𝑟𝑎𝑑𝑒𝑠100
+⁄
+ 
+1 
+4.39 (7.92) 
+0.58 (7.16) 
+2 
+1.67 (6.54) 
+0.35 (6.89) 
+3 
+0.72 (5.28) 
+0.16 (5.64) 
+4 
+0.12 (1.21) 
+0.08 (3.45) 
+5 
+-0.01 (-0.12) 
+0.05 (2.35) 
+6 
+0.25 (2.03) 
+0.03 (1.66) 
+7 
+0.06 (0.58) 
+0.03 (1.75) 
+8 
+-0.01 (-0.10) 
+0.00 (0.16) 
+9 
+-0.17 (-2.42) 
+-0.01 (-0.74) 
+ 
+ 
+ 
+Mean/Std.Dev. of Dependent Variables 
+ 
+#𝑄𝑢𝑜𝑡𝑒𝑠100
+⁄
+ 
+#𝑇𝑟𝑎𝑑𝑒𝑠100
+⁄
+ 
+Mean 
+35.04 
+4.39 
+SD 
+279.0 
+65.99 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+33 
+ 
+Panel B: Nanex Data. 
+We observe similar results for the Nanex data. The full-second periodicities have consistently higher point 
+estimates and 𝑡-statistics. The half second periodicities (lags 5, 15, 25, …) are not as evident as in the NASDAQ 
+data. 
+The joint test of the difference between estimates of lags divisible by 10 (10, 20, 30, …, 100) and the average of 
+adjacent lags (9/11, 19/21,…,99/101) yields a difference of 0.6253 for the number of quotes and 0.0891 for the 
+number of trades. The day and stock clustered 𝑡-stats for these differences are 14.43 for quotes and 19.89 for 
+trades. 
+ 
+Lag 
+#𝑄𝑢𝑜𝑡𝑒𝑠100
+⁄
+ 
+#𝑇𝑟𝑎𝑑𝑒𝑠100
+⁄
+ 
+1 
+19.44 (71.98) 
+11.99 (45.47) 
+2 
+4.16 (29.23) 
+2.14 (36.72) 
+3 
+1.52 (21.75) 
+1.41 (43.97) 
+4 
+1.13 (22.57) 
+0.83 (34.84) 
+5 
+2.81 (26.59) 
+0.82 (35.12) 
+6 
+1.54 (19.37) 
+0.68 (32.39) 
+7 
+0.53 (11.92) 
+0.54 (33.30) 
+8 
+1.40 (11.42) 
+0.48 (31.34) 
+9 
+0.44 (9.43) 
+0.42 (27.26) 
+10 
+2.19 (17.53) 
+0.69 (38.49) 
+11 
+1.52 (7.88) 
+0.46 (36.18) 
+⋮ 
+⋮ 
+⋮ 
+14 
+0.36 (22.41) 
+0.29 (35.42) 
+15 
+0.41 (22.58) 
+0.32 (35.66) 
+16 
+0.42 (24.80) 
+0.28 (31.60) 
+⋮ 
+⋮ 
+⋮ 
+19 
+0.38 (23.49) 
+0.26 (33.17) 
+20 
+1.31 (17.83) 
+0.48 (34.42) 
+21 
+0.68 (12.21) 
+0.38 (25.18) 
+⋮ 
+⋮ 
+⋮ 
+24 
+0.34 (23.10) 
+0.22 (28.93) 
+25 
+0.28 (23.63) 
+0.23 (23.29) 
+26 
+0.22 (21.20) 
+0.21 (25.81) 
+⋮ 
+⋮ 
+⋮ 
+29 
+0.23 (25.78) 
+0.18 (21.89) 
+30 
+0.51 (22.43) 
+0.28 (26.90) 
+31 
+0.39 (22.41) 
+0.20 (25.04) 
+⋮ 
+⋮ 
+⋮ 
+34 
+0.22 (22.93) 
+0.15 (19.91) 
+35 
+0.22 (20.58) 
+0.15 (19.93) 
+36 
+0.23 (29.38) 
+0.15 (20.85) 
+⋮ 
+⋮ 
+⋮ 
+39 
+0.23 (25.61) 
+0.15 (19.30) 
+40 
+0.85 (10.70) 
+0.22 (27.64) 
+41 
+0.16 (8.13) 
+0.17 (21.45) 
+⋮ 
+⋮ 
+⋮ 
+44 
+0.17 (21.58) 
+0.12 (14.69) 
+45 
+0.18 (16.54) 
+0.12 (15.79) 
+46 
+0.17 (26.28) 
+0.12 (18.50) 
+⋮ 
+⋮ 
+⋮ 
+49 
+0.17 (15.96) 
+0.14 (20.44) 
+50 
+1.59 (9.91) 
+0.25 (27.34) 
+51 
+0.09 (3.92) 
+0.17 (18.61) 
+⋮ 
+⋮ 
+⋮ 
+54 
+0.15 (17.28) 
+0.10 (16.81) 
+55 
+0.12 (11.30) 
+0.12 (18.91) 
+56 
+0.14 (21.16) 
+0.12 (18.94) 
+⋮ 
+⋮ 
+⋮ 
+99 
+0.10 (9.67) 
+0.09 (17.78) 
+100 
+1.11 (12.19) 
+0.23 (24.01) 
+101 
+0.10 (4.47) 
+0.14 (24.19) 
+ 
+ 
+ 
+Bin 
+#𝑄𝑢𝑜𝑡𝑒𝑠100
+⁄
+ 
+#𝑇𝑟𝑎𝑑𝑒𝑠100
+⁄
+ 
+1 
+14.13 (9.22) 
+0.79 (7.18) 
+2 
+3.49 (7.08) 
+0.23 (6.96) 
+3 
+1.42 (4.76) 
+0.12 (5.09) 
+4 
+0.90 (2.86) 
+0.06 (3.01) 
+5 
+1.42 (3.84) 
+0.11 (4.44) 
+6 
+1.34 (5.12) 
+0.04 (1.84) 
+7 
+0.90 (2.54) 
+0.07 (3.23) 
+8 
+2.43 (6.78) 
+0.03 (1.51) 
+9 
+0.19 (0.81) 
+0.04 (2.24) 
+ 
+ 
+ 
+Mean/Std.Dev. of Dependent Variables 
+ 
+#𝑄𝑢𝑜𝑡𝑒𝑠100
+⁄
+ 
+#𝑇𝑟𝑎𝑑𝑒𝑠100
+⁄
+ 
+Mean 
+74.97 
+5.05 
+SD 
+842.9 
+105.1 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+34 
+ 
+Table 5: Subsecond Variation in Trading Activity, Volatility, and Liquidity. 
+The dependent variables include (i) volatility, the absolute stock return based on the quote midpoints and the 
+price jump dummy that equals 1 if the absolute return exceeds 0.1%; and (ii) liquidity, the quoted bid-ask 
+spread and market depth measured at the center of each time bin. Absolute return and quoted bid-ask spread 
+are measured in basis points. Dummy variable 𝐹𝑖𝑟𝑠𝑡100𝑚𝑠 corresponds to the time bin of the first 100 ms of 
+each second. The other time bin dummies have been omitted from the regression to avoid full rank and serve 
+as a reference point. 
+Both panels list estimates of a three-stage instrumental regression design where the endogenous variable 
+#𝑇𝑟𝑎𝑑𝑒𝑠 is instrumented by the 𝐹𝑖𝑟𝑠𝑡100𝑚𝑠 dummy. In the first step, parameter estimates for a two-stage 
+instrumental variable regressions, where the number of trades in a given 100 ms bin are instrumented by the 
+first 100 ms dummy, are collected separately for each stock and day; in the third stage these estimates are then 
+regressed against a constant where errors are clustered by day and stock, and their 𝑡-statistics are listed in 
+parentheses. We repeat the same model with #𝑄𝑢𝑜𝑡𝑒𝑠 as the endogenous variable. The sample of the IV 
+regressions consists of 216,000 100 ms pooled time intervals per day and stock; *, **, *** denote significance at 
+the 10%, 5%, and 1% levels, respectively, of the double clustered errors of the aggregation regression. 
+Panel A: NASDAQ data. 
+ 
+1st Stage 
+ 
+2nd Stage 
+ 
+#𝑇𝑟𝑎𝑑𝑒𝑠 
+100
+⁄
+ 
+#𝑄𝑢𝑜𝑡𝑒𝑠 
+100
+⁄
+ 
+ 
+|𝑅𝑒𝑡𝑢𝑟𝑛| 
+bps 
+𝑃𝑟𝑖𝑐𝑒 
+𝐽𝑢𝑚𝑝 
+10,000
+⁄
+ 
+𝑄𝑢𝑜𝑡𝑒𝑑 
+𝑆𝑝𝑟𝑒𝑎𝑑 
+bps 
+𝐷𝑒𝑝𝑡ℎ 
+$ 
+ 
+ 
+ 
+#𝑇𝑟𝑎𝑑𝑒𝑠 (Instrumented) 
+𝐵𝑖𝑛1, 𝐹𝑖𝑟𝑠𝑡100𝑚𝑠 
+0.479*** 
+(6.97) 
+ 
+ 
+8.587* 
+(1.70) 
+2,932*** 
+(3.16) 
+−0.504 
+(−0.47) 
+−8.902 
+(−1.38) 
+ 
+ 
+ 
+ 
+#𝑄𝑢𝑜𝑡𝑒𝑠 (Instrumented) 
+𝐵𝑖𝑛1, 𝐹𝑖𝑟𝑠𝑡100𝑚𝑠 
+ 
+3.792*** 
+(8.00) 
+ 
+0.480 
+(0.38) 
+422.0*** 
+(5.71) 
+0.213 
+(1.12) 
+−0.798 
+(−0.70) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+FE: 𝐻𝑜𝑢𝑟× 𝐷𝑎𝑦× 𝑆𝑡𝑜𝑐𝑘 
+Yes 
+Yes 
+ 
+Yes 
+Yes 
+Yes 
+Yes 
+𝑁 
+5,270 
+5,270 
+ 
+5,270 
+5,270 
+5,270 
+5,270 
+Mean of Dep. Var. 
+4.39 
+35.04 
+ 
+0.0997 
+18.39 
+13.77 
+303.6 
+Std. Dev. of Dep. Var. 
+65.99 
+279.0 
+ 
+4.44 
+428.4 
+19.14 
+823.6 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+35 
+ 
+Panel B: Nanex Data. 
+We confirm our results in an independent test, which is based on the same 120 stocks from the NASDAQ dataset 
+but during 01 February 2013 to 14 May 2013 (Nanex data). 
+ 
+1st Stage 
+ 
+2nd Stage 
+ 
+#𝑇𝑟𝑎𝑑𝑒𝑠 
+100
+⁄
+ 
+#𝑄𝑢𝑜𝑡𝑒𝑠 
+100
+⁄
+ 
+ 
+|𝑅𝑒𝑡𝑢𝑟𝑛| 
+bps 
+𝑃𝑟𝑖𝑐𝑒 
+𝐽𝑢𝑚𝑝 
+10,000
+⁄
+ 
+𝑄𝑢𝑜𝑡𝑒𝑑 
+𝑆𝑝𝑟𝑒𝑎𝑑 
+bps 
+𝐷𝑒𝑝𝑡ℎ 
+$ 
+ 
+ 
+ 
+ 
+#𝑇𝑟𝑎𝑑𝑒𝑠 (Instrumented) 
+𝐵𝑖𝑛1, 𝐹𝑖𝑟𝑠𝑡100𝑚𝑠 
+0.687*** 
+(6.95) 
+ 
+ 
+1.237 
+(1.06) 
+392.7 
+(1.26) 
+−0.115 
+(−0.19) 
+3.598 
+(1.48) 
+ 
+ 
+ 
+ 
+ 
+#Quot𝑒𝑠 (Instrumented) 
+𝐵𝑖𝑛1, 𝐹𝑖𝑟𝑠𝑡100𝑚𝑠 
+ 
+12.44*** 
+(8.90) 
+ 
+0.0920*** 
+(6.69) 
+14.94*** 
+(2.93) 
+0.00421 
+(0.66) 
+0.0554 
+(0.26) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+FE: 𝐻𝑜𝑢𝑟× 𝐷𝑎𝑦× 𝑆𝑡𝑜𝑐𝑘 
+Yes 
+Yes 
+ 
+Yes 
+Yes 
+Yes 
+Yes 
+𝑁 
+7,437 
+7,437 
+ 
+7,437 
+7,437 
+7,437 
+7,437 
+Mean of Dep. Var. 
+5.05 
+74.97 
+ 
+0.0190 
+1.822 
+6.281 
+500.8 
+Std. Dev. of Dep. Var. 
+105.1 
+842.9 
+ 
+0.3418 
+135.0 
+7.574 
+1,302 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+36 
+ 
+Table 6: Autoregressive Instruments. 
+We employ a similar instrumented variable regression model as in Table 5, but we use different instruments. We measure spikes around periodic, 1-second 
+activities by calculating the average difference between each even-second lagged bin and its direct 100 ms neighbors. For example, the instrument for the 
+1-second periodicity is {[L10(#𝑇𝑟𝑎𝑑𝑒𝑠) −L9(#𝑇𝑟𝑎𝑑𝑒𝑠)] + [L10(#𝑇𝑟𝑎𝑑𝑒𝑠) −L11(#𝑇𝑟𝑎𝑑𝑒𝑠)]} 2
+⁄ , where L𝑡(⋅) is the lag operator. We use these 10 periodic 
+spike measures as instruments in the first stage to instrument the number of trades (quotes). We control for the 100 ms time bins such that the results 
+are based on periodicity relative to a certain point in time and not to absolute time at whole seconds. Double-clustered (by day and stock) 𝑡-statistics are 
+listed in parentheses; *, **, *** denote significance at the 10%, 5%, and 1% levels, respectively, of the double-clustered errors. 
+Panel A: NASDAQ data. 
+#𝑇𝑟𝑎𝑑𝑒𝑠 
+1 sec. 
+2 sec. 
+3 sec. 
+4 sec. 
+5 sec. 
+6 sec. 
+7 sec. 
+8 sec. 
+9 sec. 
+10 sec. 
+1st Stage 
+#𝑇𝑟𝑎𝑑𝑒𝑠⁄ 100 
+0.158*** 
+(12.73) 
+0.113*** 
+(12.31) 
+0.0428*** 
+(6.14) 
+0.0328*** 
+(5.82) 
+0.0565*** 
+(7.81) 
+0.0300*** 
+(6.50) 
+0.0205*** 
+(4.27) 
+0.0149*** 
+(4.02) 
+0.0132*** 
+(2.62) 
+0.0840*** 
+(10.18) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+2nd Stage 
+|𝑅𝑒𝑡𝑢𝑟𝑛| 
+bps 
+𝑃𝑟𝑖𝑐𝑒 
+𝐽𝑢𝑚𝑝 
+10,000
+⁄
+ 
+𝑄𝑢𝑜𝑡𝑒𝑑 
+𝑆𝑝𝑟𝑒𝑎𝑑 
+bps 
+𝐷𝑒𝑝𝑡ℎ 
+$ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+−4.49 
+(−0.72) 
+774.5 
+(0.87) 
+0.196 
+(0.25) 
+−6.30 
+(−0.55) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+#𝑄𝑢𝑜𝑡𝑒𝑠 
+1 sec. 
+2 sec. 
+3 sec. 
+4 sec. 
+5 sec. 
+6 sec. 
+7 sec. 
+8 sec. 
+9 sec. 
+10 sec. 
+1st Stage 
+#𝑄𝑢𝑜𝑡𝑒𝑠⁄ 100 
+0.648*** 
+(9.53) 
+0.432*** 
+(11.76) 
+0.207*** 
+(9.78) 
+0.146*** 
+(7.87) 
+0.364*** 
+(12.94) 
+0.104*** 
+(8.84) 
+0.0602*** 
+(5.79) 
+0.0635*** 
+(5.71) 
+0.0367*** 
+(3.52) 
+0.303*** 
+(11.79) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+2nd Stage 
+|𝑅𝑒𝑡𝑢𝑟𝑛| 
+bps 
+𝑃𝑟𝑖𝑐𝑒 
+𝐽𝑢𝑚𝑝 
+10,000
+⁄
+ 
+𝑄𝑢𝑜𝑡𝑒𝑑 
+𝑆𝑝𝑟𝑒𝑎𝑑 
+bps 
+𝐷𝑒𝑝𝑡ℎ 
+$ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+1.229*** 
+(8.43) 
+331.8*** 
+(7.55) 
+0.345*** 
+(7.59) 
+0.212 
+(1.43) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Fixed Effects and 
+Controls 
+Hour, day, stock, 100 ms time bins, first six 100 ms lags 
+𝑁 
+5,270 
+5,270 
+5,270 
+5,270 
+ 
+ 
+ 
+ 
+ 
+ 
+Mean of Dep. Var. 
+0.0997 
+18.39 
+13.77 
+303.60 
+ 
+ 
+ 
+ 
+ 
+ 
+Std. Dev. 
+4.44 
+428.4 
+19.14 
+823.6 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+37 
+ 
+Panel B: Nanex Data. 
+ 
+#𝑇𝑟𝑎𝑑𝑒𝑠 
+1 sec. 
+2 sec. 
+3 sec. 
+4 sec. 
+5 sec. 
+6 sec. 
+7 sec. 
+8 sec. 
+9 sec. 
+10 sec. 
+1st Stage 
+#𝑇𝑟𝑎𝑑𝑒𝑠⁄ 100 
+0.178*** 
+(14.41) 
+0.114*** 
+(13.93) 
+0.0684*** 
+(10.42) 
+0.0407*** 
+(7.14) 
+0.0711*** 
+(11.54) 
+0.0390*** 
+(8.70) 
+0.0183*** 
+(3.14) 
+0.0179*** 
+(3.70) 
+0.0143*** 
+(2.87) 
+0.0854*** 
+(13.08) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+2nd Stage 
+|𝑅𝑒𝑡𝑢𝑟𝑛| 
+bps 
+𝑃𝑟𝑖𝑐𝑒 
+𝐽𝑢𝑚𝑝 
+10,000
+⁄
+ 
+𝑄𝑢𝑜𝑡𝑒𝑑 
+𝑆𝑝𝑟𝑒𝑎𝑑 
+bps 
+𝐷𝑒𝑝𝑡ℎ 
+$ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+1.143*** 
+(3.82) 
+286.8*** 
+(3.73) 
+-0.255 
+(-1.47) 
+-1.084 
+(-0.66) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+#𝑄𝑢𝑜𝑡𝑒𝑠 
+1 sec. 
+2 sec. 
+3 sec. 
+4 sec. 
+5 sec. 
+6 sec. 
+7 sec. 
+8 sec. 
+9 sec. 
+10 sec. 
+1st Stage 
+#𝑄𝑢𝑜𝑡𝑒𝑠⁄ 100 
+0.926*** 
+(15.43) 
+0.545*** 
+(9.65) 
+0.140*** 
+(8.00) 
+0.459*** 
+(7.64) 
+1.026*** 
+(8.43) 
+0.255*** 
+(7.90) 
+0.0633*** 
+(5.66) 
+0.281*** 
+(7.08) 
+0.0799*** 
+(6.58) 
+0.721*** 
+(10.09) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+2nd Stage 
+|𝑅𝑒𝑡𝑢𝑟𝑛| 
+bps 
+𝑃𝑟𝑖𝑐𝑒 
+𝐽𝑢𝑚𝑝 
+10,000
+⁄
+ 
+𝑄𝑢𝑜𝑡𝑒𝑑 
+𝑆𝑝𝑟𝑒𝑎𝑑 
+bps 
+𝐷𝑒𝑝𝑡ℎ 
+$ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+0.115*** 
+(8.65) 
+24.21*** 
+(6.31) 
+0.0321*** 
+(4.96) 
+-0.282*** 
+(-7.07) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Fixed Effects and 
+Controls 
+Hour, day, stock, 100 ms time bins, first six 100 ms lags 
+𝑁 
+7,437 
+7,437 
+7,437 
+7,437 
+ 
+ 
+ 
+ 
+ 
+ 
+Mean of Dep. Var. 
+0.0190 
+1.822 
+6.281 
+500.8 
+ 
+ 
+ 
+ 
+ 
+ 
+Std. Dev. 
+0.3418 
+135.0 
+7.574 
+1,302 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+38 
+ 
+Table 7: 1-Second Periodicity in Liquidity and Price Impact. 
+The table reports a version of Kyle’s lambda of our NASDAQ data as another measure for liquidity. We regress 
+5-minute stock returns on contemporaneous order imbalances. We aggregate the original 100 ms bin times into 
+5-minute intervals and keep 5-minute returns and order imbalances tagged by their 100 ms time bin. This 
+aggregation produces 10 sub-period order imbalances for each 5-minute interval, one for each 100 ms time bin 
+summed across five minutes. Dummy variables 𝐵𝑖𝑛1 through 𝐵𝑖𝑛9 correspond to the 100 ms bin of each second. 
+Dummy 𝐵𝑖𝑛10 has been omitted to avoid full rank and serves as a reference point. We run models using a 
+straight measure of dollar order imbalance  and also following Hasbrouck (2009), where order imbalance is 
+based 
+on 
+the 
+square 
+root 
+of 
+dollar 
+imbalance, 
+𝑂𝑟𝑑𝑒𝑟𝐼𝑚𝑏𝑡,𝐵𝑖𝑛(𝑖) = sign(𝐼𝑚𝑏𝐷𝑜𝑙𝑙𝑎𝑟𝑠𝑡,𝐵𝑖𝑛(𝑖)) ×
+|𝐼𝑚𝑏𝐷𝑜𝑙𝑙𝑎𝑟𝑠𝑡,𝐵𝑖𝑛(𝑖)|
+1 2
+⁄ . The 𝑂𝑟𝑑𝑒𝑟𝐼𝑚𝑏𝑡 parameters without “Bin” index denote the sum across all time bins, i.e., 
+∑
+𝐼𝑚𝑏𝐷𝑜𝑙𝑙𝑎𝑟𝑠𝑖
+1 2
+⁄
+𝐵𝑖𝑛10
+𝑖=𝐵𝑖𝑛1
+. We trimmed returns at the 0.1st and 99.9th percentiles. The loading on the coefficient 
+for the first 100 ms time bin dummy (in bold) is insignificant. 
+𝑃𝑎𝑟𝑎𝑚𝑒𝑡𝑒𝑟 
+𝑅𝑒𝑡𝑢𝑟𝑛𝑡, 
+√𝑂𝑟𝑑𝑒𝑟𝐼𝑚𝑏1,000
+⁄
+ 
+𝑅𝑒𝑡𝑢𝑟𝑛𝑡, 
+𝑂𝑟𝑑𝑒𝑟𝐼𝑚𝑏1,000
+⁄
+ 
+𝑂𝑟𝑑𝑒𝑟𝐼𝑚𝑏𝑡 
+55.86 
+(10.12) 
+448.4 
+(6.45) 
+𝑶𝒓𝒅𝒆𝒓𝑰𝒎𝒃𝒕,𝑩𝒊𝒏(𝟏) 
+1.56 
+(0.52) 
+9.036 
+(0.17) 
+𝑂𝑟𝑑𝑒𝑟𝐼𝑚𝑏𝑡,𝐵𝑖𝑛(2) 
+2.10 
+(0.64) 
+−0.2566 
+(−0.00) 
+𝑂𝑟𝑑𝑒𝑟𝐼𝑚𝑏𝑡,𝐵𝑖𝑛(3) 
+1.59 
+(0.45) 
+−2.683 
+(−0.04) 
+𝑂𝑟𝑑𝑒𝑟𝐼𝑚𝑏𝑡,𝐵𝑖𝑛(4) 
+0.86 
+(0.22) 
+−8.701 
+(−0.13) 
+𝑂𝑟𝑑𝑒𝑟𝐼𝑚𝑏𝑡,𝐵𝑖𝑛(5) 
+−0.32 
+(−0.09) 
+2.507 
+(0.04) 
+𝑂𝑟𝑑𝑒𝑟𝐼𝑚𝑏𝑡,𝐵𝑖𝑛(6) 
+2.56 
+(0.77) 
+15.25 
+(0.24) 
+𝑂𝑟𝑑𝑒𝑟𝐼𝑚𝑏𝑡,𝐵𝑖𝑛(7) 
+6.38 
+(1.77) 
+89.90 
+(1.17) 
+𝑂𝑟𝑑𝑒𝑟𝐼𝑚𝑏𝑡,𝐵𝑖𝑛(8) 
+−0.59 
+(−0.14) 
+−48.31 
+(−0.74) 
+𝑂𝑟𝑑𝑒𝑟𝐼𝑚𝑏𝑡,𝐵𝑖𝑛(9) 
+0.65 
+(0.20) 
+7.827 
+(0.12) 
+𝐼𝑛𝑡𝑒𝑟𝑐𝑒𝑝𝑡 
+−0.2289 
+(−2.77) 
+−0.2644 
+(−3.78) 
+FE: 𝐻𝑜𝑢𝑟× 𝐷𝑎𝑦×
+𝑘
+No 
+No 
+𝑅2 
+0.14 
+0.10 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+39 
+ 
+Table 8: Impact of High-Frequency Traders. 
+The dependent variables include (i) volatility, the absolute stock return based on the quote midpoints and the 
+price jump dummy that equals 1 if the absolute return exceeds 0.1%, and (ii) liquidity, the quoted bid-ask 
+spread and market depth measured at the center of each time bin. Absolute return and quoted bid-ask spread 
+are measured in basis points. Dummy variable 𝐵𝑖𝑛1 corresponds to the time bin of the first 100 ms of each 
+second. The other time bin dummies have been omitted from the regression to avoid full rank, and they serve 
+as a reference point. 
+We list estimates of a three-stage instrumental regression design: In the first step, parameter estimates for a 
+two-stage instrumental variable regressions (where the number of trades by HFTs (Panel A), HFTs taking 
+liquidity (Panel B), and HFTs providing liquidity (Panel C) in a given 100 ms bin are instrumented by the first 
+100 ms dummy) are collected separately for each stock and day; these estimates then are regressed against a 
+constant, where errors are clustered by day and stock and their 𝑡-statistics listed in parentheses. The sample of 
+the IV regression consists of 216,000 100 ms pooled time intervals per day and stock; *, **, *** denote 
+significance at the 10%, 5%, and 1% levels, respectively, of the double-clustered errors of the aggregation 
+regression. 
+ 
+#𝐻𝐹𝑇𝑇𝑟𝑎𝑑𝑒𝑠 
+100
+⁄
+ 
+|𝑅𝑒𝑡𝑢𝑟𝑛| 
+bps 
+𝑃𝑟𝑖𝑐𝑒 
+𝐽𝑢𝑚𝑝 
+10,000
+⁄
+ 
+𝑄𝑢𝑜𝑡𝑒𝑑 
+𝑆𝑝𝑟𝑒𝑎𝑑 
+bps 
+𝐷𝑒𝑝𝑡ℎ 
+$ 
+ 
+1st Stage 
+2nd Stage 
+2nd Stage 
+2nd Stage 
+2nd Stage 
+𝐵𝑖𝑛1, 𝐹𝑖𝑟𝑠𝑡100𝑚𝑠 
+0.2946*** 
+(5.82) 
+ 
+ 
+ 
+ 
+#𝐻𝐹𝑇𝑇𝑟𝑎𝑑𝑒𝑠 
+(Instrumented) 
+ 
+5.5478 
+(0.27) 
+2,932.46*** 
+(3.07) 
+−0.5031 
+(−0.46) 
+−9.9101 
+(−0.77) 
+Controls 
+Yes 
+Yes 
+Yes 
+Yes 
+Yes 
+FE: 𝐻𝑜𝑢𝑟× 𝐷𝑎𝑦× 𝑆𝑡𝑜𝑐𝑘 
+Yes 
+Yes 
+Yes 
+Yes 
+Yes 
+𝐵𝑖𝑛1, 𝐹𝑖𝑟𝑠𝑡100𝑚𝑠 
+0.0834*** 
+(5.70) 
+ 
+ 
+ 
+ 
+#𝐴𝑐𝑡𝑖𝑣𝑒𝐻𝐹𝑇𝑇𝑟𝑎𝑑𝑒𝑠 
+(Instrumented) 
+ 
+−2.7140 
+(−0.11) 
+−218.65 
+(−0.18) 
+−2.3441 
+(−0.71) 
+13.9118 
+(0.91) 
+Controls 
+Yes 
+Yes 
+Yes 
+Yes 
+Yes 
+FE: 𝐻𝑜𝑢𝑟× 𝐷𝑎𝑦× 𝑆𝑡𝑜𝑐𝑘 
+Yes 
+Yes 
+Yes 
+Yes 
+Yes 
+𝐵𝑖𝑛1, 𝐹𝑖𝑟𝑠𝑡100𝑚𝑠 
+0.2434*** 
+(5.65) 
+ 
+ 
+ 
+ 
+#𝑃𝑎𝑠𝑠𝑖𝑣𝑒𝐻𝐹𝑇𝑇𝑟𝑎𝑑𝑒𝑠 
+(Instrumented) 
+ 
+−24.2485 
+(−0.50) 
+575.35 
+(0.16) 
+−10.5870* 
+(−1.83) 
+14.4388 
+(0.61) 
+Controls 
+Yes 
+Yes 
+Yes 
+Yes 
+Yes 
+FE: 𝐻𝑜𝑢𝑟× 𝐷𝑎𝑦× 𝑆𝑡𝑜𝑐𝑘 
+Yes 
+Yes 
+Yes 
+Yes 
+Yes 
+𝑁 
+5,270 
+5,270 
+5,270 
+5,270 
+5,270 
+Mean of Dep. Var. 
+ 
+0.0997 
+18.39 
+13.77 
+303.60 
+Std. Dev. of Dep. Var. 
+ 
+4.44 
+428.4 
+19.14 
+823.6 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+40 
+ 
+Table 9: Low-Frequency Summary Statistics 
+Sample averages, standard deviations, and 1st, 50th, and 99th percentiles of daily common stock data from CRSP 
+from 03 January 2000 through 31 December 2019. Only records with a nominal price of $5 or higher and market 
+capitalization of $100 million or more are included for a total sample of 15,289,956 daily observations for 
+10,004 unique firms. All variables are winsorized at the 0.05% and 99.95% level (that is 0.0005 and 0.9995 in 
+decimal). We measure volume as the natural logarithm of number of shares traded each day multiplied by the 
+ending stock price, turnover as daily share volume over total number of shares outstanding, the bid-ask spread 
+as the difference of bid and ask price over the average of the bid and ask, volatility as the absolute value of the 
+daily return and alternatively as the logarithm of the highest ask over the lowest bid. 
+Variable 
+Mean 
+Std. Dev. 
+Q(1%) 
+Median 
+Q(99%) 
+𝑣𝑜𝑙𝑢𝑚𝑒 
+ 
+15.55 
+2.258 
+9.845 
+15.63 
+20.24 
+𝑡𝑢𝑟𝑛𝑜𝑣𝑒𝑟1000
+⁄
+ 
+ 
+8.942 
+13.77 
+0.08143 
+5.423 
+60.62 
+𝑏𝑖𝑑𝐴𝑠𝑘𝑆𝑝𝑟𝑒𝑎𝑑 in bps 
+ 
+0.3854 
+0.7783 
+0.004929 
+0.1198 
+4.000 
+|𝑟𝑒𝑡𝑢𝑟𝑛| in bps 
+1.894 
+2.357 
+0.000 
+1.191 
+11.31 
+𝑙𝑜𝑔𝐻𝑖𝑔ℎ𝐿𝑜𝑤 
+ 
+0.03540 
+0.02941 
+0.002071 
+0.02734 
+0.1510 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+41 
+ 
+Table 10: Low-Frequency IV Regression 
+Sample averages, standard deviations, and 1st, 50th, and 99th percentiles of daily common stock data from CRSP 
+from 03 January 2000 through 31 December 2019. Only records with a nominal price of $5 or higher and market 
+capitalization of $100 million or more are included for a total sample of 15,289,956 daily observations for 
+10,004 unique firms. All variables are winsorized at the 0.05% and 99.95% level (that is 0.0005 and 0.9995 in 
+decimal). We report 𝑡-statistics with stock and day clustered errors in parentheses 
+ 
+1st Stage 
+ 
+2nd Stage 
+ 
+𝑙𝑜𝑔𝐷𝑜𝑙𝑙𝑎𝑟 
+𝑉𝑜𝑙𝑢𝑚𝑒 
+𝑡𝑢𝑟𝑛𝑜𝑣𝑒𝑟 
+1000
+⁄
+ 
+ 
+100
+× 𝑏𝑖𝑑𝐴𝑠𝑘 
+𝑆𝑝𝑟𝑒𝑎𝑑 
+|𝑟𝑒𝑡𝑢𝑟𝑛| 
+bps 
+𝑙𝑜𝑔 
+𝐻𝑖𝑔ℎ𝐿𝑜𝑤 
+ 
+ 
+ 
+ 
+𝑙𝑜𝑔𝐷𝑜𝑙𝑙𝑎𝑟𝑉𝑜𝑙𝑢𝑚𝑒 (Instrumented) 
+𝑓𝑖𝑟𝑠𝑡𝐷𝑎𝑦𝑂𝑓𝑀𝑜𝑛𝑡ℎ 
+0.111*** 
+(3.46) 
+ 
+ 
+0.0390 
+(0.19) 
+1.879** 
+(2.20) 
+0.0200** 
+(2.08) 
+ 
+ 
+ 
+ 
+ 
+𝑡𝑢𝑟𝑛𝑜𝑣𝑒𝑟 (Instrumented) 
+𝑓𝑖𝑟𝑠𝑡𝐷𝑎𝑦𝑂𝑓𝑀𝑜𝑛𝑡ℎ 
+ 
+12.44*** 
+(8.90) 
+ 
+0.00664 
+(0.195) 
+0.320*** 
+(3.09) 
+0.00341*** 
+(3.05) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+FE: 𝑆𝑡𝑜𝑐𝑘 
+Yes 
+Yes 
+ 
+Yes 
+Yes 
+Yes 
+𝑁 
+15,289,956 
+15,289,956 
+ 
+15,289,956 
+15,289,956 
+15,289,956 
+Mean of Dep. Var. 
+15.55 
+8.942 
+ 
+0.3854 
+1.894 
+0.0354 
+Std. Dev. of Dep. Var. 
+2.258 
+13.77 
+ 
+0.7783 
+2.357 
+2.357 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+42 
+ 
+Appendix A: Econometric Models 
+Our NASDAQ and Nanex data are panel data of 120 individual stocks for 44 (NASDAQ) 
+and 67 trading days (Nanex) with 216,000 observations per day and stock (6 trading hours 
+× 60 minutes × 60 seconds × 10 100 ms time bins). Because of the immense size of the data, 
+we parallelize the computations by estimating each stock on each day separately (first-stage 
+regression) and then averaging these coefficients. This also helps control for stockidiosyncratic and market-wide systematic biases. In addition, we control for possible 
+unobserved effects throughout the time of day by employing hour fixed effects for each day 
+and stock in the first-stage regression. For this first-stage parallelized regression, we employ 
+an ordinary least squares, instrumental variables, or autoregressive model depending on our 
+econometric model. 
+The only exception to this procedure is the analysis of order imbalances in Section 4, 
+Equation (6). Here, we tag each record according to its 100 ms bin occurrence within each 
+second and then aggregate the data over 5-minute intervals. The resulting dataset of 
+380,1608 observations then becomes the sample for a linear regression model. 
+The following formally shows the regression models for the first and possibly second 
+stage in case of IV specification for the tables: 
+Table 3: OLS 
+ 
+𝐹𝑖𝑟𝑠𝑡100𝑚𝑠𝑡
+𝑠,𝑑= ∑𝑋𝑖,𝑡
+𝑠,𝑑× 𝛽𝑖
+𝑠,𝑑
+𝑖
++ 𝛼𝑠,𝑑+ 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟+ 𝜖𝑡
+𝑠,𝑑. 
+ 
+8 = 120 stocks × 44 days × 6 hours × 12 five minute periods per hour 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+43 
+ 
+ 
+The list of independent variables (𝑋𝑠,𝑑) includes 𝐹𝑖𝑟𝑠𝑡𝑆𝑒𝑐𝑜𝑛𝑑, 𝐹𝑖𝑟𝑠𝑡𝑀𝑖𝑛𝑢𝑡𝑒, 
+𝑆𝑖𝑧𝑒, and √𝑆𝑖𝑧𝑒 for both samples. For the NASDAQ data, we also add 𝐻𝐹𝑇, 
+𝑃𝑎𝑠𝑠𝑖𝑣𝑒𝐻𝐹𝑇, and 𝐵𝑢𝑦. 
+Table 4: Autoregression 
+ 
+#𝑇𝑟𝑎𝑑𝑒𝑠𝑡
+𝑠,𝑑= ∑L𝑡(#𝑇𝑟𝑎𝑑𝑒𝑠𝑡
+𝑠,𝑑) × 𝛽𝑙
+𝑠,𝑑
+101
+l=1
++ ∑𝐵𝑖𝑛𝑏,𝑡
+𝑠,𝑑× 𝛿𝑠,𝑑
+10
+b=1
++ αs,d + 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟
++ 𝜖𝑡
+𝑠,𝑑 
+or 
+#𝑄𝑢𝑜𝑡𝑒𝑠𝑡
+𝑠,𝑑= ∑L𝑡(#𝑄𝑢𝑜𝑡𝑒𝑠𝑡
+𝑠,𝑑) × 𝛽𝑙
+𝑠,𝑑
+101
+l=1
++ ∑𝐵𝑖𝑛𝑏,𝑡
+𝑠,𝑑× 𝛿𝑠,𝑑
+10
+b=1
++ αs,d + 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟
++ 𝜖𝑡
+𝑠,𝑑. 
+Table 5: IV 
+1st Stage: 
+#𝑇𝑟𝑎𝑑𝑒𝑠𝑡
+𝑠,𝑑= 𝐵𝑖𝑛1,𝑡
+𝑠,𝑑× 𝛿𝑠,𝑑+ 𝐹𝑖𝑟𝑠𝑡𝑆𝑒𝑐𝑜𝑛𝑑𝑡
+𝑠,𝑑× 𝛾11
+𝑠,𝑑+ 𝐹𝑖𝑟𝑠𝑡𝑀𝑖𝑛𝑢𝑡𝑒𝑡
+𝑠,𝑑× 𝛾12
+𝑠,𝑑
++ 𝛼𝑠,𝑑+ 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟+ 𝜖1,𝑡
+𝑠,𝑑 
+or 
+#𝑄𝑢𝑜𝑡𝑒𝑠𝑡
+𝑠,𝑑= 𝐵𝑖𝑛1,𝑡
+𝑠,𝑑× 𝛿𝑠,𝑑+ 𝐹𝑖𝑟𝑠𝑡𝑆𝑒𝑐𝑜𝑛𝑑𝑡
+𝑠,𝑑× 𝛾11
+𝑠,𝑑+ 𝐹𝑖𝑟𝑠𝑡𝑀𝑖𝑛𝑢𝑡𝑒𝑡
+𝑠,𝑑× 𝛾12
+𝑠,𝑑
++ 𝛼𝑠,𝑑+ 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟+ 𝜖1,𝑡
+𝑠,𝑑. 
+2nd Stage: 
+𝐷𝑒𝑝𝑒𝑛𝑑𝑒𝑛𝑡𝑡
+𝑠,𝑑= #𝑇𝑟𝑎𝑑𝑒𝑠𝑡
+𝑠,𝑑̂ × 𝛽𝑠,𝑑+ 𝐹𝑖𝑟𝑠𝑡𝑆𝑒𝑐𝑜𝑛𝑑𝑡
+𝑠,𝑑× 𝛾21
+𝑠,𝑑
++ 𝐹𝑖𝑟𝑠𝑡𝑀𝑖𝑛𝑢𝑡𝑒𝑡
+𝑠,𝑑× 𝛾22
+𝑠,𝑑+ 𝛼𝑠,𝑑+ 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟+ 𝜖2,𝑡
+𝑠,𝑑 
+or 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+44 
+ 
+𝐷𝑒𝑝𝑒𝑛𝑑𝑒𝑛𝑡𝑡
+𝑠,𝑑= #𝑄𝑢𝑜𝑡𝑒𝑠𝑡
+𝑠,𝑑̂ × 𝛽𝑠,𝑑+ 𝐹𝑖𝑟𝑠𝑡𝑆𝑒𝑐𝑜𝑛𝑑𝑡
+𝑠,𝑑× 𝛾21
+𝑠,𝑑
++ 𝐹𝑖𝑟𝑠𝑡𝑀𝑖𝑛𝑢𝑡𝑒𝑡
+𝑠,𝑑× 𝛾22
+𝑠,𝑑+ 𝛼𝑠,𝑑+ 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟+ 𝜖2,𝑡
+𝑠,𝑑. 
+ The second stage uses |𝑅𝑒𝑡𝑢𝑟𝑛|, 𝑃𝑟𝑖𝑐𝑒𝐽𝑢𝑚𝑝, 𝑄𝑢𝑜𝑡𝑒𝑑𝑆𝑝𝑟𝑒𝑎𝑑, and 𝐷𝑒𝑝𝑡ℎ as 
+dependent variables. We instrument #𝑇𝑟𝑎𝑑𝑒𝑠 and #𝑄𝑢𝑜𝑡𝑒𝑠 in two different 
+specifications. 
+Table 6: Autoregression IV 
+1st Stage: 
+#𝑇𝑟𝑎𝑑𝑒𝑠𝑡
+𝑠,𝑑= ∑𝛿𝑙
+𝑠,𝑑× 𝑆𝑝𝑖𝑘𝑒10𝑙
+𝑠,𝑑 
+10
+l=1
++ ∑𝜙𝑙
+𝑠,𝑑× Lj(#𝑇𝑟𝑎𝑑𝑒𝑠𝑡
+𝑠,𝑑)
+6
+j=1
++ ∑𝐵𝑖𝑛𝑏,𝑡
+𝑠,𝑑× 𝛾𝑏
+𝑠,𝑑
+9
+b=1
++ 𝛼𝑠,𝑑+ 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟+ 𝜖1,𝑡
+𝑠,𝑑 
+or 
+#𝑄𝑢𝑜𝑡𝑒𝑠𝑡
+𝑠,𝑑= ∑𝛿𝑙
+𝑠,𝑑× 𝑆𝑝𝑖𝑘𝑒10𝑙
+𝑠,𝑑 
+10
+l=1
++ ∑𝜙𝑙
+𝑠,𝑑× Lj(#𝑄𝑢𝑜𝑡𝑒𝑠𝑡
+𝑠,𝑑)
+6
+j=1
++ ∑𝐵𝑖𝑛𝑏,𝑡
+𝑠,𝑑× 𝛾𝑏
+𝑠,𝑑
+9
+b=1
++ 𝛼𝑠,𝑑+ 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟+ 𝜖1,𝑡
+𝑠,𝑑. 
+2nd Stage: 
+𝐷𝑒𝑝𝑒𝑛𝑑𝑒𝑛𝑡𝑡
+𝑠,𝑑= #𝑇𝑟𝑎𝑑𝑒𝑠𝑡
+𝑠,𝑑̂ × 𝛽𝑠,𝑑+ ∑𝜙𝑙
+𝑠,𝑑× Lj(#𝑇𝑟𝑎𝑑𝑒𝑠𝑡
+𝑠,𝑑)
+6
+j=1
++ ∑𝐵𝑖𝑛𝑏,𝑡
+𝑠,𝑑× 𝛾𝑏
+𝑠,𝑑
+9
+b=1
++ 𝛼𝑠,𝑑+ 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟+ 𝜖2,𝑡
+𝑠,𝑑
+ 
+or 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+45 
+ 
+𝐷𝑒𝑝𝑒𝑛𝑑𝑒𝑛𝑡𝑡
+𝑠,𝑑= #𝑄𝑢𝑜𝑡𝑒𝑠𝑡
+𝑠,𝑑̂ × 𝛽𝑠,𝑑+ ∑𝜙𝑙
+𝑠,𝑑× Lj(#𝑄𝑢𝑜𝑡𝑒𝑠𝑡
+𝑠,𝑑)
+6
+j=1
++ ∑𝐵𝑖𝑛𝑏,𝑡
+𝑠,𝑑× 𝛾𝑏
+𝑠,𝑑
+9
+b=1
++ 𝛼𝑠,𝑑+ 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟+ 𝜖2,𝑡
+𝑠,𝑑.
+ 
+ The second stage uses |𝑅𝑒𝑡𝑢𝑟𝑛|, 𝑃𝑟𝑖𝑐𝑒𝐽𝑢𝑚𝑝, 𝑄𝑢𝑜𝑡𝑒𝑑𝑆𝑝𝑟𝑒𝑎𝑑, and 𝐷𝑒𝑝𝑡ℎ as 
+dependent variables. We instrument #𝑇𝑟𝑎𝑑𝑒𝑠 and #𝑄𝑢𝑜𝑡𝑒𝑠 in two different 
+specifications. 
+Table 7: OLS 
+ 
+𝑅𝑒𝑡𝑢𝑟𝑛𝑡= ∑𝑂𝑟𝑑𝑒𝑟𝐼𝑚𝑏𝑡,𝐵𝑖𝑛(𝑖) × 𝛽𝑖
+9
+𝑖=1
++ 𝑂𝑟𝑑𝑒𝑟𝐼𝑚𝑏𝑡× 𝛽0 + α + 𝜖𝑡. 
+ Returns are aggregated over 5-minute intervals. Order imbalances are tagged 
+according to when they occur within each 100 ms time bin within a second and 
+then aggregated over 5-minute intervals by 100 ms time bin. 
+Table 8: IV 
+1st Stage: 
+#𝑇𝑟𝑎𝑑𝑒𝑠𝑡
+𝑠,𝑑= 𝐵𝑖𝑛1,𝑡
+𝑠,𝑑× 𝛿𝑠,𝑑+ 𝐹𝑖𝑟𝑠𝑡𝑆𝑒𝑐𝑜𝑛𝑑𝑡
+𝑠,𝑑× 𝛾11
+𝑠,𝑑+ 𝐹𝑖𝑟𝑠𝑡𝑀𝑖𝑛𝑢𝑡𝑒𝑡
+𝑠,𝑑× 𝛾12
+𝑠,𝑑
++ 𝛼𝑠,𝑑+ 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟+ 𝜖1,𝑡
+𝑠,𝑑. 
+2nd Stage: 
+𝐷𝑒𝑝𝑒𝑛𝑑𝑒𝑛𝑡𝑡
+𝑠,𝑑= #𝑇𝑟𝑎𝑑𝑒𝑠𝑡
+𝑠,𝑑̂ × 𝛽𝑠,𝑑+ 𝐹𝑖𝑟𝑠𝑡𝑆𝑒𝑐𝑜𝑛𝑑𝑡
+𝑠,𝑑× 𝛾21
+𝑠,𝑑
++ 𝐹𝑖𝑟𝑠𝑡𝑀𝑖𝑛𝑢𝑡𝑒𝑡
+𝑠,𝑑× 𝛾22
+𝑠,𝑑+ 𝛼𝑠,𝑑+ 𝐹𝐸𝑡
+ℎ𝑜𝑢𝑟+ 𝜖2,𝑡
+𝑠,𝑑. 
+ 
+The second stage uses |𝑅𝑒𝑡𝑢𝑟𝑛|, 𝑃𝑟𝑖𝑐𝑒𝐽𝑢𝑚𝑝, 𝑄𝑢𝑜𝑡𝑒𝑑𝑆𝑝𝑟𝑒𝑎𝑑, and 𝐷𝑒𝑝𝑡ℎ as 
+dependent variables. 
+3rd Stage: 
+𝛽𝑠,𝑑= 𝐴𝑏𝑜𝑣𝑒𝑀𝑒𝑑𝑖𝑎𝑛𝑠,𝑑× 𝛿ℎ𝑖𝑔ℎ+ 𝐵𝑒𝑙𝑜𝑤𝑀𝑒𝑑𝑖𝑎𝑛𝑠,𝑑× 𝛿𝑙𝑜𝑤+ 𝜖𝑠,𝑑. 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+46 
+ 
+ 
+The dummy variables 𝐴𝑏𝑜𝑣𝑒𝑀𝑒𝑑𝑖𝑎𝑛 and 𝐵𝑒𝑙𝑜𝑤𝑀𝑒𝑑𝑖𝑎𝑛 indicate whether a 
+particular firm on a particular trading day is above or below the median in 
+regard to market capitalization, return volatility, or stock price level. We 
+analyze each cross-section separately in a separate equation. 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+47 
+ 
+Appendix B: Cross-Sectional Analysis 
+We delve a little deeper by analyzing whether the clustering of trading activity has 
+different effects based on certain stock attributes such as market capitalization, volatility, and 
+price level. Computer algorithms tend to favor trading in large companies with high volatility, 
+high trading volume, and low nominal stock prices (higher relative tick sizes); so we expect 
+that the seasonality effect will be stronger for these stocks. 
+We calculate daily medians of market capitalization, volatility, and stock prices across 
+our 120 NASDAQ companies, and we sort each company into high/low portfolios each day. 
+This daily sorting ensures that, for example, a generally low volatility stock, which 
+experiences an extraordinary news event on a particular day, is correctly tagged as a highvolatility stock on that day. We then regress the coefficients from the instrument variable 
+regressions (Regressions (3.1) and (3.2)) against a high and low dummy for each crosssectional attribute. The constant is omitted in this regression, so Table  list levels (means) of 
+the IV point estimates and the 𝑡-statistics (clustered by stock symbol) test for difference from 
+zero, not for difference between high and low dummy: 
+𝛽𝑠,𝑑= 𝐴𝑏𝑜𝑣𝑒𝑀𝑒𝑑𝑖𝑎𝑛𝑠,𝑑× 𝛿ℎ𝑖𝑔ℎ+ 𝐵𝑒𝑙𝑜𝑤𝑀𝑒𝑑𝑖𝑎𝑛𝑠,𝑑× 𝛿𝑙𝑜𝑤+ 𝜖𝑠,𝑑. 
+(7)
+The first-stage coefficients support our intuition that high-frequency traders favor 
+large companies with high volatilities. The 𝑡-statistics are significant for all cross-sections, 
+but the point estimates of 0.868 for high market cap stocks versus 0.090 for low market caps 
+are much higher. The effect is not as pronounced for high-volatility stocks, for which the 
+average coefficients are 0.569 versus 0.389 for low volatility. The difference in means 
+between high price stocks (.427) and low price stocks (.530) is even smaller. 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+48 
+ 
+The second-stage estimates show no meaningful difference between any high and low 
+portfolios for quoted spreads or market depth. Volatility is somewhat difficult to interpret: 
+When measured as absolute returns, we find that increased trading activity has a statistically 
+more significant impact on large companies with high volatilities and high price levels. 
+Although not statistically significant, even at the 10% level, the point estimate for small 
+companies (14.88) is much higher than large companies (2.290), which is significant at the 
+1% level. Price jumps paint a different picture, in that we find more statistical significance 
+for small companies with low volatilities and low price levels. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+49 
+ 
+Table B.1: Cross-Sectional Analysis. 
+We perform a cross-sectional analysis of how trading volume affects market metrics for our NASDAQ data. We 
+sort our 120 stock × 44 days IV regressions coefficients from the previous analysis into high/low groups for 
+market capitalization, volatility, and stock price level. We sort the 120 stocks into low and high groups for each 
+day and tag each IV regression according to its capitalization/volatility/price. The 5,270 coefficient estimates 
+are then regressed against the two high/low group dummies, without a constant, separately for market cap, 
+volatility, and price (three different regressions). We report 𝑡-statistics with stock symbol clustered errors in 
+parentheses. 
+ 
+ 
+#𝑇𝑟𝑎𝑑𝑒𝑠 
+100
+⁄
+ 
+ 
+|𝑅𝑒𝑡𝑢𝑟𝑛| 
+bps 
+𝑃𝑟𝑖𝑐𝑒 
+𝐽𝑢𝑚𝑝 
+10,000
+⁄
+ 
+𝑄𝑢𝑜𝑡𝑒𝑑 
+𝑆𝑝𝑟𝑒𝑎𝑑 
+bps 
+𝐷𝑒𝑝𝑡ℎ 
+$ 
+ 
+1st 𝐹𝑖𝑟𝑠𝑡100𝑚𝑠 
+ 
+2nd 
+#𝑇𝑟𝑎𝑑𝑒𝑠 (Instrumented) 
+Low Market Cap 
+0.090*** 
+(5.25) 
+ 
+14.88 
+(1.39) 
+5,671*** 
+(3.10) 
+−0.912 
+(−0.39) 
+−4.056 
+(−0.71) 
+High Market Cap 
+0.868*** 
+(8.36) 
+ 
+2.290*** 
+(2.82) 
+193.9 
+(0.97) 
+−0.096 
+(−0.37) 
+−13.75 
+(−1.14) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Low Volatility 
+0.389*** 
+(13.07) 
+ 
+7.823 
+(3.10) 
+1,619** 
+(2.49) 
+−0.389 
+(−0.20) 
+−19.73* 
+(−1.69) 
+High Volatility 
+0.569*** 
+(14.24) 
+ 
+9.351*** 
+(0.824) 
+4.247 
+(1.71) 
+−0.619 
+(−0.32) 
+1.932 
+(0.31) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Low Price 
+0.530*** 
+(4.83) 
+ 
+7.682 
+(0.78) 
+2,585*** 
+(3.29) 
+−1.505 
+(−0.99) 
+1.199 
+(0.26) 
+High Price 
+0.427*** 
+(6.81) 
+ 
+9.491** 
+(2.10) 
+3,280* 
+(1.89) 
+0.498 
+(0.28) 
+−19.00 
+(−1.57) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+FE: 𝐻𝑜𝑢𝑟× 𝐷𝑎𝑦× 𝑆𝑡𝑜𝑐𝑘 
+Yes 
+ 
+Yes 
+Yes 
+Yes 
+Yes 
+𝑁 
+5,270 
+ 
+5,270 
+5,270 
+5,270 
+5,270 
+Mean of Dependent Var. 
+4.39 
+ 
+0.0997 
+18.39 
+13.77 
+303.60 
+Std. Dev. of Dep. Var. 
+65.99 
+ 
+4.44 
+428.4 
+19.14 
+823.6 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+50 
+ 
+Appendix C: Robustness Tests 
+Finally, we discuss alternative explanations for the subsecond periodicities. The first 
+concern is that high-frequency periodicities are temporary because algorithms learn, 
+improve, and become less predictable by means of their software engineers. This concern 
+does not affect our conclusions, but it questions the generality of the subsecond periodicity 
+test introduced in this study. We posit that the periodicities are quite persistent. One reason 
+is that algorithmic trading was already a mature industry by the start of our sample period 
+in 2008. The next reason is that we cannot find any direct negative implications for 
+algorithms that engage in such cyclical and predictable trading in our data. Most importantly, 
+we find strong high-frequency periodicities in independent recent data from the beginning 
+of February to the middle of May 2013 in our Nanex sample. Our other results are also quite 
+similar in the Nanex sample. This out-of-sample test confirms that the periodicity is not 
+driven by a particular sample or time period. 
+The second concern is that corporate and macro news may be more likely to be 
+released at rounded-times, causing spikes in trading activity and potentially also creating a 
+periodicity at rounded-times. As a robustness test, we check our results to ensure they do 
+not change when we exclude the first minute of every hour and every half-hour from our 
+sample. Also, the bid-ask spread and the price impact are unchanged during the first 100 ms, 
+which is inconsistent with higher information asymmetry sparked by news releases. In 
+addition to analyzing spikes at every whole second in absolute time (rounded-times), we also 
+repeat our tests using one-second periodic trading patterns that do not originate at the whole 
+second, using relative periodicities as discussed previously. These tests confirm our main 
+results, which rules out that news released at the top of a whole second drive our findings. 
+Electronic copy available at: https://ssrn.com/abstract=2496669
+
+51 
+ 
+Finally, another alternative is that dark pools and internalizers may report orders at 
+the beginning of a second. TheNASDAQ dataset explicitly excludes trades by dark pools, but 
+there could be trades from other internalizers. If so, then such trades should have no effect 
+on quotes. However, most of our results (i.e., quote intensity, volatility) use only quoted prices 
+and therefore internal crosses by internalizers are not driving our results. 
+The fact that we find very similar results in two independent datasets, reduces the 
+chance of our findings being driven by a particular sample period or stock selection. 
+Electronic copy available at: https://ssrn.com/abstract=2496669

@@ -1,0 +1,127 @@
+{
+  "doc_id": 80,
+  "titulo": "Critical edges in financial networks",
+  "resumen_operativo": "Este trabajo identifica qué préstamos banco-empresa impactan de forma crítica en el riesgo sistémico ante un shock exógeno. Utiliza modelos de machine learning optimizados mediante pipelines genéticos y valores Shapley para demostrar que el PageRank del nodo deudor es el mejor predictor de dicho riesgo. Aunque no tiene aplicación directa a operativas intradía, ofrece un esquema riguroso sobre uso de AutoML e interpretabilidad en datos tabulares y topológicos.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "systemic risk",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Pérdida de capital agregada sufrida por el sistema financiero, ocasionada por la propagación de un shock exógeno inicial.",
+      "relaciones": [],
+      "cita_textual": "the SR corresponds to the loss of equity suffered by the financial system caused by the propagation of an exogenous initial shock"
+    },
+    {
+      "nombre": "differential DebtRank",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Metodología para calcular el riesgo sistémico simulando un proceso donde agentes afectados por shocks exógenos transmiten pérdidas en cadena.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "systemic risk"}
+      ],
+      "cita_textual": "The SR of the financial network is computed through the differential DebtRank (DDR) approach"
+    },
+    {
+      "nombre": "critical edge",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Conexión en la red financiera cuya inclusión o eliminación impacta sustancialmente, como valor atípico, en el riesgo sistémico de la misma.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "systemic risk"}
+      ],
+      "cita_textual": "an edge is deemed as critical if it is an outlier considering its impact, according to the IQR approach"
+    },
+    {
+      "nombre": "PageRank",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida topológica del nodo destino de un préstamo (empresa prestataria) que refleja su importancia y determina la probabilidad de que su default genere contagio grave.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "critical edge"}
+      ],
+      "cita_textual": "the probability of an edge being critical increases with the PageRank of its destination node"
+    },
+    {
+      "nombre": "Shapley values",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica basada en teoría de juegos usada para dar explicabilidad a modelos de machine learning, identificando la contribución individual de variables.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "feature importance"}
+      ],
+      "cita_textual": "Posterior analysis through Shapley values shows that the PageRank of the edge’s destination node (the firm) is the main driver"
+    },
+    {
+      "nombre": "interbank network",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Red de exposiciones financieras no garantizadas entre bancos, la cual actúa como canal de amplificación y contagio de shocks.",
+      "relaciones": [],
+      "cita_textual": "The red edges represent the IB connections that will amplify this initial shock – that is, they are responsible for the contagion."
+    },
+    {
+      "nombre": "bank-firm credit network",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Red conformada por exposiciones crediticias de instituciones financieras hacia empresas no financieras, receptora directa de las perturbaciones originadas en corporaciones.",
+      "relaciones": [],
+      "cita_textual": "The bank-firm credit network encompasses the corporate loans granted by FIs to non-financial firms."
+    },
+    {
+      "nombre": "XGBoost",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo basado en gradient boosting seleccionado automáticamente para predecir si una conexión financiera es crítica ante un nivel de shock moderado.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "critical edge"},
+        {"tipo": "PARTE_DE", "objeto": "gradient boosting"}
+      ],
+      "cita_textual": "The model selected by the TPOT pipeline was the XGBoost [45] for ζ = 0.1"
+    },
+    {
+      "nombre": "random forest",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de ensemble utilizado en la etapa predictiva de aprendizaje automático para identificar criticidad bajo un nivel de shock sistémico severo.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "critical edge"}
+      ],
+      "cita_textual": "and the Random Forest [46] for ζ = 0.5"
+    },
+    {
+      "nombre": "Tree-based Pipeline Optimization Tool",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Sistema AutoML de programación genética usado para limpieza de datos, extracción y selección de variables, e hiperparametrización de algoritmos predictivos.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "random forest"},
+        {"tipo": "USA", "objeto": "XGBoost"}
+      ],
+      "cita_textual": "we rely on the Tree-based Pipeline Optimization Tool (TPOT), a programming-based automated machine learning (AutoML) system"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La distribución del impacto de remoción o inserción de vínculos financieros sobre el riesgo sistémico exhibe colas pesadas y se ajusta óptimamente a una log-normal.",
+      "mercado": "Red interbancaria y corporativa de Brasil",
+      "periodo": "Diciembre 2022",
+      "magnitud": "Cola pesada (heavy-tailed log-normal)",
+      "condiciones": "Analizado evaluando impacto fraccionario sobre la medición Differential DebtRank total tras retirar un vínculo individual.",
+      "robustez": "media",
+      "cita_textual": "The distribution of the edges’ impact is well represented by a log-normal distribution."
+    },
+    {
+      "afirmacion": "Los modelos de machine learning entrenados usando validación cruzada y SMOTE logran una exactitud excepcional al clasificar las conexiones como críticas o no críticas.",
+      "mercado": "Red interbancaria y corporativa de Brasil",
+      "periodo": "Diciembre 2022",
+      "magnitud": "Accuracy out-of-sample superior a 0.88",
+      "condiciones": "Implementando búsqueda automática de modelos (XGBoost y Random Forest) sobre características topológicas y de balance.",
+      "robustez": "alta",
+      "cita_textual": "The level of accuracy obtained in these prediction exercises was very high (above 90%)."
+    },
+    {
+      "afirmacion": "El PageRank del nodo destino es el determinante principal en definir si la conexión es un riesgo sistémico atípico (crítico), superando el propio patrimonio o tasa de interés.",
+      "mercado": "Red interbancaria y corporativa de Brasil",
+      "periodo": "Diciembre 2022",
+      "magnitud": "Fuerte correlación positiva en SHAP values",
+      "condiciones": "Basado en la evaluación de SHAP values para predecir vínculos clasificados como outliers vía rango intercuartil.",
+      "robustez": "alta",
+      "cita_textual": "Posterior analysis through Shapley values shows that the PageRank of the edge’s destination node (the firm) is the main driver of the critical status of the edges"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "nula",
+    "nota": "El enfoque investiga el contagio estático del riesgo de crédito comercial y bancario; no presenta variables operables, señales de ejecución ni componentes dinámicos extrapolables al flujo de órdenes en el mercado de futuros."
+  }
+}

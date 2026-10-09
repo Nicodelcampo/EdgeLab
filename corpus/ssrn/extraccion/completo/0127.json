@@ -1,0 +1,153 @@
+{
+  "doc_id": 127,
+  "titulo": "The Price Jerk Indicator and the KCE Quantum System: Applying the Third Derivative of Price Motion to Financial Reversal Detection and a Complete Quantitative Trading Framework Based on Classical Physics",
+  "resumen_operativo": "Introduce el Price Jerk Indicator (PJI), la tercera derivada del precio aplicada a detección de reversiones. El PJI ajusta una regresión cuadrática sobre aceleraciones de precio rodantes para identificar \"frenado dinámico\" (deceleración de una caída) como señal de reversión alcista. Validación sobre 388 trades reales en NAS100/SPY (2019-2026) muestra AUC-ROC 0.534 vs 0.512 de RSI-14. El sistema completo KCE Quantum Ultimate (8 algoritmos propietarios) reporta Calmar 10.0, Sortino 5.30 y degradación walk-forward de 4.7pp. Es un paper con fuerte tono promocional y propiedad intelectual restrictiva.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "price jerk",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Tercera derivada temporal del precio (tasa de cambio de la aceleración), adaptada del concepto físico de jerk. El paper la estima mediante regresión cuadrática sobre aceleraciones de precio rodantes; curvatura negativa indica frenado dinámico que precede reversiones alcistas.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "reversal detection"},
+        {"tipo": "USA", "objeto": "momentum"}
+      ],
+      "cita_textual": "the third derivative — jerk — has received no attention in quantitative finance. In classical mechanics, jerk is the rate of change of acceleration"
+    },
+    {
+      "nombre": "reversal detection",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Detección de puntos de reversión de precio, específicamente de tendencia bajista a alcista, usando la tercera derivada del precio. El paper propone que deceleración de caída (negative jerk) precede sistemáticamente reversiones alcistas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "price jerk"},
+        {"tipo": "SE_OPONE_A", "objeto": "momentum"}
+      ],
+      "cita_textual": "periods of decelerating decline (negative jerk) systematically precede bullish reversals"
+    },
+    {
+      "nombre": "AUC-ROC",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Área bajo la curva ROC usada para evaluar poder predictivo binario (WIN/LOSS en ventana forward de RRx16 barras). AUC=0.50 es azar; AUC>0.53 se considera prácticamente significativo para señales financieras.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "price jerk"}
+      ],
+      "cita_textual": "AUC=0.50 indicates no predictive power; AUC>0.53 is considered practically significant for financial time series"
+    },
+    {
+      "nombre": "walk-forward validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Validación out-of-sample secuencial con 48 meses in-sample (2019-2022) y 38 meses out-of-sample (2023-2026). Degradación de win rate <5pp se interpreta como ausencia de overfitting.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "In-sample: Jan 2019–Dec 2022 (48 months). Out-of-sample: Jan 2023–Mar 2026 (38 months). Degradation <5pp is consistent with sampling variability"
+    },
+    {
+      "nombre": "Hurst exponent",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Exponente de Hurst combinado (promedio de estimadores ACF y R/S) usado para clasificar regímenes de mercado: IMPULSO (H>0.62), TENDENCIA (0.55-0.62), RANGO (0.45-0.55), CAOS (H<0.45).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "regime detection"},
+        {"tipo": "APLICA_A", "objeto": "position sizing"}
+      ],
+      "cita_textual": "KCE-Hurst computes H_combo = (H_ACF + H_RS) / 2, combining two independent Hurst estimators"
+    },
+    {
+      "nombre": "RSI",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Relative Strength Index de 14 períodos usado como baseline de comparación para el PJI; también se usa en el algoritmo 'Maceta RSI' que detecta inflecciones en U e inverted-U de la serie RSI para anticipar agotamiento de momentum.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "momentum"}
+      ],
+      "cita_textual": "RSI-14 baseline AUC-ROC 0.512"
+    },
+    {
+      "nombre": "MACD",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Moving Average Convergence-Divergence, indicador de momentum mencionado como referencia histórica de indicadores de segunda derivada del precio.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "momentum"}
+      ],
+      "cita_textual": "momentum oscillators such as RSI and MACD capture quasi-first- and second-order behavior"
+    },
+    {
+      "nombre": "maximum drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Drawdown máximo del -7.74% reportado para el sistema KCE Quantum Ultimate sobre 388 trades en 7 años, presentado como dentro de límites aceptables para fondos.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk management"}
+      ],
+      "cita_textual": "Maximum Drawdown -7.74% — Within fund limits"
+    },
+    {
+      "nombre": "Calmar ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio de retorno sobre máximo drawdown; el paper reporta 10.0 para el sistema KCE, ubicándolo en el top 3% de sistemas según los autores.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"}
+      ],
+      "cita_textual": "Calmar Ratio 10.0 — Top 3% systems"
+    },
+    {
+      "nombre": "Sortino ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio de retorno sobre desviación bajista; reportan 5.30, considerado excelente (>3.0).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "downside risk"},
+        {"tipo": "MEJORA_A", "objeto": "Sharpe ratio"}
+      ],
+      "cita_textual": "Sortino Ratio 5.30 — Excellent >3.0"
+    },
+    {
+      "nombre": "Monte Carlo simulation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Simulación de 50,000 escenarios para estimar probabilidad de obtener funding en un protocolo estandarizado de prop firm de dos fases; resultado 95.4%.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "Monte Carlo simulation (50,000 scenarios) yields P(prop firm funding) = 95.4%"
+    },
+    {
+      "nombre": "support and resistance",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Zonas de confluencia de al menos 2 promedios históricos de precio (8, 21, 34, 55, 89 barras) usadas como niveles de soporte/resistencia estadísticamente significativos en el algoritmo KCE-PD.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "technical analysis"}
+      ],
+      "cita_textual": "Confluence of nc≥2 averages creates a statistically significant support/resistance zone with higher probability of price reaction"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El Price Jerk Indicator (tercera derivada del precio) logra AUC-ROC de 0.534 frente a 0.512 del RSI-14 como baseline, una mejora del 4.3% estadísticamente significativa en 388 trades reales.",
+      "mercado": "NAS100 (CFD), SPY (ETF CFD)",
+      "periodo": "2019-2026",
+      "magnitud": "AUC-ROC: 0.534 (PJI) vs 0.512 (RSI-14); mejora de 4.3%",
+      "condiciones": "388 trades reales ejecutados en Pepperstone MT5, barras horarias; sin detalles de costos de transacción ni slippage por operación",
+      "robustez": "baja",
+      "cita_textual": "The PJI achieves AUC-ROC of 0.534 versus 0.512 for RSI-14 — a statistically significant improvement for financial time series"
+    },
+    {
+      "afirmacion": "El sistema KCE Quantum Ultimate completo obtiene Calmar Ratio de 10.0, Sortino Ratio de 5.30, win rate 25.8%, y máximo drawdown de -7.74% sobre 388 trades en 7 años.",
+      "mercado": "NAS100 y SPY",
+      "periodo": "2019-2026",
+      "magnitud": "Calmar 10.0, Sortino 5.30, WR 25.8%, Max DD -7.74%, Profit Factor 1.42",
+      "condiciones": "Walk-forward: IS 2019-2022 (WR 26.9%), OOS 2023-2026 (WR 22.2%); horario H1; sin reporte detallado de costos ni slippage por trade",
+      "robustez": "baja",
+      "cita_textual": "The complete trading system achieving Calmar Ratio of 10.0, Sortino Ratio of 5.30, and passes walk-forward out-of-sample validation with only 4.7pp WR degradation over 38 months"
+    },
+    {
+      "afirmacion": "La degradación walk-forward de win rate es de 4.7 puntos porcentuales (26.9% in-sample vs 22.2% out-of-sample), lo cual se interpreta como dentro de variabilidad muestral esperada y ausencia de overfitting.",
+      "mercado": "NAS100 y SPY",
+      "periodo": "IS 2019-2022, OOS 2023-2026 (38 meses OOS)",
+      "magnitud": "WR IS 26.9% → WR OOS 22.2%; degradación 4.7pp",
+      "condiciones": "Solo dos instrumentos (índices US); barras horarias; sin mención de pruebas en otros mercados o timeframes",
+      "robustez": "baja",
+      "cita_textual": "Walk-Forward WR (in-sample) 26.9%, Walk-Forward WR (out-of-sample) 22.2%, WR Degradation 4.7pp"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El sistema opera en barras horarias (H1), no tick-level, pero el concepto de jerk de precio podría adaptarse a escalas intradía menores. La detección de frenado dinámico como señal de reversión es testeable en datos de ES futures intraday."
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "doc_id": 329,
+  "titulo": "The Adoption of Blockchain-Based Decentralized Exchanges: A Market Microstructure Analysis",
+  "resumen_operativo": "Demuestra que la infraestructura de DEXs somete a los liquidity providers (LPs) a una tragedia de los comunes: los LPs carecen de incentivos para retirar liquidez porque las pérdidas por arbitraje se comparten colectivamente mientras los costos de retirada son individuales. Las rentas de arbitraje fluyen principalmente a los validadores como gas fees (infrastructure rents), con el arbitrajista mediano transfiriendo el 96% de sus ganancias. Usa la crisis de Silicon Valley Bank como experimento natural para mostrar que los LPs adoptan curvas de pricing más convexas en respuesta a mayor volatilidad.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Automated Market Maker (AMM)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Smart contract que opera en DEXs eliminando la necesidad de market makers activos tradicionales. Funciona con algoritmos de pricing predeterminados que facilitan cotización automática y risk sharing, permitiendo que incluso inversores retail provean liquidez.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Decentralized Exchange (DEX)"},
+        {"tipo": "SE_OPONE_A", "objeto": "Centralized Limit Order Book"}
+      ],
+      "cita_textual": "Unlike CEXs that utilize traditional limit order books, most DEXs employ automated market makers (AMMs)—smart contracts that eliminate the need for active market makers."
+    },
+    {
+      "nombre": "Tragedy of the commons in DEXs",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fallo de coordinación donde los LPs no retiran liquidez para evitar pérdidas por arbitraje porque las pérdidas se comparten entre todo el pool, pero los costos de retirada (gas fees) son individuales. Cada LP solo pujará hasta su pérdida individual esperada, que es una fracción de la ganancia total del arbitrajista.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Arbitrage losses for LPs"},
+        {"tipo": "SE_OPONE_A", "objeto": "Efficient liquidity provision"}
+      ],
+      "cita_textual": "This creates a 'tragedy of the commons': losses to LPs are shared across the entire liquidity pool, but an arbitrageur offering the highest gas fee captures the entire arbitrage profit from trading against the pool."
+    },
+    {
+      "nombre": "Infrastructure rents",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Rentas extraídas por los validadores de blockchain a través de gas fees en el sistema de subasta first-price bloque-por-bloque. Los arbitrajistas compiten al estilo Bertrand ofreciendo gas fees hasta el total de su ganancia esperada, resultando en que los validadores capturen hasta el 100% de las rentas de arbitraje (vs ~30% en CEXs).",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Validator-extracted rents"},
+        {"tipo": "CAUSA", "objeto": "Increased cost of liquidity provision"}
+      ],
+      "cita_textual": "Validators extract a significantly higher proportion of arbitrage rents (up to 100%) compared to the estimated 30% in CEXs."
+    },
+    {
+      "nombre": "Gas fee priority auction",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Mecanismo de ejecución de blockchain donde las transacciones se priorizan por gas fee ofrecido, no por tiempo de llegada. Esto permite a los arbitrajistas superar las órdenes de retirada de liquidez de los LPs mediante pujas más altas, creando una competencia Bertrand-like que transfiere las rentas a los validadores.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Tragedy of the commons in DEXs"},
+        {"tipo": "USA", "objeto": "First-price auction"}
+      ],
+      "cita_textual": "The blockchain's transaction execution mechanism prioritizes transactions based on gas fees rather than order timing."
+    },
+    {
+      "nombre": "Convex pricing curves (Uniswap V3)",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Curvas de pricing con distintos niveles de convexidad que los LPs pueden elegir en Uniswap V3. Mayor convexidad reduce las rentas de arbitraje pero también disminuye el volumen de trading y las comisiones para los LPs. En equilibrio, los LPs eligen curvas más convexas cuando las rentas de arbitraje son más altas.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "Arbitrage losses for LPs"},
+        {"tipo": "PARTE_DE", "objeto": "Automated Market Maker (AMM)"}
+      ],
+      "cita_textual": "Higher convexity, while potentially reducing arbitrage rents, also leads to lower trading volumes and diminished fees for LPs. We show that when arbitrage rents are higher, LPs may choose more convex pricing curves in equilibrium."
+    },
+    {
+      "nombre": "Speed technology in DEX arbitration",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Tecnología de velocidad que permite a agentes enviar transacciones para inclusión inmediata en el bloque actual. Adoptada predominantemente por arbitrajistas, redistribuye rentas de validadores a arbitrajistas rápidos. Su efectividad para reducir infrastructure rents es limitada; solo si un LP mayoritario puede costearla mitiga parcialmente su propio riesgo.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Arbitrageur execution priority"},
+        {"tipo": "REDISTRIBUYE", "objeto": "Infrastructure rents"}
+      ],
+      "cita_textual": "Speed technology is predominantly adopted by arbitrageurs and primarily serves to redistribute rents from validators to these fast arbitrageurs. Its overall effectiveness in reducing infrastructure rents is limited."
+    },
+    {
+      "nombre": "Silicon Valley Bank crisis natural experiment",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Experimento cuasi-natural que explota la divergencia entre dos pares de stablecoins durante la crisis de SVB: USDT-USDC experimentó alta volatilidad y fluctuaciones de tipo de cambio, mientras DAI-USDC se mantuvo estable gracias al Peg Stability Module (PSM). Se usa un enfoque difference-in-differences.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Difference-in-differences"},
+        {"tipo": "APLICA_A", "objeto": "Convex pricing curves (Uniswap V3)"}
+      ],
+      "cita_textual": "While the USDT-USDC pair experienced significant volatility and exchange rate fluctuations, the DAI-USDC pair maintained relative stability due to the Peg Stability Module (PSM). This divergence provides a natural quasi-experimental setting."
+    },
+    {
+      "nombre": "Peg Stability Module (PSM)",
+      "tipo": "mecanismo",
+      "definicion_en_contexto": "Módulo del ecosistema DAI que mantiene la estabilidad del par DAI-USDC permitiendo conversiones 1:1, aislando este par de la volatilidad que afectó a USDT-USDC durante la crisis de SVB.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "Exchange rate volatility"},
+        {"tipo": "PARTE_DE", "objeto": "DAI stablecoin ecosystem"}
+      ],
+      "cita_textual": "The DAI-USDC pair maintained relative stability due to the Peg Stability Module (PSM)."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La mediana del ratio de gas cost a arbitrage revenue es 0.96, indicando que al menos la mitad de las transacciones de arbitraje en DEXs incurren en costos de gas cercanos al ingreso total, con las rentas fluyendo casi completamente a los validadores.",
+      "mercado": "Ethereum DEXs (Uniswap V2, Uniswap V3)",
+      "periodo": "Incluye período de crisis SVB (marzo 2023)",
+      "magnitud": "Mediana ratio gas-cost/arbitrage-revenue = 0.96 (96% de las ganancias del arbitrajista van al validador)",
+      "condiciones": "Subasta first-price bloque-por-bloque en Ethereum; pares USDT-USDC y DAI-USDC",
+      "robustez": "alta",
+      "cita_textual": "With a median gas cost to arbitrage revenue ratio of 0.96, our findings suggest that at least half of the transactions incur gas costs nearing the total revenue earned."
+    },
+    {
+      "afirmacion": "Durante períodos de alta volatilidad (crisis SVB), los LPs retiran liquidez y adoptan curvas de pricing más convexas en Uniswap V3, consistente con la predicción teórica de respuesta defensiva ante mayores rentas de arbitraje.",
+      "mercado": "Uniswap V3 (Ethereum)",
+      "periodo": "Crisis Silicon Valley Bank (marzo 2023)",
+      "magnitud": "Efectos estadísticamente significativos en retirada de liquidez y adopción de curvas más convexas (magnitudes exactas requieren lectura completa)",
+      "condiciones": "Difference-in-differences: USDT-USDC (tratado, alta volatilidad) vs DAI-USDC (control, estable vía PSM)",
+      "robustez": "alta",
+      "cita_textual": "We present statistical evidence indicating liquidity withdrawal and increased usage of more convex pricing curves during periods marked by high volatility and elevated arbitrage rents."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "Analiza dinámica de arbitraje bloque-por-bloque en DEXs, relevante para trading intradiario en cripto; pero el foco es microestructura de provisión de liquidez, no estrategias de trading."}
+}

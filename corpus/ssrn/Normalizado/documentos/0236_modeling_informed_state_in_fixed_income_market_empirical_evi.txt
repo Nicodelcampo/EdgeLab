@@ -1,0 +1,885 @@
+Modelling Informed State in Fixed Income Market :
+Empirical Evidence from HFT Data. ∗
+Alok Kumar, Madhucchand Darbha †
+January 6, 2010
+Abstract
+Motivated by ﬁndings in the existing literature on the information content of order ﬂows, we specify Probability of Informed Trading - Asymmetric
+Autoregressive Conditional Duration (PIN-AACD) model to identify the ‘informed state’ in the Fixed Income Markets. Using tick-by-tick price and order
+ﬂow data, we obtain the estimates for the probability of informed (PIN) state
+throughout the trading day. The trade direction (buy versus sell orders) and
+the duration between trades are modelled jointly. The model allows the Probabilities of Good News and Bad News to vary each interval. Results show that
+intraday patterns of the PIN estimates are consistent with the scheduled arrival
+of public information or news. Further, we show that PIN is positively related
+to overall market depth. The eﬀect of realized volatility on information asymmetry is unexpectedly found to be negative. We also ﬁnd positive correlation
+between news and trading volume. The study intends to support trading and
+sales teams in identifying informed trades.
+1
+Introduction
+Existing literature documents that order ﬂow or transaction data contain signiﬁcant
+market information. The existence of information asymmetry among market participants makes informed trading a very important issue from many respects. A most
+∗We would like to thank Gangadhar Darbha, RBS and Prof. Tse, Singapore Management University for their valuable comments. The views and ideas expressed in this paper are solely the
+authors’ and do not in any way represent the views or ideas of the authors’ employer.
+†Global Algorithmic Solutions, Royal Bank of Scotland
+1
+Electronic copy available at: https://ssrn.com/abstract=1666818
+
+challenging question is how can we tell the probability of informed trading for each
+asset from publicly available data? Hasbrouck(1991a) points out that the magnitude
+of the price eﬀect of information depends on a positive function of the proportion of
+potentially informed traders, the probability of a private information signal, and the
+precision of the private information. However, the probability of informed trading is
+not directly observable and must be estimated from observable trade data such as
+quotes, transaction prices, and volumes.
+With the vast propagation of new channels, the increase in transaction speeds made
+possible by e-commerce, plus the diverse methods of price delivery (e.g. RFQ, Streaming), appear to have made liquidity providers exposed to opportunistic or aggressive
+clients, keen to take advantage of any price mismatches or latencies. The market
+maker faces the possibility of trading with agents who have superior information.
+The risk of market maker to unintentionally create trade opportunities for counterparties having superior information cannot be ruled out. However with quick progress
+in technology and recent availability, at relative low costs, of high frequency datasets
+have also driven a great increase in theoretical works concerning the analysis of market microstructure.
+Government bond market has been traditionally divided in an inter-dealer and a
+dealer-to-customer segment. Recent studies have shown that asymmetric information exists in the bond market, even though government bond prices are mainly
+aﬀected by public information. In spite of the importance of this market, there are
+not many models that analyse the information based trading in bond market. This
+paper proposes a method that is based on PIN-AACD model of Tay, Ting, Tse,
+Warachka (2009) to estimate the intraday probability of informed trading for ﬁxed
+income market. We employ the PIN-AACD model to estimate the information risk
+or the probability of information-based trading of Euro government bonds.
+This
+structural model has been shown to be very eﬀective in capturing a market maker’s
+learning process about information from trades.
+1.1
+Probability of Informed Trading
+Probability of Informed Trading (PIN) is a measure of information asymmetry - it
+measures the fraction of trades in a time interval that arises from informed traders.
+Intuitively, PIN measures market makers’ belief about the trades being informed. PIN
+measures the ability of traders or clients to interpret signals on the expected evolution
+of the asset price. The following question is relevant from the traders’/market makers’
+perspectives - ‘Given the state at t, what is the probability that a trade in the next
+interval will be informed trade’. PIN measures the implicit risk for market makers to
+2
+Electronic copy available at: https://ssrn.com/abstract=1666818
+
+unintentionally create trade opportunities for counterparties or clients, because they
+are less informed than their counterparties. Probability of informed trading is not
+something that is directly observable, how to measure informed trading is therefore
+an important and practical issue. By simply counting the number of buys and sells
+during a time interval, we can get a proxy of information-motivated trading. The
+crux behind the PIN framework is that information related trading happens in intervals with informed traders receiving a private signal, which induces a larger number
+of buy orders if the private signal is positive or a larger number of sell orders if the
+private signal is negative.
+The model of Easley et al.1 has become a standard application for measuring the degree of informed trading. EKOP use trade-direction data to estimate the proportion
+of trades initiated by informed traders. Their model is based on the number of buy
+and sell orders, the intensities of which depend on the existence of ‘news’ or information. Conditional on the arrival of news, information is further classiﬁed as being
+either ‘good’ or ‘bad’. EKOP model the aggregate number of buy- and sell-initiated
+trades each day as independent Poisson variables, with diﬀerent intensities for days
+with good news, no news and bad news. The characterization of each trading day
+is unknown, and the likelihood of the numbers of buy and sell orders is based on
+the mixture-of-Poisson distribution. PIN is then calculated as the ratio of the intensity of informed trades divided by the intensity of all trades (informed or uninformed).
+The EKOP model is estimated as follows : Assume that prior to the beginning of each
+trading day nature selects that an information event will occur (with probability α)
+or not (with probability 1-α). With probability δ the information will be a bad news
+event, with probability 1-δ it will be a good news event. Uninformed traders arrive
+each day with probability ϵ. Informed traders only arrive on days with information
+events at the rate µ. Assuming independence across days, which is consistent with
+an informational eﬃcient market, a direct estimate of α,δ, ϵ and µ is obtained using the maximum likelihood function from EKOP. Then, the probability of informed
+trading(PIN) is deﬁned as the ratio of the expected number of trades originated by
+informed traders divided by the total expected number of trades, whether they are
+initiated by informed or uninformed traders, which is expressed as δ = αµ/(αµ+2ϵ).
+Most of the prior works using PIN required an assumption that it was constant over
+a substantial period of time. However, PIN may be time varying and our aim is to
+formulate a methodology by which we are able to continuously update PIN based on
+past information. Recently, some studies estimated PIN at higher frequencies, such
+1Easley, Kiefer, O‘Hara and Paperman (Journal of Finance, 1996), henceforth referred to as
+EKOP.
+3
+Electronic copy available at: https://ssrn.com/abstract=1666818
+
+as on a daily basis and intraday basis. Easley et al. (2008) propose a bivariate time
+series approach for the estimation of PIN. They model the arrival of informed and
+uninformed trades using a bivariate autoregressive process, with total trade and trade
+imbalance (diﬀerence between buy and sell orders) as covariates.
+In order to estimate the importance of adverse selection or informed trading we compute PIN using a structural model that is extension of AACD methodology. The
+model is similar to that of EKOP framework as both these models adopt mixture of
+distribution approach. EKOP framework assumes the occurences of single information event per day whereas the model discussed here incorporates information events
+occuring at all times during the day. The model draws inference based on tick-by-tick
+trade data, whereas the EKOP sequential trade model is based on daily aggregate
+buying and selling pressures. Additionally, the PIN-AACD framework allows for interactions between consecutive buy-sell orders, accounts for the duration between
+trades and the volume of trade and allows the Probabilities of Good News and Bad
+News to vary each interval. Originally developed by Tay, Ting, Tse, Warachka (2009),
+the PIN-AACD approach has been initially estimated on equity markets but never
+applied to bond markets. This paper ﬁlls this gap and propose an estimate of the
+PIN-AACD measure calculated on a high frequency bond market dataset.
+Before we apply the concept of PIN to the bond market, we need to interpret private
+information due to the diﬀerent information structures of the stock and bond markets. In the stock market, private information is often viewed as inside information
+of a ﬁrm’s cash ﬂows. In the government bond market, macroeconomic variables are
+the dominating factors that aﬀect bond prices. As a result, private information in
+the Treasury bond market mainly arises from heterogeneous interpretation of public
+information and dealers’ private access to customer order ﬂows. Some traders may
+have an advantage in assessing how macroeconomic variables might aﬀect bond prices
+due to their superior analytical skills. On the other hand, uninformed traders in the
+bond market could represent regular investors who do not have special skills in analyzing public information and cannot observe order ﬂows.
+2
+High Frequency PIN Estimation
+This section describes a methodology to estimate PIN using high-frequency transaction data. The method is based on an AACD model for trade directions. We ﬁrst
+outline the AACD model as proposed by Bauwens and Giot(2003). The speciﬁcation of the conditional expected duration equation is then constructed to account for
+informed and uninformed trades due to the arrival of news. Finally, we extend our
+4
+Electronic copy available at: https://ssrn.com/abstract=1666818
+
+methodology to allow the probabilities of good and bad news to vary across time, and
+estimate PIN on intraday basis.
+2.1
+Methodology: AACD Model
+Trade direction is modelled using AACD model and PIN is computed as byeproduct
+of the model. Let yi denote the trade direction of the ith trade at time ti , which
+may take values of j = -1 or 1 representing a sell-initiated and buy-initiated trade,
+respectively. Let φi−1 denote the information set after the (i-1)th trade. φi−1 may
+consist of past trade directions, transaction volume, and lagged durations. Given
+φi−1, we assume that each of the two potential trade directions of the trade at time
+ti follows a latent stochastic point process whose inter-arrival times have independent exponential distributions. The observed trade direction is the outcome of the
+competition between the two underlying Poisson point processes to be the ﬁrst arrival. Conditional on the information set φi−1 after the (i-1)th trade, the inter-arrival
+time random variables of the latent processes follows an exponential distribution with
+mean (conditional expected duration) ψji , where ‘j’ denotes the latent trade direction
+and ‘i’ denotes the trade at time ti.
+Let λji = 1/ψji, be the intensity of the latent Poisson process. The waiting time from
+time ti−1 of the (i-1)th trade to time ti of the ith trade or the duration of the ith
+trade is denoted by xi = ti −ti−1. Let the conditional joint density of (xi, yi) (or
+equivalently (ti , yi )), denoted by pi(xi, yi|φi−1), be given by
+pi(xi, j|φi−1) = λi,jexp[−(λ−1,i + λ1i)xi]
+(1)
+If we sum over the possible trade directions j in Equation (1), we obtain the
+following conditional marginal density of xi :
+fxi(x|φi−1) = (λ−1,i + λ1,i)exp[−(λ−1,i + λ1i)x]
+(2)
+which is an exponential distribution with mean 1/(λ−1,i + λ1i). The conditional
+marginal density of yi is obtained by integrating (1) over the duration xi and is given
+as :
+fyi(j|φi−1) = λji/(λ−1,i + λ1i), j = −1, 1
+(3)
+Note that the joint density in Equation (1) is the product of the marginal density
+of xi and yi , or xi and yi are independent of each other, conditional on the information
+5
+Electronic copy available at: https://ssrn.com/abstract=1666818
+
+set φi−1. Given a sample of observations (xi, yi) for i = 1 · · · N, the log-likelihood
+function may be written as
+N
+X
+i=1
+logpi(xi, j|φi−1) = −
+N
+X
+i=1
+[
+X
+j=−1,1
+xi/ψji −log(
+X
+j=−1,1
+Dyi(j)/ψji)]
+(4)
+where Dyi(j) = 1, if j = yi and 0, otherwise.
+Once the functional forms of the
+conditional expected durations φji are speciﬁed, the parameters of the model can
+be estimated using maximum likelihood estimation (MLE). Following Bauwens and
+Giot(2000), the conditional expected duration may be speciﬁed in the following logarithmic form :
+logψji = νj,−1D−1(yi−1) + νj,1D1(yi−1) + αjlogψj,i−1 + βjlogxi−1, j = −1, 1
+(5)
+The above equation is an extended logarithmic ACD(1,1) structure, where the constant term in the usual ACD equation is replaced by the intercepts νj,−1 and νj,1 that
+vary according to the previous trade direction. The above equation also implies that
+increase(decrease) in ψji i.e. larger(smaller) duration will lead to reduced(increased)
+probability that the transaction at time ti is of type j. For example, if the previous
+trade direction is of type k, the intercept for logψji is νjk. So, a larger(smaller) νjk
+implies that trade direction k induces a larger(smaller) expected duration of the next
+trade direction being of type j.
+Trading volume conveys information relating to market conditions and may have a
+direct eﬀect. Duration has been considered as an indicator of trading intensity and
+liquidity, estimated with various trading-activity related measures. We believe that
+volume is also potentially relevant as one such activity measure. In the next section,
+we extend AACD model that allows trading volume to aﬀect conditional expected
+duration and also estimate PIN.
+2.2
+Methodology: PIN-AACD Model
+We introduce AACD model into EKOP framework where the conditional expected
+duration is dependent on good news, bad news or no news. Let S be the set of three
+states (no news, good news, bad news). We denote ψs
+ji as the conditional expected
+duration of trade direction j in state s ∈S given information φi−1. Let f s
+ji be the
+basis of the equations for the conditional expected duration in each of the three states
+in S given as :
+6
+Electronic copy available at: https://ssrn.com/abstract=1666818
+
+Table 1 Functional forms for the logarithmic conditional expected duration.
+State(S)
+Buy/Sell(j)
+Log. Conditional Duration
+No News(N)
+-1
+logψN
+−1i = f N
+−1i
+1
+logψN
+1i = f N
+1i
+Good News(G)
+-1
+logψG
+−1i = f G
+−1i
+1
+logψG
+1i = f G
+1i −µ
+Bad News(B)
+-1
+logψB
+−1i = f B
+−1i −µ
+1
+logψB
+1i = f B
+1i
+f s
+ji = νj,−1D−1(yi−1) + νj,1D1(yi−1) + αjlogψj,i−1 + βjlogxi−1 + ζjyi−1logϑi−1
+(6)
+where j=-1,1 and s ∈S and ϑi−1 is the volume of the trade at time ti−1. From equation(6), we can see that the basis depends on whether the previous transaction is a
+buy or sell initiated order yi−1, the lagged duration xi−1, the previous conditional expected duration logψj,i−1 as well as the lagged signed logarithmic volume yi−1logϑi−1
+thus allowing volume to impact trade intensity.
+According to the assumptions of traditional EKOP framework, only uninformed
+traders are active in the absence of any news. In the presence of good news, informed
+traders purchase shares, thereby increasing the trading intensity of buy orders. Conversely, in the presence of bad news, informed traders sell shares and the trading
+intensity of sell orders is increased. However, the trading intensity of sell orders on a
+good-news interval and the trading intensity of buy orders on a bad-news interval are
+identical to their counterparts on a no-news interval. In Table 1, we have diﬀerent
+functional forms of the logarithmic conditional expected duration, given the state ‘S’
+and the buy/sell direction.
+From the above table, we observe that the basic functional form of the logarithmic
+conditional expected duration holds for no-news state (s=N). The logarithmic conditional expected duration of a buy(sell) order on a bad-news(good-news) interval is
+the benchmark function f B
+1i (f G
+−1i). The logarithmic conditional expected duration of
+a sell order on a bad-news interval decreases by µ due to selling by informed traders.
+On a good-news interval, the logarithmic conditional expected duration of a buy order decreases by µ due to buying by informed traders.
+To incorporate variation with respect to the state of news, the joint density of (xi, yi, )
+conditional on the information set and given state ‘s’ is rewritten as :
+7
+Electronic copy available at: https://ssrn.com/abstract=1666818
+
+psi(xi, k|φi−1) =
+Y
+j=−1,1
+(1/ψs
+ji)Dk(j)exp(−xi/ψs
+ji), k = −1, 1; s ∈S
+(7)
+On a given interval ‘d’ let Nd = Bd + Sd be the numbers of trades. The likelihood
+function for interval ‘d’, given that interval ‘d’ is in state ‘s’ is given as :
+Y
+i=Nd
+(psi(xi, k|φi−1))
+(8)
+The overall likelihood function is then given by
+D
+Y
+d=1
+[
+X
+s∈S
+πs
+Y
+i=Nd
+(psi(xi, k|φi−1))]
+(9)
+In the extended PIN-AACD model, the expected number of trades due to informed
+traders in the interval (ti−1, ti), conditional on ψi−1, equals
+(πGλG
+1i + πBλB
+−1,i)xi
+(10)
+and the expected number of trades due to all traders in the interval (ti−1, ti), conditional on ψi−1, is given by
+(λN
+−1,i + λN
+1i + πGλG
+1i + πBλB
+−1,i)xi
+(11)
+Aggregating the above two quantities over the entire period of the sample, PIN is
+computed as the ratio of the total expected number of trades due to informed traders
+to the total expected number of all trades over all trading intervals and is given by
+PIN =
+PD
+d=1
+PNd
+i=1(πGλG
+1i + πBλB
+−1,i)xi
+PD
+d=1
+PNd
+i=1(λN
+−1,i + λN
+1i + πGλG
+1i + πBλB
+−1,i)xi
+(12)
+Note that above formulae is a generalisation of traditional PIN with time-varying
+trade intensities 2. Formula in equation(12) is used to estimate PIN over the entire
+2Assuming trade intensities of informed traders under good news and bad news are the same, i.e.
+λB
+−1,i = λG
+1,i = δ, as in the EKOP framework and assuming λN
+1,i = λ1, λN
+−1,i = λ−1 and πG + πB =
+probability of news, we see that the formula in equation(12) reduces to traditional PIN formula.
+8
+Electronic copy available at: https://ssrn.com/abstract=1666818
+
+sample period. To compute PIN measures over intraday intervals, we sum the numerator and denominator of equation(12) over trades in subintervals of a day and is
+estimated as below
+PINd =
+PNd
+i=1(πGλG
+1i + πBλB
+−1,i)xi
+PNd
+i=1(λN
+−1,i + λN
+1i + πGλG
+1i + πBλB
+−1,i)xi
+(13)
+and the data {xi, yi}, the estimated parameters (λB
+−1,i, λG
+1i, λN
+−1,i, λN
+1i) correspond to
+interval ‘d’. Till now, we have extended AACD model by including trade intensities
+and trading volume, however the probabilities of good news, no news, and bad news
+are constant in the sample period as in EKOP framework. In the next subsection, we
+extend the PIN-AACD framework by modelling time-varying probabilities of news
+rather than assuming it to be constant.
+2.3
+Time-Varying Probability of News
+To model the time-varying probabilities of news, we follow Tay, Ting, Tse, Warachka
+(2009) and adopt a reduced-form approach. Trading volume is used as a covariate
+for news arrival. We assume a logistic model in which the arrival of good news, no
+news, and bad news on interval ‘d’ depends on the aggregate volume of buy and sell
+orders. We denote
+¯
+V B as the average number of lots traded per interval initiated
+by buy orders. Similarly, we denote
+¯
+V S as the average number of lots traded per
+interval initiated by sell orders. Let VB(VS) be the numbers of lots traded on interval
+‘d’ initiated by buy(sell)orders. Assuming logistic model, the probability of no news
+during an interval ‘d’ is given by
+πNd = 1 −θEd =
+1
+1 + exp{δ1 + δ2[log(V B
+d + V S
+d ) −log( ¯
+V B + ¯
+V S)]}
+(14)
+Given news during an interval ‘d’, the probability of good news is given by
+θGd =
+1
+1 + exp[δ3(logV S
+d −log ¯
+V S
+d ) −δ4(logV B
+d −log ¯
+V B
+d )]
+(15)
+The arrivals of good news and bad news on interval ‘d’ are given by πGd = θEdθGd
+and πBd = θEd(1 −θGd), respectively. The extended loglikelihood function is given as
+Loglik =
+Obs.
+X
+j=1
+log[πGλG
+−1e−λG
+−1xjλG
+1 e−λG
+1 xj + πBλB
+−1e−λB
+−1xjλB
+1 e−λB
+1 xj + πNλN
+−1e−λN
+−1xjλN
+1 e−λN
+1 xj](16)
+9
+Electronic copy available at: https://ssrn.com/abstract=1666818
+
+We expect δ2 > 0, so that when the aggregate volume on interval d, V B
+d + V S
+d , increases relative to the interval average volume ¯
+V B + ¯
+V S, the probability of no news
+decreases. δ1 is a scaling parameter, may be positive or negative. Further, we expect
+δ3 > 0 and δ4 > 0, so that V S
+d > ¯
+V S
+d or V B
+d
+<
+¯
+V B
+d
+implies a decreased probability
+of good news. In equation (14), we observe that if V S
+d
+=
+¯
+V S
+d
+and V B
+d
+=
+¯
+V B
+d , the
+probabilities of good news and bad news, given there is news, equal one-half.
+PIN with time-varying probabilities of news during an interval ‘d’ is estimated using
+the formulae
+PINd =
+PNd
+i=1(πGdλG
+1i + πBdλB
+−1,i)xi
+PNd
+i=1(λN
+−1,i + λN
+1i + πGdλG
+1i + πBdλB
+−1,i)xi
+(17)
+3
+Data
+We apply the AACD model to intraday Transaction data of German Bund Futures(FGBLZ8
+December 2008 expiry) traded on EUREX. The data are obtained
+from the Reuters Datascope Tick History database for October 6, 2008 to October
+10, 2008. We extract three variables : time of trade, transaction price, and signed
+volume inferred using the Lee and Ready (1991) algorithm. We also correct for the
+opening auction and for time-of-day eﬀects using procedures similar to those in Engle
+and Russell (1998). All transactions recorded before 8:00am(GMT) and after 5:00
+pm(GMT) are deleted. The No of Buys and No of Sells follow a ‘U’ shaped pattern
+as the day progresses. The Buy and Sell volume also follows the ‘U’ shaped pattern.
+The Average Duration for Buy(Sell) trades follows an Inverted ‘U’ pattern. Initially
+when the trading intensiﬁes around 10:00am the duration ﬁrst drops and then rises
+as it reaches the Lunch hours and again drops during closing hours. The following
+summary statistics are for FGBLZ8(December 2008 expiring Bund Futures contract
+for 10.5 years Maturity, 6% coupon on a 100,000 EUR notional) for the day, 6th
+October, 2008.
+4
+Empirical Results
+This section describes the empirical results and also validates PIN estimates in the
+light of the asymmetric information literature. The results of the PINAACD model
+with time varying probability of no news, good news, bad newss are presented in Ta10
+Electronic copy available at: https://ssrn.com/abstract=1666818
+
+Table 2 Summary statistics of trade direction and duration.
+Statistics
+8:20 -
+10:20 -
+12:20 -
+14:2016:20 -
+Entire
+8:40
+10:40
+12:40
+14:40
+16:40
+Day
+Order-ﬂow variables
+No of Buys
+407
+402
+226
+301
+623
+18590
+Total Buy Volume
+7693
+7319
+6741
+7691
+13637
+351896
+No of Sells
+469
+361
+282
+395
+680
+18751
+Total Sell Volume
+8773
+8190
+6472
+9074
+14037
+353111
+Avg Buy Size
+18.90
+18.21
+29.83
+25.55
+21.89
+18.93
+Avg Sell Size
+18.71
+22.69
+22.95
+22.97
+20.64
+18.83
+Avg Durations Buy (in seconds)
+Given Good News
+0.5078
+0.1246
+0.8489
+0.1387
+0.0750
+0.2094
+Given Bad News
+0.5081
+0.1260
+0.8638
+0.1408
+0.0751
+0.2105
+Avg Durations Sell (in seconds)
+Given Good News
+0.4391
+0.2267
+0.2768
+0.1031
+0.1138
+0.1844
+Given Bad News
+0.4388
+0.2243
+0.2719
+0.1015
+0.1135
+0.1838
+ble 3 3. The model is estimated using the MLE method with the likelihood function
+computed from Equation(16), where the conditional expected durations are deﬁned
+as in Table 1. On each of day, we consider 20-minutes trade intervals and compute
+PIN over each interval using Equation(17). We present the estimates for 8.20-8.40,
+10.20-10.40, 12.20-12.40, 14.20-14.40 and 16.20-16.40 hours of the day. The lower
+panels of Table 3 provide summary statistics for the probability of no news, good
+news, and bad news as well as the intraday PIN estimates. Figure 1 plot the intraday patterns of PIN based on the AACD model as deﬁned in Equation (17) for
+the German Bund futures data. There is a clear intraday pattern of PIN over the
+day, with the measure peaking around pre-scheduled macroeconomic news announcement times, such as 8:00 AM, 10:00 AM and 1:00 PM. High PIN observed during the
+London morning hours when the trading intensiﬁes. PIN settles for a while during
+lunch hours when there is a lull in trading. PIN rises back when New York Business
+open and ﬁnally falls during London Closing hours 4. Intraday Probability of News,
+Good News and Bad News also have substantial variations as can be seen in ﬁgure
+1. Overall, PIN-AACD seems to capture information-based trading of German Bund
+Futures data quite well.
+To validate the economic implications of our methodology for estimating PIN, we ex3The estimates corresponds to 6th October 2008, the estimates for other days are available from
+authors on request.
+4We have estimated the PIN-AACD model for various trading days in the month of October and
+we got similar results.
+11
+Electronic copy available at: https://ssrn.com/abstract=1666818
+
+amine the correlation between PIN estimates and return volatility as well as market
+depth. In the literature, the eﬀect of volatility on information asymmetry is relatively
+mixed. Wang (1993) found that asymmetric information increases return volatility
+5. Contrarily, volatility can have negative impact on PIN. Li and Wu(2006), Aslan,
+O’Hara, David Easley (2007) report that higher liquidity trading and therefore lower
+PIN is related to higher volatility of the stock. Shalan (1993) reaches a similar conclusion that the least informed traders increase volatility, whereas informed trading
+reduces volatility by removing uncertainty in the marketplace. In the Admati and
+Pﬂeiderer(1988) model, frequent trading or less intertrade duration is associated with
+liquidity traders and hence low trading means a high proportion of informed traders
+on the market, which translates into higher volatility. More recently, Chung and Li
+(2003) found that PIN is not signiﬁcantly related to price volatility. The eﬀect of
+realized volatility on information asymmetry is unexpectedly found to be negative.
+The market depth is measured by Kyle’s lambda deﬁned as price movement per unit
+signed volume of trade. Kyle’s lambda is estimated as the regression coeﬃcient of
+price changes on signed logarithmic volumes. We then calculate the correlation coefﬁcients between Kyle’s lambda and estimates of PIN. Large values of Kyle’s lamdba
+implies lack of depth of the market. If PIN reﬂects asymmetric information, there
+should be positive correlation between PIN and Kyle’s lambda. From the table below
+we see that the contemporaneous correlation of PIN with Kyle’s lambda is positive.
+Correlations in the following table correspond to 6th October 2008. We have also
+calculated correlations for other days and found that results were similar with the
+exception of few days.
+Correlations of PIN versus realised volatility, market depth.
+Correlations
+Corr(PIN,Market Depth)
+0.5927
+Corr(PIN,Realised Volatility)
+-0.2083
+Corr(News,Volume)
+0.2959
+5
+Conclusion
+The identiﬁcation of informed and uninformed trading activities is an important topic
+in market microstructure. We present an empirical model for inferring the information content of bond trades at the transaction level. Using the PIN-AACD model, we
+are able to identify the arrival of informed traders to the ﬁxed income market. This
+5If PIN successfully measures the extent of asymmetric information we would expect PIN to
+correlate positively with return volatility.
+12
+Electronic copy available at: https://ssrn.com/abstract=1666818
+
+models extends the AACD model to incorporate trade directions, volume, durations,
+and their interactions. The model allows the underlying probabilities of good news
+and bad news to be time varying and estimates the intraday probability of informed
+trading. The comparison of our PIN estimates with return volatility, market depth,
+news and trading volume supports the economic implications of our methodology.
+The analysis might support trading and sales desks in identifying informed trades,
+however the valuable information generated from the analysis can also be tailored to
+support varying degrees of usage and type of audience. PIN estimates can also be
+used for proﬁling clients into informed and uninformed clients. PIN estimates can
+further be used as an explanatory variable as proxy for information in all the information based models. The results presented here are based on a single bond trade data,
+it will be interesting to see if there is any regularity in intraday PIN movements over
+a large sample of bonds. This model can also be extended by allowing the parameters
+that capture reduction in duration, ‘µ’, to diﬀer in Buy versus Sell orders as might
+be justiﬁed due to shortselling restrictions.
+6
+References
+• Admati, A., R., and Pﬂeiderer P., 1988, ‘A theory of intraday patterns: volume
+and price variability.’, Review of Financial Studies, 1, 3-40
+• Anthony Tay, Christopher Ting, Yiu Kuen Tse and Mitch Warachka, 2009,
+‘Using High-Frequency Transaction Data to Estimate the Probability of Informed
+Trading.’,Journal of Financial Econometrics, 7, 1–24
+• Bauwens, L., and P. Giot, 2003, ‘Asymmetric ACD Models: Introducing Price
+Information in ACD Models.’, Empirical Economics, 28, 709–731
+• Easley, D., and O’Hara, M., 1987, ‘Price, trade size, and information in securities markets.’, Journal of Financial Economics, 19, 69-90
+• Easley, D., Kiefer, N., O’Hara, M., and Paperman, J., 1996, ‘Liquidity, information and infrequently traded stocks.’, Journal of Finance, 51, 1405-1436
+• Easley, D., Kiefer, N., and O’Hara, M., 1997, ‘The information content of the
+trading process.’, Journal of Empirical Finance, 4, 159-185
+• Easley, D., R. F. Engle, O’Hara, M., and L. Wu., 2008, ‘Time-Varying Arrival
+Rates of Informed and Uninformed Trades.’, Journal of Financial Econometrics,
+6, 171-207
+13
+Electronic copy available at: https://ssrn.com/abstract=1666818
+
+• Hasbrouck, J., 1991, ‘Measuring the information content of stock trades.’, Journal of Finance, 46, 179-207
+• Hasbrouck, J., and George Soﬁanos, 1991, ‘The trades of market makers: An
+empirical analysis of NYSE specialists.’, Journal of Finance, 48, 1565-1593
+• Lee, C. M. C., and M. A. Ready, 1991, ‘Inferring Trade Direction from Intraday
+Data.’, Journal of Finance, 46, 733-746
+14
+Electronic copy available at: https://ssrn.com/abstract=1666818
+
+Figure 1: Intraday PIN, Trading Volume, Prob of News, Good news and Bad News
+07:40−08:00
+09:20−09:40
+11:00−11:20
+12:40−13:00
+14:20−14:40
+16:00−16:20
+17:40−18:00
+0.2
+0.25
+0.3
+0.35
+20min Intervals
+PIN
+07:40−08:00
+09:20−09:40
+11:00−11:20
+12:40−13:00
+14:20−14:40
+16:00−16:20
+17:40−18:00
+1
+2
+3
+4
+x 10
+4
+20min Intervals
+TotalVolume
+07:40−08:00
+09:20−09:40
+11:00−11:20
+12:40−13:00
+14:20−14:40
+16:00−16:20
+17:40−18:00
+0.4
+0.5
+0.6
+0.7
+0.8
+20min Intervals
+Prob of News
+07:40−08:00
+09:20−09:40
+11:00−11:20
+12:40−13:00
+14:20−14:40
+16:00−16:20
+17:40−18:00
+0.2
+0.25
+0.3
+0.35
+0.4
+20min Intervals
+Prob of Good,Bad News
+pGood
+pBad
+TotalVolumeB+S
+PNews
+Probability of Informed Trading
+15
+Electronic copy available at: https://ssrn.com/abstract=1666818
+
+Table 3 Estimates of the Intraday PIN-AACD model with time varying
+probabilities of good news, and bad news.
+Trade Variables
+Param
+8.2010.2012.2014.2016.208:40
+10:40
+12:40
+14:40
+16:40
+Sale after sale
+ν−1,−1
+-0.0012
+-0.0001
+-0.0116
+0.0007
+-0.0047
+Sale after buy
+ν−1,1
+-0.0013
+-0.0067
+-0.0046
+0.0003
+-0.0025
+Condl. duration for sales
+α−1
+0.0188
+0.1454
+0.1494
+0.1838
+0.1130
+Lagged duration for sales
+β−1
+0.0052
+0.5744
+0.4561
+0.2345
+0.5411
+Volume-direction for sales
+ς−1
+0.0008
+0.0007
+0.0015
+-0.0033
+0.0004
+Adjustment for Information
+µ
+0.0032
+0.0003
+-0.0031
+0.0020
+0.0019
+Buy after sale
+ν1,−1
+-0.0035
+-0.0001
+0.0074
+-0.0052
+0.0023
+Buy after buy
+ν1,1
+0.0054
+0.0011
+-0.0101
+-0.0197
+0.0013
+Condl. duration for buys
+α1
+0.2408
+0.0022
+0.2261
+0.1786
+0.1076
+Lagged duration for buys
+β1
+0.7324
+0.3873
+0.2983
+0.4309
+0.3181
+Volume-direction for buys
+ς1
+-0.0017
+0.0001
+-0.0007
+-0.0033
+0.0020
+Prob Equation, Coeﬀ1
+δ1
+0.1054
+0.2104
+0.3122
+0.5910
+0.4168
+Prob Equation, Coeﬀ2
+δ2
+0.5933
+0.2416
+0.3815
+0.3900
+0.5210
+Prob Equation, Coeﬀ3
+δ3
+0.0032
+0.6685
+0.4511
+0.6326
+0.3236
+Prob Equation, Coeﬀ4
+δ4
+0.1871
+0.1448
+0.4067
+0.8619
+0.4808
+Probabilities
+Prob of good news
+θG
+0.2366
+0.2839
+0.2759
+0.3068
+0.3029
+Prob of bad news
+θB
+0.2504
+0.2602
+0.2816
+0.3458
+0.2933
+Prob of no news
+πN
+0.5130
+0.4559
+0.4426
+0.3474
+0.4038
+Prob of Informed Trading
+PIN
+0.3055
+0.1854
+0.2698
+0.2254
+0.2368
+16
+Electronic copy available at: https://ssrn.com/abstract=1666818

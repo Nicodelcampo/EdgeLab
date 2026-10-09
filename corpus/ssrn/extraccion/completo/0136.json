@@ -1,0 +1,155 @@
+{
+  "doc_id": 136,
+  "titulo": "From No-Arbitrage to Foundation Models: A Review of Financial-Mathematics-Constrained Generative AI and Deep Learning for Quantitative Finance",
+  "resumen_operativo": "Revisión semi-sistemática que organiza la literatura de AI en finanzas cuantitativas alrededor de restricciones matemático-financieras (no-arbitrage, martingale pricing, admissibility de superficies de volatilidad, hedging loss, tail risk). Propone una taxonomía de tres capas: (1) admissibility estructural (¿es posible el output financiero?), (2) objetivos económicos a nivel tarea (¿es útil?), (3) gobernanza/validación (¿es válida la evidencia?). Identifica cinco patrones de inyección de constraints: hard parameterization, soft penalties, projection/repair, adversarial testing, y temporal validation. Cubre option pricing, asset pricing, market generators, LLMs financieros y time-series foundation models. Incluye 51 papers analizados. Es un survey sin resultados empíricos propios, escrito por un estudiante de pregrado.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "no-arbitrage pricing",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Principio fundamental que restringe los precios de derivados mediante argumentos de replicación dinámica y medidas martingala equivalentes. El paper lo presenta como la restricción más básica que los modelos de AI deben respetar para ser financieramente válidos.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "martingale pricing"},
+        {"tipo": "PARTE_DE", "objeto": "structural admissibility"}
+      ],
+      "cita_textual": "No-arbitrage is the most basic constraint in financial modeling. In its static form, it rules out price systems that permit a nonnegative payoff with positive probability of gain and no initial cost"
+    },
+    {
+      "nombre": "martingale pricing",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Fundamento matemático de asset pricing donde precios descontados son martingalas bajo una medida de pricing equivalente. El paper argumenta que no es solo una base histórica sino un test de consistencia económica para modelos AI.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "no-arbitrage pricing"},
+        {"tipo": "APLICA_A", "objeto": "option pricing"}
+      ],
+      "cita_textual": "Martingale pricing is not simply a historical foundation of derivatives. It becomes a way to distinguish statistical fit from economic consistency"
+    },
+    {
+      "nombre": "option pricing",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Pricing de opciones como dominio donde las restricciones matemáticas son explícitas: put-call parity, monotonicidad/convexidad en strike, calendar spread restrictions. El paper señala que es un laboratorio natural para AI constraint-aware.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "no-arbitrage pricing"},
+        {"tipo": "USA", "objeto": "deep learning"}
+      ],
+      "cita_textual": "In derivatives, the mathematical constraints are explicit. Static arbitrage, put-call parity, calendar restrictions, and martingale pricing provide clear tests"
+    },
+    {
+      "nombre": "deep learning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Redes neuronales, neural SDEs, GANs, diffusion models y transformers aplicados a pricing, calibration y hedging. El paper argumenta que sin constraints financieras, estos modelos pueden generar outputs estadísticamente precisos pero económicamente inválidos.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "option pricing"},
+        {"tipo": "APLICA_A", "objeto": "asset pricing"},
+        {"tipo": "REQUIERE", "objeto": "no-arbitrage pricing"}
+      ],
+      "cita_textual": "A model can fit historical returns, option prices, or financial news while violating basic economic conditions"
+    },
+    {
+      "nombre": "deep hedging",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Formulación del hedging como problema de aprendizaje bajo costos de transacción y preferencias de riesgo (Buehler et al., 2019). La red aprende políticas que minimizan la distribución de pérdidas terminales en vez de replicar un delta hedge frictionless.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "deep learning"},
+        {"tipo": "MEJORA_A", "objeto": "delta hedging"},
+        {"tipo": "REQUIERE", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "Buehler et al. (2019) formulate hedging under transaction costs and risk preferences as a learning problem"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costos de transacción que el deep hedging incorpora explícitamente en la función objetivo, desplazando el foco de replicar un hedge ideal a manejar la distribución de pérdidas en un entorno realista.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "deep hedging"},
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "A hedging model must also account for trading frequency, transaction costs, liquidity, risk aversion, and the distribution of terminal hedging loss"
+    },
+    {
+      "nombre": "stochastic volatility",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelos de volatilidad estocástica (Heston 1993) y rough volatility (Gatheral et al., 2018) que imponen restricciones de calibración. Deep calibration puede acelerarlos pero debe preservar las relaciones modelo-implied entre paths, precios y superficies.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "option pricing"},
+        {"tipo": "REQUIERE", "objeto": "deep learning"}
+      ],
+      "cita_textual": "Rough volatility illustrates why this distinction matters. Deep calibration can make them operational, yet the learned system must still preserve the model-implied relation"
+    },
+    {
+      "nombre": "asset pricing",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Asset pricing empírico con machine learning donde la restricción no es local (una superficie de opciones) sino global: la relación entre expected returns, factores, SDF y test assets. Autoencoder asset pricing models imponen esta estructura.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "no-arbitrage pricing"},
+        {"tipo": "USA", "objeto": "deep learning"}
+      ],
+      "cita_textual": "Autoencoder asset pricing models address this issue directly. The model compresses information into factors that explain expected returns through an economic pricing relation"
+    },
+    {
+      "nombre": "large language models",
+      "tipo": "metodo",
+      "definicion_en_contexto": "LLMs financieros (BloombergGPT, FinGPT, FinBERT) que procesan noticias, filings, earnings calls y social media. El paper enfatiza que su validación requiere timestamped evaluation, control de leakage temporal y costos de implementación.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "NLP"},
+        {"tipo": "REQUIERE", "objeto": "walk-forward validation"}
+      ],
+      "cita_textual": "For a financial LLM, a benchmark built from revised filings or post-event news labels can overstate signal quality"
+    },
+    {
+      "nombre": "walk-forward validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Validación temporal estricta requerida para foundation models financieros: rolling-origin backtests, leakage audits, distributional forecasts, tail calibration y cost-aware trading simulations.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "look-ahead bias"},
+        {"tipo": "REQUIERE", "objeto": "large language models"}
+      ],
+      "cita_textual": "A foundation model for quantitative finance must therefore be evaluated through rolling-origin backtests, leakage audits, distributional forecasts, tail calibration, transaction-cost-aware trading simulations, and stress-period performance"
+    },
+    {
+      "nombre": "look-ahead bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo de información futura que puede infiltrarse en LLMs y foundation models a través de pretraining data, databases revisadas o construcción de benchmarks. Es la constraint de gobernanza más crítica para modelos financieros basados en texto.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "walk-forward validation"},
+        {"tipo": "CONTRADICE_A", "objeto": "large language models"}
+      ],
+      "cita_textual": "Evaluation must ensure that the model does not access future information through pretraining data, revised databases, or benchmark construction"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de sobreajuste en asset pricing AI exacerbado por baja signal-to-noise ratio, regímenes inestables y riesgos severos de multiple testing. El paper exige cost-adjusted, capacity-aware out-of-sample performance.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "walk-forward validation"},
+        {"tipo": "CONTRADICE_A", "objeto": "deep learning"}
+      ],
+      "cita_textual": "A model can appear successful because of data snooping, survivor bias, look-ahead bias, or an evaluation period that favors a particular style"
+    },
+    {
+      "nombre": "GAN",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Generative Adversarial Networks aplicadas a generación de escenarios de mercado. El paper destaca TimeGAN, Tail-GAN y VolGAN como ejemplos que alinean el objetivo generativo con restricciones financieras (arbitrage-free surfaces, tail risk estimation).",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "market generation"},
+        {"tipo": "REQUIERE", "objeto": "no-arbitrage pricing"}
+      ],
+      "cita_textual": "VolGAN for arbitrage-free implied-volatility surface generation. This line of work is central because it treats arbitrage constraints as part of the generative target"
+    },
+    {
+      "nombre": "NLP",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Procesamiento de lenguaje natural como puente entre datos textuales financieros y modelos predictivos; los LLMs lo extienden con capacidad de transfer learning y razonamiento contextual.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "large language models"},
+        {"tipo": "APLICA_A", "objeto": "sentiment analysis"}
+      ],
+      "cita_textual": "Financial LLMs extend AI in finance from numerical prediction to text-rich decision environments"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Es un survey sin resultados empíricos propios, pero la taxonomía de constraints (no-arbitrage, temporal validation, leakage control) es directamente aplicable al diseño de sistemas de backtesting y validación de estrategias intradía en ES futures. El framework de evaluación layered (statistical fit → mathematical admissibility → economic performance → robustness → governance) es una checklist útil para auditar modelos de trading."
+  }
+}

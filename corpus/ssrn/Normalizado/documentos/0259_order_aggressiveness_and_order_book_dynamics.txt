@@ -1,0 +1,3442 @@
+Order Aggressiveness and Order Book Dynamics
+Anthony D. Hall
+School of Finance and Economics
+University of Technology, Sydney
+Nikolaus Hautsch∗
+Institute of Economics
+University of Copenhagen
+December 29, 2004
+Abstract
+In this paper, we study the determinants of order aggressiveness and traders’ order
+submission strategy in an open limit order book market. Using order book data from
+the Australian Stock Exchange, we model traders’ aggressiveness in market trading,
+limit order trading as well as in order cancellations on both sides of the market using a
+six-dimensional autoregressive intensity model. The information revealed by the open
+order book plays an important role in explaining the degree of order aggressiveness in
+the individual processes. Moreover, evidence for signiﬁcant dynamic interdependencies
+between the individual processes conﬁrms the usefulness of the multivariate setting.
+Overall, our empirical results conﬁrm theoretical ﬁndings on limit order book trading
+and show that a trader’s decision of when and which order to submit is signiﬁcantly
+inﬂuenced by the queued volume, the market depth, the inside spread, recent volatility,
+as well as recent changes in both the order ﬂow and the price.
+Keywords: order aggressiveness, multivariate intensity, open limit order book, order
+book dynamics
+JEL Classiﬁcation: G14, C32, C41
+1
+Introduction
+Limit order book data provide the maximum amount of information about ﬁnancial markets at the lowest aggregation level. A theme in the recent literature is to obtain a better
+understanding of a trader’s fundamental problem to decide when to submit which type of
+order and on which side of the market.
+∗Corresponding author. Email: Nikolaus.Hautsch@econ.ku.dk. Address: Studiestraede 6, University of
+Copenhagen, DK-1455 Copenhagen-K, Denmark, tel: ++ 45 35323022, fax: ++ 45 35323000. Acknowledgements: Special thanks are due to James McCulloch whose assistance in preparing the data has made
+this research project feasible.
+1
+
+In this paper, we model a trader’s decision problem in a multivariate setting. The
+basic idea is to describe the processes of aggressive market orders, aggressive limit orders
+as well as aggressive cancellations on both sides of the market in terms of a six-dimensional
+point process which is modelled by an autoregressive intensity model. The multivariate
+stochastic intensity function, associated with the contemporaneous instantaneous arrival
+rate of an order in each dimension is a natural concept to simultaneously model the decision
+of when and which order to submit.
+In the previous literature on order aggressiveness, the trader’s decision problem is
+typically addressed by applying the order classiﬁcation scheme proposed by Biais, Hillion,
+and Spatt (1995). The major advantage of this approach is that it is easy to apply since
+all information on order aggressiveness is encapsulated into a (univariate) variable which
+permits modelling the degree of aggressiveness using a standard ordered probit model
+with explanatory variables that capture the state of the order book.1 However, there are
+three major drawbacks of this model. First, it is not a dynamic model, so any dynamics
+within the dynamics as well as all interdependencies between the individual processes are
+ignored. Ignoring multivariate dynamics and spill-over eﬀects can induce misspeciﬁcations
+and biases. Second, in a recent paper, Coppejans and Domowitz (2002) show that trades
+behave quite diﬀerently from orders and cancellations in relation to particular order book
+variables. This makes it questionable whether it is reasonable to treat these events as the
+ordered realizations of the same (single) variable.2 Third, modelling order aggressiveness
+based on an ordered response model ignores the timing of orders.
+Thus, the trader’s
+decision is modelled conditional on the fact that there is a submission of an order at a
+particular point in time. However, the question of when to place the order is ignored.
+Our study avoids these diﬃculties and can be regarded as an extension of the existing
+approaches by Coppejans and Domowitz (2002), Ranaldo (2004), and Pascual and Veredas
+(2004) in several directions. First, using a multivariate autoregressive intensity model explicitly accounts for order book dynamics and interdependencies between the individual
+processes. Second, we allow for the possibility that market orders, limit orders and cancellations behave diﬀerently in their dependence of the state of the market as we model them
+as individual processes. Thus, instead of trying to capture order aggressiveness in terms of
+a single variable, we account for the multi-dimensionality of the decision problem. Third,
+the concept of the intensity function is a natural continuous-time measure for a trader’s
+1See e.g. Al-Suhaibani and Kryzanowski (2000), Griﬃths, Smith, Turnbull, and White (2000), Holliﬁeld,
+Miller, Sand˚as, and Slive (2002), Ranaldo (2004) or Pascual and Veredas (2004).
+2For that reason, Pascual and Veredas (2004) consider the decision process as a sequential process of
+two steps. In the ﬁrst step, the trader chooses between a market order, limit order and a cancellation,
+whereas in the second step, he decides the exact order placement.
+2
+
+degree of aggressiveness. The multivariate intensity function provides the instantaneous
+order arrival probability in each instant and in each dimension. This naturally captures
+the question of where and when it is likely that an order is placed.
+Since we are particularly interested in the determinants of a trader’s order aggressiveness, we explicitly focus on the processes of aggressive buy and sell market orders3,
+aggressive ask and bid limit orders4, and aggressive ask and bid cancellations5. According
+to previous studies in this ﬁeld, these are the most interesting and substantial orders.
+In this sense, our approach can be seen as an extension of the study by Coppejans and
+Domowitz (2002). They also focus on the arrival rate of trades, limit orders and cancellations, however not explicitly on aggressive orders but study all incoming orders. Moreover,
+they analyze the individual processes separately using a generalized version of Engle and
+Russell’s (1998) (univariate) autoregressive conditional duration (ACD) model, so their
+framework does not allow for any multivariate interdependencies between the individual
+processes.
+Using the described setting, we state the following research questions: (i) Can we
+conﬁrm previous results regarding the determinants of order aggressiveness and traders’
+order submission strategies when the multivariate dynamics of limit order books are fully
+taken into account? (ii) How strong are the (dynamic) interdependencies between the
+individual processes and how important is it to take order book dynamics into account?
+(iii) What is the explanatory power of order book variables on top of the multivariate
+dynamics? (iv) Are traders looking not only on the state of the book, but also at previous
+market activities inducing changes of the book during the past minutes?
+Our empirical analysis is based on order book data from the ﬁve most liquid stocks
+traded on the Australian Stock Exchange (ASX) during the period July-August 2002. By
+replicating the electronic trading at the ASX, we reconstruct the complete order book at
+each instant of time. The order arrival intensities are modelled using a six-dimensional
+version of the autoregressive conditional intensity (ACI) model introduced by Russell
+(1999), where we include variables capturing the current state of the order book as well
+as recent changes in the book.
+Our empirical results mainly conﬁrm previous theoretical results on traders’ optimal
+order submission strategies as derived by Parlour (1998) and Foucault (1999). However,
+3These are market orders whose posted volume exceeds the standing volume on the ﬁrst level of the
+opposite queue and whose volume is equal or higher than the 75%-quantile of all order volumes.
+4These are limit orders whose posted price improves the current best ask or bid price, respectively and
+whose volume is equal or higher than the 75%-quantile of all order volumes.
+5These are cancellations of pending limit orders with a volume equal or higher than the 75%-quantile
+of all order volumes.
+3
+
+conﬁrming Coppejans and Domowitz (2002), we also observe that the arrival rates of
+market orders and limit orders can behave quite diﬀerently in their dependence of the state
+of the order book. Therefore, a limit order should not necessarily be considered simply as
+a less aggressive version of a market order as in the order classiﬁcation scheme proposed by
+Biais, Hillion, and Spatt (1995). This ﬁnding motivates modelling the individual processes
+in a multivariate setting.
+Moreover, we ﬁnd clear evidence for multivariate dynamics
+and interdependencies between the individual processes.
+Finally, it is shown that the
+inclusion of order book variables clearly improves the goodness-of-ﬁt of the model. We
+also demonstrate that a model which excludes dynamics, but does include order book
+variables clearly outperforms a dynamic speciﬁcation without covariates. Hence, we ﬁnd
+signiﬁcant evidence for the notion that traders’ order aggressiveness and order submission
+strategy is aﬀected by the state of the limit order book.
+The remainder of the paper is organized in the following way: In Section 2, we discuss
+economic propositions on the basis of recent theoretical research on limit order book
+trading.
+Section 3 presents the econometric approach.
+In Section 4, we describe the
+data based on ASX trading as well as descriptive statistics characterizing the individual
+limit order books. The empirical results are reported and discussed in Section 5, whereas
+Section 6 concludes.
+2
+Economic Propositions
+The desire for a deeper understanding of market participants’ order submission strategies in a limit order book market has inspired a wide range of theoretical and empirical
+research6. In a limit order book market, investors can choose between limit orders and
+market orders. In this context, traders face a dilemma. The advantage of a market order
+is that it is executed immediately. However, with a limit order, while traders have the
+possibility of improving their execution price, they face the risk of non-execution as well
+as the risk of being ”picked oﬀ”. The latter arises from the possibility that the limit order
+can be mispriced when time elapses as a result of new information entering the market.
+These economic principles form the basis of numerous theoretical approaches in this area.
+One of the ﬁrst models in this ﬁeld was Cohen, Maier, Schwartz, and Whitcomb (1981)
+who discussed the ”gravitational pull” property of a limit order. This argument refers to
+the idea that after observing a limit order, a market participant has a higher incentive to
+6See e.g. Glosten (1994), Handa and Schwartz (1996), Harris and Hasbrouck (1996), Seppi (1997),
+Harris (1998), Bisi`ere and Kamionka (2000), Griﬃths, Smith, Turnbull, and White (2000), Lo and Sapp
+(2003), Cao, Hansch, and Wang (2003), or Ranaldo (2004) among others.
+4
+
+post a market order than placing further limit orders in the immediate neighborhood of
+the existing oﬀer which would induce the risk of non-execution.
+This idea was reﬁned and extended in several directions by Parlour (1998), Foucault
+(1999), Griﬃths, Smith, Turnbull, and White (2000), or Handa, Schwartz, and Tiwari
+(2003).
+Parlour (1998) proposes a dynamic equilibrium model in which traders with
+diﬀerent valuations for an asset arrive randomly in the market. Then, the endogenous
+execution probability of a limit order depends both on the state of the book and how
+many market orders will arrive over the remainder of the day. She shows that both the
+past, through the state of the book, and the future, through the expected order ﬂow, aﬀect
+the placement strategy and cause systematic patterns in transaction and order data. The
+major underlying idea is the mechanism of ”crowding out” of market sell (buy) orders
+after observing market buy (sell) orders. This is due to the eﬀect that after a buy (sell)
+market order, a limit order at the ask (bid) has a higher execution probability. Therefore,
+since the payoﬀto limit orders increases with the probability of execution, a trader who
+wants to sell (buy) is more likely to submit a sell (buy) limit order instead of a sell (buy)
+market order. Because of this crowding out of market orders on the opposite side, buy
+(sell) market orders are less frequent after sell (buy) market orders than after buy (sell)
+market orders. This has been empirically conﬁrmed by Biais, Hillion, and Spatt (1995)
+using data from the Paris Bourse. Similarly, Parlour’s model predicts that the probability
+of observing a limit buy order after a limit buy order is smaller than the probability of
+observing a limit buy order after any other transaction. This is due to the fact that a
+lengthening of the queue at one level decreases the execution probability of further limit
+orders at the same level and thus makes them more unattractive.
+These underlying principles determine the dependence of a trader’s aggressiveness on
+the state of the limit order book. Order aggressiveness is typically measured by applying
+the classiﬁcation scheme proposed by Biais, Hillion, and Spatt (1995) that classiﬁes orders
+according to their position in the order book and their implied price impact. By setting the
+limit price, the limit volume and attributes associated with speciﬁc execution rules, traders
+implicitly determine the aggressiveness of their order, and thus inﬂuence the execution
+probability and the implied price impact.
+According to this classiﬁcation scheme, the
+most aggressive order is a market order which is allowed to be matched with several price
+levels on the opposite side, i.e. an order which is allowed to ”walk up” or ”down” the book.
+Accordingly, the least aggressive order is a cancellation, where a pending limit order is
+removed from the book.
+Applying the theoretical underpinning outlined above, ”gravitational pull” and ”crowd5
+
+ing out” arguments imply testable relationships regarding changes of the order book volume and their impact on traders’ incentive to post aggressive market orders, limit orders
+and cancellations. As a result, we can formulate the following testable propositions:
+(i) An increase of the volume on the ask (bid) side
+– decreases the aggressiveness of market trading on the ask (bid) side and increases it on the bid (ask) side,
+– decreases the aggressiveness of limit order trading on the ask (bid) side,
+– decreases the probability of cancellations on the bid (ask) side.
+Similar mechanisms apply to the inﬂuence of market depth on traders’ order aggressiveness.
+A higher depth on the ask (bid) side reduces the execution probability on the ask (bid)
+side and induces a crowding out towards the opposite market side. A related argument
+refers to the informational content of the open limit order book. In particular, a higher
+depth on the ask (bid) side reﬂects that a relative higher proportion of volume is to be
+sold (bought) at a comparably low (high) price. This induces a negative (positive) price
+signal which increases traders’ preference to sell (buy). However, in the case a trader posts
+an aggressive limit order, he has to undercut/overbid the current price level in order to
+increase the execution probability. This reduces the order’s possible price improvement
+and makes limit order trading more expensive. Hence, following the ”gravitational pull”
+argument, it is more reasonable to directly post a market order on the opposite side instead
+of posting a further limit order and bearing the risk of non-execution. This is stated in
+hypothesis (ii):
+(ii) An increase of the depth on the ask (bid) side
+– decreases the aggressiveness of market trading on the ask (bid) side and increases it on the bid (ask) side,
+– decreases the aggressiveness of limit order trading on the ask (bid) side,
+– increases the probability of cancellations on the ask (bid) side.
+Furthermore, an important determinant of liquidity is the inside spread between the
+best ask and bid price. The bid-ask spread determines the costs of crossing the market and
+thus of market trading. The higher the bid-ask spread, the higher the costs of immediacy,
+and thus the higher traders’ preference for limit order trading:
+(iii) The higher the bid-ask spread, the lower the intensity of aggressive market trading.
+In contrast, the higher the bid-ask spread, the higher the intensity of aggressive limit
+order trading.
+6
+
+Moreover, traders’ order submission strategy should not only depend on the current
+state of the book but also on recent movements of the price. Positive price movements
+during the past trading minutes indicate that a substantial amount of the ask volume was
+cleared leading to a decline of the ask depth. Since potential buyers face a high price for
+immediacy, limit order trading on the bid side becomes more attractive. Moreover, when
+price processes tend to be mean-reverting, a price increase over a particular period should
+cause a rise of the sell pressure and an increase of the non-execution risk of limit ask orders
+implying a crowding out of limit ask orders towards limit bid orders. These implications
+are summarized in the following hypothesis:
+(iv) A period of positive price movements leads to a higher (lower) intensity of aggressive
+market trading on the bid (ask) side.
+Furthermore, it increases (decreases) the
+intensity of aggressive limit trading on the bid (ask) side.
+In Foucault (1999), investors’ valuations of shares diﬀer. Thus, traders’ order placement
+strategies depend on their valuations and the best oﬀers in the book. In a dynamic equilibrium model, Foucault (1999) shows that the volatility of the asset is a main determinant
+of the mix between market and limit orders. Higher volatility increases the pick-oﬀrisk
+which increases the reservation prices of limit order traders, and thus the costs of market
+trading. Then, market trading is less intensive implying a decrease of limit order execution
+probabilities. This is summarized in proposition (v):
+(v) A higher volatility decreases market order trading and increases limit order trading.
+These formulated hypotheses underpin the rationale for the construction of appropriate
+explanatory variables in Section 5.
+3
+The Econometric Approach
+The arrival of aggressive market orders, limit orders and cancellations is statistically described as a multivariate (ﬁnancial) point process. The econometric literature concerned
+with the modelling of ﬁnancial point processes was originated by the seminal paper by
+Engle and Russell (1998) who introduced the class of autoregressive conditional duration
+(ACD) models. While this model was successfully applied to univariate duration processes7, it is not easily extended to a multivariate framework. The reason is that in a
+7This model has been extended in several directions, see e.g. Bauwens and Giot (2000), Lunde (2000),
+Dufour and Engle (2000), Grammig and Maurer (2000), Zhang, Russell, and Tsay (2001), Fernandes and
+Grammig (2001), Coppejans and Domowitz (2002) or Bauwens and Veredas (2004) among others. For an
+overview, see Hautsch (2004).
+7
+
+multivariate context the particular processes occur asynchronously, which is diﬃcult to
+address in a discrete time duration model.
+The most natural way is to model multivariate point processes on the basis of a speciﬁcation of the (multivariate) intensity function leading to a continuous-time framework. In
+this paper, we apply a six-dimensional version of the autoregressive conditional intensity
+(ACI) model proposed by Russell (1999). Following the notation of Hall and Hautsch
+(2004), let t denote the calendar time and deﬁne tk
+i , k = 1, . . . , K as the arrival times of
+a K-dimensional point process. Let Nk(t) := P
+i≥1 1l {tk
+i ≤t} and Mk(t) := P
+i≥1 1l {tk
+i <t}
+represent the right-continuous and left-continuous counting functions associated with the
+k-type process, respectively.
+Deﬁne the multivariate intensity function as
+λ(t; Ft) := (λ1(t; Ft), λ2(t; Ft), . . . , λK(t; Ft)),
+where
+λk(t; Ft) := lim
+∆↓0
+1
+∆Pr
+h
+(Nk(t + ∆) −Nk(t)) > 0 |Ft
+i
+(1)
+denotes the (conditional) intensity function associated with the counting process Nk(t)
+given the information set Ft.
+Hence, in this framework λk(t; Ft) corresponds to the
+instantaneous arrival rate of an aggressive order or cancellation, and thus is a natural
+(continuous-time) measure for the degree of order aggressiveness at each instant.
+Russell (1999) proposed parameterizing λk(t; Ft) in terms of a proportional intensity
+structure
+λk(t; Ft) = Ψk
+M(t)λk
+0(t)sk(t),
+k = 1, . . . K,
+(2)
+where Ψk
+i is a function capturing the dynamics of the k-type process, λk
+0(t) denotes a k-type
+baseline intensity component that speciﬁes the (deterministic) evolution of the intensity
+until the next event and sk(t) is a k-type seasonality component that may be speciﬁed using
+a spline function. The basic idea of the ACI model is to specify the dynamic component
+Ψk
+i in terms of an autoregressive process. Assume that Ψk
+i is speciﬁed in log-linear form,
+i.e.
+Ψk
+i := exp
+³
+˜Ψk
+i + z′
+i−1γk´
+,
+(3)
+where zi denotes the vector of explanatory variables capturing the state of the market at
+arrival time ti and γk the corresponding parameter vector associated with process k. Then,
+8
+
+the ACI(1,1) model is obtained by parameterizing the vector ˜Ψ′
+i :=
+³
+˜Ψ1
+i , ˜Ψ2
+i , . . . , ˜ΨK
+i
+´
+in
+terms of a VARMA type speciﬁcation,
+˜Ψi =
+³
+Akϵi−1 + B ˜Ψi−1
+´
+yk
+i−1,
+(4)
+where Ak = {αk
+j } denotes a (K × 1) innovation parameter vector and B = {βij} is a
+(K ×K) matrix of persistence parameters. Moreover, yk
+i deﬁnes an indicator variable that
+takes the value 1 if the i-th point of the pooled process is of type k.
+The innovation term ϵi is computed based on the integrated intensity function associated with the process observed most recently. Hence,
+ϵi :=
+K
+X
+k=1
+Ã
+1 −
+Z tk
+i
+tk
+i−1
+λk(s; Fs)ds
+!
+yk
+i .
+(5)
+Under fairly weak assumptions, the integrated intensity function corresponds to an i.i.d. standard exponential variate8. Therefore, ϵi is a random mixture of centered i.i.d. standard
+exponential variables, and thus is itself i.i.d. For this reason, weak stationarity of the
+model depends on the eigenvalues of the matrix B. If the eigenvalues of B lie inside the
+unit circle, the process ˜Ψi is weakly stationary.
+Note that the intensity function has left-continuous sample paths. Therefore, Ψi has
+also to be a left-continuous function and has to be predetermined at least instantaneously
+before the arrival of a new event. Therefore, Ψi is known instantaneously after the occurrence of ti−1 and does not change until ti. Then, λk(t; Ft) changes between ti−1 and ti
+only as a deterministic function of time (according to λk
+0(t) and sk(t)).
+The baseline intensity function λk
+0(t) is speciﬁed in terms of the backward recurrence
+times xk(t) := t −tk
+Mk(t), k = 1, . . . , K, of all processes and may be speciﬁed using a
+Weibull-type parameterization depending on the parameters ωk and pk
+r,
+λk
+0(t) = exp(ωk)
+K
+Y
+r=1
+xr(t)pk
+r−1, (pk
+r > 0).
+(6)
+Then, by denoting W as the data matrix consisting of all points and explanatory
+variables, the log likelihood function of the multivariate ACI model is computed as
+ln L (W; θ) =
+K
+X
+k=1
+n
+X
+i=1
+(
+−
+Z tk
+i
+tk
+i−1
+λk(s; Fs)ds + yk
+i ln λk(ti; Fti)
+)
+,
+(7)
+where n denotes the number of points of the pooled process. Under correct speciﬁcation
+of the model, the resulting k-type ACI residuals
+ˆεk
+i :=
+Z tk
+i
+tk
+i−1
+ˆλk(s; Fs)ds
+8See Br´emaud (1981) or more recently Bowsher (2002).
+9
+
+should be distributed as i.i.d. unit exponential. Therefore, model diagnostics can be performed by evaluating the dynamical and distributional properties of the residuals. Engle
+and Russell (1998) propose a test against excess dispersion based on the asymptotically
+normal test statistic
+p
+nk/8(ˆσ2
+εk −1), where ˆσ2
+εk is the empirical variance of the k-type
+residual series and nk denotes the number of points observed for process k.
+4
+Data and Descriptive Statistics
+4.1
+Trading at the ASX
+The Australian Stock Exchange (ASX) is a continuous double auction electronic market.
+Trading at ASX starts with a pre-opening period followed by an opening call auction.
+Then, normal trading takes place continuously between 10:09 am and 16:00 pm.
+The
+market is closed with a further call auction and a late trading period. For more details
+regarding the daily market schedule of the ASX, see Hall and Hautsch (2004).
+During normal trading, orders can be entered as market orders which will execute
+immediately and limit orders which enter the queues. At the ASX, in general orders are
+not allowed to walk up (down) the book. Hence, a high quoted volume of a market order
+will be matched with the pending volume on the ﬁrst level of the opposite queue. Trades
+will be generated and traded orders deleted until there is no more order volume that is
+equal to the posted price.
+The remaining part of the order will enter the queue as a
+corresponding limit order. When a market order is executed against several pending limit
+orders, a trade record for each market order - limit order pair is generated. Since such
+multiple trades are generated by a single market order, we aggregate them into a single
+trade record.
+Limit orders are queued in the buy and sell queues according to a strict price-time
+priority order. During normal trading, pending limit orders can be modiﬁed or cancelled
+without restrictions.9
+All trades and orders are visible to the public.
+Orders with a
+total value exceeding $200,000 can be entered with a hidden volume. However, suﬃcient
+information is available to unambiguously reconstruct all transactions.
+4.2
+Descriptive Statistics
+Our empirical analysis is based on order book data from the ﬁve most liquid stocks traded
+at the ASX during the period 1 July to 30 August 2002, namely Broken Hill Proprietary
+Limited (BHP), National Australia Bank (NAB), News Corporation (NCP), Telstra (TLS)
+9Clearly, modifying the order volume or the order price can aﬀect the order priority. For more details,
+see Hall and Hautsch (2004).
+10
+
+and Woolworths (WOW). The samples are extracted from the Stock Exchange Automated
+Trading System (SEATS) and contain time stamped prices, volumes and identiﬁcation
+attributes of all orders as well as information about opening and closing auctions, preopening periods as well as market enquiries. By replicating the execution engine of the
+ASX, with explicit consideration of all trading rules, we reconstruct the individual order
+books at any time.
+Our resulting samples consist of data covering the normal trading period, where we
+remove data from the opening and closing call auctions as well as all market crossings
+and oﬀmarket trades. Then, the resulting samples consist of 147, 552, 107, 595, 252, 009,
+97, 804, and 59, 519 observations for BHP, NAB, NCP, TLS and WOW, respectively.
+Table II shows descriptive statistics characterizing the order books of the ﬁve individual
+stocks during the sample period. We observe an average bid-ask spread ranging between
+1.0 ticks for TLS and around 2.2 ticks for NAB. For all stocks, the average sell volume is
+slightly higher than the buy volume which is explained by a slightly down market during
+the analyzed period. However, comparing the average posted as well as cancelled ask and
+bid volume, there are no systematic diﬀerences. The variables d askp and d bidp measure
+the diﬀerence between the current posted price of a limit order and the current best ask
+and bid price, respectively. Thus, we observe that on average limit orders are placed within
+a distance of about 5 ticks to the current best ask and bid price. Again, smaller spreads
+are set for TLS (around 2 to 3 ticks), whereas NAB and NCP reveal relatively wide spreads
+of around 6 to 8 ticks. The variables adiff x and bdiff x represent the price diﬀerence
+between the mid-quote and the price associated with the x-th quantile of the standing ask
+and bid volume, respectively10. Therefore, they reﬂect the average piecewise steepness of
+the bid and ask reaction curves. It turns out that for most stocks, the average shape of
+both curves is relatively symmetric, but for WOW we observe a slightly higher average
+depth on the bid side. Finally, the variables adep x measure the market depth in terms of
+the ratio of the volume associated with the x-th quantile and the corresponding implied
+price impact. For instance, adep 5 = 45.662 for BHP means that up to the 5%-quantile
+we observe on average a standing ask volume of 45, 662 shares per tick. Again, we ﬁnd
+relatively symmetric shapes of the individual bid and ask queues.
+4.3
+Order Aggressiveness at the ASX
+Table I gives a classiﬁcation of the order aggressiveness at the ASX. Market orders are
+generally not allowed to walk up or down the ask or bid queues, respectively, so at the ASX
+10For an exact deﬁnition of the variables, see Table II.
+11
+
+the most aggressive order is an order which has a volume that exceeds the standing volume
+on the ﬁrst level of the opposite queue, and thus results in an immediately executed market
+order for the matched volume and a limit order for the remaining volume. Accordingly, we
+deﬁne a ”normal” market order as a buy or sell order whose volume can be fully matched
+with pending limit orders.
+Regarding limit orders, we apply the classiﬁcation scheme
+proposed by Biais, Hillion, and Spatt (1995) and classify ask and bid limit orders according
+to the distance between the posted limit price and the current best bid and ask price. Thus,
+we distinguish between ”most aggressive” limit orders whose price undercuts or overbids
+the current best ask or bid limit price, respectively. Correspondingly, ”aggressive” limit
+orders are placed directly in the current ﬁrst level of the ask or bid queue, whereas ”normal”
+limit orders enter the higher levels of the order book. Finally, cancelled limit orders are
+regarded as the least aggressive orders.
+Table III shows the average numbers of the diﬀerent order types as well as the average
+waiting times between the individual order arrivals. We observe that the proportions of the
+particular order types are not stable across stocks and show clear variations. For instance,
+the percentage of aggressive market orders varies between 2% and 7% corresponding to
+average waiting times between 2 and 8 minutes.
+Accordingly, the proportion of most
+aggressive limit order varies between 0.1% and 4% corresponding to average waiting times
+between 3 and 35 minutes.
+On average, we observe a higher proportion of the most
+aggressive ask limit orders than of the corresponding bid limit orders. Furthermore, it
+turns out that on average around 5% of all limit orders are cancelled. An exceptionally
+high proportion of cancellations of around 11% is observed for NCP.
+In our empirical analysis, we focus on the three most interesting groups of orders: aggressive buy and sell orders, most aggressive ask and bid limit orders as well as aggressive
+ask and bid cancellations. Moreover, we introduce a further criterion for order aggressiveness which goes beyond the scheme shown in Table I. In particular, we exclusively select
+only those orders which have a quoted volume which is equal or higher than the 75%-
+quantile. This additional selection is applied for two reasons: First, order aggressiveness
+is naturally linked to the size of the posted volume. For economic signiﬁcance, it makes
+a huge diﬀerence whether a small or a high volume is quoted. For high volumes, the economic trade-oﬀbetween the costs of immediacy and the pick-oﬀrisk is much more relevant
+than for small trades. Second, focussing exclusively on the big trades should reduce the
+noise in the data and should help to identify distinct patterns and relationships. This
+selection rule leads to a signiﬁcant reduction of the sample size resulting in 9, 316, 10, 463,
+9, 142, 3, 102, and 3, 438 observations for BHP, NAB, NCP, TLS, and WOW respectively
+12
+
+(see Table III).
+5
+Empirical Results
+Since the estimation of 6-dimensional ACI processes is a challenging task requiring the
+estimation of a large number of parameters, we estimate restricted ACI speciﬁcations. In
+order to reduce the number of parameters, we specify the backward recurrence functions
+in terms of a Weibull parameterization, where we do not allow for interdependencies
+between the individual functions, i.e. pk
+r = 1 ∀k̸ = r.
+Moreover, while the matrix of
+innovation parameters A is fully parameterized, we do not allow for spill-over eﬀects in
+the persistence terms, i.e. the matrix B is speciﬁed as a diagonal matrix. In order to
+account for deterministic intra-day seasonality patterns, we specify three linear spline
+functions for the processes of aggressive market orders, limit orders, and cancellations
+based on one hour nodes11. For parameter identiﬁcation, the spline function is normalized
+to one at the beginning of the trading day. To ease the numerical optimization of the log
+likelihood function, we standardize the time scale by the average duration of the pooled
+process.12
+In order to test the economic propositions formulated in Section 2, we deﬁne the
+following explanatory variables capturing the state of the order book:
+• AV: Current logarithmic aggregated volume in the ask queue.
+• BV: Current logarithmic aggregated volume in the bid queue.
+• DAV: Changes of the logarithmic aggregated ask volume during the past 5 minutes.
+• DBV: Changes of the logarithmic aggregated bid volume during the past 5 minutes.
+• SD: Current bid-ask spread.
+• MQ: Change of the mid-quote during the past 5 minutes.
+• VL: Volatility, measured by the average squared mid-quote changes during the past
+5 minutes.
+In order to analyze the importance of order book dynamics and information provided by
+the open limit order book for the goodness-of-ﬁt and the explanatory power of the model,
+we estimate three diﬀerent speciﬁcations: Table IV reports the estimation results based
+on an ACI model including both dynamic variables as well as order book variables. Table
+V is based on a speciﬁcation which includes order book information, however, does not
+11We do not estimate separate seasonality functions for the diﬀerent sides of the market.
+12This scaling does not change the order of the processes.
+13
+
+account for any dynamics in the multivariate process. Hence, in this speciﬁcation, ˜Ψi is set
+to zero. Finally, Table VI gives the results of a speciﬁcation which accounts for dynamic
+structures but excludes any order book covariates.
+5.1
+Statistical Results
+The processes are estimated by maximum likelihood using the MAXLIK-procedure of
+GAUSS. It should be stressed that despite of the high-dimensionality of the processes and
+the high number of parameters, the processes converged smoothly and without numerical
+diﬃculties.
+The following statistical results can be summarized. First, for all processes, we ﬁnd
+signiﬁcantly declining backward recurrence functions as revealed by parameters pk
+k < 1.
+Thus, the event arrival rates decline with the length of the spell which is a well known
+result for ﬁnancial duration data. However, as indicated by the residual diagnostics, not
+in all of the models is the speciﬁcation of the backward recurrence function suﬃcient
+to completely capture the distributional properties of the processes. In particular, the
+speciﬁcations of Table IV and V reveal signiﬁcant excess dispersion, which is not the case
+for the models reported in Table VI. Thus, the inclusion of order book variables seem to
+deteriorate the model’s ability to capture the distributional properties of the data.
+Second, we ﬁnd evidence for positive autocorrelations in the individual processes as
+indicated by signiﬁcantly positive estimates of αk
+k. Thus, the individual arrival rates are
+clustered. This is true for all individual processes including cancellations. Nearly all processes show quite high persistence, revealed by parameter estimates of β close to unity.
+Moreover, we also observe signiﬁcant spill-over eﬀects between the individual processes.
+The strongest interactions seem to exist between the individual sides of the market which
+is particularly true for market orders13, but also for limit orders. Weaker, however in
+most cases still signiﬁcant, interdependencies are also found between the arrival rates of
+aggressive market orders and aggressive limit orders. Interestingly, these spill-overs are
+primarily positive, so we do not ﬁnd evidence for the fact that a high aggressiveness on
+one side of the market negatively inﬂuences the aggressiveness on the opposite side. These
+results suggest that interdependencies between the individual order arrival processes are
+obviously not driven by an individual trading behavior as predicted by the economic underpinnings outlined in Section 2. Rather, such eﬀects seem to be driven by an underlying
+process of general market activity which simultaneously aﬀects all individual processes.
+13This ﬁnding is consistent with the results of Hall and Hautsch (2004) who ﬁnd similar results when
+analyzing the continuous buy-sell pressure at the ASX.
+14
+
+Similar results are also found for the ask and bid cancellation intensity. In most cases, the
+parameters α5
+i and α6
+i are signiﬁcantly positive, indicating that a higher market activity
+also increases the intensity of order cancellations. This is particularly true for the impact
+of aggressive market trading on the cancellation intensity. However, in the opposite direction, it turns out that the market and limit order processes do not seem to be aﬀected by
+the arrival rate of order cancellations since the parameters αi
+5 and αi
+6 are insigniﬁcant in
+most cases.
+Third, the estimates of the seasonality functions support the evidence for distinct deterministic intra-day patterns of the intensities of aggressive market trading, limit order
+trading and cancellations. The estimated individual intra-day seasonality functions reported in Figure 1, reveal similar patterns in the form of the well known U-shape. Hence,
+intra-day seasonalities seem to be induced by a general level of trading activity implying relatively high intensities after the opening, a signiﬁcant decline around noon and a
+distinct increase before the closure of the market.
+Fourth, as indicated by the Ljung-Box statistics based on the ACI residuals, the dynamic speciﬁcations (Table IV and VI) seem to appropriately capture the dynamical properties of the data. Moreover, for four out of ﬁve stocks, the inclusion of dynamics is absolutely essential in order to capture the serial dependence in the data. This is illustrated by
+the diagnostics for the non-dynamic speciﬁcation (Table V). Here, the Ljung-Box statistics
+reveal a signiﬁcant dynamic misspeciﬁcation.
+Fifth, by comparing the BIC values of the three diﬀerent speciﬁcations shown in Tables
+IV through VI, we can conclude that the inclusion of both dynamic variables as well as
+limit order book variables clearly improves the goodness-of-ﬁt of the model. However, for
+all stocks, the speciﬁcations where order book variables are omitted (Table V) outperform
+the non-dynamic models shown in Table VI in terms of explanatory power. Therefore,
+this ﬁnding suggests that a speciﬁcation which includes order book information has a
+signiﬁcantly higher explanatory power than a pure dynamic model without covariates.
+Nevertheless, as indicated by the BIC values in Table IV, in four of ﬁve cases, the inclusion of dynamics on top of order book variables leads to a further increase of the BIC.
+Summarizing these ﬁndings, we can conclude that the state of the order book plays a particularly important role in explaining the degree of order aggressiveness in the individual
+processes. Nonetheless, in addition order book dynamics are required in order to obtain a
+well-speciﬁed model.
+15
+
+5.2
+Economic Results
+A particular important ﬁnding is that for most of our order book covariates, we ﬁnd a
+remarkable robustness over the cross-section of stocks. Actually, we ﬁnd no systematic
+diﬀerences between the individual stocks. Regarding our economic hypotheses, we can
+summarize the following ﬁndings.
+The impact of the queued volume
+Regarding the inﬂuence of the queued volume, we only ﬁnd a partial conﬁrmation of
+hypothesis (i). In particular, a higher level of the cumulated ask volume increases the
+intensity of aggressive buy market orders and decreases the intensity of aggressive buy
+limit orders.
+In contrast on the sell side, we observe no signiﬁcant eﬀects on the sell
+aggressiveness, however a signiﬁcantly positive impact on the ask intensity.
+Converse
+eﬀects are found regarding the queued volume on the bid side. Here, a higher pending
+volume negatively aﬀects the aggressiveness of buy market orders and ask limit orders,
+whereas it positively aﬀects market trading on the sell side and limit order trading on the
+bid side.
+Hence a high standing volume on one market side increases traders’ preference for
+market orders on the particular side and reduces it on the opposite side which does not
+conﬁrm hypothesis (i). However, concerning the limit order trading we ﬁnd evidence for
+crowding out eﬀects which are in line with hypothesis (i). In fact, a high standing volume
+reduces traders’ preference to post aggressive limit orders on the same side and increases
+it on the opposite side. Furthermore, it is shown that a high queued ask (bid) volume
+signiﬁcantly decreases the cancellation intensity of big bid (ask) orders which also conﬁrms
+hypothesis (i).
+Concerning the inﬂuence of the cumulated volume during the past minutes we do not
+ﬁnd a conﬁrmation of hypothesis (i). In fact, an increase in the cumulated volume on
+one market side during the past ﬁve minutes decreases the intensity of market orders
+as well as of limit orders on both sides of the market, and simultaneously increases the
+overall cancellation intensity. Hence, we observe a type of mean reversion eﬀect causing a
+reduction of the overall order ﬂow and an increase in the tendency to remove orders after
+periods in which much (one-sided) volume has been accumulated in the queues.
+The impact of market depth
+Our results show a clear conﬁrmation of hypothesis (ii). Hence, a high depth on the ask
+side decreases the intensity for aggressive buys and increases it for aggressive sells. The
+16
+
+converse is true for a high depth on the bid side. In particular, a higher depth on the ask
+(bid) side reﬂects that a relative higher proportion of volume is to be sold (bought) at
+a comparatively low (high) price. This negative (positive) price signal increases market
+participants’ preference to aggressively sell (buy) their positions immediately by posting
+corresponding market orders.
+Furthermore, we observe that a high depth on one particular side of the market also
+leads to a reduction of aggressive limit order trading on that side of the market. Thus,
+trader’s incentive to undercut (overbid) the current best ask (bid) price level decreases
+when there is already a high volume standing in the lowest levels of the queue. Interestingly, it turns out that the crowding out of limit orders even leads to a higher intensity of
+aggressive limit orders on the opposite side of the market. Moreover, as stated in proposition (ii), it is shown that a high ask (bid) depth increases the probability of cancellations
+on the same side of the market.
+The impact of the bid-ask spread
+Regarding the bid-ask spread, we ﬁnd a clear conﬁrmation of proposition (iii). Therefore,
+traders’ preference for aggressive market trading signiﬁcantly decreases when the bid-ask
+spread rises. Conversely, the aggressiveness of limit order trading increases. Hence, the
+higher the bid-ask spread, the lower traders’ incentive to cross the market and to post a
+market order on the opposite side. In this case, market agents are willing to bear higher
+risk by posting limit orders. Furthermore, we ﬁnd weak evidence for the fact that the
+bid-ask spread has a negative impact on the cancellation intensity on both sides of the
+market.
+The impact of past price movements
+Price movements during the past ﬁve minutes have a signiﬁcant impact on traders’ preference to post aggressive market and limit orders. It turns out that positive price movements
+decrease (increase) traders’ aggressiveness in market trading on the buy (sell) side. In contrast, trader’s incentive to post aggressive limit trades on the ask side increases, whereas
+for bid limit orders as well as order cancellations no clear-cut results are found. Nevertheless, overall our results conﬁrm hypothesis (iv). Thus, positive (negative) price movements
+over a longer period generate an increasing sell (buy) pressure and an increasing tendency
+to post limit orders on the opposite side of the market.
+17
+
+The impact of past volatility
+Regarding proposition (v), we do not ﬁnd a clear-cut conﬁrmation. Actually, we observe an
+increase of both market trading and limit order trading after periods of higher mid-quote
+volatility. These results are highly signiﬁcant and consistent over all stocks. However,
+this result stands in contrast to the implications of Foucault (1999). Hence, we reject the
+notion of a crowding out of market trading towards limit order trading. In fact, we ﬁnd
+evidence for the eﬀect that higher volatility increases both market order trading as well
+as limit order trading.
+5.3
+Summarizing the Results
+Overall, we ﬁnd clear evidence that the arrival rate of aggressive market orders, limit
+orders, and cancellations is aﬀected by the state of the order book and that the inclusion
+of order book variables signiﬁcantly increases the goodness-of-ﬁt of the model. The most
+important ﬁnding is that economic theory is broadly conﬁrmed. Particularly regarding
+the inﬂuence of the standing volume, the market depth, the bid-ask spread and past
+price movements, we ﬁnd a clear conﬁrmation of ”crowding-out” eﬀects as discussed in
+Parlour (1998) or ”gravitational pull” arguments posited by Cohen, Maier, Schwartz,
+and Whitcomb (1981). These results are in line with previous empirical studies such as
+Griﬃths, Smith, Turnbull, and White (2000), Coppejans and Domowitz (2002), Pascual
+and Veredas (2004) or Ranaldo (2004). Nevertheless, our ﬁndings suggest that a separate
+modelling of the single processes in a multivariate setting is a valuable strategy providing
+a clear-cut picture of how the particular processes are individually aﬀected by the state of
+the order book. In particular, limit orders cannot necessarily be treated as less aggressive
+versions of market orders since they behave in a diﬀerent way depending on certain order
+book variables. This is particularly apparent for the impact of the aggregated queued
+volume and the impact of past volatility, for which we ﬁnd conﬂictive reactions of the
+aggressiveness in market trading and limit order trading which are not supported by
+theory. Similar results have been also found by Coppejans and Domowitz (2002).
+Moreover, it is shown that the order book eﬀects remain remarkably stable irrespective
+whether order book dynamics are taken into account or not. While this ﬁnding illustrates
+the robustness of the results, it also implies that the economic relations hold conditionally
+on the history of the individual processes as well as unconditionally.
+18
+
+6
+Conclusions
+We analyze the impact of order book information of traders’ order aggressiveness in the
+electronic trading on the Australian Stock Exchange. The novel feature of the paper is
+to analyze this issue using a multivariate dynamic intensity framework. Therefore, order
+aggressiveness in market trading, limit order trading as well as in order cancellations on
+both sides of the market is modelled on the basis of a six-dimensional version of the autoregressive conditional intensity (ACI) model proposed by Russell (1999). The multivariate
+intensity function gives the instantaneous order arrival probability in each instant and
+for each order process. Therefore, it is nicely interpreted as a natural (continuous-time)
+measure for traders’ degree of aggressiveness in the individual dimensions. In this sense,
+our setting merges on the one hand approaches, where order aggressiveness is modelled in
+terms of a categorized variable on the basis of the order classiﬁcation scheme proposed by
+Biais, Hillion, and Spatt (1995) (see, for instance, Griﬃths, Smith, Turnbull, and White,
+2000, or Ranaldo, 2004), and, on the other hand, studies which model the intensity of
+aggressiveness using univariate (ACD-type) dynamic duration models (see e.g. Coppejans
+and Domowitz, 2000 or Pascual and Veredas, 2004).
+The usefulness of the individual modelling of the single order processes in a multivariate setting is illustrated by the ﬁnding that the intensity of market trading, limit
+order trading, and cancellations do not necessarily behave similarly in their dependence
+on certain order book variables. This result makes the application of (too simpliﬁed) order
+classiﬁcation schemes questionable and supports the notion of using sequential classiﬁcations by distinctly distinguishing between market orders, limit orders and cancellations as
+implemented by Pascual and Veredas (2004).
+Our results show that order book information has signiﬁcant explanatory power in
+explaining traders’ degree of aggressiveness. In particular we ﬁnd that the inclusion of
+variables capturing the current state of the order book as well as recent changes in the book
+improves the model’s goodness-of-ﬁt considerably. Analyzing the inﬂuence of fundamental
+market characteristics such as the queued volume, the depth, the inside spread, recent
+movements in the order ﬂow and in the price as well as the recent price volatility during the
+last trading minutes, we widely conﬁrm economic theory. Particularly regarding market
+depth, clear evidence for ”crowding out eﬀects” (cf. Parlour, 1998) is shown. Therefore, a
+high depth on one particular side induces a crowding out of aggressive market and limit
+order trading on that side towards the other side of the market.
+Our results provide clear evidence that the timing of aggressive market orders, limit
+19
+
+orders as well as cancellations is inﬂuenced by the state of the order book which is in
+line with the ﬁndings of Coppejans and Domowitz (2002), but in contrast to those of
+Pascual and Veredas (2004). A possible explanation for these conﬂicting results is that
+Pascual and Veredas (2004) apply a discrete-time duration model which does not allow
+for time-varying covariates. However, particularly for the processes of highly aggressive
+orders which arrive quite infrequently, it seems to be essential to account for changes of
+the order book during a spell14.
+Clear evidence for the existence of multivariate dynamic structures in the order arrival
+processes is found. We observe signiﬁcant spill-over eﬀects between between the both sides
+of the market and - in a weaker form - between market trading and limit order trading.
+The fact that these interdependencies are primarily (signiﬁcantly) positive provides hints
+that order book dynamics are driven by general market activity which simultaneously
+inﬂuences all individual processes rather than by economic ”crowding out” arguments
+which would imply negative spill-over eﬀects.
+These ﬁndings support the notion that
+the arrival rates of aggressive orders are basically driven by two pieces of information:
+(i) the state of the market as revealed by the open limit order book and which directs
+traders’ order submission strategy, and (ii) general market activity which simultaneously
+inﬂuences the individual arrival rates15.
+However, our ﬁndings show that order book
+information plays the dominant role in explaining order aggressiveness. In particular, we
+observe that in terms of its explanatory power, a model which excludes all dynamics but
+includes order book covariates signiﬁcantly outperforms a completely dynamic model that
+does not account for the state of the market. Nevertheless, the dynamic variables are
+absolutely necessary in order to obtain a well-speciﬁed model.
+14In our setting, such an updating of the information set occurs whenever a new point of the pooled
+process arrives. A further extension would be to account for any changes of the order book. However this
+would considerably increase the computational burden in our multivariate setting.
+15This result supports the idea of Bauwens and Hautsch (2003) to model the underlying market activity in
+terms of a latent autoregressive component which simultaneously aﬀects all individual intensity processes.
+20
+
+References
+Al-Suhaibani, M., and L. Kryzanowski (2000): “An Exploratory Analysis of the
+Order Book, and Order Flow and Execution on the Saudi Stock Market,” Journal of
+Banking and Finance, 24, 1323–1357.
+Bauwens, L., and P. Giot (2000): “The Logarithmic ACD Model: An Application to
+the Bid/Ask Quote Process of two NYSE Stocks,” Annales d’Economie et de Statistique,
+60, 117–149.
+Bauwens, L., and N. Hautsch (2003): “Dynamic Latent Factor Models for Intensity
+Processes,” Discussion paper, University of Konstanz, Universit´e Catholique de Louvain.
+Bauwens, L., and D. Veredas (2004): “The Stochastic Conditional Duration Model: A
+Latent Factor Model for the Analysis of Financial Durations,” Journal of Econometrics,
+119, 381–412.
+Biais, B., P. Hillion, and C. Spatt (1995): “An Empirical Analysis of the Limit Order
+Book and the Order Flow in the Paris Bourse,” Journal of Finance, 50, 1655–1689.
+Bisi`ere, C., and T. Kamionka (2000): “Timing of Orders, Orders Aggressiveness and
+the Order Book at the Paris Bourse,” Annales d’Economie et de Statistique, 60, 43–72.
+Bowsher, C. G. (2002): “Modelling Security Markets in Continuous Time: Intensity
+based, Multivariate Point Process Models,” Discussion Paper 2002-W22, Nuﬃeld College, Oxford.
+Br´emaud, P. (1981): Point Processes and Queues, Martingale Dynamics. Springer, New
+York.
+Cao, C., O. Hansch, and X. Wang (2003): “The Informational Content of an Open
+Limit Order Book,” Discussion paper, Pennsylvania State University.
+Cohen, K. J., S. F. Maier, R. A. Schwartz, and D. K. Whitcomb (1981): “Transaction Costs, Order Placement Strategy, and Existence of the Bid-Ask Spread,” Journal
+of Political Economy, 89(2), 287–305.
+Coppejans, M., and I. Domowitz (2002): “An Empirical Analysis of Trades, Orders,
+and Cancellations in a Limit Order Market,” Discussion paper, Duke University.
+Dufour, A., and R. F. Engle (2000): “The ACD Model: Predictability of the Time
+between Consecutive Trades,” Discussion paper, ISMA Centre, University of Reading.
+Engle, R. F., and J. R. Russell (1998): “Autoregressive Conditional Duration: A
+New Model for Irregularly Spaced Transaction Data,” Econometrica, 66, 1127–1162.
+Fernandes, M., and J. Grammig (2001): “A Family of Autoregressive Conditional
+Duration Models,” Discussion Paper 2001/31, CORE, Universit´e Catholique de Louvain.
+Foucault, T. (1999): “Order Flow Composition and Trading Costs in a Dynamic Limit
+Order Market,” Journal of Financial Markets, 2, 99–134.
+21
+
+Glosten, L. R. (1994): “Is the Electronic Open Limit Order Book Inevitable,” Journal
+of Finance, 49, 1127–1161.
+Grammig, J., and K.-O. Maurer (2000): “Non-Monotonic Hazard Functions and the
+Autoregressive Conditional Duration Model,” Econometrics Journal, 3, 16–38.
+Griffiths, M. D., B. F. Smith, D. A. S. Turnbull, and R. W. White (2000): “The
+Costs and Determinants of Order Aggressiveness,” Journal of Financial Economics, 56,
+65–88.
+Hall, A. D., and N. Hautsch (2004): “Estimating the Intensity of Buy and Sell Arrivals in a Limit Order Book Market,” Discussion Paper 04-07, Institute of Economics,
+University of Copenhagen.
+Handa, P., R. Schwartz, and A. Tiwari (2003): “Quote Setting and Price Formation
+in an Order Driven Market,” Journal of Financial Markets, 6, 461–489.
+Handa, P., and R. A. Schwartz (1996): “Limit Order Trading,” Journal of Finance,
+51, 1835–1861.
+Harris, L. (1998): “Optimal Dynamic Order Submission Strategies in Some Stylized
+Trading Problems,” Financial Markets, Institutions and Instruments, 7, 1–75.
+Harris, L., and J. Hasbrouck (1996): “Market vs. Limit Orders: The SuperDOT Evidence on Order Submission Strategy,” Journal of Financial and Quantitative Analysis,
+31(2), 213–231.
+Hautsch, N. (2004): Modelling Irregularly Spaced Financial Data – Theory and Practice
+of Dynamic Duration Models, vol. 539 of Lecture Notes in Economics and Mathematical
+Systems. Springer, Berlin.
+Hollifield, B., R. A. Miller, P. Sand˚as, and J. Slive (2002): “Liquidity Supply
+and Demand in Limit Order Markets,” Discussion paper, Centre for Economic Policy
+Research, London.
+Lo, I., and S. G. Sapp (2003): “Order Submission: The Choice between Limit and Market Orders,” Discussion paper, University of Waikato, University of Western Ontario.
+Lunde, A. (2000): “A Generalized Gamma Autoregressive Conditional Duration Model,”
+Discussion paper, Aarlborg University.
+Parlour, C. A. (1998): “Price Dynamics in Limit Order Markets,” The Review of
+Financial Studies, 11(4), 789–816.
+Pascual, R., and D. Veredas (2004): “What Pieces of Limit Order Book Information
+are Informative?,” Discussion Paper 204/33, CORE.
+Ranaldo, A. (2004): “Order Aggressiveness in Limit Order Book Markets,” Journal of
+Financial Markets, 7, 53–74.
+Russell, J. R. (1999): “Econometric Modeling of Multivariate Irregularly-Spaced HighFrequency Data,” Discussion paper, University of Chicago.
+22
+
+Seppi, D. J. (1997): “Liquidity Provision with Limit Orders and Strategic Specialist,”
+Review of Financial Studies, 1(1), 103–150.
+Zhang, M. Y., J. Russell, and R. S. Tsay (2001): “A Nonlinear Autoregressive
+Conditional Duration Model with Applications to Financial Transaction Data,” Journal
+of Econometrics, 104, 179–207.
+Appendix
+A
+Tables
+Table I
+Classiﬁcation of Order Aggressiveness at the ASX
+Aggressive buy order
+Quoted volume exceeds the ﬁrst level of standing ask volume
+Normal buy order
+Quoted volume does not exceed the ﬁrst level of standing ask volume
+Most aggressive ask order
+Limit price is below current best ask price
+Aggressive ask order
+Limit price is at current best ask price
+Normal ask order
+Limit price is above current best ask price
+Cancelled ask order
+Cancellation of a standing ask order
+Aggressive sell order
+Quoted volume exceeds the ﬁrst level of standing bid volume
+Normal sell order
+Quoted volume does not exceed the ﬁrst level of standing bid volume
+Most aggressive bid order
+Limit price is above current best bid price
+Aggressive bid order
+Limit price is at current best bid price
+Normal bid order
+Limit price is below current best bid price
+Cancelled bid order
+Cancellation of a standing bid order
+23
+
+Table II
+Order book characteristics
+Means and standard deviations of various order book characteristics based on the BHP, NAB, NCP,
+TLS and WOW stock traded at the ASX. The samples contain all market and limit orders of the
+individual stocks traded at the ASX during July-August 2002,
+corresponding to 45 trading days.
+BHP
+NAB
+NCP
+TLS
+WOW
+Mean
+S.D.
+Mean
+S.D.
+Mean
+S.D.
+Mean
+S.D.
+Mean
+S.D.
+sprd
+1.075
+0.311
+2.175
+1.516
+1.277
+0.599
+1.006
+0.079
+1.485
+0.922
+trvol
+2746.7
+7688.5
+1174.1
+2901.3
+1113.7
+4131.5
+8877.5
+39414.2
+1646.7
+4906.6
+buyvol
+5692.4
+9783.9
+2830.6
+4016.9
+4817.5
+7408.2
+21233.8
+57399.5
+3707.5
+7184.2
+sellvol
+8336.2
+12190.6
+2902.7
+3902.7
+5358.7
+7789.6
+21816.1
+60877.4
+4410.3
+6785.4
+qvol
+8303.4
+38223.4
+3534.3
+4858.5
+5235.3
+6238.4
+35513.0
+68337.0
+4832.7
+7329.7
+qavol
+9704.9
+12842.4
+3621.1
+5169.3
+5209.8
+6058.5
+35077.7
+68038.8
+5123.8
+7046.5
+qbvol
+7212.8
+49667.3
+3453.4
+4549.0
+5264.2
+6436.2
+35927.5
+68618.7
+4585.3
+7553.3
+cvol
+11172.2
+81984.5
+4308.8
+6063.3
+4533.8
+5999.2
+61007.7
+97236.4
+6021.8
+9469.3
+cavol
+11595.3
+17307.7
+4348.3
+6392.8
+4315.7
+5438.5
+64477.8
+100813.0
+5793.7
+8761.2
+cbvol
+10778.7
+112671.2
+4271.5
+5736.1
+4774.1
+6553.5
+58166.4
+94120.8
+6211.8
+10018.1
+d askp
+5.842
+86.084
+6.407
+24.454
+7.247
+52.743
+3.198
+11.616
+4.818
+16.021
+d bidp
+4.662
+16.628
+8.543
+71.853
+6.131
+14.328
+2.377
+7.798
+4.104
+14.611
+amq
+0.115
+0.316
+0.423
+0.809
+0.101
+0.319
+0.040
+0.197
+0.230
+0.518
+avol
+1452.4
+343.7
+265.1
+62.1
+920.6
+256.4
+5409.2
+1558.8
+501.8
+185.0
+bvol
+1376.9
+665.7
+222.9
+78.7
+720.3
+216.3
+6237.1
+1647.8
+344.5
+230.7
+adiﬀ1
+0.897
+0.671
+2.018
+1.926
+1.271
+0.939
+0.577
+0.268
+1.376
+1.323
+adiﬀ2
+1.308
+1.007
+2.880
+2.752
+1.884
+1.319
+0.643
+0.357
+2.001
+1.931
+adiﬀ5
+2.717
+2.116
+5.829
+5.403
+3.712
+2.340
+0.866
+0.565
+4.024
+3.415
+bdiﬀ1
+0.898
+0.650
+1.851
+1.700
+1.155
+0.869
+0.582
+0.273
+1.187
+1.032
+bdiﬀ2
+1.269
+0.954
+2.523
+2.381
+1.633
+1.204
+0.656
+0.371
+1.546
+1.409
+bdiﬀ5
+2.488
+1.948
+4.806
+4.639
+3.077
+2.078
+0.937
+0.612
+2.781
+2.610
+adep 1
+22.257
+10.725
+2.404
+1.870
+11.055
+7.154
+102.651
+35.792
+6.352
+4.686
+adep 2
+34.429
+21.732
+3.614
+3.262
+15.621
+12.257
+196.338
+77.341
+9.862
+8.665
+adep 5
+45.662
+40.078
+4.577
+5.093
+18.572
+16.865
+420.273
+216.059
+12.729
+14.358
+bdep 1
+20.477
+13.596
+2.093
+1.697
+9.203
+5.613
+117.936
+39.229
+4.516
+4.183
+bdep 2
+31.411
+23.779
+3.228
+2.924
+13.874
+10.131
+223.766
+85.101
+7.479
+7.465
+bdep 5
+42.927
+38.160
+4.293
+4.507
+17.876
+15.783
+455.945
+240.004
+11.290
+12.538
+Shown order book characteristics: Bid-ask spread (sprd), traded volume (trvol), traded buy/sell volume (buyvol,
+sellvol), quoted volume (qvol), quoted ask/bid volume (qavol, qbvol), cancelled volume (cvol), cancelled ask/bid
+volume (cavol, cbvol), diﬀerence between quoted ask price and the current best ask price (d askp), diﬀerence
+between current best bid quote and quoted bid price (d bidp), absolute midquote change (amq), as well as
+cumulated ask/bid volume (avol, bvol, in units of 1000 shares). Furthermore, adiff x := px,a −mq, where px,a
+denotes the price associated with the x%-quantile of the cumulated ask volume and mq denotes the midquote.
+Correspondingly, bdiff x := mq −px,b, where px,b denotes the price associated with the x%-quantile of the
+cumulated bid volume. Moreover, adep x := (x/100) · avol/(px,a −mq) and bdep x := (x/100) · bvol/(mq −px,b),
+measured in units of 1000 shares.
+24
+
+Table III
+Descriptive Statistics of Trade and Limit Order Arrival Processes at the ASX
+Descriptive statistics of order arrival processes of the BHP, NAB, NCP, TLS and WOW stock.
+For the
+deﬁnition of the order categories, see Table I. ”v > 75%” means that the quoted volume is above the
+75%-quantile.
+The upper table shows the number of the orders in the individual categories as well as
+their corresponding percentage with respect to the complete sample.
+The lower table shows the average
+waiting time between two order arrivals and the corresponding standard deviation.
+The samples contain
+all market and limit orders of the individual stocks traded at the ASX during July-August 2002, corresponding to 45 trading days.
+Duration statistics measured in minutes.
+Overnight spells are ignored.
+BHP
+NAB
+NCP
+TLS
+WOW
+Number of observations
+Num.
+Prop.
+Num.
+Prop.
+Num.
+Prop.
+Num.
+Prop.
+Num.
+Prop.
+Total number
+147552
+107595
+252009
+97804
+59519
+Aggr. buys, v > 75%
+1946
+0.013
+2657
+0.025
+2385
+0.009
+522
+0.005
+838
+0.014
+Aggr. buys
+5998
+0.041
+8057
+0.075
+7700
+0.031
+1761
+0.018
+3359
+0.056
+Normal buys
+28349
+0.192
+14303
+0.133
+21402
+0.085
+19142
+0.196
+10125
+0.170
+Most aggr. asks, v > 75%
+1511
+0.010
+1763
+0.016
+2058
+0.008
+241
+0.002
+795
+0.013
+Most aggr. asks
+4092
+0.028
+4695
+0.044
+6879
+0.027
+909
+0.009
+2460
+0.041
+Aggr. asks
+15065
+0.102
+11632
+0.108
+14544
+0.058
+12595
+0.129
+6787
+0.114
+Normal asks
+10306
+0.070
+7963
+0.074
+50769
+0.201
+9565
+0.098
+4106
+0.069
+Canc. asks, v > 75%
+1029
+0.007
+842
+0.008
+528
+0.002
+716
+0.007
+273
+0.005
+Canc. asks
+6689
+0.045
+5912
+0.055
+30390
+0.121
+4572
+0.047
+2763
+0.046
+Aggr. sells, v > 75%
+2338
+0.016
+2867
+0.027
+2372
+0.009
+551
+0.006
+892
+0.015
+Aggr. sells
+6133
+0.042
+8016
+0.075
+7711
+0.031
+1747
+0.018
+3559
+0.060
+Normal sells
+15455
+0.105
+13100
+0.122
+17249
+0.068
+17707
+0.181
+7329
+0.123
+Most aggr. bids
+1611
+0.011
+1455
+0.014
+1174
+0.005
+353
+0.004
+348
+0.006
+Aggr. bids, v > 75%
+5772
+0.039
+4626
+0.043
+5903
+0.023
+1249
+0.013
+2109
+0.035
+Aggr. bids
+17441
+0.118
+12967
+0.121
+15333
+0.061
+13848
+0.142
+8010
+0.135
+Normal bids
+14900
+0.101
+8504
+0.079
+42375
+0.168
+9125
+0.093
+5594
+0.094
+Canc. bids, v > 75%
+881
+0.006
+879
+0.008
+625
+0.002
+719
+0.007
+292
+0.005
+Canc. bids
+7329
+0.050
+6265
+0.058
+27624
+0.110
+5584
+0.057
+3318
+0.056
+All aggr. orders, v > 75%
+9316
+10463
+9142
+3102
+3438
+BHP
+NAB
+NCP
+TLS
+WOW
+Time between order arrivals
+Mean
+S.D.
+Mean
+S.D.
+Mean
+S.D.
+Mean
+S.D.
+Mean
+S.D.
+Aggr. buys, v > 75%
+8.070 16.429
+5.958 12.499
+6.628 14.213 27.467 41.131 15.000 34.635
+Aggr. buys
+2.634
+5.084
+1.958
+3.383
+2.056
+3.507
+8.892 17.635
+4.708
+8.490
+Normal buys
+0.557
+0.878
+1.102
+1.912
+0.738
+1.273
+0.825
+1.167
+1.556
+2.821
+Most aggr. asks, v > 75%
+10.081 22.034
+8.842 12.935
+7.572 13.371 46.636 69.354 17.258 32.415
+Most aggr. asks
+3.809
+8.886
+3.342
+4.794
+2.293
+4.175 15.074 33.948
+6.353 12.809
+Aggr. asks
+1.047
+1.844
+1.356
+2.542
+1.086
+1.994
+1.253
+2.092
+2.322
+4.420
+Normal asks
+1.529
+2.593
+1.974
+3.107
+0.311
+0.840
+1.642
+2.379
+3.799
+6.850
+Canc. asks, v > 75%
+14.767 27.042
+17.373 31.419
+28.451 42.565 20.208 31.547 28.330 44.988
+Canc. asks
+2.352
+4.087
+2.643
+4.628
+0.519
+1.521
+3.455
+5.365
+5.648 10.773
+Aggr. sells, v > 75%
+6.719 13.908
+5.488 11.964
+6.674 13.725 27.319 40.144 16.454 35.553
+Aggr. sells
+2.569
+4.840
+1.969
+3.526
+2.052
+3.557
+8.946 18.536
+4.427
+8.255
+Normal sells
+1.022
+1.636
+1.204
+1.846
+0.916
+1.663
+0.892
+1.249
+2.153
+3.399
+Most aggr. bids
+8.816 19.374
+10.075 17.388
+11.712 22.701 35.128 53.063 24.065 45.808
+Aggr. bids, v > 75%
+2.703
+6.502
+3.396
+5.184
+2.654
+5.264 11.277 27.220
+7.276 13.564
+Aggr. bids
+0.904
+1.545
+1.215
+2.288
+1.030
+1.828
+1.140
+1.787
+1.968
+3.519
+Normal bids
+1.056
+1.680
+1.848
+3.264
+0.372
+0.821
+1.723
+2.503
+2.788
+5.659
+Canc. bids, v > 75%
+17.248 27.849
+16.978 27.560
+23.258 34.908 21.048 30.493 34.455 57.392
+Canc. bids
+2.144
+3.344
+2.507
+4.292
+0.571
+1.385
+2.823
+4.284
+4.716
+8.339
+25
+
+Table IV
+Fully speciﬁed ACI models
+Maximum likelihood estimates of six-dimensional ACI(1,1) models for intensity processes of (1) aggressive buy
+orders, (2) aggressive sell orders, (3) aggressive ask limit orders, (4) aggressive bid limit orders, (5) aggressive
+cancellations of ask orders, (6) aggressive cancellations of bid orders. Backward recurrence functions are speciﬁed
+in terms of individual univariate Weibull parameterizations. The persistence vectors Ak are fully parameterized,
+whereas B is parameterized as diagonal matrix. Three spline functions are speciﬁed for market orders (s12
+. ), limit
+orders (s34
+. ) and cancellations (s56
+. ) based on 1 hour nodes between 10 a.m. and 4 p.m. The exact deﬁnition of
+the covariates is found in Section 5. All covariates except V OL are scaled by 10. Standard errors are computed
+based on OPG estimates. The time series are re-initialized at each trading day.
+BHP
+NAB
+NCP
+TLS
+WOW
+BHP
+NAB
+NCP
+TLS
+WOW
+Constants and backward recurrence parameters
+ω1
+-1.059∗∗∗-0.336∗∗∗-0.294∗∗∗-1.085∗∗∗-1.015∗∗∗
+p1
+0.844∗∗∗0.797∗∗∗0.820∗∗∗0.832∗∗∗0.737∗∗∗
+ω2
+-0.301∗∗∗-0.285∗∗∗-0.157
+-1.207∗∗∗-0.672∗∗∗
+p2
+0.845∗∗∗0.778∗∗∗0.798∗∗∗0.836∗∗∗0.731∗∗∗
+ω3
+-0.793∗∗∗-0.782∗∗∗-0.490∗∗∗-0.722∗∗∗-0.859∗∗∗
+p3
+0.834∗∗∗0.905∗∗∗0.878∗∗∗0.825∗∗∗0.810∗∗∗
+ω4
+-0.497∗∗∗-1.348∗∗∗-1.081∗∗∗-0.420∗
+-1.637∗∗∗
+p4
+0.818∗∗∗0.862∗∗∗0.834∗∗∗0.700∗∗∗0.838∗∗∗
+ω5
+-1.352∗∗∗-1.397∗∗∗-1.576∗∗∗-1.025∗∗∗-1.674∗∗∗
+p5
+0.742∗∗∗0.749∗∗∗0.873∗∗∗0.653∗∗∗0.789∗∗∗
+ω6
+-1.704∗∗∗-1.442∗∗∗-1.410∗∗∗-1.363∗∗∗-1.980∗∗∗
+p6
+0.762∗∗∗0.741∗∗∗0.859∗∗∗0.671∗∗∗0.780∗∗∗
+Innovation parameters
+α1
+1
+0.115∗∗∗0.114∗∗∗0.076∗∗∗
+0.235∗∗∗
+0.176∗∗∗
+α1
+2
+0.003
+0.029∗∗
+0.018∗∗
+0.046
+0.081∗∗∗
+α2
+1
+-0.010
+0.013
+0.004
+0.179∗∗∗
+0.055∗∗∗
+α2
+2
+0.120∗∗∗0.115∗∗∗0.085∗∗∗0.244∗∗∗0.177∗∗∗
+α3
+1
+0.052∗∗∗0.038∗∗∗
+0.012
+0.160
+0.082∗∗∗
+α3
+2
+-0.010
+-0.009
+0.013∗
+-0.007
+0.054∗∗
+α4
+1
+-0.033∗∗
+-0.009
+-0.007
+0.076
+0.059∗
+α4
+2
+0.018
+0.042∗∗∗0.003∗∗∗0.263∗
+0.058∗
+α5
+1
+0.031∗∗
+0.037∗∗
+0.064∗∗∗
+0.074∗∗
+0.016
+α5
+2
+0.046∗∗∗0.049∗∗∗0.022∗
+-0.030
+0.145∗∗∗
+α6
+1
+0.044∗∗∗0.027∗
+0.042∗∗∗
+0.049∗∗
+0.199∗∗∗
+α6
+2
+0.010
+0.042∗∗∗0.041∗∗∗0.030∗
+0.138∗∗∗
+α1
+3
+0.042∗∗∗-0.002
+-0.015∗
+0.085
+0.074∗∗∗
+α1
+4
+0.028∗∗
+0.053∗∗∗
+0.005
+-0.079∗
+0.071∗∗∗
+α2
+3
+0.026∗
+-0.007
+0.018∗
+-0.159∗∗
+0.070∗∗∗
+α2
+4
+0.064∗∗∗0.048∗∗∗
+0.013
+0.046
+0.021
+α3
+3
+0.097∗∗∗0.073∗∗∗0.028∗∗∗
+0.438∗∗∗
+0.122∗∗∗
+α3
+4
+0.012
+0.008
+0.038∗∗∗-0.393∗∗
+0.084∗∗∗
+α4
+3
+0.076∗∗∗-0.004
+0.026∗∗∗
+0.010
+0.175∗∗∗
+α4
+4
+0.116∗∗∗0.083∗∗∗0.033∗∗∗-0.042
+0.215∗∗∗
+α5
+3
+0.051∗∗∗0.034∗∗
+0.022∗
+0.063
+0.132∗∗∗
+α5
+4
+0.031∗
+0.056∗∗
+0.029∗
+0.017
+0.058
+α6
+3
+0.056∗∗∗0.032∗∗
+0.008
+-0.038
+0.029
+α6
+4
+0.022
+0.010
+0.010
+-0.014
+0.201∗∗∗
+α1
+5
+-0.008
+-0.017
+-0.010
+-0.019
+0.118∗∗∗
+α1
+6
+0.002
+-0.054∗∗
+0.012
+0.127∗∗∗0.083∗∗∗
+α2
+5
+0.023
+0.013
+-0.004
+0.185∗∗∗
+0.133∗∗∗
+α2
+6
+0.017
+-0.024
+0.012
+-0.056∗∗∗
+0.013
+α3
+5
+-0.007
+0.017
+-0.063∗∗∗
+0.186∗
+0.022
+α3
+6
+0.000
+0.014
+0.024
+-0.451∗∗
+-0.021
+α4
+5
+0.058∗
+0.015
+0.010
+0.129
+0.104∗
+α4
+6
+0.001
+-0.002
+0.012
+-0.088
+0.058
+α5
+5
+0.002
+0.097∗∗∗
+0.025
+0.068∗∗
+0.122∗∗∗
+α5
+6
+0.005
+0.030
+-0.006
+0.029
+-0.185∗∗∗
+α6
+5
+0.094∗∗∗
+0.002
+-0.001
+0.030
+-0.141∗∗
+α6
+6
+0.067∗∗∗0.119∗∗∗
+0.017
+0.019
+0.068∗
+Persistence parameters
+β11
+0.980∗∗∗0.961∗∗∗0.993∗∗∗
+0.922∗∗∗
+0.994∗∗∗
+β44
+0.950∗∗∗0.984∗∗∗0.998∗∗∗-0.251∗∗∗0.995∗∗∗
+β22
+0.969∗∗∗0.968∗∗∗0.980∗∗∗
+0.820∗∗∗
+0.993∗∗∗
+β55
+0.980∗∗∗0.980∗∗∗0.993∗∗∗0.948∗∗∗0.994∗∗∗
+β33
+0.955∗∗∗0.991∗∗∗0.995∗∗∗
+0.481∗∗∗
+0.994∗∗∗
+β66
+0.979∗∗∗0.982∗∗∗0.994∗∗∗-0.973∗∗∗0.991∗∗∗
+Seasonality parameters
+s12
+11:00 -0.673∗∗∗-0.646∗∗∗-1.216∗∗∗
+8.226∗∗∗-1.355∗∗∗
+s34
+11:00
+0.160
+-0.334
+-0.831∗∗∗3.955∗∗-1.183∗∗∗
+s12
+12:00
+0.138
+0.266
+0.961∗∗∗-14.730∗∗∗1.228∗∗∗
+s34
+12:00 -1.159∗∗
+0.183
+0.492
+-7.780∗∗
+0.672
+s12
+13:00 -0.981∗∗∗-1.341∗∗∗-0.937∗∗∗
+2.870∗
+-0.570∗
+s34
+13:00 -0.438∗∗∗-1.551∗∗∗-0.957∗∗∗3.113∗∗∗
+0.179
+s12
+14:00
+3.161∗∗∗3.553∗∗∗2.620∗∗∗10.182∗∗∗
+2.222∗∗∗
+s34
+14:00
+2.956
+3.548∗∗∗2.661∗∗∗5.563∗∗
+1.526∗∗∗
+s12
+15:00
+-0.286
+-0.521∗
+-0.721∗∗∗-6.032∗∗
+-0.034
+s34
+15:00
+0.025∗∗∗-1.032∗∗
+-0.269
+-4.674
+-0.422
+s12
+16:00
+0.468
+0.516
+1.509∗∗∗
+6.824∗∗
+4.069∗∗∗
+s34
+16:00
+-0.237
+0.652
+-0.986∗∗
+1.557
+0.896
+s56
+11:00 -0.572∗
+-1.387∗∗∗-1.309∗∗∗-0.264
+-1.894∗∗∗
+s56
+14:00
+3.755∗∗∗2.814∗∗∗2.770∗∗∗4.863∗∗∗1.495∗∗∗
+s56
+12:00
+0.266
+1.555∗∗∗1.163∗∗
+0.359
+1.817∗∗∗
+s56
+15:00 -1.313∗∗∗-1.044∗∗∗-0.827∗
+-2.817∗∗∗
+0.184
+s56
+13:00 -1.531∗∗∗-1.605∗∗∗-1.135∗∗∗-2.265∗∗∗-0.349
+s56
+16:00
+1.071∗
+0.799∗
+0.273
+3.798∗∗∗
+0.516
+26
+
+Table IV continued
+BHP
+NAB
+NCP
+TLS
+WOW
+BHP
+NAB
+NCP
+TLS
+WOW
+Explanatory variables
+AV1
+3.108∗∗∗
+1.579∗∗∗
+1.129
+10.325∗∗∗
+1.952
+DAV1 -0.649∗∗-0.411∗∗-0.974∗∗∗-2.109∗∗∗-1.097∗∗∗
+AV2
+0.477
+-0.006
+0.044
+1.283
+-4.123∗∗∗
+DAV2 -0.698∗∗-0.161
+-0.899∗∗∗-1.309∗∗∗-1.558∗∗∗
+AV3
+8.480∗∗∗
+5.378∗∗∗
+8.408∗∗∗23.421∗∗∗3.956∗∗∗
+DAV3
+0.172
+-0.456∗
+-0.376
+-0.662
+-0.963∗∗∗
+AV4
+11.203∗∗∗-10.071∗∗∗-12.398∗∗∗-5.250∗∗∗-5.426∗
+DAV4 -0.910∗∗-0.232
+-0.868∗∗
+-0.938∗∗∗
+0.841∗
+AV5
+-0.602
+0.635
+3.546∗∗∗
+5.198∗∗∗-0.008
+DAV5 1.341∗∗∗1.811∗∗∗1.585∗∗∗-0.390
+0.993∗
+AV6
+-3.195∗∗∗-7.523∗∗∗-4.154∗∗∗-4.753∗∗∗-6.877∗∗∗
+DAV6
+0.363
+-0.968∗∗∗-0.851∗
+0.524∗
+-0.269
+BV1
+0.379
+-1.429∗∗
+-0.241
+-2.643∗
+-1.420
+DBV1 -0.440∗∗-0.629∗∗∗-0.351∗∗
+-1.498∗∗∗-0.774∗∗∗
+BV2
+1.869∗∗∗-0.271
+0.751
+10.025∗∗∗3.522∗∗
+DBV2 -0.290
+-0.549∗∗∗-0.368∗
+-1.588∗∗∗-0.465∗∗
+BV3
+-4.407∗∗∗-5.105∗∗∗-6.919∗∗∗-6.776∗∗∗-1.855
+DBV3 -0.447∗
+-0.228
+-0.243
+-0.991∗
+-0.244
+BV4
+15.485∗∗∗11.177∗∗∗13.989∗∗∗21.712∗∗∗8.300∗∗
+DBV4 0.539∗∗-0.167
+0.605
+-0.105
+0.342
+BV5
+-4.124∗∗∗-5.123∗∗∗-9.011∗∗∗-8.142∗∗∗-4.821∗∗
+DBV5 -1.576∗∗∗-0.289
+-0.599∗
+0.112
+-0.604∗∗
+BV6
+-1.756∗∗
+2.774∗∗∗
+-0.647
+2.399∗∗
+2.235
+DBV6 0.543∗
+1.046∗∗∗1.017∗∗∗-0.980∗∗∗1.522∗∗∗
+AD1
+-7.287∗∗∗-2.318∗∗∗-3.390∗∗∗-18.057∗∗∗-2.130∗∗∗
+BD1
+3.974∗∗∗1.903∗∗∗2.575∗∗∗8.315∗∗∗
+1.036∗∗
+AD2
+4.400∗∗∗
+1.340∗∗∗
+2.405∗∗∗
+4.035∗∗∗
+0.828∗∗
+BD2
+-7.144∗∗∗-1.247∗∗∗-3.381∗∗∗-16.624∗∗∗-0.586
+AD3
+-7.708∗∗∗-2.072∗∗∗-3.448∗∗∗-28.527∗∗∗-3.019∗∗∗
+BD3
+0.148
+-0.185
+-0.390
+4.385∗∗∗-1.137∗∗
+AD4
+0.709∗
+-0.302
+0.596
+2.784∗∗
+-2.468∗∗∗
+BD4
+-8.672∗∗∗-2.400∗∗∗-4.005∗∗∗-26.667∗∗∗-2.832∗∗∗
+AD5
+4.822∗∗∗
+6.074∗∗∗
+7.804∗∗∗
+2.902∗∗∗4.521∗∗∗
+BD5
+1.516∗∗∗-0.048
+-1.026
+1.510∗∗
+0.904
+AD6
+0.584
+0.177
+0.270
+-1.085
+0.937
+BD6
+6.410∗∗∗6.437∗∗∗5.877∗∗∗4.674∗∗∗5.545∗∗∗
+SP1
+-1.925∗∗∗-0.386∗∗∗-1.130∗∗∗
+-1.594
+-0.471∗∗∗
+MQ1
+-1.849∗∗∗-0.305∗∗∗-0.596∗∗∗-0.925∗∗
+-0.239∗∗
+SP2
+-1.699∗∗∗-0.297∗∗∗-0.892∗∗∗-3.223∗
+-0.273∗∗∗
+MQ2
+1.551∗∗∗0.248∗∗∗0.329∗∗∗1.836∗∗∗0.256∗∗∗
+SP3
+0.639∗∗∗
+0.199∗∗∗
+0.416∗∗∗
+1.661∗∗∗0.250∗∗∗
+MQ3
+-0.257∗
+-0.010
+-0.217∗∗
+-0.770∗
+-0.261∗∗∗
+SP4
+0.549∗∗∗
+0.173∗∗∗
+0.459∗∗∗
+1.753∗∗∗0.235∗∗∗
+MQ4
+0.467∗∗∗-0.016
+-0.247∗∗
+0.911∗
+-0.161
+SP5
+-0.857∗∗∗
+0.044
+-0.279∗∗∗-1.218∗∗
+0.086
+MQ5
+-1.098∗∗∗-0.096
+-0.839∗∗∗
+0.608
+-0.112
+SP6
+-0.969∗∗∗
+0.124∗∗∗-0.136∗
+-0.887∗
+-0.169∗∗
+MQ6
+1.788∗∗∗-0.062
+0.424∗∗
+0.440
+0.698∗∗∗
+VL1
+3.773∗∗∗
+0.242∗∗∗
+2.901∗∗∗
+0.124
+0.977∗∗∗
+VL2
+4.790∗∗∗
+0.232∗∗∗
+2.498∗∗∗
+0.073
+1.018∗∗∗
+VL3
+3.936∗∗∗
+0.042
+1.361∗∗∗
+0.055
+0.153
+VL4
+3.921∗∗∗
+0.144∗∗∗
+0.695∗∗
+-0.090
+0.414∗
+VL5
+5.712∗∗∗
+0.266∗∗∗
+2.992∗∗∗
+0.055
+1.125∗∗∗
+VL6
+5.848∗∗∗
+0.273∗∗∗
+1.551∗∗∗
+0.069
+1.188∗∗∗
+Diagnostics
+Obs
+9316
+10463
+9142
+3102
+3438
+LL
+-20145
+-23836
+-19894
+-6343
+-6527
+BIC
+-20721
+-24419
+-20468
+-6850
+-7040
+Aggressive Buy Orders
+Aggressive Sell Orders
+Mean of ˆεi
+1.014
+1.001
+0.993
+0.952
+0.995
+0.994
+1.000
+0.991
+1.042
+1.002
+S.D. of ˆεi
+1.159
+1.067
+1.095
+1.190
+1.114
+1.139
+1.058
+1.088
+1.241
+1.100
+LB(20) of ˆεi
+13.039
+18.503
+25.243
+14.846
+13.610
+14.905
+28.017
+27.049
+26.972
+17.114
+Exc. disp.
+5.379∗∗∗
+2.533∗∗
+3.443∗∗∗
+3.369∗∗∗
+2.477∗∗
+5.106∗∗∗2.295∗∗3.179∗∗∗4.501∗∗∗
+2.216∗∗
+Aggressive Ask Limit Orders
+Aggressive Bid Limit Orders
+Mean of ˆεi
+1.020
+0.999
+0.991
+0.978
+0.992
+1.015
+0.997
+0.979
+1.032
+0.959
+S.D. of ˆεi
+1.095
+1.058
+1.086
+1.088
+1.050
+1.091
+1.035
+1.097
+1.083
+1.025
+LB(20) of ˆεi
+10.806
+22.876
+13.522
+29.364∗
+32.165∗∗
+20.823
+13.765
+11.254
+10.760
+11.538
+Exc. disp.
+2.740∗∗∗
+1.796∗
+2.891∗∗∗
+1.009
+1.040
+2.714∗∗∗
+0.985
+2.472∗∗
+1.151
+0.339
+Aggressive Ask Cancellations
+Aggressive Bid Cancellations
+Mean of ˆεi
+0.991
+1.004
+1.011
+1.029
+1.031
+1.006
+1.023
+1.005
+1.005
+1.083
+S.D. of ˆεi
+0.975
+0.963
+0.932
+0.975
+1.045
+0.932
+0.972
+0.992
+0.905
+1.095
+LB(20) of ˆεi
+17.313
+20.241
+11.585
+31.632∗∗
+22.407
+12.733
+27.965
+10.571
+37.679∗∗∗
+15.504
+Exc. disp.
+0.549
+0.744
+1.067
+0.464
+0.542
+1.368
+0.578
+0.133
+1.701∗
+1.202
+27
+
+Table V
+ACI models without dynamics
+Maximum likelihood estimates of six-dimensional ACI(1,1) models without dynamics for intensity processes
+of (1) aggressive buy orders, (2) aggressive sell orders, (3) aggressive ask limit orders, (4) aggressive bid limit
+orders, (5) aggressive cancellations of ask orders, (6) aggressive cancellations of bid orders. Backward recurrence
+functions are speciﬁed in terms of individual univariate Weibull parameterizations. The autoregressive matrices
+Ak and B are set to zero.
+The spline functions are speciﬁed for market orders (s12
+. ), limit orders (s34
+. ) and
+cancellations (s56
+. ) based on 1 hour nodes between 10 a.m. and 4 p.m. The exact deﬁnition of the covariates is
+found in Section 5. All covariates except V OL are scaled by 10. Standard errors are computed based on OPG
+estimates. The time series are re-initialized at each trading day.
+BHP
+NAB
+NCP
+TLS
+WOW
+BHP
+NAB
+NCP
+TLS
+WOW
+Constants and backward recurrence parameters
+ω1
+-0.970∗∗∗-0.304∗∗∗-0.256∗∗
+-0.578∗
+-1.849∗∗∗
+p1
+0.828∗∗∗0.772∗∗∗0.779∗∗∗0.806∗∗∗
+0.557∗∗∗
+ω2
+-0.250∗
+-0.243∗∗
+-0.088
+-0.814∗∗
+-0.569∗∗∗
+p2
+0.830∗∗∗0.759∗∗∗0.777∗∗∗0.827∗∗∗
+0.575∗∗∗
+ω3
+-0.671∗∗∗-0.845∗∗∗-0.517∗∗∗-0.611∗∗
+-0.639∗∗∗
+p3
+0.837∗∗∗0.865∗∗∗0.849∗∗∗0.795∗∗∗
+0.701∗∗∗
+ω4
+-0.450∗∗∗-1.463∗∗∗-1.131∗∗∗-0.440∗
+-1.827∗∗∗
+p4
+0.804∗∗∗0.837∗∗∗0.811∗∗∗0.700∗∗∗
+0.614∗∗∗
+ω5
+-1.343∗∗∗-1.427∗∗∗-1.583∗∗∗-0.718∗∗
+-0.987∗∗∗
+p5
+0.713∗∗∗0.706∗∗∗0.823∗∗∗0.649∗∗∗
+0.604∗∗∗
+ω6
+-1.771∗∗∗-1.552∗∗∗-1.393∗∗∗-1.030∗∗∗-3.317∗∗∗
+p6
+0.727∗∗∗0.714∗∗∗0.791∗∗∗0.668∗∗∗
+0.627∗∗∗
+Seasonality parameters
+s12
+11:00 -0.779∗∗∗-0.817∗∗∗-1.134∗∗∗
+5.225∗∗∗-1.216∗∗∗
+s34
+11:00 -0.403∗
+-0.403
+-0.812∗∗∗
+4.292∗∗
+-0.571∗
+s12
+12:00
+0.247
+0.424
+0.861∗∗∗-9.370∗∗∗
+0.998∗∗∗
+s34
+12:00 -0.360
+0.245
+0.594∗
+-8.839∗∗
+-0.240
+s12
+13:00 -0.867∗∗∗-1.119∗∗∗-0.951∗∗∗
+0.947
+-0.257
+s34
+13:00 -0.415
+-1.408∗∗∗-1.149∗∗∗
+4.130∗∗
+0.862∗
+s12
+14:00 2.917∗∗∗
+3.231∗∗∗
+2.764∗∗∗
+8.350∗∗∗
+1.551∗∗∗
+s34
+14:00
+2.459∗∗∗3.449∗∗∗2.791∗∗∗5.828∗∗∗
+1.174∗
+s12
+15:00 -0.474∗∗
+-0.909∗∗∗-1.008∗∗∗-4.896∗∗∗-1.108∗∗
+s34
+15:00 -0.129
+-1.453∗∗∗-0.210
+-5.695∗
+-1.713∗∗
+s12
+16:00 -0.072
+0.584∗
+1.315∗∗∗
+4.353∗∗
+1.640∗∗∗
+s34
+16:00 -0.147
+0.741
+-1.208∗∗
+2.312
+2.539∗∗∗
+s56
+11:00 -0.414
+-1.361∗∗∗-1.125∗∗∗-0.220
+-1.224∗∗∗
+s56
+14:00
+3.742∗∗∗2.795∗∗∗3.108∗∗∗4.911∗∗∗
+1.569∗∗
+s56
+12:00
+0.042
+1.531∗∗∗
+1.018∗∗∗
+0.352
+0.920
+s56
+15:00 -1.188∗∗∗-1.263∗∗∗-0.898
+-2.894∗∗∗-1.288
+s56
+13:00 -1.498∗∗∗-1.592∗∗∗-1.353∗∗
+-2.334∗∗∗
+0.047
+s56
+16:00
+0.233
+0.685∗
+-0.396
+3.788∗∗∗
+0.932
+Explanatory variables
+AV1
+1.717∗∗∗
+0.639
+-2.788∗∗∗12.936∗∗∗
+0.091
+DAV1 -0.415
+-0.261
+-0.648∗∗∗-1.970∗∗∗
+0.587∗
+AV2
+1.510∗∗∗
+0.455
+0.802∗
+0.909
+1.200∗
+DAV2 -0.615∗∗-0.210
+-0.796∗∗∗-0.990∗∗∗-0.437∗
+AV3
+7.577∗∗∗
+4.381∗∗∗
+8.662∗∗∗21.358∗∗∗
+3.234∗∗∗
+DAV3 0.367
+-0.566∗∗-0.306
+-0.499
+0.164
+AV4 -10.311∗∗∗-10.219∗∗∗-9.006∗∗∗-5.775∗∗∗-15.237∗∗∗
+DAV4 -0.837∗∗-0.302
+-0.660∗
+-1.029∗∗∗
+1.491∗∗∗
+AV5
+-0.774
+0.157
+1.334
+3.986∗∗∗
+3.446∗∗∗
+DAV5 1.587∗∗∗1.868∗∗∗1.630∗∗∗-0.346
+1.719∗∗∗
+AV6
+-3.138∗∗∗-6.224∗∗∗-5.912∗∗∗-4.956∗∗∗-12.886∗∗∗
+DAV6 0.442
+-1.120∗∗∗-0.642
+0.598∗∗
+0.314
+BV1
+0.787∗
+-0.651∗
+3.028∗∗∗-3.281∗
+2.461∗∗∗
+DBV1 -0.234
+-0.514∗∗∗-0.301∗
+-0.932∗∗∗-0.374∗
+BV2
+0.084
+-0.759∗∗
+-0.244
+10.528∗∗∗-1.222∗
+DBV2 -0.143
+-0.284∗∗∗-0.284
+-1.270∗∗∗
+0.310∗
+BV3
+-4.146∗∗∗-4.487∗∗∗-6.735∗∗∗-5.331∗∗∗-1.634∗
+DBV3 -0.227
+-0.218
+-0.140
+-1.055∗∗
+-0.410∗∗
+BV4 13.824∗∗∗11.335∗∗∗11.352∗∗∗21.499∗∗∗18.504∗∗∗
+DBV4 0.440
+0.082
+0.734∗
+-0.125
+0.635∗∗
+BV5
+-4.307∗∗∗-4.653∗∗∗-6.657∗∗∗-6.256∗∗∗-7.446∗∗∗
+DBV5 -1.502∗∗∗-0.129
+-0.784∗∗
+0.181
+0.329
+BV6
+-2.250∗∗∗
+1.421∗
+0.830
+2.351∗∗
+10.951∗∗∗
+DBV6 0.551∗
+1.270∗∗∗1.271∗∗∗-0.937∗∗∗
+1.600∗∗∗
+AD1
+-5.852∗∗∗-2.001∗∗∗-2.542∗∗∗-18.482∗∗∗-1.714∗∗∗
+BD1
+3.915∗∗∗1.971∗∗∗2.843∗∗∗7.732∗∗∗
+0.465
+AD2
+4.520∗∗∗
+1.436∗∗∗
+2.372∗∗∗
+3.827∗∗∗
+1.153∗∗∗
+BD2
+-6.109∗∗∗-1.208∗∗∗-3.027∗∗∗-17.238∗∗∗-0.745∗
+AD3
+-6.738∗∗∗-1.523∗∗∗-3.776∗∗∗-27.456∗∗∗-1.939∗∗∗
+BD3
+0.113∗∗∗0.024
+-0.621∗
+3.950∗∗∗-1.365∗∗∗
+AD4
+0.578
+0.008
+-0.225
+3.221∗∗
+-0.477
+BD4
+-7.338∗∗∗-2.499∗∗∗-4.289∗∗∗-26.201∗∗∗-3.493∗∗∗
+AD5
+5.127∗∗∗
+6.341∗∗∗
+7.808∗∗∗
+2.694∗∗∗
+5.165∗∗∗
+BD5
+1.746∗∗∗-0.108
+-0.974
+0.881
+-0.589
+AD6
+1.036∗∗
+0.333
+0.570
+-1.004
+0.942
+BD6
+6.696∗∗∗6.540∗∗∗6.174∗∗∗4.977∗∗∗
+4.212∗∗∗
+SP1
+-1.951∗∗∗-0.389∗∗∗-1.148∗∗∗-3.472
+-0.665∗∗∗
+MQ1 -1.642∗∗∗-0.310∗∗∗-0.678∗∗∗-0.856∗∗∗-0.183∗∗
+SP2
+-1.740∗∗∗-0.299∗∗∗-0.917∗∗∗-2.502
+-0.377∗∗∗
+MQ2
+1.493∗∗∗0.177∗∗∗0.380∗∗∗1.547∗∗∗
+0.289∗∗∗
+SP3
+0.639∗∗∗
+0.221∗∗∗
+0.416∗∗∗
+1.787∗∗∗
+0.229∗∗∗
+MQ3
+-0.260∗
+-0.026
+-0.253∗∗∗-0.782
+-0.035
+SP4
+0.535∗∗∗
+0.188∗∗∗
+0.493∗∗∗
+1.745∗∗∗
+0.193∗∗∗
+MQ4
+0.482∗∗∗-0.049
+-0.109
+1.034∗∗
+0.029
+SP5
+-0.898∗∗∗
+0.051∗
+-0.311∗∗∗-1.514∗∗
+-0.019
+MQ5 -1.321∗∗∗-0.171∗∗-0.856∗∗∗
+0.411
+-0.399∗∗
+SP6
+-1.010∗∗∗
+0.129∗∗∗-0.157∗∗
+-1.332∗
+-0.196∗∗
+MQ6
+1.870∗∗∗-0.080
+0.433∗∗∗
+0.205
+0.586∗∗∗
+VL1
+3.989∗∗∗
+0.261∗∗∗
+2.613∗∗∗
+0.068
+0.279∗
+VL4
+3.892∗∗∗0.114∗∗∗0.975∗∗∗-0.073
+-0.342
+VL2
+4.621∗∗∗
+0.256∗∗∗
+2.442∗∗∗
+0.001
+0.265∗
+VL5
+5.922∗∗∗0.271∗∗∗2.889∗∗∗
+0.026
+0.483∗
+VL3
+3.772∗∗∗
+0.029
+1.405∗∗∗
+0.039
+-0.021
+VL6
+5.942∗∗∗0.273∗∗∗1.547∗∗∗
+0.083
+0.755∗∗∗
+28
+
+Table V continued
+Diagnostics
+BHP
+NAB
+NCP
+TLS
+WOW
+BHP
+NAB
+NCP
+TLS
+WOW
+Obs
+9316
+10463
+9142
+3102
+3438
+LL
+-20426
+-24192
+-20210
+-6422
+-7322
+BIC
+-20809
+-24581
+-20593
+-6759
+-7664
+Aggressive Buy Orders
+Aggressive Sell Orders
+Mean of ˆεi
+1.011
+1.004
+1.004
+0.984
+1.027
+1.001
+1.004
+1.006
+1.018
+1.039
+S.D. of ˆεi
+1.227
+1.061
+1.121
+1.274
+1.136
+1.155
+1.075
+1.102
+1.219
+1.108
+LB(20) of ˆεi138.654∗∗∗228.349∗∗∗328.073∗∗∗28.760∗875.175∗∗∗152.729∗∗∗380.321∗∗∗189.016∗∗∗40.895∗∗∗1168.166∗∗∗
+Exc. disp.
+7.904∗∗∗
+2.312∗∗
+4.458∗∗∗
+5.039∗∗∗
+2.976∗∗
+5.719∗∗∗
+2.952∗∗
+3.724∗∗∗
+4.052∗∗∗
+2.421∗∗
+Aggressive Ask Limit Orders
+Aggressive Bid Limit Orders
+Mean of ˆεi
+1.002
+1.001
+1.001
+0.993
+0.993
+0.988
+0.995
+0.987
+1.017
+0.948
+S.D. of ˆεi
+1.087
+1.077
+1.138
+1.126
+1.070
+1.078
+1.038
+1.132
+1.068
+1.073
+LB(20) of ˆεi 59.655∗∗∗179.270∗∗∗98.016 ∗∗∗36.974∗∗687.721∗∗∗169.180∗∗∗192.434∗∗∗57.125 ∗∗∗
+9.576
+457.756∗∗∗
+Exc. disp.
+2.502∗∗
+2.384∗∗
+4.756∗∗∗
+1.470
+1.454
+2.312∗∗
+1.068
+3.428∗∗∗
+0.947
+1.000
+Aggressive Ask Cancellations
+Aggressive Bid Cancellations
+Mean of ˆεi
+1.003
+0.995
+1.002
+1.008
+1.013
+1.005
+1.002
+1.003
+1.012
+1.037
+S.D. of ˆεi
+1.004
+0.964
+0.952
+0.954
+1.161
+0.936
+0.960
+1.034
+0.908
+1.168
+LB(20) of ˆεi 37.028∗∗83.534 ∗∗∗41.465∗∗∗48.019∗∗∗233.517∗∗∗46.825∗∗∗80.124∗∗∗61.366 ∗∗∗38.402∗∗∗110.162∗∗∗
+Exc. disp.
+0.107
+0.718
+0.747
+0.851
+2.032∗∗
+1.287
+0.813
+0.611
+1.654∗
+2.207∗∗
+Diagnostics: Log Likelihood (LL), Bayes Information Criterion (BIC) and diagnostics (mean, standard deviation,
+Ljung-Box statistics and excess dispersion test) of ACI residuals ˆεs
+i.
+29
+
+Table VI
+ACI models without covariates
+Maximum likelihood estimates of six-dimensional ACI(1,1) models for intensity processes of (1) aggressive buy
+orders, (2) aggressive sell orders, (3) aggressive ask limit orders, (4) aggressive bid limit orders, (5) aggressive
+cancellations of ask orders, (6) aggressive cancellations of bid orders. Backward recurrence functions are speciﬁed
+in terms of individual univariate Weibull parameterizations. The persistence vectors Ak are fully parameterized,
+whereas B is parameterized as diagonal matrix. Three spline functions are speciﬁed for market orders (s12
+. ),
+limit orders (s34
+. ), and cancellations (s56
+. ) based on 1 hour nodes between 10 a.m. and 4 p.m. Standard errors
+are computed based on OPG estimates. The time series are re-initialized at each trading day.
+BHP
+NAB
+NCP
+TLS
+WOW
+BHP
+NAB
+NCP
+TLS
+WOW
+Constants and backward recurrence parameters
+ω1
+-0.893∗∗∗-0.724∗∗∗-0.635∗∗∗-1.204∗∗∗-1.109∗∗∗
+p1
+0.822∗∗∗0.787∗∗∗0.803∗∗∗0.797∗∗∗0.705∗∗∗
+ω2
+-0.742∗∗∗-0.658∗∗∗-0.544∗∗∗-1.153∗∗∗-1.014∗∗∗
+p2
+0.798∗∗∗0.766∗∗∗0.781∗∗∗0.843∗∗∗0.721∗∗∗
+ω3
+-0.967∗∗∗-1.138∗∗∗-0.783∗∗∗-1.665∗∗∗-0.740∗∗∗
+p3
+0.760∗∗∗0.870∗∗∗0.821∗∗∗0.671∗∗∗0.784∗∗∗
+ω4
+-0.986∗∗∗-1.385∗∗∗-1.330∗∗∗-1.259∗∗∗-1.705∗∗∗
+p4
+0.736∗∗∗0.816∗∗∗0.780∗∗∗0.595∗∗∗0.779∗∗∗
+ω5
+-1.449∗∗∗-1.600∗∗∗-1.910∗∗∗-1.210∗∗∗-1.959∗∗∗
+p5
+0.706∗∗∗0.734∗∗∗0.832∗∗∗0.665∗∗∗0.746∗∗∗
+ω6
+-1.604∗∗∗-1.537∗∗∗-1.876∗∗∗-1.216∗∗∗-1.851∗∗∗
+p6
+0.755∗∗∗0.730∗∗∗0.862∗∗∗0.672∗∗∗0.749∗∗∗
+Innovation parameters
+α1
+1
+0.049∗∗∗0.124∗∗∗0.063∗∗∗0.147∗∗∗0.134∗∗∗
+α1
+2
+0.046∗∗∗0.056∗∗∗0.028∗∗∗0.047∗∗
+0.049∗∗∗
+α2
+1
+0.027∗∗
+0.034∗∗
+0.012
+0.124∗∗∗0.064∗∗∗
+α2
+2
+0.085∗∗∗0.133∗∗∗0.078∗∗∗0.096∗∗∗0.097∗∗∗
+α3
+1
+-0.008
+0.010
+-0.018∗
+0.037
+0.078∗∗∗
+α3
+2
+0.013
+0.010
+0.038∗∗∗0.043
+0.050∗∗
+α4
+1
+0.037∗∗∗0.017∗
+0.062∗∗∗0.036
+0.107∗∗∗
+α4
+2
+-0.007
+-0.013
+-0.025
+-0.057∗
+-0.002
+α5
+1
+-0.014
+0.041∗
+0.021
+0.033
+-0.039∗
+α5
+2
+0.095∗∗∗0.154∗∗∗0.055∗∗∗0.085∗∗∗0.133∗∗∗
+α6
+1
+0.167∗∗∗0.091∗∗∗0.063∗∗∗0.088
+0.151∗∗∗
+α6
+2
+-0.033
+0.038∗∗
+0.053∗∗∗0.027
+0.081∗∗∗
+α1
+3
+0.025∗∗
+-0.008
+-0.005∗∗∗0.092∗∗
+0.056∗∗∗
+α1
+4
+0.016
+0.017
+0.007
+-0.016
+0.086∗∗∗
+α2
+3
+0.017
+-0.009
+0.018∗
+0.049
+0.054∗∗∗
+α2
+4
+0.007
+0.041∗∗
+0.004
+-0.053
+0.037∗
+α3
+3
+0.110∗∗∗0.084∗∗∗0.096∗∗∗0.182∗∗∗0.108∗∗∗
+α3
+4
+-0.003
+-0.005
+0.019
+0.008
+0.051∗
+α4
+3
+0.005
+-0.037∗∗∗-0.029∗
+0.129∗∗∗0.080∗∗∗
+α4
+4
+0.151∗∗∗0.110∗∗∗0.186∗∗∗0.046
+0.224∗∗∗
+α5
+3
+-0.006
+0.056∗∗
+0.040∗∗
+0.034
+0.083∗∗∗
+α5
+4
+-0.019
+0.032
+-0.001
+-0.008
+0.073∗∗
+α6
+3
+0.022
+0.026
+-0.024
+0.045
+0.005
+α6
+4
+-0.003
+-0.005
+0.001
+0.035
+0.125∗∗∗
+α1
+5
+-0.029∗
+-0.007
+-0.021
+0.004
+0.087∗∗∗
+α1
+6
+0.039∗∗-0.050∗
+0.026
+0.036
+0.044∗∗∗
+α2
+5
+0.025∗
+0.037
+0.006
+0.034
+0.088∗∗∗
+α2
+6
+0.003
+-0.038
+0.001
+-0.003
+0.006∗∗∗
+α3
+5
+-0.001
+0.013
+-0.011
+-0.024
+0.025
+α3
+6
+0.013
+-0.003
+-0.027
+0.025
+-0.001∗∗∗
+α4
+5
+-0.058∗∗
+0.017
+-0.050
+0.018
+0.032
+α4
+6
+0.002
+-0.016
+-0.008
+0.018
+0.088∗∗
+α5
+5
+0.045∗∗
+0.134∗∗∗0.055∗
+0.001
+0.056
+α5
+6
+0.049∗∗
+0.031
+0.022
+0.025
+-0.014∗∗∗
+α6
+5
+0.122∗∗∗0.031
+0.007
+0.013
+-0.164∗∗∗
+α6
+6
+0.149∗∗∗0.094∗∗∗0.042
+0.001
+0.102
+Persistence parameters
+β11
+0.987∗∗∗0.945∗∗∗0.994∗∗∗0.986∗∗∗0.994∗∗∗
+β44
+0.997∗∗∗0.998∗∗∗0.990∗∗∗0.992∗∗∗0.995∗∗∗
+β22
+0.987∗∗∗0.951∗∗∗0.984∗∗∗0.985∗∗∗0.995∗∗∗
+β55
+0.987∗∗∗0.961∗∗∗0.993∗∗∗0.983∗∗∗0.997∗∗∗
+β33
+0.997∗∗∗0.994∗∗∗0.997∗∗∗0.994∗∗∗0.994∗∗∗
+β66
+0.961∗∗∗0.972∗∗∗0.993∗∗∗0.979∗∗∗0.994∗∗∗
+Seasonality parameters
+s12
+11:00 -1.257∗∗∗-1.223∗∗∗-1.665∗∗∗-0.793∗∗∗-1.553∗∗∗
+s34
+11:00 -1.449∗∗∗-1.291∗∗∗-1.495∗∗∗-0.913∗∗∗-1.660∗∗∗
+s12
+12:00 0.791∗∗∗0.912∗∗∗1.499∗∗∗-0.137
+1.339∗∗∗
+s34
+12:00 0.989∗∗∗1.326∗∗∗1.505∗∗∗-0.189
+1.245∗∗∗
+s12
+13:00 -0.577∗∗∗-0.929∗∗∗-0.736∗∗∗-0.005
+-0.362
+s34
+13:00 -0.172
+-1.098∗∗∗-1.110∗∗∗1.040∗
+0.191
+s12
+14:00 2.330∗∗∗2.666∗∗∗2.046∗∗∗2.603∗∗∗1.666∗∗∗
+s34
+14:00 1.675∗∗∗2.189∗∗∗2.151∗∗∗1.692∗∗∗1.003∗∗∗
+s12
+15:00 -0.311
+-0.411∗
+-0.579∗∗∗-1.491∗∗∗-0.134
+s34
+15:00 -0.975∗∗∗-0.755∗∗∗-0.336
+-2.316∗∗∗-0.632
+s12
+16:00 0.286
+0.355
+1.291∗∗∗1.402∗∗
+2.487∗∗∗
+s34
+16:00 0.698∗∗
+0.174
+-0.695∗∗
+3.150∗∗∗1.044∗
+s56
+11:00 -0.884∗∗∗-1.224∗∗∗-1.506∗∗∗-0.430
+-1.612∗∗∗
+s56
+14:00 3.110∗∗∗3.064∗∗∗2.309∗∗∗4.714∗∗∗1.505∗∗∗
+s56
+12:00 0.502
+1.249∗∗∗1.304∗∗∗0.598
+1.227∗∗
+s56
+15:00 -0.646
+-0.870∗∗
+-0.586
+-2.483∗∗∗-0.127
+s56
+13:00 -1.110∗∗∗-1.572∗∗∗-0.860∗∗∗-2.250∗∗∗-0.040
+s56
+16:00 0.173
+0.924
+0.569
+3.274∗∗∗1.130
+30
+
+Table VI continued
+Diagnostics
+BHP
+NAB
+NCP
+TLS
+WOW
+BHP
+NAB
+NCP
+TLS
+WOW
+Obs
+9316
+10463
+9142
+3102
+3438
+LL
+-22351
+-25144
+-21277
+-7538
+-6967
+BIC
+-22680
+-25477
+-21605
+-7828
+-7260
+Aggressive Buy Orders
+Aggressive Sell Orders
+Mean of ˆεi
+0.989
+0.999
+0.992
+0.958
+0.988
+0.992
+0.996
+1.001
+1.002
+1.012
+S.D. of ˆεi
+1.016
+1.020
+1.051
+0.930
+1.087
+1.027
+1.044
+1.058
+0.957
+1.084
+LB(20) of ˆεi
+13.858
+18.542
+18.892
+27.911
+20.361
+12.845
+27.835
+20.016
+17.917
+17.768
+Exc. disp.
+0.515
+0.760∗
+1.831∗
+1.079
+1.869∗
+0.934
+1.712
+2.075∗∗
+0.698
+1.864∗
+Aggressive Ask Limit Orders
+Aggressive Bid Limit Orders
+Mean of ˆεi
+0.983
+1.009
+1.015
+0.987
+0.987
+0.997
+0.986
+0.964
+0.966
+0.9457
+S.D. of ˆεi
+1.036
+1.048
+1.070
+0.953
+1.001
+1.012
+1.033
+1.0203
+0.921
+0.9929
+LB(20) of ˆεi
+15.927
+14.314
+11.126
+31.249
+17.930
+19.197
+21.943
+17.132
+17.175
+18.180
+Exc. disp.
+1.015
+1.488
+2.333∗∗
+0.494
+0.037
+0.344
+0.918
+0.495
+1.003
+0.093
+Aggressive Ask Cancellations
+Aggressive Bid Cancellations
+Mean of ˆεi
+0.995
+1.002
+1.012
+1.008
+1.0079
+1.010
+1.009
+1.003
+1.010
+1.037
+S.D. of ˆεi
+0.935
+0.962
+0.9503
+0.906
+0.9750
+0.929
+0.942
+0.978
+0.876
+1.047
+LB(20) of ˆεi
+23.337
+25.336
+16.429
+20.911
+19.263
+11.344
+24.900
+13.915
+24.142∗∗∗
+8.333
+Exc. disp.
+1.411
+0.749
+0.787
+1.681∗
+0.288
+1.428
+1.169
+0.374
+2.200∗∗
+0.584
+Diagnostics: Log Likelihood (LL), Bayes Information Criterion (BIC) and diagnostics (mean, standard deviation,
+Ljung-Box statistics and excess dispersion test) of ACI residuals ˆεs
+i.
+Figure 1.
+Intraday seasonality functions: Estimated intraday seasonality functions of the processes of
+aggressive market orders (solid line), aggressive limit orders (broken line), and aggressive cancellations (dotted
+line) for the BHP, NAB, NCP, TLS and WOW stock traded at the ASX. The estimates are based on the ACI
+speciﬁcations in Table 4.
+31

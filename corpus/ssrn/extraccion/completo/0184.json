@@ -1,0 +1,110 @@
+{
+  "doc_id": 184,
+  "titulo": "FinRL: A Deep Reinforcement Learning Library for Automated Stock Trading in Quantitative Finance",
+  "resumen_operativo": "El paper presenta FinRL, una librería open-source de deep reinforcement learning diseñada para el trading automatizado de acciones. Organizada en tres capas (entorno de mercado, agente DRL y aplicaciones), proporciona entornos con datos de NASDAQ-100, DJIA, S&P 500, HSI, SSE 50 y CSI 300, algoritmos DRL como DQN, DDPG, PPO, SAC, A2C y TD3, y tres casos de uso: single stock trading, multiple stock trading y portfolio allocation. La librería incorpora fricciones de mercado como costes de transacción y liquidez.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Deep Reinforcement Learning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Framework de aprendizaje automático que equilibra exploración y explotación para resolver problemas de decisión dinámica. En FinRL se aplica al trading automatizado, entrenando agentes que deciden dónde, a qué precio y qué cantidad negociar.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "automated stock trading"},
+        {"tipo": "USA", "objeto": "neural networks"}
+      ],
+      "cita_textual": "Deep reinforcement learning (DRL), which balances exploration (of uncharted territory) and exploitation (of current knowledge), has been recognized as an advantageous approach for automated stock trading."
+    },
+    {
+      "nombre": "Markov Decision Process",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Formalización matemática del problema de trading automatizado donde el agente observa el estado (precios, volumen, indicadores), toma una acción (comprar/vender/mantener) y recibe una recompensa.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "automated stock trading"},
+        {"tipo": "USA", "objeto": "state space"}
+      ],
+      "cita_textual": "Considering the stochastic and interactive nature of the automated stock trading tasks, a financial task is modeled as a Markov Decision Process (MDP) problem."
+    },
+    {
+      "nombre": "DQN",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Deep Q-Network, algoritmo DRL basado en valor que aproxima la función Q mediante redes neuronales profundas. Es uno de los algoritmos fine-tuned disponibles en FinRL.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "deep reinforcement learning"},
+        {"tipo": "USA", "objeto": "Q-learning"}
+      ],
+      "cita_textual": "FinRL provides fine-tuned state-of-the-art DRL algorithms (DQN, DDPG, PPO, SAC, A2C, TD3, etc.)."
+    },
+    {
+      "nombre": "PPO",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proximal Policy Optimization, algoritmo actor-crítico que optimiza políticas de trading con restricciones de confianza para estabilidad. Incluido en la capa de agentes de FinRL.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "actor-critic methods"},
+        {"tipo": "USA", "objeto": "policy gradient"}
+      ],
+      "cita_textual": "FinRL provides fine-tuned state-of-the-art DRL algorithms (DQN, DDPG, PPO, SAC, A2C, TD3, etc.)."
+    },
+    {
+      "nombre": "Transaction Cost",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Fricción de mercado incorporada en el entorno de trading de FinRL. Es uno de los determinantes clave de los retornos netos y permite simular condiciones realistas de trading.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market frictions"},
+        {"tipo": "CAUSA", "objeto": "net return reduction"}
+      ],
+      "cita_textual": "It incorporates important trading constraints such as transaction cost, market liquidity and the investor's degree of risk-aversion."
+    },
+    {
+      "nombre": "State Space",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Conjunto de observaciones que el agente recibe del entorno: balance, posiciones, precios (open/high/low/close), volumen de trading e indicadores técnicos como MACD y RSI.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Markov decision process"},
+        {"tipo": "USA", "objeto": "technical indicators"}
+      ],
+      "cita_textual": "The state space describes the observations that the agent receives from the environment."
+    },
+    {
+      "nombre": "Action Space",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Conjunto de acciones permitidas: vender (-k), mantener (0) o comprar (+k) donde k es el número de acciones. El espacio puede ser discreto {-k,...,-1,0,1,...,k}.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Markov decision process"},
+        {"tipo": "REQUIERE", "objeto": "reward function"}
+      ],
+      "cita_textual": "The action space describes the allowed actions that the agent interacts with the environment. Normally, a includes three actions: selling, holding, and buying."
+    },
+    {
+      "nombre": "Sharpe Ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica de evaluación del rendimiento ajustado por riesgo, disponible como función de recompensa en FinRL. Definida como mean(R_t)/std(R_t) para un período de trading.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"},
+        {"tipo": "USA", "objeto": "reward function"}
+      ],
+      "cita_textual": "The Sharpe ratio for periods t = {1, ..., T}, i.e., S_T = mean(R_t)/std(R_t)."
+    },
+    {
+      "nombre": "Backtesting",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Evaluación del rendimiento de estrategias de trading usando datos históricos. FinRL proporciona backtesting extensivo con métricas estándar y fricciones de mercado incorporadas.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "trading strategies"},
+        {"tipo": "USA", "objeto": "evaluation metrics"}
+      ],
+      "cita_textual": "Extensive backtesting is analyzed via trading performance. Moreover, it incorporates important trading constraints such as transaction cost, market liquidity."
+    },
+    {
+      "nombre": "Portfolio Allocation",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Uno de los tres casos de uso demostrados en FinRL, donde el agente DRL asigna pesos de cartera entre múltiples activos para maximizar retorno ajustado por riesgo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "automated stock trading"},
+        {"tipo": "USA", "objeto": "deep reinforcement learning"}
+      ],
+      "cita_textual": "We incorporated three application demonstrations, namely single stock trading, multiple stock trading, and portfolio allocation."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "FinRL soporta granularidad horaria y por minuto en los datos de mercado, lo que permite entrenar agentes DRL para estrategias intradía."}
+}

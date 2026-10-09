@@ -1,0 +1,4834 @@
+High-frequency trading and price efficiency:
+a unified model
+Louis Raffestin∗
+October 3, 2023
+Corresponding author information
+Name : Louis RAFFESTIN.
+Email adress: louis.raffestin@u-bordeaux.fr
+Postal adress: 16 Av. Léon Duguit, 33600 Pessac, France.
+Phone number: +33 631 189 878
+Conflict of Interest statement
+The author declares that he has no known competing financial interests or personal
+relationships that could have appeared to influence the work reported in this paper.
+Financial Disclosure statement
+The author declares that he has no relevant or material financial interests that relate to
+the research described in this paper.
+∗Univ. Bordeaux CNRS, BSE, UMR 6060. E-mail: louis.raffestin@u-bordeaux.fr
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+High-frequency trading and price efficiency:
+a unified model
+Abstract
+I study the impact of high-frequency trading (HFT) on price efficiency, taking into account both
+the asset demand from HFT itself and the change it induces in the demand from informed traders.
+HFT trades against demand shocks when demand shocks typically originate from noise trading.
+Conversely, HFT trades with demand shocks when demand shocks typically originate from a change
+in fundamentals. This pattern enhances price efficiency on average, holding the behavior of informed
+traders constant. However, HFT lowers the expected profit of informed traders, who may react either
+by withdrawing from the market or by using order randomization to mislead HFT. Such responses
+lower the weight of fundamentals in global price variance, which decreases price efficiency. Overall,
+the impact of HFT on price efficiency is ambiguous. The model accommodates the bulk of the
+findings of the now mature HFT literature, even those that appear contradictory at first glance.
+Keywords:
+High-frequency Trading, Price Efficiency, Randomization, Information treatment,
+Information content.
+JEL classification: G12, G14, G23.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+1. Introduction
+Consider a patient who suffers from insomnia, and is prescribed sleeping pills. Intuitively, the
+pills should improve the sleep quality of the patient, as they typically end each insomnia episode.
+Nevertheless, in the long-run, sleeping pills typically increase the number of insomnia episodes as
+the patient’s body becomes less able to generate melatonin on its own. If this long-run reaction is
+sufficiently strong, the costs of more insomnia episodes outweigh the benefits more sleep conditional
+on an insomnia episode. Overall the impact of taking sleeping pills on sleep quality is unclear.
+A sizable academic literature1 suggests that a similar trade-off arises in the relationship between high-frequency trading and price efficiency. On the one hand, HFT speeds up the process
+of incorporation of relevant information into prices. On the other hand, HFT diverts profit away
+from informed investors, which lowers their incentive to obtain and disseminate information. HFT
+enhances price efficiency only if the benefits of a better treatment of existing information outweighs
+the cost of a long-term decrease in the information content of the market.
+Objective. This paper assesses the overall desirability of HFT for price efficiency, taking into
+account both its impact on information treatment and its impact on information content. I provide
+a model in which a representative high-frequency trader (HFTr) interacts with a representative
+informed trader (ITr) and a representative liquidity trader (LTr), in a market for a single asset. HFTr
+i) observes the order flow from LTr and ITr, ii) uses this information to estimate the fundamental
+value of the asset, and iii) trades before other participants can trade again. I study the impact
+of this trading rule on the level of price efficiency of the market, first holding the behavior of ITr
+constant, and second allowing ITr to respond to HFTr through exit or order randomization.
+Findings. The trading pattern of HFTr crucially depends on the ratio ρ of the variance of noise
+trading, defined as the sum of the demand from LTr and a random component in the demand
+from ITr, over the variance of fundamental trading, defined as the component in the demand from
+ITr that reflects fundamental information. When ρ is above a threshold ρ∗, unexpected demand
+shocks typically drive the price away from its fundamental value. In this market prices revert on
+average at subsequent periods, and HFTr trades against any demand shock it observes to benefit
+from this reversion, a strategy referred to as market making. By contrast, when ρ is below ρ∗,
+unexpected demand shocks typically drive the price towards its fundamental value. In this market
+the price is positively autocorrelated on average, and HFTr trades with any demand shocks it
+observes to benefit from this movement, a strategy referred to as backrunning. Market making
+leads HFTr to downplay fundamental shocks by trading against them, while backrunning leads
+HFTr to exaggerate meaningless noise shocks by trading with them. However the HFTr trading
+rule is correct on average, and consequently HFTr enhances the process of shock incorporation into
+prices. This is the information treatment effect.
+Maintaining constant the flow of new information being generated by ITr, better information
+treatment makes HFTr desirable from a price efficiency perspective. However, because the increase in
+1See Chordia et al. (2013), O’Hara (2015), or Menkveld (2016) for surveys
+2
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+price efficiency spurred by HFTr lowers the utility of ITr, ITr reacts to HFTr over certain parameter
+sets. This reaction may take two forms. First, ITr can exit the market if the cost of acquiring
+information exceeds the benefits of exploiting mispricings. Second, ITr can randomize its orders,
+thereby reducing the expected utility of HFTr when HFTr backruns. For ITr, randomization entails
+a utility cost stemming from the risk and transaction costs it involves, but ITr utility shoots up
+if randomization successfully drives HFTr out of market. Both exit and randomization imply that
+the share of fundamental trading over noise trading falls, decreasing price efficiency. This is the
+information content effect.
+For both ITr exit and randomization the information content effect
+dominates the information treatment effect: the level of mispricing when HFTr threatens to enter
+is higher than it would be if HFTr never existed. Nevertheless, randomization constitutes a second
+best equilibrium in parameter sets for which ITr would have exited if randomization was not an
+option.
+Method. The model is built on two blocks. The first block solves for equilibrium prices and
+utilities in the market in which both HFTr and ITr feature. This is done by using rational expectations to pinpoint how HFTr extract fundamental information from the order flow. The second
+block considers the strategic game played by HFTr and ITr before trading starts. The game uses
+a Stackelberg (1934) setup in which ITr moves first knowing the best response of HFTr. ITr must
+decide between three strategies: participating without randomization, participating with randomization, and exiting. The model is solved recursively: the expected utilities in the market with both
+HFTr and ITr, obtained from the first block, are fed into the game. The final impact of HFTr is
+given by the equilibrium level of price efficiency defined by rational expectations, in the equilibrium
+market structure defined by the strategic game.
+Literature.
+The model’s study of HFTr holding ITr behavior constant relates closely to an
+extensive empirical literature that studies HFT within a given market whose characteristics remain
+constant during the sample period. This literature has produced the following results. HFT may
+trade with or against the order flow shocks it observes (van Kervel and Menkveld (2019), Korajczyk
+and Murphy (2019)) depending on the structure of the market it operates in. This pattern generally
+enhances price efficiency (Brogaard et al. (2014), Carrion (2013)), perhaps at the expense of some
+excess volatility (Bershova and Rakhlin (2013), Boehmer et al. (2021)), and perhaps not (Hasbrouck
+and Saar (2013), Chaboud et al. (2014)). HFT generally provides liquidity (Hendershott, et al.
+(2011), Frino et al. (2014)) but sometimes switches to liquidity taking (Kervel (2015)). Finally,
+HFT diverts profits away from informed investors (e.g., Hirschey (2021), Tong (2015)) and from the
+market marker (e.g., van Kervel (2015), Biais et al. (2015)).
+The model’s study of the response of ITr to HFTr in terms of participation relates to a broad body
+of literature pioneered by Grossman and Stiglitz (1980), whose general message is that information
+acquisition decreases when those who invest in information are not those rewarded for it. Specifically,
+several recent empirical papers report a significantly negative link between HFT and information
+acquisition (Lee and Watts (2021), Gider et al. (2021)), in line with the theoretical contributions
+of Baldauf and Mollner (2020) and Weller (2018). Less work has been undertaken on the issue
+3
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+of the strategies used by ITr to dissimulate information from HFTr. Van Kervel and Menkveld
+(2019, vKM henceforth) and O’Hara et al. (2014) show that institutional investors seek to avoid
+detection by HFT, by slowing down the pace of their position taking or by using odd lots. Hoffman
+(2014) provides a theoretical model in which “slow traders” trade less in the presence of HFT. To
+the best of my knowledge, only one paper (Yang and Zhu (2020), YZ henceforth) explicitly studies
+randomization. In YZ, the decision to randomize orders by “fundamental investors” depends on the
+number of high-frequency traders, as well as the quality of their order flow information.
+Both vKM and YZ are the closest in terms of approach to this study. Similarity with vKM is
+derived from following a similar methodological path: firstly, characterizing the demand of HFT,
+secondly, examining the way this demand impacts informed traders, and finally investigating how
+informed traders respond to HFT. In this way this paper can be seen as a theoretical basis for
+vKM’s empirical evidence. In the case of YZ, similarity comes from the focus on randomization
+as a response to HFT. The present study differs because it provides a general model in which
+HFTr may trade either with or against ITr and in a full dynamic mode.2 Furthermore, YZ focus
+primarily on the profits of fundamental traders relative to HFT, whereas I focus on the desirability
+of randomization from a price efficiency perspective.
+In terms of modeling, this study is linked to theoretical papers in which agents seek to extract
+information from the order flow (see Kyle (1985), Glosten and Milgrom (1985), or Muth (1960)
+in a more general setting). At the heart of these models is the statistical problem of estimating
+the permanent component of a variable that is subjected to both permanent shocks and transitory
+white noise shocks. In a linear setup the optimal rule can be derived analytically, which in my case
+allows for the obtainment of closed forms on different indicators of market quality such as investor
+utilities, market depth, or price efficiency. Several theoretical models have recently added HFT to
+these classic models for different purposes (e.g., Foucault et al. (2016), Budish et al. (2015)).
+Contributions. This paper makes two notable contributions. The first is to provide a theoretical
+framework that accommodates the bulk of the findings in the HFT literature. In effect the paper
+can be seen as a model-based literature review.
+In particular, the results of the model on the
+market impact of HFT when the flow of information is held constant match well the results of the
+empirical literature on the market impact of HFT within a fixed market structure. Findings that
+are consensual in this literature –such as the impact of HFT on the utility of informed traders
+or price efficiency– correspond to the results that do not depend on the value of the parameter
+set in the model. By contrast, issues over which this literature is divided – such as the short-term
+impact of HFT on excess volatility or liquidity– correspond to results that depend on whether HFTr
+acts as a backrunner or as a market maker, which itself depends on the ratio ρ of the variance of
+2This approach differs from YZ who focus on backrunning in a 2 period setup. Interestingly such a generalization
+is called for by YZ, who write on page 5 “A full dynamic model would be more realistic [...]. In addition, our theory is
+meant to capture only one aspect of HFTs, namely their back-running strategies. The other side of the coin, namely,
+the market-making strategies of HFTs, also receives strong empirical support[...]. A useful future research direction
+is to incorporate multiple dimensions of HFT strategies in a coherent theoretical framework”
+4
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+noise trading over the variance of fundamental trading. Interestingly, empiricists have suspected
+the importance of parameter ρ. vKM notably states that HFT trades with institutional investors
+when “the information component dominates the transitory component in [investors] order’s overall
+price impact”.
+The second contribution of this paper is to make a set of new predictions. Some of these are
+concerned with the way HFTr treats information, such as the prediction that fundamental shocks
+should be downplayed in markets dominated by noise trading.
+However the most novel results
+of the model relate to the responses of ITr to HFTr. They can be summarized as follows. Exit
+and randomization both unambiguously reduce price efficiency relative to an absence of response
+to HFTr by ITr. However, randomization is an attractive second-best if it prevents ITr exit. The
+appearance of randomization depends on its efficiency in reducing HFTr utility, its cost for ITr,
+and the utility gain for ITr of driving HFTr out. Driving HFTr out of the market is easier when
+noise trading is high, because noise trading decreases the utility of backrunning. The region of the
+parameter set over which randomization prevents ITr from exiting is smaller than the region over
+which it prevents ITr from staying without randomizing.
+The paper proceeds as follows. Section 2 presents the framework. Section 3 characterizes the
+inference problem and trading rule of HFTr.
+Section 4 discusses the impact of HFTr on price
+efficiency and ITr utility when ITr behavior is held constant. Section 5 studies the participation
+and randomization response of ITr to HFTr, and what this response implies for price efficiency.
+Section 6 concludes. A glossary of all the abbreviations and notation used in the paper follows the
+conclusion.
+2. Framework
+2.1. Basic features
+2.1.1. Asset, investors, and price movement
+Consider a market for a single asset evolving over a trading cycle that contains a large finite
+number T of periods. At the start of each period t, the asset has a price of Pt and a fundamental
+value of Ft, which is assumed to move exogenously following a random walk:
+Ft = Ft−1 + εf
+t
+(1)
+with εf
+t an i.i.d normal shock with a mean of 0 and a variance of σ2
+f.
+Three traders interact on the market: a liquidity trader, an informed trader, and a high-frequency
+trader. The demand from LTr at each period is denoted by εl
+t, while the demands from ITr and
+HFTr are denoted respectively by Qi
+t and Qh
+t . LTr is assumed to buy and sell in erratic fashion
+according to its idiosyncratic needs. Thus εl
+t is an i.i.d normally distributed shock with a mean of
+0 and a variance σ2
+l . By contrast, ITr and HFTr trading is motivated by a desire to buy (sell) the
+asset when its price Pt is below (above) its fundamental value Ft.
+5
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+Both ITr and HFTr know all the model parameters, including the distributions of all shocks.
+However they do not observe the exact realizations of the shocks, neither at t nor at subsequent
+periods. Thus neither HFTr nor ITr knows Ft. Both agents crucially differ in the tools they can
+invest in to estimate Ft: ITr can obtain an informational advantage over other traders in exchange
+for the payment of a fixed utility cost of Ci prior to the start of the trading cycle, while HFTr can
+obtain a speed advantage over other traders in exchange for the payment of a fixed utility cost of
+Ch prior to the start of the trading cycle
+The informational advantage of ITr takes the form of a noisy private signal about the value of
+Ft, received at the start of each period. The value of Ft as expected by ITr upon reception of the
+signal is denoted by Ei
+t(Ft). The discrepancy between this value and the real fundamental value :
+εs
+t = Ei
+t(Ft) −Ft
+(2)
+is an i.i.d normal shock with a mean of 0 and a variance of σ2
+s.
+The speed advantage of HFTr is derived from an the ability to 1) observe the joint demand
+Qi
+t + εl
+t from ITr and LTr at the start of a period, 2) use this joint demand to form its estimate of
+the fundamental value Eh(Ft) = E
+ Ft|Qi
+t + εl
+t
+
+, and 3) trade in period t before ITr and LTr trade
+again. If agent k = (i, h) does not pay the cost Ck, it sits out the trading cycle, demanding Qk
+t = 0
+at all t.
+2.1.2. Demand and price movement in a period
+Chronologically, each trading period is split into two subperiods. In the first period, ITr demands
+Qi
+t, and LTr demands εl
+t shortly after. In the second subperiod, HFTr observes the joint demand
+Qi
+t +εl
+t and demands Qh
+t . The point in time in period t at which the first subperiod ends is denoted
+by (t, 1).
+Orders are sent to an unmodeled market maker (MM) who is assumed to use a linear rule in
+which one unit of demand moves the price by an amount b. Importantly, b is not necessarily optimal
+in the sense of Kyle (1985). If it was, there would be no rationale for the existence of HFT. This
+modeling is based on the idea is that HFTr is quicker that MM in understanding how prices should
+react to demand shocks, and thus can exploit mispricings (van Kervel (2015)).3
+MM continuously updates its quotes. Consider for instance that a buy order from an agent k
+for a quantity Qk
+t of the asset is initiated at given point in time z of period t. MM executes the
+first unit of this demand at a price Pt at time (t, z), and the second unit at a price of Pt + b at
+(t, z + ι), where ι is an infinitesimal amount of time. The third unit is executed at a price of Pt + 2b
+at (t, z + 2ι), so on until Pt + bQk
+t . This modeling implies that the order of Qk
+t units has a total
+impact on price of bQk
+t , and is executed at a mean price of Pt + b
+2Qk
+t . It is designed to match tick
+changes arising from an order book gradually being filled.
+3Specifying an exogenous pricing rule is admittedly a strong choice, but a full modeling of MM would make paper
+lengthier without changing its core, which is the study of the interaction between HFTr and ITr.
+6
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+The process of order treatment by MM is assumed to be so quick that it is considered as
+immediate from the model’s perspective. Therefore at the end of the first subperiod, after ITr and
+LTr have sent their demand to MM, the price is:
+Pt,1 = Pt + b
+
+Qi
+t + εl
+t
+
+(3)
+Similarly the price Pt+1 at the end of period t (or beginning of period t + 1), after HFTr posts
+its demand, is :
+Pt+1 = Pt,1 + bQh
+t
+(4)
+Figure 1 summarizes the timing of events.
+Figure 1: Timeline of demand shocks and price movement in a given period.
+2.2. The ITr and HFTr problem
+This section specifies the utility function and optimal demand of ITr and HFTr at each trading
+period, if they chose to participate to the trading cycle.
+2.2.1. ITr trading utility and demand
+At a point in time ι of period t, ITr derives a surplus of (Ft −Pt,ι) from buying one unit of the
+asset at a lower price than its fundamental value, and a surplus of (Pt,ι −Ft) from selling one unit
+of the asset at a higher price than its fundamental value. Using the fact that the mean execution
+price of an order of Qi
+t units of is Pt + b
+2Qi
+t, the total surplus obtained by ITr over period t is
+Qi
+t
+ Ft −(Pt + b
+2Qi
+t)
+
+. For ITr at the start of period t, this total surplus is a random variable with
+an expected value of Qi
+t
+ Ei
+t(Ft) −Pt,ι
+
+−b
+2(Qi
+t)2 and a variance of (Qi
+t)2σ2
+s. Using a mean-variance
+function with a coefficient of risk aversion of
+1
+2τ , the utility Ui
+t,ι function of ITr at time t is:
+Ui
+t = Qi
+t
+ Ei
+t(Ft) −Pt,ι
+
+−(Qi
+t)2 1
+2λ
+(5)
+7
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+where 1/λ = σ2
+s
+τ + b captures the utility cost of investing Qi
+t, which comes in part from the
+risk σ2
+s
+τ involved in investing Qi
+t, and in part from the transaction costs b involved in investing Qi
+t.
+Maximizing Equation (5) yields the following optimal ITr demand Qi
+t
+∗at time t :
+Qi
+t
+∗= λ(Ft −Pt) + λεs
+t
+(6)
+Equation (6) states that absolute optimal ITr demand increases on average with the extent to
+which the asset is mispriced |Ft −Pt|, and decreases with the estimation risk and transaction costs
+contained in λ.
+Importantly, ITr can decide to add a noise of εr
+t around its optimal demand Qi
+t
+∗to artificially
+decrease the share of its demand that carries information about Ft. This is randomization. The
+randomizing noise εr
+t is set to be an i.i.d normally distributed with a mean of zero and a variance
+of σ2
+r, and is defined by:
+Qi
+t = Qi
+t
+∗+ εr
+t
+(7)
+The variance σ2
+r represents the level of randomization. It is set as constant across periods of the
+trading cycle to ease notation and without loss of generality.4
+Before proceeding, it is worth noting that bλ =
+bτ
+σ2s+bτ < 1. This means that the demand from ITr
+is not sufficiently strong to immediately bring prices to their fundamental value on average. Thus
+ITr demand is positively autocorrelated on average, consistent with empirical observation (O’Hara
+(2015)).
+2.2.2. HFTr utility and demand
+Similar to ITr, HFTr derives a utility surplus of Ft −Pt,ι on each unit of a buy order executed
+at time (t, ι), and a surplus Pt,ι −Ft on each unit of a sell order executed at (t, ι). The total HFTr
+surplus over period t obtained from demanding Qh
+t at time (t, 1) is Qh
+t
+ Ft −(Pt,1 + b
+2Qh
+t )
+
+. For
+HFTr at the time (t, 1) of posting its order, Ft is a random variable with an expected value of
+Eh
+t,1(Ft). However, contrary to ITr, HFTr is modeled as risk-neutral. This difference is motivated
+by the fact that ITr is typically a human being, while HFTr is a machine. This modeling implies
+that the total HFTr utility Uh
+t throughout period t is:
+Uh
+t = Qh
+t
+
+E
+h
+t,1(Ft) −Pt,1
+
+−
+
+Qh
+t
+2 b
+2
+
+(8)
+where Pt,1 is the price of the asset when HFTr posts its order, and the negative term
+ Qh
+t
+2   b
+2
+
+stems from the transactions costs involved in demanding Qh
+t .
+No new information regarding fundamentals comes to HFTr between (t, 1) and (t + 1, 1), which
+4It is the average level of randomization throughout the trading cycle that matters
+8
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+implies that E
+h
+t,1(Ft) = Eh
+t+1(Ft+1). The demand that maximizes Uh
+t is then:
+Qh
+t = Eh
+t+1(Ft+1) −Pt,1
+b
+(9)
+where Eh
+t+1(Ft+1) = E
+ Ft|Qi
+t + εl
+t
+
+is the HFTr’s estimate of the fundamental value after observing the joint demand by LTr and ITr. Plugging the HFTr demand defined in Equation (9) into
+Equation (4) leads to:
+Pt+1 = Eh
+t+1(Ft+1)
+(10)
+HFTr buys or sells the asset until its price converges to its estimate of the fundamental value.
+2.3. Decision making before trading
+Prior to the start of a given trading cycle, ITr and HFTr make strategic decisions that will
+apply through the entire cycle. First, both ITr and HFTr decide whether to pay the fixed cost
+to participate in the cycle. Second, ITr chooses a level of randomization σ2
+r, conditional on entry.
+The strategic game played by ITr and HFTr resembles a Stackelberg (1934) setup: ITr moves first
+knowing the best response of HFTr, and does not deviate from its randomization and participation
+choices after choosing.
+Formally, at the start of each trading cycle, the set of strategies available to ITr is Si =
+ IAr, Ir, AI
+
+,
+which stand respectively for entering without using randomization, entering using randomization,
+and not entering. I =
+ IAr ∨Ir
+
+denotes ITr entrance for any level of randomization. On the other
+hand, HFTr must choose between strategies Sh = (H,Z
+Z
+H), which represent respectively entering and
+not entering. The utility that any agent k = (i, h) gets if it does not enter is zero. Defining as
+ck = Ck
+T
+the mean information/speed cost per period of a trading cycle, the mean utility ¯
+Uk per
+period of a trading cycle that agent k gets if it enters is:
+¯
+Uk = E(Uk
+t ) −ck
+(11)
+where E(Uk
+t ) is the utility that agent k expects from any period t, which is equal to mean trading
+utility across the cycle
+Pt=T
+t=1 Uk
+t
+T
+since T is large. Table 1 illustrates the payoff matrix associated to
+the ITr/HFTr game.
+IT\HFT
+H
+Z
+Z
+H
+IAr
+
+( ¯
+Ui)I,H
+Ar
+, ( ¯
+Uh)I,H
+Ar
+
+
+( ¯
+Ui)I,Z
+H
+Ar
+, 0
+
+Ir
+
+( ¯
+Ui)I,H
+r
+, ( ¯
+Uh)I,H
+r
+
+
+( ¯
+Ui)I,Z
+H
+r
+, 0
+
+AI
+
+0, ( ¯
+Uh)AI,H
+(0, 0)
+Table 1: Payoff table for the strategic game between ITr and HFTr prior to each trading cycle
+This game and its implications for price efficiency will be studied in section 5. For now the
+analysis focuses on characterizing the (I, H) market in which ITr and HFTr coexist. Section 3
+9
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+draws the behavior of HFTr and price dynamics in the (I, H) market. Section 4 compares the
+characteristics of the (I, H) market to those of the (I,Z
+Z
+H) market, holding the ITr strategy si =
+ IAr ∨Ir
+
+constant.
+3. HFTr inference, trading, and utility
+Section 3.1 solves the inference problem of HFTr. Section 3.2 derives HFTr demand. Section
+3.3 draws HFTr utility.
+3.1. HFTr inference
+3.1.1. The HFTr inference problem
+Using Equations (6) and (7), the joint demand Qi
+t + εl
+t of ITr and LTr can be expressed as :
+Qi
+t + εl
+t = λ(Ft −Pt) + εn
+t
+(12)
+where εn
+t = λεs
+t + εr
+t + εl
+t is the sum of LTr demand and the elements in ITr demand that are
+unrelated to fundamentals, which is referred to as noise trading. εn
+t is normally distributed with a
+mean of 0 and a variance of σ2
+n = λ2σ2
+s + σ2
+r + σ2
+l . By contrast, λFt is the part of the ITr demand
+that carries fundamental information, referred to as fundamental trading.
+The goal of HFTr is to efficiently relate movements in Qi
+t + εl
+t to movements in Ft. The key
+to doing this is to note that the difference Ψ f
+t = Ft −Eh
+t (Ft) between the real fundamental value
+and the fundamental value as expected by HFTr is linearly related to the difference Ψ d
+t = Qi
+t +
+εl
+t −Eh
+t
+ Qi
+t + εl
+t
+
+between the real demand from LTr and ITr and the demand from LTr and ITr as
+expected by HFTr. Formally:
+Ψ d
+t = λ(Ft −Pt) + εn
+t −Eh
+t (λ(Ft −Pt) + εn
+t )
+(13)
+⇒Ψ d
+t = λΨ f
+t + εn
+t
+(14)
+where I used the fact that Eh
+t (Pt) = Pt and Eh
+t (εn
+t ) = 0, since HFTr observes prices at the start
+of t but not noise trading shocks.
+As all shocks in the model are normally distributed, estimating Ψ f
+t knowing Ψ d
+t is a classic signal
+extraction problem. Its solution5 is:
+Eh
+t+1(Ψ f
+t ) = E(Ψ f
+t |Ψ d
+t ) = δ
+λΨ d
+t
+(15)
+5Let Z = X + Y with X ∼N(0, σ2
+x) and Y ∼N(0, σ2
+y). The conditional distribution of X given Z = z is normal,
+and since X and Y have zero means, simplifies to:
+E(X|Z = z) =
+
+cov(x,z)
+σxσz
+ 
+σx
+σz
+
+z =
+
+cov(x,x+y)
+σ2z
+
+z =
+
+σ2
+x
+σ2x+σ2y
+
+z
+10
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+where δ = 1 −
+σ2
+n
+σ2
+Ψ,d is the share of the observable gap between actual and expected demand Ψ d
+t
+that is assigned to Ψ f
+t by HFTr, i.e., the share of Qi
+t + εl
+t that reflects a change in fundamentals.
+3.1.2. Optimal inference
+Using Ψ f
+t = Ft −Eh
+t (Ft), Eh
+t+1(Ft+1) can be rewritten as:
+Eh
+t+1(Ft+1) = Eh
+t+1(Ft) = Eh
+t+1(Eh
+t (Ft) + Ψ f
+t ) = Eh
+t (Ft) + Eh
+t+1(Ψ f
+t )
+(16)
+When forming its expectations about Ft at time t + 1, HFTr starts from its previous estimate
+Eh
+t (Ft) and corrects it via its ex-post estimate of its ex-ante forecast error Eh
+t+1(Ψ f
+t ).
+Plugging (15) and (14) into (16) yields:
+Eh
+t+1(Ft+1) = Eh
+t (Ft) + δ
+λ
+
+λΨ f
+t + εn
+t
+
+(17)
+Taking the difference between (1) and (17) leads to:
+Ψ f
+t+1 = (1 −δ)Ψ f
+t + εf
+t+1 −δ
+λεn
+t
+(18)
+Appendix A-1 shows that systemically substituting Ψ f
+t until Ψf,0 yields the following expression
+for the expected squared forecast error of Ft by HFTr:
+σ2
+Ψ,f = E
+
+(Ψ f
+t )2
+= E
+
+Ft −Eh
+t (Ft)
+2
+=
+σ2
+f +
+  δ
+λ
+2 σ2
+n
+2δ −δ2
+(19)
+The objective of the rational HFTr is to find the value of δ that minimizes its expected squared
+forecast error E
+ Ft −Eh
+t (Ft)
+2. Appendix A-2 proves that this value is:
+δ = 1
+2ρ
+p
+1 + 4ρ −1
+
+(20)
+where ρ = λ2σ2
+s+σ2
+r+σ2
+l
+λ2σ2
+f
+is the ratio of the variance of noise trading over the variance of fundamental trading, which plays an important role in the model. Appendix A-3 shows that δ increases
+when ρ decreases: HFTr assigns a higher proportion of unexpected demand shocks to fundamental
+trading when fundamental trading drives a high share of the total variation in demand.
+Appendix A-4 plugs the expression of δ given in Equation (20) back into the expected squared
+forecast error given in Equation (19) to get the value of expected squared forecast error in equilibrium:
+σ2
+Ψ,f =
+σ2
+f
+δ =
+2σ2
+fρ
+√1 + 4ρ −1
+(21)
+11
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+3.2. HFTr demand
+3.2.1. Pattern
+Using Equations (10), (12), and (4), the total HFTr demand Qh
+t throughout period t can be
+expressed as:
+Qh
+t = 1
+b
+h
+Eh
+t+1(Ft+1) −Eh
+t (Ft) −b (λ(Ft −Pt) + εn
+t )
+i
+(22)
+Plugging Equation (17) into Equation (22) then yields:
+Qh
+t = 1
+bλ(δ −bλ) (λ(Ft −Pt) + εn
+t )
+(23)
+HFTr trades against any demand shocks it observes when δ < bλ and in the same direction as
+the demand shocks when δ > bλ. Using (20), the condition δ ≶bλ can be showed to be equivalent
+to:
+ρ∗= (1 −bλ)
+(bλ)2
+≶ρ
+(24)
+Proposition 1: HFTr trades against demand shocks from non-HFT agents when the variance
+of noise trading relative to fundamental trading is above a certain threshold ρ∗= (1−bλ)
+(bλ)2 and in the
+same direction as demand shocks from non-HFT agents otherwise.
+Proof: Qh
+t × (λ(Ft −Pt) + εn
+t ) < 0 if δ < bλ ⇔ρ∗< ρ, and Qh
+t × (λ(Ft −Pt) + εn
+t ) > 0 if
+δ > bλ ⇔ρ∗> ρ
+Proposition 1 states that the trading behavior of HFTr depends on the broader structure of
+the market it operates in. This is explained by the fact that noise trading is mean-reverting, while
+fundamental trading is positively autocorrelated. A positive (negative) noise trading shock at period
+t leads the price Pt to increase (decrease) while the fundamental value Ft remains constant. On
+average, this leads the asset to become overvalued (undervalued), which means that ITr demand
+should sell (buy) at the following period, bringing the price down (up). By contrast, a positive
+fundamental shock implies that price Pt increases, but less so than the fundamental value Ft,
+because bλ < 1. On average, this leads the asset to become undervalued (overvalued), which means
+that ITr should buy (sell) at the following period, bringing the price up (down). ρ∗< ρ means
+that noise trading is sufficiently strong relative to fundamental trading to make prices revert at
+the following period on average. HFTr then hopes to benefit from the future mean reversion by
+trading against any demand shock that it observes. Conversely, ρ∗> ρ means that the variance in
+the demand for the asset is driven more by fundamentals and thus reflects a change in the long-run
+value of the asset. In this case, HFTr tags along the process the convergence towards the new Ft
+by trading with demand shocks. Finally in the special case ρ = ρ∗⇒δ = bλ, the price at (t, 1)
+matches exactly the expected fundamental value as expected by HFTr, who does not trade.
+12
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+3.2.2. Link to literature
+Distinguishing strategies that trade against other investors (against the wind strategies) from
+strategies that trade with other investors (with the wind strategies) has been an important topic
+in the HFT literature. Against the wind trading is close to market-making, and has notably been
+considered as such by Grossman and Miller (1988). With-the-wind trading can reflect different
+strategies (Brunnermeier and Pedersen (2005)), but the way HFTr behaves in this model is particularly close to backrunning, which involves using publicly available data on past order flow from
+informed traders to estimate fundamentals (YZ).
+Several theoretical models consider both market making and backrunning by HFT (e.g., Foucault
+et al. (2016), Baldauf and Mollner (2020)). However to my knowledge this paper is the first to
+define the conditions under which HFT will switch between both rules. The role of ρ in the model is
+consistent with several empirical contributions (e.g., Korajczyk and Murphy (2019) vKM). vKM in
+particular demonstrates that high-frequency traders usually trade against the wind, but can trade
+with the wind if “the information component dominates the transitory component in [investors]
+order’s overall price impact”. vKM also report evidence that investors need some time (around
+seven hour) to comprehend to true nature of a shock, which is conceptually close to the learning
+process presented in section 3.1.6
+3.3. HFTr utility
+3.3.1. Expression
+Appendix B-1 shows that the mean HFTr utility per period is :
+¯
+Uh =
+ 
+σ2
+f
+δ2
+!
+1
+2b (bλ −δ)2 −ch
+(25)
+This leads to Lemma 1.
+Lemma 1: HFTr utility increases with the distance between b and δ
+λ
+Proof : see Appendix B-2
+The intuition for Lemma 1 is the following.
+HFTr feeds off deviations at (t, 1) between its
+estimate of fundamental value Eh
+t,1(Ft), and the price specified by the market maker Pt,1. Eh
+t,1(Ft)
+6Despite this strong connection, one notable feature of vKM is not reproduced in the model in its current form.
+vKM shows that HFT may switch from against-the-wind trading to with-the-wind trading following a single fundamental shock. In the model HFTr demand reverts but never changes sign following a fundamental shock in a noise
+trading dominated market. This pattern could be accommodated by an extended model in which demand shocks
+from informed traders are allowed to follow an ARCH process. In this case a large shock εf,t would imply both an
+increase in Ft and an increase in the value of σ2
+f for the subsequent periods as more fundamental shocks are expected
+to occur. The resulting fall in ρ could lead to ρ < ρ∗, and thus make HFTr switch to with the wind trading. Finding
+a process for εf,t that exactly matches the dynamic patterns of HFT demand is an interesting subject, but one that
+would significantly complexity the model without altering the main intuition that the trading rule of HFTr depends
+on the structure of the market.
+13
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+is the most educated guess that can be made about Ft for an agent who only observes the order
+flow. If the market maker is as knowledgeable/quick as HFTr, it chooses b = δ
+λ such that prices
+instantly move to Pt,1 = Pt + b (λ (Ft −Pt) + εn
+t ) = Eh
+t+1(Ft). In this case the HFTr demand is null
+at every period. If however MM chooses a rule b that is far from the correct δ
+λ, HFTr has plenty of
+mispricings to prey on.
+3.3.2. Link to literature
+Lemma 1 implies that HFTr and MM are in a competition to incorporate shocks into prices,
+which closely connects with a sizable body of theoretical literature (e.g., Easley et al.
+(2011),
+van Kervel (2015), Biais et al. (2015)). Its overall message is that, following the apparition of
+fundamental news, HFTr (MM) races to take (remove) stale orders in order to earn (avoid losing)
+the difference between the price and the true value of the asset. Menkveld and Zoican (2017) provide
+a MM versus HFT model in which the “news-to-liquidity-trader ratio” –ρ in the model– plays a key
+part. Lemma 1 also relates to casual observation of the recent developments in the high-frequency
+world. The efficiency of market makers increased in recent years in response to HFT (Pagnotta and
+Philippon (2015)). Alternative trading venues such as dark pools developed. The fees for collocation
+services rose. Finally, the profits of the HFT industry have been on a declining trend, particularly
+those related to cross-venue arbitrage in which the race for stale orders occurs in its purest form
+(Foucault et al. (2017)). This suggests that market makers were to an extent successful in hurting
+high-frequency traders.
+4. Impact of HFTr in the absence of ITr response
+This section characterizes the market (I, H) with ITr and HFTr, and compares it to the market
+(I,Z
+Z
+H) with ITr and without HFTr, holding the ITr strategy si = I =
+ IAr ∨Ir
+
+constant. Section
+4.1 studies price efficiency, while section 4.2 studies ITr utility and access to liquidity.
+4.1. HFTr impact on price efficiency
+Price efficiency in a given market at the start of a period t is inversely measured by the squared
+distance between the price of the asset and its fundamental value at that time (Ft −Pt)2. Section
+4.1.1 studies the sum Pt=∞
+t=0 (Ft −Pt)2 of the mispricings following a single shock (fundamental or
+noise). Section 4.1.2 studies the global tendency of the asset to be mispriced M = E
+
+(Ft −Pt)2
+.
+4.1.1. Single shock incorporation
+Price movement in the market with ITr and HFTr is obtained by plugging the HFTr demand
+specified in Equation (23) and the ITr+LTr demand specified in Equation (12) into the price movement Equations (4) and (3). This yields:
+P I,H
+t+1 = P I,H
+t
++ δ
+
+Ft −P I,H
+t
+
++ δ
+λεn
+t
+(26)
+14
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+On the other hand, price movement in the (I,Z
+Z
+H) market is obtained by plugging the ITr+LTr
+demand specified in Equation (12) into the price movement Equation (3). This yields:
+P I,Z
+H
+t+1 = P I,Z
+H
+t
++ bλ(Ft −P I,Z
+H
+t
+) + bεn
+t
+(27)
+Studying the impulse response functions of Equations (26) and (27) to a unique noise trading
+and/or a fundamental shock at t = 0 leads to Proposition 2.
+Proposition 2: Holding ITr behavior constant and following a fundamental (noise) shock,
+HFTr speeds up the process of convergence towards fundamental value if order flow innovations
+typically come from fundamental (noise) trading, but slows down the process of convergence towards
+fundamental value if order flow innovations typically come from noise (fundamental) trading.
+Proof : see Appendix C.
+Proposition 2 states that in any market structure HFTr helps to incorporate one type of shock
+but at the expense of the other type.
+When noise trading is sufficiently common compared to
+fundamental trading, HFTr rationally trades against non-HFTr demand at all t. In this market, if
+a given demand shock in fact emanated from fundamental trading at a given t, HFTr mistakenly
+trades against the incorporation of the fundamental shock into prices. Conversely when fundamental
+trading is sufficiently common compared to noise trading, HFTr rationally trades with non-HFTr
+demand at all t. If this demand in fact emanated from noise trading at a given t, HFTr mistakenly
+exaggerates a meaningless shock.
+Only a limited amount of research explored the possibility that HFT occasionally downplays
+fundamental shocks. vKM shows that price changes have a lower tendency to be permanent when
+HFT trades against the wind, but only relative to when HFT trades with the wind, not relative to
+a market without HFT. More work has been undertaken on the possibility that HFT exaggerates
+meaningless shocks. This literature did not reach a consensus. Bershova and Rakhlin (2013) and
+Boehmer et al. (2021) find a link between HFT and excess volatility, while Hasbrouck and Saar
+(2013) and Chaboud et al. (2014) do not. The model is consistent with such mixed results, as it
+implies that the presence of excess volatility depends on the underlying structure of the market.
+4.1.2. Global price efficiency
+Since HFTr helps to incorporate one type of shock (noise or fundamental) but hampers the
+incorporation of the other type of shock, the question of its overall impact on price efficiency remains
+open. To investigate, I compare the expected mispricing MI,H = E
+
+Ft −P I,H
+t
+2
+in the market
+with ITr and HFTr to the expected mispricing MI,Z
+H = E
+
+Ft −P I,Z
+H
+t
+2
+in the market with ITr
+but without HFTr.
+Because Pt = Eh
+t (Ft) when HFTr is present on the market, MI,H corresponds to the forecast
+15
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+HFTr error σ2
+Ψ,f = E
+ Ft −Eh
+t (Ft)
+2
+, which was pinned down in Equation (21). Therefore:
+MI,H =
+σ2
+f
+δ =
+2σ2
+fρ
+√1 + 4ρ −1
+(28)
+On the other hand, mispricing in the no-HFTr market –obtained in Appendix D-1– is:
+MI,Z
+H =
+σ2
+f + b2σ2
+n
+2bλ −(bλ)2
+(29)
+Appendix D-2 shows that:
+MI,H −MI,Z
+H = −
+
+1
+1 −(1 −bλ)2
+ 
+σ2
+f
+δ2
+!
+(bλ −δ)2
+(30)
+Proposition 3: Holding the behavior of ITr constant, HFTr has a positive impact on global
+price efficiency, i.e., MI,H ≤MI,Z
+H
+Proof : immediate from Equation (30).
+Proposition 3 states that, although HFTr does not lead all shocks to a more efficient incorporation into prices, it leads to a better incorporation of shocks in general. The reason is that HFTr is
+helpful in incorporating the type of shock that is the most common in the market in which it operates, i.e., fundamental shocks when ρ < ρ∗and noise shocks when ρ > ρ∗. This is the information
+treatment effect: HFTr is quick and efficient (on average) in incorporating shocks into prices. This
+conclusion is in line with an extensive literature that investigated the direct impact of HFT on price
+efficiency in the early 2010’s (e.g., Carrion (2013); Riordan and Storkenmaier (2012), Conrad et al.
+(2015)). Particularly consistent with the model are Brogaard et al. (2014) and Hirschey (2021),
+who show that the impact on high-frequency traders on price efficiency comes from their ability to
+trade against transitory shocks and with permanent shocks on average.
+Further investigation of MI,H −MI,Z
+H leads to Lemma 2.
+Lemma 2: Holding the behavior of ITr constant, the impact of HFTr on price efficiency :
+- is null for a market structure in which b = δ
+λ
+- increases with the deviations of b from δ
+λ
+Proof: immediate from Equation (30).
+Lemma 2 states that the increase in price efficiency provided by HFTr is a growing function of
+the distance |b −δ
+λ| between the pricing rule b used by the market marker and the optimal rule
+δ
+λ. This is logical: the efficiency gain provided by HFTr is large when the existing treatment of
+information by MM is very inefficient.
+16
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+4.2. HFTr impact on ITr
+Section 4.2 studies what the presence of HFTr implies for ITr, from both a market liquidity
+perspective (section 4.2.1) and a utility perspective (section 4.2.2).
+4.2.1. HFTr liquidity provision to ITr
+Liquidity is studied through market depth, denoted by md. Market depth for non-HFTr investors
+is formally defined as the amount of non-HFTr demand required to move prices by one unit between
+t and t + 1, i.e., md = (Qi
+t+εl
+t)
+Pt+1−Pt . If the market is shallow (md is low), ITr and LTr demand shocks
+move prices by a large amount. This situation imposes a cost on ITr as it increases transaction
+costs. By contrast, if the market is deep (md is high), ITr benefits from lower transaction costs.
+md in the market with ITr and HFTr is obtained rapidly by plugging Equations (23) and (3)
+into (4). This yields:
+mdI,H = λ
+δ
+(31)
+On the other hand, if HFTr is not present on the market the price reaction to demand shocks is
+defined by the MM rule given in Equation (3). Depth in this case is mdI,Z
+H = 1/b. It follows that:
+mdI,H −mdI,Z
+H = λ/δ −1/b
+(32)
+Lemma 3: HFTr:
+- increases market depth for ITr when non-HFTr demand typically comes from noise trading.
+- decreases market depth for ITr when non-HFTr demand typically comes from fundamental
+trading.
+Proof : λ/δ −1/b ≶0 ⇒bλ ≶δ ⇔ρ ≶ρ∗
+Lemma 3 is a natural consequence of proposition 1: when HFTr trades in the same direction as
+non-HFTr it takes liquidity, and conversely. The main interest of Lemma 3 lies with its ability to
+reconcile two opposing views on the link between HFT and liquidity. On the one hand, the general
+conclusion of the academic literature is that HFT enhances liquidity (Frino et al. (2014), Boehmer
+et al. (2021)). On the other hand, market participants typically argue that the HFT liquidity is
+“phantom”, i.e., vanishes when informed traders post their orders (Lewis, 2014). The model suggests
+that both positions are not as opposed as they appear. If HFT typically trades against the wind
+but switches when informed trading is high, as suggested by vKM, it is logical to observe both i) a
+positive link between liquidity and HFT on average, and ii) a vanishing liquidity following informed
+demand shocks. A number of studies focused on liquidity are consistent with this postulate. van
+Kervel (2015) notably considers liquidity provision across venues in the presence of HFT. He finds
+that a buying order in a given venue triggers new limit orders on the bid side of the order book
+in other venues, but cancellations of limit orders on the ask side. In a similar vein, Breckenfelder
+17
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+(2019) finds that market liquidity deteriorates when HFT follows speculative strategies (δ > bλ in
+the model).
+4.2.2. HFTr impact on ITr utility
+This section considers the impact of HFTr on the mean utility per trading period ¯
+Ui of ITr. The
+general expression for ¯
+Ui is quickly obtained by plugging Equation (6) into (7) and into Equation
+(5). This yields:
+¯
+Ui = λ
+2 M −1
+2λ
+ σ2
+r + λ2σ2
+s
+
+−ci
+(33)
+Equation (33) implies that, for any level of randomization:
+  ¯
+UiI,H −
+  ¯
+UiI,Z
+H
+=
+λ
+2 (MI,H −MI,Z
+H) = −λ
+2
+
+1
+1 −(1 −bλ)2
+ 
+σ2
+f
+δ2
+!
+(bλ −δ)2
+(34)
+Proposition 4: Holding the behavior of ITr constant, ITr utility is lower when HFTr is present
+on the market.
+Proof:
+  ¯
+UiI,H −
+  ¯
+UiI,Z
+H ≤0, immediate from Equation (34)
+Proposition 4 states that high-frequency trading imposes a cost on informed traders because it
+increases price efficiency. This result is consensual in the literature. Aquilina et al. (2022) estimate
+the profit diverted from IT by HFT to $5 billion annually in global equity markets. Hirschey (2021),
+vKM, and Korajczyk and Murphy (2019) jointly discuss the issues of IT costs and price efficiency,
+as Equation (34) does.
+In the model the negative relationship between HFTr and ITr utility holds regardless of whether
+HFTr acts as a backrunner or a market maker. However, because HFTr provides liquidity to ITr
+when acting as a market maker (i.e., bλ > δ), one may expect the utility loss of ITr to be lower in
+this context. To investigate I define as ω = |b −δ
+λ| the distance between the MM pricing rule b and
+the optimal pricing rule δ
+λ, in absolute value. I then compare the value of
+  ¯
+UiI,H −
+  ¯
+UiI,Z
+H when
+b = δ
+λ + ω, which implies that HFTr acts as a market maker (bλ > δ), to
+  ¯
+UiI,H −
+  ¯
+UiI,Z
+H when
+b = δ
+λ −ω, which implies that HFTr acts as a backrunner (bλ < δ). This leads to Lemma 4.
+Lemma 4: The ITr utility cost induced by HFTr is higher when HFTr backruns.
+Proof : see Appendix D-3.
+Lemma 4 confirms that the liquidity provision of HFTr when bλ > δ limits the utility loss it
+imposes on ITr. By providing depth, HFTr leads prices to be more sluggish, which implies that an
+investor with private information about Ft will manage to buy more of the asset before the price
+converges back to Ft. In effect ITr has less mispricings to exploit, but draws more revenue from
+the mispricings that do occur. By contrast, when b < δ
+λ, ITr loses on both accounts: there are less
+18
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+instances of mispricing to exploit on average and less room to exploit them when they do occur, as
+prices are quicker to converge to Ft.
+Despite its more specific nature, Lemma 4 is supported by the literature. Tong (2015) notably
+finds that “institutional trading costs are more pronounced when HFTs engage in directional strategies”. vKM confirm this finding. Hirschey (2021) finds that the diversion of profit from non-HFT
+to HFT is stronger when non-HFT traders are particularly eager to buy or sell, i.e., when δ is high.
+Finally, Malinova et al. (2018) provide evidence that the liquidity provision of HFT has a negative
+impact on IT implementation costs, which is consistent with the idea that the asymmetric effect of
+HFT comes from liquidity.
+5. Impact of HFTr allowing for ITr response
+Section 4 discussed the price efficiency impact of HFTr for a given ITr strategy. This section
+studies the possibility that ITr changes strategy when HFTr would enter unless prevented from
+doing so by ITr (i.e., ( ¯
+Uh)I,H
+Ar
+> 0). This is done by solving the strategic game that arises between
+ITr and HFTr prior to the trading cycle. Section 5.1 solves the game. Section 5.2 analyzes the
+conditions under which the market moves from one equilibrium to another. Section 5.3 discusses
+the implications of the game in terms of price efficiency.
+5.1. The ITr/HFTr game
+5.1.1. Optimal level of randomization
+The first step toward solving the game is to derive the level of randomization chosen by ITr
+when playing Ir. Plugging the expected HFTr utility in the market with ITr and HFTr, given by
+Equation (25), into Equation (11), the participation condition of HFTr can be rewritten as:
+( ¯
+Uh)I,H > 0 ⇒
+ 
+σ2
+f
+δ2
+!
+1
+2b (bλ −δ)2 −ch > 0
+(35)
+( ¯
+Uh)I,H increases with δ if bλ < δ, which implies that ( ¯
+Uh)I,H decreases with σ2
+r if bλ <
+δ. In words, by lowering the share of order flow that contains fundamental information through
+randomization, ITr makes backrunning less profitable for HFTr. Setting ( ¯
+Uh)I,H = 0 and using
+Equation (20) yields the threshold level of randomization ¯σ2r above which HFTr chooses not to
+enter the market:
+¯σ2r =
+1 −¯δ
+¯δ2
+
+λ2σ2
+f −λ2σ2
+s −σ2
+l
+(36)
+where ¯δ is the threshold value for δ under which HFTr exits and is given by :
+¯δ =
+bλ
+
+1 −
+r
+2bch
+σ2
+f
+
+(37)
+19
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+Lemma 5: The threshold value for randomization above which HFTr exits the market decreases
+with σ2
+l , σ2
+s , bλ and ch, and rises with σ2
+f .
+Proof: follows directly from Equations (36) and (37)
+The negative relationship between ¯σ2r and σ2
+s reflects the fact that randomization and other
+sources of noise are perfect substitutes. Non-randomizing noise provides natural camouflage for ITr,
+who does not need to randomize as much. The negative relationship between ¯σ2r and bλ comes from
+the fact that E(Uh
+t )I,H decreases with bλ when HFTr backruns (bλ < δ). In other words, when
+bλ < δ the market marker is using an overly sluggish price rule, a rise in bλ then means that MM
+is becoming more efficient. This hurts HFTr and makes it easier to expel by ITr. A high ch also
+hurts HFTr and makes it easier to expel. Finally, the positive relationship between ¯σ2r and σ2
+f comes
+from two channels. First, when fundamental trading is high, the marginal impact of σ2
+r on δ is low.
+Second, ¯δ falls with σ2
+f because a rise in σ2
+f increases HFTr utility, making it harder to expel. In
+other words each unit of randomization is less efficient, and more units of randomization are needed.
+5.1.2. ITr optimal strategy and Nash equilibria
+It is easy to show7 that in any market ITr utility ( ¯
+Ui) decreases with σ2
+r. In words, an increase
+in randomization that is insufficient to remove HFTr from a market with HFTr, or an increase in
+randomization in a market that is already without HFTr, is unambiguously utility reducing for ITr.
+It follows that ITr necessarily chooses the minimum randomization level ¯σ2r such that HFTr exits if
+it engages in randomization, i.e., σ2
+r = ¯σ2r if Si = Ir.
+The level of randomization ¯σ2r chosen by ITr, if it randomizes, ensures that HFTr does not enter
+the market. Formally this means that S∗
+h = Z
+Z
+H if Si = Ir. On the other hand, by construction the
+game between ITr and HFTr only arises if HFTr would enter if not prevented from doing so by ITr,
+i.e., S∗
+h = H if Si = IAr. ITr knows the model parameters, which means that it knows the utility
+expected by HFTr in each possible equilibrium. ITr thus knows that playing Si = IArwill result in
+the market structure (IAr, H), while playing Si = Ir will result in (Ir,Z
+Z
+H). Consequently, the optimal
+strategy for ITr is as follows:
+1) play Si = IAr if
+¯
+(Ui)I,H
+Ar
+−¯
+(Ui)I,Z
+H
+r
+> 0 and
+¯
+(Ui)I,H
+Ar
+> 0, i.e., if the utility
+¯
+(Ui)I,H
+Ar
+from not
+randomizing and sharing the market with HFTr exceeds the utility
+¯
+(Ui)I,Z
+H
+r
+from randomizing to
+exclude HFTr, and the zero utility from not participating.
+2) play Si = Ir if
+¯
+(Ui)I,H
+Ar
+−
+¯
+(Ui)I,Z
+H
+r
+< 0 and
+¯
+(Ui)I,Z
+H
+r
+> 0, i.e., if the utility
+¯
+(Ui)I,Z
+H
+r
+from
+randomizing to exclude HFTr exceeds the utility
+¯
+(Ui)I,H
+Ar
+from not randomizing and sharing the
+market with HFTr, and the zero utility from not participating.
+3) play Si = AI if 0 >
+¯
+(Ui)I,H
+Ar
+and 0 >
+¯
+(Ui)I,Z
+H
+r
+, i.e., if the zero utility from not participating
+exceeds the utility
+¯
+(Ui)I,Z
+H
+r
+from randomizing to exclude HFTr, and the utility
+¯
+(Ui)I,H
+Ar
+from not
+randomizing and sharing the market with HFTr.
+7A formal proof is available on request
+20
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+The Nash equilibria associated with the first two possibilities are (IAr, H) and (Ir,Z
+Z
+H), respectively.
+By contrast, if Si = AI, the Nash equilibrium can theoretically be either (AI,Z
+Z
+H) or (AI, H).
+For
+conciseness I treat both market structures as one, referred to as (AI) = ((AI, H), (AI,Z
+Z
+H)). The reason
+is that, as will become clear shortly, both markets without ITr are equivalent in that they both lead
+to a complete divergence of the price of the asset from its fundamental value.
+5.1.3. Proposition and link to literature
+Proposition 5 summarizes the different market structures that may arise from the ITr/HFTr
+game.
+Proposition 5: The possibility of HFTr entering the market ( ( ¯
+Uh)I,H
+Ar
+> 0) splits the parameter
+set into three regions:
+1) one such that
+¯
+(Ui)I,H
+Ar
+> max
+ ¯
+(Ui)I,Z
+H
+r
+, 0
+
+, in which ITr enters using no randomization and
+HFTr enters.
+2) one such that ¯
+(Ui)I,Z
+H
+r
+> max
+ ¯
+(Ui)I,H
+Ar
+, 0
+
+, in which ITr enters using randomization and HFTr
+exits.
+3) one such that 0 > max
+ ¯
+(Ui)I,H
+Ar
+, ¯
+(Ui)I,Z
+H
+r
+
+, in which ITr exits.
+Proof: immediate from above.
+Proposition 5 is consistent with the findings from two strands of literature. The first focuses
+on the link between HFT and the general level of information acquisition by other participants.
+Theoretical contributions on this issue include, for instance, Baldauf and Mollner (2020) and Biais
+et al. (2015). Empirically, Lee and Watts (2021) and Weller (2018) show that stocks that are
+more exposed to HFT have lower levels of information acquisition prior to earning announcements.
+Meling (2021) shows that a positive shock to order anonymity on the Oslo stock exchange lead to
+increased trading activity by institutional investors. Shkilko and Sokolov (2020) report an increase
+in non-arbitrage trading volume following an exogenous drop in the speed differential between
+agents. The second strand of literature focuses on the strategies developed by informed investors to
+counter robots. Artificial increasing of the ratio of noise trading over fundamental trading through
+randomization is studied theoretically by YZ. These authors notably find that randomization is
+optimal “ if the standard deviation of the noise in signal is below a certain threshold”. In Hoffman
+(2014), the ratio of noise trading over fundamental trading increases because informed investors trade
+less in the presence of HFT. Empirically, vKM and O’Hara et al. (2014) show that institutional
+investors seek to avoid detection by HFT by slowing down the pace of their position taking or by
+using odd lots.
+5.2. Critical points
+5.2.1. Mathematical and graphical expression in the (ci, ch) space
+Setting
+¯
+(Ui)I,Z
+H
+r
+−¯
+(Ui)I,H
+Ar
+= 0,
+¯
+(Ui)I,Z
+H
+r
+= 0, and
+¯
+(Ui)I,H
+Ar
+= 0 spurs the critical points of the
+parameter set at which the market moves from one equilibrium to another. Appendix E shows that
+21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+these conditions can be reexpressed in the (ci, ch) space as:
+c∗
+h =
+σ2
+f
+2b
+
+
+
+
+
+
+1 −bλ
+2
+
+λ2(2−bλ)
+2(1−bλ)
+
+MI,Z
+H
+Cr
+−MI,H
+Cr
+
++λ2σ2
+s+σ2
+l
+
+λ2σ2
+f
+s
+1 + 4
+λ2(2−bλ)
+2(1−bλ)
+
+MI,Z
+H
+Cr
+−MI,H
+Cr
+
++λ2σ2s+σ2
+l
+λ2σ2
+f
+−1
+
+
+
+
+
+
+2
+(38)
+c∗∗
+h =
+σ2
+f
+2b
+
+
+
+
+
+
+1 −bλ
+2
+ λ(2−bλ)
+1−bλ
+
+λ
+2 MI,Z
+H
+Cr
+−1
+2λ λ2σ2
+s−ci
+
++λ2σ2
+s+σ2
+l
+
+λ2σ2
+f
+s
+1 + 4
+ λ(2−bλ)
+1−bλ
+
+λ
+2 MI,Z
+H
+Cr
+−1
+2λ λ2σ2s−ci
+
++λ2σ2s+σ2
+l
+λ2σ2
+f
+−1
+
+
+
+
+
+
+2
+(39)
+c∗
+i = λ
+2 MI,H
+Ar
+−λ
+2 σ2
+s
+(40)
+c∗
+h is the threshold value for ch past which ITr randomizes instead of entering and not randomizing, c∗∗
+h is the threshold value for ch past which ITr randomizes instead of exiting the market, and
+c∗
+i is the threshold value past which ITr exits the market instead of entering and not randomizing.
+To illustrate, Figure 2 provides an informal plot of the phase diagram of the market in the (ci, ch)
+space.
+Figure 2: Phase diagram of the market in the (ci, ch) space. This figure plots Equations (38) to (40), which split the
+parameter set into different regions according to the equilibrium market structure it generates. The area with circle markers is
+the region of the (ci, ch) space in which ITr randomizes. The shaded area with cross markers is the region of the (ci, ch) space
+for which ITr and HFTr coexist. The area without markers is the region for which ITr exits. cmax
+k
+represents the fixed cost for
+agent k past which k has a dominant strategy in not entering.
+5.2.2. Sensitivity analysis : unambiguous parameters
+This section seeks to identify parameters that have an unambiguous effect on the region boundaries c∗
+h, c∗∗
+h , and c∗
+i .
+22
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+Lemma 6: The threshold value c∗
+i below which ITr prefers entering without randomizing to
+not entering increases with the variance of the demand from liquidity traders σ2
+l and the variance
+of the fundamental value of the asset σ2
+f
+Proof: see Appendix F-1
+Lemma 6 comes from the fact that the utility that ITr obtains from entering the market increases
+with σ2
+l and σ2
+f, while the zero utility of not participating remains constant. The reason is that ITr
+benefits from more variation in either the price Pt or the fundamental value Ft of the asset, as such
+variation increases expected mispricing E
+ (Pt −Ft)2
+. Graphically, a rise in σ2
+l or σ2
+f moves c∗
+i to
+the right in figure 2, increasing the size of the (IAr, H) region relative to the (AI) region.
+Lemma 7: The threshold value c∗∗
+h above which ITr prefers entering and randomizing to not
+entering decreases with the variance of the demand from liquidity traders σ2
+l and increases with the
+fixed cost of information acquisition ci
+Proof: see Appendix F-2
+The negative relationship between σ2
+l and c∗∗
+h comes from two channels. The first is that more
+noise increases mispricing, which makes entering more desirable for ITr as in Lemma 6. The second
+channel is that a rise in σ2
+l decreases the utility of HFTr, which lowers the amount of randomization
+needed to remove HFTr from the market as highlighted by lemma 5. This further increases the
+desirability of entering and randomizing for ITr. This latter channel explains why σ2
+f has an ambiguous effect on c∗∗
+h . Fundamental noise increases mispricing, which makes entering more desirable
+for ITr, but also increases the utility from entering for HFTr, making it more costly for ITr to expel
+HFTr. The positive relationship between ci and c∗∗
+h is intuitive: when entering is costly, ITr has
+little utility to spend on randomizing and thus only randomizes if HFTr is easy to expel, i.e., if ch
+is above a high threshold.
+5.2.3. Sensitivity analysis : ambiguous parameters
+Several parameters have an ambiguous impact on the region boundaries. Two observations can
+be made regarding this group. The first one is that σ2
+l and σ2
+f –which have a clear relationship with
+c∗∗
+h and/or c∗
+i – do not have a clear relationship with c∗
+h. This comes from the fact that σ2
+l and σ2
+f
+increase both the gain from and cost of expelling HFTr for ITr. To see why, recall that the impact
+of HFTr on price efficiency is an increasing function of the distance between the MM pricing rule b
+and the correct pricing rule δ
+λ. A rise in σ2
+l (or a fall in σ2
+f) brings the correct pricing rule δ
+λ closer
+to the rule b used by the market maker when HFTr backruns (δ > bλ), and thus lowers the gains
+from expelling HFTr. Nevertheless the convergence between δ and bλ also lowers the utility from
+backrunning of HFTr, and thus the cost of expelling HFTr through randomization.
+The second observation relates to several model parameters that may have been expected to
+have an unambiguous effect on the region boundaries, but do not. This notably applies to the noise
+σ2
+s of the signal received about the value of Ft by ITr, or ITr risk aversion τ, which is contained
+23
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+in λ. Intuitively such variables should lower the utility that ITr obtains from entering the market
+and thus make not entering relatively more likely. However, the relationship between σ2
+s or τ and
+¯
+Ui is ambiguous. Risk aversion or a less precise signal do have a direct utility cost, but also cause
+ITr to use a more sluggish trading rule, which increases mispricings. For some parameter sets this
+latter effect dominates, and ITr utility increases with σ2
+s or τ. YZ reach a conceptually similar
+result for HFT in their model. They find that, over certain parameter sets, “a higher accuracy of
+back-runners’ order flow information can harm back-runners”.
+5.3. Price efficiency in equilibrium
+5.3.1. Overall impact of HFTr
+This section evaluates the total impact of HFTr on price efficiency accounting for ITr response.
+I compare the level of mispricing in each possible equilibrium (IAr, H), (Ir,Z
+Z
+H), and (AI) when HFTr
+would enter unless prevented from doing so by ITr (( ¯
+Uh)I,H
+Ar
+> 0) to the level of mispricing in the
+no-HFTr market (IAr,Z
+Z
+H) that arises when HFTr never enters (i.e., ( ¯
+Uh)I,H
+Ar
+< 0).
+Proposition 2 showed that MI,H ≤MI,Z
+H for any level of σ2
+r, which means that MI,H
+Ar
+≤MI,Z
+H
+Ar
+.
+A quick glance at Equation (29) indicates that MI,Z
+H
+Ar
+< MI,Z
+H
+r
+, i.e., randomization is bad for price
+efficiency in the (I,Z
+Z
+H) market. Finally, Appendix G shows that mispricing tends to infinity in
+any market (AI) = ((AI, H), (AI,Z
+Z
+H)) without ITr, i.e., limt→+∞MAI,H = limt→+∞MAI,Z
+H = +∞. Since
+there is a large but finite number of periods T in a given trading cycle, any market without ITr
+leads to a large but finite level of mispricing. Therefore, the following rankings of mispricings can
+be established:
+MI,H
+Ar
+≤MI,Z
+H
+Ar
+< MI,Z
+H
+r
+< MAI
+(41)
+Proposition 6: The possibility of HFTr entering the market splits the parameter set into three
+regions:
+1) one such that ¯
+(Ui)I,H
+Ar
+> max
+ ¯
+(Ui)I,Z
+H
+r
+, 0
+
+and price efficiency increases relative to a situation
+with no HFTr.
+2) one such that ¯
+(Ui)I,Z
+H
+r
+> max
+ ¯
+(Ui)I,H
+Ar
+, 0
+
+and price efficiency decreases relative to a situation
+with no HFTr.
+3) one such that 0 > max
+ ¯
+(Ui)I,H
+Ar
+, ¯
+(Ui)I,Z
+H
+r
+
+and price efficiency collapses relative to a situation
+with no HFTr.
+Proof: immediate from Expression (41) and Proposition 5.
+Proposition 6 outlines that HFTr is no longer unambiguously desirable when accounting for the
+possibility of ITr exit/randomization. If the behavior of ITr is not impacted by HFTr participation,
+fundamental information circulates in the same way it would without HFTr, and is being treated
+more efficiently. However if ITr randomizes or exits in response to HFTr’s willingness to enter, the
+circulation and/or dissemination of fundamental information decreases. In both cases the decrease
+in information content dominates the increase in information treatment, and overall price efficiency
+24
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+falls. Nevertheless, the two responses do not have the same impact on price efficiency: exit is far
+more harmful than randomization, as it completely cuts off information generation. Interestingly,
+HFTr does not have to be present in the market in equilibrium to have a negative impact on
+price efficiency. The mere threat of entry by HFTr is sufficient to discourage ITr from entering or
+convincing it to randomize.
+Proposition 6 reconciles two strands of empirical literature that have reached seemingly opposite
+conclusions: one that studies HFT on a given market and associates it with a rise in efficiency
+(reviewed in Section 4) and one that studies HFT across markets or regulations and associates
+it with a decrease in information acquisition (reviewed in section 5).
+The conclusion that the
+negative effect of HFT on information content dominates the positive effect of HFT on information
+treatment is supported by the literature. Several of the papers that report a decrease in information
+acquisition when HFT activity is high also report an overall drop in price efficiency (Lee and Watts
+(2021), Weller (2018)). Gider et al. (2021) find a negative impact of HFT on price efficiency across
+exchanges.
+5.3.2. Randomization and price efficiency
+This section studies the desirability of randomization from a price efficiency perspective, by
+comparing a situation in which ITr can randomize to a hypothetical situation in which randomization
+is either impossible or too costly. Recall that ITr randomizes if
+¯
+(Ui)I,Z
+H
+r
+> ¯
+(Ui)I,H
+Ar
+and
+¯
+(Ui)I,Z
+H
+r
+> 0,
+i.e., if the utility from randomizing to exclude HFTr exceeds the utility from not randomizing and
+sharing the market with HFTr and the utility from not participating. The randomization equilibrium
+(Ir,Z
+Z
+H) thus replaces the (IAr, H) equilibrium if ¯
+(Ui)I,H
+Ar
+> 0, i.e., if without randomization ITr would
+have coexisted with HFTr instead of exiting. Conversely, the randomization equilibrium (Ir,Z
+Z
+H)
+replaces the (AI) equilibrium if
+¯
+(Ui)I,H
+Ar
+< 0, i.e., if without randomization ITr would have exited the
+market instead of coexisting with HFTr.
+Proposition 7: The region of the parameter set in which ITr randomizes can be split into 2
+subregions:
+1) one such that
+¯
+(Ui)I,H
+Ar
+> 0, in which price efficiency decreases relative to a situation with no
+randomization.
+2) one such that
+¯
+(Ui)I,H
+Ar
+< 0, in which price efficiency increases significantly relative to a
+situation with no randomization.
+Proof: immediate from Expression (41)
+Proposition 7 states that randomization can be a second-best equilibrium from a price efficiency
+perspective. (Ir,Z
+Z
+H) is never preferable to the (IAr, H) market in which ITr and HFTr coexist, but it
+may prevent the emergence of the most undesirable market structure (AI).
+Lemma 8: The threshold value c∗∗
+h above which ITr prefers entering and randomizing to not
+entering is higher than the threshold value c∗
+h above which ITr prefers entering and randomizing to
+25
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+entering and not randomizing.
+Proof: c∗∗
+h = c∗
+h when ci = c∗
+i , and d c∗∗
+h
+d ci as shown in Appendix F-2
+Lemma 8 states that randomization is less efficient in preventing ITr exit than it is in preventing
+peaceful coexistence between ITr and HFTr. This comes from the fact that ITr considers exiting
+only when its utility is low. In this context, ITr has less utility to spend on randomization, ceteris
+paribus. By contrast, the fact that ITr wants to enter the market with or without HFTr suggests
+that it benefits a lot from entering, and can afford to pay the utility cost of expelling HFTr.
+This result implies that HFTr can be particularly undesirable for markets in which the returns to
+informed trading are low. It also lowers the desirability of randomization from a price efficiency
+perspective.
+Nevertheless, the gains from avoiding ITr exit far exceed the costs from avoiding
+coexistence, implying that even a small likelihood of avoiding this outcome may suffice to make
+randomization desirable.
+Figure 3 informally summarizes the price efficiency impact of HFTr and randomization by region
+of the phase diagram in the (ci, ch) space.
+Figure 3: Price efficiency by region of the phase diagram in the (ci, ch)space. The black plus and minus signs indicate the
+level of price efficiency of a given region with respect to the price efficiency of the same region in the model without HFTr.
+The white plus and minus signs indicate the level of price efficiency of a given region with respect to the price efficiency of the
+same region in the model without randomization. The size of the plus/minus is an approximate (author-drawn) proxy for the
+magnitude of the difference with the reference market. cmax
+k
+represents the fixed cost for agent k past which k has a dominant
+strategy in not entering.
+6. Conclusion
+High-frequency trading is desirable from a price efficiency perspective only if ITr does not react
+to it. If ITr randomizes its orders, the gains from HFTr are more than offset in equilibrium. If
+ITr exits the market in response to HFT, information stops flowing in and the market fails. Which
+option emerges in a given market crucially boils down to the characteristics of the market.
+26
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+An implication of this paper is that regulation of HFT should be market and time dependent. If
+high-frequency traders act primarily as market markers, and/or the cost of acquiring information is
+low, the gains from HFT are likely to outweigh its costs. However, if high-frequency traders have a
+tendency to backrun and the profits of informed traders are low, the regulator or the exchange may
+consider implementing anti-HFT rules. This may include penalties on canceled orders, stochastic
+execution time, or asymmetric speed bumps.
+27
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+Glossary
+Abbreviations
+Abbreviation
+Meaning
+HFT
+High-frequency trading in general
+HFTr
+Representative high-frequency trader in the model
+ITr
+Representative informed trader in the model
+LTr
+Representative liquidity trader in the model
+vKM
+Van Kervel and Menkveld (2019)
+YZ
+Yang and Zhu (2020)
+MM
+Market maker
+Notation (part 1)
+Notation
+Meaning
+t
+Point in time marking the start of a period
+T
+Number of periods in a trading cycle
+Pt
+Price of the asset (at time t)
+Ft
+Fundamental value of the asset
+εf
+t
+Noise of the random walk process followed by Ft
+σ2
+f
+Variance of εf
+t
+εl
+t
+Random demand from LTr
+σ2
+l
+Variance of εl
+t
+i
+ITr
+h
+HFTr
+Ck
+Fixed utility cost to participate in a cycle for agent k = (I, h)
+ck
+Ck
+T
+εs
+t
+Noise in ITr’s signal about Ft
+σ2
+s
+Variance of εs
+t
+Qk
+t
+Demand by agent k = (I, h)
+b
+Price impact of Qk
+t
+t, z
+Given point in time z of period t
+ι
+Infinitesimal amount of time
+t, 1
+Point in time in a period just before HFTr’s order is placed
+28
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+Notation (part 2)
+Notation
+Meaning
+U k
+t
+Utility of agent k = (i, h)
+¯
+U k
+Expected utility per period E(U k
+t ) −ck
+1
+2τ
+Risk aversion
+λ
+1/( σ2
+s
+τ + b)
+Qi
+t
+∗
+Optimal demand for ITr
+εr
+t
+Noise from randomization by the informed trader
+σ2
+r
+Variance of εs
+t, Level of randomization
+Si
+Set of strategies at the start of each trading cycle for ITr
+ICr
+ITr participates without using randomization
+Ir
+ITr participates using randomization
+AI
+ITr does not participate
+I
+ITr participates for any level of randomization
+ ICr ∨Ir
+
+H
+HFTr participates
+Z
+Z
+H
+HFTr does not participate
+σ2
+n
+Noise trading λ2σ2
+s + σ2
+r + σ2
+l
+Ψ f
+t
+Difference Ft −Eh
+t (Ft) between the real fundamental value and the estimation of HFTr
+Ψ d
+t
+Difference Qi
+t + εl
+t −Eh
+t
+ Qi
+t + εl
+t
+
+between the real non-HFT demand and the estimation of HFTr
+p
+Variance of noise trading over the variance of fundamental trading λ2σ2
+s+σ2
+r+σ2
+l
+λ2σ2
+f
+δ
+Share of demand from ITr and LTr that stems from a change in Ft on average
+ρ∗
+Threshold for p above which (below which) HFTr trades against (with) demand shocks
+M
+Tendency of the asset to be mispriced, equal to E
+
+(Ft −Pt)2
+md
+Market depth, defined as the amount of non-HFTr demand required to move prices by one unit
+(Qi
+t+εl
+t)
+Pt+1−Pt
+ω
+Absolute distance |b −δ
+λ| between the MM pricing rule b and the optimal pricing rule δ
+λ
+¯δ
+Threshold value for δ under which HFTr exits
+¯σ2r
+Level of randomization above which HFTr chooses not to enter
+c∗
+h
+Threshold value for ch past which ITr randomizes instead of entering and not randomizing
+c∗∗
+h
+Threshold value for ch past which ITr randomizes instead of exiting the market
+c∗
+i
+Threshold value past which ITr exits the market instead of entering and not randomizing
+29
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+Appendix A
+A-1
+This Appendix derives the expression for the expected squared the forecast error σ2
+Ψ,f = E
+
+(Ψ f
+t )2
+.
+Start from Equation (18), which states:
+Ψ f
+t+1 = (1 −δ)Ψ f
+t + εf
+t+1 −δ
+λεn
+t
+substituting until t = 0 yields :
+Ψf
+t+1 = (1 −δ)t+1Ψf
+0 +
+h
+(1 −δ)tεf
+1 + (1 −δ)t−1εf
+2 + ... + (1 −δ)εf
+t + (1 −δ)0εf
+t+1
+i
+−δ
+λ
+
+(1 −δ)tεn
+0 + (1 −δ)t−1εn
+1 + ... + (1 −δ)εn
+t−1 + (1 −δ)0εn
+t
+
+it follows that:
+σ2
+Ψ,f = E((Ψf
+t+1)2)
+=
+h
+(1 −δ)2tσ2
+f + (1 −δ)2(t−1)σ2
+f + ... + (1 −δ)2σ2
+f + (1 −δ)0σ2
+f
+i
++
+
+δ
+λ
+2 
+(1 −δ)2tσ2
+n + (1 −δ)2(t−1)σ2
+n + ... + (1 −δ)2σ2
+n + (1 −δ)0σ2
+n
+
+where I have used the fact that all shocks are independent. Using the properties of geometric
+series
+σ2
+Ψ,f = σ2
+f
+1−(1−δ)2(t+1)
+1−(1−δ)2
++
+  δ
+λ
+2 σ2
+n
+1−(1−δ)2(t+1)
+1−(1−δ)2
+When t is large:
+σ2
+Ψ,f =
+σ2
+f +
+  δ
+λ
+2 σ2
+n
+2δ −δ2
+A-2
+This Appendix derives the value of δ that minimizes the expected squared forecast error σ2
+Ψ,f
+for HFTr, given in Equation (19). Define:
+u = σ2
+f +
+  δ
+λ
+2 σ2
+n
+u′ = σ2
+n
+λ2 2δ
+v = 2δ −δ2
+v′ = 2 −2δ
+dσ2
+Ψ,f
+dδ
+= u′v−v′u
+v2
+= 0 ⇒u′v −v′u = 0
+⇒
+
+σ2
+n
+λ2 2δ
+  2δ −δ2
+−(2 −2δ)
+
+σ2
+f +
+  δ
+λ
+2 σ2
+n
+
+= 0
+⇒2 (2 −2δ)
+  δ
+λ
+2 σ2
+n −(2 −2δ) σ2
+f −(2 −2δ)
+  δ
+λ
+2 σ2
+n = 0
+⇒(2 −2δ)
+  δ
+λ
+2 σ2
+n −(2 −2δ) σ2
+f = 0
+⇒σ2
+n
+λ2 δ2 + δσ2
+f −σ2
+f = 0
+△= (σ2
+f)2 −4σ2
+n
+λ2
+
+−σ2
+f
+
+△= 4σ2
+f
+h
+σ2
+f + 4σ2
+n
+λ2
+i
+30
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+δ1,2 =
+λ2
+"
+±σf
+s
+σ2
+f+4 σ2n
+λ2
+
+−σ2
+f
+#
+2σ2n
+One root is negative and thus is not eligible. Therefore:
+δ =
+λ2
+"
+σf
+r
+σ2
+f+4 σ2n
+λ2 −σ2
+f
+#
+2σ2n
+δ = 1
+2ρ
+hp
+1 + 4ρ −1
+i
+A-3
+This Appendix studies the derivative of δ with respect to ρ, starting from the expression of δ
+given above (Equation (20) in the body of the text).
+dδ
+dρ = 1
+2
+h
+−1
+ρ2
+  √1 + 4ρ −1
+
++
+4
+2√1+4ρ
+1
+ρ
+i
+dδ
+dρ = −(
+√1+4ρ−1)
+√1+4ρ
+2ρ2√1+4ρ
++
+2ρ
+2ρ2√1+4ρ
+dδ
+dρ =
+√1 + 4ρ −(1 + 2ρ)
+2ρ2√1 + 4ρ
+dδ
+dρ < 0 ⇒√1 + 4ρ < (1 + 2ρ) ⇒1 + 4ρ < (1 + 2ρ)2
+⇒1 + 4ρ < 1 + 4ρ + 4ρ2⇒0 < 4ρ2
+True by definition, therefore dδ
+dρ < 0.
+A-4
+This Appendix simplifies Equation (19), whose expression is :
+σ2
+Ψ,f =
+σ2
+f +
+  δ
+λ
+2 σ2
+n
+2δ −δ2
+where δ =
+λ
+h
+σf
+q
+λ2σ2
+f+4σ2n−λσ2
+f
+i
+2σ2n
+as proven in Appendix A-2.
+Let NUM designate the numerator of equation (19), and DEN designate its denominator.
+First consider the numerator:
+NUM = σ2
+f +
+  δ
+λ
+2 σ2
+n
+NUM =
+
+1
+4σ2n
+
+4σ2
+nσ2
+f +
+h
+σf
+q
+λ2σ2
+f+4σ2n−λσ2
+f
+i2
+4σ2nσ2n
+σ2
+n
+NUM =
+
+1
+4σ2n
+ 
+4σ2
+nσ2
+f + σ2
+f(λ2σ2
+f + 4σ2
+n) + (λσ2
+f)2 −2σf
+q
+λ2σ2
+f + 4σ2nλσ2
+f
+
+NUM =
+
+1
+4σ2n
+ 
+σ2
+f
+
+λ2σ2
+f + 4σ2
+n
+
++ σ2
+f(λ2σ2
+f + 4σ2
+n) −2σf
+q
+λ2σ2
+f + 4σ2nλσ2
+f
+
+Define X = σf
+q
+λ2σ2
+f + 4σ2n
+NUM =
+
+1
+2σ2n
+ 
+X2 −λσ2
+fX
+
+Second consider the denominator:
+DEN = 2δ −δ2 = δ(2 −δ)
+31
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+= δ
+ 
+2 −
+λ
+h
+σf
+q
+λ2σ2
+f+4σ2n−λσ2
+f
+i
+2σ2n
+!
+= δ
+ 
+4σ2
+n+λ2σ2
+f−λσf
+q
+λ2σ2
+f+4σ2n
+2σ2n
+!
+= δ
+ 
+σ2
+f(λ2σ2
+f+4σ2
+n)−λσ2
+fσf
+q
+λ2σ2
+f+4σ2n
+2σ2nσ2
+f
+!
+= δ
+
+X2−λσ2
+fX
+2σ2nσ2
+f
+
+It follows that:
+σ2
+Ψ,d = NUM
+DEN =
+
+1
+2σ2n
+
+(X2−λσ2
+fX)
+δ
+σ2
+f
+ 
+X2−λσ2
+f X
+2σ2n
+!
+=
+1
+ 
+δ
+σ2
+f
+!
+σ2
+Ψ,f =
+σ2
+f
+δ
+Appendix B
+B-1
+This Appendix draws the expression for the expected utility E(U
+h
+t ) of HFTr. Start from Equation (8), which states:
+U
+h
+t = Qh
+t (E
+h
+t,1(Ft) −Pt,1) −b
+2
+
+Qh
+t
+2
+Using Equations E
+h
+t,1(Ft) = Pt+1 and Pt+1 = Pt,1 + bQh
+t , U
+h
+t can be reexpressed as:
+U
+h
+t =
+
+Qh
+t
+
+(bQh
+t ) −b
+2
+
+Qh
+t
+2
+E(U
+h
+t ) =
+b
+2
+
+E
+
+(Qh
+t )2
+Plugging Equation (23) and using the fact that Et(Ft) = Pt leads to:
+E(U
+h
+t ) =
+b
+2
+  1
+bλ(δ −bλ)
+2
+E (λ(Ft −Et(Ft)) + εn
+t )2
+(Ft −Et(Ft)) and εn
+t are independent, since Pt = Pt,0 is the price before the noise shocks
+materialize. Therefore:
+E(U
+h
+t ) =
+ 1
+2b
+
+(δ −bλ)2
+
+σ2
+Ψ,f + σn
+t
+λ2
+
+(42)
+Appendix A showed that:
+σ2
+Ψ,f =
+σ2
+f
+δ =
+σ2
+f +
+  δ
+λ
+2 σ2
+n
+2δ −δ2
+(43)
+32
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+which implies that:
+σ2
+f (1 −δ) =
+ δ
+λ
+2
+σ2
+n
+(44)
+Plugging Equations (44) and (43) into (42) yields:
+E(U
+h
+t ) =
+ 1
+2b
+
+(δ −bλ)2
+ 
+σ2
+f
+δ +
+σ2
+f (1 −δ)
+δ2
+!
+⇒E(U
+h
+t ) =
+ 
+σ2
+f
+δ2
+!  1
+2b
+
+(bλ −δ)2
+B-2
+This Equation studies the derivative of E(U
+h
+t ), expressed above and in Equation (25) in the
+body of the text, with respect to b. Define:
+u = (bλ −δ)2 = b2λ2 −2bλδ + δ2
+u′ = 2bλ2 −2λδ
+v = b
+v′ = 1
+dE(U
+h
+t )
+db
+= 1
+2
+
+σ2
+f
+δ2
+ h
+u′v−v′u
+v2
+i
+dE(U
+h
+t )
+db
+= 1
+2
+
+σ2
+f
+δ2
+ 
+(2bλ2−2λδ)b−(bλ−δ)2
+b2
+
+dE(U
+h
+t )
+db
+= 1
+2
+
+σ2
+f
+δ2
+ h
+2bλ(bλ−δ)−(bλ−δ)2
+b2
+i
+dE(U
+h
+t )
+db
+= 1
+2
+
+σ2
+f
+δ2
+ h
+(bλ−δ)(2bλ−(bλ−δ))
+b2
+i
+dE(U
+h
+t )
+db
+= 1
+2
+
+σ2
+f
+δ2
+ h
+(bλ−δ)(bλ+δ)
+b2
+i
+dE(U
+h
+t )
+db
+= 1
+2
+ 
+σ2
+f
+δ2
+! (bλ)2 −δ2
+b2
+
+dE(U
+h
+t )
+db
+< 0 if bλ < δ, and dE(U
+h
+t )
+db
+> 0 if bλ > δ.
+Thus E(U
+h
+t ) decreases with b if bλ < δ, and increases with b if bλ > δ
+Appendix C
+This Appendix draws the price impulse response functions in the (I,Z
+Z
+H) and (I, H) markets.
+C-1 considers a fundamental shock. C-2 considers a noise trading shock.
+33
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+C-1
+Using Equations (26) and (1), Ft −P I,H
+t
+can be reexpressed as:
+Ft −P I,H
+t
+= Ft−1 + εf
+t −
+
+P I,H
+t−1 + δ
+
+Ft−1 −P I,H
+t−1
+
++ δ
+λεn
+t−1
+
+Ft −P I,H
+t
+= (1 −δ)
+
+Ft−1 −P I,H
+t−1
+
+−δ
+λεn
+t−1 + εf
+t
+Consider that a single fundamental shock εf,0 occurs at time t = 0, starting from a situation in
+which the price is equal to the fundamental value. This implies that:
+Ft −P I,H
+t
+= (1 −δ)
+
+Ft−1 −P I,H
+t−1
+
+Ft −P I,H
+t
+= (1 −δ)t 
+F0 −P I,H
+0
+
+Ft −P I,H
+t
+= (1 −δ)tεf
+0
+
+Ft −P I,H
+t
+2
+= (1 −δ)2t 
+εf
+0
+2
+Using the properties of geometric series, the sum TDI,H
+f
+of all the squared mispricings that
+occur in the (I, H) market following a fundamental shock is :
+TDI,H
+f
+= Pt=∞
+t=0
+
+Ft −P I,H
+t
+2
+= (1 −δ)2 
+1−(1−δ)∞
+1−(1−δ)2
+ 
+εf
+0
+2
+TDI,H
+f
+=
+
+εf
+0
+2
+(1 −δ)2
+1 −(1 −δ)2
+(45)
+The same expression for the (I,Z
+Z
+H) market is easily obtained by noting that Equation (26) boils
+down to Equation (27) when δ = bλ. Therefore:
+TDI,Z
+H
+f
+=
+
+εf
+0
+2
+(1 −bλ)2
+1 −(1 −bλ)2
+(46)
+Define a function f(x) =
+(1−x)2
+1−(1−x)2 =
+1
+1
+(1−x)2 −1. Its derivative is:
+d f(x)
+d x
+=
+d f(x)
+d
+1
+(1−x)2 −1
+d
+1
+(1−x)2
+d (1−x)2
+d (1−2x+x2)
+d x
+=
+"
+−
+
+1
+1
+(1−x)2 −1
+2# 
+−
+
+1
+(1−x)2
+2
+[−2 + 2x] < 0
+It follows that TDI,H
+f
+< TDI,Z
+H
+f
+if δ > bλ ⇔ρ∗> ρ, and TDI,H
+f
+> TDI,Z
+H
+f
+if δ < bλ ⇔ρ∗< ρ
+C-2
+Using the price recurrence Equation (26) and Equation (1), Ft −P I,H
+t
+can be reexpressed as:
+Ft −P I,H
+t
+= Ft−1 + εf
+t −
+
+P I,H
+t−1 + δ
+
+Ft−1 −P I,H
+t−1
+
++ δ
+λεn
+t−1
+
+Ft −P I,H
+t
+= (1 −δ)
+
+Ft−1 −P I,H
+t−1
+
+−δ
+λεn
+t−1 + εf
+t
+Consider that a single noise trading shock εn,0 occurs at time t = 0, starting from a situation in
+which the price was equal to the fundamental value. This implies that:
+34
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+Ft −P I,H
+t
+= (1 −δ)t−1 
+F1 −P I,H
+1
+
+= (1 −δ)t−1  −δ
+λεn
+0
+
+
+Ft −P I,H
+t
+2
+= (1 −δ)2(t−1)   δ
+λ
+2 (εn
+0)2
+Using the properties of geometric series, the sum TDI,H
+n
+of all the squared mispricings that
+occur in the (I, H) market following a noise trading shock is :
+TDI,H
+f
+= Pt=∞
+t=0
+
+Ft −P I,H
+t
+2
+=
+  δ
+λ
+2 
+1−(1−δ)2∞
+1−(1−δ)2
+
+(εn
+0)2
+TDI,H
+n
+=
+εn
+0
+λ
+2
+δ2
+1 −(1 −δ)2
+(47)
+The same expression for the (I,Z
+Z
+H) market is easily obtained by noting that Equation (26) boils
+down to Equation (27) when δ = bλ. Therefore:
+TDI,Z
+H
+n
+=
+εn,0
+λ
+2
+(bλ)2
+1 −(1 −bλ)2
+(48)
+Define a function f(x) =
+x2
+1−(1−x)2 =
+x2
+1−(1−2x+x2) =
+x2
+2x−x2 =
+1
+2
+x−1. It is immediate that its
+derivative is positive. It follows that TDI,H
+n
+> TDI,Z
+H
+n
+if δ > bλ ⇔ρ∗> ρ, and TDI,H
+n
+< TDI,Z
+H
+n
+if
+δ < bλ ⇔ρ∗< ρ
+Appendix D
+Appendix D-1 draws the mispricing level in the (I,Z
+Z
+H) market. Appendix D-2 compares it to
+the mispricing level in the (I, H) market. Appendix D-3 compares the utility
+  ¯
+UiI,H of ITr with
+HFTr to the utility
+  ¯
+UiI,Z
+H of ITr without HFTr, and studies the behavior of the difference in ITr
+utility
+¯
+△Ui =
+  ¯
+UiI,H −
+  ¯
+UiI,Z
+H.
+D-1
+As showed in Appendix A-1
+σ2
+Ψ,f = E(Ft+1 −Pt+1)2 =
+σ2
+f+( δ
+λ)
+2σ2
+n
+2δ−δ2
+As noted in Appendix 3, the price dynamics in the (I,Z
+Z
+H) market given in Equation (27) corresponds to the price dynamics of the (I, H) market given in Equation (26) when δ = bλ. Therefore:
+MI,Z
+H =
+σ2
+f +
+  bλ
+λ
+2 σ2
+n
+2bλ −(bλ)2
+D-2
+Using Equation (28) and (29):
+MI,Z
+H −MI,H =
+σ2
+f+( bλ
+λ )
+2σ2
+n
+2bλ−(bλ)2
+−
+2σ2
+fρ
+√1+4ρ−1
+Using ρ = λ2σ2
+s+σ2
+r+σ2
+l
+λ2σ2
+f
+=
+σ2
+n
+λ2σ2
+f :
+35
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+=
+1
+2bλ−(bλ)2
+
+σ2
+f + b2σ2
+n −
+2
+(
+√1+4ρ−1)
+σ2
+n
+λ2 (2bλ −λ2)
+
+=
+1
+2bλ−(bλ)2+1−1
+
+
+
+σ2
+n
+λ2
+
+4
+1+4
+σ2n
+λ2σ2
+f
+−1 + b2σ2
+n −σ2
+n
+λ2
+4bλ
+√1+4ρ−1 + σ2
+n
+λ2
+2b2λ2
+√1+4ρ−1
+
+
+=
+1
+1−(1+b2λ2−2bλ)
+
+b2σ2
+n + σ2
+n
+λ2
+4
+(
+√1+4ρ−1)(
+√1+4ρ+1) −σ2
+n
+λ2
+4bλ
+√1+4ρ−1 + σ2
+n
+2b2
+√1+4ρ−1
+
+=
+1
+1−(1−bλ)2
+
+b2σ2
+n + σ2
+n
+λ2
+ √1+4ρ+1
+√1+4ρ−1
+ 
+4
+(
+√1+4ρ+1)
+2 −
+4bλ
+√1+4ρ+1
+
++
+2σ2
+nb2
+√1+4ρ−1
+
+=
+1
+1−(1−bλ)2
+
+σ2
+n
+λ2
+ √1+4ρ+1
+√1+4ρ−1
+ 
+4
+(
+√1+4ρ+1)
+2 −
+4bλ
+√1+4ρ+1
+
++ b2σ2
+n
+
+2
+√1+4ρ−1 + 1
+
+=
+1
+1−(1−bλ)2
+
+σ2
+n
+λ2
+ √1+4ρ+1
+√1+4ρ−1
+ 
+4
+(
+√1+4ρ+1)
+2 −
+4bλ
+√1+4ρ+1
+
++ b2σ2
+n
+
+2+√1+4ρ−1
+√1+4ρ−1
+
+=
+1
+1−(1−bλ)2
+
+σ2
+n
+λ2
+  √1+4ρ+1
+√1+4ρ−1
+ 
+4
+(
+√1+4ρ+1)
+2 −
+4bλ
+√1+4ρ+1 + b2λ2
+
+=
+1
+1−(1−bλ)2 σ2
+fρ
+ √1+4ρ+1
+√1+4ρ−1
+ 
+bλ −
+2
+√1+4ρ+1
+2
+Now note using Equation (20) that:
+δ =
+1
+2ρ
+ √1 + 4ρ −1
+
+= (
+√1+4ρ−1)(
+√1+4ρ+1)
+2ρ(
+√1+4ρ+1)
+=
+1+4ρ−1
+2ρ(
+√1+4ρ+1) =
+2
+√1+4ρ+1
+which notably implies that:
+1
+δ2 =
+ √1+4ρ+1
+2
+
+2ρ
+√1+4ρ−1 = ρ
+ √1+4ρ+1
+√1+4ρ−1
+
+It follows that:
+MI,Z
+H −MI,H =
+
+1
+1 −(1 −bλ)2
+ 
+σ2
+f
+δ2
+!
+(bλ −δ)2
+D-3
+Consider the pricing rule b = δ
+λ −ω ⇒λ (b + ω) = δ. Let
+¯
+△Ui−ω =
+  ¯
+UiI,H −
+  ¯
+UiI,Z
+H be the
+utility loss imposed by HFTr on ITr when MM uses this rule. Using Equation (34):
+¯
+△Ui−ω = −λ
+2
+
+1
+1−(1−bλ)2
+
+σ2
+f
+  bλ
+δ −1
+2 = −λ
+2
+
+1
+1−(1−bλ)2
+
+σ2
+f
+
+b
+b+ω −1
+2
+Similarly, when b = δ
+λ + ω ⇒λ (b −ω) = δ , the utility loss imposed by HFTr on ITr is :
+¯
+△Ui+ω = −λ
+2
+
+1
+1−(1−bλ)2
+
+σ2
+f
+  bλ
+δ −1
+2 = −λ
+2
+
+1
+1−(1−bλ)2
+
+σ2
+f
+
+b
+b−ω −1
+2
+Let us pose:
+¯
+△Ui−ω >
+¯
+△Ui+ω ⇒−λ
+2
+
+1
+1−(1−bλ)2
+
+σ2
+f
+
+b
+b+ω −1
+2
+> −λ
+2
+
+1
+1−(1−bλ)2
+
+σ2
+f
+
+b
+b−ω −1
+2
+This inequality can be reexpressed as:
+⇒
+
+b
+b+ω −1
+2
+<
+
+b
+b−ω −1
+2
+⇒1 −
+b
+b+ω <
+b
+b−ω −1
+⇒2 <
+b(b−ω)
+(b−ω)(b+ω) +
+b(b+ω)
+(b−ω)(b+ω)
+⇒2 < b(b−ω)+b(b+ω)
+(b−ω)(b+ω)
+36
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+⇒2 <
+2b2
+(b−ω)(b+ω)
+⇒(b −ω) (b + ω) < b2
+⇒b2 −ωb + ωb −ω2 < b2
+⇒−ω2 < 0
+True by definition. For a given level of pricing efficiency, the HFTr impact on ITr utility is
+higher when b < δ
+λ, i.e., when HFTr backruns.
+Appendix E
+This Appendix obtains the critical points c∗
+h , c∗∗
+h
+and c∗
+i at which the equilibrium market
+structure changes. It focuses on c∗
+h and c∗∗
+h , since c∗
+i is obtained immediately as follows:
+¯
+(Ui)I,H
+Ar
+= λ
+2 MI,H
+Ar
+−λ
+2 σ2
+s −ci = 0 ⇒c∗
+i = λ
+2 MI,H
+Ar
+−λ
+2 σ2
+s
+E-1
+First consider c∗
+h, the threshold value for ch past which ITr randomizes instead of staying and
+not randomizing, obtained by setting
+¯
+(Ui)I,Z
+H
+r
+−¯
+(Ui)I,H
+Ar
+= 0. Applying the general expression for
+ITr utility given in Equation (33) to both market structures yields:
+¯
+(Ui)I,Z
+H
+r
+−¯
+(Ui)I,H
+Ar
+= λ
+2
+
+MI,Z
+H
+r
+−MI,H
+Ar
+
+−1
+2λ
+¯σ2r = 0 ⇒λ
+2
+
+MI,Z
+H
+r
+−MI,H
+Ar
+
+= 1
+2λσ2
+r
+Using the expression for expected mispricing in the absence of HFTr given in Equation (29)
+leads to:
+MI,Z
+H
+r
+=
+σ2
+f+b2(λ2σ2
+s+σ2
+r+σ2
+l )
+2bλ−(bλ)2
+=
+σ2
+f+b2(λ2σ2
+s+σ2
+l )
+2bλ−(bλ)2
++
+b2σ2
+r
+2bλ−(bλ)2 = MI,Z
+H
+Ar
++
+b2
+2bλ−(bλ)2 σ2
+r
+It follows that :
+λ
+2
+
+MI,Z
+H
+r
+−MI,H
+Ar
+
+= λ
+2
+
+MI,Z
+H
+Ar
+−MI,H
+Ar
+
++ λ
+2
+b2
+2bλ−(bλ)2 σ2
+r =
+1
+2λσ2
+r
+⇒λ
+2
+
+MI,Z
+H
+Ar
+−MI,H
+Ar
+
+=
+
+2bλ−(bλ)2
+2λ(2bλ−(bλ)2) −λ
+2
+2λb2
+2λ(2bλ−(bλ)2)
+
+σ2
+r
+⇒λ
+2
+
+MI,Z
+H
+Ar
+−MI,H
+Ar
+
+=
+
+2bλ−(bλ)2−λ2b2
+2λ(2bλ−(bλ)2)
+
+σ2
+r
+⇒λ
+2
+
+MI,Z
+H
+Ar
+−MI,H
+Ar
+
+=
+
+2−2bλ
+2λ(2−bλ)
+
+σ2
+r
+⇒λ2(2−bλ)
+2(1−bλ)
+
+MI,Z
+H
+Ar
+−MI,H
+Ar
+
+= σ2
+r
+Replacing σ2
+r with its equilibrium value ¯σ2r given in Equation (36) yields:
+⇒λ2(2−bλ)
+2(1−bλ)
+
+MI,Z
+H
+Ar
+−MI,H
+Ar
+
+=
+
+1−¯δ
+¯δ2
+
+λ2σ2
+f −λ2σ2
+s −σ2
+l
+⇒
+λ2(2−bλ)
+2(1−bλ)
+
+MI,Z
+H
+Cr
+−MI,H
+Cr
+
++λ2σ2
+s+σ2
+l
+λ2σ2
+f
+¯δ2 −1 + ¯δ = 0
+37
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+The solutions of the second degree polynomial are:
+¯δ1,2 =
+−1±
+v
+u
+u
+u
+t1+4
+λ2(2−bλ)
+2(1−bλ)
+ 
+MI,Z
+H
+Cr
+−MI,H
+Cr
+!
++λ2σ2s+σ2
+l
+λ2σ2
+f
+2
+ 
+λ2(2−bλ)
+2(1−bλ)
+ 
+MI,Z
+H
+Cr
+−MI,H
+Cr
+!
++λ2σ2s+σ2
+l
+!
+λ2σ2
+f
+One is negative. The other is positive and corresponds to the threshold for ¯δ past which the
+expression becomes positive, i.e., the investor randomizes. The equilibrium value for ¯δ is thus:
+¯δ∗=
+v
+u
+u
+u
+t1+4
+λ2(2−bλ)
+2(1−bλ)
+ 
+MI,Z
+H
+Cr
+−MI,H
+Cr
+!
++λ2σ2s+σ2
+l
+λ2σ2
+f
+−1
+2
+ 
+λ2(2−bλ)
+2(1−bλ)
+ 
+MI,Z
+H
+Cr
+−MI,H
+Cr
+!
++λ2σ2s+σ2
+l
+!
+λ2σ2
+f
+Using the expression for ¯δ given in Equation (37) leads to:
+bλ
+ 
+1−
+s
+2bc∗
+h
+σ2
+f
+! =
+v
+u
+u
+u
+t1+4
+λ2(2−bλ)
+2(1−bλ)
+ 
+MI,Z
+H
+Cr
+−MI,H
+Cr
+!
++λ2σ2s+σ2
+l
+λ2σ2
+f
+−1
+2
+ 
+λ2(2−bλ)
+2(1−bλ)
+ 
+MI,Z
+H
+Cr
+−MI,H
+Cr
+!
++λ2σ2s+σ2
+l
+!
+λ2σ2
+f
+which yields the final result:
+c∗
+h =
+σ2
+f
+2b
+
+
+
+
+
+
+1 −bλ
+2
+
+λ2(2−bλ)
+2(1−bλ)
+
+MI,Z
+H
+Cr
+−MI,H
+Cr
+
++λ2σ2
+s+σ2
+l
+
+λ2σ2
+f
+s
+1 + 4
+λ2(2−bλ)
+2(1−bλ)
+
+MI,Z
+H
+Cr
+−MI,H
+Cr
+
++λ2σ2s+σ2
+l
+λ2σ2
+f
+−1
+
+
+
+
+
+
+2
+which using the expression for ¯δ∗above can also be expressed as c∗
+h =
+σ2
+f
+2b
+
+1 −bλ
+¯δ∗
+2
+.
+E-2
+Consider now c∗∗
+h , the threshold value for ch past which ITr randomizes instead of exiting,
+obtained by setting
+¯
+(Ui)I,Z
+H
+r
+= 0. Applying the general expression for ITr utility given in Equation
+(33) to the market (Ir,Z
+Z
+H) gives:
+¯
+(Ui)I,Z
+H
+r
+= λ
+2 MI,Z
+H
+r
+−1
+2λ
+  ¯σ2r + λ2σ2
+s
+
+−ci = 0 ⇒λ
+2 MI,Z
+H
+r
+−1
+2λλ2σ2
+s −ci = 1
+2λσ2
+r
+Using the expression for expected mispricing in the absence of HFTr given in (29) leads to :
+MI,Z
+H
+r
+=
+σ2
+f+b2(λ2σ2
+s+σ2
+r+σ2
+l )
+2bλ−(bλ)2
+=
+σ2
+f+b2(λ2σ2
+s+σ2
+l )
+2bλ−(bλ)2
++
+b2σ2
+r
+2bλ−(bλ)2 = MI,Z
+H
+Ar
++
+b2
+2bλ−(bλ)2 σ2
+r
+It follows that :
+38
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+⇒λ
+2MI,Z
+H
+r
+−1
+2λλ2σ2
+s −ci = λ
+2MI,Z
+H
+Ar
++ λ
+2
+b2
+2bλ−(bλ)2 σ2
+r −1
+2λλ2σ2
+s −ci =
+1
+2λσ2
+r
+⇒
+
+λ(2−bλ)
+1−bλ
+ 
+λ
+2MI,Z
+H
+Ar
+−1
+2λλ2σ2
+s −ci
+
+= σ2
+r
+Replacing σ2
+r with its equilibrium value ¯σ2r given in Equation (36) yields:
+⇒
+
+λ(2−bλ)
+1−bλ
+ 
+λ
+2MI,Z
+H
+Ar
+−1
+2λλ2σ2
+s −ci
+
+=
+
+1−¯δ
+¯δ2
+
+λ2σ2
+f −λ2σ2
+s −σ2
+l
+⇒
+
+
+λ2(2−bλ)
+2(1−bλ)
+
+MI,Z
+H
+Cr
+−MI,H
+Cr
+
++λ2σ2
+s+σ2
+l
+λ2σ2
+f
+
+¯δ2 −1 + ¯δ = 0
+The solutions of the second degree polynomial are:
+¯δ1,2 =
+−1±
+v
+u
+u
+u
+t1+4
+
+λ(2−bλ)
+1−bλ
+ 
+λ
+2 MI,Z
+H
+Cr
+−1
+2λ λ2σ2s−ci
+!
++λ2σ2s+σ2
+l
+λ2σ2
+f
+2
+ 
+λ(2−bλ)
+1−bλ
+ 
+λ
+2 MI,Z
+H
+Cr
+−1
+2λ λ2σ2s−ci
+!
++λ2σ2s+σ2
+l
+!
+λ2σ2
+f
+One is negative. The other is positive and corresponds to the threshold for ¯δ past which the
+expression becomes positive, i.e., the investor randomizes. The equilibrium value for ¯δ is thus:
+¯δ∗∗=
+v
+u
+u
+u
+t1+4
+
+λ(2−bλ)
+1−bλ
+ 
+λ
+2 MI,Z
+H
+Cr
+−1
+2λ λ2σ2s−ci
+!
++λ2σ2s+σ2
+l
+λ2σ2
+f
+−1
+2
+ 
+λ(2−bλ)
+1−bλ
+ 
+λ
+2 MI,Z
+H
+Cr
+−1
+2λ λ2σ2s−ci
+!
++λ2σ2s+σ2
+l
+!
+λ2σ2
+f
+Using the expression for ¯δ given in Equation (37) leads to:
+r
+2bc∗∗
+h
+σ2
+f
+= 1 −bλ
+2
+ 
+λ(2−bλ)
+1−bλ
+ 
+λ
+2 MI,Z
+H
+Cr
+−1
+2λ λ2σ2s−ci
+!
++λ2σ2s+σ2
+l
+!
+λ2σ2
+f
+v
+u
+u
+u
+t1+4
+
+λ(2−bλ)
+1−bλ
+ 
+λ
+2 MI,Z
+H
+Cr
+−1
+2λ λ2σ2s−ci
+!
++λ2σ2s+σ2
+l
+λ2σ2
+f
+−1
+which yields the final result:
+c∗∗
+h =
+σ2
+f
+2b
+
+
+
+
+
+
+1 −bλ
+2
+
+λ(2−bλ)
+1−bλ
+
+λ
+2 MI,Z
+H
+Cr
+−1
+2λ λ2σ2
+s−ci
+
++λ2σ2
+s+σ2
+l
+
+λ2σ2
+f
+s
+1 + 4
+ λ(2−bλ)
+1−bλ
+
+λ
+2 MI,Z
+H
+Cr
+−1
+2λ λ2σ2s−ci
+
++λ2σ2s+σ2
+l
+λ2σ2
+f
+−1
+
+
+
+
+
+
+2
+Appendix F
+This Appendix studies the derivative of c∗
+i with respect to σ2
+f and σ2
+l , and the derivative of c∗∗
+h
+with respect to σ2
+l and ci.
+39
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+F-1
+Plugging Equation (28) into c∗
+i = λ
+2MI,H
+Ar
+−λ
+2σ2
+s leads to:
+c∗
+i = λ
+2
+σ2
+f
+δAr
+−λ
+2 σ2
+s
+The derivative of δAr with respect to x = {σ2
+f, σ2
+l } is
+d δCr
+d x =
+
+d δCr
+d ρCr
+ 
+d ρCr
+d x
+
+. Using Appendix A-3 and
+the expression for ρAr = λ2σ2
+s+σ2
+l
+λ2σ2
+f
+leads to:
+d δAr
+d x =
+ p1 + 4 ρAr −
+ 1 + 2 ρAr
+
+2 ρ2
+Ar
+p1 + 4 ρAr
+!
+|
+{z
+}
+<0
+
+
+
+d λ2σ2
+s+σ2
+l
+λ2σ2
+f
+d x
+
+
+
+It follows immediately that:
+d c∗
+i
+d σ2
+l =
+λσ2
+f
+2
+
+d 1/δCr
+d δCr
+ 
+d δCr
+d σ2
+l
+
+=
+λσ2
+f
+2
+d 1/δAr
+d σ2
+l
+
+|
+{z
+}
+<0
+ p1 + 4 ρAr −
+ 1 + 2 ρAr
+
+2 ρ2
+Ar
+p1 + 4 ρAr
+!
+|
+{z
+}
+<0
+ 
+1
+λ2σ2
+f
+!
+|
+{z
+}
+>0
+⇒d c∗
+i
+d σ2
+l
+> 0
+Consider now d c∗
+i
+d σ2
+f , whose expression can be decomposed as:
+d c∗
+i
+d σ2
+f = λ
+2
+
+
+
+δCr−
+ 
+d δCr
+d σ2
+f
+!
+σ2
+f
+δ2
+Cr
+
+
+= λ
+2
+
+
+
+
+
+δCr−
+
+
+√1+4 ρCr−
+
+1+2 ρCr
+
+2 ρ2
+Cr
+√1+4 ρCr
+
+
+
+−
+λ2σ2s+σ2
+l
+λ2(σ2
+f)
+2
+
+σ2
+f
+δ2
+Cr
+
+
+
+
+
+d c∗
+i
+d σ2
+f > 0 ⇒δAr +
+ √1+4 ρCr−
+
+1+2 ρCr
+
+2 ρ2
+Cr
+√1+4 ρCr
+!
+ρAr > 0
+Using the expression for δArgiven in Equation (20) :
+⇒
+1
+2ρCr
+ p1 + 4ρAr −1
+
+>
+ 
+1+2 ρCr
+
+−√1+4 ρCr
+2 ρCr
+√1+4 ρCr
+!
+⇒
+ p1 + 4ρAr −1
+ p1 + 4 ρAr >
+ 1 + 2 ρAr
+
+−p1 + 4 ρAr
+⇒1 + 4ρAr −p1 + 4 ρAr >
+ 1 + 2 ρAr
+
+−p1 + 4 ρAr
+⇒4ρAr > 2 ρAr ⇒2 > 1
+d c∗
+i
+d σ2
+f
+> 0
+F-2
+Start from the expression :
+c∗∗
+h =
+σ2
+f
+2b
+
+1 −bλ
+¯δ∗∗
+2
+(49)
+40
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+given in Appendix E-2. The first step is to define :
+f =
+
+λ(2−bλ)
+1−bλ
+ 
+λ
+2MI,Z
+H
+Ar
+−1
+2λλ2σ2
+s −ci
+
++ λ2σ2
+s + σ2
+l
+λ2σ2
+f
+(50)
+which allows to rewrite ¯δ∗∗given in Appendix E-2 as:
+¯δ∗∗=
+√1 + 4f −1
+2f
+The derivative with respect to the liquidity variance σ2
+l can be decomposed as:
+d c∗∗
+h
+d σ2
+l
+=
+σ2
+f
+2b
+
+
+
+d
+
+1 −bλ
+¯δ∗∗
+2
+d 1 −bλ
+¯δ∗∗
+
+
+
+|
+{z
+}
+>0
+ 
+d 1 −bλ
+¯δ∗∗
+d ¯δ∗∗
+!
+|
+{z
+}
+>0
+d ¯δ∗∗
+d f
+
+|
+{z
+}
+<0
+ d f
+d σ2
+l
+
+See Appendix A-3 for the proof that d ¯δ∗
+d f < 0 . To find
+d f
+d σ2
+l , first note using that Equation (29)
+f can be reexpressed as :
+f =
+ λ(2−bλ)
+1−bλ
+ 
+λ
+2
+σ2
+f +b2σ2n
+2bλ−(bλ)2 −1
+2λ λ2σ2
+s−ci
+!
++λ2σ2
+s+σ2
+l
+λ2σ2
+f
+=
+
+λ(2−bλ)
+1−bλ
+
+λ
+2
+b2σ2n
+bλ(2−bλ)
+λ2σ2
+f
++
+σ2
+l
+λ2σ2
+f + cst
+where cst is a constant with respect to σ2
+l . Further simplification leads to:
+f =
+b(λ2σ2
+s+σ2
+r+σ2
+l )
+2λ(1−bλ)σ2
+f
++
+σ2
+l
+λ2σ2
+f + cst =
+bσ2
+l
+2λ(1−bλ)σ2
+f +
+σ2
+l
+λ2σ2
+f + cst
+It follows that
+d f
+d σ2
+l > 0 which means that :
+d c∗∗
+h
+d σ2
+l
+< 0
+By the same token the derivative with respect to the ITr’s fixed cost ci can be decomposed as:
+d c∗∗
+h
+d ci
+=
+σ2
+f
+2b
+
+
+
+d
+
+1 −bλ
+¯δ∗∗
+2
+d 1 −bλ
+¯δ∗∗
+
+
+
+|
+{z
+}
+>0
+ 
+d 1 −bλ
+¯δ∗∗
+d ¯δ∗∗
+!
+|
+{z
+}
+>0
+d ¯δ∗∗
+d f
+
+|
+{z
+}
+<0
+ d f
+d ci
+
+d f
+d ci < 0 is immediate from Equation (50), implying that :
+d c∗∗
+h
+d ci
+> 0
+41
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+Appendix G
+This Appendix shows that, in any market structure (AI) = ((AI, H), (AI,Z
+Z
+H)) without ITr, mispricing
+tends to infinity as t rises.
+G-1
+Start with the (AI, H) market. The first step to obtaining mispricings is to solve for the equilibrium price dynamics. In a trading cycle without ITr, HFTr’s best bet about the fundamental value
+is the price at the start of the cycle Eh
+t,1(Ft) = P0, which may contain some trace of ITr trading in
+previous cycles.
+The optimal demand of HFTr in the first period is thus:
+Qh
+0 = P0 −
+ P0 + bεl
+0
+
+b
+= −εl
+0
+The best strategy for HFTr is to fully counter any demand shock since it necessarily comes from
+liquidity traders. This implies that the total demand received by MM is null, which means that
+P1 = P0.
+The same logic applies for the following period. In general, neither the HFTr estimate of the
+fundamental value Eh
+t (Ft) = P0 nor the price at the start of each period Pt = P0 changes. The
+optimal rule for HFTr is always to counter noise trading shocks:
+Qh
+t = −εl
+t
+Mispricings in (AI, H) are obtained immediately by noting that the price does not change :
+Ft −Pt = F0 + Pi=t
+i=0 εf
+i −P0
+Ft −Pt = F0 −P0 + Pi=t
+i=0 εf
+i
+⇒E
+
+(Ft −Pt)2
+= E
+
+(F0 −P0)2
++ Pi=t
+i=0
+
+εf
+i
+2
+Thus:
+MAI,H
+t
+=
+MI,Z
+H
+0
++ tσ2
+f
+where MI,Z
+H
+0
+is the expected mispricing at the start of the cycle. The expected mispricing across
+the cycle MAI,H
+2
+is then :
+MAI,H =
+Pt=T
+t=0 MAI,H
+2,t
+T
+=
+TMI,Z
+H
+1
++ σ2
+f + 2σ2
+f + ... + Tσ2
+f
+T
+Using the properties of arithmetic sequences:
+MAI,H = MI,Z
+H
+0
++
+T(T + 1)σ2
+f
+2
+42
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+G-2
+I now turn to the (AI,Z
+Z
+H) market. In the absence of ITr and HFTr only LTr demand the asset.
+The evolution of the price through time is then:
+Pt = Pt−1 + bεl
+t = P0 + b
+k=t
+X
+k=0
+εl
+k
+It follows that :
+Ft −Pt = F0 + Pk=t
+k=0 εf
+k −
+
+P0 + b Pk=t
+k=0 εl
+k
+
+⇒E
+
+(Ft −Pt)2
+= E
+
+(F0 −P0)2
++ Pk=t
+k=0
+
+εf
+k
+2
++ b2 Pk=t
+k=0
+ εl
+k
+2
+Thus:
+MAI,Z
+H
+t
+=
+MAI,Z
+H
+0
++ t
+ σ2
+f + b2σ2
+l
+
+The expected mispricing across the cycle MAI,H is then :
+MAI,Z
+H = MAI,Z
+H
+0
++
+T(T + 1)
+
+σ2
+f + b2σ2
+l
+
+2
+Thus both MAI,Hand MAI,H tend to infinity when T is large, and MAI,H < MAI,Z
+H
+43
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+References
+[1] Aquilina, M., Budish, E., O’Neill, P., 2022. Quantifying the High-Frequency Trading “Arms
+Race”. The Quarterly Journal of Economics 137 (1), 493–564.
+[2] Baldauf, M., Mollner, J., 2020. High-Frequency Trading and Market Performance. Journal of
+Finance. Volume75 (3), 1495-1526.
+[3] Bernales, A., 2019. Make-Take Decisions under High-Frequency Trading Competition. Journal
+of Financial Markets 45, 1-18.
+[4] Bershova, N., Rakhlin, D., 2013. High-frequency trading and long-term investors: a view from
+the buy side. Journal of Investment StrategiesVolume 2 (2), 3-47.
+[5] Biais, B., Foucault, T., Moinas, S., 2015. Equilibrium Fast Trading. Journal of Financial Economics 116 (2), 292-313.
+[6] Boehmer, E., Fong, K., Wu, J., 2021. Algorithmic Trading and Market Quality: International
+Evidence. Journal of Financial and Quantitative Analysis 56 (8), 2659 - 2688.
+[7] Breckenfelder J., 2019. Competition among high-frequency traders, and market quality. Working Paper Series 2290, European Central Bank.
+[8] Brogaard, J., Hendershott, T., Riordan, R., 2014. High-Frequency Trading and Price Discovery.
+Review of Financial Studies 27 (8), 2267-2306.
+[9] Brunnermeier, M., Pedersen, L., 2005. Predatory trading. Journal of Finance 60, 1825–1863.
+[10] Budish, E., Cramton, P., Shim, J., 2015. The High-Frequency Trading Arms Race: Frequent
+Batch Auctions as a Market Design Response. Quarterly Journal of Economics 130 (4), 15471621.
+[11] Carrion, A., 2013. Very fast money: High-frequency trading on the NASDAQ. Journal of
+Financial Markets 16 (4), 680-711.
+[12] Chaboud, A., Chiquoine, B., Hjalmarsson, E., Vega, C., 2014. Rise of the machines: Algorithmic trading in the foreign exchange market, Journal of Finance 69 (5), 2045-2084.
+[13] Chordia, T., Goyal A., Lehmann, B., Saar, G., 2013. High-frequency trading. Journal of Financial Markets 16, 637–645.
+[14] Conrad, J., Wahal, S., Xiang, J., 2015. High-frequency quoting, trading, and the efficiency of
+prices. Journal of Financial Economics, 116 (2), 271-291.
+[15] Easley, D., López de Prado, M., O’Hara, M., 2012. Flow Toxicity and Liquidity in a Highfrequency World. The Review of Financial Studies 25 (5), 1457-1493.
+44
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+[16] Foucault, T., Hombert, J., Roşu, I., 2016. News Trading and Speed. Journal of finance 71(1),
+335-382.
+[17] Foucault, T., Kozhan, R., Tham, W., 2017. Toxic Arbitrage. The Review of Financial Studies
+30 (4), 1053–1094.
+[18] Frino, A., Mollica, V., Webb, R. 2014. The Impact of Co-Location of Securities Exchanges’ and
+Traders’ Computer Servers on Market Liquidity. The journal of Futures Market 34 (1), 20–33.
+[19] Froot, K., Scharfstein D., Stein J., 1992. Herd on the Street: Informational Inefficiencies in a
+Market with Short-Term Speculation. Journal of Finance 47 (4), 1461-1484.
+[20] Gider,
+J.,
+Schmickler,
+S.,
+Westheide,
+C.,
+2021.
+High-Frequency
+Trading
+and
+Price
+Informativeness.
+SAFE
+Working
+Paper.
+https://econpapers.repec.org/paper/bonboncrc/crctr224_5f2021_5f257.htm
+[21] Glosten, L., Milgrom, P., 1985. Bid, Ask and Transaction Prices in a Specialist Market with
+Heterogeneously Informed Traders. Journal of Financial Economics 14 (1), 71–100.
+[22] Grossman, S., Stiglitz, J., 1980. On the Impossibility of Informationally Efficient Markets.
+American Economic Review 70, (3), 393-408.
+[23] Grossman, S., Miller, M., 1988. Liquidity and market structure. Journal of Finance 43 (3),
+617–633.
+[24] Hasbrouck, J., Saar, G., 2013, Low-latency trading, Journal of Financial Markets 16 (4), 646679.
+[25] Hendershott, T., Jones, C., Menkveld A., 2011. Does Algorithmic Trading Improve Liquidity?
+The Journal of Finance 66(1), 1-33.
+[26] Hirschey, N., 2021. Do High-Frequency Traders Anticipate Buying and Selling Pressure? Management Science 67 (6), 3321-3345.
+[27] Hoffmann, P., 2014. A dynamic limit order market with fast and slow traders. Journal of
+Financial Economics 113 (1), 156-169.
+[28] van Kervel, V., 2015. Competition for Order Flow with Fast and Slow Traders. Review of
+Financial Studies 28(7), 2094-2127.
+[29] van Kervel, V., Menkveld, A., 2019. High-Frequency Trading around Large Institutional Orders.
+Journal of Finance, 74 (3), 1091-1137.
+[30] Korajczyk, R., Murphy, D., 2019. High-Frequency Market Making to Large Institutional Trades.
+The Review of Financial Studies 32 (3), 1034–1067.
+[31] Kyle, A., 1985. Continuous Auctions and Insider Trading. Econometrica Vol. 53 (6) , 1315-1335.
+45
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed
+
+[32] Lee, C. Watts, E., 2021. Tick Size Tolls: Can a Trading Slowdown Improve Earnings News
+Discovery? The Accounting Review 96 (3), 373–401.
+[33] Malinova, K., Park, A., Riordan, R., 2018. Do Retail Investors Suffer from High Frequency
+Traders? Journal of Financial Economics 130 (2), 347-366.
+[34] Meling, T., 2021. Anonymous Trading in Equities. The Journal of Finance, 76, 707-754.
+[35] Menkveld, A., 2016, The economics of high-frequency trading: Taking stock. Annual Review
+of Financial Economics 8, 1-24.
+[36] Menkveld, A., Zoican, M., 2017. Need for Speed? Exchange Latency and Market Liquidity.
+Review of Financial Studies 30, 1188-1228
+[37] Muth, J., 1960. Optimal Properties of Exponentially Weighted Forecasts. Journal of the American Statistical Association 55 (290), 299-306
+[38] O’Hara, M., 2015. High frequency market microstructure. Journal of Financial Economics 116
+(2), 257-270.
+[39] O’Hara, M., Yao, C., Ye, M., 2014. What’s Not There: Odd Lots and Market Data. Journal of
+Finance, 69 (5), 2199-2236.
+[40] Pagnotta, E., Philippon, T., 2018. Competing on Speed. Econometrica, Econometric Society,
+86 (3), 1067-1115.
+[41] Riordan, R., Storkenmaier,A., 2012. Latency, liquidity and price discovery. Journal of Financial
+Markets, 15 (4), 416-437
+[42] Shkilko, A., Sokolov, K., 2020. Every Cloud Has a Silver Lining: Fast Trading, Microwave
+Connectivity, and Trading Costs. The Journal of Finance, 75, 2899-2927.
+[43] Von Stackelberg, H., 1934. Marktform und Gleichgewicht, Springer Verlag, Vienna and Berlin.
+[44] Tong, L., 2015. A blessing or a curse? The impact of high frequency trading on institutional
+investors, Unpublished Manuscript University of Iowa.
+[45] Weller, B., 2018. Does Algorithmic Trading Reduce Information Acquisition? Review of Financial Studies, 31 (6), 2184-2226.
+[46] Yang, L., Zhu, H., 2020. Back-Running: Seeking and Hiding Fundamental Information in Order
+Flows. The Review of Financial Studies 33, 1484–1533.
+46
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4598559
+Preprint not peer reviewed

@@ -1,0 +1,987 @@
+From No-Arbitrage to Foundation Models: A Review of
+Financial-Mathematics-Constrained Generative AI and
+Deep Learning for Quantitative Finance
+Yuxuan Huang
+University of Nottingham Ningbo China, Ningbo, China
+First-Year Undergraduate Student
+BSc Mathematics with Applied Mathematics (MAM)
+Correspondence: yukinovo@outlook.com
+May 2026
+Abstract
+Artificial intelligence increasingly enters quantitative finance through option pricing, volatility calibration, hedging, asset pricing, risk measurement, market simulation, financial text analysis, and time-series forecasting. Yet finance differs from many
+prediction domains because a statistically accurate model can still be economically
+invalid.
+Prices must respect no-arbitrage restrictions, discounted asset prices must
+be consistent with martingale arguments under suitable measures, volatility surfaces
+must satisfy static and dynamic admissibility conditions, hedging rules must account
+for transaction costs and risk preferences, and scenario generators must preserve tail
+behavior rather than merely match average dependence. This semi-systematic review
+studies modern financial AI through this constraint-centered perspective. It organizes
+the literature from arbitrage pricing and stochastic volatility to neural option pricing,
+deep calibration, deep hedging, no-arbitrage asset pricing, generative market models,
+financial large language models, and time-series foundation models. The review makes
+three contributions. First, it separates financial constraints into structural admissibility, task-level economic objectives, and governance-validity requirements. Second, it
+identifies recurring design patterns for constraint injection, including hard parameterization, soft penalties, projection or repair, adversarial testing, and temporal validation. Third, it proposes layered and task-specific evaluation criteria that distinguish
+statistical fit from mathematical admissibility, economic usefulness, robustness, and
+deployability. The main argument is that financial mathematics is not a legacy layer
+that deep learning replaces. It provides the inductive biases, loss functions, diagnostic
+tests, and deployment gates that make AI models usable in quantitative finance.
+Keywords: no-arbitrage; financial mathematics; generative AI; deep learning; quantitative
+finance; option pricing; asset pricing; market generators; foundation models.
+1
+
+1
+Introduction
+The rapid diffusion of generative AI and deep learning into finance creates a productive
+tension. Neural networks, transformers, neural stochastic differential equations, generative
+adversarial networks, diffusion models, and large language models provide flexible tools for
+learning nonlinear relations from high-dimensional data.
+They can approximate pricing
+functions, infer latent factors, generate market paths, summarize financial documents, and
+transfer across related time-series tasks. At the same time, financial data are noisy, nonstationary, strategically adaptive, and shaped by equilibrium restrictions. A model can fit
+historical returns, option prices, or financial news while violating basic economic conditions.
+In quantitative finance, this is not a minor modeling imperfection. It can produce arbitrage
+opportunities that cannot exist in a competitive market, unstable hedges, misleading risk
+estimates, and backtests that disappear once realistic trading frictions and temporal leakage
+are controlled.
+This review therefore takes financial-mathematical constraints as its organizing principle.
+The central question is how no-arbitrage, martingale pricing, stochastic volatility, calibration, hedging error, and tail-risk constraints enter modern AI models. This framing differs
+from general surveys of AI in finance, which often classify papers by task, such as forecasting, sentiment analysis, portfolio allocation, or risk management. It also differs from
+surveys of neural option pricing or financial large language models because those literatures
+usually focus on one model family or one application area. The proposed perspective treats
+mathematical constraints as a common language across derivatives, asset pricing, market
+generation, and foundation models.
+The intellectual starting point is the arbitrage-pricing tradition. Black and Scholes (1973)
+and Merton (1973) show that derivative prices are restricted by dynamic replication and
+rational pricing arguments. Harrison and Kreps (1979) and Harrison and Pliska (1981) formulate the martingale foundation of asset pricing. Heath et al. (1992) develop a no-arbitrage
+framework for the term structure. Heston (1993), Dupire (1994), Comte and Renault (1998),
+and Gatheral et al. (2018) enrich the modeling of volatility through stochastic, local, longmemory, and rough-volatility structures. These works do more than provide classical baselines. They define admissibility conditions that modern learning systems must respect if
+they are to produce financially meaningful outputs.
+The central thesis of this review is that financial mathematics should be read as a design
+language for AI in quantitative finance. In this view, no-arbitrage is not merely a theorem
+that explains why a classical price is valid. It becomes an architectural constraint, a regularization principle, a diagnostic test, and a rejection criterion for learned outputs. Martingale
+pricing is not simply a historical foundation of derivatives. It becomes a way to distinguish
+statistical fit from economic consistency.
+Calibration is not only a numerical procedure.
+It becomes a test of whether a learned map respects economically meaningful parameters
+and extrapolates safely. Tail risk is not a secondary reporting statistic. It becomes a core
+objective for generators and risk engines.
+This review makes three contributions. First, it separates financial constraints into structural admissibility, task-level economic objectives, and governance-validity requirements.
+This resolves a common ambiguity in AI-finance surveys, where no-arbitrage restrictions,
+hedging losses, tail-risk metrics, and leakage controls are often discussed as if they operated
+2
+
+at the same level. Second, it identifies recurring design patterns for constraint injection,
+including hard parameterization, soft penalties, projection or repair, adversarial testing, and
+temporal validation. Third, it proposes a task-specific evaluation matrix that distinguishes
+statistical accuracy from mathematical admissibility, economic usefulness, robustness, and
+deployability. The resulting criterion is deliberately stronger than generic predictive performance: an AI model is useful in quantitative finance only when it is statistically competent,
+financially admissible, economically meaningful, and valid at the time of decision.
+These contributions can be stated as three propositions. Proposition 1 is that financial
+constraints should be classified by level of operation: structural admissibility defines what
+outputs are financially possible, task-level objectives define what outputs are useful, and
+governance-validity requirements define whether the evidence supporting the model is valid.
+Proposition 2 is that statistical fit is only the first layer of evaluation; quantitative-finance
+models must also pass mathematical admissibility, economic performance, robustness, and
+governance tests. Proposition 3 is that constraint injection is not a single technique but a
+design choice among hard parameterization, soft penalization, projection, adversarial testing,
+and temporal validation. In short, this review does not merely summarize AI in finance. It
+defines the conditions under which AI can be considered financially acceptable.
+2
+Review Methodology: Search and Screening
+This review uses a semi-systematic design that combines structured search with narrative
+synthesis. It is not a bibliometric meta-analysis and does not report prevalence estimates
+for the entire AI-in-finance literature. The objective is narrower: to identify work in which
+financial-mathematical constraints shape model architecture, learning objectives, diagnostics, or deployment validation.
+The search used five source channels: Google Scholar for broad cross-disciplinary discovery; arXiv and SSRN for recent preprints in machine learning, quantitative finance, and
+financial economics; Crossref and publisher databases, including ScienceDirect, SpringerLink,
+Wiley Online Library, Taylor & Francis Online, SIAM, IEEE Xplore, and ACM Digital Library where relevant, for journal and conference versions; reference lists from major surveys;
+and forward/backward citation chaining from foundational papers. The search window emphasized work from 2017 to 2026, while classical financial-mathematics foundations were
+included outside this window when they define constraints used by later AI methods.
+The search strings combined finance and AI keyword families. The finance family included “no-arbitrage,” “martingale pricing,” “option pricing,” “implied volatility,” “volatility surface,” “deep hedging,” “asset pricing,” “stochastic discount factor,” “market generator,” “financial time series,” “financial LLM,” and “financial foundation model.” The
+AI family included “deep learning,” “neural network,” “neural SDE,” “BSDE,” “generative model,” “GAN,” “diffusion,” “transformer,” “foundation model,” and “large language
+model.” Searches were run as paired combinations, for example “no-arbitrage neural network,” “volatility surface generative model,” “deep hedging transaction costs,” “asset pricing machine learning no-arbitrage,” “financial time series foundation model,” and “financial
+LLM temporal leakage.”
+Records were included when they satisfied at least one of four criteria: (i) they introduced
+3
+
+or formalized a financial constraint that later constrains AI models; (ii) they embedded such
+a constraint into a learning architecture, loss function, calibration procedure, or simulation
+mechanism; (iii) they evaluated AI outputs through financial admissibility, economic performance, or leakage-aware diagnostics; or (iv) they proposed benchmarks or foundation-model
+protocols relevant to quantitative finance. Records were excluded when they used AI for
+finance without an identifiable financial-mathematical constraint, focused only on generic
+NLP or forecasting without temporal or economic validation, lacked sufficient methodological detail, or duplicated earlier versions of the same work.
+Deduplication and screening proceeded in three stages.
+First, duplicate records were
+removed by matching title, author list, year, DOI, arXiv identifier, and published/preprint
+versions of the same paper. When both a preprint and a peer-reviewed version were available, the peer-reviewed version was preferred unless the preprint contained materially newer
+content. Second, titles and abstracts were screened for relevance to at least one application
+domain: derivatives, asset pricing, market generation, financial LLMs, or time-series foundation models. Third, full texts were assessed for whether the financial constraint affected
+the model, objective, evaluation protocol, or deployment logic rather than appearing only
+as background motivation.
+The final included set contains 51 records: 31 published journal or practitioner-journal
+articles, five conference papers, one book or book chapter, and 14 arXiv or other preprints.
+Preprints are retained because the topics of financial LLMs, time-series foundation models, and market generators are moving faster than journal publication cycles.
+They are
+used mainly to characterize recent methods and open benchmarks, while stronger inferential
+weight is placed on peer-reviewed journal articles, conference papers, and classical financialmathematics foundations.
+Each included record was coded along four dimensions: application domain, financial
+constraint, constraint-injection mechanism, and evaluation protocol. Evidence was weighted
+more heavily when a study combined methodological novelty with out-of-sample, leakagecontrolled, arbitrage-aware, tail-aware, or cost-aware evaluation.
+This design supports a
+constraint-centered synthesis rather than a frequency count of topics.
+Table 1 positions this review against closely related surveys. The contribution is not
+breadth alone. The review contributes a constraint-centered evaluation logic: AI models in
+finance should be classified not only by algorithm or task, but by the financial restrictions
+they encode, violate, or test.
+3
+Three-Layer Constraint Taxonomy
+No-arbitrage is the most basic constraint in financial modeling. In its static form, it rules out
+price systems that permit a nonnegative payoff with positive probability of gain and no initial
+cost. In its dynamic form, it connects admissible trading strategies, equivalent martingale
+measures, and discounted asset-price processes. The fundamental theorem of asset pricing
+gives this connection its canonical form. Under suitable technical conditions, absence of
+arbitrage corresponds to the existence of a pricing measure under which discounted prices
+behave as martingales. This insight matters for AI because it turns a qualitative economic
+principle into testable restrictions on model outputs.
+4
+
+Table 1: Positioning against related surveys
+Reference
+Main focus
+Boundary of the present
+review
+Added analytical dimension
+Ruf and Wang
+(2020)
+Neural networks for
+option pricing and
+hedging
+Neural option pricing is
+treated as one
+component of a wider
+constraint-aware
+modeling agenda.
+Links derivative learning to
+cross-domain admissibility across
+pricing, generation, asset pricing,
+and foundation models.
+Li et al. (2024)
+and Lee et al.
+(2025)
+Large language
+models in finance
+Financial LLMs are
+covered only where
+temporal leakage,
+market efficiency, and
+risk constraints affect
+quantitative use.
+Evaluates language models by
+timestamped evidence,
+tradability, source provenance,
+and leakage control.
+Ericson et al.
+(2024)
+Deep generative
+financial time series
+with VaR
+applications
+VaR-oriented generation
+is embedded into a
+broader taxonomy of
+no-arbitrage,
+calibration, and
+economic validity.
+Requires generated markets to
+pass financial validity tests, not
+only distributional similarity
+metrics.
+Horvath et al.
+(2026)
+Market generators as
+a paradigm for
+financial modeling
+Market generation is
+treated as one endpoint
+of a wider movement
+from financial
+constraints to AI model
+design.
+Connects market generators with
+arbitrage diagnostics, tail-risk
+validation, and downstream
+decision quality.
+Caulfield and
+Gleeson (2024)
+Empirical
+comparison of deep
+generative models for
+multivariate financial
+time series
+The focus here is
+conceptual and
+mathematical
+constraints rather than
+only empirical model
+comparison.
+Reframes comparison around the
+admissibility and economic use
+of synthetic financial data.
+5
+
+Option markets provide a clear example. A learned option surface must preserve monotonicity and convexity in strike, suitable calendar-spread relations across maturities, and
+consistency between call and put prices. A model that minimizes root mean squared pricing
+error but violates these restrictions can generate prices that cannot coexist in a frictionless market.
+Similarly, implied volatility models must respect shape restrictions implied
+by static arbitrage and must remain stable under extrapolation because risk systems and
+hedging desks often require prices outside the dense region of observed quotes.
+Calibration is another central constraint. In classical models, calibration maps market
+prices to model parameters, such as volatility, mean reversion, correlation, and jump intensity. In deep learning, calibration often becomes an inverse problem solved by neural
+surrogates or amortized maps. The speed advantage is important, but speed alone is insufficient. The learned map must preserve economically meaningful parameter regions, maintain
+stability across maturities and strikes, and avoid overfitting microstructure noise.
+Deep
+calibration therefore sits between numerical approximation and financial identification.
+Hedging adds a decision-theoretic layer. A price model can be judged by pricing error,
+but a hedging model must also account for trading frequency, transaction costs, liquidity, risk
+aversion, and the distribution of terminal hedging loss. Deep hedging is important because
+it formulates hedging as an optimization problem under frictions and convex risk measures
+(Buehler et al., 2019). This shifts attention from replicating a frictionless delta hedge to
+learning policies that minimize economically relevant loss functions.
+Tail risk imposes a further constraint on both predictive and generative models. Value-atRisk and Expected Shortfall are imperfect but widely used summaries of downside exposure.
+Financial generators that reproduce mean, variance, and autocorrelation while underestimating extremes are dangerous. Conversely, a model that explicitly optimizes tail-sensitive
+metrics may be more useful for stress testing even if it does not dominate on standard forecast errors. This is one reason why recent work on generative financial time series places
+increasing emphasis on VaR, Expected Shortfall, drawdowns, and distributional backtesting
+(Ericson et al., 2024; Cont et al., 2025).
+The constraints reviewed here are not homogeneous. They operate at three levels. Structural constraints define the admissible financial object, task-level constraints define what a
+model must optimize for a specific use case, and governance constraints define whether the
+empirical evidence supporting the model is valid at decision time. Table 2 summarizes this
+three-layer taxonomy. It is organized by the level at which the restriction enters the modeling
+pipeline rather than by algorithm, because the same algorithm can be economically useful
+or invalid depending on how the restriction is imposed and tested.
+4
+Constraint-Driven Pricing, Calibration, and Hedging
+Early neural approaches to derivative pricing already recognize that pricing and hedging are
+linked. Hutchinson et al. (1994) use learning networks to approximate pricing and hedging
+functions, thereby opening a line of work in which neural models serve as nonparametric
+alternatives to closed-form formulas or finite-difference solvers. Ruf and Wang (2020) review
+6
+
+Table 2: A three-layer taxonomy of financial constraints in AI-driven quantitative models
+Layer
+Financial role and examples
+Implementation and minimum
+diagnostics
+Structural
+admissibility
+Defines whether the financial object
+is possible. Examples include
+no-arbitrage, equivalent martingale
+measures, put-call parity, calendar
+monotonicity, strike convexity, and
+volatility-surface shape restrictions.
+Implemented through hard
+parameterization, constrained neural
+SDEs, projection onto admissible sets,
+or arbitrage penalties. Minimum
+diagnostics include static arbitrage
+checks, martingale consistency,
+shape-restriction tests, and
+extrapolation stability.
+Task-level
+economic
+objective
+Defines whether the model is useful
+for a specific use case. Examples
+include calibration stability, hedging
+loss, transaction costs, turnover, tail
+risk, drawdowns, Expected Shortfall,
+and capacity.
+Implemented through multi-objective
+losses, convex-risk optimization, deep
+hedging, tail-aware generators, or
+cost-aware reinforcement learning.
+Minimum diagnostics include
+calibration residuals, hedging loss
+distributions, cost-adjusted PnL, VaR
+or ES exceedance tests, and
+stress-period performance.
+Governance and
+validation
+Defines whether the evidence
+supporting the model is valid at
+decision time. Examples include
+temporal causality, leakage control,
+data revisions, source provenance,
+auditability, robustness, and
+model-risk documentation.
+Implemented through rolling-origin
+evaluation, purged validation,
+timestamped corpora, source
+attribution, audit trails, or live
+simulation. Minimum diagnostics
+include leakage audits, post-event
+contamination tests, reproducibility
+checks, regime splits, and deployment
+monitoring.
+7
+
+this broad literature and show that neural networks are applied to option pricing, hedging,
+calibration, and implied-volatility approximation across many settings.
+The modern literature moves from generic approximation toward constraint-aware learning. For high-dimensional derivatives, deep PDE and BSDE methods address the curse of
+dimensionality by learning solution representations or control processes (Han et al., 2018;
+Sirignano and Spiliopoulos, 2018; Beck et al., 2019). These methods are relevant to finance
+because many derivative-pricing problems are naturally expressed through parabolic partial
+differential equations or backward stochastic differential equations. Their financial value,
+however, depends on boundary conditions, stability, and consistency with the underlying
+pricing measure.
+Deep calibration provides another bridge between classical models and neural approximation. Hernandez (2017) shows how neural networks can accelerate model calibration. Bayer
+et al. (2019) extend this direction to rough stochastic-volatility models, where standard calibration is computationally demanding. Biagini et al. (2024) provide theoretical support by
+studying approximation rates for deep calibration. The common lesson is that neural networks are most convincing when they accelerate a financially meaningful map rather than
+replace the pricing theory that defines the map.
+Rough volatility illustrates why this distinction matters. Gatheral et al. (2018) show
+that volatility is empirically rough, which motivates models with fractional or long-memory
+structure. These models capture important features of implied volatility but create difficult
+calibration problems. Deep calibration can make them operational, yet the learned system
+must still preserve the model-implied relation between paths, option prices, and volatility
+surfaces. Otherwise, the output is fast but not financially interpretable.
+Deep hedging makes constraints even more explicit.
+Buehler et al. (2019) formulate
+hedging under transaction costs and risk preferences as a learning problem. The objective is
+not to recover a classical hedge in an idealized market but to learn a strategy that manages
+the distribution of losses in a realistic environment. This changes the role of deep learning.
+It becomes a policy-learning tool governed by a financial objective rather than a black-box
+price interpolator.
+Recent neural SDE market models further tighten the link between learning and noarbitrage. Cohen et al. (2023) construct neural SDE market models on an arbitrage-free
+state space of option prices. This is directly aligned with the thesis of the present review.
+Instead of training a flexible dynamics model and testing for arbitrage afterward, the model
+architecture and state representation incorporate admissibility from the outset. Such work
+suggests a general design principle. When the financial constraint is known, it should be
+built into the model space, the loss, or the simulation mechanism before deployment.
+5
+Constraint-Driven Asset Pricing
+Asset pricing raises a different but related problem. The object is not a derivative surface but
+the cross section and time series of expected returns. Traditional factor models, including
+Fama and French (1992) and Carhart (1997), impose low-dimensional economic structure.
+Later work on latent factors and characteristics, such as Kelly et al. (2019), Kozak et al.
+(2018), and Freyberger et al. (2020), enriches this structure while retaining the central role
+8
+
+of economic restrictions.
+Machine learning changes empirical asset pricing by modeling nonlinear interactions
+among firm characteristics and macro states. Gu et al. (2020) show that machine learning methods improve return prediction relative to many traditional approaches, especially
+when the feature space is large and nonlinear. Yet pure prediction is not the final objective
+in asset pricing. Expected returns are equilibrium objects, and a predictive signal must be
+evaluated through portfolio performance, risk adjustment, and no-arbitrage restrictions.
+Autoencoder asset pricing models address this issue directly. Gu et al. (2021) use an
+autoencoder structure to learn latent factors and conditional exposures while maintaining
+an asset-pricing interpretation. The model compresses information into factors that explain
+expected returns through an economic pricing relation. This makes the autoencoder more
+than a dimensionality-reduction device. It becomes a mechanism for imposing structure on
+high-dimensional return data.
+Chen et al. (2024) further develop this line by using deep learning together with noarbitrage criteria and adversarial test assets. The adversarial component searches for portfolios that expose pricing errors, which makes the learning process closer to an economic stress
+test than a standard supervised-learning exercise. This approach is important because it
+treats no-arbitrage not as a theorem cited in the introduction but as an operational training
+and evaluation principle.
+The asset-pricing literature also warns against naive use of AI. Financial returns have
+low signal-to-noise ratios, unstable regimes, and severe multiple-testing risks. A model can
+appear successful because of data snooping, survivor bias, look-ahead bias, or an evaluation period that favors a particular style. Constraint-aware asset-pricing AI must therefore
+combine statistical validation with economic validation. Out-of-sample prediction, portfolio
+turnover, transaction costs, capacity, risk exposures, and crash performance all belong to
+the evaluation set.
+6
+Generative Market Models and Risk Validation
+Generative models are attractive in finance because real market data are scarce, proprietary,
+and regime-dependent. Synthetic paths can support stress testing, model validation, reinforcement learning, and risk measurement. However, financial generation is harder than
+visual or textual generation in one crucial respect. The generated samples must be tradable, risk-relevant, and economically admissible. A market generator that looks realistic by
+standard distributional metrics can still fail if it creates arbitrage, suppresses tail events, or
+breaks cross-asset dependence.
+Time-series GANs provide a general starting point. Yoon et al. (2019) propose TimeGAN
+for sequential data, while Ni et al. (2020) use signature-based metrics for time-series generation. Neural controlled differential equations (Kidger et al., 2020) and neural SDEs (Gierjatowicz et al., 2020) also offer continuous-time representations that are natural for irregular
+financial data. These methods improve the expressive power of generative finance, but financial validity still requires domain-specific tests.
+Option markets make this requirement especially visible. Wiese et al. (2019) study learning to simulate equity option markets, while Cuchiero et al. (2020) connect generative ad9
+
+versarial methods with calibration of local stochastic-volatility models. Cont and Vuletic
+(2023) focus on arbitrage-free implied volatility surfaces, and Vuletic and Cont (2024) propose VolGAN for arbitrage-free implied-volatility surface generation. This line of work is
+central because it treats arbitrage constraints as part of the generative target.
+Tail-GAN provides a complementary example for risk management. Cont et al. (2025)
+develop nonparametric scenario generation for tail-risk estimation. The key insight is that
+a generator for risk management should be evaluated by the quality of tail-risk estimates,
+not only by its ability to imitate average sample moments. This aligns with the broader
+principle that the evaluation metric must reflect the financial use case.
+Recent surveys of deep generative financial time series and market generators synthesize
+this emerging field (Ericson et al., 2024; Caulfield and Gleeson, 2024; Horvath et al., 2026).
+They show that model comparison remains difficult because datasets, preprocessing choices,
+stylized-fact tests, and downstream tasks vary widely. For a constraint-centered review, the
+most important open issue is the absence of a unified benchmark that combines statistical
+similarity, no-arbitrage diagnostics, tail-risk accuracy, and trading relevance.
+7
+Financial Large Language Models and Time-Series
+Foundation Models
+This review uses the term “foundation model” operationally rather than as a marketing
+label. A model is treated as a financial foundation-model candidate only if it is pretrained at
+scale on broad financial or time-series corpora, supports transfer across multiple downstream
+tasks, and can be evaluated under timestamped, leakage-controlled protocols. Under this
+definition, BloombergGPT and FinGPT are financial language-model candidates; Chronos,
+Lag-Llama, TimesFM, and MOIRAI are time-series foundation-model candidates; FinBERT
+and PatchTST are important baselines or precursor architectures rather than equivalent
+foundation models unless broad transfer and task generality are demonstrated.
+7.1
+Financial Language Models
+Financial large language models extend AI in finance from numerical prediction to text-rich
+decision environments. BloombergGPT (Wu et al., 2023) shows the value of domain-specific
+pretraining for financial NLP tasks. FinGPT (Yang et al., 2023) emphasizes open-source
+adaptation and instruction tuning for finance. FinBERT (Araci, 2019) remains an important pre-LLM baseline for financial sentiment analysis. Surveys of large language models in
+finance and FinLLMs map applications in sentiment analysis, information extraction, question answering, report generation, and decision support (Li et al., 2024; Lee et al., 2025).
+These models are useful because financial markets digest text from news, filings, earnings
+calls, analyst reports, and social media.
+Yet financial LLMs introduce special risks. Textual signals are time-stamped, revised,
+leaked, and unevenly disseminated. Evaluation must ensure that the model does not access
+future information through pretraining data, revised databases, or benchmark construction.
+For a financial LLM, a benchmark built from revised filings or post-event news labels can
+overstate signal quality; valid evaluation must restrict each prompt, retrieval corpus, and
+10
+
+label to information available at the forecast timestamp. Lopez-Lira and Tang (2023) connect
+LLM-based news interpretation with stock return predictability, but such evidence must be
+read together with market efficiency, transaction costs, and decay of public signals.
+In
+quantitative finance, a language model is not validated by linguistic fluency. It is validated
+by its incremental information content after controlling for timing, tradability, risk, and
+implementation costs.
+7.2
+Time-Series Foundation Models
+Time-series foundation models create a parallel opportunity. Chronos (Ansari et al., 2024),
+Lag-Llama (Rasul et al., 2023), TimesFM (Das et al., 2024), and MOIRAI (Woo et al.,
+2024) show that large pretrained models can transfer across forecasting tasks. PatchTST
+(Nie et al., 2023) and the critique by Zeng et al. (2023) provide important context for
+understanding when transformer-based forecasting helps and when simpler models remain
+competitive. These models are relevant to finance because markets generate many related
+time series across assets, maturities, frequencies, and macro variables.
+However, general time-series pretraining is not the same as financial modeling. Financial series are shaped by trading calendars, microstructure noise, corporate actions, regime
+shifts, leverage effects, volatility clustering, and policy events. They also respond to model
+deployment itself. A foundation model for quantitative finance must therefore be evaluated through rolling-origin backtests, leakage audits, distributional forecasts, tail calibration, transaction-cost-aware trading simulations, and stress-period performance. Without
+these tests, foundation-model accuracy can be a statistical artifact rather than an economic
+advantage.
+7.3
+Toward Quantitative-Finance Foundation Models
+A promising direction is to combine language, time series, and financial constraints in a
+single architecture.
+Such a model could process news, filings, prices, volatility surfaces,
+order-book states, and macro data while enforcing no-arbitrage, temporal causality, and risk
+constraints. This is closer to a financial foundation model than a generic LLM applied to
+finance. The challenge is not only scale. It is the design of objectives and benchmarks that
+reward economically valid reasoning.
+8
+Unified Evaluation Framework and Benchmark Gaps
+The constraint-centered view makes it possible to compare areas that are often reviewed
+separately. Option pricing, empirical asset pricing, market generation, and financial foundation models differ in data structure and objective, but they face a common problem. Pure
+statistical learning is too weak because the object being learned is embedded in an economic
+system. The relevant question is not only whether the model fits data. It is whether the
+model respects the restrictions that make the data financially meaningful.
+In derivatives, the mathematical constraints are explicit. Static arbitrage, put-call parity,
+calendar restrictions, and martingale pricing provide clear tests.
+This makes derivatives
+11
+
+a natural laboratory for constraint-aware AI. The weakness is that many neural pricing
+studies still evaluate models on interpolation accuracy rather than on the harder tasks of
+extrapolation, stress behavior, and live hedging. A model that prices options accurately
+within the observed strike-maturity grid may fail exactly where risk managers need it most,
+which is outside dense quote regions and during volatility shocks.
+In asset pricing, the constraint is less local but more economically ambitious. No-arbitrage
+does not produce a single option surface condition. It restricts the relation between expected
+returns, factors, stochastic discount factors, and test assets. The strength of recent deep
+asset-pricing work is that it uses no-arbitrage as an objective or adversarial criterion rather
+than as background theory. The weakness is that return predictability remains fragile. A
+model may find nonlinear signals that are statistically real in one sample but economically
+weak after turnover, costs, short-sale constraints, and capacity are considered.
+In generative market modeling, the central problem is validation. A generator can pass
+distributional similarity tests while failing financial diagnostics.
+Conversely, a generator
+that is imperfect in generic time-series metrics may be valuable if it produces realistic stress
+scenarios and tail losses. The strength of recent work such as VolGAN and Tail-GAN is that
+it aligns the generative objective with financial use cases. The weakness is that there is still
+no standard evaluation protocol that jointly covers arbitrage, stylized facts, risk metrics, and
+downstream decision quality.
+In financial LLMs and time-series foundation models, the main constraint is temporal
+causality. Pretraining scale can hide future information, revised data, and benchmark contamination. For this reason, the validation of financial foundation models must be stricter
+than the validation of generic language or forecasting models. Their promise is real because finance is a multimodal domain where text, prices, volatility, macro variables, and
+microstructure signals interact. Their risk is also real because a model can seem intelligent
+while using information that would not be available at decision time.
+This comparison supports a direct evaluation proposition: the minimum admissibility test
+depends on the financial object being generated or acted upon. Derivatives require arbitragefree surfaces and hedge-aware stress tests; asset pricing requires no-arbitrage pricing errors
+and cost-adjusted performance; market generation requires tail and downstream risk validation; financial LLMs and time-series foundation models require timestamped, leakage-free
+evaluation.
+A recurring weakness in AI finance is the overuse of generic predictive metrics. Mean
+squared error, classification accuracy, and likelihood are useful but incomplete.
+A pricing model needs pricing accuracy, calibration stability, and arbitrage checks.
+A hedging
+model needs terminal loss distributions, turnover, transaction costs, and sensitivity to market
+regimes. An asset-pricing model needs risk-adjusted performance, factor exposures, capacity, and robustness across samples. A market generator needs stylized facts, cross-sectional
+dependence, tail-risk accuracy, and no-arbitrage diagnostics. A financial LLM needs temporal leakage control, factual reliability, source attribution, and economically meaningful
+downstream tests.
+This review therefore proposes a layered evaluation framework. The first layer is statistical fit, including forecast error, likelihood, distributional distance, and calibration. The
+second layer is mathematical admissibility, including no-arbitrage, martingale consistency,
+shape restrictions, and valid volatility dynamics. The third layer is economic performance,
+12
+
+including hedging loss, risk-adjusted returns, drawdowns, turnover, capacity, and transaction
+costs. The fourth layer is robustness, including regime changes, stress periods, data revisions,
+adversarial perturbations, and out-of-market extrapolation. The fifth layer is governance,
+including interpretability, auditability, reproducibility, and model-risk documentation.
+The layered framework becomes more useful when translated into task-specific minimum
+reporting standards. Table 5 gives such a matrix. The entries are not meant to be exhaustive;
+they define the minimum evidence needed before a model can be interpreted as financially
+meaningful rather than merely predictive.
+For quantitative deployment, statistical fit is never sufficient on its own. A model that
+fails the relevant structural admissibility test should be treated as financially invalid even if
+it improves generic predictive accuracy. Economic performance and governance tests then
+determine whether an admissible model is useful and deployable.
+This layered framework also clarifies the relation between old and new methods. Classical
+models often have strong admissibility and interpretability but limited flexibility.
+Deep
+models often have high flexibility but weak guarantees.
+The goal is not to declare one
+side superior. The goal is to design models that inherit the economic discipline of financial
+mathematics and the representational power of modern AI.
+The benchmark implication is equally direct. Quantitative finance lacks shared benchmarks that combine prices, returns, volatility surfaces, text, macro variables, and trading
+frictions under strict timestamping. A useful benchmark should prevent leakage, record data
+revisions, include realistic transaction costs, evaluate stress periods, and report both statistical and economic metrics. Without such benchmarks, claims about foundation models in
+finance remain difficult to compare.
+9
+Design Patterns for Constraint Injection
+The literature suggests several design patterns for injecting financial constraints into AI
+models. The first is hard parameterization. In this approach, the model output is restricted
+by construction to an admissible set. For example, an implied-volatility surface generator can
+be parameterized so that it satisfies convexity and monotonicity conditions, or a neural SDE
+can be defined on a state space that excludes arbitrage. The advantage is strong validity.
+The disadvantage is that the parameterization may be difficult to design and may reduce
+flexibility.
+The second pattern is soft penalization. The training loss combines statistical fit with
+penalties for arbitrage, calibration error, hedging loss, tail-risk underestimation, or temporal
+leakage. This approach is easy to implement and compatible with many model classes. Its
+weakness is that penalty weights are often unstable and may not guarantee validity under
+extrapolation. A small average penalty can still allow severe violations in rare but important
+states.
+The third pattern is projection or repair. A flexible model first generates a price, surface,
+or scenario, and a second step projects the output onto an admissible set. This approach
+separates learning from validity enforcement. It can be useful when exact constraints are
+known but hard to integrate into the model architecture. Its weakness is that repair can
+distort the learned distribution and may hide systematic model failures.
+13
+
+Table 3: Comparative synthesis of constraint-aware AI across quantitative finance
+Domain
+Main opportunity
+Constraint bottleneck
+Most important open
+test
+Derivatives
+Fast pricing, calibration,
+hedging, and surface
+generation
+Static and dynamic
+arbitrage across strikes,
+maturities, and paths
+Stress-period hedging
+and arbitrage-free
+extrapolation
+Asset pricing
+Nonlinear factors and
+high-dimensional
+characteristics
+No-arbitrage relation
+between expected returns
+and test assets
+Cost-adjusted and
+capacity-aware
+out-of-sample
+performance
+Market
+generation
+Synthetic scenarios for
+risk, stress testing, and
+reinforcement-learning
+environments
+Tail behavior, dependence,
+and economic admissibility
+Downstream risk and
+trading decision quality
+Financial LLMs
+Extraction and reasoning
+over news, filings, and
+reports
+Temporal leakage, factual
+reliability, and market
+efficiency
+Timestamped
+evaluation with
+tradable signals
+Time-series
+foundation
+models
+Transfer learning across
+assets, frequencies, and
+macro variables
+Regime instability,
+nonstationarity, and
+causal validation
+Rolling-origin,
+leakage-free, risk-aware
+forecasting
+Table 4: Evaluation layers for AI models in quantitative finance
+Layer
+Typical metrics
+Main failure mode when omitted
+Statistical fit
+Forecast error, likelihood,
+distributional distance, calibration
+error
+The model may not learn the
+data-generating regularities.
+Mathematical
+admissibility
+No-arbitrage tests, martingale
+checks, surface-shape constraints
+The model may generate prices or
+paths that are financially
+impossible.
+Economic
+performance
+Hedging loss, Sharpe ratio,
+drawdown, turnover, cost-adjusted
+return
+The model may be accurate but
+untradable or unprofitable.
+Robustness
+Stress-period tests, regime splits,
+leakage audits, adversarial
+perturbations
+The model may work only in one
+sample or through hidden future
+information.
+Governance
+Reproducibility, interpretability,
+audit trails, model-risk
+documentation
+The model may be impossible to
+approve, monitor, or diagnose.
+14
+
+Table 5: Task-specific minimum evaluation matrix
+Task
+Required statistical
+metrics
+Required admissibility tests
+Economic or deployment
+tests
+Option pricing
+and impliedvolatility
+modeling
+Pricing error,
+implied-volatility error,
+calibration error by
+strike and maturity
+bucket
+Put-call parity, monotonicity
+in strike, convexity in strike,
+calendar-spread checks,
+extrapolation checks
+Stress-period pricing,
+hedge sensitivity,
+stability outside dense
+quote regions
+Deep
+calibration
+Parameter recovery
+error, calibration
+residuals, runtime
+Parameter-domain
+admissibility, consistency
+with the pricing model,
+path-surface consistency
+Stability under noisy
+quotes, maturity and
+strike extrapolation
+Deep hedging
+Terminal hedging loss,
+loss quantiles, CVaR or
+Expected Shortfall
+Consistency with tradable
+instruments and
+self-financing assumptions
+Turnover, transaction
+costs, liquidity
+constraints, stress-period
+loss
+Empirical
+asset pricing
+Out-of-sample return
+prediction, factor pricing
+errors, alpha tests
+No-arbitrage or
+stochastic-discount-factor
+restrictions, test-asset
+pricing errors
+Cost-adjusted returns,
+turnover, capacity,
+short-sale constraints,
+subperiod robustness
+Market
+generation
+Distributional distance,
+stylized facts, volatility
+clustering, dependence
+Arbitrage checks for
+generated prices or surfaces,
+martingale or
+measure-consistency checks
+where relevant
+VaR and Expected
+Shortfall backtesting,
+drawdown realism,
+downstream risk or
+trading utility
+Financial
+LLMs
+Task accuracy,
+factuality, retrieval
+quality
+Temporal admissibility of
+inputs and labels
+Timestamped evaluation,
+source attribution,
+leakage audit,
+tradable-signal decay,
+transaction costs
+Time-series
+foundation
+models
+Forecast error,
+probabilistic calibration,
+coverage
+Causal feature availability,
+calendar alignment,
+revision-aware data handling
+Rolling-origin backtests,
+regime splits, tail
+calibration, cost-aware
+downstream tests
+15
+
+The fourth pattern is adversarial testing. Instead of manually specifying all failure modes,
+an adversary searches for portfolios, states, or scenarios that expose pricing errors, arbitrage,
+or tail-risk weakness. This is especially natural in asset pricing, where adversarial test assets
+can reveal violations of no-arbitrage conditions. It is also promising for market generators
+because adversarial diagnostics can search for unrealistic stress scenarios or dependence
+structures.
+The fifth pattern is causal and temporal validation. This pattern is essential for LLMs
+and foundation models. The model may be architecturally powerful, but its evaluation is
+invalid if future information enters through pretraining, revised financial statements, data
+vendors, or benchmark construction. Constraint injection here means designing the data
+pipeline and evaluation protocol so that all inputs are available at the decision time. This
+is less glamorous than model architecture, but it is often more important.
+The design-pattern conclusion is practical: hard constraints should be preferred when
+the admissible set is known and violations are unacceptable; soft penalties and projection
+are useful when exact constraints are difficult to encode; adversarial testing is strongest
+when failure modes are high-dimensional; and temporal validation is mandatory when text
+or pretrained time-series models are used for market decisions. Strong systems are likely to
+combine these patterns. An option market generator may use hard no-arbitrage parameterization, tail-risk penalties, and stress-period validation. A financial LLM for trading may
+use timestamped retrieval, source attribution, leakage audits, and cost-aware backtests. A
+deep asset-pricing model may use no-arbitrage losses, adversarial test assets, and portfolio
+capacity constraints.
+10
+Research Agenda and Deployment Issues
+The first priority is constraint injection. Researchers need systematic comparisons among
+hard architectural constraints, soft penalties, projection methods, constrained decoding, synthetic data filtering, and post-hoc arbitrage repair. The right choice may depend on the
+task. Option-surface generation may benefit from hard no-arbitrage parameterizations, while
+asset-pricing models may benefit from adversarial test assets and economic loss functions. A
+mature literature should report not only whether constraints improve average accuracy, but
+also whether they reduce catastrophic violations under extrapolation and stress.
+The second priority is benchmark construction. The benchmark gap identified above
+should be addressed through public, timestamped datasets that combine market data, text,
+macro variables, trading frictions, and stress-period labels. Benchmark design is especially
+important because foundation models are trained on broad corpora where future information
+can enter through subtle channels.
+The third priority is generative validation. Market generators should be judged by more
+than visual similarity or marginal distributions. They should pass tests for stylized facts,
+dependence, volatility clustering, drawdowns, liquidity stress, option-surface arbitrage, and
+tail-risk estimation. Risk departments and trading desks need generators that fail visibly
+when they leave the domain of validity. A useful generator should communicate uncertainty
+about its own validity domain rather than produce plausible but unsupported scenarios.
+The fourth priority is interpretability. Constraint-aware AI should expose which eco16
+
+nomic restrictions bind, which features drive pricing errors, which scenarios produce hedging
+losses, and which textual sources influence decisions. Interpretability is not only a regulatory
+preference. It is a practical requirement for diagnosing unstable strategies. In derivatives,
+interpretability may mean sensitivity to strikes, maturities, and state variables. In asset pricing, it may mean factor exposures and characteristic interactions. In LLM-driven finance, it
+may mean source traceability and temporal provenance.
+The fifth priority is deployment research. Many models look promising in offline backtests
+but degrade under latency, costs, crowding, changing regimes, and feedback from other market participants. Future studies should report live or paper-trading evidence when possible,
+separate confirmatory from exploratory analysis, and document capacity constraints. In finance, deployment is part of the scientific test. A model that cannot survive implementation
+frictions has not yet solved the quantitative problem it claims to solve.
+11
+Conclusion
+Financial AI is entering a new phase.
+The field is moving beyond isolated applications
+of neural networks to pricing, forecasting, or sentiment analysis and toward models that
+combine flexible learning with financial-mathematical structure. The central lesson of the
+literature is clear. In quantitative finance, constraints are not optional decorations. Noarbitrage, martingale consistency, calibration, hedging objectives, and tail-risk diagnostics
+define what it means for a model to be financially valid.
+This review argues that the most promising path runs from no-arbitrage to foundation
+models rather than from generic AI to finance. Deep learning can accelerate calibration, solve
+high-dimensional pricing problems, learn hedging policies, discover nonlinear asset-pricing
+relations, and generate market scenarios. Foundation models can integrate text and time
+series across markets. But these systems become scientifically and practically credible only
+when financial mathematics guides their architecture, training objectives, evaluation, and
+deployment. The paper’s central conclusion can be stated in one sentence: the issue is not
+whether AI can be applied to finance, but what conditions make AI financially admissible.
+The next generation of quantitative finance research should therefore treat mathematical
+constraints as the core design language for generative AI and deep learning.
+Acknowledgements
+The author thanks the academic environment of the University of Nottingham Ningbo China
+for supporting early-stage undergraduate research interests in finance, mathematics, and
+artificial intelligence. Any remaining errors are the author’s responsibility.
+Funding
+This research receives no external funding.
+17
+
+Conflict of Interest
+The author declares no conflict of interest.
+Data Availability
+This article is a literature review and does not generate or analyze new empirical datasets.
+The cited literature is available through the corresponding publishers, preprint servers, or
+bibliographic databases.
+Author Contributions
+Yuxuan Huang is responsible for the topic design, literature synthesis, review structure,
+manuscript drafting, and final revision.
+AI-Assisted Tools Disclosure
+The author used AI-assisted tools for literature organization, language polishing, and LaTeX formatting. The author reviewed, revised, and takes full responsibility for the final
+manuscript, arguments, citations, and conclusions.
+Ethics Statement
+This study does not involve human participants, animal subjects, private personal data, or
+experimental financial trading with client assets.
+References
+Ansari, A. F., Stella, L., Turkmen, C., Zhang, X., Mercado, P., Shen, H., Shchur, O., Rangapuram, S. S., Pineda Arango, S., Kapoor, S., Zschiegner, J., Maddix, D. C., Mahoney,
+M. W., Torkkola, K., Gordon Wilson, A., Bohlke-Schneider, M., and Wang, Y. (2024).
+Chronos: Learning the language of time series. arXiv preprint arXiv:2403.07815.
+Araci, D. (2019). Finbert: Financial sentiment analysis with pre-trained language models.
+arXiv preprint arXiv:1908.10063.
+Bayer, C., Horvath, B., Muguruza, A., Stemper, B., and Tomas, M. (2019).
+On deep
+calibration of rough stochastic volatility models. arXiv preprint arXiv:1908.08806.
+Beck, C., E, W., and Jentzen, A. (2019). Machine learning approximation algorithms for
+high-dimensional fully nonlinear partial differential equations and second-order backward
+stochastic differential equations. Journal of Nonlinear Science, 29:1563–1619.
+18
+
+Biagini, F., Gonon, L., and Walter, M. (2024). Approximation rates for deep calibration of
+rough stochastic volatility models. SIAM Journal on Financial Mathematics.
+Black, F. and Scholes, M. (1973). The pricing of options and corporate liabilities. Journal
+of Political Economy, 81(3):637–654.
+Buehler, H., Gonon, L., Teichmann, J., and Wood, B. (2019). Deep hedging. Quantitative
+Finance, 19(8):1271–1291.
+Carhart, M. M. (1997). On persistence in mutual fund performance. The Journal of Finance,
+52(1):57–82.
+Caulfield, J. and Gleeson, J. P. (2024). Systematic comparison of deep generative models
+applied to multivariate financial time series. arXiv preprint.
+Chen, L., Pelger, M., and Zhu, J. (2024).
+Deep learning in asset pricing.
+Management
+Science, 70(2):714–750.
+Cohen, S. N., Reisinger, C., and Wang, S. (2023). Arbitrage-free neural-sde market models.
+Applied Mathematical Finance, 30(4):389–423.
+Comte, F. and Renault, E. (1998). Long memory in continuous-time stochastic volatility
+models. Mathematical Finance, 8(4):291–323.
+Cont, R., Cucuringu, M., Xu, R., and Zhang, C. (2025). Tail-gan: Learning to simulate tail
+risk scenarios. Management Science.
+Cont, R. and Vuletic, M. (2023). Simulation of arbitrage-free implied volatility surfaces.
+Applied Mathematical Finance, 30(2):109–134.
+Cuchiero, C., Khosrawi, W., and Teichmann, J. (2020). A generative adversarial network
+approach to calibration of local stochastic volatility models. Risks, 8(4):101.
+Das, A., Kong, W., Sen, R., and Zhou, Y. (2024). A decoder-only foundation model for
+time-series forecasting. arXiv preprint arXiv:2310.10688.
+Dupire, B. (1994). Pricing with a smile. Risk, 7(1):18–20.
+Ericson, L., Zhu, X., Han, X., Fu, R., Li, S., Guo, S., and Hu, P. (2024). Deep generative
+modeling for financial time series with application in value-at-risk: A comparative review.
+arXiv preprint arXiv:2401.10370.
+Fama, E. F. and French, K. R. (1992). The cross-section of expected stock returns. The
+Journal of Finance, 47(2):427–465.
+Freyberger, J., Neuhierl, A., and Weber, M. (2020). Dissecting characteristics nonparametrically. The Review of Financial Studies, 33(5):2326–2377.
+Gatheral, J., Jaisson, T., and Rosenbaum, M. (2018).
+Volatility is rough.
+Quantitative
+Finance, 18(6):933–949.
+19
+
+Gierjatowicz, P., Sabate-Vidales, M., Siska, D., Szpruch, L., and Zuric, Z. (2020).
+Robust pricing and hedging via neural stochastic differential equations.
+arXiv preprint
+arXiv:2007.04154.
+Gu, S., Kelly, B., and Xiu, D. (2020). Empirical asset pricing via machine learning. The
+Review of Financial Studies, 33(5):2223–2273.
+Gu, S., Kelly, B., and Xiu, D. (2021). Autoencoder asset pricing models. Journal of Econometrics, 222(1):429–450.
+Han, J., Jentzen, A., and E, W. (2018). Solving high-dimensional partial differential equations using deep learning. Proceedings of the National Academy of Sciences, 115(34):8505–
+8510.
+Harrison, J. M. and Kreps, D. M. (1979). Martingales and arbitrage in multiperiod securities
+markets. Journal of Economic Theory, 20(3):381–408.
+Harrison, J. M. and Pliska, S. R. (1981). Martingales and stochastic integrals in the theory
+of continuous trading. Stochastic Processes and their Applications, 11(3):215–260.
+Heath, D., Jarrow, R., and Morton, A. (1992). Bond pricing and the term structure of interest
+rates: A new methodology for contingent claims valuation. Econometrica, 60(1):77–105.
+Hernandez, A. (2017). Model calibration with neural networks. Risk.
+Heston, S. L. (1993).
+A closed-form solution for options with stochastic volatility with
+applications to bond and currency options. The Review of Financial Studies, 6(2):327–
+343.
+Horvath, B., Plenk, H., and Vuletic, M. (2026). Market Generators: A Paradigm Shift in
+Financial Modeling. Springer. In Signature Methods in Finance.
+Hutchinson, J. M., Lo, A. W., and Poggio, T. (1994). A nonparametric approach to pricing
+and hedging derivative securities via learning networks. The Journal of Finance, 49(3):851–
+889.
+Kelly, B. T., Pruitt, S., and Su, Y. (2019). Characteristics are covariances: A unified model
+of risk and return. Journal of Financial Economics, 134(3):501–524.
+Kidger, P., Morrill, J., Foster, J., and Lyons, T. (2020). Neural controlled differential equations for irregular time series. In Advances in Neural Information Processing Systems.
+Kozak, S., Nagel, S., and Santosh, S. (2018). Interpreting factor models. The Journal of
+Finance, 73(3):1183–1223.
+Lee, J., Stevens, A., and Han, J. (2025). Large language models in finance (finllms). Neural
+Computing and Applications, 37:24853–24867.
+Li, Y., Wang, S., Ding, H., and Chen, H. (2024). Large language models in finance: A
+survey. arXiv preprint arXiv:2311.10723.
+20
+
+Lopez-Lira, A. and Tang, Y. (2023). Can chatgpt forecast stock price movements? return
+predictability and large language models. arXiv preprint arXiv:2304.07619.
+Merton, R. C. (1973). Theory of rational option pricing. The Bell Journal of Economics
+and Management Science, 4(1):141–183.
+Ni, H., Szpruch, L., Wiese, M., Liao, S., and Xiao, B. (2020). Conditional sig-wasserstein
+gans for time series generation. arXiv preprint arXiv:2006.05421.
+Nie, Y., Nguyen, N. H., Sinthong, P., and Kalagnanam, J. (2023). A time series is worth 64
+words: Long-term forecasting with transformers. In International Conference on Learning
+Representations.
+Rasul, K., Ashok, A., Williams, A. R., Khorasani, H., Adamopoulos, G., Bhagwatkar,
+R., Biloˇs, M., Ghonia, H., Schneider, A., Garg, S., Drouin, A., Chapados, N., Rish,
+I., Besse, P., Dudek, G., Januschowski, T., Wang, Y., and Smola, A. (2023).
+Lagllama: Towards foundation models for probabilistic time series forecasting. arXiv preprint
+arXiv:2310.08278.
+Ruf, J. and Wang, W. (2020). Neural networks for option pricing and hedging: A literature
+review. Journal of Computational Finance, 24(1):1–46.
+Sirignano, J. and Spiliopoulos, K. (2018). Dgm: A deep learning algorithm for solving partial
+differential equations. Journal of Computational Physics, 375:1339–1364.
+Vuletic, M. and Cont, R. (2024). Volgan: A generative model for arbitrage-free implied
+volatility surfaces. Applied Mathematical Finance, 31(4):203–238.
+Wiese, M., Bai, L., Wood, B., and Buehler, H. (2019). Deep hedging: Learning to simulate
+equity option markets. arXiv preprint arXiv:1911.01700.
+Woo, G., Liu, C., Kumar, A., Xiong, C., Savarese, S., and Sahoo, D. (2024). Unified training
+of universal time series forecasting transformers. In Proceedings of the 41st International
+Conference on Machine Learning.
+Wu, S., Irsoy, O., Lu, S., Dabravolski, V., Dredze, M., Gehrmann, S., Kambadur, P., Rosenberg, D., and Mann, G. (2023). Bloomberggpt: A large language model for finance. arXiv
+preprint arXiv:2303.17564.
+Yang, H., Liu, X.-Y., and Wang, C. D. (2023). Fingpt: Open-source financial large language
+models. arXiv preprint arXiv:2306.06031.
+Yoon, J., Jarrett, D., and van der Schaar, M. (2019). Time-series generative adversarial
+networks. In Advances in Neural Information Processing Systems.
+Zeng, A., Chen, M., Zhang, L., and Xu, Q. (2023). Are transformers effective for time series
+forecasting? In Proceedings of the AAAI Conference on Artificial Intelligence.
+21

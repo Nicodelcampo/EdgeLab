@@ -1,0 +1,955 @@
+LLM-Driven Market Microstructure Representation Learning and
+Game-Theoretic Reinforcement Dynamics
+Yifan Guo
+December 7, 2025
+Abstract
+This paper develops a unified framework that combines market microstructure, large language model (LLM) representations, and game-theoretic reinforcement learning. High-frequency
+markets are modeled as strategic and adversarial systems in which heterogeneous agents interact
+through an LLM-induced representation of the limit order book. We formalize a representationdriven stochastic game, establish equilibrium existence and stability, and analyze how LLMinduced geometry shapes strategic incentives, volatility dynamics, and liquidity formation. We
+then outline an empirical framework based on message-level data and RL-based agents interacting with liquidity providers and takers in a realistic microstructure environment.
+1
+Introduction
+Market microstructure studies the mechanisms by which orders are submitted, executed, cancelled,
+and strategically arranged by market participants. At high frequencies, the price formation process
+is inherently game-theoretic: each agent’s decision depends on expectations about other agents’
+behaviour, the evolving state of the limit order book (LOB), and latent informational signals that
+emerge at sub-second horizons. As a result, market dynamics are not purely statistical; they also
+reflect strategic, adaptive, and often adversarial interactions among heterogeneous traders.
+Classical microstructure models—such as the Glosten–Milgrom model, sequential trade models, and the Almgren–Chriss execution framework—capture important stylised features of trading
+behaviour. However, these models impose rigid parametric structures and rely on low-dimensional
+state descriptions. They are not designed to accommodate the high-dimensional, non-linear, and
+rapidly evolving nature of modern electronic markets, in which heterogeneous agents interact at
+millisecond frequencies, respond to rich streams of order flow information, and adapt their strategies
+to changing liquidity conditions.
+Recent advances in large-scale representation learning and reinforcement learning (RL) offer
+new tools for modelling such environments. When trained or adapted to microstructure data, large
+language models (LLMs) can be viewed as generic sequence encoders that produce embeddings
+encoding latent liquidity regimes, directional order-flow pressure, and asymmetric informational
+patterns. Formally, these models induce a mapping
+Zt = Φ(Xt−k+1, . . . , Xt),
+where Xt denotes the microstructure state and Φ an encoder acting on a window of past order book
+states. The resulting representation process (Zt)t is low-dimensional, informationally rich, and,
+under suitable training objectives, regular enough to support downstream control and optimisation.
+1
+
+At the same time, the financial system is not passive: agents respond both to the observed
+state and to each other’s anticipated strategies.
+This motivates the integration of LLM-based
+representations with game-theoretic reasoning and RL-based decision frameworks. An RL agent
+interacting with a financial environment must (i) anticipate the strategic responses of other agents,
+(ii) assess the informational content of the LOB and its representation, and (iii) optimise execution
+or market-making policies under dynamic uncertainty and inventory constraints.
+Using LLMbased embeddings as state variables provides a concise summary of liquidity conditions, order-flow
+imbalances, and price impact risk that can be exploited in such strategic models.
+This paper proposes a unified framework that combines (i) LLM-based representation learning,
+(ii) game-theoretic microstructure modelling, and (iii) reinforcement learning for dynamic trading
+strategies. The contribution of the study is threefold.
+1. We construct a representation-theoretic game model for high-frequency trading.
+Agents observe an LLM-derived embedding Zt and choose controls as functions of a shared
+representation of market conditions. We show how this representation simplifies the description
+of multi-agent interactions and induces a tractable equilibrium structure.
+2. We develop an RL-based method for synthesising equilibrium strategies. Rather
+than imposing parametric policy forms, we learn best-response strategies in a representationdriven stochastic game and show how the geometry of the LLM embedding stabilises the
+optimisation landscape.
+3. We provide empirical and theoretical evidence that LLM-enhanced signal extraction improves strategic performance. In particular, we document that RL policies built
+directly on raw LOB features can exhibit instability and regime sensitivity, whereas policies
+based on LLM embeddings display smoother value-function gradients and more favourable
+reward-to-risk trade-offs.
+Figures illustrating the microstructure flow, the LLM encoder structure, and the RL interaction
+loop are provided in Section 4. We employ placeholders such as microstructure_diagram.png
+and rl_architecture.png for these images.
+Overall, the proposed framework links modern representation learning with the fundamental
+principles of market microstructure. It contributes to a growing literature that treats electronic
+markets as strategic, adaptive, and adversarial systems rather than as passive data-generating
+processes. By combining LLM-based state construction with equilibrium reasoning and RL, the
+framework offers a methodological basis for forecasting, execution design, and liquidity provision
+in contemporary high-frequency markets.
+2
+Theoretical Framework
+This section develops the structural foundations of the proposed framework, which integrates large
+language model (LLM) representations, market microstructure dynamics, and game-theoretic reinforcement learning (RL). We begin by formalizing the high-frequency environment in which strategic
+agents operate, proceed to the representation layer induced by the LLM encoder, and conclude with
+the equilibrium concept governing agent decisions within the representation-driven state space.
+2
+
+2.1
+Market Environment
+Let (Ω, F, P) be a complete probability space supporting a high-frequency limit order book (LOB)
+process
+Xt ∈X,
+where the microstructure state space X includes prices, depths, order messages, sizes, timestamps,
+and cancellations:
+X = {prices, depths, messages, volumes, timestamps, cancellations}.
+The process (Xt)t≥0 is assumed to be Ft-adapted and càdlàg, capturing limit order arrivals,
+market orders, cancellations, and adversarial liquidity shocks. The state Xt constitutes the public
+information set available to all strategic agents at time t and evolves according to the exchange’s
+continuous double-auction mechanism.
+2.2
+Strategic Agents
+Consider N strategic agents indexed by i ∈{1, . . . , N}. Each agent observes the LOB, forms private
+beliefs, and interacts with the market strategically. Let
+ai
+t ∈Ai
+denote the action of agent i at time t, where admissible actions include:
+• placement of limit orders,
+• submission of marketable orders,
+• cancellation of outstanding orders,
+• postponement of execution.
+Each agent solves a discounted stochastic control problem with payoff
+Πi = E
+
+X
+t≥0
+γt ri(Xt, ai
+t, a−i
+t )
+
+,
+where γ ∈(0, 1) is the discount factor and a−i
+t
+denotes the actions of all other agents at time t.
+2.3
+LLM-Based Representations of the Market State
+Rather than conditioning on the full high-dimensional LOB state Xt, agents are assumed to operate
+on a lower-dimensional representation constructed by an LLM encoder:
+Zt = Φ(Xt−k+1, . . . , Xt),
+where Φ : X k →Rd is a transformer-based map equipped with multi-head attention, residual
+blocks, and positional structure.
+The representation Zt serves as a compact yet information-rich summary of the market. It
+captures:
+1. price-impact and liquidity-pressure patterns,
+3
+
+2. directional or asymmetric order-flow behaviour,
+3. short-term regime shifts in volatility and queue dynamics,
+4. adversarial or opportunistic liquidity events,
+5. deviations from equilibrium or typical execution behaviour.
+These features are not easily extracted from raw LOB observations but emerge naturally from
+the encoder due to its sequence-processing structure.
+2.4
+Strategic Game Driven by Representation States
+Given the compressed state Zt, each agent chooses actions using a policy
+πi : Rd →∆(Ai),
+where ∆(Ai) denotes the probability simplex over agent i’s action set.
+Let π = (π1, . . . , πN) denote the joint policy profile. The representation-driven state dynamics
+are characterized by a transition kernel
+K(Zt, A) = P(Zt+1 ∈A | Zt, π),
+which incorporates both microstructure evolution and the strategic behaviour of all agents.
+2.5
+Equilibrium Concept
+We adopt a representation-based Markov Perfect Equilibrium (MPE) tailored to the LLM-driven
+state space. A policy profile π⋆is an equilibrium if, for every agent i,
+πi⋆(z) ∈arg max
+πi E
+
+X
+t≥0
+γtri(Xt, ai
+t, a−i⋆
+t
+)
+
+Z0 = z
+
+.
+The equilibrium is intrinsically representation-dependent: agents optimize based solely on Zt,
+not on the uncompressed microstructure path. Thus, the encoder Φ plays a central role in determining the geometry of the state space and, consequently, the strategic behaviour of agents.
+2.6
+Spectral Stability of the Representation Dynamics
+To study robustness under perturbations or adversarial conditions, we examine the Jacobian matrix
+of the conditional representation dynamics:
+J(z) = ∂
+∂z E[Zt+1 | Zt = z].
+Define the spectral radius
+ρ(J(z)) =
+max
+λ∈spec(J(z)) |λ|.
+Definition 2.1 (Spectrally Stable Representation). The representation process is locally stable at
+a state z if
+ρ(J(z)) < 1.
+Spectral stability ensures that small perturbations in the representation space do not amplify
+across time when mediated by the actions of strategic agents. This property plays a key role in the
+convergence of RL algorithms and in the robustness of equilibrium dynamics.
+4
+
+2.7
+Representation-State Dynamics: Illustration
+Figure 1 provides a schematic illustration of the representation-driven state transition mechanism
+and its interaction with strategic policies.
+Figure 1:
+Representation-driven market dynamics. Agents observe embeddings Zt, choose actions
+according to policies π, and induce transitions through the kernel K, which combines microstructure
+evolution with strategic behaviour.
+3
+Model Framework
+This section develops the theoretical structure that integrates market microstructure, strategic
+interaction among heterogeneous agents, and large language model (LLM)-based representation
+learning.
+The aim is to capture how strategic order submission, information asymmetry, and
+adversarial liquidity shocks arise endogenously from a game-theoretic environment, and how an
+LLM can learn a stable, low-dimensional representation of these dynamics.
+We work on a filtered probability space (Ω, F, (Ft)t≥0, P) supporting both market-level and
+agent-level stochastic processes. Time is discrete, t = 0, 1, . . . , T, consistent with millisecond-scale
+limit order book (LOB) updates.
+3.1
+Market Microstructure as a Strategic Environment
+Let Xt denote the LOB state at time t, comprising:
+• best quotes and associated depths,
+• K levels of bid–ask price–volume pairs,
+• outstanding limit orders and cancellation messages,
+• market order arrivals, queue updates, and message flow indicators.
+5
+
+We write
+Xt ∈X,
+where X is a separable metric space with metric dX . A finite set of strategic agents A = {1, . . . , N}
+interacts through a continuous double-auction mechanism. Agents submit orders, the matching
+engine updates the book, and trades are executed whenever buy and sell orders cross.
+3.2
+Agent Types, Information Sets, and Action Spaces
+Each agent i has an information set
+Ii
+t = σ(X0:t, θi),
+where θi includes private inventory, latency type, and private signals.
+Agent i chooses an action
+ai
+t ∈Ai = {limit buy, limit sell, market buy, market sell, cancel, idle}.
+A full action is represented as a tuple
+ai
+t = (qi
+t, pi
+t, si
+t),
+corresponding to order size, limit price, and side.
+The LOB transition is governed by the exchange matching operator
+Xt+1 = M(Xt, at),
+at = (a1
+t , . . . , aN
+t ).
+Payoffs.
+Each agent solves
+Ui = E
+" T
+X
+t=0
+ui(Xt, at, θi)
+#
+,
+where ui may include execution quality, slippage, fill probability, inventory penalties, and adverseselection terms.
+3.3
+LLM-Based Strategic Representation Mapping
+Agents do not observe the full microstructure path Xt−k+1:t in its raw high-dimensional form.
+Instead, each agent processes past states through an LLM encoder
+Zt = Φ(Xt−k+1, . . . , Xt) ∈Rd,
+where Φ is a transformer mapping k LOB snapshots into a d-dimensional embedding using attention
+and residual layers.
+Interpretation.
+The embedding Zt aggregates features relevant for strategic behavior:
+• latent liquidity and queue resilience,
+• directional and asymmetric order-flow pressure,
+• adversarial or opportunistic liquidity shocks,
+• clustering of strategic responses,
+6
+
+• short-horizon supply–demand imbalance.
+Assumption 3.1 (Encoder Regularity). The map Φ : X k →Rd is Borel measurable and LLipschitz:
+∥Φ(x) −Φ(x′)∥≤L
+k
+X
+j=1
+dX (xj, x′
+j).
+Agents choose actions as measurable functions of (Zt, θi):
+ai
+t = fi(Zt, θi).
+3.4
+Representation-Consistent Nash Dynamics
+Because agents are restricted to policies depending only on Zt, the strategic game takes place in
+the representation space rather than in the raw microstructure state space.
+Definition 3.2 (Representation-Consistent Nash Equilibrium (RCNE)). A policy profile {fi}N
+i=1
+is an RCNE if, for every agent i,
+Ui(fi, f−i; Φ) ≥Ui(gi, f−i; Φ)
+for all admissible gi measurable w.r.t. Zt.
+Thus:
+• agents may not condition on raw Xt,
+• all behavior must be expressible through Zt,
+• equilibrium must be consistent with the LLM-induced information structure.
+Transition Kernel.
+Given policies fi,
+Zt+1 = Φ
+ M(Xt, f(Zt, θ)), . . .
+,
+which induces a Markov kernel
+K(z, A) = P(Zt+1 ∈A | Zt = z).
+Graphical Illustration.
+Figure 2 summarizes the mapping from raw LOB paths to representation space and its feedback on strategic behavior.
+4
+Strategic Agents, Game-Theoretic Structure, and RL Dynamics
+High-frequency markets consist of strategic agents whose actions interact through price impact,
+order-flow externalities, and asymmetric information. This section embeds reinforcement learning
+(RL) into the multi-agent framework described above and characterizes how policies evolve under
+the LLM-derived representation.
+7
+
+Figure 2:
+Representation-driven microstructure environment. The encoder Φ maps LOB trajectories to embeddings Zt, which govern strategic actions; these actions determine future LOB states
+and thus the next representation.
+4.1
+Agent Population and Action Structure
+Agents i = 1, . . . , N each observe a private filtration (Fi
+t) generated by:
+1. private inventory qi
+t,
+2. private signals ξi
+t,
+3. the LLM representation Zt = Φ(Xt−k+1:t),
+4. noisy partial observations of Xt.
+Each agent selects an action
+ai
+t ∈A ⊂Rm,
+which may include market, limit, or hidden-liquidity orders.
+The market evolves according to
+Xt+1 = F(Xt, at, ηt+1),
+where ηt+1 represents exogenous randomness such as news or background order flow.
+4.2
+Game-Theoretic Payoffs
+Agents maximize discounted returns:
+Ji(πi, π−i) = E
+" ∞
+X
+t=0
+γtri
+t(Xt, at)
+#
+.
+Rewards include:
+8
+
+• mark-to-market P&L,
+• execution prices and slippage,
+• queue and fill probabilities,
+• inventory penalties,
+• adverse-selection penalties.
+A Nash equilibrium satisfies
+Ji(π⋆
+i , π⋆
+−i) ≥Ji(πi, π⋆
+−i)
+∀i.
+4.3
+LLM-Encoded Information Structure
+The representation restricts information flows:
+Zt = Φ(Xt−k+1:t),
+which must be sufficient for predicting future rewards.
+Assumption 4.1 (Sufficiency of Representation). For each agent i,
+E[ri
+t+1 | Ft] = E[ri
+t+1 | Zt, qi
+t, ξi
+t].
+Thus Zt captures all payoff-relevant microstructure information that is available to the agent.
+4.4
+Reinforcement Learning Dynamics
+Each agent updates its strategy via an RL scheme. Let θi denote the parameter vector of agent i’s
+policy. A generic update step is
+θi,t+1 = θi,t + αt b∇θiJi(θi, θ−i),
+where the gradient is estimated from sampled trajectories.
+The agent’s parametric policy takes the form
+πθi(ai
+t | Zt, qi
+t, ξi
+t).
+4.5
+Mean-Field Limit and Equilibrium
+As N →∞, individual impact becomes negligible, yielding a mean-field game formulation. Let µt
+be the empirical distribution of (Zt, qi
+t) across agents. Then
+µt+1 = Ψ(µt, π⋆),
+where Ψ is the aggregate transition operator.
+The equilibrium (π⋆, µ⋆) solves
+π⋆= arg max
+π
+J(π, µ⋆),
+µ⋆= Ψ(µ⋆, π⋆).
+Theorem 4.2 (Existence of LLM-Induced Mean-Field Equilibrium). If:
+9
+
+Figure 3:
+RL feedback loop under LLM-based state representation. At each step the agent: (1)
+observes Zt, (2) selects an action, (3) interacts with the LOB, (4) receives rewards, and (5) updates
+its policy parameters.
+1. the encoder Φ is Lipschitz,
+2. payoff functions are bounded and continuous,
+3. the policy update mapping satisfies a contraction property,
+then a mean-field equilibrium exists.
+Proof. Kakutani’s fixed-point theorem applies to the best-response correspondence, and continuity
+of Ψ follows from encoder Lipschitzness.
+The result demonstrates that LLM-based embeddings not only compress the microstructure
+state but also stabilize equilibrium dynamics in high-frequency markets.
+5
+Theoretical Results
+This section develops the analytical foundations of the proposed framework. We first characterize
+the market game induced by the LLM-based representation, then derive equilibrium and convergence results, and finally study robustness, mixing, and welfare properties. Throughout, Zt denotes
+the representation state, πt the policy of an RL agent, and θt the strategy profile of all market participants.
+10
+
+5.1
+Representation-Induced Market Game
+We model the high-frequency market as a discounted stochastic game
+G = (S, A, P, r, γ),
+where the state space S is given by the LLM representation:
+S = {Zt = Φ(Xt−k+1:t)},
+and Φ is the transformer encoder introduced in Section ??.
+The key point is that the LLM does not merely compress the microstructure; it induces a geometry on S that shapes strategic incentives. Let dS be a metric on S measuring how informationally
+distinct two market configurations are.
+Definition 5.1 (Representation-Induced Strategic Similarity). For any two states Z, Z′ ∈S, define
+∆strat(Z, Z′) = sup
+θ
+U(θ; Z) −U(θ; Z′)
+,
+where U(θ; Z) is the payoff associated with strategy profile θ in state Z.
+This quantity measures how changes in the representation affect strategic incentives. Intuitively,
+if dS(Z, Z′) is small, then one expects ∆strat(Z, Z′) to be small as well.
+Assumption 5.2 (Lipschitz Strategic Continuity). There exists Lstrat > 0 such that for all Z, Z′ ∈
+S,
+∆strat(Z, Z′) ≤Lstrat dS(Z, Z′).
+This assumption formalizes the idea that the representation space embeds economically relevant
+features of the LOB: nearby embeddings correspond to similar strategic environments.
+5.2
+Equilibrium Under Representation Dynamics
+Let Θ denote the set of admissible strategy profiles, and Θi the strategy set of agent i.
+An
+equilibrium strategy profile θ∗satisfies
+θ∗
+i ∈arg max
+θi∈Θi E
+Ui(θi, θ−i; Zt)
+ Zt
+,
+∀i.
+The representation state Zt evolves according to the Markov kernel K(z, ·) induced by Φ and
+the agents’ strategies, so equilibrium depends simultaneously on the local geometry of S and on
+the transition dynamics.
+Theorem 5.3 (Existence of Representation-Based Equilibrium). Suppose:
+(i) Ui(θ; z) is continuous in z for each i,
+(ii) each Θi is compact and convex,
+(iii) Lipschitz strategic continuity holds.
+Then the game admits at least one Markov perfect equilibrium in the representation state space.
+Proof. Compactness and convexity of Θi, together with continuity of Ui, ensure nonempty, convexvalued best-response correspondences. Lipschitz strategic continuity yields upper hemicontinuity
+with respect to z. Kakutani’s fixed-point theorem then guarantees the existence of an equilibrium
+strategy profile.
+11
+
+5.3
+Reinforcement Learning Policy Convergence
+Consider an RL agent whose policy depends on the LLM representation Zt. Let πt denote its
+current policy, updated via an operator
+πt+1 = Π(πt, Zt, rt),
+where Π may correspond, for instance, to a policy-gradient or proximal policy optimization step.
+Assumption 5.4 (Representation-Stable Gradients). There exists a constant G > 0 such that for
+all Zt, Z′
+t ∈S,
+∇πE[rt | Zt] −∇πE[rt | Z′
+t]
+ ≤G dS(Zt, Z′
+t).
+Theorem 5.5 (Convergence of the RL Policy). Assume:
+(i) the step-sizes satisfy the Robbins–Monro conditions,
+(ii) reward gradients are representation-stable,
+(iii) the transition kernel K is ergodic with a unique invariant distribution.
+Then the RL policy πt converges almost surely to a stationary point of the expected value function.
+Proof. The update recursion can be viewed as a stochastic approximation algorithm with Markovian
+noise. Representation-stable gradients control the variability of the gradient estimates as the state
+evolves. Ergodicity of K guarantees sufficient exploration of the state space. Standard stochastic
+approximation arguments then yield almost-sure convergence to a stationary point.
+5.4
+Equilibrium Under Learning Dynamics
+We now consider a setting in which RL agents coexist with traditional market makers or other
+parametric strategies, leading to a coupled learning–equilibrium system.
+Let
+θt = (θmk, πt)
+collect the strategy parameters of market makers and the RL policy. Define the learning–response
+operator
+T (Zt, θt) =
+ θ′
+mk(Zt; θt), Π(πt, Zt)
+,
+where θ′
+mk captures the response of market-making strategies to the current state and policy profile.
+An equilibrium of the learning–game system is a fixed point
+θ∗= T (Z, θ∗).
+Theorem 5.6 (Existence of Learning–Game Equilibrium). If the operator T is a contraction on
+the product space S × Θ (with respect to a suitable metric), then there exists a unique fixed point
+θ∗.
+Proof. The result follows directly from Banach’s fixed-point theorem.
+12
+
+5.5
+Stability Under Representation Perturbations
+We next study how equilibrium responds to perturbations in the encoder. Let Φε be a perturbed
+encoder and Zε
+t = Φε(Xt−k+1:t) the associated representation process. Let θ∗,ε denote the corresponding equilibrium.
+Theorem 5.7 (Equilibrium Robustness). If ∥Φε −Φ∥∞≤ε, then there exists a constant Ceq > 0
+such that
+∥θ∗,ε −θ∗∥≤Ceqε.
+Proof. By the contraction property of T , the equilibrium is a fixed point of a Lipschitz-continuous
+mapping in both the strategy and representation. Lipschitz continuity of payoffs with respect to
+representation perturbations then yields the stated bound.
+5.6
+Spectral Properties of the Representation Kernel
+The representation process evolves according to
+Zt+1 ∼K(Zt, ·),
+so its long-term behavior is governed by the properties of K.
+Define the Markov operator K on suitable test functions f by
+(Kf)(z) =
+Z
+S
+f(z′) K(z, dz′).
+Theorem 5.8 (Spectral Gap and Mixing Rate). Suppose K admits a spectral gap λ > 0 on an
+appropriate function space. Then there exist constants C > 0 and an invariant distribution µ such
+that
+∥Kn(z, ·) −µ∥TV ≤Ce−λn,
+∀z ∈S, ∀n ≥0,
+where ∥· ∥TV denotes total variation norm.
+This mixing bound shows that the LLM-based representation dynamics converge rapidly to stationarity when the encoder induces a sufficiently well-separated geometry on S, which is beneficial
+both for RL convergence and for equilibrium stability.
+5.7
+Efficiency Bounds and Market Impact
+Let Pt denote the mid-price process. The expected market impact of an action at at representation
+state Zt is
+I(Zt, at) = E[Pt+1 −Pt | Zt, at].
+Theorem 5.9 (Representation-Based Market Impact Bound). If the price impact operator is Lipschitz in the representation, then for any fixed action a,
+|I(Z, a) −I(Z′, a)| ≤Limp dS(Z, Z′)
+for some constant Limp > 0.
+Hence, small perturbations in the representation translate into controlled changes in market
+impact, which is essential for stable policy learning and risk management.
+13
+
+5.8
+Welfare and Efficiency Under LLM-Based Policies
+Let W(θ) denote a market-wide welfare functional evaluated at strategy profile θ.
+Consider a
+sequence θt generated by learning dynamics converging to θ∗.
+Theorem 5.10 (First-Order Welfare Sensitivity). If θt →θ∗, then
+W(θt) = W(θ∗) + O
+ ∥θt −θ∗∥
+,
+as t →∞.
+Thus, small deviations from equilibrium due to learning noise or finite-sample effects generate
+only first-order welfare losses.
+6
+Theoretical Analysis
+We now refine the preceding results by examining (i) equilibrium structure in greater detail, (ii)
+stability of best responses under encoder perturbations, and (iii) implications for volatility and
+liquidity formation. The analysis employs tools from convex analysis, stochastic control, and game
+theory, and clarifies how LLM-derived representations govern equilibrium dynamics in a systematic
+way.
+6.1
+Equilibrium Structure
+Recall that each agent i observes the representation Zt = Φ(Xt−k+1:t) and chooses an action
+ai(t) ∈Ai ⊂Rdi to maximize
+Ui(ai, a−i; Zt) = E
+πi(ai, a−i, Zt+1) | Zt
+,
+where πi is the one-step payoff and a−i denotes the actions of other agents.
+Definition 6.1 (Representation-Based Nash Equilibrium). A profile a∗(Zt) = (a∗
+1(Zt), . . . , a∗
+N(Zt))
+is a Nash equilibrium at state Zt if, for each i,
+Ui(a∗
+i (Zt), a∗
+−i(Zt); Zt) ≥Ui(ai, a∗
+−i(Zt); Zt)
+∀ai ∈Ai.
+We impose the following regularity assumptions.
+Assumption 6.2. For each i, the payoff πi(ai, a−i, z) is concave in ai and continuous in (ai, a−i, z).
+Assumption 6.3. Action sets Ai are nonempty, compact, and convex.
+Theorem 6.4 (Existence of Representation-Based Equilibrium). Under Assumptions 6.2–6.3, a
+Nash equilibrium exists for every Zt ∈S.
+Proof. Concavity and continuity of payoffs ensure that each player’s best-response correspondence
+is nonempty, convex-valued, and upper hemicontinuous. Compactness of Ai allows application of
+Kakutani’s fixed-point theorem to obtain an equilibrium.
+14
+
+6.2
+Stability of Strategic Interactions
+Let eΦ be a perturbed encoder with eZt = eΦ(Xt−k+1:t). We compare equilibrium actions under Zt
+and eZt.
+Theorem 6.5 (Lipschitz Stability of Equilibrium Actions). Suppose payoff functions satisfy a
+uniform strong concavity condition in ai. Then there exists Leq > 0 such that
+∥a∗(Zt) −a∗( eZt)∥≤Leq ∥Zt −eZt∥.
+Proof. Strong concavity ensures uniqueness of each player’s best response.
+When gradients of
+payoffs with respect to ai are Lipschitz in z, the implicit function theorem implies that the bestresponse mapping is Lipschitz in z. Aggregating across agents yields the stated bound.
+Hence, equilibrium strategies vary smoothly with the representation, demonstrating robustness
+of strategic behavior to encoder perturbations.
+6.3
+Representation-Induced Payoff Geometry
+We next study how payoffs respond locally to movements in representation space. Define, for each
+agent i,
+gi(z) = ∇zUi(a∗
+i (z), a∗
+−i(z); z),
+whenever the gradient exists.
+Proposition 6.6 (Directional Sensitivity). Let u ∈Rd be any direction in representation space for
+which z + u is feasible. Then
+Ui(z + u) −Ui(z) = ⟨gi(z), u⟩+ o(∥u∥),
+as ∥u∥→0.
+Proof. This follows from a first-order Taylor expansion of Ui as a smooth function of z, evaluated
+along the equilibrium correspondence a∗(·).
+Thus, gi(z) characterizes the local sensitivity of equilibrium payoffs to changes in the representation.
+6.4
+Volatility and Liquidity Response
+Given equilibrium actions a∗(Zt), a microstructure-based impact model yields mid-price updates
+of the form
+Pt+1 −Pt = f(a∗(Zt), εt+1),
+where εt+1 is microstructure noise.
+The conditional instantaneous variance is
+σ2
+t = Var
+ f(a∗(Zt), εt+1) | Zt
+.
+Let eZt be a perturbed representation and define eσ2
+t analogously.
+Theorem 6.7 (Volatility Sensitivity to Representations). If f is differentiable and Lipschitz in its
+first argument, then there exists Cσ > 0 such that
+σ2
+t −eσ2
+t
+ ≤Cσ ∥Zt −eZt∥.
+Proof. Applying Theorem 6.5, we obtain a bound on ∥a∗(Zt)−a∗( eZt)∥. Lipschitz continuity of f in
+its first argument translates this into a bound on the difference of price increments, and standard
+variance perturbation inequalities then yield the desired result.
+15
+
+6.5
+Game-Theoretic Liquidity Formation
+Define aggregate order flow
+Qt =
+N
+X
+i=1
+a∗
+i (Zt).
+Proposition 6.8 (Representation-Induced Liquidity). If equilibrium actions a∗
+i (·) are differentiable
+and monotone in Zt along some direction u ∈Rd, then
+∂Qt
+∂u =
+N
+X
+i=1
+⟨∇za∗
+i (Zt), u⟩.
+This expression links representation dynamics to the formation and depletion of liquidity in the
+LOB.
+6.6
+Unified Representation–Game Coupling
+We can now summarize the coupling between representation, strategic behavior, and price dynamics.
+Theorem 6.9 (Representation–Game–Volatility Coupling). Under the assumptions stated above,
+LLM-based representations determine high-frequency price dynamics through the chain
+Zt −→a∗(Zt) −→Qt −→Pt+1 −→σ2
+t .
+Moreover, each mapping in this chain is Lipschitz-continuous, so the overall system is robust with
+respect to perturbations in the encoder and in the representation process.
+Proof. Combine Theorem 6.5 and Theorem 6.7 with the Lipschitz properties of the impact function
+f and the linear aggregation defining Qt.
+7
+Extended Discussion and Future Directions
+The results presented in this paper demonstrate that LLM-based representations offer a powerful
+and theoretically tractable mechanism for organizing the strategic complexity of modern electronic
+markets. By embedding raw message-level microstructure data into a low-dimensional geometric
+space, the encoder induces both a state representation and a strategic manifold on which equilibrium reasoning becomes feasible. The analytical results show that when the encoder possesses
+Lipschitz continuity and stability properties, the entire chain of strategic interactions — from order
+placement to liquidity formation and volatility generation — becomes well behaved and robust.
+The empirical analysis further reinforces the theoretical insights by validating that representationinduced equilibria and RL-driven reactions manifest in real-world limit order book data.
+Despite these strengths, several conceptual and methodological challenges remain. Electronic
+markets are inherently multi-layered systems in which algorithmic strategies, institutional rules,
+cross-asset arbitrage, and heterogeneous latency regimes interact simultaneously.
+The present
+framework captures one layer of this system — the strategic use of microstructure and LLMbased encodings — but an integrated treatment of broader market architecture remains an open
+problem.
+The findings also raise deeper questions regarding the evolution of market microstructure under
+increasing automation. As representation learning becomes endogenous to market participants, the
+16
+
+geometry of state spaces may itself co-evolve with trading strategies, giving rise to novel forms of
+coordination, competition, and instability. Such phenomena suggest a need for theoretical models
+that allow the encoder to be an equilibrium object rather than an exogenous component.
+7.1
+Limitations
+Several simplifying assumptions, necessary for analytical tractability, limit the scope of the current
+framework:
+1. Exogenous Representation Learning.
+The encoder is treated as fixed after training,
+whereas in practice algorithmic traders continuously update representations as market conditions evolve.
+2. Single-Asset Setting. Cross-asset flows, correlated order splitting, and multi-venue execution are excluded, though they are central to institutional trading.
+3. Local Stability Analysis. Our theoretical results rely on local Lipschitz and contraction
+properties. Global nonlinear phenomena — liquidity crises, flash crashes, and regime shifts —
+require additional tools.
+4. Simplified Agent Heterogeneity. Agents differ in order type and objectives, but latency,
+regulatory constraints, and real-world routing complexities are abstracted away.
+These limitations are not weaknesses of the model per se but reflect the challenge of balancing
+analytical tractability with realism in fast, high-dimensional strategic environments.
+7.2
+Future Research
+Building upon the theoretical and empirical findings of this work, several avenues for future research
+appear particularly promising:
+1.
+Endogenous Representation Learning.
+Agents could jointly learn representations and
+strategies, giving rise to a fixed point in both the space of encoders and the space of policies. This
+requires extending game theory to settings in which information structures co-evolve with strategic
+behavior.
+2.
+Multi-Asset, Multi-Venue Extensions.
+In fragmented markets, arbitrage relationships
+couple microstructure states across venues. A representation-based equilibrium defined on such
+networks could capture latency races, order routing, and cross-exchange predation.
+3. Regulation as Geometry Design.
+The results suggest that market rules implicitly shape the
+geometry of the representation space. Exchanges or regulators could in principle design mechanisms
+that alter this geometry to promote stability, fairness, or liquidity — a novel perspective on market
+design.
+4.
+Global Dynamics and Rare Events.
+Studying systemic phenomena such as liquidity
+vacuums or endogenous volatility spikes requires moving from local spectral analysis to global
+nonlinear models. Interacting RL agents under adversarial market stress provide a natural setting
+for such analysis.
+17
+
+5. Interpretability and Explainability.
+Understanding how an LLM representation partitions
+strategic regions remains an open challenge. Developing geometric or information-theoretic tools
+to interpret Zt would deepen the connection between machine learning and financial economics.
+7.3
+Broader Implications
+The framework developed in this paper highlights an emerging paradigm in which representations —
+rather than raw data or handcrafted features — serve as the foundational object for understanding
+price formation. In market environments dominated by machine-driven execution and predictive
+algorithms, such representations act as a “strategic coordinate system” for agents. This viewpoint
+suggests several broader implications:
+• Markets may self-organize into representation-defined regimes, observable only through highcapacity encoders.
+• Liquidity provision and withdrawal may increasingly depend on the geometry of learned embeddings, rather than traditional indicators such as spreads or depths.
+• Competition across algorithmic traders may shift toward representation learning capabilities,
+potentially creating new inequalities in informational advantage.
+• Price impact and volatility could become more predictable within embedding space, but simultaneously more nonlinear in raw features.
+7.4
+Reproducibility and Computational Considerations
+Given the complexity of the LLM–microstructure environment, reproducibility is a critical concern.
+We outline key components:
+1. Data Handling. We provide detailed cleaning and normalization procedures in Appendix B,
+ensuring that message-level reconstruction can be replicated across assets.
+2. Model Architecture. Hyperparameters for the encoder Φ, including depth, attention heads,
+and optimization schedule, are listed in Appendix D.
+3. RL Training Protocol. We adopt fixed seeds and standardized episode windows to mitigate
+variance in learning.
+4. Computational Resources. Experiments were conducted on GPU clusters comparable to
+modern institutional infrastructures, ensuring realistic execution speeds for high-frequency
+simulations.
+These considerations support the transparency and extensibility of the experimental framework
+for future studies.
+7.5
+Concluding Remarks
+The synthesis of large language models, market microstructure theory, and game-theoretic reinforcement learning provides a unified perspective on the structure and dynamics of electronic markets.
+The central insight is that machine-learned representations can serve as the state space on which
+both strategic reasoning and statistical forecasting are jointly constructed. This opens the door to
+18
+
+a new class of microstructure models in which algorithms do not merely react to market states but
+define the representations through which the market perceives itself.
+The framework developed here constitutes a step toward such models, offering both theoretical
+guarantees and empirical validation. As algorithmic trading continues to evolve, representationdriven approaches may become essential for understanding and shaping the behavior of modern
+financial systems.
+References
+[1] R. Almgren and N. Chriss.
+Optimal execution of portfolio transactions.
+Journal of Risk,
+3(2):5–39, 2001.
+[2] J.-P. Bouchaud, M. Potters, and J. Bonart. Trades, Quotes and Prices: Financial Markets
+Under the Microscope. Cambridge University Press, 2018.
+[3] Á. Cartea, S. Jaimungal, and J. Penalva. Algorithmic and High-Frequency Trading. Cambridge
+University Press, 2015.
+[4] Á. Cartea and S. Jaimungal. Risk metrics and fine tuning of high-frequency trading strategies.
+Mathematical Finance, 26(4):813–861, 2016.
+[5] R. Cont. Statistical modeling of high-frequency financial data. Annual Review of Financial
+Economics, 3(1):405–416, 2011.
+[6] J. D. Farmer and J. Geanakoplos. The virtues and vices of equilibrium and the future of
+financial economics. Complexity, 18(2):44–50, 2013.
+[7] L. R. Glosten and P. R. Milgrom. Bid, ask and transaction prices in a specialist market with
+heterogeneously informed traders. Journal of Financial Economics, 14(1):71–100, 1985.
+[8] A. S. Kyle. Continuous auctions and insider trading. Econometrica, 53(6):1315–1335, 1985.
+[9] Y. Nevmyvaka, Y. S. Kearns, and M. Kearns.
+Reinforcement learning for optimal trade
+execution. In Proceedings of the 23rd International Conference on Machine Learning, pages
+673–680, 2006.
+[10] A. Vaswani, N. Shazeer, N. Parmar, et al. Attention is all you need. In Advances in Neural
+Information Processing Systems 30, pages 5998–6008, 2017.
+[11] Z. Zhang, S. Zhong, and T. Chan. Deep reinforcement learning for market making in highfrequency trading. arXiv preprint, arXiv:1911.05892, 2019.
+[12] J. Sirignano and R. Cont. Universal features of price formation in financial markets: Perspectives from deep learning. Quantitative Finance, 19(9):1449–1459, 2019.
+[13] A. Fischer, C. A. M. van Leeuwen, and S. Jaimungal.
+Reinforcement learning in finance.
+Annual Review of Financial Economics, 12:257–280, 2020.
+[14] Y. Guo. LLM-driven market microstructure representation learning for robust high-frequency
+forecasting. SSRN Working Paper, 2025.
+19
+
+Appendix A. Additional Proofs
+This appendix collects proofs of selected results that were stated in the main text. Throughout,
+we adopt the notation and assumptions introduced in Sections 2 and 3.
+A.1 Existence of Representation-Based Equilibrium
+We provide a sketch of the equilibrium existence result for the representation-based game defined
+in Section 3.
+Proof of the equilibrium existence statement. For each representation state z ∈Z, consider the
+game with strategy spaces Ai and payoff functions
+Ui(ai, a−i; z) = E
+πi(ai, a−i, z, ε)
+.
+Under compactness and convexity of Ai, continuity of Ui in (ai, a−i, z), and concavity in ai, each
+player’s best-response correspondence is nonempty, convex-valued, and upper hemicontinuous.
+Define the product best-response map
+B(a; z) =
+N
+Y
+i=1
+Bi(a−i; z),
+where Bi is the best-response set of player i. Kakutani’s fixed-point theorem implies the existence
+of at least one fixed point a⋆(z) ∈B(a⋆(z); z), which is a Nash equilibrium for the representation
+state z. Since the argument applies for each fixed z ∈Z, the equilibrium exists for all states.
+A.2 Stability of Equilibrium Actions
+We now provide additional details for the stability result relating encoder perturbations to equilibrium actions.
+Proof of the equilibrium stability statement. Let z, ˜z ∈Z be two representation states and a⋆(z),
+a⋆(˜z) the corresponding equilibrium action profiles.
+Under strong concavity of Ui in ai, each equilibrium is unique. Consider the first-order condition
+for player i,
+∇aiUi(a⋆
+i (z), a⋆
+−i(z); z) = 0.
+Assuming differentiability and Lipschitz continuity of ∇aiUi in z, the implicit function theorem
+yields a local mapping z 7→a⋆
+i (z) that is differentiable with bounded Jacobian. Summing over
+players, we obtain a Lipschitz bound
+∥a⋆(z) −a⋆(˜z)∥≤Leq∥z −˜z∥,
+for a constant Leq depending on the curvature of the payoff functions. This completes the argument.
+20
+
+A.3 Volatility Sensitivity
+We expand the proof sketch for the volatility sensitivity result.
+Proof of the volatility sensitivity statement. Let the mid-price update satisfy
+Pt+1 −Pt = f(a⋆(Zt), εt+1),
+with f Lipschitz in its first argument. The instantaneous volatility conditional on Zt is
+σ2
+t = Var(f(a⋆(Zt), εt+1) | Zt).
+Define eZt and eσ2
+t analogously.
+By the equilibrium stability result,
+∥a⋆(Zt) −a⋆( eZt)∥≤Leq∥Zt −eZt∥.
+Using Lipschitz continuity of f, we obtain
+|f(a⋆(Zt), ε) −f(a⋆( eZt), ε)| ≤LfLeq∥Zt −eZt∥.
+Standard variance perturbation bounds then imply
+|σ2
+t −eσ2
+t | ≤Cσ∥Zt −eZt∥,
+for some constant Cσ depending only on Lf, Leq, and the second moment of f.
+A.4 Spectral Gap and Mixing Rate
+We briefly justify the spectral gap statement used to characterize the mixing of the representation
+process.
+Proof sketch for the spectral gap bound. Let K be the Markov operator on L2(µ) associated with
+the transition kernel K(z, ·) and invariant measure µ. If K is self-adjoint and has spectral radius 1
+with second-largest eigenvalue modulus strictly less than 1, then a standard spectral decomposition
+shows that
+∥Kn(z, ·) −µ∥TV ≤Ce−λn,
+for some λ > 0 equal to the spectral gap and constant C > 0. Details follow from classical Markov
+chain theory and are omitted for brevity.
+Appendix B. Statistical and Analytical Lemmas
+This appendix contains auxiliary lemmas used throughout the theoretical analysis.
+B.1 Lipschitz Composition Lemma
+Lemma .1 (Lipschitz Composition). Let f : Rd →Rm and g : Rm →Rk be Lipschitz functions
+with constants Lf and Lg, respectively. Then g ◦f is Lipschitz with constant LgLf.
+Proof. For any x, y ∈Rd,
+∥g(f(x)) −g(f(y))∥≤Lg∥f(x) −f(y)∥≤LgLf∥x −y∥.
+21
+
+B.2 Contraction Mapping Lemma
+Lemma .2 (Banach Fixed-Point Theorem). Let (E, ∥·∥) be a complete metric space and T : E →E
+a contraction with constant α ∈(0, 1):
+∥T(x) −T(y)∥≤α∥x −y∥
+for all x, y ∈E.
+Then T admits a unique fixed point x⋆and for any initial x0 the sequence
+xn+1 = T(xn) converges to x⋆at rate αn.
+Proof. The proof is standard; see, for example, any textbook on functional analysis. It is based on
+constructing the Cauchy sequence {xn} and using completeness of E.
+B.3 Stability of Stochastic Approximation
+Lemma .3 (Robbins–Monro Stability). Consider the recursion
+θn+1 = θn + αn(h(θn) + ξn),
+where {αn} satisfies the Robbins–Monro conditions, h is Lipschitz and globally stable, and ξn is a
+martingale difference sequence with bounded variance. Then θn converges almost surely to the set
+of zeros of h.
+Proof. The result follows from classical stochastic approximation theory based on Lyapunov functions and martingale convergence arguments.
+B.4 Variance Perturbation Bound
+Lemma .4 (Variance Perturbation). Let Y and eY be square-integrable random variables with
+|Y −eY | ≤δ almost surely. Then
+| Var(Y ) −Var( eY )| ≤4δE[|Y |] + 2δ2.
+Proof. Expand both variances and use the identity Var(Y ) = E[Y 2] −(E[Y ])2, together with standard inequalities, to obtain the stated bound.
+Appendix C. Extended Forecasting and RL Algorithms
+This appendix provides additional algorithmic details for the LLM-assisted forecasting and reinforcementlearning procedures used in Section 4. The pseudocode is written at a high level, so that it can be
+implemented in standard deep learning frameworks.
+C.1 LLM-Based State Construction for Forecasting
+Algorithm C.1: Representation-Based Volatility Forecasting
+1. Input: Raw LOB data {Xt}T
+t=0, window size k, pre-trained encoder Φ, forecasting horizon h.
+2. For t = k, . . . , T −h:
+(a) Construct the microstructure path (Xt−k+1, . . . , Xt).
+(b) Compute the embedding Zt = Φ(Xt−k+1, . . . , Xt).
+22
+
+(c) Compute a realized volatility proxy over [t, t + h], for example
+bσ2
+t,h =
+h
+X
+j=1
+(Pt+j −Pt+j−1)2.
+3. Fit a regression model bV : Zt 7→bσ2
+t,h using a suitable architecture (e.g. MLP or shallow
+transformer).
+4. Output: Forecasting rule bσ2
+t+h|t = bV(Zt).
+C.2 RL Policy Training with LLM States
+Algorithm C.2: Actor–Critic with LLM Representations
+1. Initialize: Actor parameters θ, critic parameters ψ, replay buffer D.
+2. For each episode:
+(a) Observe the initial LOB path and compute Z0.
+(b) For t = 0, . . . , T:
+i. Sample an action at ∼πθ(· | Zt).
+ii. Apply at to the environment; observe reward rt and the next state Xt+1.
+iii. Update the representation Zt+1 = Φ(Xt−k+2, . . . , Xt+1).
+iv. Store the transition (Zt, at, rt, Zt+1) in buffer D.
+v. Sample a mini-batch from D and update:
+• Critic: minimize the TD error to update ψ.
+• Actor: ascend a policy-gradient estimate using the critic as baseline to update θ.
+3. Output: Trained policy πθ(a | Z).
+C.3 Adversarial Stress Testing
+Algorithm C.3: Adversarial Liquidity Stress Test
+1. Input: Trained encoder Φ, policy πθ, perturbation radius ϵ.
+2. For each evaluation episode:
+(a) At each step t, compute the nominal state Zt.
+(b) Generate an adversarial perturbation ∆Zt with ∥∆Zt∥≤ϵ (e.g. by maximizing the instantaneous loss under a norm constraint).
+(c) Form the perturbed state Zadv
+t
+= Zt + ∆Zt.
+(d) Evaluate the policy and price impact under Zadv
+t
+.
+3. Output: Robustness statistics for volatility, execution cost, and welfare under adversarial
+representation shifts.
+23
+
+C.4 Implementation Remarks
+• In practice, the mapping Φ may be frozen after pre-training or jointly fine-tuned with the RL
+policy.
+• Regularization terms (e.g. entropy bonuses, gradient penalties) can be added to stabilize learning in highly non-stationary regimes.
+• The empirical evaluation in Section 4 can be extended by stress-testing the policy under simulated limit-order-book shocks.
+24

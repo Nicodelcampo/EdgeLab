@@ -1,0 +1,100 @@
+{
+  "doc_id": 192,
+  "titulo": "Integrating General Economics and Quantitative Finance: Equilibrium, Stochastic Control, Market Microstructure, and Machine Learning",
+  "resumen_operativo": "Artículo de síntesis que integra teoría económica (equilibrio general, martingale approach, CAPM, APT) con finanzas cuantitativas modernas (optimal execution, market making, mean field games) y métodos de machine learning (DML, LLMs). Propone un pipeline unificado de investigación a implementación que combina modelización basada en teoría con evaluación empírica disciplinada. Cubre desarrollos recientes de estructura de mercado como 0DTE options, T+1 settlement y central clearing en Treasuries. Es puramente conceptual-sintético, sin resultados empíricos originales.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Optimal Execution",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Problema de control estocástico que modela el trade-off entre coste de ejecución y riesgo de precio al liquidar o adquirir una posición. El framework Almgren-Chriss proporciona una frontera eficiente explícita entre coste esperado y varianza del coste.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "stochastic control"},
+        {"tipo": "USA", "objeto": "price impact"}
+      ],
+      "cita_textual": "The optimal execution literature models the tradeoff between execution cost and price risk, producing policies that specify how rapidly to liquidate or acquire a position."
+    },
+    {
+      "nombre": "Market Making",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Provisión de liquidez modelada como problema de control con riesgo de inventario y llegadas estocásticas de órdenes. Avellaneda-Stoikov derivan reglas de quoting en un LOB que balancean spread esperado contra riesgo de inventario.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "limit order book"},
+        {"tipo": "USA", "objeto": "stochastic control"}
+      ],
+      "cita_textual": "Market making models treat liquidity provision as a control problem with inventory risk and stochastic order arrivals."
+    },
+    {
+      "nombre": "Mean Field Games",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Límite de juegos estocásticos con muchos agentes interactuando, donde la acción de un trader grande afecta las oportunidades de otros. El enfoque de Carmona-Delarue usa FBSDEs acopladas (HJB-Fokker-Planck).",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "market microstructure"},
+        {"tipo": "MEJORA_A", "objeto": "stochastic games"}
+      ],
+      "cita_textual": "This leads to stochastic games, and, in markets with many interacting agents, to mean field game (MFG) limits."
+    },
+    {
+      "nombre": "Double/Debiased Machine Learning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método econométrico de Chernozhukov et al. (2018) que construye Neyman-orthogonal scores y usa sample splitting (cross-fitting) para reducir sesgo de regularización, permitiendo inferencia asintóticamente normal con parámetros de baja dimensión en presencia de funciones nuisance de alta dimensión.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "causal inference"},
+        {"tipo": "MITIGA", "objeto": "regularization bias"}
+      ],
+      "cita_textual": "Chernozhukov et al. develop double/debiased machine learning (DML), which constructs Neyman-orthogonal score functions and uses sample splitting (cross-fitting) to reduce regularization bias."
+    },
+    {
+      "nombre": "Large Language Models",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Herramientas de automatización de medición que pueden etiquetar y resumir texto, extraer variables estructuradas de disclosures y generar features de datos cualitativos, requiriendo validación rigurosa de su error de medición.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "sentiment analysis"},
+        {"tipo": "REQUIERE", "objeto": "measurement error validation"}
+      ],
+      "cita_textual": "Large language models (LLMs) introduce a new kind of measurement automation: they can label and summarize text, extract structured variables from disclosures, and generate features from qualitative data."
+    },
+    {
+      "nombre": "Hamilton-Jacobi-Bellman Equation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Ecuación diferencial parcial que caracteriza la función valor en problemas de control estocástico. Subyace a los modelos de ejecución óptima, market making y mean field games en el paper.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "optimal execution"},
+        {"tipo": "PARTE_DE", "objeto": "stochastic control"}
+      ],
+      "cita_textual": "Optimization under uncertainty naturally leads to stochastic control, where value functions satisfy Hamilton-Jacobi-Bellman (HJB) equations."
+    },
+    {
+      "nombre": "Causal Inference",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Estimación de efectos causales (de cambios de política, reglas de ejecución o disclosures) sobre liquidez y volatilidad usando DML cuando el parámetro admite representación de score ortogonal con funciones nuisance de alta dimensión.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "double/debiased machine learning"},
+        {"tipo": "APLICA_A", "objeto": "market microstructure"}
+      ],
+      "cita_textual": "DML can be used when the causal parameter admits an orthogonal score representation with high-dimensional nuisance functions."
+    },
+    {
+      "nombre": "No-Arbitrage Valuation",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Principio que implica la existencia de un pricing kernel o medida martingala equivalente bajo la cual los precios descontados son martingalas. Proporciona disciplina para combinar estimación estadística con consistencia financiera.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "stochastic discount factor"},
+        {"tipo": "APLICA_A", "objeto": "derivative pricing"}
+      ],
+      "cita_textual": "The no-arbitrage condition implies the existence of a pricing kernel or an equivalent martingale measure under which discounted asset prices are martingales."
+    },
+    {
+      "nombre": "Stochastic Control",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Marco matemático para optimización bajo incertidumbre donde las políticas óptimas se caracterizan mediante ecuaciones HJB. Aplicado a ejecución, market making y problemas de hedging con fricciones.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "optimal execution"},
+        {"tipo": "USA", "objeto": "Hamilton-Jacobi-Bellman equation"}
+      ],
+      "cita_textual": "Optimization under uncertainty naturally leads to stochastic control, where value functions satisfy Hamilton-Jacobi-Bellman (HJB) equations and optimal policies can be characterized via verification arguments."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Cubre optimal execution, market making, 0DTE options y microstructure intradía; el pipeline metodológico integrador es directamente aplicable a desarrollo de estrategias intraday."}
+}

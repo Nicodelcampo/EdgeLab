@@ -1,0 +1,2287 @@
+High Frequency Trading with Speed Hierarchies
+October 4, 2019
+Abstract
+Traders diﬀer in speed and their speed diﬀerences matter. This paper models the competition
+between fast traders (FTs) who react at varying speeds upon observing a common signal about
+incoming orders placed by normal-speed traders. I ﬁnd that the outcome of competition between
+FTs depends crucially on the hierarchical structure of FTs’ speed: (1) FTs’ aggregate market
+power increases when their speeds are more heterogeneous, (2) entries of new FTs may increase
+FTs’ aggregate market power, and (3) even when inﬁnitely many FTs compete their aggregate
+market power does not vanish except in rare special cases. This paper also demonstrates the
+limitations of some traditional measures of market quality: although FTs in the model increase
+trading volume, trade against normal-speed liquidity demanders, accelerate price discovery, and
+trade in informative directions, normal-speed liquidity demanders are worse oﬀand prices are
+ultimately less informative as a result of FTs’ trading.
+Keywords: information eﬃciency, liquidity, market microstructure, high frequency trading, industrial organization
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+1
+Introduction
+In recent years we have witnessed the emergence of high frequency traders (HFTs). Empirical studies,
+such as Baron, Brogaard and Kirilenko (2012), Brogaard, Hendershott and Riordan (2014), and
+Kirilenko, Kyle, Samadi and Tuzun (2017), ﬁnd that HFTs typically hold inventories for very short
+periods and generate high trading volume. Anecdotally, HFTs are extremely sensitive to latencies
+and invest astonishing amounts of capital to be able to slightly increase their trading speed. The
+Australian Stock Exchange, for example, has to ensure that every cable connecting any co-locating
+HFT’s computer with the exchange’s server is of the same exact length.1 Some HFTs reportedly
+invest in ﬁber optic cables—which cost about $1 billion per cable—under the Arctic Ocean to reduce
+latency between London and Tokyo by 50 milliseconds.2 Why do HFTs compete on speed? How do
+speed diﬀerences between HFTs aﬀect their market power? How are slower traders aﬀected by the
+competition between HFTs?
+To address these questions, I develop a model in which multiple strategic fast traders (FTs) are
+assumed to anticipate incoming orders.3 In contrast to many studies in the literature (discussed in
+Section 1.1), this paper places no constraints on FTs’ speed hierarchies—the hierarchical structures
+of their relative speeds. I ﬁnd that speed hierarchies crucially inﬂuence FTs’ strategies and their
+market powers.
+First, relative speed matters: an FT’s trading proﬁt decays exponentially when the ranking of
+her speed among FTs falls.4 Thus, a seemingly negligible speed improvement may substantially
+increase an FT’s trading proﬁt if it improves her speed ranking.
+Second, FTs’ speed hierarchies aﬀect their aggregate market power. In particular, FTs, who
+compete against one another, in aggregate earn more proﬁts when they trade at more heterogeneous
+speeds. Assuming all predators trade at the same speed, Brunnermeier and Pedersen (2005) ﬁnd
+that “predation is most ﬁerce if there are few predators.” In contrast, in this paper the entry of an
+1Co-location is a service provided by exchanges. Traders who subscribe to this service can place their computers in
+the same room as the exchanges’ servers to reduce the signal transmission latencies.
+2See http://goo.gl/oDwtjm and http://goo.gl/OCBFYF for the news reports.
+3This paper does not attempt to model all types of HFTs, instead focusing on HFTs who use order anticipation
+strategies. Empirical studies, such as Hirschey (2013), Clark-Joseph (2013), and Sağlam (2018) ﬁnd evidence consistent
+with HFTs’ use of such strategies. Anecdotally, Charlie Munger claims that HFTs practice “legalized front-running.”
+(http://www.cnbc.com/id/100705820). See Lewis (2014) for more anecdotal stories.
+4In this paper, trading proﬁt is simply proﬁt generated in trading. It does not equal net proﬁt because costs are
+ignored.
+1
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+FT may increase FTs’ aggregate proﬁt if the entrant is much faster than all incumbent FTs. Even
+when inﬁnitely many FTs compete, their aggregate market power does not vanish if the number of
+fastest FTs is ﬁnite.
+Moreover, the existence of order-anticipating FTs trading at varying speeds poses challenges
+to some common measures of market liquidity and information eﬃciency. First, FTs in this model
+endogenously choose to trade against normal-speed liquidity demanders when they arrive—FTs
+buy when normal-speed liquidity demanders sell and sell when normal-speed liquidity demanders
+buy. Contrary to intuition, however, liquidity demanders are worse oﬀas a result of FTs’ trading.
+Second, FTs in the model trade in informative directions—they buy when prices are too low and sell
+when prices are too high relative to the informationally eﬃcient level—and bring information to
+the market earlier. Despite accelerating price discovery, FTs’ trading makes prices ultimately less
+informative. Third, when FTs’ speeds are more heterogeneous, although the Herﬁndal index of their
+proﬁt might decrease, they earn higher proﬁts and their negative impacts on market liquidity and
+price informativeness are more severe.
+I introduce FTs into an extended Kyle (1985) framework with trading and quoting latencies. In
+addition to FTs, there are three types of normal-speed traders in the model: a strategic informed
+trader, noise traders, and passive liquidity providers. The strategic informed trader privately observes
+the true value of a risky asset. Noise traders trade randomly. A continuum of competitive passive
+liquidity providers set prices and absorb order-ﬂow imbalance.5
+Trades occur over a short trading round during which normal-speed traders lag behind FTs. At
+the beginning of the trading round, passive liquidity providers post a pricing function against which
+others can trade. The pricing function is ﬁxed during the trading round, reﬂecting passive liquidity
+providers’ speed disadvantage. After observing the pricing function, the informed trader and noise
+traders submit market orders. Before their orders arrive at the market, FTs observe a common noisy
+signal about these orders because, for example, FTs can observe faster and more granular updates
+of the limit-order books on various exchanges. Upon observing such a signal, FTs react at varying
+5Passive liquidity providers represent the large number of traders who have no speed advantage, information
+advantage, or motivation to initiate trades. I do not call them “market makers” because they are not necessarily
+designated market makers or dealers. Consistent with the assumed diﬀerence between FTs and passive liquidity
+providers, Kirilenko et al. (2017) ﬁnd that HFTs’ inventory patterns diﬀer substantially from those of slower
+intermediaries. In particular, HFTs’ inventories are positively correlated with contemporaneous price changes—they
+buy when price increases—while slower intermediaries’ inventories—like passive liquidity providers in this model—are
+negatively correlated with contemporaneous price changes.
+2
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+speeds. They trade rapidly in the same direction at better prices ahead of the incoming orders.
+Under reasonable assumptions on future price impact, FTs choose to reverse their early trades and
+exit their positions at the slightly later moment when liquidity demanders’ orders arrive. At the end
+of the trading round, passive liquidity providers update the quote.
+FTs eﬀectively levy a speed tax on passive liquidity providers and passive liquidity providers
+shift the tax burden to normal-speed liquidity demanders, namely the informed trader and noise
+traders. Speciﬁcally, because of their speed disadvantage, passive liquidity providers cannot update
+the pricing function every time an FT trades and thus suﬀer losses when trading with FTs. To
+break even, passive liquidity providers have to ex ante increase the slope of the pricing function
+beyond the informationally eﬃcient level to charge more for absorbing a given order-ﬂow imbalance.
+Thus, the transaction price overshoots the informationally eﬃcient level when normal-speed liquidity
+demanders arrive. When passive liquidity providers catch up with the market, they partially reverse
+the run-up in transaction price and set the quote at the informationally eﬃcient level, thereby
+resulting in a price adjustment without trading.6 FTs liquidate their positions immediately before
+the price adjustment when normal-speed liquidity demanders’ orders arrive. If they were to liquidate
+after the adjustment, they would receive inferior liquidating prices.
+FTs’ aggregate proﬁt increases with the accuracy of their order-ﬂow signal and a parameter γ,
+which summarizes their aggregate market power. For a given number of FTs, γ may vary substantially
+depending on the proﬁle of FTs’ relative speeds. In general, greater speed heterogeneity among FTs
+increases their aggregate market power—hence their aggregate trading proﬁt. This occurs for two
+reasons. First, when FTs’ speeds become more heterogeneous, FTs in total experience more trading
+opportunities, which allows them to exploit normal-speed traders’ relative slowness to a greater
+extent. Second, speed diﬀerences reduce the number of FTs trading at the same moment, thereby
+reducing the intensity of competition between FTs at that moment.
+FTs in this model have strong incentives to shave every nanosecond oﬀtheir latencies because
+an FT can at least quintuple her expected trading proﬁts by moving up one spot in the speed
+ranking among FTs. Moreover, the increasingly ﬁner time granularity of modern markets opens
+6Hence prices exhibit short-lived momentum and partial reversal within a trading round and do not follow a
+martingale. Such short-term predictability is often reported by empirical studies using trade-by-trade-level data. As
+summarized by Hasbrouck (1996), “at the level of transaction prices ... the random-walk conjecture ... is very easy to
+reject in most markets.”
+3
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+up more space for FTs to vary on speed. In a continuously operating market, no one could ever
+attain zero latency and traders can always beat competitors by achieving any slight speed advantage.
+Consequently, FTs engage in ﬁerce competition on speed and such competition tends to increase
+speed heterogeneity between FTs, which increases their market power and the speed tax levied on
+normal-speed traders.
+If policymakers want to lower the market power of order-anticipating FTs, they cannot ignore
+the impact of FTs’ speed diﬀerences. If, as prior studies typically assume, all FTs trade at the same
+speed, then the entry of a new FT always reduces FTs’ aggregate proﬁt. If, however, FTs may trade
+at varying speeds and an entrant is much faster than incumbent FTs, FTs may earn higher total
+proﬁt because in aggregate they experience more trading opportunities. Similarly, if a slow FT
+becomes faster but is still slower than the fastest FT, FTs’ aggregate proﬁt declines. If, however, a
+slow FT becomes much faster than all other FTs, then FTs’ aggregate proﬁt may increase.
+In practice, determining FTs’ speed hierarchies can be hard for policymakers. They can still,
+however, design policies to limit FTs’ aggregate market power. For example, they can limit the
+precision of an exchange’s timestamp and require the exchange to execute all orders with the same
+timestamp at the same price. This intervention would lower FTs’ aggregate market power for
+any given speed hierarchy because it would reduce speed heterogeneity among FTs. In addition,
+policymakers can make all FTs equally slower relative to normal-speed traders. FTs would then
+always earn lower total proﬁt.
+Even when inﬁnitely many FTs compete, the fastest FTs still earn strictly positive trading proﬁts
+as long as the number of fastest FTs is ﬁnite. In reality, the number of fastest FTs is very small
+owing to the physical limitations of the market.7
+Some traditional measures of a trader’s impact on market liquidity and information eﬃciency
+are not suitable for order-anticipating FTs.
+First, FTs in this model increase trading volume and apparently “provide” liquidity: they exit
+when liquidity demanders’ orders arrive and their exiting trades run in the direction that is opposite
+to that of liquidity demanders’ orders. Nonetheless, liquidity demanders in the model end up paying
+worse prices. To resolve this puzzle, note that FTs’ trades aﬀect prices before liquidity demanders’
+orders arrive. Hence FTs eﬀectively reallocate liquidity intertemporally—they consume liquidity
+7For example, the number of co-location spots is limited by the space.
+4
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+when it is cheap and supply liquidity when it is expensive.8 Overall, liquidity demanders are actually
+worse oﬀ.
+Second, FTs in this model accelerate price discovery but ultimately make prices less informative.
+In the brief time before normal-speed liquidity demanders’ orders arrive, FTs’ trades bring information
+to the market.9 Nevertheless, the information value of FTs’ trades is quickly superseded when the
+normal-speed traders’ orders arrive. Ultimately price informativeness is determined by the fraction
+of the informed trader’s orders that appear in the aggregate order ﬂow. Because the informed trader
+reduces her trading intensity in response to higher liquidity costs, the aggregate order-ﬂow becomes
+less informative. Consequently, despite a speedier price discovery process, prices are ultimately less
+informative after liquidity demanders have traded and FTs have exited.
+An FT’s eﬀect on the informativeness of the order-ﬂow is similar to a prying messenger’s eﬀect
+on the information content of a letter. Suppose that, just prior to delivering a letter, a messenger
+glances at it and summarizes the letter to the receiver. Although the summary is informative, its
+information value is supplanted momentarily by the letter itself. Furthermore, expecting the letter
+to be pried into, the sender, worrying about privacy, is less likely to write clearly. Hence the receiver
+is ultimately less informed.
+Prior studies typically assume that all FTs trade at the same speed. I show that this assumption
+likely results in underestimation of order-anticipating FTs’ negative impact on market liquidity and
+price informativeness because this impact is more severe when FTs trade at more heterogeneous
+speeds. If the negative impact of order-anticipating HFTs is severe, policymakers could improve
+market quality by reducing the speed heterogeneity among traders.
+1.1
+Related literature
+See Angel, Harris and Spatt (2011) and Menkveld (2016) for excellent surveys of the HFT literature.
+This paper diﬀers from prior studies in two key respects: (1) here the structure of FTs’ relative
+speeds is not restricted and (2) FTs are faster but less informed than the informed trader.
+First, speed homogeneity, typically assumed in the literature, is inconsistent with extensive
+anecdotal stories reported, for example, by Patterson (2013) and Lewis (2014), and ﬁndings reported
+8Hendershott and Riordan (2012) ﬁnd empirically that algorithmic traders demand liquidity when spreads are
+narrow and supply liquidity when spreads are wide.
+9This is consistent with empirical ﬁndings, such as those reported by Brogaard et al. (2014) and Carrion (2013).
+5
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+in empirical studies, such as Baron et al. (2012) and Baldauf and Mollner (2015). Moreover, HFTs’
+massive investment in speed would be hard to explain if they all traded at the same speed. The
+general speed structure allows this paper to examine the eﬀects of FTs’ speed hierarchies on their
+strategies, competition, and market quality. These eﬀects are missing from the literature because only
+a few special types of speed hierarchies have been considered. For example, in the models presented
+in the following papers, there is only one FT or all FTs trade at the same speed: Bernhardt and
+Taub (2008), Biais, Foucault and Moinas (2015), Brunnermeier (2005), Cartea and Penalva (2012),
+Dugast and Foucault (2017), Foucault, Hombert and Rosu (2016), Hirshleifer, Subrahmanyam and
+Titman (1994), Hoﬀmann (2014), Jovanovic and Menkveld (2016), Pagano and Röell (1993), and
+Yang and Zhu (2019). In Budish, Cramton and Shim (2015) and Menkveld and Zoican (2017), all
+HFTs have the same speed ex ante and one is picked randomly to win ex post. A similar case is
+discussed in Section 5.1. Because of the assumed speed homogeneity in these models, the number
+of HFTs is suﬃcient to capture FTs’ aggregate impact, whereas in this paper speed heterogeneity
+between FTs plays a central role. Martinez and Rosu (2013) do touch on a case in which FTs trade
+at two speeds. Their model assumes an exogenous pricing function and does not analyze the impact
+of speed hierarchies on normal-speed traders.
+Second, this paper assumes that FTs are less informed than the informed trader. Because of this
+information structure, FTs accelerate price discovery but ultimately make prices less informative.
+This complements the ﬁndings of Budish et al. (2015) and Menkveld and Zoican (2017) because they
+assume away information asymmetry between traders. Other studies, such as Bernhardt and Taub
+(2008), Foucault et al. (2016), and Martinez and Rosu (2013), typically assume that FTs are also the
+best informed traders about fundamentals. Information processing, however, is time-consuming. To
+reach an accurate understanding of economic forces requires a time commitment that far exceeds
+the time-frame in which HFTs operate. For example, it is hard to argue that HFTs understand Coca
+Cola better than Warren Buﬀett does. Given their high trading frequencies, HFTs in reality most
+likely trade based on rough analyses conducted quickly.
+Brunnermeier and Pedersen (2005) and Carlin, Lobo and Viswanathan (2007) also model
+predatory trading, albeit in substantially diﬀerent frameworks.
+In their models, traders have
+the same information, pricing functions are exogenous, and predators trade at the same speed.
+Consequently, these papers do not study the impact of diﬀerences in predatory traders’ speed on the
+6
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+pricing function or information eﬃciency.
+This paper also contributes to the industry organization literature because FTs essentially play a
+generalized Stackelberg game with multiple stages and multiple players at each stage. Diﬀering from
+Daughety (1990), Watt (2002), and Julien, Musy and Saïdi (2012), this paper’s pricing function is
+endogenous, which is pivotal to examining FTs’ impact on other traders. For example, contrary to
+the conclusions of the aforementioned papers, I ﬁnd that non-FTs are worse oﬀwhen FTs’ speeds
+are more heterogeneous. Finally, I show that making policies based on the Herﬁndahl index of FTs
+may lead to unintended consequences.
+The rest of the paper is organized as follows. Section 2 describes the model and the equilibrium.
+Section 3 discusses the impact of FTs’ speed hierarchies on their aggregate market power and related
+policy implications. Section 4 examines the impact of FTs on other traders’ strategies and the market
+quality. Section 5 brieﬂy discuss several extensions. Section 6 concludes. Proofs are in the Appendix.
+2
+Model
+In this section I introduce the model setup and presents the equilibrium.
+2.1
+Setup
+Asset and traders. A risky asset is traded. Its true value v is normally distributed as
+v ∼N(v0, σ2
+v).
+(1)
+In this paper N(m, v2) denotes a normal distribution with mean m and variance v2.
+All traders are risk neutral.10 There are three types of normal-speed traders: (1) one strategic
+informed trader who knows the risky asset’s true value v; (2) noise traders who trade randomly;
+and (3) a continuum of passive liquidity providers who set the pricing functions, absorb the residual
+order-ﬂow imbalances, and expect to make zero proﬁts. It should be noted that passive liquidity
+providers do not represent HFTs who use mainly limit-orders.11 Instead, they represent the large
+number of traders who have no speed advantage, information advantage, or motivation to initiate
+10We will see that FTs’ proﬁts are risk-free. Hence their risk attitude is irrelevant.
+11Order types used by HFTs will be discussed later in this section.
+7
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+trades. They are the ultimate liquidity providers in this model. I do not call them “market makers”
+because they are not necessarily designated market makers.12
+In addition, there are N strategic fast traders (FTs). They observe a common noisy signal of
+normal-speed liquidity demanders’ incoming orders and react at J speeds to establish their positions.
+FTs can choose the timing of their exits. Consistent with empirical evidence, Lemma 2 will show
+that FTs should liquidate when liquidity demanders arrive instead of waiting to liquidate later. By
+contrast, the informed trader in this model, representing long-term investors, can wait until v is
+revealed and then eﬀectively exit with zero price impact.
+Clearly, the informed trader and the noise traders demand liquidity and the passive liquidity
+providers provide liquidity. It is unclear a priori whether FTs enhance market liquidity. In section 4
+I show that in equilibrium FTs act as if they “provide liquidity” to the informed trader and the noise
+traders, and yet make them worse oﬀ.
+Timeline and information structure. The timeline of events is common knowledge to all traders.
+Consider one round of trading. The trading round starts at time 0 and ends at time 1+. The interval
+(0, 1+) represents a short time-frame during which passive liquidity providers lag behind FTs. This
+interval could last a few seconds or even less.
+Event
+Price
+Time t =
+0
+t1
+1
+1+
+0+
++
++
++
++
++
+Order ﬂow
+Passive
+liquidity
+providers set
+P(·)
+p0 = E[v]
+FT enters position
+FT: u1
+pt1
+Informed and
+Noise Traders
+arrive. FT
+exits.
+Informed: x
+Noise: z
+FT: −u1
+p1
+Passive liquidity
+providers set
+ﬁnal quote
+p1+ = E[v|F1]
+Figure 1.
+Timeline of a trading round with only one FT.
+Figure 1 illustrates the timeline for the simplistic case with only one FT, who buys u1 shares at
+12By contrast, Budish et al. (2015) and Menkveld and Zoican (2017) eﬀectively assume all passive liquidity providers
+are HFTs too. In practice not all intermediaries become HFTs. For example Baron et al. (2012) ﬁnd that non-HFT
+market makers lose mostly to HFTs and earn proﬁts from other non-HFT traders. Kirilenko et al. (2017) ﬁnd that
+HFTs’ trading activities “are clearly distinct from Market Makers.”
+8
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+time t1 and exits the position at time 1. More generally, the timeline of events with multiple FTs is
+as follows.
+At time 0, passive liquidity providers set the initial quote p0 and a publicly observable pricing
+function P(·). The pricing function is ﬁxed during the time interval (0, 1+), reﬂecting passive
+liquidity providers’ speed disadvantage relative to FTs. Orders arriving at the same instant are
+executed at the same price as determined by P(·).13
+At time 0+, the informed trader, knowing v and observing P(·), submits an order for x shares.
+Noise traders submit orders for z shares in total, where
+z ∼N(0, σ2
+z).
+(2)
+z is independent of the risky asset’s value v and the distribution of z is common knowledge to all.
+The aggregate size of normal-speed liquidity demanders’ orders is thus
+y = x + z.
+(3)
+These orders suﬀer from latencies and arrive in the market later, at time 1.
+Immediately after time 0+, with probability ρ, FTs observe a signal Iy that perfectly reveals y.
+With probability 1 −ρ, Iy is purely noise.14 The parameter ρ is a measure of the accuracy of FTs’
+signal. FTs know whether Iy is informative. Hence
+ˆy := E[y|Iy] =
+
+
+
+
+
+
+
+y
+with probability ρ,
+0
+with probability 1 −ρ.
+(4)
+In equilibrium FTs would not trade when Iy is pure noise. Whether Iy is informative is independent
+of all other random variables in the model. To focus on the impact of speed diﬀerences, I assume
+that FTs observe the same signal so that they diﬀer only with respect to speed. FTs thus trade in
+the same direction.15
+13Hence, as proposed by Budish et al. (2015), prices are essentially determined in uniform batch auctions held at
+time tj and 1. FTs, however, still earn positive proﬁts because they are faster than passive liquidity providers.
+14Alternatively, we could assume the signal is always partially informative. For example, Iy = y + ey where ey is a
+noise term and corr(Iy, y) = ρ.
+15Boehmer, Li and Saar (2018) and Chaboud, Chiquoine, Hjalmarsson and Vega (2014) ﬁnd that algorithmic traders
+9
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+Upon observing Iy, FTs react with varying speeds. Suppose there are J possible instants to
+trade t1 < t2 < · · · < tJ between time 0+ and time 1. If an FT arrives in the interval (ti−1, ti],
+she may trade at time ti, ti+1, · · · , tJ and time 1. When an FT observes y, she will not waste any
+trading opportunity and trade at all these instants.16 A faster FT is able to trade earlier and more
+frequently. To describe FTs’ speed hierarchies—the hierarchical structure of FTs’ relative speeds, I
+deﬁne speed proﬁle as follows.
+Deﬁnition 1 (Speed proﬁle of fast traders). The speed proﬁle {n1, n2, · · · , nJ} is a vector of
+J numbers, where nj is the number of FTs who are able to trade at time tj.
+Without loss of generality, assume that the fastest FTs arrive in the interval (t0, t1]. Then n1 ≥1,
+nj weakly increases with j, and nJ = N.17
+FTs know the speed hierarchies and trade accordingly.18 Let uj,k denote the size of the k-th
+order at time tj. Time-tj orders are executed at the same price ptj depending on
+uj :=
+nj
+X
+k=1
+uj,k,
+(5)
+the total size of the orders.19 Denote cumulative order size of FTs arriving before time tj by
+Sj−1 :=
+j−1
+X
+i=0
+ui.
+(6)
+Let u0 = 0 and S0 = 0 for completeness.
+At time 1, the informed trader’s and noise traders’ orders of y shares arrive. FTs completely
+liquidate their positions. Lemma 2 will show that exiting at time 1 is optimal for FTs under
+reasonable assumptions about the price impact of exiting in future trading rounds. The aggregate
+order size of FTs is thus −SJ = −(u1 + u2 + · · · + uJ) shares. Passive liquidity providers execute
+and HFTs tend to use positively correlated strategies.
+16In equilibrium an FT always trades a non-zero quantity at every possible instant unless ˆy = 0.
+17If n1 = 0, we can remove it from the speed proﬁle and reduce J by 1 without aﬀecting any result.
+18The game between FTs is similar to the game between multiple informed traders in Holden and Subrahmanyam
+(1992). There are two key diﬀerences. First, in this model the number of FTs is not ﬁxed but increases over time.
+Second, in this model the pricing function is set by slower liquidity providers and thus does not change every time an
+FT trades.
+19When the timestamp is precise enough, no two orders are pooled and every order is executed at a diﬀerent price.
+This is a special case in which every FT arrives at a unique instant and every FT can trade only once. All results hold
+qualitatively.
+10
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+all the aggregate orders of y −SJ shares at price p1.20
+At time 1+, passive liquidity providers set the quote at p1+ using all the information they learn
+during the trading round. The trading round ends. This paper models only one representative
+trading round. In a dynamic model of multiple trading rounds, p1+ would be the opening quote for
+the next trading round.
+In summary, passive liquidity providers set the opening quote p0 and the pricing function P(·)
+at time 0. During the trading round, they receive orders of {u1, u2, · · · , uJ, y −SJ} shares at time
+{t1, t2, · · · , tJ, 1}. They execute the orders at prices {pt1, pt2, · · · , ptJ, p1}. At the end of the trading
+round, they set the closing quote p1+.
+As the timeline illustrates, traders fall into speed hierarchies. First, FTs are faster than normalspeed liquidity demanders. Any FT can trade at least twice in a trading round whereas an informed
+trader or a noise trader can trade only once. Second, FTs are also faster than passive liquidity
+providers since FTs can enter and liquidate positions before passive liquidity providers are able to
+adjust the pricing function at time 1+. Third, FTs vary in speed. Faster FTs react more quickly and
+trade more frequently than slower FTs. Without FTs, the model would be equivalent to the static
+model of Kyle (1985) in which traders trade at the same speed.
+Discussion on FTs’ order-ﬂow information Iy.
+In this paper I assume that Iy is a noisy signal of y, the aggregate order-ﬂow of normal-speed
+liquidity demanders. As a result, FTs in this model do not speciﬁcally target the informed trader’s
+order x or the noise traders’ orders z and proﬁt from any order they can predict, informative or
+not.21 For example, the false tweet posted by hackers announcing explosions in the White House
+(studied in Baldauf and Mollner (2015)) and recommendations made by Jim Cramer on his popular
+TV show (studied in Engelberg, Sasseville and Williams (2012)) convey no true information but
+are still valuable to FTs because such events help FTs predict the incoming order-ﬂow generated
+by viewers of the show. In such situations, FTs do not need to ﬁnd out whether such events are
+truly informative, which is time-consuming, because they exit before the price reverts to the right
+20In practice every FT can exit at the same time because once an FT buys uj shares, she can place a limit sell order
+of uj shares at the same price level p1. Then when y arrives at time 1, all FTs’ limit sell orders are executed at the
+price p1. FTs may even place limit orders at many price levels before they observe y to ensure priority in execution. If
+they do not observe y, they may simply cancel these limit orders.
+21Consistent with this assumption, Biais and Woolley (2011) comment that “HFT ... concentrates more on the
+information ... about the trading strategies or signals of other market participants.”
+11
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+levels. Yang and Zhu (2019) assume “back-runners” (similar to FTs in this paper) cannot predict
+noise traders’ orders and anticipate only the informed traders’ orders.22 Whether HFTs can better
+anticipate orders of the informed trader or noise traders is a very challenging empirical question that
+lies beyond the scope of this paper. Nevertheless, it seem to be a reasonable presumption that HFTs
+trade on any order they can anticipate and are able to predict some noise traders’ orders.
+In practice, the order-ﬂow signal Iy may come from various sources. First, FTs may quickly
+detect patterns in the limit-order book because they subscribe to exchanges’ faster and more
+detailed data feeds. Hasbrouck and Saar (2013), for example, ﬁnd pronounced peaks in activities
+around 10-30 millisecond into every second. Such patterns, possibly generated by less sophisticated
+algorithms, are not detectable in data with second-level precision but are detectable in data with
+millisecond-level precision. Sağlam (2018) presents evidence that some order-execution algorithms
+leave patterns that can make it possible to predict incoming orders and, when such patterns are more
+prominent, the originator of these orders suﬀers a more severe implementation shortfall. Second,
+FTs react to some events, such as earnings announcements, news stories, and social media posts,
+more quickly. As discussed in the previous paragraph, such events need not be truly informative
+about the fundamentals. They are useful to FTs as long as they help FTs predict order-ﬂow. Third,
+FTs may detect that an order is being rerouted between markets, as described in Patterson (2013)
+and Lewis (2014).
+The speciﬁcation of Iy also implies that FTs in this paper are faster but less informed than the
+informed trader, because Iy is a noisy observation of y, which is a noisy signal of the informed trader’s
+order size x. This assumption reﬂects the realistic trade-oﬀbetween trading speed and information
+accuracy. In practice HFTs make decisions almost in real time and cannot conduct time-consuming,
+deep analysis of “soft” information regarding the long-term value. Traders who conduct such analyses
+probably cannot trade very quickly. Unlike HFTs, these traders could hold large inventories for
+long durations because v is typically revealed very slowly. In addition, FTs’ information advantage
+expires at time 1 because the aggregate order-ﬂow y, which is more informative than Iy, is revealed
+at time 1. FTs do not lose to the more informed trader because FTs’ speed advantage allows them
+to exit by the time the informed trader arrives.
+22Yang and Zhu (2019) focus on how informed traders mask their trading motives by randomizing. In contrast, this
+paper focuses on how FTs compete once they anticipate some incoming orders.
+12
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+FTs in this model, eﬀectively less-informed traders, make the better-informed trader trades
+less aggressively, thereby making the price ultimately less informative. In contrast, in Foster and
+Viswanathan (1994), the presence of a less-informed trader forces the better informed trader to trade
+more aggressively on the common part of both traders’ private information. The diﬀering implication
+arises from the subtle diﬀerence in information structure between the two models. In Foster and
+Viswanathan (1994) the two informed traders obtain their information from two independent sources.
+If one informed trader does not trade on their common information, the other informed trader would,
+which renders the information less valuable in the future. Hence both informed traders trade more
+aggressively. In this model, however, FTs have no independent source of information because Iy is
+an noisy observation of the informed trader’s order x, not the fundamental value v. If the informed
+trader does trade, the order-ﬂow is uninformative and FTs’ traders are uninformative. The informed
+trader hence has no incentive to be more aggressive. Instead, she trades less aggressively due to her
+higher price impact.
+Discussion of FTs’ order types.
+HFTs in practice deploy multiple strategies. Some HFTs use mainly market orders and others
+use mainly limit orders. This paper does not attempt to model all HFTs, focusing instead on
+order-anticipating HFTs who use market orders.23 Order-anticipating HFTs could also use only limit
+orders. As Hasbrouck and Saar (2009) point out, a limit-order strategy may have eﬀects similar
+to those of a market-order strategy. For example, HFTs who anticipate a large buy order could
+cancel their limit sell orders at low prices and submit (or keep) limit sell orders at higher prices. For
+liquidity demanders, these HFTs have the same eﬀects as order-anticipating HFTs who use market
+orders. In the model presented in Section B, order-anticipating FTs use limit orders and their trading
+results in “phantom liquidity” that sometimes disappears just before liquidity demanders arrive.
+2.2
+Equilibrium
+I now present the symmetric linear equilibrium in which FTs arriving at the same moment follow
+the same strategy and traders use linear strategies.
+23Baron et al. (2012), Brogaard, Hagströmer, Nordén and Riordan (2015), and Hagströmer and Nordén (2013) all
+ﬁnd that a signiﬁcant portion of HFTs trade predominantly with market orders.
+13
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+Deﬁnition 2 (Equilibrium). The following conditions are satisﬁed in equilibrium:
+1. Proﬁt maximization of the informed trader. Given others traders’ strategies and the asset’s
+true value v, at time 0 the informed trader submit an order of x shares to maximize her expected
+proﬁt E[πI] = E[x(v −p1)|v], where p1 is the transaction price at time 1.
+2. Proﬁt maximization of FTs. Given other traders’ strategies and Iy, the k-th FT arriving at
+time tj trades uj′,k shares at tj′ for j′ ∈{j, j + 1, · · · , J} and liquidates her inventory at ¯tj,k ≥tj to
+maximize her expected proﬁt E
+h
+πF
+j,k
+ Iy
+i
+= E
+hPJ
+j′=j uj′,k(p¯tj,k −pt′
+j)
+ Iy
+i
+. I choose the symmetric
+equilibrium where FTs trade the same quantity at any instant, i.e., uj,k = uj,l for all j, k, l.
+3. Competitive pricing function. Given other traders’ strategies, at time 0 passive liquidity
+providers commit to a pricing function P(·) they will use during the interval [0, 1] such that their
+expected trading proﬁt in this trading round is zero.
+4. Informationally eﬃcient opening and closing quotes. Given other traders’ strategies and the
+order-ﬂow they observe, passive liquidity demanders set the opening quote p0 and the closing quote
+p1+ to equal their expectation of v at time 0 and at time 1+.
+I make the following simplifying assumption to obtain the equilibrium in closed form. In Section
+B I discuss a diﬀerent model and present an equilibrium, solved numerically, in which all strategies
+are allowed to be non-linear.
+Assumption 1 (Linearity). Passive liquidity providers, upon receiving the market order of aggregate size ytj shares at tj ∈(0, 1], ﬁll the order at the average price of
+ptj = ptj−1 + λIytj,
+(7)
+where ptj−1 is the average price of the previous trade at time tj−1. For the sake of completeness, let
+pt0 be the initial quote p0. The price impact parameter λI is ﬁxed between time 0 and 1 because of
+passive liquidity providers’ speed disadvantage compared with FTs. The informed trader chooses a
+trade size that is linear in the pricing error
+x = β(v −p0).
+(8)
+14
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+FTs choose trade sizes that are linear in the residual order size that they can anticipate:24
+uj,k = αj
+nj
+(ˆy −Sj−1) .
+(9)
+Assumption 1 implies that prices during the trading round are linear in the cumulative order-ﬂow
+Sj. Let ¯u = −SJ if FTs liquidate at time 1 and ¯u = 0 if FTs liquidate after time 1. Then
+ptj = p0 + λISj = p0 + λI P
+i≤j
+Pni
+k=1 ui,k and
+p1 = p0 + λI(SJ + y −¯u).
+(10)
+Because y = x + z = β(v −p0) + z, the aggregate size of all orders traded in the interval [0, 1]
+¯y := SJ + y −¯u is linear in v. Therefore, the closing quote is
+p1+ = E[v|F1+] = E[v|¯y] = v0 + λP ¯y.
+(11)
+In Kyle (1985), market makers are fast enough to use all their information to price every trade.
+Hence a single λ suﬃces to measure a market order’s immediate impact on transaction price and its
+permanent impact on market makers’ belief. By contrast, in this model passive liquidity providers
+are slow and cannot adjust the pricing function every time an FT trades. Thus, they need to set two
+price impact parameters: the immediate price impact parameter λI and the permanent price impact
+parameter λP . Speciﬁcally, at time 0, passive liquidity providers commit to pricing market orders
+upon their arrivals using λI. When passive liquidity providers catch up with the market at time 1+,
+they use λP to set the ﬁnal quote p1+ to equal their best estimate of v. Thus trading prices may
+temporarily deviate from passive liquidity providers’ estimate of v before time 1+.25 An immediate
+result is that λI cannot be lower than λP .
+Lemma 1. If passive liquidity providers do not expect to lose, they set λI ≥λP ≥0.
+Intuitively, in addition to losing to the informed trader, passive liquidity providers also lose
+to FTs. To oﬀset the additional losses to FTs, passive liquidity providers have to charge liquidity
+24This is equivalent to assuming that uj,k is linear in p1 −ptj−1.
+25This is consistent with the ﬁnding of Hendershott, Jones and Menkveld (2011) that algorithmic trading increases
+the informativeness of quotes relative to trades.
+15
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+demanders a higher price impact than what the information content can justify; hence λI > λP .26
+In this paper only one trading round is considered and the price impact parameter λI and λP in
+this trading round is endogenously determined in equilibrium. To investigate the possibility that
+FTs liquidate in future trading rounds, I make the following assumption regarding λf, FTs’ expected
+immediate price impact parameter in future trading rounds.
+Assumption 2. (Future price impact is not signiﬁcantly lower) λf ≥λP .
+It is worth noting that this assumption does not imply that λf ≥λI because λI ≥λP . The
+assumption holds as long as the future immediate price impact λf is not signiﬁcantly lower than
+λI.27 The assumption is suﬃcient, yet not necessary, for the next result.
+Lemma 2 (FTs prefer short holding horizons). Given Assumption 2, FTs prefer to liquidate
+at time 1 than before or after time 1.
+Most empirical studies ﬁnd that HFTs hold close to zero inventory at the end of a trading day
+and their inventory levels rapidly mean-revert to zero within a trading day.28 The overnight margin
+costs or aversion to inventory risk can explain HFTs’ incentive to hold zero end-of-day inventory.29
+Lemma 2 provides a possible explanation for rapid mean-reversion within a day even for risk neutral
+FTs:30 the presence of order-anticipating FTs forces slower liquidity providers to charge a price
+premium (λI ≥λP ). Hence the time-1 price p1 = p0 +λI ¯y must overshoot passive liquidity providers’
+best estimate p1+ = p0 + λI ¯y. If FTs do not liquidate at time 1 and wait to liquidate later, they
+would be liquidating starting from the inferior price p1+ and lose the price gap |p1 −p1+|.31
+Theorem 1 (Linear Equilibrium). Given Assumption 1 and Assumption 2, there exists a sym26This divergence between the execution price and informationally eﬃcient price also arises in the model of Glosten
+(1994), where the price schedule is non-linear. In Section B, I discuss the impact of order-anticipation in that
+framework.
+27Long-term investors, for example the informed trader in this model, may not need to liquidate soon because they
+could hold the asset forever and collect dividends, eﬀectively achieving a zero liquidating price impact.
+28See, for example, Kirilenko et al. (2017) and Biais and Woolley (2011). SEC (2010) even uses “very short
+time-frames for establishing and liquidating positions” as one criterion for deﬁning HFTs.
+29Adrian, Capponi, Vogt and Zhang (2017) ﬁnd that overnight inventory pressure makes the treasury market less
+liquid as the end-of-day approaches.
+30Risk averse FTs would have stronger incentives to liquidate sooner because the order-ﬂow in the future is riskier.
+31In Foster and Viswanathan (1994) market makers are as fast as informed traders. Hence λI = λP and there is no
+such predictable price gap. Consequently, the less informed trader does not unwind her position early.
+16
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+metric linear equilibrium in which all FTs liquidate at time 1 and
+the initial quote p0 = v0,
+(12)
+the (j, k)-th FT’s order uj,k = αj
+nj
+(ˆy −Sj−1) for 1 ≤k ≤nj,
+(13)
+the informed trading size x = β (v −p0) ,
+(14)
+the pricing function ptj = ptj−1 + λIyj,
+(15)
+and the ﬁnal quote p1+ = v0 + λP y
+(16)
+where the strategy parameters are
+β = σz
+σv
+r1 −ργ
+1 + ργ ,
+λI = σv
+2σz
+r1 + ργ
+1 −ργ ,
+λP = σv
+2σz
+p
+1 −(ργ)2,
+(17)
+αi =
+
+
+
+
+
+
+
+nJ
+nJ+1
+i = J
+ni(ni+1−2gi+1)
+ni(ni+1−2gi+1)+ni+1
+1 ≤i ≤J −1
+(18)
+Let α0 = u0,k = S0 = 0 for completeness. FTs’ total market power starting from ti is measured by
+gi :=
+J
+X
+j=i
+ 
+αj
+1 −αj
+jY
+k=i
+(1 −αk)2
+!
+=
+
+
+
+
+
+
+
+αJ(1 −αJ)
+i = J
+αi(1 −αi) + (1 −αi)2gi+1
+1 ≤i ≤J −1
+.
+(19)
+In particular, FTs’ total market power over the entire trading round is represented by
+γ := g1 =
+J
+X
+j=1
+ 
+αj(1 −αj)
+j−1
+Y
+i=0
+(1 −αi)2
+!
+.
+(20)
+Remark. Lemma A.8 in the Appendix shows that γ ∈[0, 0.5]; by deﬁnition, ρ ∈(0, 1]. Hence,
+ργ ∈[0, 0.5] and β, λI, λP are well deﬁned.
+Traders’ strategy parameters {αj}, β, λI, and λP are determined by the volatility of the
+fundamental value σv, the volatility of noise trading σz, the quality of FTs’ information ρ, and FTs’
+speed proﬁle {n1, n2, · · · , nJ}.
+The next result, illustrated in Figure 2, shows that ργ fully summarizes FTs’ impact on normalspeed traders. Speciﬁcally, when ργ = 0, normal-speed traders use the same strategies as in Kyle
+17
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+(1985): λI = λP =
+1
+2β = σv
+2σz . When ργ increases, λI increases, λP falls, and β declines.
+Corollary 1 (FTs’ impact on other traders’ strategies). Keeping σv/σz constant, when ργ
+increases, passive liquidity providers charge higher price impact to execute trades(λI ↑), the informed
+trader trades less aggressively (β ↓), and passive liquidity providers learn less information from the
+order-ﬂow (λP ↓).
+Proof. Follows directly from Theorem 1.
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+Immediate price impact λI
+Permanent price impact λP
+λ in Kyle(85)
+ργ
+Price impact / σv
+σz
+(a) Price impact and ργ
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+β in Kyle(85)
+Informed trading intensity β
+ργ
+Trading intensity / σv
+σz
+(b) Trading intensity and ργ
+Figure 2. Impact of ργ on normal-speed traders.
+When passive liquidity providers receive an order of y shares, they mark the price up by λIy
+and impose a price-impact surcharge of λIy2. In equilibrium passive liquidity providers eﬀectively
+transfer a fraction ργ of the surcharge to FTs while transferring the remaining surcharge to the
+informed trader. FTs eﬀectively levy a speed tax on normal-speed traders and ργ is the speed tax
+rate. When ργ = 0, FTs make zero proﬁts and the equilibrium reduces to the static equilibrium
+in Kyle (1985) from which FTs are absent. When ργ increases, passive liquidity providers need to
+transfer a higher fraction (ργ ↑) of their price-impact surcharges to FTs. In order to break even,
+passive liquidity providers have to raise the immediate price impact (λI ↑) to charge more for ﬁlling
+the same order. Seeing the higher price impact, the informed trader trades less aggressively (β ↓)
+in response. As a result, the ﬁnal price of the trading round is less sensitive to the cumulative
+order-ﬂow of the trading round (λP ↓).
+18
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+The impact of ρ is intuitive: FTs earn more proﬁts when they have a more accurate order-ﬂow
+signal. The parameters {gi} , including γ = g1, are less transparent. Theorem 1 shows that
+{gj}, together with FTs’ trading intensities {αj}, are ultimately determined by FTs’ speed proﬁle
+{n1, n2, · · · , nJ}.
+Proposition 1. At tj, FTs’ trading intensity αj satisﬁes 0 <
+1
+J−j+2 ≤αj ≤
+nj
+nj+1 < 1.
+Intuitively, an FT chooses her trading intensity αj to balance the instantaneous proﬁt at tj and
+proﬁt potential between tj and 1. At time tj, FTs’ trading intensity αj is lower than the “myopic”
+level
+nj
+nj+1 and higher than the “patient” level
+1
+J−j+2. The myopic level αj =
+nj
+nj+1 is optimal when
+the FT has only one trading opportunity left in the interval [tj, 1). The patient intensity level
+αj =
+1
+J−j+2 is optimal if only one FT is present.32
+FTs’ trading intensities {αj} then determine γ, which, as the next result shows, measures FTs’
+total market power for a given signal quality ρ because FTs’ aggregate proﬁt increases with ργ.
+Proposition 2. FTs’ aggregate expected proﬁt is E
+
+πF 
+=
+σvσzργ
+√
+1−(ργ)2 and it increases with ργ.
+In Section 3 I discuss how FTs’ speed proﬁle aﬀects their competition and market power γ.
+3
+Fast traders’ competition and market power
+As Proposition 2 shows, γ can be considered a measure of FTs’ aggregate market power since
+FTs’ aggregate proﬁt increases with γ. This section studies how FTs’ speed diﬀerences aﬀect their
+competition, thereby inﬂuencing γ. Although in this model, as proposed by Budish et al. (2015),
+prices are essentially determined by uniform batch auctions, I show that not every type of competition
+between FTs reduces their aggregate market power γ when FTs may diﬀer in speed.
+Roughly speaking, FTs’ aggregate market power increases when their speeds are more heterogeneous. As a result, FTs’ may earn higher total proﬁts when new FTs enter the market. Even
+when inﬁnitely many FTs compete, their aggregate proﬁt in general does not vanish because, in this
+model, diﬀering from most existing studies, FTs may trade at varying speeds.
+32When FTs do not observe y, although αj > 0, they do not trade because ˆy = E[y] = 0.
+19
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+3.1
+Fast traders’ proﬁts and their speed ranking
+FTs have strong incentives to compete on speed because an individual FT’s trading proﬁt depends
+crucially on her speed relative to other FTs.
+Proposition 3 (FTs’ proﬁts and relative speeds). An FT arriving at time ti earns more than
+5.6k times as much expected proﬁts as an FT arriving at ti+k.
+An FT could more than quintuple her expected trading proﬁts by moving up one spot in the
+speed ranking. Arriving earlier, even by a nanosecond, enables an FT to (1) establish larger positions,
+(2) trade at better prices, and (3) enjoy more trading opportunities.33 Eﬀectively, an FT who arrives
+earlier enjoys greater market power.
+This result explains FTs’ obsession over speed. For example, Lou Modano, head of global
+infrastructure for NASDAQ OMX, comment that there is “a lot of opportunity for new [hardware]
+players” to feed a ceaseless demand for ever lower latency in electronic trading systems (http:
+//goo.gl/ZNV6IJ). Although FTs are already faster than most traders, they continue to invest in
+the latest speed technologies because they need to be faster than other FTs.
+This result also explains why the number of FTs is very limited in every market: when the
+number of FTs increases, the slowest FT’s trading proﬁts quickly approach zero. Given the high
+costs of speed technologies, only a small number of FTs can survive.
+3.2
+An example
+It is of course not surprising that having a speed advantage is valuable. More importantly, we are
+interested in understanding how FTs’ strong incentives to become faster aﬀect their aggregate market
+power γ. Let us consider a hypothetical example with three FTs to gain some insights regarding
+FTs’ speed proﬁles and their market power. Denote by γ{n1,n2,··· ,nJ} FTs’ market power γ when the
+speed proﬁle is {n1, n2, · · · , nJ}.
+Example: Consider a market with three FTs: A, B, and C. They anticipate that a market order
+submitted by a normal-speed investor M will arrive in 1 second.
+33Baron et al. (2012) that ﬁnd relative speed signiﬁcantly aﬀects an HFT’s proﬁt. Slowing other FTs down could
+also improve an FT’s speed relative to that of other FTs. Consistent with this intuition, Gai, Yao and Ye (2012) and
+Egginton, Ness and Ness (2016) ﬁnd evidence that some HFTs use the “quote-stuﬃng” strategy to slow other traders.
+20
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+Stage 1 Initially the timestamp precision is 1 second. All three FTs arrive within 1 second. The
+exchange cannot determine their arrival sequence and ﬁlls all FT’s orders at the same price.34
+The speed proﬁle is {3}. Any FTs earns the same proﬁt and their market power γ{3} =
+3
+4
+ 1 −3
+4
+
+= 3
+16 ≈0.188.
+Stage 2 The exchange increases the timestamp precision to 0.5 second.
+FT A subscribes to the
+exchange’s faster data feed and upgrades her hardware. As a result, A can trade twice: once
+before t = 0.5 by herself and once after t = 0.5 with the other two FTs B and C. FTs’ speed
+proﬁle becomes {1, 3}. The ratio of the trading proﬁt of A, B, and C is 15 : 1 : 1. FTs’ total
+market power increases to γ{1,3} ≈0.302.
+Stage 3 FT B upgrades her algorithm so that she can also trade once before t = 0.5 and once after
+t = 0.5. From the perspective of the exchange, A and B eﬀectively have the same speed and
+FTs’ speed proﬁle becomes {2, 3}. The ratio of the trading proﬁt of A, B, and C is 15 : 15 : 1
+and FTs’ market power γ{2,3} ≈0.256.
+Stage 4 FT C improves her algorithm and become as fast as A and B. Every FT earns the same
+trading proﬁt. FTs’ speed proﬁle becomes {3, 3} and market power γ{3,3} ≈0.214.
+Stage 5 Normal-speed investor M switches to a faster broker and her order arrives earlier at t = 0.5.
+FTs’ speed proﬁle becomes {3} and market power returns to γ{3} ≈0.188.
+A
+B
+C
+γ = 0.188
+Expected Proﬁt
+Speed proﬁle { 3 }
+A
+B
+C
+γ = 0.302
+Speed proﬁle {1 3}
+A
+B
+C
+γ = 0.256
+Speed proﬁle {2 3}
+A
+B
+C
+γ = 0.214
+Speed proﬁle {3 3}
+Stage 1
+Stage 2
+Stage 3
+Stage 4
+Stage 5
+Figure 3. Example of FTs’ competition.
+34In Section 5.1 I consider a case in which if the exchange cannot diﬀerentiate the time priority of certain orders,
+the exchange executes these orders in a random sequence at diﬀering prices.
+21
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+The example, illustrated in Figure 3, shows several eﬀects when FTs trade at varying speeds: (1)
+Although the number of FTs is constant, FTs’ total market power γ may vary substantially. The
+number of FTs is thus not a suﬃcient statistic of their market power. (2) A ﬁner time granularity can
+increase FTs’ market power: γ is higher at stages 2-4 than at stage 1. (3) An FT’s speed investment
+may have an ambiguous impact on their total market power: γ increases from stage 1 to stage 2 but
+decreases from stage 2 to stage 4. (4) FTs earn higher proﬁts when every FT becomes faster: γ is
+higher in stage 4 than in stage 1. (5) FTs may not beneﬁt from their speed investment. FTs’ trading
+proﬁt is the same at stage 1 and stage 5. Their net proﬁts decrease because they have to pay for
+better speed technologies, including the exchange’s service.
+In this example a ﬁner time granularity triggers an arms race in speed technology—a trader
+could earn more trading proﬁt if others do not upgrade but would earn the same trading proﬁt if
+everyone upgrades. Everyone, except for the speed technology vendors, would have been better oﬀif
+the time granularity stayed the same.
+3.3
+Speed hierarchies and fast traders’ market power γ
+We now examine the general relationship between FTs’ speed proﬁle {n1, n2, · · · , nJ} and their
+aggregate market power γ.
+First, FTs’ aggregate power γ can vary substantially depending on the speed proﬁle even when
+the number of FTs N and FTs’ total number of trading opportunities J are given.
+Proposition 4 (Bounds of FTs’ market power γ). Given N, the number of FTs, and J, FTs’
+total number of trading opportunities, FTs’ market power γ is maximized when the speed proﬁle is
+{1, 1, · · · , N} and is minimized when the speed proﬁle is {N, N, · · · , N}. Given J, γ is maximized
+when there is only one FT (speed proﬁle {1, 1, · · · , 1}); given N, γ is minimized when all FTs trade
+once simultaneously (speed proﬁle {N}). Formally,
+N
+(1 + N)2 = γ{N} ≤γ{N,N,··· ,N} ≤γ{n1,n2,··· ,nJ} ≤γ{1,1,··· ,N} ≤γ{1,1,··· ,1} =
+J
+2J + 2 ≤0.5.
+(21)
+Figure 4 illustrates the results. FTs’ total market power γ is maximized when the speed proﬁle is
+{1, 1, · · · , 1}. In this situation, the degree of competition between FTs at any instant is minimized
+because there is only one FT. FTs enjoy the least market power when the speed proﬁle is {N}. In
+22
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+(a) Number of FTs N = 2.
+(b) Number of FTs’ trades J = 5.
+Figure 4. Bounds of FTs’ market power γ.
+this case all FTs trade once at the same moment and the degree of competition between FTs reaches
+the highest level.
+It is not surprising that FTs’ market power γ generally increases with J and decreases with N.
+First, J—FTs’ total number of trading opportunities before time 1—measures the aggregate speed
+advantage FTs enjoy over normal-speed traders. When J increases, FTs in aggregate are able to
+exploit normal-speed traders’ speed disadvantage to a greater extent and earn higher proﬁts. Second,
+N—the total number of FTs—measures the degree of competition between FTs at time tJ.
+Moreover, FTs’ market power γ should also decrease with nj—the number of FTs trading at
+{tj}—for any j ∈{1, 2, · · · , J} because FTs trading at the same instant engage in a Cournot like
+competition. When nj increases, competition reduces the proﬁts of FTs trading at and after tj.
+Therefore, FTs’ aggregate market power γ is not fully determined by N and J because {nj} for
+j < J are not uniquely determined by N and J. A speed proﬁle is valid as long as 0 < n1 ≤n2 ≤
+· · · nJ−1 ≤nJ = N.
+As Figure 4 demonstrates, the range of FTs’ aggregate market power γ is still quite wide when
+N and J are given. To assess the impact of a potential policy intervention, a regulator in general
+would need to know how the intervention aﬀects the entire speed proﬁle of FTs, which can be very
+costly. The next result shows one exceptional case in which regulators can reduce γ without fully
+knowing the speed proﬁle.
+Proposition 5 (FTs’ aggregate market power increases with their speed heterogeneity).
+23
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+Given N, the number of FTs, bunching non-empty neighboring groups in an FTs’ speed proﬁle lowers
+FTs’ market power γ and splitting one group of FTs into neighboring groups increases γ.
+Bunching two neighboring groups of FTs makes their speed eﬀectively the same, thereby reducing
+their speed heterogeneity. FTs’ aggregate market power γ falls, for two reasons. First, bunching
+reduces FTs’ aggregate number of trades from J to J −1. Second, the number of FTs at tj increases
+from nj to nj+1, intensifying FTs’ competition at tj and reducing FTs’ proﬁt potential at subsequent
+instants. Both eﬀects lower FTs’ market power γ.
+This result suggests that weakening the time priority rule always reduces FTs’ aggregate market
+power for any existing speed proﬁle of FTs. Hence, regulators can improve market quality without
+knowing FTs’ speed proﬁle. For example, regulators may require an exchange to treat orders arriving
+within the same 50-millisecond interval equally, despite the exchange’s capacity to timestamp at the
+nanosecond-level precision. This rule would weaken FTs’ speed advantage over normal-speed traders
+and intensify FTs’ competition for any speed proﬁle, thereby reducing their market power.
+One might attempt to reduce FTs’ market power by encouraging the entry of new FTs. The
+next result, however, shows that this intervention might not work when entrants are much faster
+than incumbents.
+Proposition 6 (Impact of an FT’s entry is ambiguous). Suppose a new FT enters the market
+and arrives at t′. (1) If the entrant is slower than the fastest incumbent FTs (t′ ≥t1), FTs’ market
+power γ decreases, and it decreases further when the entrant is faster. If the entrant trades at the
+same speed as the fastest incumbents t′ = t1, γ is minimized. (2) If the entrant is faster than all
+incumbent FTs (t′ < t1), FTs’ market power γ may increase or decrease.
+Figure 5 illustrates the results. If the entrant is slower than the fastest incumbent (t′ ≥t1), the
+total number of FTs’ trading opportunities J is unchanged whereas the degree of competition from
+t′ to tJ increases. Hence FTs’ market power falls. When t′ = t1, γ is minimized because the entrant
+intensiﬁes competition at every moment without increasing J.
+If the entrant is faster than all incumbent FTs (t′ < t1), the entry has ambiguous impact on
+FTs’ aggregate market power. On the one hand, the entrant competes with all incumbent FTs,
+which tends to reduce γ. On the other hand, because the entrant is faster, she enjoys more trading
+24
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+Figure 5. Eﬀect of an FT’s entry on FTs’ market power when the incumbent FT arrives at t1 = 15.
+opportunities than incumbents, thereby increasing J and γ. The ﬁrst eﬀect dominates when the
+entrant is slightly faster than incumbents (t′ ∈(10, t1)) and the second eﬀect dominates when the
+entrant is much faster (t′ < 10). Proposition 6 provides one explanation for the mixed empirical
+ﬁndings regarding the impact of the entry of HFTs. For example, Breckenfelder (2019) ﬁnds that
+HFTs’ entry hurts liquidity whereas Menkveld (2013) ﬁnds that entry improves liquidity.
+Proposition 7 (Impact of an FT’s becoming faster is ambiguous). Suppose an FT arriving
+at time t becomes faster and arrives at time t′. (1) If the FT is still slower than the fastest FT
+(t′ ≥t1), γ decreases. (2) If the FT becomes the fastest FT (t′ < t1), γ may increase.
+If an FT becomes faster but is still slower than the fastest FT, the speed improvement intensiﬁes
+her competition with some FTs who were faster and reduces γ. If the FT becomes the new fastest
+FT, FTs enjoy more trading opportunities in aggregate and may earn higher proﬁts in total.
+The impact is unambiguous if all FTs become equally faster than normal-speed traders.
+Proposition 8 (FTs’ aggregate market power increases when all FTs become equally
+faster). For j ≥1, γ{n1,n2,··· ,nj−1,nj,nj,··· ,nj} ≥γ{n1,n2,··· ,nj−1,nj}.
+When all FTs become equally faster than normal-speed traders, FTs enjoy more trading opportunities and earn higher proﬁts. This covers the case when the speed proﬁle changes from
+25
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+{0, n2, n3, · · · , nJ} to {n2, n3, · · · , nJ, nJ}. Conversely, when all order-anticipating FTs become
+equally slower, every FT experiences fewer trading opportunities and earns lower proﬁt. This is
+another way of reducing FTs’ aggregate market power without knowing their speed proﬁle.35
+In general, FTs’ aggregate market power does not vanish when their speeds diﬀer.
+Proposition 9 (FTs’ market power in the limit). FTs’ market power converges to zero if and
+only if inﬁnitely many FTs trade at the highest speed. Formally, if n1 of N FTs trade at the highest
+speed, then limN→∞γ = 0 ⇐⇒limN→∞n1 = ∞.
+When n1 is ﬁnite, even when inﬁnitely many FTs trade at the second highest speed, FTs’
+aggregate trading proﬁt is not zero because the fastest FTs earn strictly positive trading proﬁts by
+trading at t1. In practice, due to physical limits, for instance the number of co-location spots, only a
+very limited number of FTs can be the fastest. Thus, FTs’ impact in general does not vanish even
+in the limit with inﬁnitely many competing FTs. Brunnermeier and Pedersen (2005) ﬁnd that the
+impact of predators on price vanishes in the limit because they assume all predators trade at the
+same speed. Budish et al. (2015) ﬁnd that batching two HFTs together is suﬃcient to eliminate
+“order sniping” because in their model the liquidity provider is one of the batched HFTs, which
+is equivalent to making J = 0 in this model. This paper shows more generally that even when
+the liquidity provider is strictly slower than FTs, batching is still beneﬁcial because it limits FTs’
+aggregate trading opportunities J and forces FTs to compete on price. FTs’ impact, however, does
+not vanish in general when J > 0.
+3.4
+Herﬁndahl index and FTs’ market power γ
+Some empirical studies, for example Baron et al. (2012), report the Herﬁndahl index (HHI) of the
+HFT sector. Nevertheless, the index might not be an appropriate measure of HFTs’ aggregate market
+power because it does not always increase with γ.
+For example, suppose the speed proﬁle changes from {1} to {1, 2} because of the entry of an
+FT who is faster than the incumbent. The Herﬁndahl index of proﬁts of FTs falls from 1 to 0.80.
+Nonetheless, FTs’ market power γ increases from 0.25 to 0.32. Intuitively, although the FT sector
+becomes less concentrated, the entrant FT also crowds out some passive liquidity providers who
+35Hu (2019), for example, ﬁnds that the entry of IEX, an exchange that delays all orders for 350 microseconds,
+reduces trading costs.
+26
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+earn zero proﬁts. Hence, in aggregate FTs enjoy more trading opportunities and earn higher proﬁts.
+A better measure is the HHI of the ﬁnancial intermediary sector, which includes HFTs and other
+slow intermediaries. Such a measure would capture the crowd-out eﬀect.
+3.5
+Summary of policy implications regarding FTs’ speed heterogeneity
+Taken together, the results reported in this section show that even when prices are determined
+in uniform batch auctions, as Budish et al. (2015) advocate, one cannot fully rely on the force
+of competition to limit the aggregate market power of FTs. Because FTs’ trading proﬁts decay
+exponentially with their speed ranking, FTs have strong incentives to compete on speed. When they
+do so, FTs’ speeds are likely to become more heterogeneous, which increases their market power.
+Policies promoting the entry of FTs may not help if the entrants are faster than incumbent FTs.
+Policymakers should try to lower the HHI of the ﬁnancial intermediary sector, rather than the HHI
+of the HFT sector, because the entry of HFTs could displace slower intermediaries. To mitigate
+the impact of FTs, regulators could introduce rules to encourage price or quantity competition and
+discourage speed competition.
+4
+FTs’ impact on market liquidity, and information eﬃciency
+This section demonstrates how FTs in this model aﬀect normal-speed traders, thereby aﬀecting
+market liquidity and information eﬃciency. I also discuss how some commonly used measures of
+liquidity and information eﬃciency can be misleading when FTs are present.
+4.1
+Market liquidity
+We can directly assess the impact of FTs on market liquidity by examining the proﬁts of the natural
+liquidity demanders in this model, namely the informed trader and noise traders.
+Proposition 10 (Speed tax rate ργ and traders’ proﬁts). For a given σvσz, when ργ increases,
+FTs earn higher aggregate expected proﬁts (E
+
+πF 
+=
+σvσzργ
+√
+1−(ργ)2 ↑), the informed trader earns lower
+proﬁts (E[πI] = σvσz
+2
+q
+1−ργ
+1+ργ ↓), and noise traders suﬀer more losses (E[πN] = −σvσz
+2
+q
+1+ργ
+1−ργ ↓).
+27
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+−2
+−1
+0
+1
+2
+Informed trader’s E(πI)
+FTs’ proﬁt E(πF )
+Noise traders’ proﬁts E(πN)
+ργ
+Expected trading proﬁt / σvσz
+2
+(a) Trader’s Proﬁts
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0
+0.2
+0.4
+0.6
+0.8
+1
+E(πF )/E(−πN)
+E(πI)/E(−πN)
+ργ
+Proﬁts fraction
+(b) Proﬁt Ratios
+Figure 6. Traders’ proﬁts and the speed tax rate ργ.
+Corollary 1 shows that liquidity demanders suﬀer a higher price impact λI when FTs’ market
+power γ increases. Proposition 10, illustrated by Figure 6, shows directly that, when FTs earn higher
+total proﬁts, normal-speed liquidity demanders are worse oﬀand hence the market is less liquid. The
+result is consistent with the empirical ﬁndings of Korajczyk and Murphy (2018) and Tong (2015).
+Some other indirect measures of liquidity, such as the direction of trades and trading volume,
+might be misleading when order-anticipating FTs are present. For example, as Lemma 2 shows,
+FTs choose to exit at time 1 and their exiting trades run in the opposite direction of normal-speed
+liquidity demanders’ orders at time 1. One might conclude based on this behavior that these FTs
+enhance liquidity. To resolve the apparent contradiction with Proposition 10, note that, for FTs to
+“provide liquidity” at time 1, they must take liquidity earlier at tj and these earlier trades move the
+price before liquidity demanders’ orders arrive. Essentially, FTs consume liquidity at tj and provide
+the liquidity back at time 1 at a proﬁt, thereby making liquidity demanders worse oﬀ.
+Similarly, trading volume is not a reliable measure of liquidity.
+Proposition 11 (FTs may increase trading volume while hurting liquidity). When FTs
+have better order-ﬂow information (ρ ↑), they initiate a higher fraction of the trading volume and
+normal-speed liquidity demanders earn lower proﬁts.
+When FTs have better order-ﬂow information, they anticipate and trade ahead of normal-speed
+liquidity demanders more often. Consequently, their trades account for a higher fraction of the
+trading volume. Liquidity demanders, however, are worse oﬀ. Thus FTs’ high trading volume can be
+28
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+a sign of unnecessary intermediation rather than valuable liquidity provision.
+4.2
+Information eﬃciency
+Although FTs’ trades are informative, we cannot conclude that the presence of FTs uniformly
+improves price informativeness. Many empirical studies, such as Brogaard et al. (2014) and Carrion
+(2013), ﬁnd that trades of some HFTs can predict short-term price movements. Consistent with
+these ﬁndings, FTs in this model trade in informative directions: when the incoming order is a buy
+order, for example, FTs buy before time 1 when the price is low and sell at time 1 when the price
+overshoots. Nevertheless, the next result shows that prices are ultimately less informative after FTs
+have exited their positions.
+Proposition 12 (FTs accelerate but ultimately hurt price discovery). Let Ft denote the
+public information at time t; measure the information eﬃciency at time t with
+φt := E
+
+1 −Var[v|Ft]
+Var[v]
+
+.
+(22)
+Then, intermediate information eﬃciency φt1 = ρ(1−ργ)
+2
+increases with ρ and decreases with γ. The
+ex post information eﬃciency φ1+ = 1−ργ
+2
+decreases with ργ.
+0
+0.2
+0.4
+0.6
+0.8
+1
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+γ = 0
+γ = 1
+4
+γ = 1
+3
+FTs’ information quality ρ
+φt1
+(a) Intermediate information efﬁciency
+0
+0.2
+0.4
+0.6
+0.8
+1
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+γ = 0
+γ = 1
+4
+γ = 1
+3
+FTs’ information quality ρ
+φ1+
+(b) Ex post information efﬁciency
+Figure 7. Equilibrium information eﬃciency.
+Figure 7 illustrates the results. In this model, FTs’ trades are informative because their signal
+29
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+Iy is correlated with the informed trader’s order x. Hence, FTs’ trades bring information to the
+market earlier at t1, thereby increasing φt1. Nonetheless, at the end of the trading round, prices are
+ultimately less informative (φ1+ ↓) because the informed trader trades less aggressively in light of
+the higher liquidity cost.36
+Intuitively, an FT’s impact on the order-ﬂow is similar to a prying messenger’s impact on letters.
+Suppose that a messenger glances at a letter and summarizes it to the receiver just prior to delivering
+it. The summary is informative but its information value is quickly superseded by the letter itself.
+Moreover, the sender, worrying about privacy, is less likely to write clearly ex ante and the receiver
+is ultimately less informed.
+4.3
+Policy implications and discussions
+To improve market quality, policymakers can try to inﬂuence FTs’ aggregate market power γ and the
+accuracy of their order-ﬂow information ρ. On the one hand, a lower γ leads to better liquidity and
+information eﬃciency. Hence, policymakers should reduce γ by limiting FTs’ speed heterogeneity, as
+discussed in Section 3.3. On the other hand, while a higher ρ hurts market liquidity and ex post
+information eﬃciency, it improves intermediate information eﬃciency. If the social beneﬁts of slightly
+faster price discoveries outweighed the social costs of ultimately less informative prices, policymakers
+might want to allow FTs to have access to the order-ﬂow signal Iy.37 Market quality is the best
+when FTs have perfect order-ﬂow information (ρ = 1) and yet earn zero proﬁts (γ = 0): FTs bring
+information to market earlier and natural liquidity demanders’ proﬁts are not aﬀected.
+5
+Extensions
+I brieﬂy discuss some extensions in this section.
+5.1
+Stochastic speed rankings
+Adding randomness to the sequence of order execution has been proposed as a method for weakening
+the time-priority rule. Harris (2013), for example, proposes adding a random latency of between
+36If information production is endogenous, the informed trader would produce less information. FTs’ information
+suppression eﬀects would be ampliﬁed.
+37A complete welfare analysis, which is beyond the scope of this paper, should also take into account of the beneﬁts
+of better speed technologies and the impact of lower incentives to produce information.
+30
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+0 and 10 milliseconds to every order. EBS, a leading trading venue for currencies, experimented
+with a similar “latency ﬂoor” rule, under which orders arriving within a short batching interval are
+executed in a random sequence (http://goo.gl/30SiwH). These interventions eﬀectively makes an
+FT’s speed advantage stochastic: a faster FT’s order might not be executed earlier.
+Suppose N FTs fall into the same batching interval and all exit in the next batch at price p0 +λIy.
+For simplicity consider the case in which every FT can trade only once.
+Proposition 13 (Latency ﬂoor). In the symmetric equilibrium under the latency-ﬂoor rule, each
+FT trades u =
+2
+N+3 ˆy shares and FTs’ market power is γ =
+4N
+(N+3)2 ≥γ{N} =
+N
+(1+N)2 .
+Speed proﬁle {N}
+Latency ﬂoor
+0
+10
+20
+0.2
+0.4
+Number of FTs
+(a) An FT’s order size u
+Speed proﬁle {N}
+Latency ﬂoor
+0
+10
+20
+0
+0.2
+0.4
+Number of FTs
+(b) FTs’ market power γ
+Figure 8.
+FTs’ market power γ and each FT’s order size under the latency ﬂoor rule.
+Under the latency-ﬂoor rule, FTs submit orders of the same size ex ante but receive varying
+prices depending on their ex post realized positions in the queue. Figure 8 illustrates the equilibrium
+when each FT can trade once under the EBS rule. When the batching interval is too short so the
+number of FTs pooled together is small, FTs’ market power might even increase slightly because the
+second fastest and third fastest FTs trade more aggressively knowing that they might trade ﬁrst.38
+When the batching interval is long enough, the latency ﬂoor does reduce γ, albeit at a much slower
+rate than is the case when all FTs have the same deterministic speed. Therefore, to improve market
+quality, the platform needs to make sure enough randomness is added to the execution sequence.
+38Yueshen (2013) points out a related eﬀect when positions in the queue are uncertain.
+31
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+5.2
+Endogenous speed proﬁles
+FTs’ speeds are given exogenously in the main model. We may endogenize speed proﬁles once the
+cost C(δ) to achieve a certain latency δ is given.
+When C(δ) is continuous, no two FTs would have the same speed in equilibrium. Suppose two
+FTs trade at the same latency δ. As an FT’s proﬁt depends on her speed ranking, an FT can increase
+her trading proﬁts by a strictly positive amount if she reduces her latency by any positive amount.
+Because C(δ) is continuous, the cost of reducing the latency by an inﬁnitesimal amount converges to
+zero. Hence, two FTs trading at the same speed never constitutes an equilibrium. Consequently,
+FTs’ market power cannot be at the lower bound because endogenous speed proﬁles cannot be {N}
+when C(δ) is continuous. One may improve market quality by adding discontinuity to the speed
+cost function or the platform’s timestamps.
+6
+Conclusion
+This paper shows that FTs’ aggregate market power depends crucially on the hierarchical structure
+of their relative speeds even when prices are eﬀectively determined in uniform batch auctions. If
+FTs’ order anticipation is deemed a serious threat to market quality, policymakers should explore
+ways to reduce speed heterogeneity and encourage price or quantity competition between FTs.
+32
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+Appendices
+A
+Proofs
+Proof of Lemma 1. The informed trader buys when v > 0, so λP ≥0. Suppose λI < λP . Without
+loss of generality, assume y > 0. If FTs trade, they trade in the same direction as y. Hence, the
+total size of all market orders arriving during the trading round ¯y ≥y > 0. During the interval (0, 1]
+passive liquidity providers sell shares at a price that is at most v0 + λI ¯y, which is lower than their
+best estimate E[v|¯y] = v0 + λP ¯y. Hence they expect to lose.
+Proof of Lemma 2. Without loss of generality, suppose that an FT anticipates a positive order
+y > 0 will arrive at time 1 and purchases u shares before time 1. The total order-ﬂow excluding the
+FT’s orders in the interval [0, 1] is η > 0 because all FTs observe y > 0. The FT cannot trade at
+1+. Hence she may exit at time 1, before time 1, or after time 1+. (1) If she exits at time 1, her
+exit price would be pAt = p0 + λI(u + η −u) = p0 + λIη. (2) If she exits before time 1, others’ total
+order size is η′ ≤η −y < η. Her exit price would be pBefore = p0 + λI(u + η′ −u) < p0 + λIη = pAt.
+(3) If she exits after time 1+, the closing price of the current trading round is p0 + λP (u + η)
+and her exiting trade incurs a price impact of λfu.
+Hence her expected exit price would be
+pAfter = p0 + λP (u + η) −λfu = p0 + λP η + u(λP −λf) < p0 + λIη = pAt. Because pAt > pBefore
+and pAt > pAfter, the FT is better oﬀexiting at time 1 than before or after.
+Lemma A.1 (Informed trader’s strategy β). Given λI, the informed trader’s optimal trade size
+is x = β (v −p0) where β =
+1
+2λI . Her maximized expected proﬁt at time 0+ is E
+
+πI v, p0, λI
+=
+1
+4λI (v −p0)2 .
+Proof. Given the pricing function ptj = ptj−1+λIytj, the informed trader estimates that E[p1|v, p0, λI] =
+p0 + λI E[x + z] = p0 + λIx. Her expected proﬁt is E[x(v −p1)|v, p0, λI] = x(v −p0 −λIx). Solve
+the ﬁrst-order condition to ﬁnd that β =
+1
+2λI . Hence E[πI|v, p0, λI] =
+1
+4λI (v −p0)2.
+Lemma A.2 (Permanent price impact λP ). Suppose the informed trader trades x = β(v −p0).
+Passive liquidity providers set the ﬁnal quote at p1+ = E[v|F1] = v0 + λP (x + z) where λP =
+βσ2
+v
+β2σ2v+σ2z .
+Proof. The aggregate order-ﬂow between time 0 and time 1 is always y = x + z no matter whether
+33
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+FTs observe y. FTs could split y into smaller orders when they trade. Their trading, however, does
+not provide additional information regarding v. Hence passive liquidity providers estimate that
+E[v|F1] = E[v|y = x + z] = v0 +
+βσ2
+v
+β2σ2v+σ2z (x + z).
+Lemma A.3 (FTs’ order size uj and Sj). Suppose the aggregate size of FTs’ trades at tj is
+uj = αj(ˆy −Sj−1) for 1 ≤j ≤J. Then for 1 ≤j ≤J, uj = ˆyαj
+Qj−1
+i=0(1 −αi) and Sj = Pj
+i=0 ui =
+ˆy
+
+1 −Qj
+i=0(1 −αi)
+
+.
+Proof. Proof by induction. First, S0 = u0 = α0 = 0 by deﬁnition. Second, u1 = α1(ˆy −S0) = α1ˆy
+and S1 = u0 + u1 = u1 = α1ˆy = ˆy (1 −(1 −α1)(1 −α0)). Third, suppose the result holds for
+j ≤K. Then, uK+1 = αK+1 (ˆy −SK) = αK+1
+
+ˆy −ˆy
+
+1 −QK
+i=0(1 −αi)
+
+= ˆyαK+1
+QK
+i=0(1 −αi)
+and SK+1 = uK+1 + SK = αK+1(ˆy −SK) + SK = αK+1ˆy + (1 −αK+1)SK = αK+1ˆy + (1 −
+αK+1)ˆy
+
+1 −QK
+i=0(1 −αi)
+
+= ˆy
+
+1 −QK+1
+i=0 (1 −αi)
+
+. Hence, the result also holds for j = K+1.
+Lemma A.4 (FTs’ proﬁts). Suppose the immediate price impact is λI and the aggregate size of
+FTs’ trades at ti is ui = αi(ˆy −Si−1) for 1 ≤i ≤J. Conditional on Iy and Si−1, for k ≥0, the
+expected proﬁt of all FTs from their trades at time ti+k is
+E[πi+k|Iy] = λI (ˆy −Si−1)2
+αi+k
+1 −αi+k
+ i+k
+Y
+j=i
+(1 −αj)
+!2
+(23)
+and FTs’ expected proﬁts from their trades from ti to tJ is
+Vi(ˆy −Si−1) = λI (ˆy −Si−1)2 gi,
+(24)
+where gi := PJ
+j=i
+
+αj
+1−αj
+Qj
+k=i(1 −αk)2
+measures FTs’ market power from ti to tJ.
+Proof. If ˆy = 0, FTs do not trade (uj = 0) and earn zero proﬁt.
+Suppose ˆy = y̸ = 0.
+The
+expected proﬁt of all FTs from their trades at time ti is E[πi|Iy] = E[(p1 −pti−1 −λIui)ui|Iy] =
+λI (ˆy −Si−1)2 (1 −αi)αi. Lemma A.3 implies that ˆy−Si+k−1
+ˆy−Si−1
+= Qi+k−1
+j=i
+(1 −αj). Hence,
+E[πi+k|Iy] = λI (ˆy −Si+k−1)2 (1 −αi+k)αi+k = λI (ˆy −Si−1)2
+αi+k
+1 −αi+k
+ i+k
+Y
+j=i
+(1 −αj)
+!2
+(25)
+Sum over k = 1, 2, · · · , J −i to ﬁnd that total expected proﬁts are λI(ˆy −Si−1)2gi.
+Lemma A.5 (FTs’ strategy α). Given the signal Iy, the last traded price ptj−1, and other traders’
+strategy parameters β, λI, λP , uj,−k := P
+l̸=k uj,l, in the symmetric equilibrium, ui = αj(ˆy −Sj−1)
+where αi =
+ni(ni+1−2gi+1)
+ni(ni+1−2gi+1)+ni+1 where gi is deﬁned in Eq. (19).
+34
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+Proof. At the last trading opportunity tJ, N FTs play a one-shot Cournot game. Hence, αJ =
+N/(N + 1) and gJ = N/(1 + N)2. For 1 ≤i ≤J −1, by Lemma A.4, the expected proﬁt of all FTs
+from time ti+1 to tJ is Vi+1(ˆy −Si) = gi+1λI (ˆy −Si−1 −ui,k −ui,−k)2, where ui,−k = ui −ui,k. At
+time ti the k-th FT solves the following problem:
+max
+ui,k
+λI (ˆy −Si−1 −ui,k −ui,−k) ui,k +
+1
+ni+1 gi+1λI (ˆy −Si−1 −ui,k −ui,−k)2
+(26)
+The second-order condition holds. The ﬁrst-order condition implies that ˆy −Si−1 −ui,k −ui,−k −
+ui,k = 2gi+1
+ni+1 (ˆy −Si−1 −ui,k −ui,−k). In the symmetric equilibrium, ui,−k = (ni −1)ui,k. Hence,
+ui,k = αi
+ni (ˆy −Sj−1), where αi =
+ni(ni+1−2gi+1)
+ni(ni+1−2gi+1)+ni+1 .
+Lemma A.6 (Price impact parameters λI and λP ). If, at time 0, passive liquidity providers expect
+to make zero proﬁt and the aggregate size of FTs’ trades at time tj is uj = αj (ˆy −Sj−1), then
+λP = λI (1 −ργ) ,
+γ =
+J
+X
+j=1
+ 
+αj(1 −αj)
+j−1
+Y
+i=0
+(1 −αi)2
+!
+,
+α0 = 0,
+(27)
+Proof. The ﬁnal quote p1+ = p0 + λP y. At time 1, passive liquidity providers absorb the residual
+order-ﬂow y −SJ at price p1 = p0 + λIy. By Lemma A.3, SJ = ˆy
+
+1 −QJ
+i=0(1 −αi)
+
+. Thus, passive
+liquidity providers’ expected proﬁt from the trade at time 1 is
+E [(y −SJ) (p1 −p1+)] = Pr {Iy = y} E [(y −SJ) (p1 −p1+)|Iy = y] + Pr {Iy = 0} E [(y −SJ) (p1 −p1+)|Iy = 0]
+= ρσ2
+y(λI −λP )
+ J
+Y
+i=0
+(1 −αi)
+!
++ (1 −ρ)σ2
+y(λI −λP )
+= σ2
+y(λI −λP )
+ 
+1 −ρ + ρ
+J
+Y
+i=0
+(1 −αi)
+!
+.
+(28)
+Because ptj = p0 + λISj = p0 + λI ˆy
+
+1 −Qj
+i=0(1 −αi)
+
+, passive liquidity providers’ loss to FTs is
+E
+
+E
+
+uj
+ p1+ −ptj
+
+|Iy
+
+= E
+"
+uj
+ 
+λP ˆy −λI ˆy
+ 
+1 −
+j
+Y
+i=0
+(1 −αi)
+!!#
+(29)
+= ρσ2
+y
+ 
+λP −λI + λI
+j
+Y
+i=0
+(1 −αi)
+!
+αj
+j−1
+Y
+i=0
+(1 −αi)
+The last step holds because ˆy2 = y2 with probability ρ and 0 otherwise. Hence E[ˆy2] = ρ E[y2] = ρσ2
+y.
+35
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+Passive liquidity providers’ total expected loss to the FTs is
+J
+X
+j=1
+ρσ2
+yαj
+j−1
+Y
+i=0
+(1 −αi)
+ 
+λP −λI + λI
+j
+Y
+i=0
+(1 −αi)
+!
+(30)
+=ρσ2
+y
+ 
+λP −λI
+J
+X
+j=1
+αj
+j−1
+Y
+i=0
+(1 −αi) + λI
+J
+X
+j=1
+αj(1 −αj)
+j−1
+Y
+i=0
+(1 −αi)2
+!
+=ρσ2
+y
+ 
+λP −λI 
+1 −
+J
+Y
+j=1
+(1 −αj)
+!
++ λIγ
+!
+(31)
+The last step uses Lemma A.3.
+The zero-proﬁt condition implies that Equation (28) equals
+Equation (31). Eliminating σ2
+y > 0, we ﬁnd that λP = λI (1 −ργ).
+Lemma A.7 (Decomposition of gi). gJ = αJ(1 −αJ). For l ≥1 and i + l ≤J,
+gi =
+i+l−1
+X
+j=i
+ 
+αj
+1 −αj
+j
+Y
+k=i
+(1 −αk)2
+!
++ gi+l
+i+l−1
+Y
+k=i
+(1 −αk)2
+(32)
+In particular, gi = αi(1 −αi) + (1 −αi)2gi+1.
+Proof. Easy to verify by deﬁnition.
+Proof of Theorem 1. Lemma A.1 implies that λI =
+1
+2β. Lemma A.2 implies that λP =
+βσ2
+v
+β2σ2v+σ2z .
+Lemma A.6 implies that λP = λI(1 −ργ). Hence, β = σz
+σv
+q
+1−ργ
+1+ργ . Plug β back to ﬁnd λI and λP .
+Lemma A.7 shows that we can ﬁnd αi and gi recursively from i = J to i = 1.
+Lemma A.8 (Properties of gi and γ). For 1 ≤i ≤k ≤J, we have (1) 0 ≤gi ≤
+J−i+1
+2(J−i+2) < 0.5, (2)
+∂gi
+∂αk > 0 if αk ∈
+h
+0,
+1
+J−k+2
+i
+, (3)
+∂gi
+∂αk < 0 if αk ∈
+h
+1
+J−k+2, 1
+i
+, (4) gi is maximized at
+J−i+1
+2(J−i+2) when
+αk =
+1
+J−k+2 for all k, and (5)
+∂gi
+∂αk < 0 when αk ∈[0.5, 1]. γ = g1 also has above properties.
+Proof. By assumption α0 = 0 and nk > 0. Hence αk ∈(0, 1) for k ≥1. When i = J, gi = αi(1 −αi).
+It is maximized at 0.25 =
+J−i+1
+2(J−i+2) for αi = 0.5 = 1/(J −i + 2) and minimized at 0 for αi = 1. When
+i < J, by Lemma A.7,
+∂gi
+∂αk =
+ k−1
+Y
+j=i
+(1 −αj)2
+!
+· ∂gk
+∂αk =
+ k−1
+Y
+j=i
+(1 −αj)2
+!
+· ((1 −2αk) −gk+12(1 −αk))
+(33)
+We can verify that
+∂gi
+∂αk = 0 and ∂2gi
+∂α2
+k < 0 when α∗
+k =
+1
+J−k+2 for all k. Given α∗(k), we can ﬁnd
+g∗
+k =
+J−k+1
+2(J−k+2) by induction. Hence, gi increases with αk when αk ∈[0, 1/(J −k + 2)] and decreases
+with αk when αk ∈[
+1
+J−k+2, 1]. When αk =
+1
+J−k+2 for all i ≤k ≤J, gi is maximized at
+J−i+1
+2(J−i+2).
+Because
+1
+J−k+2 ≤0.5,
+∂γ
+∂αk < 0 when αk ∈[0.5, 1].
+36
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+Lemma A.9. For i < J, αi increases with ni and decreases with gi+1/ni+1.
+Proof. Lemma A.5 implies that αi =
+1
+1+ 1
+ni
+1
+1−2gi+1/ni+1
+. According to Lemma A.8, gi+1 ≤1/2 and
+thus 0 ≤1 −2gi+1/ni+1. Therefore, αi increases with ni and decreases with gi+1/ni+1.
+Proof of Proposition 1. First, Lemma A.9 implies that αi ≤limni+1→∞αi =
+ni
+ni+1. Second,
+Lemma A.8 implies that gi+1 ≤
+J−i
+2(J−i+1). Hence, ni(1−2gi+1/ni+1) ≥ni −
+ni
+ni+1
+J−i
+J−i+1 ≥1−
+J−i
+J−i+1 =
+1
+J−i+1. Therefore, αi =
+1
+1+ 1
+ni
+1
+1−2gi+1/ni+1
+≥
+1
+1+J−i+1 =
+1
+J−i+2. The inequality binds when ni = ni+1
+and gi+1 =
+J−i
+2(J−i+1). According to Lemma A.8, this is true only if αk =
+1
+J−k+2 for all k ≥i + 1,
+which, by Equation (18), implies that ni = ni+1 = · · · = nJ = 1.
+Proof of Proposition 2. Lemma A.4 on page 33 implies that, conditional on Iy, FTs’ total
+expected proﬁt is V1(ˆy) = λI ˆy2γ. Hence, E [V1(ˆy)] = λIρσ2
+yγ = ργλI(σ2
+z + β2σ2
+v) =
+σvσz
+√
+1/(ργ)2−1,
+which increases with ργ.
+Lemma A.10 (gi increases with αk). For i ≤k,
+∂gi
+∂αk < 0.
+Proof. By Proposition 1, αk ≥
+1
+J−i+2. Lemma A.8 then implies that ∂gi
+∂αk < 0 for i ≤k.
+Lemma A.11 (gi−k increases when ni decreases). Suppose ni decreases to n′
+i > 0. (1) FTs’ market
+power index γ = g1 increases. (2) For j > i, αj and gj are unaﬀected. (3) For j ≤i, αj decreases
+and gj increases.
+Proof. Prove by backward induction. (1) For j > i, all nj are unaﬀected. Using equations (18)
+and Lemma A.7, we can show from j = J to j = i + 1 that all αj and gj are the same. (2) For
+j = i, nj decreases. It follows from Lemma A.9 that αj falls. Lemma A.10 then implies that gj
+increases. (3) For j = i −1, nj is unchanged but gj+1/nj+1 is higher. Due to Lemma A.9, αj falls.
+Lemma A.10 then implies that gj increases. (4) Repeat step (3) for j = i −2, · · · , 1, we can show
+that αj decreases and gj increases. In particular, γ = g1 increases.
+Lemma A.12 (γ does not change after adding nJ+1 = ∞). γ{n1,··· ,nJ} = γ{n1,··· ,nJ,∞}.
+Proof. For the speed proﬁle {n1, n2, · · · , nJ, ∞}, αJ+1 = 1, gJ+1 = 0. We can then show that the
+two speed proﬁles have the same αi for 1 ≤i ≤J since their ﬁrst J elements are the same. Hence,
+for 1 ≤i ≤J, gi are the same. In particular, they have the same γ = g1.
+37
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+Lemma A.13 (γ decreases after removing n1). γ{n1,n2,··· ,nJ} > γ{n2,n3,··· ,nJ} when n1 > 0.
+Proof. By Lemma A.11, γ{n1,n2,··· ,nJ} > γ{n2,n3,··· ,nJ,∞} since n2 ≥n1, · · · , nJ ≥nJ−1, and ∞> nJ.
+By Lemma A.12, γ{n2,··· ,nJ} = γ{n2,··· ,nJ,∞}. Hence, γ{n2,n3,··· ,nJ} > γ{n1,n2,··· ,nJ}.
+Lemma A.14. Suppose all J elements of the speed proﬁle are equal, i.e., nj = n for all j. Then
+FTs’ market power index increases with J and limJ→∞γ =
+2
+n+2+√
+(n+2)2−8.
+Proof. Let γ(J, n) denote the speed index of a speed ﬁle whose J elements are all n. By Lemma A.13
+and Lemma A.8, γ(J, n) increases with J and is bounded above. Hence γ∗(n) := limJ→∞γ(J, n)
+exists. Obviously γ∗(n) = limJ→∞gi = limJ→∞gi+1. By Theorem 1, for i < J, αi =
+n−2gi+1
+1+n−2gi+1 .
+Hence, α∗= limJ→∞α =
+n−2γ∗
+1+n−2γ∗. Theorem 1 also implies that gi = αi(1 −αi) + (1 −αi)2gi+1.
+Hence, γ∗(n) = 1−α∗
+2−α∗=
+1
+1+
+1
+1−α∗=
+1
+2+n−2γ∗(J,n). Hence, γ∗(n) =
+2
+n+2+√
+(n+2)2−8.
+Proof of Proposition 3. Consider the case when at least one FT arrives at ti and at least another
+FT arrives at ti+1. Hence ni+1 ≥2. The ratio of the two traders’ expected proﬁts
+Vi(ˆy −Si−1)/ni
+Vi+1 (ˆy −Si) /ni+1 = gini+1
+gi+1ni
+1
+(1 −αi)2 = ni+1
+gi+1 + ni+1
+ni
+−2 > ni+1
+gi+1 −1 ≥
+2
+gi+1 −1
+(34)
+Lemma A.11 implies that gi+1 is maximized when ni+1 = · · · = nJ = 2.
+By Lemma A.14,
+gi+1 < γ∗(2) =
+2
+4+√
+(4)2−8 ≈0.29 < 0.3. Hence,
+2
+gi+1 −1 >
+2
+0.3 −1 > 5.6. Repeat the above reasoning
+k times and we see that
+Vi(ˆy−Si−1)/ni
+Vi+k(ˆy−Si)/ni+k > 5.6k.
+Proof of Proposition 4. Given J and N, the general speed proﬁle is {n1, n2, · · · , nJ} where
+nJ = N. By deﬁnition, for 1 ≤j ≤J −1, 1 ≤nj ≤nJ = N. By Lemma A.11, γ{1,··· ,1,N} ≤
+γ{n1,n2,··· ,nJ} ≤γ{N,N,··· ,N}. Also by Lemma A.11, given J, γ{1,··· ,1,N} ≤γ{1,··· ,1,1} =
+J
+2J+2 ≤0.5. By
+Lemma A.13, γ{N,N,··· ,N} ≥γ{N} =
+N
+(N+1)2 .
+Proof of Proposition 5. Suppose we start from a speed proﬁle (A) {n1, · · · , ni−1, ni, ni+1, · · · , nJ}.
+If we bunch its i-th and i + 1-th elements, we obtain a speed proﬁle (B) {n1, · · · , ni−1, ni+1, · · · , nJ},
+which has the same γ as another speed proﬁle (C): {n1, · · · , ni−1, ni+1, · · · , nJ, ∞} according to
+Lemma A.12. As nj ≤nj+1, the k-th element of (A) is no greater than the k-th element of (C) for
+1 ≤k ≤J −1. In addition, the J-th element of (A) is strictly less than the J-th element of (C) since
+nJ < ∞. By Lemma A.11, γA < γC. Therefore, γA < γC = γB.
+38
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+Proof of Proposition 6. Suppose the entrant is slower than the fastest incumbents and arrives
+at t1 ≤ti ≤tJ. The speed proﬁle becomes {n1, · · · , ni−1, ni + 1, ni+1 + 1, · · · , nJ + 1}. When i is
+smaller, more elements of the speed proﬁle are increased by 1. Hence, by Lemma A.11, γ decreases
+further when the entrant arrives earlier (but not before t1). Figure 3 shows an example in which
+entry may increase γ when the entrant is much faster than all incumbents.
+Proof of Proposition 7. First, suppose the FT who arrived at tj+1 now starts trading at tj
+for j ≥1. The speed proﬁle then changes from {· · · nj, nj+1, · · · } to {· · · nj + 1, nj+1, · · · }. By
+Lemma A.11, γ decreases. Second, suppose the speed proﬁle changes from {1, 2} to {1, 2, 2} because
+the second-fastest FT becomes much faster. γ increases from 0.316 to 0.334.
+Proof of Proposition 8. First, by Lemma A.12 γ{n1,n2,··· ,nJ−1} = γ{n1,n2,··· ,nJ−1,∞}. Second, by
+Lemma A.11, γ{n1,n2,··· ,nJ−1,∞} ≤γ{n1,n2,··· ,nJ−1,nJ} ≤γ{n1,n2,··· ,nJ−1,nJ−1}. Hence, γ falls every time
+we remove the last element and we deduce that γ{n1,n2,··· ,nj,··· ,nJ} ≥γ{n1,n2,··· ,nj}.
+Proof of Proposition 9. By deﬁnition, γ = (1 −α1) (α1 + g2(1 −α1)). Lemma A.8 implies that
+0 < g2 < 0.5.
+First, if limN→∞n1 = ∞, then α1 =
+n1
+1+n1 →1 and γ →0.
+Second, since
+0 < α1(1 −α1) < γ, γ →0 implies that α1 →1 or α1 →0. If α1 →0, then g2 →γ →0. However,
+if g2 →0, α1 =
+1
+1+
+n2
+n1(n2−2g2) →
+n1
+1+n1 > 0. Contradictory. Hence, γ →0 implies that α1 →1, which
+implies that n1 →∞.
+Proof of Proposition 10. Proposition 2 shows that FTs’ aggregate proﬁt E [V1(ˆy)] = λIρσ2
+yγ =
+ργλI(σ2
+z + β2σ2
+v) =
+σvσz
+√
+1/(ργ)2−1. Noise traders trade z shares at price p1. Their proﬁt is E
+
+πN
+=
+E [−z(p1 −p0)] = −λIσ2
+z = −
+q
+1+ργ
+1−ργ
+σvσz
+2
+The informed trader’s trading proﬁt is σvσz
+2
+q
+1+ργ
+1−ργ −
+2
+√
+1/(ργ)2−1
+
+=
+σvσz
+2
+q
+1−ργ
+1+ργ . Noise traders and the informed trader’s proﬁts both decrease with ργ.
+Proof of Proposition 11. The normal-speed liquidity demanders’ order size y ∼N
+ 0, σ2
+y
+
+. When
+FTs do not trade, their volume is zero. Let Ω= 1 −QJ
+i=0(1 −αi). When FTs trade, they initiate
+trades of 2|SJ| units, where SJ ∼N(0, Ω2σ2
+y) according to Lemma A.3. We know from statistics
+that E [|y|] = σy
+q
+2
+π =
+2σz
+√
+π(1+ργ) and E [|SJ|] = ρΩE [|y|] =
+2ρΩσz
+√
+π(1+ργ). Therefore, the fraction of
+the volume initiated by FTs is
+E[2|SJ|]
+E[|y|+2|SJ|] =
+2ρΩ
+1+2ρΩ, which increases with ρ. By Proposition 10, the
+informed and noise traders earn lower proﬁts.
+39
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+Proof of Proposition 12. At time 1+, the order-ﬂow y = x + z = β(v −v0) + z is revealed. Thus,
+Var[v|F1+] = Var[v|y] =
+σ2
+vσ2
+z
+β2σ2v+σ2z . The ex post information eﬃciency φ1+ =
+β2σ2
+v
+β2σ2v+σ2z = 1−ργ
+2
+. At
+time t1, with probability ρ, FTs trade and passive liquidity providers infer y from u1 based on FTs’
+strategy given in Theorem 1. In this case Var [v|Ft1] = Var[v|y] and φt1 = φ1+ = 1−ργ
+2
+. With
+probability 1 −ρ, FTs do not trade and Var [v|Ft1] = Var[v]. In this case φt1 = 0. Thus, at time 0,
+the expected intermediate information eﬃciency φt1 = ρφ1+ = ρ1−ργ
+2
+. Since ργ < 0.5, φt1 increases
+with ρ.
+Proof of Proposition 13. Suppose trader 1 chooses order size u1. In a symmetric equilibrium,
+every other FT trades u shares. u1 has the same probability of being placed at each position in the
+queue. Hence, the FT’s expected proﬁt is
+E [u1(p1 −pu1)|ˆy] = λI
+N (u1(ˆy −u1) + u1(ˆy −u −u1) + · · · + u1(ˆy −(N −1)u −u1))
+(35)
+= λI
+
+ˆyu1 −u2
+1 −N −1
+2
+uu1
+
+Hence the optimal u∗
+1 = 1
+2
+ ˆy −N−1
+2 u
+
+. Due to symmetry, u∗
+1 = u and we ﬁnd u∗=
+2ˆy
+N+3. The
+aggregate proﬁt of FTs conditional on Iy is PN
+i=1 u∗λI(ˆy −iu∗) = λI ˆy2
+4N
+(N+3)2 . Therefore, FTs’
+market power is γ =
+4N
+(N+3)2 .
+B
+Extension: Nonlinear pricing schedules
+In the main model, I assume that traders follow linear strategies to obtain closed-form solutions
+(Assumption 1). In this section I describe an alternative model in which traders’ strategies are
+nonlinear and present a numerically solved equilibrium. FTs’ impact on normal-speed liquidity
+demanders and market quality are similar to their impact in the main model.
+For ease of exposition, I describe only the oﬀer side of the limit order book and consider the
+situation in which the incoming market order is a buy order. Speciﬁcally, as in Glosten (1994), passive
+liquidity providers jointly form a limit order book represented by the marginal pricing function P(q),
+where q is the quantity. Upon seeing P(q), a normal-speed liquidity demander submits a market buy
+order of size y. With probability µ, the trader is informed and with probability 1 −µ, the trader is
+a noise trader. Passive liquidity providers are perfectly competitive. When setting P(q), they do
+not observe y and know only that the limit order at q will be executed if y ≥q. Hence they set
+40
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+P(q) = E [v|y ≥q], which is nonlinear in general.
+Some FTs may anticipate normal-speed liquidity demanders’ orders. If, with probability 1 −ρ,
+the incoming market order is not anticipated by FTs, the liquidity demander buys directly from
+passive liquidity providers at cost
+R y
+0 P(q)dq. If, with probability ρ, FTs observe y before the order
+arrives in the market, the FTs immediately use market orders to buy y shares from the limit order
+book at the cost
+R y
+0 P(q)dq and place limit sell orders of size y at price P(y). An instant later, the
+normal-speed liquidity demander’s order arrives and executes against FTs’ limit sell orders. The
+liquidity demander eﬀectively pays yP(y) to buy y shares. FTs hold zero inventory and earn a
+proﬁt of yP(y) −
+R y
+0 P(q)dq. FTs eﬀectively turn a discriminatory pricing schedule into a uniform
+price auction for liquidity demanders. FTs’ trading results in “phantom liquidity” that sometimes
+disappears right before a market order arrives.
+Unlike in the main model, FTs do not levy the speed tax on passive liquidity providers. Instead,
+they directly tax liquidity demanders. When FTs are absent (ρ = 0), the informed trader simply
+purchases all shares priced below v in the limit order book to maximize her proﬁt. When FTs
+are present (ρ > 0), the informed trader has to trade less aggressively. Consider, for example, the
+extreme case when FTs always anticipate the incoming market order (ρ = 1). Suppose the informed
+trader submits an order to buy shares priced below w. Due to FTs’ trades, the informed trader
+would pay w for every share and earn a proﬁt of v −w per share. Hence, the informed trader has to
+trade less aggressively (w < v) to earn positive proﬁts. In general, the optimal limit price w depends
+on v, ρ, and P(q).
+I generalize the numerical procedure of Baruch and Glosten (2017) to ﬁnd the marginal pricing
+schedule P(q) and the informed trader’s highest price to buy W(v) jointly. Liquidity providers’
+inference function can be represented by G(p) = W −1(p): if a limit sell order at price p is hit,
+liquidity providers infer that v ≥G(p). The algorithm is as follows.
+1. Guess an initial G0(p). For example, we may start with G0(p) = p, which is the correct
+inference function in Baruch and Glosten (2017), where no FTs exist.
+2. Given Gi(p), ﬁnd the competitive pricing schedule Pi(q). Speciﬁcally, generalizing Baruch and
+Glosten (2017), we can ﬁnd Pi(q) by ﬁnding a price p that solves 0 = ¯α(p) + β(p) · Pr(z ≥q),
+where ¯α(p) = µ
+R ∞
+Gi(p)(p −t)fv(t)dt and β(p) = (1 −µ) (p −E[v]) for every quantity q.
+41
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+3. Given Pi(q), ﬁnd the informed trader’s order- size function Xi(v). Speciﬁcally, we ﬁnd a
+quantity x that maximizes vx −(1 −ρ)
+R x
+0 Pi(q)dq −ρxPi(x) for every v.
+4. Given Pi(q) and Xi(v), we have Gi+1(p) := W −1
+i
+(p) = X−1
+i
+ P −1
+i
+(p)
+
+. The informed customer
+would buy up to price Pi(Xi(v)). Then, if a limit sell order at price p is hit, one can infer that the
+informed customer’s highest price to buy Pi(Xi(v)) ≥p, which implies that v ≥X−1
+i
+ P −1
+i
+(p)
+
+.
+5. If Gi(p) and Gi+1(p) diﬀer signiﬁcantly, increase i by one and go back to step 2. Otherwise,
+we stop the iteration and Pi(q) is considered the equilibrium pricing schedule.
+Figure 9 illustrates an example. When FTs are present, although passive liquidity providers
+may actually charge a lower marginal price P(q) (Panel (a)), normal-speed liquidity demanders
+expect to pay a higher price for any order because FTs might anticipate their orders (Panel (b)).
+Consequently, the informed trader trades less aggressively for any v (Panel (c)). A market order is
+thus less likely to be informed (Panel (d)). Therefore, just like in the main model, although FTs
+seemingly “provide liquidity” to normal-speed liquidity demanders when they arrive at the market
+and trade in informative directions, they make liquidity demanders worse oﬀand the order-ﬂow less
+informative.
+The magnitude of FTs’ speed advantage is irrelevant here because we assume all passive liquidity
+providers’ orders are placed before FTs start trading so that one FT can use one order to take out
+all standing limit sell orders, eﬀectively assuming J = ∞. If some passive liquidity providers’ limit
+orders arrive after the fastest FT starts trading, faster FTs can pick oﬀthese limit orders more
+eﬃciently because of their higher trading frequencies.
+42
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+0
+1
+2
+3
+4
+5
+quantity q
+0
+1
+2
+3
+4
+marginal price P(q)
+(a) marginal price charged
+by passive liquidity providers
+without FTs
+with FTs
+0
+1
+2
+3
+4
+5
+trade size q
+0.5
+1.0
+1.5
+2.0
+expected average price
+(b) expected average price paid
+by liquidity demanders
+without FTs
+with FTs
+0
+1
+2
+3
+4
+5
+true value v
+0
+2
+4
+highest price to buy W(v)
+(c) informed trader’s strategy
+without FTs
+with FTs
+0
+1
+2
+3
+4
+5
+quantity q
+0.2
+0.4
+0.6
+0.8
+Pr(informed|y = q)
+(d) posterior probability of informed
+without FTs
+with FTs
+Figure 9.
+Impact of FTs when pricing schedules are non-linear. True value v ∼N(0, 1). Noise
+trading z ∼N(0, 1). Probability of informed trading µ = 0.2. Probability of order anticipation
+ρ = 0.5.
+43
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+References
+Adrian, Tobias, Agostino Capponi, Erik Vogt, and Hongzhong Zhang, “Intraday Market Making
+with Overnight Inventory Costs,” Centre for Economic Policy Research Discussion Paper DP12245, 2017.
+Angel, James J., Lawrence E. Harris, and Chester S. Spatt, “Equity Trading in the 21st Century,”
+The Quarterly Journal of Finance, 2011, 1 (01), 1–53.
+Baldauf, Markus and Joshua Mollner, “Fast Traders Make a Quick Buck: The Role of Speed in Liquidity
+Provision,” Available at SSRN 2640823, 2015.
+Baron, Matthew, Jonathan Brogaard, and Andrei Kirilenko, “The Trading Proﬁts of High Frequency
+Traders,” NBER Working Paper, 2012.
+Baruch, Shmuel and Lawrence R. Glosten, “Tail Expectation, Imperfect Competition, and the Phenomenon of Flickering Quotes in Limit Order Book Markets,” Working paper, 2017.
+Bernhardt, Dan and Bart Taub, “Front-running Dynamics,” Journal of Economic Theory, 2008, 138 (1),
+288–296.
+Biais, Bruno and Paul Woolley, “High Frequency Trading,” Working paper, 2011.
+, Thierry Foucault, and Sophie Moinas, “Equilibrium Fast Trading,” Journal of Financial
+Economics, 2015, 116 (2), 292 – 313.
+Boehmer, Ekkehart, Dan Li, and Gideon Saar, “The Competitive Landscape of High-Frequency Trading
+Firms,” The Review of Financial Studies, 2018, p. hhx144.
+Breckenfelder, Johannes, “Competition among High-Frequency Traders and Market Quality,” Working
+paper, 2019.
+Brogaard, Jonathan, Björn Hagströmer, Lars Nordén, and Ryan Riordan, “Trading Fast and Slow:
+Colocation and Liquidity,” The Review of Financial Studies, 2015, 28 (12), 3407–3443.
+, Terrence Hendershott, and Ryan Riordan, “High Frequency Trading and Price Discovery,”
+Review of Financial Studies, 2014, 27 (8), 2267–2306.
+Brunnermeier, Markus K., “Information Leakage and Market Eﬃciency,” Review of Financial Studies,
+2005, 18 (2), 417–457.
+and Lasse Heje Pedersen, “Predatory Trading,” Journal of Finance, August 2005, 60 (4),
+1825–1863.
+44
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+Budish, Eric, Peter Cramton, and John Shim, “The High-Frequency Trading Arms Race: Frequent
+Batch Auctions as a Market Design Response,” Quarterly Journal of Economics, November 2015, 130 (4).
+Carlin, Bruce Ian, Miguel Sousa Lobo, and S. Viswanathan, “Episodic Liquidity Crises: Cooperative
+and Predatory Trading,” Journal of Finance, October 2007, 62 (5), 2235–2274.
+Carrion, Allen, “Very Fast Money: High-frequency Trading on the NASDAQ,” Journal of Financial Markets,
+2013, 16 (4).
+Cartea, Álvaro and José Penalva, “Where is the Value in High Frequency Trading?,” Quarterly Journal
+of Finance, 2012, 02 (03), 1250014.
+Chaboud, Alain, Ben Chiquoine, Erik Hjalmarsson, and Clara Vega, “Rise of the Machines: Algorithmic Trading in the Foreign Exchange Market,” Journal of Finance, October 2014, LXIX (5).
+Clark-Joseph, Adam D., “Exploratory Trading,” Harvard University Working Paper, 2013.
+Daughety, Andrew F., “Beneﬁcial Concentration,” The American Economic Review, 1990, 80 (5), 1231–
+1237.
+Dugast, Jerome and Thierry Foucault, “Data Abundance and Asset Price Informativeness,” Working
+Paper, Available at SSRN, 2017.
+Egginton, Jared F., Bonnie F. Van Ness, and Robert A. Van Ness, “Quote Stuﬃng,” Financial
+Management, 2016, 45 (3), 583–608.
+Engelberg, Joseph, Caroline Sasseville, and Jared Williams, “Market Madness? The Case of “Mad
+Money”,” Management Science, 2012, 58 (2), 351–364.
+Foster, F. Douglas and S. Viswanathan, “Strategic Trading with Asymmetrically Informed Traders and
+Long-lived Information,” Journal of Financial and Quantitative Analysis, 1994, 29 (4), 499–518.
+Foucault, Thierry, Johan Hombert, and Ioanid Rosu, “News Trading and Speed,” The Journal of
+Finance, 2016, 71 (1), 335–382.
+Gai, Jiading, Chen Yao, and Mao Ye, “The Externality of High Frequency Trading,” Working Paper,
+2012.
+Glosten, Lawrence R., “Is the Electronic Open Limit Order Book Inevitable?,” Journal of Finance, 1994,
+pp. 1127–1161.
+45
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+Hagströmer, Björn and Lars Nordén, “The Diversity of High-frequency Traders,” Journal of Financial
+Markets, 2013, 16 (4).
+Harris, Larry, “What to Do about High-Frequency Trading,” Financial Analysts Journal, 2013, 69 (2).
+Hasbrouck, Joel, “Modeling market microstructure time series,” Handbook of Statistics, 1996, 14, 647–692.
+and Gideon Saar, “Technology and Liquidity Provision: the Blurring of Traditional Deﬁnitions,”
+Journal of Financial Markets, 2009, 12 (2), 143–172.
+and
+, “Low-latency Trading,” Journal of Financial Markets, 2013, 16 (4).
+Hendershott, Terrence and Ryan Riordan, “Algorithmic Trading and the Market for Liquidity,” Journal
+of Financial and Quantitative Analysis, Forthcoming, 2012.
+, Charles M. Jones, and Albert J. Menkveld, “Does Algorithmic Trading Improve Liquidity?,”
+Journal of Finance, 2011, 66 (1), 1–33.
+Hirschey, Nicholas H., “Do High-Frequency Traders Anticipate Buying and Selling Pressure?,” Working
+Paper, 2013.
+Hirshleifer, David, Avanidhar Subrahmanyam, and Sheridan Titman, “Security Analysis and Trading Patterns when Some Investors Receive Information before Others,” Journal of Finance, 1994, 49 (5),
+1665–1698.
+Hoﬀmann, Peter, “A Dynamic Limit Order Market with Fast and Slow Traders,” Journal of Financial
+Economics, 2014, 113 (1), 156 – 169.
+Holden, Craig W. and Avanidhar Subrahmanyam, “Long-lived Private Information and Imperfect
+Competition,” Journal of Finance, 1992, pp. 247–270.
+Hu, Edwin, “Intentional Access Delays, Market Quality, and Price Discovery: Evidence from IEX Becoming
+an Exchange,” SSRN Working Paper, 2019.
+Jovanovic, Boyan and Albert J. Menkveld, “Middlemen in Limit-order Markets,” Working Paper, 2016.
+Julien, Ludovic A., Olivier Musy, and Aurélien W. Saïdi, “On Hierarchical Competition in Oligopoly,”
+Journal of Economics, 2012, 107 (3), 217–237.
+Kirilenko, Andrei, Albert S. Kyle, Mehrdad Samadi, and Tugkan Tuzun, “The Flash Crash:
+High-Frequency Trading in an Electronic Market,” The Journal of Finance, 2017, 72 (3), 967–998.
+46
+Electronic copy available at: https://ssrn.com/abstract=2365121
+
+Korajczyk, Robert A and Dermot Murphy, “High-Frequency Market Making to Large Institutional
+Trades,” The Review of Financial Studies, 07 2018, 32 (3), 1034–1067.
+Kyle, Albert S., “Continuous Auctions and Insider Trading,” Econometrica, November 1985, 53 (6),
+1315–1336.
+Lewis, Michael, Flash Boys, W. W. Norton & Company, 2014.
+Martinez, Victor and Ioanid Rosu, “High Frequency Traders, News and Volatility,” Working Paper,
+2013.
+Menkveld, Albert J., “High Frequency Trading and the New Market Makers,” Journal of Financial Markets,
+2013, 16 (4), 712–740.
+, “The Economics of High-Frequency Trading: Taking Stock,” Annual Review of Financial Economics,
+2016, 8 (1).
+Menkveld, Albert J and Marius A Zoican, “Need for speed? Exchange Latency and Liquidity,” The
+Review of Financial Studies, 2017, 30 (4), 1188–1228.
+Pagano, Marco and Ailsa Röell, “Front-running and Stock Market Liquidity,” Financial Markets’
+Liberalisation and the Role of Banks, 1993, 178.
+Patterson, Scott, Dark Pools: The Rise of the Machine Traders and the Rigging of the U.S. Stock Market,
+Crown Business, 2013.
+Sağlam, Mehmet, “Order anticipation around predictable trades,” Financial Management, 2018, 0 (0).
+SEC, “Concept Release on Equity Market Structure,” Release No. 34-61358; File No. S7-02-10., 2010.
+Tong, Lin, “A Blessing or a Curse? The Impact of High Frequency Trading on Institutional Investors,”
+Available at SSRN 2330053, 2015.
+Watt, Richard, “A Generalized Oligopoly Model,” Metroeconomica, 2002, 53 (1), 46–55.
+Yang, Liyan and Haoxiang Zhu, “Back-running: Seeking and Hiding Fundamental Information in Order
+Flows,” Review of Financial Studies, 2019.
+Yueshen, Bart Zhou, “Queuing Uncertainty,” Working Paper, 2013.
+47
+Electronic copy available at: https://ssrn.com/abstract=2365121

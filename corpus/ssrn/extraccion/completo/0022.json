@@ -1,0 +1,191 @@
+{
+  "doc_id": 22,
+  "titulo": "A Regime-Filtered Intraday Trading Framework for Gold: Integrating VWAP Microstructure and EMA-Based Dynamic Exit Mechanisms",
+  "resumen_operativo": "Propone una estrategia intradía 100% mecánica para XAU/USD en 15 minutos: EMA200 como filtro de régimen, VWAP de sesión NY como filtro de sesgo direccional, entrada por rechazo en EMA50, y salida trailing condicionada a cierre de vela (no a mechas). El backtest reportado no es histórico real sino una simulación Monte Carlo calibrada con parámetros de distribución de resultados, lo cual limita fuertemente la validez empírica pese a las métricas espectaculares que presenta.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "VWAP",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Precio promedio ponderado por volumen de la sesión, anclado a la apertura de la sesión de Nueva York (13:30 UTC); funciona como nivel de referencia institucional y filtro direccional de entradas.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "gold trading"},
+        {"tipo": "USA", "objeto": "intraday strategy"}
+      ],
+      "cita_textual": "VWAP is defined as the ratio of cumulative price-volume products to cumulative volume over a specified session window"
+    },
+    {
+      "nombre": "regime switching",
+      "tipo": "metodo",
+      "definicion_en_contexto": "La EMA de 200 periodos actúa como clasificador binario de régimen (alcista/bajista) sobre el cierre, restringiendo las entradas a la dirección del régimen vigente.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "EMA"},
+        {"tipo": "MEJORA_A", "objeto": "unconditional entry rules"}
+      ],
+      "cita_textual": "The 200-period EMA defines a binary directional regime on the 15-minute chart"
+    },
+    {
+      "nombre": "trailing stop",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Stop dinámico anclado a la EMA de 50 periodos, que se activa exclusivamente cuando una vela cierra del lado adverso de la EMA, ignorando penetraciones intrabar (mechas).",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "wick-triggered stop-loss"},
+        {"tipo": "USA", "objeto": "EMA"}
+      ],
+      "cita_textual": "Exit the position if and only if a 15-minute candle closes beyond the 50-period EMA on the adverse side"
+    },
+    {
+      "nombre": "wick-triggered stop-loss",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno por el cual mechas intrabar del oro penetran transitoriamente niveles técnicos y disparan stops de distancia fija sin constituir una reversión de tendencia genuina.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "unnecessary losses"},
+        {"tipo": "SE_OPONE_A", "objeto": "trailing stop"}
+      ],
+      "cita_textual": "gold’s intrabar wicks disproportionately represent transient liquidity imbalances rather than genuine directional reversals"
+    },
+    {
+      "nombre": "ATR position sizing",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Dimensionamiento de posición proporcional al riesgo fraccional de cuenta dividido por el ATR de 14 periodos, de modo que el tamaño se contrae en sesiones de alta volatilidad.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "volatility-adjusted Kelly fraction"},
+        {"tipo": "MITIGA", "objeto": "inventory risk"}
+      ],
+      "cita_textual": "This formulation is analogous to the volatility-adjusted Kelly fraction discussed by Thorp (2006)"
+    },
+    {
+      "nombre": "Kelly criterion",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Fracción óptima de riesgo derivada de la distribución empírica de resultados (f* ≈ 0.164); se usa como referencia pero se opera con solo 1% de riesgo por trade, muy por debajo de la mitad de Kelly.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "position sizing"}
+      ],
+      "cita_textual": "A half-Kelly (f∗/2 ≈8.2%) represents the theoretically optimal risk fraction under the empirical distribution"
+    },
+    {
+      "nombre": "disposition effect",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Tendencia documentada de los traders a realizar ganancias prematuramente y postergar el reconocimiento de pérdidas; el paper la usa como justificación para el trailing stop mecánico.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "early profit exits"},
+        {"tipo": "MITIGA", "objeto": "trailing stop"}
+      ],
+      "cita_textual": "The disposition effect—the empirically documented tendency of traders to realise gains prematurely and defer loss recognition—is one of the most robust findings in behavioural finance"
+    },
+    {
+      "nombre": "volatility clustering",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Agrupamiento de intervalos de alta volatilidad en el oro, especialmente alrededor de aperturas de sesión y publicaciones macroeconómicas, modelado mediante el marco ARCH/GARCH.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "wick-triggered stop-loss"}
+      ],
+      "cita_textual": "Engle’s (1982) ARCH framework and its GARCH extensions provide the theoretical basis for understanding this clustering of high-volatility intervals"
+    },
+    {
+      "nombre": "profit factor",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio de ganancias brutas sobre pérdidas brutas; usado como métrica central de comparación entre la estrategia propuesta y el benchmark de cruce de EMAs.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "intraday strategy"}
+      ],
+      "cita_textual": "Profit Factor 1.76"
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio de retorno ajustado por riesgo reportado como 3.99 anualizado para la estrategia frente a −6.66 para el benchmark de cruce de EMAs.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "intraday strategy"}
+      ],
+      "cita_textual": "Annualised Sharpe Ratio 3.99"
+    },
+    {
+      "nombre": "maximum drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Peor caída acumulada de la curva de equity; reportada en 5.1% para la estrategia propuesta frente a 98.1% del benchmark.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "intraday strategy"}
+      ],
+      "cita_textual": "Maximum Drawdown 5.1%"
+    },
+    {
+      "nombre": "expectancy",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ganancia esperada por trade en múltiplos de R; calculada tanto teóricamente (E[R]=Pw·Rw−Pl·Rl) como post-costos en la simulación (+0.414R).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "intraday strategy"}
+      ],
+      "cita_textual": "the expected value per trade is E[R] = 0.453 × 2.12 −0.547 × 1.07 = +0.373R pre-cost, and +0.414R as measured post-cost in the simulation"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "El backtest no usa datos históricos OHLCV reales, sino una simulación Monte Carlo con parámetros de distribución de resultados fijados a priori a partir de la lógica estructural de la estrategia, lo cual introduce un riesgo severo de resultados artificialmente favorables.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "walk-forward validation"}
+      ],
+      "cita_textual": "The backtest results in Section 6 are produced by a calibrated Monte Carlo simulation rather than a bar-by-bar historical backtest against actual XAU/USD tick data"
+    },
+    {
+      "nombre": "walk-forward validation",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Validación pendiente que el propio paper reconoce como necesaria: un backtest bar-a-bar contra datos OHLCV reales de 2015-2024, ausente en este trabajo.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "a full bar-by-bar backtest against XAU/USD 15-minute OHLCV data over 2015–2024 would provide regime-stratified performance statistics and enable proper walk-forward validation"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo de costos de 0.24R por trade (spread 0.14R, slippage 0.05R, comisión 0.05R) aplicado a todos los resultados reportados.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "expectancy"}
+      ],
+      "cita_textual": "All backtest results are reported net of the following cost model, representative of institutional-grade retail execution on XAU/USD"
+    },
+    {
+      "nombre": "technical analysis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Uso de reglas de trading basadas en medias móviles, referenciado vía Brock, Lakonishok y LeBaron (1992) como evidencia de contenido predictivo estadísticamente significativo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "EMA"}
+      ],
+      "cita_textual": "Brock, Lakonishok, and LeBaron (1992) provide foundational evidence that moving average-based trading rules capture statistically significant predictive content in financial price series"
+    },
+    {
+      "nombre": "momentum",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El oro exhibe momentum intradía significativo, con tendencia persistente en la dirección establecida durante el solapamiento de sesiones Londres-Nueva York.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "gold trading"}
+      ],
+      "cita_textual": "gold exhibits significant intraday momentum, with price often trending persistently in the direction established during the London–New York session overlap"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "En una simulación Monte Carlo calibrada (no backtest histórico real) de 247 trades sobre XAU/USD 15 minutos durante 2024, la estrategia VWAP-EMA propuesta obtiene win rate 45.3%, expectancy +0.414R, profit factor 1.76, Sharpe anualizado 3.99 y drawdown máximo 5.1%, superando ampliamente a un benchmark de cruce de EMA 20/50 que obtiene win rate 43.3%, expectancy −0.397R, profit factor 0.43, Sharpe −6.66 y drawdown 98.1%.",
+      "mercado": "XAU/USD (oro spot)",
+      "periodo": "enero-diciembre 2024",
+      "magnitud": "win rate 45.3% vs 43.3%; expectancy +0.414R vs −0.397R; profit factor 1.76 vs 0.43; Sharpe 3.99 vs −6.66; drawdown 5.1% vs 98.1%; retorno total +102.2% vs −98.0%; Calmar 20.20",
+      "condiciones": "Simulación Monte Carlo con distribución de resultados parametrizada a priori (no backtest bar-a-bar sobre datos OHLCV reales); neto de costos de transacción (0.24R por trade); capital inicial $10,000 con 1% de riesgo por trade",
+      "robustez": "baja",
+      "cita_textual": "A simulated backtest over 247 trades on the XAU/USD 15-minute timeframe (January–December 2024) produces a win rate of 45.3%, mean expectancy of +0.414R per trade, profit factor of 1.76, annualised Sharpe ratio of 3.99, and maximum drawdown of 5.1%"
+    },
+    {
+      "afirmacion": "La distribución de resultados de trades simulados es bimodal: pérdidas plenas (-1R) concentran el 44.9% de los casos y ganancias plenas (3R) el 28.3%, con ganancias parciales vía trailing stop en 17.0% y breakeven en 9.7%.",
+      "mercado": "XAU/USD (oro spot)",
+      "periodo": "enero-diciembre 2024",
+      "magnitud": "Full Win 28.3% (avg +2.77R), Partial Win 17.0% (avg +1.58R), Breakeven 9.7% (avg −0.07R), Full Loss 44.9% (avg −1.01R), n=247",
+      "condiciones": "Distribución de resultados parametrizada por diseño de la simulación, no medida sobre datos históricos reales",
+      "robustez": "baja",
+      "cita_textual": "the 1:3 risk-reward target with a regime-filtered, close-conditioned trailing stop is modelled to produce full wins (3R) with probability 0.30, partial wins (1–2.5R via EMA stop) with probability 0.20, breakevens with probability 0.08, and full losses (−1R) with probability 0.42"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Las reglas de régimen (EMA200), filtro VWAP de sesión y trailing stop condicionado a cierre son ideas transferibles a ES, pero los resultados del paper son una simulación Monte Carlo parametrizada, no un backtest sobre datos reales, por lo que no aportan evidencia empírica utilizable directamente y requerirían replicación completa con datos tick del ES."
+  }
+}

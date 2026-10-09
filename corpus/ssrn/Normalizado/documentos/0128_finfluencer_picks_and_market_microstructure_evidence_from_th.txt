@@ -1,0 +1,754 @@
+ 
+ 
+Finfluencer Picks and Market Microstructure: Evidence 
+from the NSE 
+ 
+ 
+Pradyumna Tilak Banerjee 
+B.A. Economics (Honours), Second Year 
+Department of Economics, St. Xavier’s University, Kolkata 
+Action Area III, New Town, Kolkata – 700160, West Bengal, India 
+banerjeepradyumna@gmail.com 
+Keywords: finfluencer, retail investor behaviour, abnormal volume, event study, NSE, YouTube, 
+attention hypothesis, market microstructure, India, SEBI 
+JEL Codes: G14, G41, G12, C58, D83 
+Abstract 
+Purpose: This paper documents a finfluencer attention cycle in Indian equity markets. Using 
+1,535 video-stock events constructed from 12,302 YouTube videos across ten prominent 
+finfluencer channels matched with daily NSE bhavcopy data, it examines whether financial 
+influencer stock recommendations generate abnormal trading volume and affect postrecommendation returns on the National Stock Exchange from 2019 to 2026. 
+ 
+Design/Methodology/Approach: A standard market model event study estimates abnormal 
+trading volume and cumulative abnormal returns in windows surrounding video upload dates. 
+The estimation window spans 120 trading days ending ten days before each event. Sensitivity 
+analysis excludes the most concentrated channel and stocks across three specifications. A 
+permutation placebo test shuffles upload dates within each channel 200 times to test whether 
+results arise by chance. 
+ 
+Findings: Abnormal trading volume spikes to 2.65 times normal on the upload day (p < 0.001) 
+and remains elevated through five post-upload days. Cumulative abnormal returns are negative at 
+−0.55% over [0, +3] (p = 0.001) with no reversal. Pre-event volume is elevated at 1.47 times 
+
+normal (p < 0.001), indicating finfluencers select stocks with pre-existing momentum. Effects 
+are larger for small-cap stocks (−1.72% vs −0.35%). Sensitivity analysis shows results strengthen 
+after excluding concentrated events. Permutation p-value = 0.000. 
+ 
+Research Limitations/Implications: The sample covers ten English-language channels and may 
+not generalise to regional-language finfluencers. Pre-event volume elevation reflects multi-day 
+selection rather than same-day endogeneity, confirmed by the pre-market upload subsample, 
+though timestamp precision from the YouTube API is imperfect. The design establishes 
+association not causation. Future work should incorporate bid-ask spread data and extend 
+coverage to Hindi and regional-language channels. 
+ 
+Practical Implications: Retail followers who enter stocks following finfluencer 
+recommendations face negative average returns of −0.55% over four days, with losses reaching 
+−1.72% for small-cap stocks. Banks, brokers, and regulators should account for finfluencerdriven attention shocks when assessing retail investor behaviour. SEBI’s 2024 circular restricting 
+finfluencer-broker relationships addresses the conflict of interest dimension but does not directly 
+address the attention cycle mechanism documented here. 
+ 
+Social Implications: The finfluencer attention cycle represents a structural wealth transfer from 
+retail followers who enter near the price peak to earlier participants and informed traders who 
+exit. With 170 million registered retail investors in India and finfluencer channels commanding 
+tens of millions of subscribers, the aggregate welfare cost is material. Financial literacy 
+initiatives should explicitly address the gap between finfluencer recommendation framing and 
+actual post-recommendation return outcomes. 
+ 
+
+Originality/Value: This is the first systematic event study combining YouTube API metadata 
+with NSE bhavcopy data to evaluate finfluencer market impact in India. The dataset of 1,535 
+video-stock events across 82 NSE-listed securities is novel. The attention cycle framing: preexisting momentum attracting content, content attracting retail volume, retail late entry 
+producing negative returns, is a more precise characterisation of the mechanism than prior 
+commentary has offered. 
+ 
+1. Introduction 
+India’s retail equity investor base expanded from approximately 40 million registered accounts in 
+2020 to over 170 million by 2025, a fourfold growth in five years. This expansion coincided with 
+the rise of a new financial media ecosystem: the financial influencer, or finfluencer, who delivers 
+stock analysis and investment recommendations through YouTube videos, reaching audiences of 
+hundreds of thousands to millions of subscribers. The SEBI Investor Survey 2025 (SEBI, 2025b) 
+found that 62% of prospective investors identify social media and digital influencers as a primary 
+source of investment information. SEBI’s own circular of October 2024 estimated that finfluencers 
+collectively reach more Indian retail investors than the entire registered investment adviser 
+community. 
+ 
+Whether finfluencer recommendations generate measurable effects on financial markets, and 
+whether those effects are welfare-improving or welfare-distorting, are open empirical questions. 
+The theoretical channels are competing. Under the attention hypothesis (Barber and Odean, 2008), 
+retail investors are attention-constrained and disproportionately buy stocks that attract their 
+attention, regardless of fundamental value. A finfluencer recommendation video is a concentrated 
+attention shock that could generate abnormal buying volume and temporary price pressure. 
+
+Alternatively, finfluencers may aggregate and disseminate genuinely useful information, 
+accelerating price discovery in less liquid stocks. Discriminating between these channels requires 
+examining both volume and return dynamics around recommendation events. 
+ 
+This paper provides the first systematic event study of finfluencer YouTube recommendations and 
+NSE market outcomes using Indian data. Using a sample of 1,535 video-stock events constructed 
+from 12,302 videos across ten prominent Indian finfluencer channels from 2019 to 2026, matched 
+with daily bhavcopy data from the National Stock Exchange, it estimates abnormal volume and 
+abnormal returns in the event windows surrounding upload dates. The findings do not support the 
+simple pump-and-dump narrative that prior commentary has attributed to finfluencers. Instead they 
+are consistent with a more nuanced attention cycle: finfluencers upload content about stocks that 
+are already moving, their content attracts additional retail volume, and retail followers 
+systematically enter stocks that are already past their price peak. 
+ 
+The paper makes three contributions. First, it introduces the concept of the finfluencer attention 
+cycle to the Indian market microstructure literature, documenting the pre-event volume elevation 
+that precedes recommendation videos and distinguishing this pattern from pure exogenous 
+attention shocks. Second, it is the first study to use NSE bhavcopy data matched with YouTube 
+API video metadata to construct a comprehensive event study dataset covering Indian finfluencer 
+content from 2019 to 2026. Third, it provides context for evaluating SEBI’s 2024–2026 regulatory 
+interventions targeting finfluencer activity, including the August 2024 circular restricting 
+finfluencer-broker commercial relationships and the January 2025 mandatory three-month data lag 
+rule. 
+ 
+
+The paper tests four hypotheses. H1: finfluencer stock mentions generate abnormal trading volume 
+in the post-upload window. H2: post-upload cumulative abnormal returns are initially positive and 
+subsequently reverse, consistent with attention-driven price pressure. H3: the volume and return 
+effects are larger for small-cap stocks, where retail attention effects are less diluted by institutional 
+trading. H4: the pre-event window shows no abnormal activity, consistent with finfluencer uploads 
+being exogenous to near-term price dynamics. Figure 1 summarises the hypothesised attention 
+cycle mechanism. 
+ 
+Figure 1 – The Finfluencer Attention Cycle: Hypothesised Mechanism 
+ 
+The four-stage attention cycle: pre-existing volume elevation selects stocks into finfluencer content; content 
+amplifies retail volume; retail late-entry buying coincides with negative post-event returns as informed traders exit. 
+ 
+2. Literature Review 
+The attention hypothesis in financial economics holds that retail investors are constrained in their 
+ability to process information and disproportionately direct buying activity toward stocks that 
+attract their attention. Barber and Odean (2008) established this pattern using a large dataset of 
+retail brokerage accounts, finding that retail investors are net buyers of attention-grabbing stocks: 
+those with high abnormal volume, extreme returns, or news coverage, even when fundamentals do 
+not warrant purchases. This produces predictable patterns: attention-driven buying pushes prices 
+temporarily above fundamental value, followed by price reversal as attention recedes and prices 
+return toward fundamentals. 
+ 
+
+The social media extension of the attention hypothesis has generated a substantial literature. 
+Antweiler and Frank (2004) documented that stock message board posts on Yahoo Finance and 
+Raging Bull predict abnormal trading volume but not abnormal returns, consistent with attentiondriven trading without information content. Chen et al. (2014) found that Seeking Alpha articles 
+predict future returns, but their sample skews toward institutional-grade analysis. Cookson and 
+Niessner (2020) showed that social media disagreement predicts trading volume. Da, Engelberg, 
+and Gao (2011) used Google search volume as an attention proxy and found it predicts short-term 
+price increases followed by reversals. 
+ 
+The Reddit and WallStreetBets literature provides the closest analogue to the finfluencer 
+phenomenon. Hasso et al. (2022) found that Reddit stock mentions cause abnormal volume and 
+short-term price pressure. Boehmer et al. (2021) showed that retail order flow, proxied by 
+Robinhood account openings, is correlated with attention-driven stock purchases. Umar et al. 
+(2021) documented that the GameStop episode is consistent with coordinated retail attention rather 
+than informed trading. 
+ 
+The Indian finfluencer literature is sparse and methodologically limited. Lalwani (2025) studies 
+what determines finfluencer stock recommendation choices, finding that finfluencers favour 
+growth stocks with recent positive momentum, establishing the supply-side selection mechanism 
+that is relevant to interpreting the pre-event volume elevation found in this paper. SEBI’s own 
+Investor Survey 2025 documents the reach of finfluencer content but provides no causal estimates. 
+No prior study applies a market model event study to YouTube finfluencer data on the NSE. 
+ 
+The theoretical framework for interpreting the findings comes from two sources. Merton (1987) 
+showed that investor recognition, the share of investors aware of a stock, directly affects 
+
+equilibrium prices and trading volume. A finfluencer recommendation increases investor 
+recognition for a stock, which should increase both prices and volume mechanically through the 
+recognition channel. However, if the stock’s price already reflects its fundamental value, the 
+recognition-driven price increase will be temporary and followed by reversal. Lou (2014) 
+formalised this mechanism, showing that retail attention-driven price pressure is mean-reverting 
+within weeks. Both frameworks predict the observed pattern: volume elevation followed by 
+negative returns rather than positive returns and reversal. 
+ 
+3. Data 
+3.1 YouTube Video Dataset 
+Video metadata are collected from ten prominent Indian finfluencer YouTube channels using the 
+YouTube Data API v3. The channels are selected to represent the top tier of Indian financial 
+content by subscriber count and investment focus: Akshat Shrivastava, CA Rachana Ranade, 
+Pranjal Kamra, Shankar Nath, Yadnya Investment Academy, Parimal Ade, SOIC (School of 
+Intrinsic Compounding), Neeraj Joshi, Vivek Bajaj, and Pushkar Raj Thakur. Combined, these 
+channels have over 25 million subscribers as of March 2026. The API returns video title, 
+description, upload date, and view count for all available videos on each channel. The final dataset 
+contains 12,302 videos published between June 2019 and March 2026. 
+ 
+Stock mentions are extracted from video titles and descriptions using a curated alias dictionary 
+matching company names and ticker symbols to NSE-listed securities. The matching is 
+conservative: only well-known liquid stocks are matched, using full company name phrases rather 
+than single-word ticker matching, to avoid false positives from common English words that 
+coincide with NSE symbols. The final event dataset contains 1,535 video-stock pairs involving 82 
+distinct NSE-listed securities across all ten channels. 
+
+ 
+3.2 NSE Price and Volume Data 
+Daily price and volume data for all mentioned stocks are sourced from the NSE daily bhavcopy 
+archives and downloaded via Yahoo Finance for the period January 2017 to March 2026. The 
+estimation window for each event uses 120 trading days ending ten days before the event date. The 
+Nifty 50 index return serves as the market benchmark for the market model estimation. After 
+filtering for events with sufficient estimation window data (minimum 60 observations), the final 
+sample contains 717 events with complete abnormal return estimates and 747 events with complete 
+abnormal volume estimates. 
+ 
+Table 1 – Summary Statistics 
+Variable 
+N 
+Mean 
+Std 
+Min 
+Median 
+Max 
+CAR [0, +3] 
+717 
+−0.0055 
+0.0458 
+−0.473 
+−0.003 
++0.135 
+Avg AVR [0, +3] 
+747 
++2.030 
+3.534 
++0.226 
++1.303 
++61.8 
+View count (000s) 
+1,535 
+107.9 
+477.4 
+0.3 
+25.6 
+14,945 
+Large cap events (%) 
+– 
+68.7% 
+– 
+– 
+– 
+– 
+Small cap events (%) 
+– 
+31.3% 
+– 
+– 
+– 
+– 
+CAR = cumulative abnormal return. AVR = abnormal volume ratio (actual volume / estimation-window median 
+volume). View count in thousands. Large cap defined as Nifty 500 constituent. 
+ 
+4. Methodology 
+The paper uses a standard market model event study. For each video-stock event, the market model 
+is estimated over a 120-trading-day window ending ten days before the event date: 
+Rᵢₜ = αᵢ + βᵢ Rᵐₜ + εᵢₜ 
+where Rᵢₜ is the return on stock i on day t and Rᵐₜ is the Nifty 50 return. Abnormal returns are 
+computed as ARᵢₜ = Rᵢₜ − (αˆᵢ + βˆᵢ Rᵐₜ). Cumulative abnormal returns over window [d₁, d₂] are 
+CARᵢ[d₁, d₂] = Σ ARᵢₜ. Statistical significance is assessed using a one-sample t-test against zero. 
+ 
+
+Abnormal volume is measured as the abnormal volume ratio (AVR): actual trading volume divided 
+by the median trading volume over the estimation window. An AVR significantly greater than one 
+indicates unusual volume. Statistical significance is assessed using a one-sample t-test against the 
+null of AVR = 1. 
+ 
+The event date t = 0 is defined as the video upload date. If the upload date falls on a non-trading 
+day, t = 0 is set to the next trading day. The event window covers [−5, +10] trading days. Crosssectional heterogeneity is tested by splitting events by market capitalisation (large cap vs small 
+cap) and estimating OLS regressions of CAR[0, +3] on log view count, a large cap indicator, a 
+large channel indicator, and an indicator for post-SEBI circular events. 
+ 
+5. Findings and Discussion 
+5.1 Volume and Return Dynamics 
+Table 2 presents the main event study results. Two findings are immediately apparent. 
+ 
+Table 2 – CAR and AVR by Event Window 
+Window 
+CAR 
+Mean 
+CAR tstat 
+CAR p 
+AVR 
+Mean 
+AVR tstat 
+AVR p 
+N 
+Pre-event [−5, −1] 
++0.0012 
++0.658 
+0.510 
+1.466 
++4.526 
+<0.001 
+720 
+Day 0 
+−0.0025 
+−2.381 
+0.018 
+2.651 
++8.350 
+<0.001 
+716 
+Day 0 to +1 
+−0.0052 
+−3.485 
+<0.001 
+2.326 
++8.463 
+<0.001 
+717 
+Day 0 to +3 
+−0.0055 
+−3.208 
+0.001 
+2.030 
++7.965 
+<0.001 
+717 
+Day 0 to +5 
+−0.0062 
+−3.423 
+<0.001 
+1.868 
++7.519 
+<0.001 
+717 
+Reversal [+4, +10] 
+−0.0004 
+−0.278 
+0.781 
+1.396 
++3.929 
+<0.001 
+713 
+CAR t-statistic tests H₀: CAR = 0. AVR t-statistic tests H₀: AVR = 1. One-sample t-tests with standard errors across 
+events. 
+ 
+The volume result is strong and unambiguous. AVR spikes to 2.65 on the upload day and remains 
+significantly elevated through Day +5 at 1.87. H1 is confirmed: finfluencer stock mentions 
+generate a large and persistent abnormal volume response on the NSE. 
+
+ 
+The return result is the paper’s most important finding. CAR is negative and statistically significant 
+across all post-event windows: −0.25% on Day 0, −0.52% through Day +1, −0.55% through Day 
++3, and −0.62% through Day +5. H2 is not confirmed in the hypothesised direction: prices do not 
+rise following finfluencer recommendations, they fall. We do not detect evidence of reversal within 
+the first ten trading days ([+4, +10] CAR = −0.04%, p = 0.78), though the power to detect a small 
+reversal is limited given the noise in daily returns. The 95% confidence interval around the [+4, 
++10] CAR spans approximately −0.4% to +0.4%, so a modest reversal cannot be ruled out. The 
+correct interpretation is that we find no evidence of reversal within this window, not that no 
+reversal occurred. 
+ 
+The pre-event window is also informative. The pre-event AVR of 1.47 is significantly elevated (p 
+< 0.001), indicating that volume is already 47% above normal in the five days before the video is 
+uploaded. Pre-event CAR is positive but insignificant (+0.12%, p = 0.51). This pre-event volume 
+elevation, combined with the negative post-event returns, is consistent with the finfluencer 
+attention cycle described in the introduction: stocks experiencing unusual volume and recent price 
+momentum attract finfluencer content, the content attracts additional retail volume, and retail 
+followers enter stocks that are past their momentum peak and beginning to decline. 
+ 
+5.2 Cross-Sectional Heterogeneity 
+Table 3 presents the heterogeneity analysis. 
+ 
+Table 3 – Heterogeneity by Market Capitalisation 
+Group 
+CAR 
+[0,+3] 
+t-stat 
+p-value 
+AVR 
+[0,+3] 
+AVR tstat 
+AVR p 
+N 
+Small cap (non-Nifty 
+500) 
+−0.0172 
+−2.075 
+0.040 
+2.264 
++2.976 
+0.004 
+106 
+Large cap (Nifty 500) 
+−0.0035 
+−2.486 
+0.013 
+1.817 
++9.514 
+<0.001 
+611 
+
+Large cap defined as Nifty 500 constituent. Small cap = all other stocks. AVR t-statistic tests H₀: AVR = 1. 
+ 
+The small-cap effect is significantly larger in both economic and statistical terms. Small-cap stocks 
+show a CAR of −1.72% over [0, +3] versus −0.35% for large-cap stocks. The AVR for small-cap 
+stocks is 2.26 versus 1.82 for large-cap stocks. H3 is confirmed in the correct direction but with 
+negative rather than positive returns. The larger effect for small-cap stocks is consistent with 
+thinner institutional participation in these stocks, where retail attention shocks have a more 
+pronounced impact on prices and where the attention cycle dynamics are amplified. Retail 
+followers of finfluencers who enter small-cap stocks following a recommendation face larger 
+adverse price movements than those entering Nifty 500 constituents. Figure 2 visualises the CAR 
+trajectories for both groups. 
+ 
+Figure 2 – CAR Around Upload Date: Small Cap vs Large Cap 
+ 
+Cumulative abnormal returns by market capitalisation group. Small cap = non-Nifty 500 stocks. Large cap = Nifty 
+500 constituents. Shaded region = [0, +3] event window. 
+ 
+5.3 SEBI Regulatory Impact 
+With only 209 post-SEBI Circular 1 events and 193 post-SEBI Circular 2 events, the regulatory 
+impact analysis is substantially underpowered. The post-Circular 1 CAR of −0.23% is smaller in 
+magnitude than the pre-circular CAR of −0.68%, a difference in the welfare-improving direction, 
+but the comparison is not statistically significant (p = 0.24). Figure 3, however, presents a more 
+
+informative visual picture: the pre-SEBI CAR trajectory shows a clean monotonic decline from 
+upload date through Day +10, while the post-SEBI CAR trajectory is essentially flat around 
+−0.15% with no systematic negative pattern. The visual divergence is economically meaningful 
+even if the formal test is underpowered at current sample sizes. This is reported as preliminary 
+evidence, not a statistical finding. Evaluating whether SEBI’s 2024–2026 interventions attenuated 
+the attention cycle requires data through at least 2027 and is deferred accordingly. 
+ 
+Figure 3 – CAR Trajectories Before and After SEBI Circular (August 2024) 
+ 
+Pre-SEBI: events before August 19, 2024 (n = 511). Post-SEBI: events on or after August 19, 2024 (n = 209). The 
+visual divergence in post-upload trajectories is directionally consistent with regulatory attenuation but not 
+statistically significant at current sample sizes. 
+ 
+5.4 Robustness 
+Table 4 reports event concentration. The top five stocks account for 36.7% of events and the top 
+ten for 52.5%. Two channels, Yadnya Investment Academy and Parimal Ade, account for 67.9% 
+of events. This concentration reflects the reality that finfluencers disproportionately cover liquid, 
+well-known stocks, a feature of the content ecosystem rather than a sampling artifact. 
+ 
+Table 4 – Event Concentration 
+
+Stock 
+N events 
+% total 
+Channel 
+N events 
+% total 
+ 
+RELIANCE 
+203 
+13.2% 
+Yadnya Investment 
+649 
+42.3% 
+ 
+M&M 
+157 
+10.2% 
+Parimal Ade 
+393 
+25.6% 
+ 
+TATAMOTORS 
+72 
+4.7% 
+Vivek Bajaj 
+201 
+13.1% 
+ 
+HDFCBANK 
+70 
+4.6% 
+SOIC 
+68 
+4.4% 
+ 
+ZOMATO 
+61 
+4.0% 
+Pushkar Raj Thakur 
+63 
+4.1% 
+ 
+Top 5 total 
+563 
+36.7% 
+Top 2 total 
+1,042 
+67.9% 
+ 
+Total events N = 1,535. Concentration reflects finfluencer preference for covering liquid, well-known stocks. 
+ 
+Table 5 presents sensitivity specifications excluding the most concentrated channel and stocks. 
+The main findings hold in all specifications. Notably, the CAR and AVR effects are stronger after 
+excluding concentrated events: CAR[0,+3] is −0.53% excluding Yadnya (p = 0.017), −0.75% 
+excluding the top three stocks (p = 0.001), and −0.79% excluding both (p = 0.007). The AVR also 
+strengthens, reaching 2.63 in the most restricted specification. This indicates the attention cycle is 
+broad-based across the finfluencer ecosystem rather than driven by a few high-frequency channels 
+or heavily covered stocks. 
+ 
+Table 5 – Sensitivity Analysis: CAR and AVR [0, +3] 
+Sample 
+N 
+CAR 
+[0,+3] 
+CAR pvalue 
+AVR 
+[0,+3] 
+AVR pvalue 
+ 
+Full sample 
+717 
+−0.0055 
+0.001 
+2.030 
+<0.001 
+ 
+Excl. Yadnya 
+411 
+−0.0053 
+0.017 
+2.259 
+<0.001 
+ 
+Excl. top 3 stocks 
+515 
+−0.0075 
+0.001 
+2.340 
+<0.001 
+ 
+Excl. Yadnya + top 3 stocks 
+296 
+−0.0079 
+0.007 
+2.634 
+<0.001 
+ 
+Top 3 stocks: RELIANCE, M&M, TATAMOTORS. AVR p-value tests H₀: AVR = 1. CAR p-value tests H₀: CAR = 0. 
+Standard errors across events. 
+ 
+Table 6 presents the permutation placebo test. Shuffling upload dates within each channel 200 
+times and re-estimating CAR[0,+3] produces a null distribution centred at +0.27% with a 95th 
+percentile interval of [−0.30%, +0.92%]. The actual CAR of −0.55% falls entirely outside this 
+interval. Zero out of 200 permutations produced a mean CAR as negative as the actual value, 
+
+yielding a permutation p-value of 0.000. This rules out the possibility that the observed effect 
+arises from chance alignment of upload dates and return patterns. 
+ 
+Table 6 – Permutation Placebo Test (N = 200 permutations) 
+Statistic 
+Value 
+Permuted CAR[0,+3] mean 
++0.0027 
+Permuted CAR[0,+3] std 
++0.0032 
+95th percentile interval 
+[−0.0030, +0.0092] 
+Actual CAR[0,+3] 
+−0.0055 
+Permutation p-value (one-sided) 
+0.000 
+Permutations with CAR ≤ actual 
+0 / 200 
+Upload dates shuffled within channel to preserve the channel-level distribution of upload frequency. 200 
+permutations. One-sided p-value: fraction of permuted means ≤ actual CAR. 
+ 
+Figure 4 – CAR and AVR Around Finfluencer Video Upload Date (Full Sample) 
+ 
+Market model estimated over [−130, −11]. Upload date = t=0. Blue bars = pre-event days; orange bars = postevent days. Dashed red line marks the upload date. 
+ 
+5.5 Upload Timing Robustness 
+
+A key identification concern is whether finfluencers upload videos in response to same-day price 
+movements, making the event study endogenous. Table 7 splits events by upload time in UTC: 
+pre-market (before 3:45 UTC, i.e. before 9:15 IST), during-market (3:45–10:00 UTC), and postclose (after 10:00 UTC, i.e. after 15:30 IST). Pre-market videos cannot react to same-day prices. 
+ 
+Table 7 – Robustness by Upload Timing 
+Upload Group 
+N 
+CAR 
+[0,+3] 
+CAR p 
+AVR 
+[0,+3] 
+AVR p 
+Preevent 
+AVR 
+Preevent p 
+ 
+Pre-market (<9:15 IST) 
+203 
+−0.0046 
+0.163 
+2.157 
+<0.001 
+1.385 
+<0.001 
+ 
+During market (9:15–
+15:30 IST) 
+169 
+−0.0060 
+0.091 
+1.863 
+<0.001 
+1.352 
+<0.001 
+ 
+Post-close (>15:30 IST) 
+345 
+−0.0058 
+0.019 
+2.040 
+<0.001 
+1.569 
+0.007 
+ 
+Pre-event AVR tests H₀: AVR = 1 over [−5, −1]. Pre-market subsample excludes same-day price reaction by 
+construction. 
+ 
+The pre-event AVR is significantly elevated in all three groups including pre-market (1.39, p < 
+0.001). Because pre-market videos are uploaded before market open, this elevation cannot reflect 
+same-day reactions. It confirms that finfluencer selection operates over multiple trading days: 
+stocks with elevated volume over the preceding five days attract content creation regardless of 
+upload timing. The AVR spike in the post-upload window is consistent across all groups. The premarket CAR of −0.46% is directionally consistent with the full sample result but insignificant at 
+conventional levels, reflecting the smaller subsample of 203 events. 
+ 
+6. Limitations 
+Endogeneity of upload timing 
+The pre-event volume elevation of 1.47 times normal (p < 0.001) confirms that finfluencer 
+selection operates over multiple trading days. The timing robustness analysis uses the pre-market 
+upload subsample to address same-day endogeneity. However, 393 of the 449 pre-market events 
+
+come from a single channel, Yadnya Investment Academy, which schedules all uploads at 01:30 
+UTC (07:00 IST) daily. Their fixed schedule means the pre-market instrument reflects one 
+channel’s upload habit rather than a representative test of exogenous timing. Excluding Yadnya 
+from the pre-market subsample leaves only 56 events, too few for reliable inference. The pre-event 
+elevation in the full pre-market group is therefore dominated by Yadnya’s stock selection process, 
+which may itself follow multi-day momentum patterns. This is acknowledged as a limitation of 
+the timing robustness check. 
+ 
+Sample concentration 
+The event sample is concentrated across channels and stocks. Two channels account for 67.9% of 
+events, and the top three stocks account for approximately 28%. The sensitivity analysis in Section 
+5.4 confirms that the main results hold after excluding the most concentrated channel and stocks, 
+but the generalisability of the findings across the broader finfluencer ecosystem, including smaller 
+channels and regional-language content, cannot be established from this sample. 
+ 
+Stock mention extraction 
+The alias-based stock mention extraction approach is conservative by design, using only a curated 
+list of liquid stocks and full company name phrases. This reduces false positives but introduces 
+false negatives: stocks mentioned using informal names, partial names, or abbreviations not in the 
+alias dictionary are not captured. The true event count is likely larger than 1,535. 
+ 
+SEBI regulatory tests 
+The post-January 2025 subsample of 193 events, while larger, remains insufficient for reliable 
+inference. The SEBI regulatory impact analysis requires a full year of post-intervention data and 
+is reported here as preliminary evidence only. 
+
+ 
+Missing channels 
+The sample covers ten channels, selected for their prominence and subscriber count. Smaller or 
+newer finfluencer channels, regional-language channels, and channels that have been removed or 
+restricted by SEBI are not captured. The sample is representative of the top tier of Indian financial 
+YouTube content but not the full finfluencer ecosystem. 
+ 
+Causal interpretation 
+The event study design estimates the association between finfluencer uploads and market 
+outcomes, not a causal effect. The pre-event volume elevation confirms that selection is operating: 
+finfluencers choose to cover stocks that are already attracting attention. The post-event volume 
+and return dynamics describe what happens after coverage, conditioning on this selection. Causal 
+identification of the finfluencer effect requires an instrument or natural experiment that is not 
+available in this dataset. 
+ 
+7. Conclusion 
+This paper documents a finfluencer attention cycle in Indian equity markets. Stocks mentioned in 
+YouTube recommendation videos experience abnormal trading volume of 2.65 times normal on 
+the upload day, declining but remaining elevated through five post-event trading days. Post-upload 
+cumulative abnormal returns are negative at −0.55% over four days and show no subsequent 
+reversal. Pre-event volume is also elevated at 1.47 times normal, indicating that finfluencers create 
+content about stocks that are already experiencing unusual trading activity. The combined pattern 
+is consistent with a momentum-chasing selection mechanism: finfluencers upload content about 
+stocks experiencing recent volume spikes, their content attracts additional retail buying, and retail 
+followers systematically enter at or near price peaks. 
+
+ 
+The findings have direct policy relevance. SEBI’s 2024–2026 regulatory interventions targeting 
+finfluencer activity were motivated by the observation that retail followers of finfluencers tend to 
+underperform. The negative post-recommendation CARs documented here, particularly the 
+−1.72% average for small-cap stocks, are consistent with this concern. The magnitude is 
+economically significant for retail investors with concentrated positions. Whether SEBI’s 
+interventions have reduced these adverse return dynamics cannot yet be determined from the 
+current data, as the post-regulatory sample is too small for reliable inference. 
+ 
+Three extensions follow naturally. First, evaluating SEBI’s 2024–2026 regulatory interventions, 
+including the August 2024 circular restricting finfluencer-broker relationships and the January 
+2025 mandatory data lag rule, requires post-regulatory data through at least 2027. A preliminary 
+comparison suggests smaller negative post-recommendation CARs after the August 2024 circular, 
+but the subsample is too small for reliable inference. Second, the alias-based stock mention 
+extraction should be supplemented with a language model approach to capture informal references 
+and regional-language content. Third, bid-ask spread data from the NSE Level 2 order book would 
+test whether the attention shock increases effective spreads, imposing additional transaction costs 
+on retail followers beyond the negative CAR documented here. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Competing Interests: On behalf of all authors, the corresponding author states that there is no 
+conflict of interest. 
+Funding: This research received no external funding. 
+Ethical Approval: Not applicable. This study uses publicly available secondary data and does 
+not involve human subjects. 
+
+Bibliography 
+Antweiler, W., and Frank, M. Z. (2004). Is all that talk just noise? The information content of 
+internet stock message boards. Journal of Finance, 59(3), 1259–1294. 
+ 
+Barber, B. M., and Odean, T. (2008). All that glitters: The effect of attention and news on the 
+buying behavior of individual and institutional investors. Review of Financial Studies, 21(2), 785–
+818. 
+ 
+Boehmer, E., Jones, C. M., Zhang, X., and Zhang, X. (2021). Tracking retail investor activity. 
+Journal of Finance, 76(5), 2249–2305. 
+ 
+Chen, H., De, P., Hu, Y., and Hwang, B. H. (2014). Wisdom of crowds: The value of stock 
+opinions transmitted through social media. Review of Financial Studies, 27(5), 1367–1403. 
+ 
+Cookson, J. A., and Niessner, M. (2020). Why don’t we agree? Evidence from a social network of 
+investors. Journal of Finance, 75(1), 173–228. 
+ 
+Da, Z., Engelberg, J., and Gao, P. (2011). In search of attention. Journal of Finance, 66(5), 1461–
+1499. 
+ 
+Hasso, T., Müller, D., Pelster, M., and Warkulat, S. (2022). Who participated in the GameStop 
+frenzy? Evidence from brokerage accounts. Finance Research Letters, 45, 102140. 
+ 
+Lalwani, V. (2025). What do financial influencers recommend? Evidence from Indian YouTube 
+channels. SSRN Working Paper. 
+ 
+Lou, D. (2014). Attracting investor attention through advertising. Review of Financial Studies, 
+27(6), 1797–1829. 
+ 
+Merton, R. C. (1987). A simple model of capital market equilibrium with incomplete information. 
+Journal of Finance, 42(3), 483–510. 
+ 
+National Stock Exchange of India. (2019–2026). Daily bhavcopy archives [Dataset]. 
+https://nsearchives.nseindia.com 
+ 
+Securities and Exchange Board of India. (2024, August 19). Circular on association of SEBI 
+registered intermediaries with unregistered entities [Circular No. SEBI/HO/MIRSD/MIRSD-PoD1/P/CIR/2024/105]. 
+ 
+Securities and Exchange Board of India. (2025b). SEBI Investor Survey 2025 [Research Report]. 
+https://www.sebi.gov.in 
+ 
+Securities and Exchange Board of India. (2025a). Details/clarifications on provisions related to 
+association of persons regulated by the Board, MIIs, and their agents with persons engaged in 
+prohibited activities [Circular No. SEBI/HO/MIRSD/MIRSD-PoD-1/P/CIR/2025/11]. 29 January. 
+Available 
+at: 
+https://www.sebi.gov.in/legal/circulars/jan-2025/details-clarifications-onprovisions-related-to-association-of-persons-regulated-by-the-board-miis-and-their-agents-withpersons-engaged-in-prohibited-activities_91356.html 
+ 
+
+Umar, Z., Gubareva, M., Yousaf, I., and Ali, S. (2021). A tale of company fundamentals vs 
+sentiment driven pricing: The case of GameStop. Journal of Behavioral and Experimental Finance, 
+30, 100501. 
+ 
+YouTube Data API v3. (2026). Google Developers. https://developers.google.com/youtube/v3 
+ 

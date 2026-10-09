@@ -1,0 +1,462 @@
+Integrating General Economics and Quantitative Finance: 
+Equilibrium, Stochastic Control, Market Microstructure, 
+and Machine Learning 
+A synthesis for researchers and practitioners 
+Onur CELEBI 
+PhD Candidate in Economics at Ankara University 
+Independent Researcher (Economics & Quantitative Finance)   
+celebionur@protonmail.ch 
+January 2026 
+ 
+Abstract 
+This article synthesizes foundational theories in economics and modern quantitative finance, 
+with particular emphasis on how stochastic analysis, market microstructure, and machine 
+learning jointly shape contemporary research and practice. We review classic frameworks for 
+portfolio choice and asset pricing, the martingale approach to no-arbitrage valuation, and 
+liquidity-sensitive models of execution and market making. We then integrate recent 
+econometric advances—especially double/debiased machine learning for causal and structural 
+estimation—and discuss emerging uses of large language models for measurement and 
+prediction tasks under explicit validity conditions. The methodology section proposes a unified 
+research-to-deployment pipeline that links theory-driven modeling to disciplined empirical 
+evaluation. The analysis highlights implications for market efficiency, risk management, and 
+financial stability, and identifies open problems at the intersection of equilibrium modeling, 
+strategic interaction, and data-driven inference. We also highlight recent market-structure 
+developments—such as the growth of zero-days-to-expiry index options, the transition to T+1 
+settlement in U.S. securities, and the expansion of central clearing in U.S. Treasuries—and 
+discuss their quantitative implications for liquidity and intraday risk. 
+Keywords 
+General equilibrium; asset pricing; stochastic calculus; stochastic control; market microstructure; 
+optimal execution; market making; mean field games; machine learning; causal inference; 
+econometrics; model risk. 
+
+1. Introduction 
+Economics and quantitative finance share a common object: decision-making under uncertainty. 
+In economics, uncertainty enters through incomplete information, strategic interaction, and 
+aggregate shocks; in finance, it appears in asset returns, volatility, liquidity, and counterparty 
+risk. Over the past five decades, the field has developed a layered architecture of theories. At the 
+most abstract level are equilibrium arguments linking preferences, technology, and information 
+to prices. At the operational level are models of trading, hedging, and risk management that must 
+confront market frictions such as transaction costs and price impact. More recently, highdimensional data and machine learning (ML) have expanded what is empirically measurable, 
+while also raising new concerns about identification, overfitting, and the epistemic reliability of 
+automated measurement. 
+ 
+This article provides an integrated view of these developments and argues for a coherent 
+methodology: (i) begin with economic primitives and no-arbitrage restrictions; (ii) represent 
+trading and strategic behavior as stochastic control or game problems; (iii) estimate and validate 
+with econometric procedures designed for high-dimensional nuisance components; and (iv) 
+maintain governance practices that preserve interpretability, auditability, and robustness under 
+distributional change. The aim is not to replace classical theory with algorithmic prediction, but 
+to combine them in ways that remain mathematically and empirically defensible. 
+Note: This article is for academic and educational purposes and does not constitute investment advice. 
+2. Literature Review 
+2.1 Portfolio choice and risk premia: from mean-variance to factor models 
+Modern quantitative finance begins with a deceptively simple insight: investors care about both 
+expected return and risk. Markowitz’s mean-variance framework formalizes this as an 
+optimization problem that trades off expected portfolio return against portfolio variance, laying 
+the foundation for risk-return frontiers and diversification logic (Markowitz, 1952). The capital 
+asset pricing model (CAPM) embeds this logic into equilibrium, predicting that expected excess 
+returns are proportional to systematic risk exposure (Sharpe, 1964). The efficient markets 
+hypothesis (EMH) advances a related informational claim: under sufficient competition and 
+rationality, prices incorporate available information so that predictable excess returns are 
+difficult to extract (Fama, 1970). 
+ 
+Subsequent theory and evidence complicate these canonical models. Multi-factor approaches, 
+including arbitrage pricing theory (APT), relax the single-factor structure of CAPM and connect 
+pricing to the absence of arbitrage across many assets (Ross, 1976). Empirical asset pricing 
+confronts a persistent tension: equilibrium models explain returns through economic 
+mechanisms, but expected returns are not directly observed and must be estimated with noisy 
+
+data. In this setting, measurement error and multiple-hypothesis testing become central 
+methodological issues—problems that are now being revisited with modern statistical learning 
+tools. 
+Equation 1 (mean-variance portfolio choice): 
+ 
+2.2 No-arbitrage valuation and stochastic analysis 
+The no-arbitrage paradigm provides a second pillar: asset prices must be consistent with the 
+absence of costless riskless profits. In continuous time, this logic is naturally expressed through 
+stochastic calculus and martingale methods. The Black-Scholes model shows how, under 
+frictionless trading and diffusion dynamics, derivative prices satisfy both a risk-neutral 
+expectation representation and a partial differential equation (Black and Scholes, 1973). 
+Merton’s continuous-time treatment generalizes the approach and clarifies connections between 
+dynamic hedging, replication, and equilibrium (Merton, 1973). The monograph by Karatzas and 
+Shreve systematizes the mathematical foundations, including semimartingales, equivalent 
+martingale measures, and utility-based optimization in incomplete markets (Karatzas and Shreve, 
+1998). 
+ 
+Two themes from this literature remain particularly relevant for modern practice. First, pricing 
+and risk management are inseparable: any valuation formula implies hedging strategies and 
+residual risks when markets are incomplete or frictions are present. Second, optimization under 
+uncertainty naturally leads to stochastic control, where value functions satisfy Hamilton-JacobiBellman (HJB) equations and optimal policies can be characterized via verification arguments. 
+These tools also underpin modern models of execution and market making, which treat liquidity 
+as an endogenous cost of trading rather than an exogenous fee. 
+Equation 2 (risk-neutral valuation): 
+ 
+Equation 3 (Black-Scholes PDE): 
+
+ 
+2.3 Liquidity, market microstructure, and strategic interaction 
+Classical asset pricing abstracts from how trades occur. Yet in practice, trading itself moves 
+prices through market impact, bid-ask spreads, queue priority, and adverse selection. The optimal 
+execution literature models the tradeoff between execution cost and price risk, producing policies 
+that specify how rapidly to liquidate or acquire a position. A widely used benchmark is the 
+Almgren-Chriss framework, which yields an explicit efficient frontier between expected trading 
+cost and cost variance under stylized impact models (Almgren and Chriss, 2001). In parallel, 
+market making models treat liquidity provision as a control problem with inventory risk and 
+stochastic order arrivals. Avellaneda and Stoikov derive quoting rules in a limit order book that 
+balance expected spread capture against inventory risk (Avellaneda and Stoikov, 2008). 
+ 
+Guéant provides a unified treatment of these models, emphasizing both analytical tractability and 
+calibration to market realities, and extending the framework to block trade pricing and liquiditysensitive hedging (Guéant, 2016). A natural next step is to treat liquidity as strategic: the actions 
+of one large trader affect the opportunities of others. This leads to stochastic games, and, in 
+markets with many interacting agents, to mean field game (MFG) limits. The probabilistic 
+approach developed by Carmona and Delarue provides a comprehensive theory for mean field 
+control and games, including forward-backward SDE characterizations and connections to 
+master equations (Carmona and Delarue, 2018). 
+Equation 4 (HJB principle, schematic form): 
+ 
+Equation 5 (mean field game HJB-Fokker-Planck coupling, schematic form): 
+ 
+
+2.4 Empirical asset pricing and machine learning 
+Machine learning has re-entered empirical asset pricing for a pragmatic reason: expected returns 
+are difficult to measure, and the predictor set proposed by decades of research is large, 
+correlated, and potentially nonlinear. Gu, Kelly, and Xiu provide a comparative analysis of ML 
+methods for forecasting equity risk premia and document that flexible nonlinear models can 
+improve out-of-sample predictive performance relative to traditional linear benchmarks (Gu, 
+Kelly, and Xiu, 2020). The central methodological challenge, however, is interpretability and 
+economic meaning: predictive success does not automatically identify causal mechanisms or 
+equilibrium channels. 
+ 
+This distinction motivates a division of labor. Structural and equilibrium models remain essential 
+for explaining why risk premia exist and how they should respond to changes in preferences, 
+technology, or constraints. ML is most valuable as a measurement tool: it can approximate 
+conditional expectations, summarize high-dimensional states, and produce forecasting signals 
+that can be embedded into economically constrained decision problems (for example, portfolio 
+optimization with turnover and risk limits). 
+2.5 Econometrics for high-dimensional and AI-assisted measurement 
+The rise of ML forces econometrics to confront an old issue in a new form: how to conduct valid 
+inference on low-dimensional parameters (such as treatment effects or structural elasticities) in 
+the presence of high-dimensional nuisance functions. Chernozhukov et al. develop 
+double/debiased machine learning (DML), which constructs Neyman-orthogonal score functions 
+and uses sample splitting (cross-fitting) to reduce regularization bias, enabling asymptotically 
+normal inference in many settings (Chernozhukov et al., 2018). These ideas are directly relevant 
+to finance, where one might estimate causal effects of policy changes, execution rules, or 
+information disclosures on liquidity and volatility. 
+ 
+Recent work extends DML to settings with additional selection complications. For example, 
+Dolgikh and Potanin propose DML estimators for treatment effects in multivariate sample 
+selection models and study their finite-sample properties (Dolgikh and Potanin, 2025). Such 
+extensions matter because financial datasets often reflect endogenous participation: trades are 
+observed only when agents choose to transact, and market data can be truncated by reporting 
+thresholds or platform rules. 
+Equation 6 (an orthogonal score used in DML, illustrative form): 
+ 
+
+2.6 Large language models as econometric instruments for text and unstructured data 
+Large language models (LLMs) introduce a new kind of measurement automation: they can label 
+and summarize text, extract structured variables from disclosures, and generate features from 
+qualitative data. Ludwig, Mullainathan, and Rambachan propose an applied econometric 
+framework that distinguishes prediction tasks from estimation (measurement) tasks and 
+emphasizes two validity requirements: avoiding training-data leakage for prediction and 
+collecting validation data to quantify measurement error for estimation (Ludwig, Mullainathan, 
+and Rambachan, 2025). In finance, such tools could reduce the cost of constructing sentiment 
+indices, classifying news by topic, or extracting risk disclosures from filings, but only if their 
+error structure is explicitly modeled and audited. 
+ 
+From a methodological standpoint, LLM-based variables should be treated like any other noisy 
+proxy: they can be useful, but they must be validated, and their errors must be propagated into 
+uncertainty quantification. This perspective aligns naturally with the econometric emphasis on 
+measurement error, and it also complements the risk-management culture of financial 
+institutions, where model risk and governance are increasingly central. 
+3. Methodology: a unified research-to-deployment pipeline 
+We now outline a methodological template for integrating economic theory, mathematical 
+finance, market microstructure, and data-driven inference. The template is intended as a practical 
+blueprint rather than a single model. It emphasizes three principles: (i) explicit economic 
+constraints (no-arbitrage, budget, risk limits); (ii) mathematically characterized decision rules 
+(stochastic control and games); and (iii) empirical validation protocols that protect against 
+overfitting, leakage, and distributional shift. 
+3.1 Modeling primitives and identification targets 
+The first step is to define primitives and targets. Primitives include state variables (prices, order 
+book features, macro signals), controls (trading rates, quotes, portfolio weights), and a 
+probabilistic law for state evolution (diffusions, point processes, or regime-switching models). 
+Targets are the objects one intends to estimate or compute, such as (i) a pricing functional for 
+derivatives, (ii) an optimal policy for execution, (iii) equilibrium price impact and spreads, or 
+(iv) causal effects of a rule change. 
+ 
+Identification must be specified at the outset: prediction problems (forecasting returns or order 
+arrivals) require stable out-of-sample performance, whereas causal or structural parameters 
+require assumptions that justify counterfactual comparisons. DML can be used when the causal 
+parameter admits an orthogonal score representation with high-dimensional nuisance functions, 
+while structural estimation may impose equilibrium restrictions from no-arbitrage or agent 
+optimization. 
+
+3.2 No-arbitrage constraints and valuation 
+For valuation problems, the no-arbitrage condition implies the existence of a pricing kernel or an 
+equivalent martingale measure under which discounted asset prices are martingales (Karatzas 
+and Shreve, 1998). Practically, this provides a disciplined way to combine statistical estimation 
+with financial consistency: a forecasting model for drifts may be useful for portfolio choice, but 
+it is not a pricing model unless it is linked to a stochastic discount factor. Conversely, derivative 
+pricing models must specify hedging strategies and residual risks in incomplete markets. 
+3.3 Optimization under frictions: control formulations 
+Many real problems are naturally expressed as stochastic control: maximize expected utility of 
+terminal wealth, minimize execution cost subject to risk, or maximize market-making P&L 
+subject to inventory constraints. The control formulation clarifies what the system is optimizing 
+and what constraints it respects. In execution, the canonical objective is a mean-risk tradeoff in 
+liquidation cost; in market making, it is a tradeoff between spread capture and inventory risk. 
+These objectives can often be solved analytically in stylized settings, which is valuable because 
+it yields interpretable comparative statics (how the policy changes with volatility, risk aversion, 
+or impact parameters). In more realistic settings, numerical methods (dynamic programming, 
+PDE solvers, reinforcement learning with constraints) are used, but the interpretation remains 
+anchored by the control objective. 
+Equation 7 (execution objective in the Almgren-Chriss tradition): 
+ 
+Figure 1 illustrates a stylized risk-neutral (linear) versus risk-averse execution trajectory using 
+synthetic parameters. 
+
+ 
+Figure 1. Example liquidation paths in the Almgren-Chriss model (illustrative parameters; not based on any specific 
+asset). 
+3.4 Strategic interaction: games and mean field limits 
+When multiple agents interact, control problems become games. Strategic interaction is central in 
+microstructure: liquidity providers quote prices anticipating adverse selection; large traders 
+choose execution schedules anticipating price impact; and regulators set rules that alter 
+incentives and equilibrium outcomes. Mean field games offer a tractable approximation when the 
+number of agents is large and each agent’s influence is small, but the aggregate distribution of 
+states affects incentives. The Carmona-Delarue framework enables probabilistic characterization 
+and numerical approximations for such models, making them relevant for studying systemic 
+liquidity, crowding, and feedback loops (Carmona and Delarue, 2018). 
+3.5 Empirical discipline: evaluation protocols and model risk controls 
+To translate models into practice, empirical evaluation must match the decision environment. For 
+prediction-based components (return forecasts, volatility forecasts, order arrival intensities), 
+standard cross-validation is insufficient when data are autocorrelated and when labels overlap 
+across time. Practitioners therefore rely on walk-forward evaluation, embargo periods, and 
+backtesting protocols that prevent information leakage. Moreover, any performance claim must 
+incorporate transaction costs, slippage, and capacity effects, which often dominate paper profits. 
+ 
+Model risk controls are equally important. In quantitative finance, a useful distinction is between 
+(i) statistical risk (estimation error under a fixed model) and (ii) structural risk (model 
+misspecification and regime change). Robustness checks include stress testing, parameter 
+
+perturbations, and scenario analysis. Coherent risk measures and expected shortfall provide a 
+mathematically principled language for tail risk aggregation (Artzner et al., 1999). 
+Equation 8 (expected shortfall, a tail risk measure): 
+ 
+Table 1 summarizes a practical pipeline linking theory to deployment. 
+Stage 
+Primary question 
+Typical methods 
+Diagnostics/metrics 
+Model 
+specification 
+What is the state and what are 
+controls? 
+SDEs; point processes; 
+factor models 
+Residual checks; stability 
+under perturbation 
+Economic 
+constraints 
+Is the model financially 
+consistent? 
+No-arbitrage; budget 
+constraints; risk limits 
+Pricing consistency; 
+hedging error 
+Decision rule 
+What is the optimal/ equilibrium 
+policy? 
+Stochastic control; 
+dynamic games; MFG 
+Sensitivity (Greeks); 
+equilibrium sanity checks 
+Estimation 
+Can we estimate required inputs? 
+ML prediction; DML for 
+causal targets 
+Out-of-sample error; CI 
+coverage; leakage tests 
+Validation 
+Does it survive realistic frictions? 
+Backtests with costs; 
+stress tests 
+Sharpe after costs; 
+drawdown; ES; turnover 
+Deployment 
+How is it monitored and 
+governed? 
+Model governance; 
+alerts; limits 
+Drift detection; limit 
+breaches; audit trail 
+ 
+4. Analysis and Synthesis 
+4.1 Market efficiency, predictability, and the role of measurement 
+The EMH (Fama, 1970) can be read less as a claim of perfect markets and more as a warning 
+about signal-to-noise ratios: if markets are competitive, most predictable patterns are quickly 
+arbitraged away or are compensation for risk. The practical implication is that improved 
+prediction is best viewed as improved measurement rather than proof of a free lunch. In this 
+spirit, ML-driven return forecasts are valuable insofar as they reduce measurement error in 
+conditional expectations, enabling sharper tests of economic mechanisms and better calibrated 
+decision rules. 
+ 
+Gu, Kelly, and Xiu (2020) emphasize that ML can materially improve risk-premium 
+measurement, but they also caution that better measurement does not, by itself, identify 
+economic structure. Bridging prediction to explanation requires embedding forecasts into models 
+that respect equilibrium restrictions and that generate testable implications about how risk premia 
+should respond to changes in constraints or shocks. 
+
+4.2 Liquidity as an economic variable 
+Liquidity is simultaneously a technological and strategic phenomenon: it depends on market 
+design, the distribution of agent objectives, and the information environment. Execution costs 
+and spreads can therefore be interpreted as prices for immediacy and risk-bearing. The execution 
+and market making literatures provide operational definitions of liquidity through measurable 
+objects: impact functions, fill probabilities, and inventory risk. In turn, these micro-level frictions 
+can aggregate into macro-level effects by changing the cost of capital, amplifying deleveraging, 
+or generating endogenous volatility. 
+ 
+Guéant’s framework highlights that liquidity is not merely a nuisance: it enters pricing and 
+hedging through additional state variables and through nonlinear feedback between trading and 
+prices (Guéant, 2016). In this setting, control and game methods are not optional—they are the 
+natural language for describing optimal behavior under endogenous trading costs. 
+4.3 Strategic execution and market making: why games matter 
+The core insight of Almgren-Chriss is that a large order transforms a static investment problem 
+into a dynamic tradeoff between cost and risk. Avellaneda-Stoikov adds a complementary 
+insight: liquidity provision can be framed as utility maximization under inventory constraints 
+with stochastic order arrivals. Both models are analytically tractable in stylized regimes, which is 
+precisely why they remain influential: they reveal comparative statics and provide baselines for 
+more complex simulation environments. 
+ 
+However, modern markets involve many participants who respond to the same signals and 
+constraints. This creates crowding and feedback effects that cannot be captured by single-agent 
+models. Mean field games provide a tractable approximation and suggest that equilibrium 
+liquidity and volatility depend on the distribution of inventories and risk tolerances. The 
+Carmona-Delarue theory makes these links mathematically precise and supplies tools for 
+numerical computation of equilibria (Carmona and Delarue, 2018). 
+4.4 Causal inference and policy evaluation in finance 
+Many economically important questions in finance are causal: how do disclosure rules affect 
+liquidity? how do execution restrictions change market quality? what is the effect of monetary 
+policy surprises on risk-taking? These questions require counterfactual reasoning. In highdimensional settings, DML provides a principled approach to combining flexible ML estimation 
+of nuisance components with valid inference on low-dimensional causal parameters 
+(Chernozhukov et al., 2018). The extension of such methods to selection problems is particularly 
+relevant for market data, where the act of trading determines what is observed (Dolgikh and 
+Potanin, 2025). 
+
+4.5 AI-assisted measurement: opportunities and governance 
+LLMs offer new capabilities for extracting structure from text-intensive financial environments, 
+including earnings calls, analyst reports, risk disclosures, and regulatory documents. The 
+econometric framework proposed by Ludwig, Mullainathan, and Rambachan underscores that 
+these tools must be used with safeguards: prediction tasks require demonstrable absence of 
+training-data leakage, and measurement tasks require validation data to quantify error and bias 
+(Ludwig, Mullainathan, and Rambachan, 2025). In institutional contexts, this implies that AIassisted variables should enter the same governance pipeline as traditional risk models: 
+documentation, validation, stress testing, monitoring, and auditability. 
+ 
+A broader implication is epistemic. As models become more complex, the risk shifts from 
+estimating parameters to understanding failure modes. A mature quantitative practice therefore 
+treats modeling as an iterative cycle of hypothesis, test, and revision, rather than as a one-time 
+optimization exercise. This is consistent with both econometric principles and the practical 
+experience that the most damaging losses often arise from untested assumptions, regime changes, 
+or unmodeled dependencies. 
+4.6 Current market structure and policy developments (2024–2026) 
+While the preceding sections emphasize stable theoretical primitives, recent market-structure 
+changes have shifted key constraints faced by quantitative strategies. These developments 
+motivate explicit modeling of intraday risk transfer, settlement and clearing frictions, and crossasset liquidity resilience. 
+4.6.1 Zero-days-to-expiry (0DTE) index options and intraday risk transfer 
+Short-dated index options have grown rapidly, altering the intraday distribution of hedging 
+demand and potentially the microstructure of volatility. For example, Cboe reports that in Q3 
+2025, 0DTE contracts comprised 57% of SPX index options average daily volume. This 
+concentration of option expiry risk into the trading day increases the importance of modeling 
+gamma-related hedging flows and liquidity conditions at sub-daily horizons. 
+4.6.2 Faster settlement (T+1) and funding/FX frictions 
+The U.S. transition to T+1 settlement (effective May 28, 2024) reduces counterparty exposure in 
+the settlement cycle but tightens operational timelines and can shift demand for intraday liquidity 
+and FX funding. For quantitative finance, the implication is that backtests and execution models 
+should incorporate settlement-driven constraints (e.g., cut-off times, fails risk, and financing 
+costs) rather than treating trades as frictionlessly nettable at end-of-day. 
+4.6.3 Expanding central clearing in U.S. Treasuries and balance-sheet constraints 
+Policy moves toward broader central clearing in U.S. Treasuries aim to reduce systemic risk, but 
+they also change the economics of intermediation via margin requirements, access models, and 
+netting sets. The SEC has extended compliance dates for covered clearing-agency standards, 
+
+pushing key deadlines into 2026–2027. This makes it timely to extend microstructure and 
+execution models to include clearing and margin as endogenous constraints on market making 
+and repo financing. 
+4.6.4 Liquidity fragility, fragmentation, and resilience across asset classes 
+Recent central-bank research emphasizes that liquidity can deteriorate simultaneously across 
+markets, particularly under stress, and that fragmentation and high-frequency activity can 
+interact with resilience. A practical synthesis is to treat liquidity not only as a cost parameter but 
+also as a state variable with regime dependence and feedback into volatility and funding 
+conditions. 
+4.6.5 Rate regime and cross-asset correlations 
+As of December 2025, the Federal Reserve’s target range for the federal funds rate was 3.50% to 
+3.75%. Shifts in the rate regime influence carry, discount rates, and the co-movement structure 
+between equities, rates, and volatility. Quantitative strategies therefore require scenario-aware 
+evaluation that conditions on policy and term-structure states rather than assuming stable 
+correlations. 
+5. Conclusion 
+General economics and quantitative finance are increasingly intertwined. Equilibrium and noarbitrage theories provide discipline and interpretability; stochastic analysis and control theory 
+supply mathematically precise decision rules; microstructure models incorporate liquidity and 
+strategic interaction; and modern econometrics and machine learning expand what can be 
+measured and predicted. The most productive research agenda is integrative: embed data-driven 
+components within economically constrained models, and validate them with evaluation 
+protocols that reflect market frictions and model risk. 
+ 
+Open problems remain. On the theoretical side, connecting equilibrium asset pricing to 
+microstructure frictions and strategic interaction at scale is still challenging. On the empirical 
+side, causal identification in markets with endogenous participation and rapidly evolving 
+institutions requires continued methodological innovation. Finally, AI-assisted measurement—
+particularly via LLMs—creates opportunities to incorporate rich qualitative information, but it 
+also demands rigorous validation and governance. Bridging these domains will be central to the 
+next generation of economics and quantitative finance, both for scientific understanding and for 
+responsible practice. 
+References 
+Almgren, R., & Chriss, N. (2001). Optimal execution of portfolio transactions. Journal of Risk, 
+3(2), 5-39. https://doi.org/10.21314/JOR.2001.041 
+
+Artzner, P., Delbaen, F., Eber, J.-M., & Heath, D. (1999). Coherent measures of risk. 
+Mathematical Finance, 9(3), 203-228. 
+Avellaneda, M., & Stoikov, S. (2008). High-frequency trading in a limit order book. Quantitative 
+Finance, 8(3), 217-224. https://doi.org/10.1080/14697680701381228 
+Black, F., & Scholes, M. (1973). The pricing of options and corporate liabilities. Journal of 
+Political Economy, 81(3), 637-654. https://doi.org/10.1086/260062 
+Carmona, R., & Delarue, F. (2018). Probabilistic Theory of Mean Field Games with 
+Applications I: Mean Field FBSDEs, Control, and Games. Springer. 
+Chernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., & Robins, 
+J. (2018). Double/debiased machine learning for treatment and structural parameters. The 
+Econometrics Journal, 21(1), C1-C68. 
+Dolgikh, S., & Potanin, B. (2025). Double machine learning for causal inference in a 
+multivariate sample selection model (arXiv:2511.12640). arXiv. 
+Fama, E. F. (1970). Efficient capital markets: A review of theory and empirical work. Journal of 
+Finance, 25(2), 383-417. 
+Gu, S., Kelly, B., & Xiu, D. (2020). Empirical asset pricing via machine learning. Review of 
+Financial Studies, 33(5), 2223-2273. https://doi.org/10.1093/rfs/hhaa009 
+Guéant, O. (2016). The Financial Mathematics of Market Liquidity: From Optimal Execution to 
+Market Making. CRC Press. 
+Karatzas, I., & Shreve, S. E. (1998). Methods of Mathematical Finance. Springer. 
+Ludwig, J., Mullainathan, S., & Rambachan, A. (2025). Large language models: An applied 
+econometric framework (NBER Working Paper No. 33344; arXiv:2412.07031). 
+Markowitz, H. (1952). Portfolio selection. Journal of Finance, 7(1), 77-91. 
+https://doi.org/10.1111/j.1540-6261.1952.tb01525.x 
+Merton, R. C. (1973). Theory of rational option pricing. Bell Journal of Economics and 
+Management Science, 4(1), 141-183. 
+Ross, S. A. (1976). The arbitrage theory of capital asset pricing. Journal of Economic Theory, 
+13(3), 341-360. https://doi.org/10.1016/0022-0531(76)90046-6 
+Sharpe, W. F. (1964). Capital asset prices: A theory of market equilibrium under conditions of 
+risk. Journal of Finance, 19(3), 425-442. 
+
+Bank for International Settlements (BIS). (2025). Through stormy seas: how fragile is liquidity 
+across asset classes and markets? BIS Working Papers No. 1229 (revised May 2025). 
+https://www.bis.org/publ/work1229.pdf 
+Bank for International Settlements, Financial Stability Institute. (2024). Regulating AI in the 
+financial sector: recent developments and main challenges. FSI Insights on policy 
+implementation No. 63. https://www.bis.org/fsi/publ/insights63.htm 
+Cboe Global Markets. (2025). The State of the Options Industry: Quarter Three 2025. 
+https://www.cboe.com/insights/posts/the-state-of-the-options-industry-quarter-three-2025/ 
+Depository Trust & Clearing Corporation (DTCC). (2024). U.S. T+1 Settlement Is Here: What’s 
+next? (DTCC Connection, Sept 17, 2024). https://www.dtcc.com/dtccconnection/articles/2024/september/17/us-t1-settlement-is-here-whats-next 
+Federal Reserve Board. (2025). Federal Reserve issues FOMC statement (December 10, 2025). 
+https://www.federalreserve.gov/newsevents/pressreleases/monetary20251210a.htm 
+U.S. Securities and Exchange Commission (SEC). (2024). Shortening the Securities Transaction 
+Settlement Cycle (Risk Alert, March 27, 2024). https://www.sec.gov/files/risk-alert-tplus1032724.pdf 
+U.S. Securities and Exchange Commission (SEC). (2025). Extension of Compliance Dates for 
+Standards for Covered Clearing Agencies for U.S. Treasury Securities and Repo (Release No. 
+34-102487). https://www.sec.gov/files/rules/final/2025/34-102487.pdf 

@@ -1,0 +1,85 @@
+{
+  "doc_id": 128,
+  "titulo": "Finfluencer Picks and Market Microstructure: Evidence from the NSE",
+  "resumen_operativo": "Examina el impacto de recomendaciones de acciones por finfluencers en YouTube en el mercado indio (NSE). Utilizando un event study, demuestra un 'ciclo de atención del finfluencer' donde los creadores seleccionan acciones con momentum preexistente, el video genera picos de volumen anormal (2.65x), y los inversores retail que compran post-video sufren retornos anormales acumulados negativos (-0.55% a 4 días), especialmente en small-caps (-1.72%). Provee evidencia empírica rigurosa de que las recomendaciones de finfluencers resultan en transferencias de riqueza desde el retail tardío hacia los participantes tempranos.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "finfluencer attention cycle",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Ciclo en el cual los finfluencers suben contenido sobre acciones que ya se están moviendo, atrayendo volumen adicional de inversores retail, quienes sistemáticamente entran cuando la acción ya pasó su pico de precio, resultando en pérdidas.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "negative abnormal returns"},
+        {"tipo": "USA", "objeto": "attention hypothesis"}
+      ],
+      "cita_textual": "The four-stage attention cycle: pre-existing volume elevation selects stocks into finfluencer content; content amplifies retail volume; retail late-entry buying coincides with negative post-event returns as informed traders exit."
+    },
+    {
+      "nombre": "attention hypothesis",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Hipótesis que sostiene que los inversores retail tienen atención limitada y compran desproporcionadamente acciones que atraen su atención (ej. por recomendaciones de finfluencers), independientemente de su valor fundamental.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "abnormal trading volume"}
+      ],
+      "cita_textual": "Under the attention hypothesis (Barber and Odean, 2008), retail investors are attention-constrained and disproportionately buy stocks that attract their attention, regardless of fundamental value."
+    },
+    {
+      "nombre": "abnormal volume ratio (AVR)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica que calcula el volumen anormal dividiendo el volumen real por el volumen mediano de la ventana de estimación, usada para identificar picos de actividad post-recomendación.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "retail volume"}
+      ],
+      "cita_textual": "Abnormal volume is measured as the abnormal volume ratio (AVR): actual trading volume divided by the median trading volume over the estimation window."
+    },
+    {
+      "nombre": "market model event study",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Metodología usada para estimar retornos anormales y volumen anormal en las ventanas alrededor de las fechas de publicación de los videos, controlando por el mercado (Nifty 50).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "cumulative abnormal return"}
+      ],
+      "cita_textual": "The paper uses a standard market model event study. For each video-stock event, the market model is estimated over a 120-trading-day window ending ten days before the event date"
+    },
+    {
+      "nombre": "cumulative abnormal return (CAR)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Retorno acumulado que excede el rendimiento esperado por el modelo de mercado; se encontró que es consistentemente negativo para quienes compran tras la recomendación del finfluencer.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "price reaction"}
+      ],
+      "cita_textual": "Cumulative abnormal returns over window [d₁, d₂] are CARᵢ[d₁, d₂] = Σ ARᵢₜ."
+    },
+    {
+      "nombre": "permutation placebo test",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Prueba de robustez que reasigna aleatoriamente las fechas de subida de videos dentro de cada canal para asegurar que los retornos anormales negativos no son producto del azar.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "false positives"}
+      ],
+      "cita_textual": "A permutation placebo test shuffles upload dates within each channel 200 times to test whether results arise by chance."
+    }
+  ],
+  "hallazgos": [
+    {
+      "explicacion": "Las recomendaciones de finfluencers generan un pico masivo de volumen el día de la publicación, alcanzando 2.65 veces el volumen normal.",
+      "cita_textual": "Abnormal trading volume spikes to 2.65 times normal on the upload day (p < 0.001) and remains elevated through five post-upload days."
+    },
+    {
+      "explicacion": "Los inversores que compran tras la recomendación experimentan retornos negativos consistentes, sin evidencia de reversión inmediata.",
+      "cita_textual": "Cumulative abnormal returns are negative at −0.55% over [0, +3] (p = 0.001) with no reversal."
+    },
+    {
+      "explicacion": "El impacto adverso en los retornos es más del triple en acciones de baja capitalización (small-caps) comparado con las de alta capitalización.",
+      "cita_textual": "Effects are larger for small-cap stocks (−1.72% vs −0.35%)."
+    },
+    {
+      "explicacion": "Las acciones recomendadas ya presentaban un volumen anormalmente alto antes del video, sugiriendo que los finfluencers eligen acciones que ya están subiendo (momentum).",
+      "cita_textual": "Pre-event volume is elevated at 1.47 times normal (p < 0.001), indicating finfluencers select stocks with pre-existing momentum."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper estudia el mercado de acciones de la India (NSE) en marcos de tiempo de varios días (event windows de -5 a +10 días) impulsados por recomendaciones en YouTube. No analiza la microestructura de alta frecuencia, futuros sobre índices como el ES, ni estrategias de trading algorítmico intradía, por lo que su aplicabilidad directa es baja, aunque ofrece un modelo de cómo el flujo de retail traders provee liquidez de salida a traders informados/tempranos."
+  }
+}

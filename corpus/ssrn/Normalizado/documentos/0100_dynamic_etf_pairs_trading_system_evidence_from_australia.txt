@@ -1,0 +1,1687 @@
+Pairs Trading in Crypto
+Sasha Stoikov, Dora Xu, Shijie Shao, Yourui Wang, Tongshu Zhang, Jinxuan Hu
+Cornell Financial Engineering Manhattan
+December 12, 2025
+Abstract
+We develop an automated framework for cryptocurrency pairs trading that identifies
+stable relationships across assets and executes mean reversion strategies in real time. Using
+2 years of hourly data for more than 500 coins, we construct a multi-stage selection process
+that combines correlation clustering, structural metadata, and stability diagnostics to isolate pairs with persistent relative value behavior. We implement these signals through the
+Hummingbot platform, where we fine tune entry thresholds, holding rules, and risk controls
+before deploying the strategy in live markets. Through extensive backtesting and live trading on selected pairs, we show that our funnel improves signal quality, enhances stability
+across regimes, and produces consistent market neutral returns while revealing important
+challenges related to liquidity, convergence reliability, and execution costs. Our code can be
+accessed through GitHub1.
+1
+Introduction
+Cryptocurrency markets operate in an environment defined by high volatility, fragmented
+liquidity, and rapidly shifting investor behavior. Unlike equities or foreign exchange markets,
+where assets are anchored by clear fundamental drivers, crypto tokens often move together
+because they participate in interconnected protocols, rely on similar infrastructure, and share
+common sources of liquidity. These structural dynamics create persistent relationships across
+assets that can be analyzed and incorporated into systematic strategies, but they also introduce
+instability that requires careful filtering to distinguish meaningful signals from noise.
+Our project uses the Hummingbot platform, an open source environment for developing and
+deploying automated trading strategies in cryptocurrency markets. Within this framework, we
+implement our approach through a custom controller, which allows us to translate statistical
+signals into executable trading decisions by managing data ingestion, signal evaluation, position
+entry and exit, and risk controls in a unified structure.
+By integrating our controller into
+Hummingbot’s execution engine, we are able to run both historical simulations and live trading
+sessions, allowing us to assess how well our pair trading framework performs under real market
+conditions while maintaining consistent and repeatable strategy behavior.
+1https://github.com/Jim-Shao/CryptoPairTrading
+1
+
+1.1
+Motivation for Crypto Pairs Trading
+Crypto tokens frequently move together because they share technological foundations, liquidity channels, and user behavior patterns. Pairs trading is a market neutral strategy that
+takes advantage of this co-movement by profiting from temporary deviations from the usual
+relationship between two assets. When two tokens that normally maintain a stable long-term
+relationship drift apart for a short period, the strategy buys the undervalued token and sells the
+overvalued token with the expectation that their prices will return to equilibrium. Since returns
+depend on changes in the spread rather than general market direction, the approach remains
+insulated from broad price swings and focuses solely on restoring the historical relationship.
+In crypto markets, where network effects and shared infrastructure create strong and persistent connections within ecosystems, such deviations occur often and typically correct quickly,
+making mean reversion an effective source of relative value trading opportunities.
+1.2
+Connection to Prior Hummingbot Research
+Prior Hummingbot research introduced a funnel based framework for identifying cryptocurrency pairs by combining correlation measures, cointegration tests, and simple structural filters.
+Their work demonstrated that naive pair selection is often unstable in volatile markets and that
+systematic validation is essential for reliable performance. Our project builds on this foundation
+by expanding the token universe to more than five hundred assets, extending the historical sample, and incorporating richer structural information through blockchain and category labels. We
+also add diagnostics that evaluate the persistence of mean reversion, including Z score stability
+and quintile based predictive tests. Finally, we integrate these components into a controller
+that supports both backtesting and live execution, allowing us to assess signal quality, execution behavior, and robustness across different market regimes. This broader scope and deeper
+analytical pipeline create a more comprehensive and scalable approach to cryptocurrency pairs
+trading.
+1.3
+Literature Review
+Before developing our framework, we reviewed several studies on cryptocurrency pairs trading to understand the challenges identified in prior research and the methods proposed to address them. These papers provided important context for our exploratory analysis and helped
+guide the design of our funnel by highlighting common sources of instability, successful filtering
+techniques, and structural features relevant to crypto markets.
+1.3.1
+Danilo and Martin: Genetic Algorithms
+Danilo and Martin examine the use of genetic algorithms to optimize pairs trading strategies
+in cryptocurrency markets [Danilo et al., 2024]. Their findings show that simple cointegration
+screening is often unreliable due to parameter instability and rapid shifts in market structure.
+The study emphasizes the need for systematic filtering, expanding-window diagnostics, and
+stability checks when selecting pairs. These insights guided our exploratory data analysis by
+encouraging us to examine how relationship strength changes through time and motivated our
+2
+
+use of a multi-stage funnel that evaluates both statistical and structural robustness before
+admitting a pair into the trading universe.
+1.3.2
+Liang: Profit-Resilient Filters
+Liang proposes a set of profit-resilient filters designed to screen out pairs whose meanreversion behavior is inconsistent across different market regimes [Liang et al., 2022]. The paper demonstrates that even statistically attractive spreads can become unprofitable if their
+signals lack persistence. This work influenced our decision to incorporate Z-score stability tests,
+measures of mean reversion strength, and quintile-based response analysis. Reading this paper helped shape our early data exploration by highlighting the limitations of static selection
+methods and reinforcing the importance of evaluating signal reliability across varying volatility
+environments.
+1.3.3
+Tadi: Copula-Based Nonlinear Dependence
+Tadi investigates nonlinear dependence structures in cryptocurrency pairs using copula models and shows that many relationships cannot be captured through linear correlation or cointegration alone [Tadi and Witzany, 2025]. The study also demonstrates that tokens belonging
+to the same functional or technological category often share deeper structural connections.
+These findings informed our choice to include blockchain and category labels in the funnel and
+encouraged the use of clustering methods to detect ecosystem-level groupings. This perspective strengthened our exploratory analysis by prompting us to look beyond linear metrics and
+incorporate structural features that reflect the complexity of crypto asset interactions.
+Summary
+The insights from prior research and our exploratory analysis guided the development of a
+more comprehensive methodology for cryptocurrency pairs trading. We construct a richer funnel that combines correlation measures, cointegration tests, structural metadata, and stability
+diagnostics such as Z score persistence and quintile based response analysis to identify pairs with
+consistent mean reversion behavior. Using two years of hourly data, we evaluate the robustness
+of these signals across different market regimes and incorporate them into a custom controller
+on the Hummingbot platform that supports both backtesting and live execution. Through this
+integrated approach, we demonstrate that systematic filtering and stability validation can produce a more reliable and scalable pairs trading framework with market neutral performance and
+manageable execution risk.
+1.4
+Market Overview
+The two-year sample from 2023-2025 spans several market regimes that shaped how crypto
+assets moved in relation to one another. The period begins with the post-FTX recovery, when
+leverage fell and market conditions steadied. It then moves into phases of renewed activity,
+including growing adoption of Ethereum Layer 2 networks, a strong resurgence in Solana driven
+by high throughput applications, and the launch of spot exchange-traded funds that brought
+3
+
+more institutional volume into Bitcoin and Ethereum. These developments were interrupted
+at times by macroeconomic events such as inflation readings and policy announcements, which
+caused brief spikes in market-wide volatility and correlation. Taken together, these shifts produced noticeable changes in token co-movement, spread dynamics, and cointegration stability,
+making them an important setting for testing how well our pairs trading approach holds up
+across different conditions.
+1.5
+Microstructure Properties
+Several microstructure features of cryptocurrency markets directly influence the feasibility
+and performance of pairs trading strategies:
+• Fragmented liquidity across exchanges: Trading volume is split among many venues,
+leading to uneven liquidity and occasional differences in quoted prices that can distort
+short-term spread movements.
+• Wide and volatile bid-ask spreads: Spreads often widen during periods of market
+stress, increasing execution costs and making it more difficult to capture small mean
+reversion moves.
+• Volatility clustering and liquidation cascades: Sharp moves driven by leveraged
+unwinds can temporarily push related assets far apart, generating signals that may not
+represent true mean reversion opportunities.
+• Funding rate driven co-movement: Perpetual futures funding rates can pull assets
+in the same direction mechanically, creating correlations that do not necessarily reflect
+long-term relationships.
+• High taker fees and execution slippage: Transaction costs remain meaningful in
+crypto markets, and slippage can erode returns if trades are executed during volatile
+periods or with insufficient liquidity.
+These microstructure characteristics shaped our modeling choices and motivated conservative thresholds and robustness filters in both our backtesting and live trading systems.
+2
+Data Exploration
+Our analysis begins with a broad examination of the cryptocurrency universe used to develop
+and validate our pairs trading framework. The purpose of this section is to describe the structure
+and characteristics of the data that informed our methodological choices. We summarize the
+composition of the full token universe, highlight the metadata used for structural filtering, and
+present the preliminary exploratory work conducted with hourly candlestick prices that guided
+the development of our return calculations, spread construction, and backtesting pipeline.
+4
+
+2.1
+Dataset Characteristics
+The initial dataset consists of 543 cryptocurrency perpetual futures contracts listed on Binance, which serves as both our primary source of historical data and the venue used for live
+trading. Each token includes metadata specifying its associated blockchain ecosystem (such
+as Ethereum, BNB Chain, Solana, Polkadot, or Cosmos) and its functional category (such as
+Layer 1 protocols, Layer 2 scaling solutions, decentralized finance governance tokens, liquid
+staking derivatives, meme tokens, and infrastructure assets). From this universe, we generate
+147,153 unordered token pairs, illustrating the need for a systematic filtering process: only a
+small subset of these pairs exhibit the stable co-movement or consistent mean reversion behavior
+required for a viable trading strategy.
+Historical price data is obtained through hourly candlestick files containing open, high, low,
+close, and volume information.
+These series form the basis for constructing midprices, log
+returns, and spread measures. While the final funnel and backtests rely on complete return
+matrices for all eligible tokens, our initial exploratory work used a smaller set of sample files to
+validate preprocessing steps, test return normalizations, and examine cross-sectional behavior
+before scaling the process to the full universe.
+2.2
+Token Categories and Ecosystem Structure
+The 543-token universe spans a wide range of technological and functional sectors. Categorizing tokens in this way allows us to interpret structural relationships that frequently influence
+correlation and cointegration patterns. The primary categories include:
+• Layer 1 protocols: Base-layer blockchains such as Bitcoin, Ethereum, Solana, Polkadot,
+and Avalanche that anchor entire ecosystems.
+• Layer 2 scaling solutions: Networks such as Arbitrum and Optimism that expand
+Ethereum throughput and tend to exhibit high correlation with ETH due to shared infrastructure and user flows.
+• Decentralized finance tokens: Governance and utility assets associated with lending
+platforms, exchanges, derivatives protocols, and stablecoin systems.
+• Liquid staking and restaking assets: Tokens tied to Ethereum staking derivatives,
+often exhibiting strong co-movement with their underlying Layer 1.
+• Meme tokens: Highly volatile assets driven primarily by sentiment and retail activity
+rather than technological fundamentals.
+5
+
+Figure 1: Distribution of tokens across functional categories in the 543-asset universe, based on
+the UnderlyingSubType field.
+As shown in Figure 1, DeFi assets make up the largest portion of the universe, followed
+by AI-related tokens, infrastructure projects, Layer 1 blockchains, and a substantial number
+of meme tokens. These distinctions become increasingly important as the analysis progresses
+since ecosystem-aligned tokens tend to form coherent correlation clusters, while sentiment-driven
+categories exhibit weaker structural ties.
+2.3
+Blockchain Ecosystem
+Analyzing the underlying blockchain ecosystems provides essential structural context for
+understanding cross-asset relationships in our token universe. Tokens built on the same chain
+often share liquidity venues, user activity patterns, and common narratives, which leads to
+stronger and more stable co-movement. During exploratory analysis, we observed that highcorrelation and high-IC pairs were disproportionately drawn from the same blockchain family,
+while cross-chain pairs exhibited weaker and less predictable behavior. These patterns motivated
+the inclusion of a “same-blockchain” filter in our funnel to eliminate structurally incompatible
+pairs before statistical testing, improving both signal quality and the reliability of downstream
+mean-reversion strategies.
+• BNB Chain: A high-throughput EVM-compatible environment with many mid-cap DeFi
+and utility tokens.
+BNB-Chain assets frequently exhibit tight co-movement driven by
+retail participation and concentrated liquidity on Binance.
+• Solana Ecosystem: A distinct high-performance blockchain with its own DeFi, meme,
+and gaming sectors. Solana-native assets often form their own correlation cluster because
+price action is influenced by Solana-specific events such as network upgrades, outages, and
+program-level flows.
+6
+
+• Polkadot and Cosmos Ecosystems:
+Interoperability-focused chains with multiple
+parachains/app-chains. Although individually smaller, these families exhibit meaningful
+internal correlation due to shared governance structures and similar developer adoption
+cycles.
+• Layer-2 Rollups and Sidechains: Arbitrum, Optimism, Polygon, Base, and other
+scaling solutions display strong co-movement with ETH and with each other. Their tokens
+are sensitive to the same on-chain transaction demand and liquidity conditions.
+• Smaller or Emerging Chains: Tokens from blockchains such as Fantom, Near, Avalanche
+sub-ecosystems, Kava, Harmony, or Aptos appear in smaller numbers. These tokens typically exhibit weaker correlation structure, and many did not survive later funnel filters.
+2.4
+Preliminary Price and Return Behavior
+Before using our entire token universe, we conducted exploratory analysis on a subset of
+hourly candlestick datasets that were compatible with Hummingbot’s framework. This early
+work allowed us to validate the data pipeline and observe common return characteristics that
+informed later design choices. From the OHLC data, we computed midprices and log returns,
+which consistently displayed several well-known features:
+• Heavy-tailed return distributions: Returns exhibit more extreme values than would
+be expected under Gaussian assumptions.
+• Volatility clustering: High-volatility periods occur in bursts, indicating regime-dependent
+dynamics.
+• High cross-sectional variability: Tokens belonging to different categories show significant differences in volatility and noise levels.
+Even though these observations were based on a limited subset of tokens, they matched
+patterns seen in the broader dataset. This validation step reinforced the need for normalization,
+stability checks, and carefully chosen rolling windows, which later became core components of
+our funnel architecture.
+These exploratory findings establish the structural and statistical context for the pair trading
+methodology developed in the following section. The diversity of token categories, the scale of
+the candidate pair universe, and the distinctive return properties observed in the data highlight
+the need for a disciplined selection process grounded in stability, co-movement, and statistical
+robustness. Section 3 builds on these observations by introducing the theoretical tools used to
+evaluate long-term relationships between assets and to construct mean-reverting spread signals.
+7
+
+3
+Pairs Trading Theory
+3.1
+Cointegration
+Cointegration refers to a statistical relationship in which two nonstationary time series
+share a stable long-run equilibrium. Although each series may individually wander over time,
+a suitable linear combination of them can be stationary, implying that any deviations from
+the equilibrium are temporary and mean-reverting. This property underlies many spread-based
+strategies in financial econometrics [Engle and Granger, 1987].
+To assess whether two time series exhibit such a long-run equilibrium, we apply the Engle–
+Granger two-step cointegration procedure [Engle and Granger, 1987], which uses the
+Augmented Dickey–Fuller (ADF) test as its stationarity diagnostic.
+• Step 1: Estimate the equilibrium relationship One series is regressed on the other
+using OLS to obtain the best-fitting linear combination. The residuals from this regression
+represent deviations from the estimated long-run equilibrium.
+• Step 2: Test residual stationarity (ADF) [Dickey and Fuller, 1979, Dickey and Fuller, 1981]
+The ADF test is then applied to the regression residuals. A sufficiently negative test statistic rejects the unit-root null hypothesis, indicating that the residual series is stationary.
+Passing this step confirms cointegration under the Engle–Granger framework.
+This unified two-step procedure ensures that both the equilibrium relationship and its meanreverting behavior are statistically validated before proceeding to any spread-based modeling
+or trading applications.
+3.2
+Regression Between Log Prices
+A well-known empirical observation in financial markets is that certain assets tend to move
+together over long horizons. Classic examples include gold and silver, dual-listed equities such as
+GOOG and GOOGL, or share classes of large energy companies such as Shell. Similar patterns
+often appear in cryptocurrency markets, where tokens that belong to the same technological
+ecosystem or share similar use cases tend to exhibit strong co-movements.
+Figure 2: Hourly price series for BAND and NKN (Oct–Nov 2025), illustrating co-movement.
+8
+
+Figure 2 illustrates such behavior for the pair BANDUSDT–NKNUSDT. Despite shortterm fluctuations, the two price series display persistent long-run co-movement, suggesting the
+presence of an underlying equilibrium relationship. To estimate the equilibrium relationship in
+a manner consistent with financial market dynamics, we regress the log price of asset A on the
+log price of asset B:
+log PA,t = α + β log PB,t + ut.
+Using log prices is essential for two reasons. First, cointegration is defined for nonstationary
+I(1) processes, and log prices of financial assets typically satisfy this property, whereas log
+returns are I(0) and therefore cannot cointegrate. Second, the lognormal diffusion model widely
+used in financial economics implies multiplicative price dynamics; expressing the relationship in
+log-price space captures proportional co-movement, stabilizes variance, and produces residuals
+whose behavior aligns with theoretical mean-reverting spreads.
+• Equilibrium loading estimation
+The slope coefficient β measures the long-run proportional sensitivity between the two logprice series and defines how the equilibrium component of the relationship is constructed.
+• Residual spread as the trading signal
+The regression residual
+ut = log PA,t −α −β log PB,t
+represents the deviation from the long-run equilibrium and forms the spread. Under cointegration, {ut} is stationary and mean-reverting, making it suitable for Z-score normalization and signal generation. In empirical settings, the regression is typically estimated
+on a rolling window to accommodate gradual structural evolution in market relationships.
+3.3
+Foundations of Mean-Reversion Trading
+Once a long-run equilibrium relationship between two assets is established, the residual
+spread derived from their log-price regression is stationary and mean reverting. Temporary deviations from this equilibrium generate trading opportunities: when the spread widens, one asset
+becomes relatively overpriced and the other underpriced, motivating a convergence trade—short
+the former and long the latter—as the spread reverts toward equilibrium.
+3.4
+Z-score Construction
+To quantify the magnitude of spread deviations, we standardize the residual ut using a
+Z-score:
+Zt = ut
+σu
+,
+where σu is the in-sample standard deviation of the regression residuals. This provides a scalefree measure of divergence, enabling consistent comparison across pairs and time periods. Large
+absolute Z-scores indicate unusually wide spreads and correspond to stronger expected mean
+reversion.
+9
+
+4
+Selecting Pairs (The Funnel)
+4.1
+Goal
+The objective of the funnel is to systematically reduce the extremely large universe of potential cryptocurrency pairs into a concise and high-quality set of 100 tradable pairs. Binance
+Perpetual Futures list 543 instruments, yielding
+543 × 542
+2
+= 147,153
+possible unordered pairs. Trading all of them is neither computationally feasible nor desirable.
+Our funnel is designed to (i) ensure that selected pairs possess sufficient liquidity and history,
+(ii) enforce economic and technological relevance (e.g., same–blockchain constraints), and (iii)
+guarantee statistically robust co-movement and mean-reversion characteristics. Only pairs that
+pass all stages of the funnel are forwarded to the strategy engine.
+4.2
+Data Splitting
+To avoid look-ahead bias and to ensure statistically consistent evaluation, we divide the
+history into a training period for pair selection and parameter optimization, and a test
+period for strategy backtesting, see Figure 3.
+• Test set: 1 March 2025 – 30 September 2025 (approximately 200 days).
+• Training set: the 800 days immediately preceding 1 March 2025.
+All filters described below operate exclusively on the training data. The test set is used only to
+validate the performance of the selected pairs under the final strategy.
+Figure 3: Training period and test period
+4.3
+Filter 1: Sufficient Historical Depth
+Pairs involving illiquid or short-listed assets tend to produce unstable hedge ratios and
+unreliable mean-reversion signals.
+Thus, we restrict attention to Binance perpetual futures
+instruments with more than 1,000 days of historical data. This reduces the universe from 543
+products to 137 assets, and the number of candidate pairs to 9,316.
+4.4
+Filter 2: Same-Blockchain Constraint
+Cryptocurrencies originating from the same blockchain (e.g., ETH–LDO on Ethereum, SOL–
+MNDE on Solana) typically exhibit stronger structural co-movements due to shared ecosystem
+flows, correlated user activity, and common governance or macro events. To systematically
+identify these relationships, we obtain coin–blockchain mapping data from CoinGecko, which
+maintains coverage of approximately 230 distinct blockchains. Using this external metadata,
+10
+
+we assign each asset in our universe to its corresponding underlying chain and restrict attention
+to pairs whose constituents originate from the same blockchain.
+This filter removes cross-ecosystem pairs that are less likely to exhibit stable long-term
+relationships, reducing the candidate set to 5,655 pairs.
+4.5
+Filter 3: Correlation Screening
+To ensure that candidate pairs exhibit stable and economically meaningful comovement,
+we compute two complementary correlation measures using 1-hour close price data from the
+training period:
+• the correlation of log prices, which captures long-term co-movement and the stability of
+the relative valuation between two assets, and
+• the correlation of returns, which reflects short-horizon co-movements and ensures that the
+assets respond similarly to market-wide shocks.
+Relying solely on price correlation can be misleading, as two assets may show high price-level
+correlation due to long-term trend alignment but behave very differently in shorter time intervals. Conversely, high return correlation without stable price-level comovement often indicates
+purely market-driven co-movement rather than a structural relationship suitable for pairs trading. A pair passes this filter only if
+Corr(log P1, log P2) > 0.9,
+Corr(r1, r2) > 0.5.
+These thresholds jointly ensure both long-term equilibrium alignment and short-term synchronous behavior.
+Applying this filter reduces the candidate set from 5,655 to 377 pairs,
+forming a significantly more coherent universe for subsequent mean-reversion testing.
+4.6
+Filter 4: Z-Score Signal Test (Information Coefficient Search)
+The final and most refined stage evaluates the statistical quality of mean-reversion signals
+for each candidate pair.
+Unlike simple correlation filters, this procedure directly measures
+whether deviations from the estimated equilibrium relationship (the Z-score) reliably predict
+future movements in the spread.
+This step is essential because pairs with strong historical
+correlation may still fail to produce actionable or stable mean-reversion signals in practice. By
+explicitly linking standardized residuals to forward returns, this filter identifies pairs whose
+spread dynamics are not only stationary but also predictive in a tradable sense.
+For each pair, and for each choice of regression window T1 and forecasting horizon T2, we
+perform the following steps at every time T within the training period.
+Rolling regression.
+We estimate the regression via
+log P1,t = α + β log P2,t + ut,
+using data from t = T −T1 to T. The residual ut represents the deviation from the dynamic
+equilibrium between the two assets. Rolling estimation allows the hedge ratio to adapt to evolv11
+
+ing market conditions, an important consideration in cryptocurrency markets where structural
+regimes may change rapidly.
+Z-score construction.
+The standardized residual is defined as
+ZT = uT
+σu
+.
+This normalization makes deviations comparable across windows and assets, allowing for a
+consistent interpretation of spread dislocations.
+Future return of the spread.
+For a forecast horizon T2,
+RT,T2 =
+ log P1,T+T2 −log P1,T
+
+−β ·
+ log P2,T+T2 −log P2,T
+
+.
+This represents the hypothetical P&L of a mean-reversion trade that is long the spread at
+time T. Evaluating future returns directly links statistical properties of the spread to tradable
+performance.
+Information Coefficient (IC).
+For each pair, we compute the correlation between the contemporaneous Z-score and the future spread return RT,T2. This quantity serves as a predictive
+information measure: negative IC values indicate that positive Z-scores tend to be followed by
+downward spread moves (and vice versa), consistent with mean-reverting behavior.
+Across all combinations
+T1 ∈{7d, 1M, 3M, 6M},
+T2 ∈{1h, 3h, 6h, 12h, 1d, 3d, 7d},
+we define the pair’s Best IC as the most negative (i.e., strongest predictively mean-reverting)
+correlation obtained. Because a positive Z-score indicates spread widening, a subsequent negative spread return reflects convergence. Hence, stronger mean reversion corresponds to more
+negative correlations.
+This filter has two major advantages:
+• It directly tests the tradability of the spread rather than relying on indirect proxies such
+as price-level or return correlation.
+• It evaluates robustness across multiple time scales, allowing the framework to capture
+both fast intraday mean reversion and slower multi-day structural reversion patterns.
+As a result, only pairs exhibiting true and persistent predictive structure—rather than coincidental historical alignment—survive this final stage.
+12
+
+4.7
+Final Selection
+Figure 4: Funnel
+Pairs are ranked by their Best IC, and the 100 highest-quality mean-reversion pairs are selected for live strategy construction and risk-managed execution. The funnel thus progressively
+narrows the original 147,153 pairs down to exactly 100 robust, statistically supported trading
+candidates.
+To illustrate the outcome of the full selection pipeline, Table 1 presents a snapshot of the
+final ranked list. For clarity, we display only the top five and bottom five pairs among the 100
+surviving candidates. These entries highlight the range of statistical characteristics captured by
+the funnel—from the strongest mean-reversion signals (most negative Best IC) at the top of the
+ranking to the weakest pairs that still meet the minimum robustness threshold. The complete
+set of 100 pairs forms the universe used for parameter calibration, validation-stage portfolio
+construction, and subsequent live deployment.
+Rank
+Pair
+Corr Return
+Corr LogP
+Label
+Best T1
+Best IC
+1
+CTSI–CHR
+0.6344
+0.9008
+Arbitrum One
+3M
+-0.3157
+2
+CHR–CTSI
+0.6344
+0.9008
+Ethereum, BNB Smart Chain
+3M
+-0.2853
+3
+QNT–SAND
+0.6237
+0.9045
+Ethereum, Energi
+6M
+-0.2708
+4
+ATA–ONT
+0.6277
+0.9586
+BNB Smart Chain
+3M
+-0.2638
+5
+ANKR–ATA
+0.5746
+0.9322
+Ethereum, Polygon POS
+6M
+-0.2585
+· · ·
+96
+GRT–SKL
+0.5889
+0.9522
+Ethereum
+6M
+-0.1580
+97
+GMT–SAND
+0.6976
+0.9125
+Solana
+1M
+-0.1576
+98
+ZRX–DENT
+0.6334
+0.9316
+Ethereum
+6M
+-0.1564
+99
+GALA–BAT
+0.6416
+0.9569
+Ethereum
+6M
+-0.1564
+100
+DENT–C98
+0.6736
+0.9009
+Ethereum
+1M
+-0.1559
+Table 1: Snapshot of Final 100 Selected Pairs
+13
+
+5
+Trading Strategy Design
+Given a selected asset pair, let PA and PB denote their prices, and let β be the slope from
+regressing log PA on log PB (Section 3.2). This regression defines the log-price spread, whose
+standardized form Zt (Section 3.4) serves as the primary trading signal.
+Classical pairs-trading frameworks typically require candidate pairs to pass a formal cointegration test (e.g., Engle–Granger or Johansen) to ensure that the constructed spread is theoretically stationary before any mean-reversion signals are computed.
+In our implementation, however, we do not impose cointegration as a pre-filter when generating Z-scores or trading signals. As shown in Section 6.5, relaxing this constraint allows the
+strategy to capture a wider range of profitable dislocations while relying on Z-score thresholds
+and stop-loss rules to maintain risk discipline.
+5.1
+Entry and Exit Rules
+Trading signals are driven by the standardized spread Zt defined in Section 3.4. An entry
+signal is generated when the absolute Z-score exceeds the pre-defined threshold, i.e.,
+|Zt| > zentry,
+while an exit signal is triggered once the Z-score reverts toward the equilibrium and crosses the
+exit threshold zexit.
+When Zt > zentry, the spread is considered excessively wide: asset A is relatively overpriced
+and asset B is relatively underpriced. The strategy therefore enters a short-spread position,
+taking a net short exposure to the log spread by shorting asset A and going long asset B.
+Conversely, when Zt < −zentry, the spread is unusually compressed.
+The strategy then
+enters a long-spread position, going long asset A and short asset B so as to be long the log
+spread.
+Once in a position, the trade is closed when the spread converges back toward its long-run
+equilibrium. In particular, an exit signal is generated when the Z-score crosses the exit threshold
+zexit toward zero: for a short-spread position, the exit condition is satisfied when Zt ≤zexit,
+and for a long-spread position, when Zt ≥−zexit.
+The precise sizing of the two legs, which determines how the log-spread view is implemented
+in tradeable price levels, is described next.
+5.2
+Position Sizing and Leverage
+To implement a position whose PnL tracks movements in the log-spread
+ut = log PA,t −α −β log PB,t,
+the portfolio must be constructed in price units rather than log units. Although the regression
+coefficient β reflects the relative sensitivity of log PA to log PB, it is not a tradable hedge ratio.
+We therefore derive a position in price levels whose return is mathematically equivalent to a
+scaled change in the log-spread (see PnL derivation below).
+14
+
+Position construction.
+We allocate capital in the ratio 1 : β to assets A and B, respectively.
+Let qA and qB denote units of the two assets. Imposing the notional constraint
+PAqA : PBqB = 1 : β,
+and fixing qA = 1 gives
+qB = β PA
+PB
+.
+Thus the unit ratio is 1 : βPA/PB, while the corresponding notional ratio is 1 : β. In the
+num´eraire of asset A, the unnormalized notional of this raw portfolio is
+(1 + β)PA.
+To ensure identical capital usage across pairs, we normalize the weights:
+wabs
+A
+=
+1
+1 + β ,
+wabs
+B
+=
+β
+1 + β ,
+wabs
+A
++ wabs
+B
+= 1.
+The trade direction is encoded by a sign variable s = +1 (long-spread) or s = −1 (short-spread).
+Thus the signed, normalized portfolio weights are
+wA = s wabs
+A ,
+wB = −s wabs
+B .
+Leverage and dollar exposures.
+Portfolio-level leverage L scales the position proportionally:
+ewA = L wA,
+ewB = L wB.
+Let M denote the capital (margin) allocated to a single trade. The resulting dollar exposures
+are
+EA = M ewA,
+EB = M ewB.
+This completes the construction of a tradeable hedge ratio in price units. We now show that
+this portfolio replicates changes in the log-spread.
+PnL derivation.
+Assume the trade is entered at time tentry with prices (PA,tentry, PB,tentry)
+and exited at time texit with prices (PA,texit, PB,texit). Let the simple returns of the two assets
+over the holding period be
+rA = PA,texit −PA,tentry
+PA,tentry
+,
+rB = PB,texit −PB,tentry
+PB,tentry
+.
+For a long-spread position (long A, short B), the normalized portfolio return in simple-return
+terms is therefore
+Rsimple =
+1
+1 + β rA −
+β
+1 + β rB =
+1
+1 + β
+PA,texit −PA,tentry
+PA,tentry
+−
+β
+1 + β
+PB,texit −PB,tentry
+PB,tentry
+.
+For small relative price changes, simple returns can be approximated by log returns via a
+15
+
+first-order Taylor expansion,
+Pi,texit −Pi,tentry
+Pi,tentry
+≈log
+ Pi,texit
+Pi,tentry
+
+,
+i ∈{A, B},
+so that
+Rsimple ≈R =
+1
+1 + β log
+ PA,texit
+PA,tentry
+
+−
+β
+1 + β log
+ PB,texit
+PB,tentry
+
+.
+Recalling the definition of the cointegration residual,
+ut = log PA,t −α −β log PB,t,
+the change in the log-spread is
+utexit −utentry = log
+ PA,texit
+PA,tentry
+
+−β log
+ PB,texit
+PB,tentry
+
+,
+and dividing by (1 + β) yields
+R = utexit −utentry
+1 + β
+.
+With the standardized representation ut = σuZt, we obtain
+R =
+σu
+1 + β
+ Ztexit −Ztentry
+
+.
+Including trade-level capital M and leverage L, the realized dollar PnL for a long-spread
+position is
+PnLlong ≈M × L ×
+σu
+1 + β
+ Ztexit −Ztentry
+
+.
+Similarly, for a short-spread position (short A, long B), the signs of the holdings are reversed
+and a parallel argument yields
+PnLshort ≈M × L ×
+σu
+1 + β
+ Ztentry −Ztexit
+
+.
+5.3
+Risk Controls
+While standardized-spread trading relies on mean reversion, real markets often exhibit prolonged divergence episodes in which the spread fails to revert within a reasonable time horizon.
+If left unmanaged, such episodes can generate large losses and jeopardize the viability of a
+pairs-trading portfolio. To guard against these scenarios, the strategy incorporates three layers
+of risk control, each parameterized explicitly for later use in the backtesting framework.
+Stop-loss threshold γSL.
+A position is liquidated early if its unrealized PnL falls below a
+fixed fraction γSL of the notional allocated to the trade. This mechanism truncates the left tail
+of the PnL distribution and prevents a single non-reverting spread from dominating portfolio
+losses.
+16
+
+Cooldown window ∆cool.
+After a stop-loss event, the corresponding pair becomes temporarily ineligible for new entries for a duration of ∆cool (measured in hours or days). This rule helps
+avoid immediate re-entry into an unstable regime in which the spread may continue drifting
+away from equilibrium.
+Permanent deactivation threshold γDE.
+If the cumulative equity associated with a pair
+experiences a drawdown exceeding γDE, the pair is removed from the active trading universe
+for the remainder of the horizon. This mechanism filters out structurally broken relationships
+or assets whose historical mean-reversion properties no longer hold.
+These controls form a unified risk-management layer that operates jointly with the standardizedspread trading rule. Their algorithmic implementation, together with the calibration of γSL,
+∆cool, and γDE, is detailed in Section 6.
+6
+Backtesting Framework
+6.1
+Backtesting Methodology
+The backtesting stage serves as a critical component of the overall framework, linking the
+pair–selection funnel to the eventual construction of a deployable trading strategy. It fulfills
+several key objectives:
+• Validation of the selection funnel.
+The funnel described in the previous section
+reduces the universe of ∼147,000 possible pairs to a manageable set P of promising
+candidates. Backtesting provides an empirical check on whether these selected pairs indeed
+exhibit stable mean-reverting behavior suitable for trading.
+• Pair–specific parameter calibration. Even among the filtered candidates, different
+pairs exhibit different speeds and strengths of mean reversion. Backtesting is therefore
+required to determine, for each pair, the most effective strategy configuration. We search
+over a three–dimensional grid
+θ = (L, zentry, zexit) ∈GL × Gzentry × Gzexit,
+where L controls how the spread is estimated and (zentry, zexit) govern trade initiation and
+closure. These parameters define the core trading behaviour of the strategy and thus form
+the natural axes of the calibration grid. The backtest over this grid yields, for each pair,
+the best-performing configuration ˆθ(A, B).
+• Tuning global control mechanisms. Backtesting also informs the choice of strategylevel hyperparameters—such as the stop-loss threshold, cooldown length, and deactivation
+rule. These mechanisms regulate risk exposure and determine how the strategy behaves
+under adverse spread movements, making them essential for live trading.
+• Assessing out-of-sample robustness.
+The validation window provides a forwardlooking test of how a portfolio constructed from {θ∗(Ai, Bi)} behaves when run concur17
+
+rently. This stage evaluates whether the gains observed in the training window generalize
+to unseen market conditions.
+For each configuration θ, the strategy is simulated over the hourly training window
+[T start
+train, T end
+train],
+using the event–driven engine described in Algorithm 1. The algorithm formalizes the mechanics
+of the standardized–spread strategy. It incorporates rolling regression for spread estimation,
+leverage-based notional sizing, stop-loss enforcement, cooldown logic, and exit detection via
+standardized spread crossings. The resulting performance metric—primarily the training-period
+Sharpe ratio—is then used to determine the optimal parameter θ∗(A, B) for each pair.
+To compare parameter configurations in a consistent manner, we use the annualized Sharpe
+ratio as the primary calibration metric throughout this report. Given an hourly return series
+{rt}T
+t=1, the annualized Sharpe ratio is defined as
+Sharpeann(θ) =
+√
+H r
+bσr
+,
+where
+r = 1
+T
+T
+X
+t=1
+rt,
+bσr =
+v
+u
+u
+t
+1
+T −1
+T
+X
+t=1
+(rt −r)2,
+and H = 24 × 365 = 8760 is the number of trading hours per year, used to convert the hourly
+Sharpe ratio to its annualized form.
+For each pair (A, B), the optimal parameter configuration is therefore obtained by
+θ∗(A, B) = arg max
+θ∈G Sharpeann
+train(θ),
+where the annualized Sharpe ratio is computed using the equity curve generated by Algorithm 1.
+Once the per-pair optimal parameters θ∗(A, B) are determined, they are applied to the
+validation window
+[T start
+val
+, T end
+val ],
+where all selected strategies are run concurrently at the portfolio level.
+Each pair (Ai, Bi)
+receives an equal capital allocation,
+Mi = Mtot
+N ,
+and operates independently under its calibrated parameters θ∗(Ai, Bi).
+Let Vi,t denote the
+equity curve of pair i; the aggregate portfolio value is
+Vport,t =
+N
+X
+i=1
+Vi,t,
+t ∈[T start
+val
+, T end
+val ].
+This produces a portfolio-level equity curve representing the joint performance of all calibrated
+pair-trading strategies. The validation-stage results provide a forward-looking approximation
+to expected live trading outcomes and serve as a benchmark for real-world deployment.
+18
+
+Algorithm 1 Event–Driven Backtest for a Single Pair
+Require: Hourly
+price
+series
+(PA,t, PB,t);
+training
+window
+[Tstart, Tend];
+parameters
+(Ltrain, zentry, zexit); leverage ℓ; stop-loss threshold γSL; cooldown duration ∆cool; deactivation threshold γDE.
+Ensure: Equity curve and performance metrics.
+1: Initialize equity E0, state = flat, no cooldown, not deactivated.
+2: Zprev ←0.
+3: for t = Tstart to Tend do
+4:
+Compute rolling OLS over last Ltrain hours to estimate
+log PA,s = αt + βt log PB,s + us,
+s ∈[t −Ltrain + 1, t].
+5:
+Extract βt, residual ut, and residual volatility σu,t.
+6:
+Zt ←ut/σu,t.
+7:
+Compute mark-to-market equity Et.
+8:
+if Et < γDE · E0 then
+9:
+permanently disable future entries.
+10:
+end if
+11:
+if in position and Et < (1 −γSL) · Eentry then
+12:
+Close position (apply exit operations).
+13:
+Enter cooldown until t + ∆cool.
+14:
+end if
+15:
+entry allowed ←(state is flat and not cooling and not deactivated).
+16:
+if entry allowed and |Zt| > zentry then
+17:
+Available margin M ←Et.
+18:
+Notional capacity: Notional ←ℓ· M.
+19:
+Hedge weights:
+wA =
+1
+1 + βt
+,
+wB =
+βt
+1 + βt
+.
+20:
+Position units:
+qA = wA · Notional
+PA,t
+,
+qB = wB · Notional
+PB,t
+.
+21:
+if Zt > 0 then
+22:
+Open short–spread (short qA, long qB); side ←short.
+23:
+else
+24:
+Open long–spread (long qA, short qB); side ←long.
+25:
+end if
+26:
+Eentry ←Et.
+27:
+end if
+28:
+if in position then
+29:
+if side = long and Zprev < −zexit and Zt ≥−zexit then
+30:
+Close position.
+31:
+else if side = short and Zprev > zexit and Zt ≤zexit then
+32:
+Close position.
+33:
+end if
+34:
+end if
+35:
+Zprev ←Zt.
+36: end for
+37: Compute performance metrics (Sharpe, PnL, trade count).
+38: return equity curve and statistics.
+19
+
+6.2
+Backtesting Implementation
+With the backtesting methodology established, we now specify the concrete parameter settings used in the training-stage simulations. For each candidate pair, the standardized–spread
+strategy is executed using hourly Binance futures data within fixed training and validation
+windows, and its performance is evaluated across a structured grid of trading parameters.
+Backtest Environment.
+All backtests were conducted on synchronized hourly price series
+for each pair. The training period spans February 28, 2023 to February 28, 2025, followed by
+a validation period from March 1, 2025 to September 30, 2025. Each strategy starts with an
+initial notional capital of $1,000,000.
+Parameter Grid.
+The strategy-specific parameters are varied over a three-dimensional grid:
+Ltrain ∈{7 d, 15 d, 1 M, 3 M, 6 M},
+zentry ∈{0.8, 1.0, 1.5, 2.0, 2.5, 3.0},
+zexit ∈{0, 0.5}.
+Each triplet (Ltrain, zentry, zexit) defines a fully specified trading rule evaluated using the
+event–driven simulation in Algorithm 1. The grid contains 5 × 6 × 2 = 60 configurations per
+pair.
+Global Control Parameters.
+Beyond the grid-search parameters, several risk and execution
+controls are held fixed throughout all simulations:
+γSL = 20%
+(stop-loss threshold),
+∆cool = 5 days
+(cooldown after stop-loss),
+γDE = 20%
+(permanent deactivation threshold),
+γfee = 5 × 10−4
+(taker fee rate),
+ℓ= 5
+(effective leverage from margin rate 0.20).
+These parameters govern drawdown protection, fee treatment, trade initiation eligibility, and
+long-run survival of the strategy, and remain constant across all candidate pairs and all gridsearch configurations.
+Optimal Parameter Selection.
+For each (A, B) pair, all grid configurations are evaluated,
+and the optimal parameter triplet is defined as
+ˆθ(A, B) = arg max
+θ∈G Sharpeann
+train(θ),
+where the Sharpe ratio is computed using the annualized hourly return series from Algorithm 1.
+These per-pair optimizers ˆθ(A, B) are then used in the validation-stage portfolio backtest.
+20
+
+6.3
+Pair-Level Results
+To illustrate the performance of the standardized–spread strategy, we examine a representative pair, BAND–NKN. Under the optimal parameter configuration bθ = (Ltrain =
+4320, zentry = 1.0, zexit = 0.0), the strategy exhibits repeated spread divergences followed
+by mean reversion, producing a steadily rising equity curve despite occasional stop-losses and
+transaction costs. The resulting training-period performance is shown in Figure 5.
+Figure 5: Training equity curve of BAND–NKN under the optimal configuration.
+Applying the same calibrated parameters to the validation window yields the out-of-sample
+equity curve in Figure 6. Overall, the pair continues to perform robustly, delivering a validationperiod Sharpe ratio of 3.09.
+Figure 6: Validation equity curve of BAND–NKN under the optimal configuration.
+21
+
+To visualize the mechanics behind individual trades, Figure 7 decomposes each round-trip
+into the residual Z-score trajectory and the corresponding PnL path. Several notable behaviors
+emerge:
+• Entries occur when |Zt| exceeds the calibrated threshold, signaling statistically significant
+deviations from equilibrium.
+• Profitable trades correspond to reversion of the standardized residual back toward zero.
+• Stop-loss exits occur when spreads continue diverging, emphasizing the importance of risk
+constraints under leveraged execution.
+• Z-score inflection points strongly align with subsequent PnL reversals, validating the residual as an effective mean-reversion signal.
+Figure 7: Residual Z-score and PnL evolution for each trade during the validation period.
+22
+
+Overall, this example typifies the behavior observed across many selected pairs: stable
+mean-reversion cycles, interpretable spread dynamics, profitable out-of-sample performance,
+and consistent alignment between standardized residual movements and realized PnL. These
+results confirm that the selection funnel and calibration procedure successfully identify spreads
+containing genuine and tradable statistical structure.
+6.4
+Portfolio-Level Results
+In the validation stage, all 100 calibrated pair strategies are traded concurrently using their
+respective optimal parameter triplets θ∗(Ai, Bi) and equal capital allocations. Figure 8 displays
+the resulting portfolio-level equity curve, cumulative fees, and the time series of open positions
+and permanently deactivated pairs.
+Figure 8: Validation-stage portfolio equity and corresponding statistics.
+Starting from an initial capital of $1,000,000, the portfolio ends the validation window with
+a final equity of $1,507,339, representing a net profit of $507,340. Cumulative transaction fees
+total $108,383, meaning that approximately
+$108,383
+$507,340 + $108,383 ≈17.6%
+of the gross trading profits were absorbed by execution costs. Despite this sizable fee drag,
+the portfolio maintains strong out-of-sample performance, achieving a Sharpe ratio of 3.44
+with a maximum drawdown of 10.97%. In total, the system closed 1,422 trades across 100
+pairs—an average of about 14 trades per pair over the 7-month validation window, or roughly
+one completed trade every two weeks.
+This trading frequency is neither overly sparse nor
+excessively active, and it aligns well with the expected cadence of mean-reversion opportunities
+in crypto–perpetual markets.
+23
+
+The middle panel of Figure 8 shows that the number of open positions typically fluctuates
+between 40 and 50 pairs, indicating efficient capital utilization throughout the validation period.
+At the same time, the count of permanently deactivated (“broken”) pairs grows slowly, reaching
+only six by the end of the window—a level that remains fully acceptable for a 100-pair universe
+and reflects stable model behavior under diverse market conditions.
+To illustrate the cross-sectional dispersion in validation performance, Table 2 reports a
+snapshot of the top and bottom five pairs ranked by validation Sharpe ratio.
+Rank
+Pair
+#Trades
+Equity
+Fees
+AnnRet (%)
+AnnVol (%)
+Sharpe
+MaxDD (%)
+1
+ANKR–ONT
+77
+74522
+15364
+3031.8
+120.5
+3.44
+-39.4
+2
+ANKR–SXP
+11
+45608
+1575
+1249.1
+85.9
+3.41
+-22.6
+3
+BAND–NKN
+13
+114462
+2313
+6437.0
+216.7
+3.09
+-80.8
+4
+SXP–ATA
+59
+77125
+11417
+3221.7
+152.7
+2.99
+-55.0
+5
+ZIL–ATA
+3
+19130
+1884
+203.9
+44.4
+2.74
+-22.4
+· · ·
+96
+DOT–ATA
+1
+7231
+51
+-42.6
+32.6
+-1.53
+-31.6
+97
+HOT–ATA
+7
+1969
+201
+-93.8
+120.4
+-1.64
+-82.0
+98
+IOTX–CHR
+22
+1894
+706
+-94.2
+123.9
+-1.66
+-81.8
+99
+HOT–STORJ
+38
+1730
+1790
+-95.1
+111.3
+-2.05
+-86.8
+100
+ZEN–1INCH
+2
+6002
+91
+-58.3
+30.4
+-2.71
+-40.0
+–
+Portfolio
+1422
+1,507,340
+108,383
+102.29
+21.15
+3.44
+-10.97
+Table 2: Validation-stage performance snapshot: top and bottom five pairs ranked by Sharpe
+ratio, with total portfolio statistics shown in the final row.
+6.5
+Effect of Removing the Cointegration Test
+Classical pairs-trading studies often recommend filtering candidate pairs using cointegration
+tests—typically Engle–Granger or Johansen—to ensure that the constructed spread is theoretically stationary. In our early development iterations, we implemented such an ADF-based filter
+and compared it against a version of the framework that admits all pairs and relies solely on
+Z-score signals for mean-reversion trading. It is important to note that the results reported
+below correspond to that intermediate prototype rather than the final version of our selection
+funnel; hence, the numbers differ from those in the full validation backtest.
+Table 3 summarizes the comparison between the ADF-filtered and unfiltered variants during
+that stage of experimentation.
+With ADF
+Without ADF
+Sharpe Ratio
+2.68
+2.98
+# Trades
+778
+1002
+Annual Volatility (%)
+13.34
+22.58
+Max Drawdown (%)
+-4.46
+-10.45
+Annual Return (%)
+41.66
+91.12
+Table 3: Performance comparison from an intermediate development stage, showing the effect
+of including vs. removing the ADF cointegration test.
+Several empirical patterns emerged from this comparison, each reflected directly in the
+performance statistics:
+24
+
+1. Only a moderate increase in trading frequency, but a large increase in profitability. Removing the ADF filter increases the number of completed trades from 778 to
+1002 (a ∼29% rise). However, annual return more than doubles from 41.66% to 91.12%.
+This asymmetry indicates that the additional trades captured by the no-ADF variant are
+not merely more frequent—they include several high-impact mean-reversion events that
+the ADF filter would otherwise exclude. In fast-moving crypto markets, many of these opportunities arise from temporary microstructure dislocations that fail formal stationarity
+tests but still revert strongly over short horizons.
+2. Higher return achieved alongside higher but proportionate risk.
+Annualized
+volatility rises from 13.34% to 22.58% (approximately +69%), while annual return rises
+by more than +118%. Max drawdown increases from −4.46% to −10.45%, but the Sharpe
+ratio still improves (2.68 →2.98).
+This suggests that the added trades increase risk,
+but the magnitude of the captured reversions more than compensates for the additional
+volatility.
+3. The ADF test rejects many spreads that exhibit practical, short-term mean
+reversion. Crypto markets frequently experience structural breaks, cross-regime dependence shifts, and temporary liquidity shocks. Under such conditions, the ADF test tends
+to reject relationships that are not stable over long horizons—even if they display strong
+*local* mean-reversion behavior that is profitable over the trading horizon of this strategy. The performance gap implies that requiring long-run statistical stationarity is a poor
+match for a strategy whose profits derive from short-horizon convergence.
+Overall, the data indicate that the ADF filter removes disproportionately many of the trades
+that contribute to outsized profits while retaining only modestly profitable ones. The resulting
+no-ADF variant resembles a Bollinger-band style approach: entries occur on sufficiently large
+standardized deviations, and exits occur upon reversion, regardless of whether an equilibrium
+relationship satisfies strict unit-root criteria. Although this relaxes econometric rigor, it aligns
+better with the behavior of crypto markets and produced superior empirical performance during
+prototyping.
+6.6
+Discussion
+The backtesting and validation analyses collectively highlight several key properties of the
+standardized–spread framework. First, at the individual-pair level, the strategy performs as
+a disciplined mean-reversion mechanism: entries are triggered only when spreads reach statistically unusual deviations, exits align closely with subsequent reversions, and stop-loss rules
+reliably contain adverse moves.
+This behavior is consistent across pairs with very different
+volatility profiles, confirming that Z-score normalization provides a robust and scale-free signal.
+At the portfolio level, running a diversified collection of calibrated pair strategies produces
+stable and interpretable dynamics. Across the validation window, the system typically maintains
+40–50 active positions at any moment, suggesting efficient capital utilization. Despite substantial fee expenditures—roughly 17.6% of gross profits—the portfolio achieves strong risk-adjusted
+performance, including a Sharpe ratio of 3.44 and a maximum drawdown of only 10.97%. The
+25
+
+total of 1,422 completed trades (about fourteen per pair over seven months) reflects a natural
+cadence for mean-reversion opportunities in cryptocurrency markets, neither overly sparse nor
+excessively high-frequency.
+The comparison between the ADF-filtered and unfiltered variants provides additional insight
+into the practical role of cointegration in this setting. Although the ADF test offers a theoretically rigorous notion of stationarity, it proves too restrictive for fast-evolving crypto markets,
+discarding many short-lived but profitable dislocations. The unfiltered version—which behaves
+more like a Bollinger-band style threshold strategy—delivers higher return and a stronger Sharpe
+ratio in our intermediate experimentation, even after accounting for the accompanying rise in
+volatility. These results suggest that, for short-horizon leveraged convergence trading, strict
+long-run stationarity is less important than capturing predictable local reversions. This perspective motivates the design choice adopted in the final framework, where Z-score standardization
+and risk controls take precedence over formal cointegration testing.
+Overall, the empirical evidence indicates that the proposed multi-stage funnel, parameter
+calibration, and Z-score trading mechanism form a coherent and robust pipeline for identifying
+and exploiting relative-value opportunities in cryptocurrency markets. The backtest results provide both validation of the framework and a realistic benchmark for the live trading experiments
+discussed in the next section.
+7
+Live Trading
+7.1
+Live Trading Setup
+To deploy the strategy in production, the standardized–spread model is wrapped into a
+custom Hummingbot v2 controller that continuously receives streaming market data and issues
+executable trading actions. The live workflow directly mirrors the backtesting pipeline: load
+parameters, compute rolling regression signals, evaluate trading conditions, and place paired
+long/short orders with hedge-consistent sizing.
+Configuration Layer.
+Each trading pair is managed by an independent pair trading controller, which loads a YAML configuration specifying connector names, candle windows, Z-score
+thresholds, leverage, and risk controls. A representative configuration is shown below.
+File: conf/controllers/BAND NKN.yml
+1
+id: pair_trading_BAND_NKN
+2
+controller_name: pair_trading
+3
+controller_type: generic
+4
+5
+# Capital allocation and leverage
+6
+total_amount_quote: 25
+7
+leverage: 5
+8
+position_mode: HEDGE
+9
+10
+# Trading pairs
+11
+connector_pair_dominant:
+26
+
+12
+connector_name: binance_perpetual
+13
+trading_pair: BAND-USDT
+14
+connector_pair_hedge:
+15
+connector_name: binance_perpetual
+16
+trading_pair: NKN-USDT
+17
+18
+# Rolling regression window
+19
+max_records: 4320
+# 6-month window
+20
+interval: 1h
+21
+22
+# Calibrated thresholds
+23
+z_score_entry_threshold: 1.0
+24
+z_score_exit_threshold: 0.0
+25
+26
+# Risk controls
+27
+pnl_stop_loss_pct: 0.20
+28
+stop_loss_cooldown_days: 5.0
+29
+deactivate_drawdown_pct: 0.20
+Controller Layer.
+Each pair is traded by a dedicated PairTrading controller, which updates
+signals, evaluates risk conditions, and issues the paired open/close instructions used in live
+trading. A simplified excerpt of the production controller is shown below.
+File: controllers/generic/pair trading.py
+1
+class PairTrading(ControllerBase):
+2
+"""
+3
+Production-grade pair trading controller.
+4
+"""
+5
+6
+def get_spread_and_z_score(self):
+7
+"""
+8
+1. Load rolling candle window.
+9
+2. Refit regression parameters only when out of position.
+10
+3. Compute long/short z-scores via bid/ask combinations.
+11
+4. Select the valid z-score that matches spread direction.
+12
+"""
+13
+return best_residual, best_z
+14
+15
+def determine_executor_actions(self):
+16
+"""
+17
+Main decision logic executed every candle:
+18
+19
+(A) Stop-loss:
+20
+If pnl_ratio < -threshold:
+21
+-> return self._close_all()
+22
+-> enter cooldown state
+23
+24
+(B) Entry signal:
+25
+If flat and not cooling down:
+27
+
+26
+If z >= entry_threshold:
+27
+# short-spread entry
+28
+return self._open_pair(SELL, BUY, px1_entry, px2_entry)
+29
+30
+If z <= -entry_threshold:
+31
+# long-spread entry
+32
+return self._open_pair(BUY, SELL, px1_entry, px2_entry)
+33
+34
+(C) Exit signal:
+35
+If holding a position and reversion crossing occurs:
+36
+-> return self._close_all()
+37
+38
+Otherwise return []
+39
+"""
+40
+return actions
+41
+42
+def _open_pair(self, side1, side2, px1, px2):
+43
+# Compute hedge-consistent quantities q1, q2
+44
+# Create paired market executions
+45
+return [
+46
+CreateExecutorAction(...),
+# leg 1 open (market)
+47
+CreateExecutorAction(...),
+# leg 2 open (market)
+48
+]
+49
+50
+def _close_all(self):
+51
+# Market-close both legs using current mid/best prices
+52
+return [
+53
+CreateExecutorAction(...),
+# leg 1 close (market)
+54
+CreateExecutorAction(...),
+# leg 2 close (market)
+55
+]
+56
+57
+def to_format_status(self):
+58
+"""
+59
+Produce a 4-line structured snapshot including:
+60
+- signals (z_long, z_short, z_selected)
+61
+- regression parameters
+62
+- entry price/time information
+63
+- current notional, PnL, and equity
+64
+Used for logging on every open/close event.
+65
+"""
+66
+return formatted_status_lines
+Running Multiple Controllers.
+In live trading, multiple pair controllers are run concurrently through a single Hummingbot script. The script configuration specifies the list of controller YAML files to load, enabling dozens of independent market-neutral strategies to operate
+in parallel under a unified execution engine. An excerpt of the script configuration is shown
+below.
+File: conf/scripts/conf v2 with controllers.yml
+28
+
+1
+markets: {}
+2
+candles_config: []
+3
+controllers_config:
+4
+- ANKR_ONT.yml
+5
+- BAND_NKN.yml
+6
+- ZIL_ATA.yml
+7
+- ICP_CHR.yml
+8
+- CTSI_ROSE.yml
+9
+- DOT_CELR.yml
+10
+- AXS_C98.yml
+11
+# (many additional pairs omitted for brevity)
+12
+script_file_name: v2_with_controllers.py
+13
+max_global_drawdown_quote: null
+14
+max_controller_drawdown_quote: null
+To start the full live-trading setup, enter the following command inside the Hummingbot
+terminal:
+1
+start --script v2_with_controllers.py --conf conf_v2_with_controllers.yml
+7.2
+Implementation Constraints in Live Trading
+To ensure uninterrupted 24/7 operation, the strategy was deployed on a rented cloud server,
+allowing all pair–trading controllers to run continuously without local machine downtime. During deployment, however, we encountered a practical constraint specific to Binance Perpetual:
+the exchange enforces a strict API rate limit based on REQUEST WEIGHT. When too many controllers operate simultaneously under the same IP address, the aggregated streaming and polling
+activity rapidly approaches the exchange-imposed threshold. Once the limit is exceeded, Binance temporarily restricts the IP address, causing all further requests to be blocked until the
+ban window expires.
+This constraint prevents an excessive number of controllers from running in parallel on a
+single server. Empirically, we found that one IP address can reliably support roughly seven
+controllers before rate limits become binding and risk triggering temporary IP bans.
+Given this operational constraint—and considering that the live deployment was executed
+with a small experimental capital base—we reduced the portfolio size from the initial 100
+candidate pairs to a curated subset of 7 pairs. This selection ensured stable 24/7 execution
+without rate–limit interruptions while preserving sufficient diversification for meaningful live
+evaluation.
+7.3
+Stage 1 Performance (Nov 28 – Dec 2)
+The first live-trading experiment ran for five days, from November 28 to December 2. We deployed seven pair-trading controllers, selected by ranking all candidate pairs on their validationset Sharpe ratio and taking the top seven: ANKR–ONT, ANKR–SXP, BAND–NKN, SXP–ATA,
+ZIL–ATA, ICP–CHR, and CTSI–ROSE. The initial portfolio value was $53.51, with each pair
+allocated approximately $10 under 5x leverage. This higher per-pair allocation was chosen be29
+
+cause, given the limited deployment window, we anticipated that only a subset of the seven
+pairs would generate actionable trading signals during the evaluation period.
+During this stage, the SXPSUDT perpetual contract experienced an abnormal and persistent
+decline. The long entry was executed at 0.0809, while the price at the time of forced liquidation
+had fallen to 0.0482, a drop of approximately 40.4%.
+The contract was later restricted on
+Binance Perpetual, and due to a coding issue, the stop-loss mechanism in our controller did not
+trigger as intended. As a result, the portfolio dropped from $53.51 to $34.88, corresponding to
+a drawdown of $18.8 (34%).
+Figure 9: Portfolio snapshot at the end of Stage 1 (Nov 28 – Dec 2).
+Failure Analysis.
+Two primary issues contributed to this outcome:
+1. Stop-loss malfunction. A bug in the controller prevented the stop-loss logic from closing
+the losing position, allowing the SXPSUDT drawdown to accumulate unchecked.
+2. Midprice-based Z-score. Signal computation relies on mid prices, whereas live execution occurs at bid/ask quotes. For pairs with small residual volatility, this discrepancy
+can create a gap between expected and realized returns, reducing execution accuracy in
+rapidly moving markets.
+7.4
+Stage 2 Performance (Dec 3 – Dec 11)
+Following the drawdown in Stage 1, we removed the two SXP-related pairs (ANKR–SXP
+and SXP–ATA), which were directly responsible for the abnormal losses. To maintain the same
+portfolio size, the next two highest-ranked pairs in the validation Sharpe ranking were added
+to the deployment: DOT–CELR and AXS–C98. Thus, Stage 2 consisted of the following seven
+controllers: ANKR–ONT, BAND–NKN, ZIL–ATA, ICP–CHR, CTSI–ROSE, DOT–CELR, and
+AXS–C98.
+The portfolio resumed live trading on December 3 with a starting value of $34.88. Over the
+next five days, the system generated stable and consistent mean-reversion trades, increasing the
+portfolio to
+34.88 + 1.63 = 36.51,
+corresponding to a profit of $1.63 (+4.67%). The strongest contributors were BAND–NKN
+and ANKR–ONT, while the newly added pairs generated moderate positive PnL and helped
+stabilize the overall portfolio.
+30
+
+Figure 10: Performance summary for Stage 2 (Dec 3 – Dec 11).
+Example 1:
+Normal exit with small but frequent profits (ANKR–ONT).
+The
+ANKR–ONT controller generated many small, stable mean-reversion trades. By December 11,
+it had opened 12 positions and closed 11 of them, producing a total realized PnL of $0.75. The
+figure below shows the first completed trade in this sequence.
+Figure 11: First closed position recorded by the ANKR–ONT controller.
+This trade demonstrates that the controller’s execution and PnL accounting behaved exactly
+as expected. The entry produced an expected log return of 6.31%, which closely matches the
+realized return of 0.2771/5 = 5.54%, once the trading cost 0.0246/5 = 0.49% is included:
+6.31% ≈5.54% + 0.49%.
+Such consistency confirms that the live system correctly implements the expected–realized
+return relationship.
+Because the residual standard deviation of this pair is relatively small
+(σu ≈0.0126), spread deviations are limited, and individual trades naturally produce modest
+but reliable profits.
+Example 2: Large-profit normal exit (BAND–NKN).
+Unlike ANKR–ONT, the BAND–
+NKN controller traded only once during this stage, but that single trade generated a substantially larger profit. The position was opened on December 3 and closed on December 8 after the
+spread fully reverted, yielding a realized gain of $1.45—the largest one-trade profit in Stage 2.
+A key reason for this large outcome is the relatively high residual volatility of the pair:
+the estimated residual standard deviation was σu ≈0.086, far higher than the σu ≈0.0126
+observed for ANKR–ONT. As discussed in Sections 5.2, the dollar PnL of a spread trade scales
+proportionally with residual volatility, so pairs with larger σu naturally produce larger per-trade
+returns for the same Z-score displacement. BAND–NKN therefore generates fewer signals but
+much higher-impact trades.
+The realized return of this trade also aligns well with the expected–realized relationship.
+31
+
+At entry, the controller reported an expected log return of 32.12%, which closely matches the
+realized return of 28.93% once the transaction cost is included. Across both legs and both
+entry/exit executions, the Binance records show a total fee of $0.0228, corresponding to a cost
+ratio of 0.46% under the $5 margin budget. Incorporating this cost yields the relationship:
+32.12% ≈28.93% + 0.46%.
+This confirms that the controller’s PnL accounting and expected-return calculation behaved
+correctly even for this high-volatility pair.
+Figure 12: Closing event of the BAND–NKN position (single trade, large profit).
+Example 3: Still-holding position (AXS–C98).
+As of December 11, the AXS–C98 controller remained in an open position.
+The trade was initiated on December 6 at 18:53:53,
+when the standardized spread exhibited a strong negative divergence with an entry signal of
+zentry ≈−3.07. Since then, the spread has partially reverted, and the monitored short-spread
+Z-score has risen to zshort ≈−1.70, still far from the exit threshold of −0.50. With the spread
+moving in the expected direction, the position currently holds a small unrealized profit—driven
+primarily by the short leg on C98—while having incurred only about $0.01 in fees. A snapshot
+of the live controller state is shown below.
+Figure 13: Live status of the still-open AXS–C98 position.
+Example 4: Stop-loss exit (ZIL–ATA).
+The ZIL–ATA position provides a clear example
+of the stop-loss mechanism functioning as designed in Stage 2. After entry on December 3, the
+spread moved persistently in the adverse direction for several days, never reverting toward the
+exit threshold. As the divergence continued to widen, the position’s loss gradually approached
+the configured stop-loss limit of 20%.
+At the time of forced exit on December 8, the realized PnL was −1.0197 USDT. Under the
+32
+
+$5 margin allocation for this pair, this corresponds to a loss ratio of
+−1.0197/5 ≈−20.4%,
+which matches the stop-loss threshold almost exactly. This confirms that the protective risk
+control activated precisely when required, preventing further downside.
+Figure 14: Stop-loss exit event for the ZIL–ATA controller.
+7.5
+Discussion
+The live deployment provides several insights into both the strengths and limitations of the
+standardized–spread framework. First, the trading logic itself behaves consistently with theoretical expectations: expected and realized returns align closely after accounting for transaction
+costs, residual volatility accurately scales the magnitude of per-trade PnL, and mean-reversion
+signals generate profitable entries across multiple pairs. These observations confirm that the
+spread construction, Z-score standardization, and execution pipeline remain reliable under real
+market conditions, not only in isolated examples such as ANKR–ONT and BAND–NKN but
+also when several controllers are run concurrently over multiple days of 24/7 trading.
+At the same time, the experiments highlight several practical considerations that are less
+visible in backtesting. The Stage 1 loss on SXPSUDT illustrates the presence of idiosyncratic
+token risk and exchange-level contract changes, which lie outside the statistical assumptions of
+the model and can lead to sudden, irreversible losses if not explicitly guarded against. Execution frictions—particularly the discrepancy between mid-price based signals and bid/ask-based
+execution—introduce meaningful costs for low-volatility pairs, suggesting that more executionaware signal estimation, or even explicit slippage and spread models, may further improve
+realized performance. Infrastructure constraints, such as Binance’s REQUEST WEIGHT limit, also
+restrict the number of controllers that can run simultaneously on a single server, effectively
+imposing a portfolio-size constraint on the live system and linking capacity directly to infrastructure design.
+Despite these challenges, the Stage 2 results show that once the system is properly riskcontrolled, the framework can operate reliably in production and deliver stable, diversified
+performance: after a 34% drawdown in Stage 1, the portfolio generated a controlled 4.67% recovery under a reduced but still diversified set of pairs. These findings suggest several directions
+for future work, including adaptive thresholding across volatility regimes, dynamic hedge-ratio
+estimation, regime-shift detection for spread stability, and execution models that incorporate
+order book microstructure and exchange-level constraints. Overall, the live deployment validates the core statistical logic while revealing key operational factors required for scaling the
+strategy in practice.
+33
+
+8
+Conclusion
+8.1
+Summary
+This paper develops an end-to-end framework for pairs trading on hourly Binance perpetual futures, spanning data exploration, pair selection, strategy design, backtesting, and live
+deployment. Starting from 543 instruments and 147,153 possible unordered pairs, we construct
+a multi-stage funnel that filters for sufficient history, same-blockchain structure, high price and
+return correlation, and finally strong predictive power of the standardized spread measured via
+its information coefficient. Ranking pairs by their best IC reduces the universe to 100 candidates
+with statistically robust and economically interpretable mean-reversion behavior.
+On top of this universe, we design a standardized-spread trading rule based on rolling logprice regression, Z-score thresholds, and hedge-consistent dollar sizing, combined with an eventdriven backtest engine that enforces stop-loss, cooldown, and permanent deactivation rules. In
+the validation window from March 1, 2025 to September 30, 2025, the equally weighted 100-pair
+portfolio starts from $1,000,000 and ends at $1,507,340, corresponding to a net profit of $507,340
+and an annualized return of 102.29%. The portfolio maintains an annualized volatility of 21.15%,
+achieves a Sharpe ratio of 3.44, and experiences a maximum drawdown of only 10.97%, despite
+paying $108,383 in transaction fees, or about 17.6% of gross profits. In total, the system closes
+1,422 trades across 100 pairs, with around 14 trades per pair over the seven-month window and
+typically 40–50 pairs active at any point in time.
+An intermediate comparison between ADF-filtered and unfiltered variants shows that, in
+fast-evolving crypto markets, strict cointegration screening can be counterproductive. Imposing an ADF test reduces trade count (778 to 1002) and lowers volatility and drawdown, but
+also removes many high-impact convergence events, leading to a lower annual return (41.66%
+vs. 91.12%) and a weaker Sharpe ratio (2.68 vs. 2.98). In contrast, a more flexible Bollingerband–style approach that relies on standardized spread deviations, backtested thresholds, and
+explicit risk controls captures a wider range of short-horizon dislocations while preserving attractive risk-adjusted performance. This evidence motivates the design choice in the final framework to use Z-score signals and robustness filters rather than enforcing cointegration as a hard
+precondition.
+Live trading experiments implemented through custom Hummingbot v2 controllers confirm
+that the framework is operationally viable in production. In Stage 1 (Nov 28–Dec 2), seven controllers are deployed with an initial portfolio value of $53.51; a stop-loss bug on the SXPSUDT
+contract, combined with an exchange-level restriction, drives the portfolio down to $34.88, a
+drawdown of roughly 34%. After fixing the stop-loss logic and replacing the two SXP-related
+pairs, Stage 2 (Dec 3–Dec 11) runs a revised seven-pair portfolio that grows from $34.88 to
+$36.51, a gain of $1.63 (+4.67%) over five days, driven primarily by BAND–NKN and ANKR–
+ONT. Across the individual trade examples, expected and realized returns line up closely once
+transaction fees are accounted for, and the scaling of PnL with residual volatility matches the
+theoretical derivation in Section 5.2. Taken together, the backtest and live results indicate that
+the proposed funnel, calibration procedure, and execution logic form a coherent pipeline for extracting market-neutral relative-value profits in cryptocurrency futures, while also highlighting
+the importance of risk management and infrastructure constraints.
+34
+
+8.2
+Future Improvements
+Several extensions can further strengthen and generalize the framework. First, risk management can be deepened beyond the current stop-loss, cooldown, and permanent deactivation
+rules. Systematic stress tests of the controller logic, explicit per-asset and per-blockchain limits on exposure and maximum loss, and automatic handling of contract-level events (such as
+delistings, trading suspensions, or parameter changes) would help mitigate concentration risk
+and single-token tail events similar to the SXPSUDT episode in Stage 1.
+Second, funding rates should be treated explicitly rather than implicitly. Because many
+mean-reversion trades remain open for several days, cumulative funding payments can become
+comparable in magnitude to the spread PnL. A more realistic backtest would incorporate the
+realized funding cash flow of each leg into the equity curve so that parameter calibration and pair
+selection are performed on net-of-funding returns. Beyond that, funding rates themselves can
+serve as an additional signal or filter: pairs with persistently one-sided funding may be penalized,
+and, in a multi-exchange setting, positions could be routed to the venue offering more favorable
+funding for the intended direction (e.g., going long on the lower-funding exchange and short on
+the higher-funding one). This would allow the framework to distinguish between exchanges not
+only by liquidity and fees but also by the long-run cost of carrying positions.
+Third, the transaction cost model can be refined.
+The current implementation assumes
+a fixed taker fee and approximates slippage coarsely. Extending the backtest engine to use
+empirical bid–ask spreads, depth-aware slippage estimates, and time-of-day effects would make
+pair selection and threshold calibration more robust to microstructure frictions, especially for
+low-volatility pairs where execution costs are a large fraction of gross PnL.
+Fourth, the signal layer can be expanded into a multi-factor framework. The standardized
+spread Z-score could be combined with information about volatility regimes, funding rates, open
+interest, and liquidity metrics, either through a simple weighted score or a constrained machinelearning model that preserves market neutrality. Such an approach would allow the strategy to
+downweight signals during stressed or illiquid periods and to scale up when conditions are more
+favorable for mean reversion.
+Finally, several components of the framework could be made adaptive rather than static.
+The regression lookback window, Z-score thresholds, and holding horizon could be adjusted
+dynamically based on recent volatility or signal strength.
+Periodically re-running the pairselection funnel and grid search on a rolling training window would allow the strategy to track
+structural shifts in token ecosystems and correlation clusters. Scaling the framework across
+additional exchanges and to larger notionals, while monitoring API rate limits and building
+failover infrastructure, would provide a clearer view of capacity constraints and help transition
+the current prototype into a production-grade, multi-exchange, market-neutral platform for
+cryptocurrency pairs trading.
+References
+[Danilo et al., 2024] Danilo, L., Jamhamed, F., and Martin, F. (2024). Optimized pairs-trading
+strategies in the cryptocurrencies market using genetic algorithms and cointegration. Working
+35
+
+Paper.
+[Dickey and Fuller, 1979] Dickey, D. A. and Fuller, W. A. (1979). Distribution of the estimators
+for autoregressive time series with a unit root. Journal of the American Statistical Association,
+74:427–431.
+[Dickey and Fuller, 1981] Dickey, D. A. and Fuller, W. A. (1981). Likelihood ratio statistics for
+autoregressive time series with a unit root. Econometrica, 49:1057–1072.
+[Engle and Granger, 1987] Engle, R. F. and Granger, C. W. J. (1987). Co-integration and error
+correction: Representation, estimation, and testing. Econometrica, 55(2):251–276.
+[Liang et al., 2022] Liang, Y., Thavaneswaran, A., Paseka, A., Qiao, W., Ghahramani, M., and
+Bowala, S. (2022). A novel optimal profit resilient filter pairs trading strategy for cryptocurrencies. Working Paper, pages 1274–1279.
+[Tadi and Witzany, 2025] Tadi, M. and Witzany, J. (2025). Copula-based trading of cointegrated cryptocurrency pairs. Financial Innovation, 11(1):40.
+Acknowledgments
+We thank Federico Cardoso, the Hummingbot team and the CFEM staff for their guidance
+and support.
+36

@@ -1,0 +1,2171 @@
+ Electronic copy available at: http://ssrn.com/abstract=2373196 
+Algorithmic Trading with Learning
+Álvaro Carteaa, Sebastian Jaimungalb, Damir Kinzebulatovc
+aDepartment of Mathematics, University of Oxford, Oxford, UK
+bDepartment of Statistical Sciences, University of Toronto, Toronto, Canada
+cThe Fields Institute for Mathematical Sciences, Toronto, Canada
+Abstract
+We propose a model where an algorithmic trader takes a view on the distribution of prices
+at a future date and then decides how to trade in the direction of her predictions using the
+optimal mix of market and limit orders. As time goes by, the trader learns from changes in
+prices and updates her predictions to tweak her strategy. Compared to a trader who cannot
+learn from market dynamics or form a view of the market, the algorithmic trader’s proﬁts are
+higher and more certain. Even though the trader executes a strategy based on a directional
+view, the sources of proﬁts are both from making the spread as well as capital appreciation of
+inventories. Higher volatility of prices considerably impairs the trader’s ability to learn from
+price innovations, but this adverse eﬀect can be circumvented by learning from a collection of
+assets that co-move. Finally, we provide a proof of convergence of the numerical scheme to the
+viscosity solution of the dynamic programming equations which uses new results for systems
+of PDEs.
+Keywords:
+Algorithmic Trading; High Frequency Trading; Nonlinear Filtration; Brownian
+Bridge; Stochastic Optimal Control; Adverse Selection
+1. Introduction
+Information is a valuable asset, but being better informed than others is money. Modern
+trading algorithms employ unprecedented computer power to process information and make
+trading decisions. In this paper we show how an informed trader (IT) who has conceived a view
+of the market encoded in a prior on price changes, devises a strategy to trade in a single stock
+or group of stocks to maximize expected proﬁts. The strategy is rooted in the IT’s superior
+Email addresses: alvaro.cartea@maths.ox.ac.uk (Álvaro Cartea), sebastian.jaimungal@utoronto.ca
+(Sebastian Jaimungal), dkinzebu@fields.utoronto.ca (Damir Kinzebulatov)
+SJ thanks NSERC and GRI for partially funding this research. This paper has beneﬁted from comments
+of seminar participants at the Isaac Newton Institute, University College London, Rutgers University. For
+comments and suggestions on earlier drafts, we are thankful to Ryan Donnelly, Jason Ricci, Chris Rogers.
+Preprint submitted to TBA
+October 12, 2015
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+ Electronic copy available at: http://ssrn.com/abstract=2373196 
+ability to constantly update her predictions of future prices and her ability to decide when to
+use limit and market orders to trade in and out of positions.
+Trading aggressively with market orders is expensive, but guarantees execution, whereas a
+more passive and cheaper alternative is limit orders, but the time of execution is uncertain. The
+choice of order type depends on many factors including: accumulated inventory, remaining time
+before position has to be closed, and more importantly, how good are the price predictions.
+As time goes by, the IT updates her prior with new information and the strategy becomes
+more aggressive to accumulate or unwind inventories as the IT becomes more conﬁdent about
+the future direction of prices.
+For example, if the IT’s initial prior is that the price of a
+particular stock will increase between now and a future date, then one expects the IT to
+initially accumulate a long position and then unwind it nearer the end of the strategy. The
+key question is how to do this optimally by choosing the right mix of market and limit orders
+at both ends of the strategy, taking into account the uncertainty in her predictions, as well as
+how to ride price changes and inventory exposure in between.
+Most of the eﬀort in the mathematical literature on algorithmic trading has focused on two
+classical problems: (i) optimal liquidation/acquisition (see, e.g., Almgren (2003), Obizhaeva
+and Wang (2013), Kharroubi and Pham (2010), Bayraktar and Ludkovski (2011), Bayraktar
+and Ludkovski (2014), Gatheral et al. (2012), Schied (2013), Guéant and Lehalle (2015)), and
+(ii) market making (see, e.g., Ho and Stoll (1981), Avellaneda and Stoikov (2008), Cartea et al.
+(2014), Cartea and Jaimungal (2015b), Guéant et al. (2012), Cartea and Jaimungal (2013)).
+This paper contributes to the growing literature in many aspects and in a new direction.
+It is the ﬁrst paper, to the authors’ knowledge, that incorporates information and dynamic
+learning in an algorithmic trading problem by using stochastic control methods. The trader
+learns from a collection of assets (i.e. uses the current prices to update the prior) and trades
+in all or a subset of them executing directional strategies. Moreover, we show how trading is
+done using both limit and market orders, which is something that few papers take into account
+– exceptions are Guilbaud and Pham (2013), Cartea and Jaimungal (2015a), and Cartea et al.
+(2015).
+Our results show how the IT learns from changes in prices to tweak her strategy and
+maximize gains from trading. Although the strategy is devised to proﬁt from a directional
+view of prices, the proﬁts stem from both making the spread as well as capital appreciation
+of inventories. However, a key variable that inﬂuences the eﬃcacy of learning, and hence the
+proﬁtability of the strategy, is the volatility of prices. For example, we use simulations to
+show that if the IT is only trading in one asset and only learning from the dynamics of the
+same asset, then the higher the volatility, the more diﬃcult it becomes to extract information
+from innovations in prices and the strategy turns much more conservative: it executes fewer
+market orders and avoids holding large inventory positions in the asset. In extreme cases where
+volatility is too high, the IT’s ability to learn from price dynamics is impaired and she cannot
+2
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+ Electronic copy available at: http://ssrn.com/abstract=2373196 
+execute a strategy based on directional price predictions. Thus, her strategy behaves like that
+of a market maker who wishes to bear very little inventory risk – passive orders are sent in
+such a way to ensure that inventories never stray too far away from zero.
+The simulations also show how the IT’s strategy compares to that of others who trade with
+lesser quality information or who are unable to learn from market dynamics. The IT’s strategy
+is superior in both (higher) mean and (lower) standard deviation of proﬁts; the IT’s strategy
+second-order stochastically dominates the other traders’ strategies. Furthermore, we also show
+that the proﬁtability of trading in assets that exhibit higher volatility is considerably improved
+if the IT is able to learn from other of assets that co-move.
+To solve for the optimal strategy used by the IT we adopt the dynamic programming
+principle to derive a quasi-variational inequality (QVI) which we solve numerically. We prove
+that the numerical scheme we employ does indeed converge to the unique viscosity solution
+of the QVI. Since inventories are discrete we cannot directly apply classical results to prove
+convergence of the scheme so we construct the proof from ﬁrst principles. In doing so we use
+the recent results of Briani et al. (2012), an extension of the classical framework of Barles and
+Soganidis (1991) which could apply if inventories were continuous, to systems of PDEs that
+satisfy certain monotonicity assumption.
+The rest of this paper is organized as follows. Section 2 presents the model for midprices
+and shows how the IT learns from innovations in midprices. Section 3 derives the IT’s optimal
+trading strategy. Section 4 shows the behavior and ﬁnancial performance of the IT’s strategy
+and how does it compare to those of other traders who are less informed or cannot learn from
+market dynamics. Section 5 shows how the strategy is modiﬁed to account for adverse selection
+costs and Section 6 contains the main convergence results showing that the numerical scheme
+converges to the viscosity solution of the QVI. All proofs are collected in the appendix.
+2. Stock Price Dynamics
+Let Si
+t denote the midprice of asset i (i = 1, . . . , n, n ∈N) at time t ∈[0, T] and assume
+that
+Si
+T = Si
+0 + Di,
+(1)
+where Di is a random variable which encodes the IT’s prior belief on the future midprice
+distribution of asset i.
+We require that Di have ﬁnite second moment, and that P(Di <
+0) ∈(0, 1) and P(Di > 0) ∈(0, 1), i.e., there is non-zero probability on both positive and
+negative outcomes to avoid arbitrage since interest rates are assumed zero. Hence, the IT
+may use whatever methods she has at her disposal to form a prior (such as statistical machine
+learning methods, price co-integration models, limit order book information, etc.) and the
+price dynamics we propose below will reﬂect the IT’s belief. The structure of the probability
+space on which we work will be described below.
+3
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+In our set-up the IT employs market-wide information before t = 0 to form her prior belief
+on the joint distribution of Di and, immediately after, decides how to execute a trading strategy
+in one or more assets between time 0 and T < T. The strategy is adjusted to incorporate the
+arrival of new information, in the form of innovations in midprices, which the IT uses to
+continuously update her prior. More speciﬁcally, we assume that the midprice process is a
+randomized Brownian bridge (rBb) connecting the current midprice to the future midprice,
+i.e.
+Si
+t −Si
+0 = σi βi
+tT + t
+T Di ,
+(2)
+where σi > 0 are constants, βi
+tT are independent2 standard Brownian bridges, independent of
+Di, 1 ⩽i ⩽n, which satisfy
+βi
+tT = W i
+t −t
+T W i
+T ,
+(3)
+for t ∈[0, T], and W i
+t are independent standard Brownian motions.
+We work on the ﬁltered probability space (Ω, P, {Ft}0⩽t⩽T ) with Ft generated by the processes Si
+t. Here the Brownian bridge σi βi
+tT models ﬂuctuations in the asset’s midprice at times
+t ∈(t, T), and since the IT has access only to the ﬁltration Ft generated by the collection of
+Si
+t, she cannot decompose Si
+t into Di and βi
+tT – except at T where βi
+TT = 0 and Si
+T = Si
+0 + Di.
+To simplify notation we write the vector of midprices as St = (S1
+t , . . . , Sn
+t ), Brownian bridges
+as βtT = (β1
+tT , . . . , βn
+tT ), and terminal midprice changes as D = (D1, . . . , Dn).
+The algorithmic and high frequency trading literature commonly assumes the midprice
+follows an arithmetic Brownian motion – this is a particular case of our model if in (2) we
+assume that Di are normally distributed with mean zero and variance σ2
+i T. Further, our choice
+of the price process is related to Doob’s h-transform of the underlying Brownian motions (see,
+e.g., Rogers and Williams (1987)). A similar model for asset prices was adopted by Brody et al.
+(2008) whereby a process analogous to (2) represented the information ﬂow in the economy
+and asset prices are found via the conditional expectation with respect to this information, i.e.
+E[Si
+0 +Di | Ft], rather than by (2) directly. In Brody et al. (2008), asset prices are martingales,
+while here the midprices are not martingales. For other applications of randomized bridges in
+information-based asset modeling see, e.g., Brody et al. (2009) and Macrina (2014). Moreover,
+similar models with applications to utility maximization were studied earlier in Baudoin (2002),
+Baudoin (2003), and Baudoin and Nguyen-Ngo (2004).
+In the proposition below, also contained implicitly in Brody et al. (2008) and Baudoin
+(2002), we show the stochastic diﬀerential equation (SDE) satisﬁed by Si
+t.
+2This independence assumption can easily be lifted. We impose it since, as will be shown later on, the
+joint distribution of the price changes induces a non-linear co-integration of asset prices while correlating the
+Brownian bridges will induce only an instantaneous correlation in price changes.
+4
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+Proposition 1. The asset’s midprice process Si
+t given by (2) satisﬁes the SDE
+dSi
+t = Ai(t, S) dt + σi dW i
+t ,
+(4)
+where W i
+t are pairwise independent Ft-Brownian motions, and Si
+t=0 = Si
+0 for 1 ⩽i ⩽n.
+Moreover,
+Ai(t, S) = ai(t, S) −(Si
+t −Si
+0)
+T −t
+,
+(5)
+where
+ai(t, S) = E[ Di | St = S ] =
+R
+Rn xi
+Qn
+j=1 exp
+
+xj
+Sj−Sj
+0
+σ2
+j (T−t) −1
+2x2
+j
+t
+Tσ2
+j (T−t)
+
+dF(x)
+R
+Rn
+Qn
+j=1 exp
+
+xj
+Sj−Sj
+0
+σ2
+j (T−t) −1
+2x2
+j
+t
+Tσ2
+j (T−t)
+
+dF(x)
+(6)
+are the Ft-conditional expectations of Di’s, and F = FD is the joint cumulative distribution
+function of the random variables D.
+This proposition shows how the trader’s prior and how learning from information updates
+are encoded in the drift of the process (4). For instance, a trader who believes that prices are
+independent arithmetic Brownian motions behaves in the same way as one who uses independent normals with zero mean and variances of σ2
+i T as his prior. Such a trader will never learn
+from the dynamics of the asset prices and A(t, S) = 0. A second simple example is if F is
+a Dirac mass at a single point δ. In this case, ai(t, S) = δi, and therefore, the price process
+is a Brownian bridge connecting the initial price S0 to the terminal price S0 + δ. In general,
+the drift term A(t, S) is non-linear and captures the (non-linear) co-integration relationship
+between asset prices. Throughout this paper, learning by the trader refers to the updates of
+the prior by observing asset prices which is not necessarily restricted to the assets the trader
+is taking positions in.
+2.1.
+Assumptions on (T, D) and A(t, S)
+In what follows, we consider pairs (T, D) so the function A(t, S) is globally uniformly
+Lipschitz on [0, T] × Rn. In principle T can be taken equal to T as long as the global Lipschitz
+condition holds, for example when D ∼N(0, σ2T) so that the SDE in (4) has a unique strong
+solution.
+Below we also consider the following modiﬁcation of the model to ensure that the return of
+the midprice remains ﬁnite. Suppose that the prediction Di for midprice changes in asset i has
+compact support. If Si
+t∗≪inf supp Di at some time t∗< T but close to T, the midprice would
+have to grow rapidly between t∗and T in order to approach supp Di, with the rate of growth
+determined by (in general, the unbounded) coeﬃcient Ai(t, S), see equation (5). To address
+the issue of unbounded rate of growth or decline of the asset midprice, the trader may adopt
+5
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+a modiﬁcation of model (2) to bound the rate of growth. More speciﬁcally, in the notation of
+Proposition 1, the agent assumes that the midprice Si
+t satisﬁes
+dSi
+t = ˜Ai(t, St) dt + σi dW i
+t ,
+(7)
+where
+˜Ai(t, S) := min
+
+Ai, max
+
+Ai, Ai(t, S)
+		
+,
+−∞< Ai < Ai < ∞,
+i = 1, . . . , n .
+(8)
+This modiﬁcation will come into play in the proof of convergence of the numerical scheme in
+section 6.
+3. Optimal trading strategy
+Innovations in midprices are used by the IT to update her prior and then to adjust her
+strategy by deciding how to use market and limit orders to trade in and out of positions between
+now and T < T. Market orders guarantee immediate execution but are more expensive because
+the trader must pay the spread in addition to liquidity taking fees. On the other hand, limit
+orders do not pay fees (in some markets they even earn rebates, see Cartea and Jaimungal
+(2013)) but execution is not guaranteed – the trader must wait until an incoming market order
+ﬁlls her limit order.
+Here we assume that the IT executes a strategy in a subset of 1, . . . , k assets (k ≤n), but
+nonetheless uses the intelligence she acquires from all n assets to form her trading strategy.
+To pose the optimal control problem we require notation to describe the IT’s submitted limit
+and market orders, cash process, accumulated inventory, and ﬁnally, the market orders sent
+by other participants.
+The IT posts passive orders only at the touch (best bid or ask) where ℓ±
+t = {ℓ1±
+t , . . . , ℓk±
+t } ∈
+{0, 1}k denotes her decision to post a sell (+) or a buy (−) limit order for one unit of asset
+at time t with ℓi±
+t
+= 0 meaning that there is no post. We also assume that every time there
+is an incoming market order, the IT’s limit order is ﬁlled with probability p = {p1, . . . , pk}.
+Moreover, m±
+t = {m1±
+t , . . . , mk±
+t } ∈Zk
++ counts the total number of market orders sent by the
+IT up until time t,
+mi±
+t
+=
+X
+k
+1{τ i±
+k ⩽t} ,
+i = 1, . . . , k ,
+(9)
+where + indicates a sell (−a buy), 1{·} is the indicator function, 0 < τ i±
+1
+< τ i±
+2
+< . . . are
+increasing sequences of H-stopping times representing the arrival times of the IT’s executed
+market orders in asset i. The ﬁltration H is the expanded ﬁltration taking into account the
+arrival of other agent’s market orders which ﬁll the IT’s posted limit orders and the assets’
+midprices. More speciﬁcally, let the counting processes N±
+t =
+n
+N1±
+t
+, . . . , Nk±
+t
+o
+represent the
+6
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+total number of buy and sell market orders other participants have sent in the assets which
+the IT trades. We assume these are Poisson processes (mutually independent and independent
+of the midprice processes) with intensities Λ± > 0. Those market orders which ﬁll the IT’s
+posted limit orders will be denoted N
+±
+t = {N
+1±
+t , . . . , N
+k±
+t } and, due to the thinning property
+of Poisson processes, are also independent Poisson processes with intensities λ± = p ⊙Λ±
+(where x ⊙y represents componentwise multiplication). The ﬁltration on which strategies are
+adapted is given by Ht = σ
+n
+Su, N±
+u , N
+±
+u
+o
+0≤u≤t
+
+.
+The number of the IT’s ﬁlled limit orders in asset i, up to time t, is given by
+R t
+0 ℓi±
+t dN
+i±
+t .
+Therefore the IT’s inventory in asset i at time t is given by
+qi
+t = −
+Z t
+0
+ℓi+
+t dN
+i+
+t
++
+Z t
+0
+ℓi−
+t dN
+i−
+t
+−mi+
+t
++ mi−
+t ,
+qi
+0 = 0 ,
+(10)
+and we assume that the IT restricts her accumulated inventory position to be between qi ⩽
+qi
+t ⩽qi for all t. The strategy can build short positions, so qi < 0.
+The execution prices that the IT achieves for trading one unit of the asset using market
+orders in asset i are Si
+t −∆i
+2 −εi for a sell, and Si
+t + ∆i
+2 + εi for a buy, where εi > 0 represents
+liquidity taking fees and ∆i is the spread between the best ask and best bid which we assume
+to be constant.
+The IT’s cash process Xt satisﬁes the SDE
+dXt =
+k
+X
+i=1
+n
+−
+
+Si
+t−−∆i
+2
+
+ℓi−
+t 1{qi
+t⩽qi} dN
+i−
+t
++
+
+Si
+t−+ ∆i
+2
+
+ℓi+
+t 1{qi
+t⩾qi} dN
+i+
+t
+−
+
+Si
+t−+ ∆i
+2 + εi
+1{qi
+t⩽qi} dmi−
+t
++
+
+Si
+t−−∆i
+2 −εi
+1{qi
+t⩾qi} dmi+
+t
+o
+,
+(11)
+with X0 = 0. The ﬁrst line accounts for changes in cash due to limit orders being ﬁlled by
+other market participants’ incoming market orders and the second line accounts for changes
+in cash due to the market orders that the IT submits.
+Next, we turn to the IT’s optimization problem who seeks the strategy ν = {ℓ±
+t , m±
+t }0≤t≤T
+which maximizes her expected cash while penalizing running inventory. Thus, the IT’s performance criteria following a given strategy ν is given by
+Hν(t, X, S, q) = Et,X,S,q
+"
+XT +
+k
+X
+i=1
+(
+ψi(qi
+T , Si
+T ) −φi
+Z T
+0
+(qi
+u)2 du
+)#
+,
+(12)
+where Et,X,S,q[·] denotes expectation conditional on Xt−= X, St−= S, and qt−= q and ψ
+7
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+represents the terminal liquidation costs / value
+ψi(q, S) = q
+
+S −
+
+∆i
+2 + εi
+sgn(q) −αi q
+
+.
+(13)
+The IT’s value function is deﬁned as
+H(t, X, S, q) = sup
+ν∈A
+Hν(t, X, S, q) .
+(14)
+As is usual, we seek Markov optimal controls (and under quite general assumptions, the optimum is indeed Markov ).
+In the right-hand side of the performance criteria (12) there are three components. The
+ﬁrst is terminal cash. The second component captures the costs that the IT incurs at the
+terminal date T when liquidating qT . The terminal inventory is unwound with a market order
+so picks up the costs of crossing the spread, as well as any other costs including liquidity
+taking fees and (linear) market impact, both of which are captured by the parameter αi > 0.
+And the third component is a running penalty that the IT imposes to control her exposure to
+inventory risk, see Cartea and Jaimungal (2015b) and Cartea et al. (2013) where the authors
+demonstrate that this type of running penalty can be viewed as arising from model uncertainty
+(ambiguity aversion) in the drift of the asset’s midprice process.
+Proposition 2. The value function H admits the representation
+H(t, X, S, q) = X +
+k
+X
+i=1
+qiSi + g(t, S, q) ,
+(15)
+where g is the unique solution to the QVI
+0 = max
+
+∂tg + Pk
+i=1
+ 1
+2σ2
+i ∂SiSig + Ai(t, S) (qi + ∂Sig) −φi (qi)2	
++ Pn
+i=k+1
+ 1
+2σ2
+i ∂SiSig + Ai(t, S) ∂Sig
+	
++ Pk
+i=1 1qi<qi λi−maxℓ∈{0,1}
+h
+∆i
+2 ℓ+ g(t, S, q + δiℓ) −g(t, S, q)
+i
++ Pk
+i=1 1qi>qi λi+ maxℓ∈{0,1}
+h
+∆i
+2 ℓ+ g(t, S, q −δiℓ) −g(t, S, q)
+i
+;
+maxξ∈D(q)
+n
+−Pk
+i=1(∆i
+2 + εi)|ξi| + g(t, S, q + ξ) −g(t, S, q)
+o
+,
+(16)
+δi is a k-vector with δij = 0 for j̸ = i and δii = 1, the set
+D(q) = ⊗k
+i=1{−1qi>qi, 0, 1qi<qi} ,
+8
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+and the QVI is subject to the terminal condition
+g(T, S, q) = −
+k
+X
+i=1
+
+∆i
+2 + εi
+|qi| + αi (qi)2
+,
+qi ⩽qi ⩽qi.
+(17)
+In (16) the ﬁrst line represents the ﬂow of asset midprices and the updates of the priors in
+the assets in which the IT trades, while the second line represents the ﬂow of asset midprices
+and the updates of the priors in the other assets. The third and fourth lines represent the
+change in the value function due to execution of the agent’s posted limit orders. The last line
+corresponds to the execution of market orders, and D(q) is the set of allowed market order
+executions which respect the inventory limits imposed by the IT.
+To solve the QVI numerically, and obtain a unique g, we impose a grid in S with boundaries
+Si ≤Si < S
+i and the additional boundary conditions
+∂SiSig(t, . . . , Si, . . . , q) = 0,
+∂SiSig(t, . . . , S
+i, . . . , q) = 0 ,
+(18)
+for all 0 < t < T, qi ⩽qi ⩽qi.
+These constraints reﬂect the intuition that the trader’s actions have a negligible eﬀect on
+her proﬁt when the midprice S is far from the support of the prediction D. Hence, for a large
+|S|, the value function H is approximately linear and in view of the ansatz (15), we impose
+these boundary conditions on g. Furthermore, we observe that the optimal trading strategy
+does not change as |S|, |S| →∞. In particular, we set |S
+i| = Si
+0+γσ
+√
+T and |S
+i| = Si
+0−γσ
+√
+T
+and take γ = 5 as larger values result in the same optimal strategies.
+Learning from midprice dynamics is impaired by the volatility of prices. When σ increases
+the IT becomes less conﬁdent about her predictions.
+Indeed, if volatility increases past a
+certain critical level, processing information does not give her any advantage and her strategy
+becomes the same as that of a trader who sees the asset evolve like an arithmetic Brownian
+motion.
+4. Behavior and performance of the optimal trading strategy
+In this section we use simulations to analyze the behavior and ﬁnancial performance of the
+IT’s strategy. The details of the numerical scheme and its convergence are provided in section
+6. Here we focus on the numerical results and their ﬁnancial interpretation. To show how
+much being better informed is worth, we compare her strategy to that of two other type of
+traders:
+i) An uniformed trader who does not have the capability to form a prior or learn from price
+innovations and therefore assumes that the midprice dynamics are given by an arithmetic
+Brownian motion – we label him the uniformed trader (UT). In this case, the UT’s strategy
+9
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+becomes that of an investor who is providing liquidity similar to the market maker models
+described in the extant literature, see for example Avellaneda and Stoikov (2008), and Chapter
+10 in Cartea et al. (2015).
+ii) The other is a trader who has an uniformed prior, but is able to learn from market
+dynamics – we label him the uninformed learner (UL). His prior is symmetric around the
+current midprice, but it is not necessarily independent normal with mean zero and variance
+σ2
+i T as is the UT’s. As a result, the UL is able to learn from the dynamics of the midprice.
+To gain insights into the performance of the traders’ strategies, we ﬁrst show results when
+they trade and learn from only one asset, and then show results for n = 2 where traders learn
+from two assets and take positions in only one of them.
+4.1. Learning from, and trading in, one asset
+All three traders assume that the asset dynamics are given by (4). What distinguishes
+them is their prior distribution on the value of the asset at time T. In particular, IT and UL
+assume that D1 is a mixture of Gaussians, and has probability density function (pdf)
+P(D1 ∈[x, x + dx)) = { pu φ(x, δu, µu) + pd φ(x, δd, µd) } dx ,
+x ∈R ,
+(19)
+where φ(x, δ, µ) is a Normal pdf with mean δ and standard deviation µ, 0 ⩽S1
+0 + δd ⩽S1
+0 + δu
+and pu + pd = 1. More speciﬁcally, for the numerical experiments below we choose
+• IT’s prior is that the pdf of D1 is as in (19) with δu = 0.02 and δd = −0.02, with
+probabilities pu = 0.8 and pd = 0.2, µu = µf = 7 · 10−2,
+• UL’s prior is that the pdf of D1 is as in (19) with δu = 0.02 and δd = −0.02, with
+probabilities pu = 0.5 and pd = 0.5, µu = µd = 7 · 10−2, and ﬁnally
+• UT believes that D1 ∼N
+
+0, σ1
+√
+T
+
+.
+This choice results in the UT assuming the
+midprice is a Brownian motion with volatility σ1 so that S1
+t = S1
+0 + σ1 W 1
+t .
+In the simulations, we assume that the midprice follows the rBb (2) where at time T the
+asset’s midprice will increase to S1
+0 + δu, where S1
+0 = 1 and δu = 0.02 (with probability 1), and
+σ1 = 0.01. We assume that all three traders know the correct σ1 parameter and we see that in
+this set-up although the IT and UL ‘learn’ from market dynamics using the same mechanism,
+the IT has a more accurate prior than that of the UL. Market orders from other participants
+which ﬁll the traders posted limit orders arrive with intensities λ± = 30. In the simulations the
+actions of the traders are small enough not to alter the dynamics of the limit order book or the
+midprice. Finally, the other model parameters are: T = 1, T = 1.1, ∆1 = 10−2, ε1 = ∆1/20,
+α1 = 5 · 10−3, q1 = −20, q1 = 20, and φ1 = 0.
+10
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+Time (t)
+Aset price (S)
+0
+0.2
+0.4
+0.6
+0.8
+1
+0.94
+0.96
+0.98
+1
+1.02
+1.04
+1.06
+(a) short 2
+Time (t)
+Aset price (S)
+0
+0.2
+0.4
+0.6
+0.8
+1
+0.94
+0.96
+0.98
+1
+1.02
+1.04
+1.06
+(b) zero inventory
+Time (t)
+Aset price (S)
+0
+0.2
+0.4
+0.6
+0.8
+1
+0.94
+0.96
+0.98
+1
+1.02
+1.04
+1.06
+(c) long 2
+Figure 1: The IT trading strategy. Maroon: post a buy market order. Orange: post a sell market order. Cyan:
+post a buy limit order. Blue: post a sell limit order. Yellow: post both buy and sell limit orders. Dark Blue:
+do not post any orders. Note: near maturity t = 1, there is a dark blue sliver when q = 0, a maroon sliver
+when q = −2 and an orange sliver when q = 2.
+Figure 1 shows the optimal strategy the IT uses to trade in the asset at all points in time
+for a range of prices and for three inventory levels. As the agent moves from a short position to
+a long position, the buy (sell) regions – both for sending market orders and for positing limit
+orders – shrink (expand). There is a clear asymmetry in the strategy due to the IT having a
+weight of 0.8 placed on the asset price increasing to $1.02. From the starting asset price of
+$1.00, however, the agent does not immediately execute buy market orders, rather there is a
+thin region around which the agent posts either buy limit orders only or both buy and sell
+limit orders. Only when the price moves slightly upwards does she execute a buy market order.
+On the other hand, if the price moves down suﬃciently she cancels the buy limit order and
+posts only sell limit orders. If the price moves even further down quickly, then (when q = 0 or
+2) she executes a sell market order. If prices move upwards suﬃciently quickly, the agent also
+executes sell market orders since she has the view that the price cannot end higher than $1.02.
+For comparison purposes, we also show in Figure 2 the optimal strategy when the agent
+only posts limit orders. When q = 0, the regions where the agent posts only buy or sell limit
+orders shrink, and the region where she posts both type of orders is expanded. The reason is
+that she is not able to fully unwind using market orders, and is therefore more conservative on
+taking directional bets. When q = +2 (q = −2) the sell (buy) limit order region expands to
+increase the likelihood that she unwinds her position by the end of the trading horizon.
+Figure 3 shows the strategies of the three traders for the same midprice path. On the lefthand y-axis we show the midprice and on the right-hand y-axis we show accumulated inventory,
+the x-axis records the time from the start of the strategy up until time T = 1. In the ﬁgure,
+stars denote the arrival of other participant’s market orders, the solid circles denote the trader’s
+buy market orders, and the empty circles denote the trader’s sell market orders. The green
+(red) line shows the times when the trader is posting buy (sell) limit orders. Furthermore, we
+11
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+Time (t)
+Aset price (S)
+0
+0.2
+0.4
+0.6
+0.8
+1
+0.94
+0.96
+0.98
+1
+1.02
+1.04
+1.06
+(a) short 2
+Time (t)
+Aset price (S)
+0
+0.2
+0.4
+0.6
+0.8
+1
+0.94
+0.96
+0.98
+1
+1.02
+1.04
+1.06
+(b) zero inventory
+Time (t)
+Aset price (S)
+0
+0.2
+0.4
+0.6
+0.8
+1
+0.94
+0.96
+0.98
+1
+1.02
+1.04
+1.06
+(c) long 2
+Figure 2: The IT is posting limit orders only (cannot execute market orders). Cyan: post a buy limit order.
+Blue: post a sell limit order. Yellow: post both buy and sell limit orders. Dark Blue: do not post any limit
+orders. Note: near maturity t = 1, there is a dark blue sliver when q = 0.
+see that the midprice is the path that starts at S1
+0 = 1 and ends at S1
+1.1 = 1.02 so that at t = 1
+the midprice is very close to 1.02. Around the midprice path we see the trader’s limit orders
+who posts at the best bid and best ask, which are ±1
+2∆1 away from the midprice.
+In panel (a) we see the strategy followed by the IT. Clearly, at the beginning of the strategy
+the IT submits a number of market buy orders, as well as predominantly submitting one-sided
+buy limit orders, to build up inventories because her prior is that the midprice will increase. As
+time evolves and the IT has built a long inventory, the strategy stops relying on market orders
+and concentrates on two-sided limit orders to control inventories whilst earning the spread.
+Nearer the end of the strategy, the IT stops posting limit orders on the buy side of the book
+and unwinds inventories using both limit and market sell orders.
+In contrast, we see the strategy adopted by the UT. Panel (b) shows how the UT’s inability
+to learn stops him from behaving as aggressively as the IT. At no point does the UT use market
+orders to build or unwind inventories. In fact, the UT devises a strategy where inventories
+mean revert to zero very quickly to avoid exposure to inventory risk. Finally, the strategy
+followed by the UL is somewhere in between that of the IT and UT, see panel (c).
+The strategy of both the IT and UL is distinct from that of a market maker, who is expected
+to continuously post two-sided quotes (not necessarily at the touch). Even though between the
+start and ﬁnal date of the strategy the IT and UL post on both sides of the limit order book,
+this is a result of their information updates which induce the strategy to control inventory
+exposure. The UT’s strategy is closer to that of a market maker because he can only make
+money from the spread since he has no directional view on the market.
+The mix between limit and market orders used by the traders depends on how conﬁdent
+they are about their prior as well as their ability to extract information from midprice dynamics.
+Even though in the simulations we assume that the midprice ends at time T = 1.1, and the
+strategy closes at T = 1, the Brownian bridge adds noise to the path and the IT and UL need
+12
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+0.98
+0.99
+1
+1.01
+1.02
+1.03
+1.04
+Time (t)
+Asset price (S)
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1−8
+−4
+0
+4
+8
+12
+16
+20
+Inventory (Q)
+(a) IT
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+0.98
+0.99
+1
+1.01
+1.02
+1.03
+1.04
+Time (t)
+Asset price (S)
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1−8
+−4
+0
+4
+8
+12
+16
+20
+Inventory (Q)
+(b) UT
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+0.98
+0.99
+1
+1.01
+1.02
+1.03
+1.04
+Time (t)
+Asset price (S)
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1−8
+−4
+0
+4
+8
+12
+16
+20
+Inventory (Q)
+(c) UL
+Figure 3: Sample path of midprice (blue), inventories (thin green), and trading strategy (thick green and red
+lines for when limit orders are posted, and green and red circles when market orders are executed).
+to update their prior and decide whether to send market orders and/or to post one-sided or
+two-sided limit orders and wait until they cancel them or are ﬁlled. In Figure 4 we show the
+average number, for 104 midprice paths, of market and ﬁlled limit orders for the three traders.
+To calculate the average number of orders we divide the time interval [0, 1] into 20 subintervals,
+and compute within each subinterval the average number of ﬁlled limit orders and the average
+number of submitted market orders. If a limit order is posted but not ﬁlled, then it is not
+taken into account in these averages.
+The ﬁgure shows that the strategy used by the traders is not only based on a directional
+view of the market trend (as shown by the market orders they employ), but it also executes
+round-trip trades during the life of the strategy. It is clear that the lesser the quality of the
+information used by the trader, the closer the strategy to that of a market maker who aims at
+making the spread and not to bet on any particular direction the asset price might take, see
+panel (b).
+13
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+0
+5
+10
+15
+20
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+# of time interval
+ 
+ 
+l.o. buy
+l.o. sell
+m.o. buy
+m.o. sell
+(a) IT trader
+0
+5
+10
+15
+20
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+# of time interval
+ 
+ 
+l.o. buy
+l.o. sell
+m.o. buy
+m.o. sell
+(b) UT trader
+0
+5
+10
+15
+20
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+# of time interval
+ 
+ 
+l.o. buy
+l.o. sell
+m.o. buy
+m.o. sell
+(c) UL trader
+Figure 4: Average number of posted market orders (circles) and ﬁlled limit orders (dash).
+What is the incremental value from being better informed?
+In Figure 5 we show the
+risk-reward proﬁles for the three traders for diﬀerent values of the maximum and minimum
+inventory that they are willing to bear (panel (a)), and for diﬀerent values of the running
+inventory penalty φ (panel (b)). Clearly, the IT outperforms the other two traders in both
+expected and standard deviation of her strategy’s proﬁt and loss (P&L). The ﬁnancial gains
+from this superiority are intensiﬁed if the traders are allowed to build larger inventory positions,
+but we recall that there is a limit to these gains since we are assuming that the traders’ strategies
+are small enough not to move the market.3 Furthermore, as panel (b) shows, if the running
+inventory penalty is increased, the gains from better information decrease because the higher
+the penalty, the more conservative is the strategy as a result of exerting tighter controls on the
+inventory position, see Cartea and Jaimungal (2015b).
+0.02
+0.04
+0.06
+0.08
+0.1
+0.12
+0.2
+0.25
+0.3
+0.35
+0.4
+0.45
+0.5
+0.55
+Std of P&L
+Mean P&L
+ 
+ 
+IT
+UL
+UT
+Bounds on
+inventory are
+increasing
+(a) q1 = −q1 = 1, 5, 10, . . . , 20, 25.
+0.02
+0.04
+0.06
+0.08
+0.1
+0.25
+0.3
+0.35
+0.4
+0.45
+0.5
+Std of P&L
+Mean P&L
+ 
+ 
+IT
+UL
+UT
+running
+penalty
+φ is increasing
+(b) φ1 = 0, 10−3, . . . , 4 · 10−3.
+Figure 5: Risk-return proﬁles for diﬀerent constraints on inventory and levels of the running inventory penalty.
+3One issue we do not discuss here is the costs associated to acquiring information. Indeed, traders must
+take into account the costs of processing and acquiring information and compare these to the proﬁts that this
+information generate.
+14
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+0.03
+0.04
+0.05
+0.06
+0.07
+0.29
+0.3
+0.31
+0.32
+0.33
+0.34
+Std of P&L
+Mean P&L
+ 
+ 
+running penalty
+φ is increasing
+Figure 6: Squares □: trading in high volatility asset and learning from
+both high and low volatility assets. Triangles △: trading in high volatility asset without learning. Diamonds ⋄: trading in low volatility asset
+without learning. Exes ×: trading in low volatility asset and learning
+from both high and low volatility assets.
+4.2. Learning from two assets and trading in one asset
+Here we illustrate how information from other assets is employed to trade in another asset.
+Assume that there are two assets with midprices S1
+t and S2
+t which satisfy (4) with σ1 = 0.02
+and σ2 = 0.01. In addition, there are common factors driving their midprice movements which
+are captured by the joint distribution of D1 and D2 assumed to be a two-dimensional Gaussian
+mixture model with pdf
+P
+ (D1, D2) ∈[x1, x + dx1) × [x2, x + dx2)
+
+= pdd φ(x1, x2; δ1
+d, δ2
+d, µ1
+d, µ2
+d) + pdu φ(x1, x2; δ1
+d, δ2
+u, µ1
+d, µ2
+u)
++ pud φ(x1, x2; δ1
+u, δ2
+d, µ1
+u, µ2
+d) + puu φ(x1, x2; δ1
+u, δ2
+u, µ1
+u, µ2
+u) ,
+(x1, x2) ∈R2,
+(20)
+where φ(x1, x2; δ1, δ2, µ1, µ2) denotes the (independent) bi-variate normal pdf with mean (δ1, δ2)
+and standard deviation (µ1, µ2), and pdd, pdu, pud, puu and δ1
+d, δ1
+u, δ2
+d, δ2
+u are provided in Table
+1. We further assume T = 1, T = 1.1, ∆1,2 = 10−2, ε1,2 = ∆1,2/20, α1,2 = 5·10−3, q1,2 = −20,
+q1,2 = 20, µ1 = µ2 = 7 · 10−2 and φ1,2 = 0.
+D1
+δ1
+d = −0.03
+δ1
+u = +0.03
+D2
+δ2
+d = −0.02
+0.45
+0.05
+δ2
+u = +0.02
+0.05
+0.45
+Table 1: Joint probability distribution of D1 and D2.
+If the IT focuses only on one asset, then the probabilities assigned to the asset ending at
+Si
+0 +Di are pu = pd = 0.5 for i = 1, 2. However, if the IT is able to learn from the dynamics of
+both assets then she will be able to make better predictions of the midprice at a future date.
+To show the incremental gains due to learning from both assets and trading in one we compare
+the P&L resulting from strategies where the IT learns from one or two assets and trades in
+one. Figure 6 shows the risk-reward proﬁle for the four strategies for diﬀerent values of the
+running inventory penalty. Clearly, learning from both assets increases the proﬁtability of the
+15
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+0
+5
+10
+15
+20
+0
+1
+2
+3
+4
+# of time interval
+ 
+ 
+l.o. buy
+l.o. sell
+m.o. buy
+m.o. sell
+(a) q1 = −q1 = 1, 5, 10, . . . , 20, 25.
+0
+5
+10
+15
+20
+0
+1
+2
+3
+4
+# of time interval
+ 
+ 
+l.o. buy
+l.o. sell
+m.o. buy
+m.o. sell
+(b) φ1 = 0, 10−3, . . . , 4 · 10−3.
+Figure 7: Average number of posted market orders (circles) and ﬁlled limit orders (dash) when trader learns
+from both assets.
+strategy.
+Moreover, Figure 7 shows the average number of market and ﬁlled limit orders for 104
+midprice paths when the trader takes a position in one asset but learns from both. Panel (a)
+(panel (b)) shows the average orders when trading in the high (low) volatility asset. The ﬁgure
+shows that the strategy for both assets relies heavily on making the spread using two-sided
+limit orders with a slight tilt to more buy limit orders at the beginning because the prediction
+is that the asset price will increase.
+5. Incorporating Adverse Selection
+Thus far we have not incorporated the impact that other trader’s actions have on the
+midprice process. It is well known that when market orders arrive they tend to push prices
+in the direction of trades and this feedback eﬀect should be taken into account (see, e.g.,
+Lipton et al. (2013), Bechler and Ludkovski (2014), Cartea and Jaimungal (2014), Cartea
+et al. (2015)). Such actions can result in the IT being at least locally adversely selected – e.g.,
+after a limit order purchase, the price goes down because the IT’s limit order was matched
+by a very fast informed trader who makes proﬁts from ultra-fast short-term predictions. To
+account for such eﬀects we consider the following variant of the model and assume that prices
+satisfy the SDE
+dSi
+t = A(t, S) dt + σi dW i
+t + ηi (dNi+
+t
+−dNi−
+t ) ,
+(21)
+where ηi > 0 are price impact constants (these can be made random with little diﬃculty), and
+recall that N±
+t are Poisson processes counting the number of buy/sell market orders posted
+by the other market participants up to time t. Here, for simplicity, we assume that the IT’s
+posted limit orders are ﬁlled with probability one (pi = 1) if a market order arrives while they
+are posted. It is not too diﬃcult to lift this assumption, but in the interest of keeping the
+discussion concise we assume that the limit orders are always at the front of the queue. Such
+16
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+0.96
+0.98
+1
+1.02
+1.04
+Time (t)
+Asset price (S)
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1−20
+−10
+0
+10
+20
+Inventory (Q)
+Figure 8: Sample path of midprice (blue), inventories (dark green), and trading strategy (light green and red
+lines for when limit orders are posted, and green and red circles when market orders are executed) in the
+presence of adverse selection.
+a model is similar in spirit to the one adopted in Cartea and Jaimungal (2015b) where the
+authors show that market makers who can post anywhere in the limit order book modify their
+strategies by posting deeper into the book to account for adverse selection costs.
+The IT still seeks the value function (14) and the ansatz H(t, X, S, q) = X + Pk
+i=1 qi Si +
+g(t, S, q) still hods; however, the QVI satisﬁed by g is modiﬁed to
+0 = max
+
+∂tg + Pk
+i=1
+ 1
+2σ2
+i ∂SiSig + Ai(t, S) (qi + ∂Sig) −φi (qi)2	
++ Pn
+i=k+1
+ 1
+2σ2
+i ∂SiSig + Ai(t, S) ∂Sig
+	
++ Pk
+i=1 1qi<qi λi−maxℓ∈{0,1}
+h
+∆i
+2 −ηi
+ℓ+ g(t, S, q + δiℓ) −g(t, S, q)
+i
++ Pk
+i=1 1qi>qi λi+ maxℓ∈{0,1}
+h
+∆i
+2 −ηi
+ℓ+ g(t, S, q −δiℓ) −g(t, S, q)
+i
+;
+maxξ∈D(q)
+n
+−Pk
+i=1(∆i
+2 + εi)|ξi| + g(t, S, q + ξ) −g(t, S, q)
+o
+.
+(22)
+The key change is that in lines three and four the gains the IT makes from her posted limit
+order being ﬁlled (relative to the midprice) decreases by ηi to ∆i
+2 −ηi.
+Figure 8 shows actions of the IT when other participants’ market orders aﬀect midprices as
+in (21). The price impact parameter is η1 = 3 · 10−3. Notice that in this case the IT initially
+posts limit orders symmetrically (in contrast to when there was no market impact, compare
+with Figure 3(a)) because the presence of adverse selection makes the IT wait until the price
+is pushed suﬃciently upwards (in this case by the arrival of two market buy orders which have
+positive price impact) before modifying her strategy to become directional.
+6. Convergence Results
+We now address the problem of ﬁnding numerically the optimal trading strategy when the
+asset midprices satisfy (7). The trader’s inventory qt, cash Xt, and value function ˜H(t, X, S, Q)
+17
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+are deﬁned as in Section 3 but with St = (S1
+t , . . . , Sn
+t ) being the solution of (7). Then ˜H admits
+the representation
+˜H(t, X, S, q) = X +
+k
+X
+i=1
+qiSi + ˜g(t, S, q)
+(23)
+where ˜g satisﬁes the QVI
+0 = max
+
+∂t˜g + Pk
+i=1
+n
+1
+2σ2
+i ∂SiSi˜g + ˜Ai(t, S) (qi + ∂Si˜g) −φi (qi)2o
++ Pn
+i=k+1
+n
+1
+2σ2
+i ∂SiSi˜g + ˜Ai(t, S) ∂Si˜g
+o
++ Pk
+i=1 1qi<qi λi−maxℓ∈{0,1}
+h
+∆i
+2 ℓ+ ˜g(t, S, q + δiℓ) −(1 + κ)˜g(t, S, q)
+i
++ Pk
+i=1 1qi>qi λi+ maxℓ∈{0,1}
+h
+∆i
+2 ℓ+ ˜g(t, S, q −δiℓ) −(1 + κ)˜g(t, S, q)
+i
+;
+maxξ∈D(q)
+n
+−Pk
+i=1(∆i
+2 + εi)|ξi| + ˜g(t, S, q + ξ) −(1 + κ)˜g(t, S, q)
+o
+,
+(24)
+˜g(T, S, q) = −
+k
+X
+i=1
+
+∆i
+2 + εi
+|qi| + αi (qi)2
+,
+qi ⩽qi ⩽qi,
+(25)
+where κ ↓0 is a robustness parameter.
+We seek bounded viscosity solutions ˜g of (24) satisfying the terminal conditions (25). If
+the trader restricts herself to posting limit orders only, then there exists a classical bounded
+solution ˜g ∈C([0, T]×Rn)∩C1,2 (0, T)×Rn
+of (24), see e.g. Becherer and Schweizer (2005).
+Below we introduce a ﬁnite diﬀerence scheme that produces discrete approximations to the
+viscosity solution g of (16) on [0, T]×Rn. In order to prove that it converges, we use the result
+of Briani et al. (2012), an extension of the classical framework of Barles and Soganidis (1991)
+to systems of PDEs satisfying certain monotonicity assumptions.
+6.1. Preliminaries
+To simplify notation, in what follows we restrict ourselves to the case of a single asset,
+i.e. n = 1. The general case of n ⩾2 assets is treated similarly.
+Consider the system of equations
+Fq
+ τ, S, u, ∂τu, ∂Su, ∂SSu
+
+= 0 ,
+(26)
+(u is the solution of the QVI which we seek) with initial conditions
+uq(0, S) = −
+  ∆
+2 + ε
+
+|q| + α (q)2,
+q ⩽q ⩽q,
+18
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+where the vectors u = (uq), ∂τu = (∂τuq), ∂Su = (∂Suq), ∂SSu = (∂SSuq), and the function
+Fq(τ, S, u, c, p, X) = max
+
+cq −1
+2σ2Xq + ˜A(T −τ, S) (q −pq) −φ q2
++1q<q λ−maxℓ∈{0,1}
+∆
+2 ℓ+ (1 + κ)uq −uq+ℓ
+
++1q>q λ+ maxℓ∈{0,1}
+∆
+2 ℓ+ (1 + κ)uq −uq−ℓ
+
+;
+maxξ∈{−1q>q,0,1q<q}
+
+−
+  ∆
+2 + ε
+
+|ξ| + (1 + κ)uq −uq+ξ
+	
+,
+for vectors c = (cq), p = (pq), and X = (Xq).
+The next result ensures that system (26) admits a comparison principle, see Ishii and Koike
+(1991), which we use for the proof of convergence.
+Proposition 3. The following is true:
+(A1) Let u = (uq), v = (vq) ∈Rn. Suppose that uq∗−vq∗= maxq{uq −vq} ⩾0. Then
+Fq∗(τ, S, u, c, p, X) −Fq∗(τ, S, v, c, p, X) ⩾κ(uq∗−vq∗) .
+(A2) There exists β > 1 and a continuous function ω : R+ →R+, ω(0) = 0, such that for any
+X, X′ ∈R satisfying (in the sense of quadratic forms)
+−3β
+ 1
+0
+0
+1
+
+⩽
+ X
+0
+0
+X′
+
+⩽3β
+
+1
+−1
+−1
+1
+
+,
+we have
+Fq
+ τ, S, u, β(τ ′ −τ), β(S′ −S), −X
+
+−Fq
+ τ ′, S′, u, β(τ ′ −τ), β(S′ −S), X′
+⩽ω
+ β(τ ′ −τ)2 + β(S′ −S)2 + β−1
+for all q.
+19
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+6.2. Finite diﬀerence scheme
+We provide a ﬁnite diﬀerence scheme F ε,h = (F ε,h
+q
+) : [0, T]×R×Rm ×C([0, T]×R) →Rm
+by the formula (r = (rq) ∈Rm, ϕ ∈C([0, T] × R), where m = q −q + 1)
+F ε,h
+q
+(τ, S, r, ϕ) := max
+
+rq−ϕ(τ−ε,S)
+ε
+−1
+2σ2 ϕ(τ,S+h)−2rq+ϕ(τ,S−h)
+h2
++ ˜A(T −τ, S)q −φ (q)2
+−˜A+(T −τ, S)
+
+ϕ(τ,S+h)−rq
+h
+
+−˜A−(T −τ, S)
+
+rq−ϕ(τ,S−h)
+h
+
++1q<q λ−maxℓ∈{0,1}
+∆
+2 ℓ+ (1 + κ)rq −rq+ℓ
+
++1q>q λ+ maxℓ∈{0,1}
+∆
+2 ℓ+ (1 + κ)rq −rq−ℓ
+
+;
+maxξ∈{−1q>q,0,1q<q}
+
+−(∆
+2 + ε)|ξ| + (1 + κ)rq −rq+ξ
+	
+,
+where ˜A+ = max{0, ˜A}, ˜A−= min{0, ˜A} on [0, ¯T] × R.
+Let
+Sh := {Sk := hk : k ∈Z},
+Tε = {τj := εj : 0 ⩽j ⩽M},
+where ε > 0 is chosen to that M := T
+ε ∈Z+. We show that solutions uε,h = (uε,h
+q ), uε,h
+q
+:
+Tε × Sh →R (ε, h > 0) of the discrete problem
+F ε,h
+q
+(τj, Sk, uε,h(τj, Sk), uε,h
+q ) = 0 ,
+j, k ∈Z ,
+uε,h
+q (0, Sk) = −
+  ∆
+2 + ε
+
+|q| + α (q)2 ,
+q ⩽q ⩽q,
+k ∈Z ,
+(27)
+can be used to approximate the solution u = (uq) of (26).
+Proposition 4. The following are true:
+(C1) For all bounded functions u = (uq), v = (vq) with uq, vq ∈C([0, T] × R) and uq ⩽vq on
+[0, T] × R, and any r, s ∈Rn such that (γ =) rq∗−sq∗= maxq{rq −sq} ⩾0 we have
+F ε,h
+q∗(τ, S, r, uq∗+ γ) −F ε,h
+q∗(τ, S, s, vq∗) ⩾κγ .
+(C2) For any bounded function ϕ ∈C([0, T] × R), ﬁxed (τ, S) ∈[0, T] × R and r = (rq) ∈Rn,
+the functions
+S 7→F ε,h
+q
+(τ, S, r, ϕ) ,
+q ⩽q ⩽q ,
+are bounded and continuous, and the functions
+r 7→F ε,h
+q
+(τ, S, r, ϕ) ,
+q ⩽q ⩽q ,
+are uniformly continuous for r in a bounded set, uniformly in S ∈Rn.
+(C3) For every ψ = (ψq), ψq ∈C([0, T] × Rn) ∩C1,1((0, T) × R), (τ, S) ∈[0, T] × R and δ > 0
+20
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+there exist h, ε > 0 such that
+|F ε,h
+q
+(τ, S, ψq(τ, S), ψ) −Fq(τ, S, ψ, ∂Sψ, ∂SSψ)| < δ ,
+q ⩽q ⩽q .
+(C4) For any ε, h > 0 there exists a bounded solution uε,h = (uε,h
+q ), uε,h
+q
+: Tε × Sh →R of the
+discrete problem (27).
+Armed with these results, we deﬁne the candidate super- and sub-solutions of (26) as
+uq(τ, S) =
+lim inf
+ε, h→+0, (τ ′,S′)→(τ,S) uε,h
+q (τ ′, S′) ,
+uq(τ, S) =
+lim sup
+ε,h→+0,(τ ′,S′)→(τ,S)
+uε,h
+q (τ ′, S′) ,
+for (τ, S) ∈[0, T] × R, q ⩽q ⩽q.
+Propositions 3 and 4 allow us to apply the argument of Proposition 3.3 of Briani et al.
+(2012): namely, u = (uq) and u = (uq) are indeed, respectively, supersolution and subsolution
+of (26), and hence by the comparison principle (cf. remark before Proposition 3) uq ⩽uq on
+[0, T] × R. The opposite inequality is obviously true, and hence u := u = u is the viscosity
+solution of (26). The constructed solution is bounded, since a comparison principle holds and
+the fact that (24)–(25) admits constant sub- and super- solutions, see Proposition 6.1 in the
+Appendix of Briani et al. (2012).
+7. Conclusions
+In this paper we show how an algorithmic trader learns from market-wide price dynamics to
+trade around directional predictions of the price of an asset or collection of assets. The proﬁts
+of the strategy come from both capital appreciation of inventories and earning the spread from
+round-trip trades. When the quality of the information is impaired by the volatility of prices,
+the strategy relies less on betting on the direction of the asset and relies more on two-sided
+quotes to earn the spread. In extreme cases, where the trader is uniformed or the quality of
+the information she gathers is too poor, the strategy behaves like that of a market maker who
+is willing to bear little inventory risk.
+We also show how learning from other assets that co-move increases the proﬁts of the
+trading strategies. This increase in proﬁts is noticeable when the trader takes positions in an
+asset which exhibits high volatility but improves the quality of the information she gathers
+by learning from the dynamics of other assets that co-move. We also show how the trader’s
+strategy is modiﬁed to account for adverse selection costs.
+Finally, we show that the numerical scheme does indeed converge to the unique viscosity
+solution of the QVI that arises from the dynamic programming principle.
+21
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+Appendix A. Proofs
+Proof (Proposition 1). We conduct our proof in two steps.
+1. First, we show that conditional expectations ai(t, y1, . . . , yd) are indeed given by formula
+(6). By deﬁnition
+ai(t, y1, . . . , yn) =
+Z ∞
+−∞
+xi dF i(xi|St = y) ,
+where F i(x|St = y) is the conditional cumulative distribution function (cdf) of Di. We have
+F i(xi|St = y) = F(+∞, . . . , xi, . . . , +∞|St = y) ,
+where F(x|St = y) is the joint conditional cdf of the random variables D. Using Bayes’ formula
+F(x|St = y) =
+R x1
+−∞. . .
+R xn
+−∞pSt(y|D = z) dF(z)
+R
+Rn pSt(y|D = z) dF(z)
+,
+where pSt(y|D = z) is the joint conditional probability density function (pdf) of St. Conditional on D = z, Si
+t = σi βi
+tT + t
+T zi are independent Gaussian random variables with mean
+t
+T zi and variance σ2
+i
+t
+T (T −t). This provides an explicit formula for pSt(y|D = z), and as a
+result we obtain (6).
+2. Next, we show that St satisﬁes (4). We ﬁx some i ∈{1, 2 . . . , n}, it suﬃces to show that
+W i
+τ = 1
+σi
+
+Si
+t −Si
+0 +
+Z τ
+0
+Si
+u −Si
+0
+T −u du −
+Z τ
+0
+ai(u, Su)
+T −u
+du
+
+,
+(A.1)
+is an Fτ-Brownian motion. By deﬁnition, W i
+τ is Fτ-adapted. It follows from (2) that d[W i, W i]τ =
+dτ. Therefore, by Lévy’s theorem, it remains to verify that W i
+τ is a martingale. We have for
+t ⩽τ
+σiE
+
+W i
+τ | Ft
+
+=
+E
+
+Si
+τ −Si
+0 | Ft
+
++
+Z t
+0
+Si
+u −Si
+0
+T −u du −
+Z t
+0
+ai(u, Su)
+T −u
+du
++
+Z τ
+t
+E
+
+Si
+u −Si
+0 | Ft
+
+T −u
+du −
+Z τ
+t
+E [ai(u, Su) | Ft]
+T −u
+du
+:=
+I1 + I2 −I3 + I4 −I5.
+(A.2)
+Using identity E [βuT | Ft] =
+T−u
+T−t E [βtT | Ft] (since βtT is a standard Brownian bridge), we
+obtain:
+I1
+=
+σi E
+
+βi
+τT | Ft
+
++ τ
+T E
+
+Di | Ft
+
+= σ1
+T −τ
+T −t E [βtT | Ft] + τ
+T ai(t, St) ,
+I4
+=
+ai(t, S)
+Z τ
+t
+1
+T −s ds ,
+I5
+=
+Z τ
+t
+1
+T −u
+
+σi
+T −u
+T −t E [βtT | Ft] + u
+T ai(t, St)
+
+du ,
+22
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+where the second and third equalities follow from (2) and the law of iterated expectations.
+Furthermore, re-arranging (A.1) yields
+I2 −I3
+=
+σi W i
+t −(Si
+t −Si
+0) .
+Therefore, identity (A.2) can be re-written as
+E
+
+W i
+u | Ft
+
+= 1
+σi
+
+σi E [βtT | Ft] + σi W i
+t −Si
+t + Si
+0 + t
+T ai(t, S)
+
+.
+By deﬁnition,
+Si
+t −Si
+0 = E
+
+Si
+t −Si
+0 | Ft
+
+= σi E [βtT | Ft] + t
+T ai(t, S) ,
+and hence we see from the previous formula that W i
+t satisﬁes the martingale condition.
+Finally, it follows from (2) that d[W i, W j]τ = 0 if i̸ = j. Therefore, by Lévy’s theorem,
+independent Ft-Brownian motions.
+□
+Proof (Proposition 2). A straightforward generalization of Øksendal and Sulem (2008),
+Theorem 10.8, to a vector-valued stochastic-impulse controlled process implies that the solution
+H of the optimization problem (14) is given by a viscosity solution to the following QVI, for
+all 0 < t < T, X ∈R, S ∈R, qi = {qi, . . . , qi}:
+0 = max
+
+∂tH + Pn
+i=1
+ 1
+2σ2
+i ∂SiSiH + Ai(t, S) ∂SiH
+	
+−Pk
+i=1 φi (qi)2
++ Pk
+i=1 1qi<qi λi−maxℓ∈{0,1}
+h
+H(t, X −ℓ(Si −∆i
+2 ), S, q + δiℓ) −H
+i
++ Pk
+i=1 1qi>qi λi+ maxℓ∈{0,1}
+h
+H(t, X + ℓ(Si + ∆i
+2 ), S, q −δiℓ) −H
+i
+;
+maxξ∈D(q)
+n
+−Pk
+i=1
+
+H(t, X −ξi 
+S + ∆i
+2 ξi
+−εi|ξi|, S, q + ξ) −H
+o
+,
+(A.3)
+subject to the terminal condition
+H(T, X, S, q) = X +
+k
+X
+i=1
+ψi(qi, Si),
+q ⩽q ⩽q .
+(A.4)
+Substituting the ansatz (15) into the above DPE leads to the stated QVI for g. In Section 6,
+we prove that (A.3) has at least one solution g. By the comparison principle (also established
+in Section 6), this solution is unique.
+□
+Proof (Proposition 3). To simplify notation, we assume without loss of generality that
+λ+ = λ−= 1. We write
+Fq(τ, S, u, c, p, X) = max { Lq(τ, S, u, c, p, X) , Mq(τ, S, u, c, p, X) } ,
+23
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+where
+Lq(τ, S, u, c, p, X) = cq −1
+2σ2Xq + ˜A(T −τ, S) (q −pq) −φ q2
++ 1q<q λ−maxℓ∈{0,1}
+∆
+2 ℓ+ (1 + κ)uq −uq+ℓ
+
++ 1q>q λ+ maxℓ∈{0,1}
+∆
+2 ℓ+ (1 + κ)uq −uq−ℓ
+
+,
+and
+Mq(τ, S, u, c, p, X) =
+max
+ξ∈{−1q>q,0,1q<q}
+
+−
+∆
+2 + ε
+
+|ξ| + (1 + κ)uq −uq+ξ
+
+,
+for q ⩽q ⩽q.
+(A1) The required inequality can be stated as follows:
+max { Lq(τ, S, u, c, p, X), Mq(τ, S, u, c, p, X)} −max{Lq(τ, S, v, c, p, X), Mq(τ, S, v, c, p, X) } ⩾0 .
+Depending on where the maximum is attained, the latter is equivalent to one of the following
+inequalities:
+1. Lq∗(τ, S, u, c, p, X) −Lq∗(τ, S, v, c, p, X) ⩾0 ,
+2. Mq∗(τ, S, u, c, p, X) −Lq∗(τ, S, v, c, p, X) ⩾0 ,
+3. Lq∗(τ, S, u, c, p, X) −Mq∗(τ, S, v, c, p, X) ⩾0 ,
+4. Mq∗(τ, S, u, c, p, X) −Mq∗(τ, S, v, c, p, X) ⩾0 .
+In fact, it is easy to see that the proof of 1) and 4) would suﬃce.
+Let us prove 1) i.e. that in case q < q∗< q
+max{0, ∆
+2 + uq∗−uq∗−1} −max{0, ∆
+2 + vq∗−vq∗−1} ⩾0 ,
+(A.5)
+max{0, ∆
+2 + uq∗−uq∗+1} −max{0, ∆
+2 + vq∗−vq∗+1} ⩾0 ,
+(A.6)
+(if q = q or q = q one of the above inequalities is void). We prove the last inequality: it can
+be violated only if ∆
+2 + uq∗< uq∗+1, ∆
+2 + vq∗> vq∗+1. Then −∆
+2 −vq∗< −vq∗+1. Adding up
+the latter and ∆
+2 + uq∗< uq∗+1 we obtain uq∗−vq∗< uq∗+1 −vq∗+1, which contradicts out
+assumption that uq∗−vq∗= maxq(uq −vq).
+Now, let us prove 4), i.e. that
+max
+
+0, −∆
+2 −ε + uq∗−uq∗+1, −∆
+2 −ε + uq∗−uq∗−1
+	
+−max
+
+0, −∆
+2 −ε + vq∗−vq∗+1, −∆
+2 −ε + vq∗−vq∗−1
+	
+⩾0 .
+The proof is straightforward: for instance, suppose that the ﬁrst maximum is attained at
+the second argument, while the second maximum is attained at the third argument; then the
+inequality that we need to prove becomes
+−∆
+2 −ε + uq∗−uq∗+1 −
+ −∆
+2 −ε + vq∗−vq∗−1
+
+⩾0 ,
+24
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+i.e. uq∗−uq∗+1 −(vq∗−vq∗−1) ⩾0. Noting that uq∗−uq∗+1 ⩾uq∗−uq∗−1, and using our
+assumption uq∗−vq∗= maxq(uq −vq), we obtain the required inequality.
+(A2) The condition on X, X′ ∈R, re-written in coordinates, is as follows:
+−3β(x2 + (x′)2) ⩽Xx2 + X′(x′)2 ⩽3β(x −x′)2
+for all
+(x, x′) ∈R2 .
+(A.7)
+We need to prove
+max{Lq
+ τ, S, u, β(τ ′ −τ), β(S′ −S), −X
+
+, Mq
+ τ, S, u, β(τ ′ −τ), β(S′ −S), −X
+
+}
+−max{Lq
+ τ ′, S′, u, β(τ ′ −τ), β(S′ −S), X′
+, Mq
+ τ ′, S′, u, β(τ ′ −τ), β(S′ −S), X′
+}
+⩽ω(β(τ ′ −τ)2 + β(S′ −S)2 + β−1) .
+Similarly to the proof of (A1), it suﬃces to show that
+Lq
+ τ, S, u, β(τ ′ −τ), β(S′ −S), −X
+
+−Lq
+ τ ′, S′, u, β(τ ′ −τ), β(S′ −S), X′
+⩽ω(β(τ ′ −τ)2 + β(S′ −S)2 + β−1) ,
+Mq
+ τ, S, u, β(τ ′ −τ), β(S′ −S), −X
+
+−Mq
+ τ ′, S′, u, β(τ ′ −τ), β(S′ −S), X′
+⩽ω(β(τ ′ −τ)2 + β(S′ −S)2 + β−1) .
+The second inequality is trivially true for any continuous ω : R+ →R+, ω(0) = 0 since its
+left-hand is identically zero. Let us prove the ﬁrst inequality. We have
+Lq
+ τ, S, u, β(τ ′ −τ), β(S′ −S), −X
+
+−Lq
+ τ ′, S′, u, β(τ ′ −τ), β(S′ −S), X′
+=
+  ˜A(T−τ, S)−˜A(T−τ ′, S′)
+
+q+ ˜A(T−τ, S)β(S′−S)−˜A(T−τ ′, S′)β(S′−S)+1
+2σ2 X+X′
+.
+The last term is negative, according to our assumption on X, X′, cf. (A.7) with x = x′ = 1.
+The rest now follows from the fact that ˜A(T −τ, S) is globally Lipschitz in (τ, S), cf. Section
+2.
+□
+Proof (Proposition 4). The veriﬁcation of conditions (C2), (C3) and (C4) is immediate.
+Let us show that condition (C1) is satisﬁed as well. Denote
+F ε,h
+q
+(τ, S, r, ϕ) = max
+n
+Lε,h
+q (τ, S, r, ϕ) , Mε,h
+q
+(τ, S, r, ϕ)
+o
+.
+Similarly to the proof of Proposition 3, it suﬃces to prove the following two inequalities:
+Lε,h
+q∗(τ, S, r, uq∗+ γ) −Lε,h
+q∗(τ, S, s, vq∗) ⩾κγ ,
+Mε,h
+q∗(τ, S, r, uq∗+ γ) −Mε,h
+q∗(τ, S, s, vq∗) ⩾κγ .
+The proof of the second inequality essentially repeats the proof of inequality 4) in the proof
+of Proposition 3.
+For the proof of the ﬁrst inequality, let us write Lε,h
+q∗(τ, S, r, uq∗+ γ) −
+25
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+Lε,h
+q∗(τ, S, s, vq∗) = I1 + I2, where
+I1 = rq∗−u(τ −ε, S) −γ
+ε
+−sq −v(τ −ε, S)
+ε
+−1
+2σ2 u(τ, S + h) −2rq∗+ u(τ, S −h) + 2γ
+h2
++ 1
+2σ2 v(τ, S + h) −2sq∗+ v(τ, S −h)
+h2
+−˜A+(T −τ, S)
+u(τ, S + h) + γ −rq∗
+h
+−v(τ, S + h) −sq∗
+h
+
+−˜A−(T −τ, S)
+rq∗−u(τ, S −h) −γ
+h
+−sq∗−v(τ, S −h)
+h
+
+and
+I2 = 1q∗<q λ−max
+ℓ∈{0,1}
+∆
+2 ℓ+ (1 + κ)rq∗−rq∗+ℓ
+
++ 1q∗>q λ+ max
+ℓ∈{0,1}
+∆
+2 ℓ+ (1 + κ)rq∗−rq∗−ℓ
+
+−1q∗<q λ−max
+ℓ∈{0,1}
+∆
+2 ℓ+ (1 + κ)sq∗−sq∗+ℓ
+
+−1q∗>q λ+ max
+ℓ∈{0,1}
+∆
+2 ℓ+ (1 + κ)sq∗−sq∗−ℓ
+
+.
+The proof that I2 ⩾κγ is similar to the proof of inequality 1) in the proof of Proposition 3.
+It remains to show that I1 ⩾0. The latter is immediate from our assumptions u ⩽v and
+γ = rq∗−sq∗= maxq{rq −sq} ⩾0.
+□
+References
+Almgren, R. (2003). Optimal execution with nonlinear impact functions and trading-enhanced
+risk. Applied Mathematical Finance 10(1), 1–18.
+Avellaneda, M. and S. Stoikov (2008, November). High-frequency trading in a limit order book.
+Quantitative Finance 8, 217–224.
+Barles, G. and P. Soganidis (1991). Convergence of approximation schemes for fully nonlinear
+second order equations. Asymptotic Analysis 4, 271–283.
+Baudoin, F. (2002). Conditional SDE and applications in ﬁnance. Stochastic Processes and
+their Applications 100, 109–145.
+Baudoin, F. (2003). Modelling anticipation on a ﬁnancial market. Paris Princeton Lecture
+Notes on Mathematical Finance LNM 1814.
+Baudoin, F. and L. Nguyen-Ngo (2004). The ﬁnancial value of weak information. Finance and
+Stochastics 8, 415–435.
+Bayraktar, E. and M. Ludkovski (2011).
+Optimal trade execution in illiquid markets.
+Mathematical Finance 21(4), 681–701.
+26
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+Bayraktar, E. and M. Ludkovski (2014).
+Liquidation in limit order books with controlled
+intensity. Mathematical Finance 24(4), 627–650.
+Becherer, D. and M. Schweizer (2005). Classical solutions to reaction-diﬀusion systems for
+hedging problems with interacting Itô and point processes. Annals of Applied Probability 15,
+1111–1144.
+Bechler, K. and M. Ludkovski (2014). Optimal execution with dynamic order ﬂow imbalance.
+arXiv preprint arXiv:1409.2618.
+Briani, A., F. Camini, and H. Zidani (2012).
+Approximation schemes for monotone systems of nonlinear second order parabolic equations: convergence result and error estimate.
+Diﬀerential Equations and Applications 4, 297–317.
+Brody, D., L. Hughston, and A. Macrina (2008). Information-based asset pricing. International
+Journal of Theoretical and Applied Finance 11, 107–142.
+Brody, D. C., M. H. Davis, R. L. Friedman, and L. P. Hughston (2009). Informed traders.
+In Proceedings of the Royal Society of London A: Mathematical, Physical and Engineering
+Sciences, Volume 465, pp. 1103–1122. The Royal Society.
+Cartea, Á., R. Donnelly, and S. Jaimungal (2013). Algorithmic trading with model uncertainty.
+Social Science Research Network Working Paper Series.
+Cartea, Á., R. F. Donnelly, and S. Jaimungal (2015). Enhancing trading strategies with order
+book signals. Available at SSRN 2668277.
+Cartea, Á. and S. Jaimungal (2013). Modeling asset prices for algorithmic and high frequency
+trading. Applied Mathematical Finance 20(6), 512–547.
+Cartea, Á. and S. Jaimungal (2014). Incorporating order-ﬂow into optimal execution. Available
+at SSRN 2557457.
+Cartea, Á. and S. Jaimungal (2015a).
+Optimal execution with limit and market orders.
+Quantitative Finance 15(8), 1279–1291.
+Cartea, Á. and S. Jaimungal (2015b). Risk metrics and ﬁne tuning of high-frequency trading
+strategies. Mathematical Finance 25(3), 576–611.
+Cartea, Á., S. Jaimungal, and J. Penalva (2015). Algorithmic and High-Frequency Trading.
+Cambridge University Press.
+Cartea, Á., S. Jaimungal, and J. Ricci (2014). Buy low, sell high: A high frequency trading
+perspective. SIAM Journal on Financial Mathematics 5(1), 415–444.
+27
+Electronic copy available at: https://ssrn.com/abstract=2373196
+
+Cartea, Á., S. Jaimungal, and J. Ricci (2015).
+Trading strategies within the edges of noarbitrage. Social Science Research Network Working Paper Series.
+Gatheral, J., A. Schied, and A. Slynko (2012). Transient linera price impact and Fredholm
+integral equations. Mathematical Finance 22(3), 445–474.
+Guéant, O. and C.-A. Lehalle (2015).
+General intensity shapes in optimal liquidation.
+Mathematical Finance 25(3), 457–495.
+Guéant, O., C.-A. Lehalle, and J. Fernandez-Tapia (2012). Dealing with the inventory risk: a
+solution to the market making problem. Mathematics and Financial Economics, 1–31.
+Guilbaud, F. and H. Pham (2013). Optimal high-frequency trading with limit and market
+orders. Quantitative Finance 13(1), 79–94.
+Ho, T. and H. R. Stoll (1981). Optimal dealer pricing under transactions and return uncertainty. Journal of Financial Economics 9, 47–73.
+Ishii, H. and S. Koike (1991). Viscosity solutions for monotone systems of second order elliptic
+pdes. Communications in Partial Diﬀerential Equations 16, 1095–1128.
+Kharroubi, I. and H. Pham (2010). Optimal portfolio liquidation with execution cost and risk.
+SIAM Journal on Financial Mathematics 1, 897–931.
+Lipton, A., U. Pesavento, and M. G. Sotiropoulos (2013). Trade arrival dynamics and quote
+imbalance in a limit order book. arXiv:1312.0514.
+Macrina, A. (2014). Heat kernel models for asset pricing. International Journal of Theoretical
+and Applied Finance 17(07), 1450048.
+Obizhaeva, A. A. and J. Wang (2013). Optimal trading strategy and supply/demand dynamics.
+Journal of Financial Markets 16(1), 1–32.
+Øksendal, B. and A. Sulem (2008).
+Applied stochastic control of jump diﬀusions, 3rd ed.
+Springer.
+Rogers, L. C. G. and D. Williams (1987).
+Diﬀusions, Markov processes, and martingales,
+Volume 2. John Wiley & Sons Inc.
+Schied, A. (2013). Robust strategies for optimal order execution in the Almgren-Chriss framework. Applied Mathematical Finance 20(3), 264–286.
+28
+Electronic copy available at: https://ssrn.com/abstract=2373196

@@ -1,0 +1,58 @@
+{
+  "doc_id": 141,
+  "titulo": "Generative AI in Algorithmic Trading and Market Predictions",
+  "resumen_operativo": "Es un paper exploratorio de muy alto nivel sobre la integración de IA Generativa en trading algorítmico. Menciona el uso de modelos como LSTM, Random Forest y Transformers para la predicción de series de tiempo financieras, así como análisis de sentimiento y GANs para detección de anomalías. Presenta una tabla básica de comparación de errores (MAE/RMSE) y un estudio de caso superficial de predicción de acciones (AAPL) usando LSTM, sin entrar en detalles metodológicos rigurosos, código o backtesting profundo.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "LSTM Networks",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Redes neuronales utilizadas para el pronóstico de series temporales por su efectividad para capturar dependencias temporales en los movimientos de precios de acciones.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "time-series forecasting"}
+      ],
+      "cita_textual": "Effective for capturing temporal dependencies in stock price movements, making them highly useful for time-series forecasting."
+    },
+    {
+      "nombre": "Transformer Models",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelos de IA avanzados que, según la comparativa del autor, superan a los modelos LSTM y Random Forest en precisión predictiva (menor MAE y RMSE) para pronósticos de mercado a largo plazo.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "LSTM Networks"}
+      ],
+      "cita_textual": "Advanced AI models that enhance long-term predictive accuracy for market forecasting... Transformer models outperform others in predictive accuracy"
+    },
+    {
+      "nombre": "Data Augmentation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Uso de IA para generar datos financieros sintéticos con el fin de mejorar el backtesting y el entrenamiento de modelos, especialmente en escenarios con datos limitados.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Generative AI"}
+      ],
+      "cita_textual": "AI-generated synthetic financial data improves backtesting and model training, particularly in scenarios with limited data."
+    },
+    {
+      "nombre": "GANs",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Redes generativas antagónicas utilizadas para detectar comportamientos inusuales del mercado y riesgos antes de que afecten el rendimiento de las operaciones.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Market Anomaly Detection"}
+      ],
+      "cita_textual": "Advanced models, such as GANs (Generative Adversarial Networks), identify unusual market behaviors and potential risks before they disrupt trading performance."
+    },
+    {
+      "nombre": "Overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Desafío en modelos de IA donde se malinterpretan patrones de corto plazo como tendencias de largo plazo, lo que puede resultar en malas decisiones de trading.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "poor trading decisions"}
+      ],
+      "cita_textual": "AI may misinterpret short-term patterns as long-term trends, leading to poor trading decisions."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "nula",
+    "nota": "El documento es una revisión conceptual de alto nivel utilizando datos diarios e históricos de varios años. No aporta microestructura de mercado, métricas tick-by-tick ni estrategias aplicables directamente al mercado de futuros ES intradía."
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "doc_id": 3,
+  "titulo": "AI & Algorithmic Trading in Stock Markets: A Systematic Literature Review",
+  "resumen_operativo": "Es una revisión secundaria (review de reviews) de cinco papers 2024-2025 sobre IA en trading algorítmico, sin experimentos propios. Aporta un mapa de consenso: deep learning (especialmente LSTM) mejora accuracy predictiva y liquidez/eficiencia de mercado, pero persiste un gap entre desempeño en backtest y despliegue real, y aparecen riesgos sistémicos nuevos como colusión algorítmica emergente entre agentes de reinforcement learning. Útil como mapa de literatura y de riesgos a vigilar, no como fuente de evidencia cuantitativa directa.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "algorithmic collusion",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Colusión tácita entre agentes de trading algorítmico basados en reinforcement learning que emerge sin coordinación ni comunicación explícita, al optimizar cada uno su función de recompensa individual.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "reinforcement learning"},
+        {"tipo": "CAUSA", "objeto": "market instability"}
+      ],
+      "cita_textual": "AI trading algorithms can, without any explicit coordination or communication, independently learn to sustain collusive pricing strategies that undermine market competition and price efficiency"
+    },
+    {
+      "nombre": "reinforcement learning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de IA con la que se modelan agentes de trading autónomos que optimizan una función de recompensa, y que en el modelo teórico de Dou et al. da lugar a colusión emergente.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "algorithmic collusion"}
+      ],
+      "cita_textual": "Using a theoretical model populated by reinforcement-learning agents, Dou et al. (2025) demonstrate that AI trading algorithms can, without any explicit coordination or communication, independently learn to sustain collusive pricing strategies"
+    },
+    {
+      "nombre": "backtest-to-live deployment gap",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Brecha consistente entre el desempeño de modelos de IA en investigación/backtesting y su comportamiento real en mercados en vivo, atribuida a overfitting, costos de transacción, latencia y no estacionariedad de los datos financieros.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "backtest overfitting"},
+        {"tipo": "MITIGA", "objeto": "walk-forward validation"}
+      ],
+      "cita_textual": "models performing impressively in backtesting often fail to deliver comparable results in live markets, due to overfitting, transaction costs, latency, and the non-stationarity of financial data"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Ajuste excesivo de los modelos a datos históricos, señalado repetidamente como una de las principales causas de que el desempeño no se traslade a mercados reales.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "backtest-to-live deployment gap"}
+      ],
+      "cita_textual": "Issues such as overfitting to historical data, sensitivity to regime changes, high computational costs, and difficulties in real-time execution present significant barriers"
+    },
+    {
+      "nombre": "LSTM",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Arquitectura de red neuronal recurrente destacada por su capacidad de retener información en secuencias largas, señalada como especialmente adecuada para forecasting de series temporales financieras.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "technical analysis"},
+        {"tipo": "MEJORA_A", "objeto": "traditional statistical methods"}
+      ],
+      "cita_textual": "The authors highlight LSTM networks as especially well-suited to financial time-series forecasting due to their ability to retain information over long sequences"
+    },
+    {
+      "nombre": "technical analysis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Uso de datos históricos de precio y volumen para pronosticar movimientos futuros de precio; identificado como el marco de aplicación dominante entre 143 estudios revisados (2015-2023) sobre IA en trading financiero.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "random forest"}
+      ],
+      "cita_textual": "technical analysis—the use of historical price and volume data to forecast future price movements—remains the dominant application framework"
+    },
+    {
+      "nombre": "market volatility",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Variable de mercado cuya relación con el trading algorítmico es objeto de debate: un estudio empírico en el mercado chino encuentra que el trading algorítmico reduce la volatilidad en balance, vía el mecanismo de sentimiento del inversor.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "market efficiency"}
+      ],
+      "cita_textual": "algorithmic trading, on balance, reduces market volatility rather than amplifying it"
+    },
+    {
+      "nombre": "investor sentiment",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Mecanismo mediador identificado como el principal canal por el cual el trading algorítmico reduce la volatilidad, al contrarrestar el ruido introducido por inversores humanos emocionales.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "market volatility"}
+      ],
+      "cita_textual": "Their analysis identifies investor sentiment as the primary mediating mechanism"
+    },
+    {
+      "nombre": "herd behavior",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Tendencia de los inversores a seguir a la multitud; actúa como mecanismo mediador secundario (menor que el sentimiento) en la relación entre trading algorítmico y volatilidad de mercado.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "market volatility"}
+      ],
+      "cita_textual": "Herd behavior—the tendency of investors to follow the crowd—also plays a mediating role, though a smaller one than sentiment"
+    },
+    {
+      "nombre": "flash crash",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Evento extremo de mercado que puede desencadenarse cuando múltiples sistemas de IA reaccionan simultáneamente a las mismas señales, generando loops de retroalimentación desestabilizadores.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "market instability"}
+      ],
+      "cita_textual": "the potential for feedback loops and sudden, destabilizing market movements increases substantially"
+    },
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Una de las categorías centrales de estrategias de trading potenciadas por IA identificadas en la revisión, junto a statistical arbitrage, sentiment-driven trading y portfolio optimization.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "AI-enhanced trading strategies"}
+      ],
+      "cita_textual": "The authors identify several core categories of AI-enhanced trading strategies, including high-frequency trading, statistical arbitrage, sentiment-driven trading, and portfolio optimization"
+    },
+    {
+      "nombre": "regulatory framework lag",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Desajuste entre el diseño de las regulaciones antitrust y de manipulación de mercado (pensadas para coordinación humana explícita) y la colusión algorítmica emergente que no requiere intención ni comunicación humana.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "algorithmic collusion"}
+      ],
+      "cita_textual": "existing antitrust and market manipulation regulations, which were designed to detect and penalize explicit coordination among human actors, may be entirely inadequate to address collusion that arises spontaneously"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Paper es una revisión narrativa de otros papers sin backtest ni datos propios; solo útil como mapa de riesgos/consensos a vigilar (colusión algorítmica, gap backtest-vivo), sin números ni metodología aplicable directamente al ecosistema ES."
+  }
+}

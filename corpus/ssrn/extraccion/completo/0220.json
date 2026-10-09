@@ -1,0 +1,236 @@
+{
+  "doc_id": 220,
+  "titulo": "Managing Volatility for Profitable Options Trading: Evidence from Pairs Trading Strategies",
+  "resumen_operativo": "Los autores proponen una metodología de pairs trading con opciones dependiente exclusivamente de la volatilidad de los subyacentes, derivada del modelo Black-Scholes con moneyness y vencimiento idénticos. Predicen el residual de volatilidad (σt − ςt) mediante regresiones lineales sobre métricas de microestructura (Roll, Price Dispersion, Price Impact, Realized Volatility) estimadas con datos horarios 2022-2023. En backtest out-of-sample con dos pares de opciones sobre acciones (OXY-XOM y MSFT-GOOGL), el par OXY-XOM obtiene un retorno anual promedio del 175% con Sharpe ratio de 2.29, mientras que MSFT-GOOGL alcanza 97% anual con Sharpe de 1.00. Las redes neuronales (ReLU, Sigmoid, Tanh) no superan a la regresión lineal simple en la predicción del residual de volatilidad.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia que implica la compra y venta simultánea de dos instrumentos financieros que tienden a moverse al unísono, explotando desviaciones temporales respecto a la Ley del Precio Único. En este paper se extiende al universo de opciones, formando pares long-short de calls europeas sobre dos subyacentes con idéntica moneyness y vencimiento.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "options trading"},
+        {"tipo": "USA", "objeto": "volatility"},
+        {"tipo": "REQUIERE", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "Pairs trading involves the simultaneous trading of two financial instruments that exhibit a tendency to move in unison."
+    },
+    {
+      "nombre": "options trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Negociación de opciones (calls europeas en este estudio) formando carteras long-short de pares, donde la rentabilidad depende exclusivamente de la diferencia de volatilidades de los activos subyacentes. Se construyen pares de opciones con el mismo ratio S/K (moneyness) y vencimiento para simplificar el cómputo de Black-Scholes.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"},
+        {"tipo": "USA", "objeto": "implied volatility"},
+        {"tipo": "APLICA_A", "objeto": "Black-Scholes"}
+      ],
+      "cita_textual": "we create alternative volatility-managed portfolios via options pairs trading. Using the seminal Black-Scholes model, we construct pairwise options portfolios that are only dependent on market volatility."
+    },
+    {
+      "nombre": "volatility",
+      "tipo": "concepto",
+      "definicion_en_contexto": "La volatilidad es la variable central que impulsa la rentabilidad de la estrategia de pairs de opciones. El valor del portfolio π crece con la volatilidad σ del activo S y decrece con la volatilidad ς del activo Z. Los autores modelan la volatilidad como range volatility diaria: (High − Low) / Open.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "range volatility"},
+        {"tipo": "PREDICE", "objeto": "volatility residual"},
+        {"tipo": "PARTE_DE", "objeto": "realized volatility"}
+      ],
+      "cita_textual": "Thus, our portfolio value π is expected to increase with σ and decrease with ς."
+    },
+    {
+      "nombre": "implied volatility",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Se deriva del marco de Black-Scholes como parámetro σ del movimiento browniano geométrico del subyacente. El paper no usa implied volatility extraída de opciones cotizadas sino que la modela teóricamente y la predice mediante microestructura del subyacente.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Black-Scholes"},
+        {"tipo": "EQUIVALE_A", "objeto": "volatility"}
+      ],
+      "cita_textual": "dSt = µStdt + σStdWt"
+    },
+    {
+      "nombre": "realized volatility",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de la desviación estándar de los retornos intradía horarios. Se usa como variable explicativa en las regresiones de microestructura para predecir el residual de volatilidad. Computada como la raíz de la varianza de retornos horarios dentro de cada día de trading.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "volatility residual"},
+        {"tipo": "MIDE", "objeto": "volatility"},
+        {"tipo": "PARTE_DE", "objeto": "microstructure effects"}
+      ],
+      "cita_textual": "Realized volatility [26] is a measure of the standard deviation of returns over a specified period, typically within a trading day."
+    },
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Arbitraje riesgoso basado en la expectativa de reversión a la media del residual de volatilidad entre dos activos. A diferencia del arbitraje sin riesgo, conlleva exposición a que la relación no se mantenga o no revierta según lo esperado. El paper enfatiza que la mayoría del arbitraje conlleva riesgo.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "pairs trading"},
+        {"tipo": "REQUIERE", "objeto": "mean reversion"},
+        {"tipo": "SE_OPONE_A", "objeto": "riskless arbitrage"}
+      ],
+      "cita_textual": "It's important to note that most arbitrage carries some level of risk, as traders make a bet on the relationship holding or mean-reverting and act accordingly."
+    },
+    {
+      "nombre": "spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El residual de volatilidad Volϵt = σt − ςt es el spread entre las volatilidades de los dos subyacentes. Constituye la variable objetivo a predecir y sobre la que se construye la estrategia: si se espera que disminuya (Et[Volϵt+1] < 0), se compra call de S y se vende call de Z, y viceversa.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "volatility residual"},
+        {"tipo": "MIDE", "objeto": "volatility"},
+        {"tipo": "PREDICE", "objeto": "trading signal"}
+      ],
+      "cita_textual": "we define the volatility residual as: Volϵt = σt − ςt"
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Supuesto fundamental del pairs trading: los precios (o volatilidades) que se desvían de su relación de largo plazo tienden a retornar a ella. Los traders compran el activo infravalorado y venden el sobrevalorado apostando a dicha reversión.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "pairs trading"},
+        {"tipo": "REQUIERE", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "Traders often rely on the assumption that these prices will 'mean-revert', returning to their usual relationship over time."
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio de rendimiento ajustado por riesgo utilizado para evaluar el desempeño de las estrategias de pares de opciones. El par OXY-XOM obtuvo un Sharpe ratio anualizado de 2.29 y el par MSFT-GOOGL uno de 1.00, indicando fuerte rentabilidad ajustada por riesgo en ambos casos.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "pairs trading"},
+        {"tipo": "MIDE", "objeto": "options trading"}
+      ],
+      "cita_textual": "the OXY-XOM strategy produced 175% average annual return with an annualized Sharpe ratio of 2.29. The MSFT-GOOGL strategy produced annualized return of 97% and a Sharpe ratio of 1.00."
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Costes de transacción que, según la literatura citada, hacen desaparecer la mayoría de las aparentes ineficiencias en opciones. Los autores reconocen esta limitación al señalar que estudios previos muestran que la mayoría de los mispricings en opciones desaparecen al considerar costes de transacción, aunque no los incorporan explícitamente en su backtest.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "pairs trading"},
+        {"tipo": "CONTRADICE_A", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "most options mispricings disappear once transaction costs are taken into account"
+    },
+    {
+      "nombre": "microstructure effects",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Efectos de microestructura del mercado (bid-ask bounce, price dispersion, price impact, realized volatility intradía) que influyen significativamente en la volatilidad del subyacente y, por ende, en el desempeño de los pares de opciones. Exhiben persistencia y pueden aprovecharse para construir estrategias rentables de predicción de volatilidad.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "volatility"},
+        {"tipo": "PREDICE", "objeto": "volatility residual"},
+        {"tipo": "PARTE_DE", "objeto": "realized volatility"}
+      ],
+      "cita_textual": "microstructure factors exhibit persistence and can be effectively utilized to create profitable strategies"
+    },
+    {
+      "nombre": "range volatility",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de volatilidad calculada como (High_t − Low_t) / Open_t para cada día de trading. Los autores la eligen para localizar los datos y evitar contaminación de otros días, siguiendo a Alizadeh, Brandt y Diebold (2002). La normalización por Open permite comparar volatilidad entre activos con distintos niveles de precio.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "volatility"},
+        {"tipo": "MIDE", "objeto": "volatility"},
+        {"tipo": "USA", "objeto": "volatility residual"}
+      ],
+      "cita_textual": "RangeV olt = Hight − Lowt / Opent"
+    },
+    {
+      "nombre": "Roll measure",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de liquidez de mercado inferida de la covarianza de cambios sucesivos de precio. Cuantifica el bid-ask spread efectivo: Roll_t = 2 * sqrt(−cov(ΔP_t, ΔP_{t−1})). El signo negativo revierte la covarianza típicamente negativa causada por el bid-ask bounce.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "bid-ask bounce"},
+        {"tipo": "PARTE_DE", "objeto": "microstructure effects"},
+        {"tipo": "USA", "objeto": "volatility residual"}
+      ],
+      "cita_textual": "Rollt = 2 * sqrt(−cov(∆Pt, ∆Pt−1))"
+    },
+    {
+      "nombre": "price dispersion",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Dispersión de precios intradía ponderada por volumen, desarrollada por Jankowitsch, Nashikkar y Subrahmanyam (2011). Mide la variabilidad del precio dentro de un día respecto al precio promedio diario, ofreciendo información sobre la volatilidad interna del activo. Mayor dispersión sugiere mayor incertidumbre de mercado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "volatility"},
+        {"tipo": "PARTE_DE", "objeto": "microstructure effects"}
+      ],
+      "cita_textual": "Higher dispersion indicates larger variability in price relative to the day's average, often suggesting greater market uncertainty or mixed trading signals."
+    },
+    {
+      "nombre": "price impact",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida que cuantifica la relación entre volumen de trading y cambios de precio intradía, basada en Amihud (2002). Calculada como el promedio de |ΔP_t| / V_t por hora de trading. Mide la sensibilidad del precio a cambios en el volumen negociado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "liquidity"},
+        {"tipo": "PARTE_DE", "objeto": "microstructure effects"}
+      ],
+      "cita_textual": "It measures how much the price of an asset could potentially move per unit of volume traded."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El par de opciones OXY-XOM en estrategia in-the-money obtuvo un retorno anual promedio del 175% con un Sharpe ratio anualizado de 2.29 en backtest out-of-sample con pronóstico a 1 día.",
+      "mercado": "Opciones sobre acciones OXY y XOM (equity pair)",
+      "periodo": "2022-2023",
+      "magnitud": "Retorno anual 175%, Sharpe ratio 2.29",
+      "condiciones": "Estrategia in-the-money (M > 1), opciones near-expiration, pronóstico rolling 2-day-ahead, entrada a cierre día t y reversión a cierre día t+1",
+      "robustez": "media",
+      "cita_textual": "the OXY-XOM strategy produced 175% average annual return with an annualized Sharpe ratio of 2.29"
+    },
+    {
+      "afirmacion": "El par de opciones MSFT-GOOGL en estrategia in-the-money obtuvo un retorno anualizado del 97% con un Sharpe ratio de 1.00.",
+      "mercado": "Opciones sobre acciones MSFT y GOOGL (equity pair)",
+      "periodo": "2022-2023",
+      "magnitud": "Retorno anual 97%, Sharpe ratio 1.00",
+      "condiciones": "Estrategia in-the-money (M > 1), opciones near-expiration, pronóstico rolling 2-day-ahead, entrada a cierre día t y reversión a cierre día t+1",
+      "robustez": "media",
+      "cita_textual": "The MSFT-GOOGL strategy produced annualized return of 97% and a Sharpe ratio of 1.00."
+    },
+    {
+      "afirmacion": "Los modelos de regresión lineal capturan más ineficiencias en mercados de futuros que en acciones, con Adjusted R² consistentemente superiores para los pares de futuros (hasta 0.224 en SPY/ZT) frente a los pares de equity (máximo 0.147 en OXY/XOM).",
+      "mercado": "Futuros y acciones (SPY, GC=F, ZB=F, ES=F, ZF=F, ZN=F, ZT=F, MSFT, GOOGL, OXY, XOM, etc.)",
+      "periodo": "2022-2023",
+      "magnitud": "Adj R² futuros: 0.050 a 0.224; Adj R² equities: 0.011 a 0.147 (algunos incluso negativos, e.g. CSX/NSC -0.005)",
+      "condiciones": "Regresiones contemporáneas con 8 variables de microestructura (Roll, Price Dispersion, Price Impact, Realized Volatility para cada activo del par)",
+      "robustez": "media",
+      "cita_textual": "The Adjusted R2 is much higher for futures as opposed to equities, implying that our models capture more inefficiencies in the futures markets"
+    },
+    {
+      "afirmacion": "Las redes neuronales con funciones de activación ReLU, Sigmoid y Tanh no mejoran el desempeño predictivo respecto a la regresión lineal simple (OLS), mostrando sesgos y agrupamiento que limitan la variabilidad de las predicciones.",
+      "mercado": "Pares de opciones sobre acciones y futuros",
+      "periodo": "2022-2023",
+      "magnitud": "N/A (comparación cualitativa)",
+      "condiciones": "Redes neuronales simples con tres funciones de activación (ReLU, Sigmoid, Tanh), comparadas contra OLS en predicción de residuales de volatilidad",
+      "robustez": "media",
+      "cita_textual": "we found that the neural networks we formulated did not enhance the performance of the model as compared to the linear regression results"
+    },
+    {
+      "afirmacion": "Los signos de los coeficientes de las variables de microestructura varían significativamente entre distintos pares de activos, lo que indica que los efectos de microestructura son específicos de cada par y no generalizables con un único modelo.",
+      "mercado": "Pares de futuros y acciones (SPY/GC=F, SPY/ZB=F, GC=F/ES=F, OXY/XOM, MSFT/GOOGL, etc.)",
+      "periodo": "2022-2023",
+      "magnitud": "Coeficientes con signos opuestos entre pares (ej. Roll S: -0.0008 en SPY/GC=F vs +0.0014 en OXY/XOM)",
+      "condiciones": "Regresiones lineales con datos horarios, variables de microestructura por activo",
+      "robustez": "media",
+      "cita_textual": "the signs of the coefficients vary from one asset pair to the next"
+    },
+    {
+      "afirmacion": "Ambos pares de opciones (MSFT-GOOGL y OXY-XOM) experimentaron un shock común en diciembre de 2022, posiblemente relacionado con reasignaciones de cartera de fin de año por parte de grandes gestores de inversión, lo que sugiere que evitar ese período mejoraría el rendimiento de la estrategia.",
+      "mercado": "Opciones sobre MSFT-GOOGL y OXY-XOM",
+      "periodo": "Diciembre 2022",
+      "magnitud": "Shock común observado en ambos pares (no cuantificado numéricamente)",
+      "condiciones": "Estrategia de pares de opciones, período out-of-sample",
+      "robustez": "baja",
+      "cita_textual": "both MSFT-GOOGL and OXY-XOM call option pairs appear to experience the same shock in December 2022"
+    },
+    {
+      "afirmacion": "El intercepto de las regresiones es altamente significativo en todos los pares analizados, lo que implica que existen variables adicionales no incluidas en el modelo que podrían explicar mejor la variación de los residuales de volatilidad.",
+      "mercado": "Futuros y acciones (todos los pares testeados)",
+      "periodo": "2022-2023",
+      "magnitud": "t-statistics del intercepto entre 10.8 y 42.9 en la mayoría de los pares; altamente significativo al 99%+",
+      "condiciones": "Regresiones con 8 variables explicativas de microestructura",
+      "robustez": "media",
+      "cita_textual": "The intercept is also highly significant across all pairs, implying that additional variables can explain the variation of the volatility residuals better."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "La estrategia opera con pronósticos a 1 día usando datos horarios intradía (entrada al cierre de t, salida al cierre de t+1), pero no se evalúa explícitamente su viabilidad intraday con frecuencias mayores ni se consideran costes de transacción intradía."
+  }
+}

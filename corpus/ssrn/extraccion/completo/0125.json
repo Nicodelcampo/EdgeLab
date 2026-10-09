@@ -1,0 +1,105 @@
+{
+  "doc_id": 125,
+  "titulo": "Exploring the dynamic impact of transaction taxes on market quality in HFT and non-HFT environments: an agent-based modeling approach",
+  "resumen_operativo": "El estudio simula el efecto de un impuesto a las transacciones sobre mercados poblados por traders de alta y baja frecuencia. Demuestra que la liquidez y la volatilidad reaccionan de manera no lineal ante el aumento de fricciones, lo que permite refinar los supuestos de costos operacionales en entornos de backtesting.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "transaction tax",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costo fijo impuesto sobre el valor nocional de las transacciones ejecutadas, utilizado teóricamente como mecanismo de política para desincentivar el exceso de trading.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "transaction costs"
+        }
+      ],
+      "cita_textual": "The transaction tax is decided by the value of executed orders and the transaction tax rate"
+    },
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Operativa acelerada mediante la cual los agentes deciden entrar basándose en umbrales de retornos muy recientes, cancelando órdenes rápidamente y manteniendo inventario cercano a cero.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "volatility"
+        }
+      ],
+      "cita_textual": "high-frequency traders, aiming to profit from frequent trading activities, are only willing to buy at a price lower than the best bid price and sell at a price higher than the best ask price submitted to the market"
+    },
+    {
+      "nombre": "agent-based modeling",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Metodología de simulación que evalúa dinámicas de mercado permitiendo que agentes individuales actúen y se adapten según lógicas predefinidas.",
+      "relaciones": [],
+      "cita_textual": "the ABM approach is not limited to observed data and allows for modelling complex systems with non-independent individuals and feedback loops in causal mechanisms"
+    },
+    {
+      "nombre": "mispricing",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de divergencia del precio respecto de su valor fundamental, que indica ineficiencia temporal del mercado.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "price discovery"
+        }
+      ],
+      "cita_textual": "the mispricing measure is constructed by the absolute difference between actual stock prices and fundamental values, divided by the fundamental value"
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Brecha entre la mejor oferta de venta y la mejor de compra, que en el modelo se emplea como proxy para medir la liquidez.",
+      "relaciones": [],
+      "cita_textual": "liquidity is assessed by the bid-ask spread"
+    },
+    {
+      "nombre": "limit order book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Repositorio donde se almacenan las órdenes pendientes que no han sido ejecutadas, esperando a la siguiente sesión para su posible calce.",
+      "relaciones": [],
+      "cita_textual": "Unexecuted orders are subsequently retained in the limit order book (LOB), awaiting the commencement of the next trading session."
+    },
+    {
+      "nombre": "noise trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Operativa sin información fundamental o técnica subyacente, representada en el modelo como un término estocástico de media cero.",
+      "relaciones": [],
+      "cita_textual": "Then, \ud835\udf00\ud835\udc61, with zero mean and variance \ud835\udf0e\ud835\udf00, represents the return of pure noise traders."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La presencia de high-frequency trading incrementa de manera significativa la volatilidad de los precios e impacta de forma adversa en el bienestar económico de los inversores más lentos.",
+      "mercado": "Artificial stock market (simulación ABM)",
+      "periodo": "no especificado",
+      "magnitud": "Standard deviation sube de 0.552E-03 a 0.924E-03; welfare (agregado) cae de 0.048 a 0.025.",
+      "condiciones": "Entorno simulado comparando un mercado exclusivo de low-frequency traders versus uno con un ratio 100:1 entre LFT e HFT.",
+      "robustez": "baja",
+      "cita_textual": "the presence of high-frequency trading (baseline scenario) may result in a decline in market quality, especially from the perspective of volatility and welfare."
+    },
+    {
+      "afirmacion": "La aplicación de un impuesto menor a las transacciones mitiga la volatilidad levemente y no perjudica de manera dramática la liquidez.",
+      "mercado": "Artificial stock market (simulación ABM)",
+      "periodo": "no especificado",
+      "magnitud": "Volatilidad baja a 0.723E-03 (p-value 0.072) en mercado mixto con tasa impositiva del 0.1%.",
+      "condiciones": "Tasa simulada del 0.1%, asumida estable a lo largo de 1000 sesiones.",
+      "robustez": "baja",
+      "cita_textual": "when the transaction tax rate increases from 0 to 0.1%, the quality of the market, either with or without high frequency trading, may improve mildly."
+    },
+    {
+      "afirmacion": "Imponer un impuesto muy alto en mercados carentes de high-frequency traders no ayuda a controlar la volatilidad y empeora notablemente la liquidez y el alineamiento de precios.",
+      "mercado": "Artificial stock market (simulación ABM)",
+      "periodo": "no especificado",
+      "magnitud": "En tasa del 0.5% en mercado non-HFT, el bid-ask spread aumenta de 0.027 a 0.034 (p-value 0.008).",
+      "condiciones": "Tasa impositiva del 0.5% en ecosistema exclusivamente formado por low-frequency traders.",
+      "robustez": "baja",
+      "cita_textual": "When the tax rate further increases from 0.1% to 0.5%, the impact of transaction taxes on market quality becomes adverse and is more pronounced in markets without high-frequency trading"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Aunque consiste en una simulación sintética, la relación no lineal entre el aumento de comisiones y la liquidez puede ayudar a modelar fricciones transaccionales en backtests robustos."
+  }
+}

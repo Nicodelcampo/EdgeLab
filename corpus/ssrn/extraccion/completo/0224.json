@@ -1,0 +1,156 @@
+{
+  "doc_id": 224,
+  "titulo": "Market Microstructure and Informational Efficiency: The Role of Intermediation",
+  "resumen_operativo": "El artículo estudia la eficiencia informacional de dos microestructuras de mercado: una con market-makers que intermedian el comercio y otra de matching aleatorio con negociación bilateral. Demuestra que la intermediación mediante market-makers puede aproximar la eficiencia informacional del mecanismo competitivo (Espacio de mensajes O(N)), mientras que el matching aleatorio requiere infinitamente más información conforme crece el número de tipos de agentes (O(N²)). En el caso límite con un market-maker monopolista en mercado contestable, el espacio de mensajes requiere solo una dimensión más que el mecanismo competitivo, siendo así un second-best en términos informacionales.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "market microstructure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Arreglos institucionales explícitos que facilitan el comercio entre agentes, incluyendo intermediarios y mecanismos de formación de precios. El artículo contrasta dos microestructuras: intermediación por market-makers y matching aleatorio con negociación.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "informational efficiency"},
+        {"tipo": "REQUIERE", "objeto": "intermediation"}
+      ],
+      "cita_textual": "To study markets with strategic agents, we need to incorporate the market microstructure explicitly and model intermediaries and other institutions that facilitate trade (Spulber 1996b, p. 135)."
+    },
+    {
+      "nombre": "informational efficiency",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de la cantidad mínima de información que un mecanismo descentralizado debe comunicar para implementar una asignación Pareto-eficiente. Se operacionaliza como el número de dimensiones del espacio de mensajes (message space) del mecanismo, siguiendo la tradición de Mount y Reiter (1974) y Jordan (1982).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "message space dimensionality"},
+        {"tipo": "PREDICE", "objeto": "competitive allocation mechanism"}
+      ],
+      "cita_textual": "Competitive equilibria are informationally efficient in the sense that competitive prices communicate the minimum amount of information necessary to implement a Pareto efficient allocation in an environment where information is dispersed."
+    },
+    {
+      "nombre": "intermediation",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Comercio indirecto donde compradores y vendedores no interactúan directamente, sino que intercambian a través de market-makers que fijan precios bid y ask y obtienen un margen. La intermediación externaliza el proceso de formación de precios, permitiendo que los demás agentes economícen en información.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "market making"},
+        {"tipo": "MEJORA_A", "objeto": "informational efficiency"},
+        {"tipo": "SE_OPONE_A", "objeto": "random matching and bargaining"}
+      ],
+      "cita_textual": "Our paper then argues that the intermediating agent who sets prices plays a fundamental role in a market economy by allowing other agents to economize on information."
+    },
+    {
+      "nombre": "competitive allocation mechanism",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Mecanismo de asignación de referencia (triple µc, Mc, gc) donde los precios se toman como dados y se determinan por el subastador walrasiano. Su espacio de mensajes es N-dimensional, donde N es el número de tipos de consumidores, y es el único mecanismo informacionalmente eficiente que satisface la restricción de participación voluntaria.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Walrasian auctioneer"},
+        {"tipo": "REQUIERE", "objeto": "message space dimensionality"}
+      ],
+      "cita_textual": "The competitive mechanism is a triple (µc, Mc, gc). The message space Mc is described by Mc = {(p, y) ∈ R2++ × Y : py(i) = 0 ∀i}."
+    },
+    {
+      "nombre": "message space dimensionality",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Número de dimensiones del espacio de mensajes que un oráculo debe comunicar a los agentes para verificar que la asignación es óptima. El mecanismo competitivo tiene dimensión N; el market-maker con k intermediarios, aproximadamente kN; y el matching aleatorio, 2(N/2)².",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "informational efficiency"},
+        {"tipo": "USA", "objeto": "privacy-preserving mechanism"}
+      ],
+      "cita_textual": "The size of the messages is interpreted as a measure of the complexity of a verification protocol."
+    },
+    {
+      "nombre": "market making",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de intermediarios (market-makers) que publican precios de compra (bid) y venta (ask), absorben el exceso de oferta y demanda, y obtienen beneficios del spread. En el modelo, los market-makers eligen (pb, ps) maximizando beneficios sujeto a market clearing y compiten a la Bertrand en el caso sin fricciones.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "intermediation"},
+        {"tipo": "USA", "objeto": "bid-ask spread"},
+        {"tipo": "EQUIVALE_A", "objeto": "Bertrand competition"}
+      ],
+      "cita_textual": "Market-makers are profit-maximizing (only attribute utility to the numeraire good) intermediaries that 'make the market' by posting bid and ask prices for the consumption good and intermediate trade between the consumers."
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre el precio de venta (ask, ps) y el precio de compra (bid, pb) que publica cada market-maker. El spread es la fuente de beneficios del intermediario y representa una dimensión adicional en el espacio de mensajes respecto al mecanismo competitivo, donde hay un único precio.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market making"},
+        {"tipo": "CAUSA", "objeto": "frictions of trading (constrained consideration sets)"}
+      ],
+      "cita_textual": "The downside is that, with positive frictions, there are different bid and ask prices for the good instead of the single price from the auctioneer."
+    },
+    {
+      "nombre": "random matching and bargaining",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Mecanismo de asignación descentralizado basado en Mortensen y Wright (2002), donde compradores y vendedores se encuentran aleatoriamente según una función de matching M(B,S) y negocian el precio mediante un protocolo de oferta take-it-or-leave-it o solución de Nash generalizada. Converge en asignación al equilibrio competitivo cuando los costos de búsqueda tienden a cero, pero es informacionalmente ineficiente.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "intermediation"},
+        {"tipo": "CONTRADICE_A", "objeto": "informational efficiency"}
+      ],
+      "cita_textual": "Random matching may be too informationally complex in large economies to be practical."
+    },
+    {
+      "nombre": "privacy-preserving mechanism",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Propiedad de un proceso de mensajes (message process) donde cada individuo responde a un mensaje utilizando exclusivamente su información privada (preferencias y dotaciones), sin requerir conocimiento de la información de otros agentes.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "competitive allocation mechanism"},
+        {"tipo": "PARTE_DE", "objeto": "informational efficiency"}
+      ],
+      "cita_textual": "A message process (µ, M) is privacy-preserving if for each i there exists a correspondence µi : Ei ⇒ M such that for each e = (e1, e2, . . . , eN) ∈ E, the profile of correspondences (µi)i∈{1,...,N} satisfies µ(e) = ∩i∈{1,...,N}µi(ei)."
+    },
+    {
+      "nombre": "contestable markets (Baumol monopoly deterrence)",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Extensión dinámica del modelo de market-maker donde un monopolista incumbente fija precios para disuadir la entrada de un competidor potencial que debe incurrir un costo fijo E. Con una tasa de descuento suficientemente baja, el equilibrio de disuasión converge al equilibrio competitivo, requiriendo solo N+1 dimensiones.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "informational efficiency"},
+        {"tipo": "USA", "objeto": "market making"},
+        {"tipo": "MITIGA", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "As the discount rate r converges to zero, the present value of any positive profit stream diverges to infinity, which implies that the monopoly deterrence equilibrium converges to the competitive equilibrium as the discount rate converges to zero."
+    },
+    {
+      "nombre": "Walrasian auctioneer",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Entidad ficticia del modelo competitivo que anuncia precios de equilibrio y asignaciones, permitiendo que los agentes verifiquen el equilibrio sin conocer la información de otros. El modelo de market-maker lo reemplaza por intermediarios estratégicos que fijan precios endógenamente.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "competitive allocation mechanism"},
+        {"tipo": "SE_OPONE_A", "objeto": "market making"}
+      ],
+      "cita_textual": "The role of the oracle is played by the 'Walrasian auctioneer' who announces the equilibrium prices and allocation."
+    },
+    {
+      "nombre": "Hayek Hypothesis",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Hipótesis articulada por Vernon Smith (1982) que sostiene que mercados competitivos con privacidad estricta (cada agente solo conoce su propia valoración) pueden alcanzar resultados competitivos, es decir, los precios agregan y comunican la información dispersa de manera eficiente.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "informational efficiency"},
+        {"tipo": "APLICA_A", "objeto": "competitive allocation mechanism"}
+      ],
+      "cita_textual": "Vernon Smith (1982) called this concept the 'Hayek Hypothesis'."
+    },
+    {
+      "nombre": "frictions of trading (constrained consideration sets)",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Supuesto de que los consumidores tienen acceso limitado e independiente a los market-makers; cada consumidor conoce un subconjunto propio de intermediarios. Esto genera poder de mercado, dispersión de precios y spreads no nulos en equilibrio.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "bid-ask spread"},
+        {"tipo": "PARTE_DE", "objeto": "market making"}
+      ],
+      "cita_textual": "We represent the frictions of trading by the assumption that consumers have constrained access regarding the market-makers that they can trade with."
+    },
+    {
+      "nombre": "Bertrand competition",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "En el entorno sin fricciones donde los consumidores tienen acceso perfecto a todos los market-makers, la competencia de precios entre al menos dos market-makers conduce la pareja de precios (bid, ask) al precio competitivo único (p*, p*) con beneficios nulos.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "market making"},
+        {"tipo": "PREDICE", "objeto": "competitive allocation mechanism"}
+      ],
+      "cita_textual": "If consumers have perfect access to all market-makers then two market-makers are sufficient to achieve the competitive allocation, as in the model of Bertrand competition."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "nula",
+    "nota": "Paper puramente teórico de teoría de mecanismos y microestructura sin datos empíricos de precios ni aplicación a mercados financieros intradía."
+  }
+}

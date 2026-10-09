@@ -1,0 +1,260 @@
+{
+  "doc_id": 37,
+  "titulo": "Adversarial-Robust Deep Reinforcement Learning for High-Frequency Cryptocurrency Trading with Explainable AI Framework",
+  "resumen_operativo": "Propone un framework de DRL (PPO/SAC/TD3) para HFT cripto que combina entrenamiento adversarial multi-escala con explicabilidad (SHAP/LIME) de baja latencia. Reporta que el agente robusto retiene 94.3% del retorno del PPO vanilla mientras reduce la tasa de éxito de ataques adversariales a 10.3%. Aporta principalmente una taxonomía de ataques adversariales específicos de microestructura cripto (manipulación de order book, ataques de latencia) más que una estrategia de trading nueva.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "adversarial attack",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Perturbaciones deliberadamente diseñadas sobre el estado observado por el agente DRL para manipular sus predicciones/decisiones de trading, con potencial de pérdidas catastróficas en milisegundos.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "trading performance degradation"},
+        {"tipo": "APLICA_A", "objeto": "deep reinforcement learning"}
+      ],
+      "cita_textual": "Adversarial attacks—strategically crafted perturbations designed to manipulate model predictions—pose existential threats to automated trading systems"
+    },
+    {
+      "nombre": "adversarial training",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de defensa que incorpora ejemplos adversariales generados dentro del propio proceso de entrenamiento del agente para mejorar su robustez, aquí aplicada en escala jerárquica (tick, minuto, episodio).",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "adversarial attack"},
+        {"tipo": "PARTE_DE", "objeto": "multi-scale adversarial training"}
+      ],
+      "cita_textual": "Our defense framework employs adversarial training at three temporal scales"
+    },
+    {
+      "nombre": "multi-scale adversarial training",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Metodología jerárquica de entrenamiento adversarial que opera simultáneamente a nivel de tick, minuto y episodio; según el paper mejora la robustez en 34.7% respecto del entrenamiento adversarial estándar.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "adversarial training"},
+        {"tipo": "MITIGA", "objeto": "adversarial attack"}
+      ],
+      "cita_textual": "This approach improves robustness by 34.7% compared to standard adversarial training."
+    },
+    {
+      "nombre": "defensive distillation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica que entrena una red 'estudiante' a partir de las probabilidades suavizadas (softmax con temperatura) de una red 'maestra' para reducir la sensibilidad del modelo a perturbaciones adversariales; se usa temperatura T=20.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "adversarial attack"},
+        {"tipo": "PARTE_DE", "objeto": "defense mechanism layer"}
+      ],
+      "cita_textual": "We apply defensive distillation to reduce model sensitivity"
+    },
+    {
+      "nombre": "randomized smoothing",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Mecanismo de robustez certificada que promedia la política sobre ruido gaussiano añadido al estado (N=100 muestras, sigma=0.1) para suavizar la decisión frente a perturbaciones.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "adversarial attack"},
+        {"tipo": "REQUIERE", "objeto": "GPU acceleration"}
+      ],
+      "cita_textual": "For certified robustness: πsmooth(a|st) = Eξ[πθ(a|st + ξ)]"
+    },
+    {
+      "nombre": "order book manipulation attack",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Ataque adversarial propuesto por el paper (OBMA) que perturba estratégicamente features del libro de órdenes para engañar al agente sobre la liquidez de mercado; logra 73.4% de éxito contra agentes DRL sin defensa.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "adversarial attack"},
+        {"tipo": "USA", "objeto": "limit order book"}
+      ],
+      "cita_textual": "Order Book Manipulation Attack (OBMA): Strategically perturbs order book features to mislead the agent about market liquidity."
+    },
+    {
+      "nombre": "latency-based adversarial attack",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Ataque adversarial (LAA) que explota el ciclo de trading 24/7 introduciendo demoras temporizadas en las observaciones de estado para maximizar la disrupción de la política; logra 68.9% de éxito contra agentes sin defensa.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "adversarial attack"}
+      ],
+      "cita_textual": "Latency-based Adversarial Attack (LAA): Exploits 24/7 trading cycles by introducing carefully timed delays in state observations"
+    },
+    {
+      "nombre": "FGSM",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Fast Gradient Sign Method: ataque adversarial estándar que perturba el estado en la dirección del signo del gradiente de la pérdida, aquí con epsilon=0.05.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "adversarial attack"}
+      ],
+      "cita_textual": "FGSM: sadv t = st + ϵ · sign(∇stL(πθ(st), y∗)) with ϵ = 0.05."
+    },
+    {
+      "nombre": "PGD",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Projected Gradient Descent: variante iterativa de ataque adversarial con refinamiento en 10 iteraciones y tamaño de paso 0.01, usada como uno de los cinco vectores de ataque evaluados.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "adversarial attack"},
+        {"tipo": "MEJORA_A", "objeto": "FGSM"}
+      ],
+      "cita_textual": "PGD: Iterative refinement with 10 iterations and step size α = 0.01."
+    },
+    {
+      "nombre": "deep reinforcement learning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Paradigma que formula el trading como un proceso de decisión de Markov donde el agente observa el estado del mercado, ejecuta acciones (comprar/vender/mantener) y recibe recompensa según el desempeño del portafolio; aquí implementado con PPO, SAC y TD3.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order flow imbalance"},
+        {"tipo": "APLICA_A", "objeto": "high-frequency trading"}
+      ],
+      "cita_textual": "The DRL paradigm formulates trading as a Markov Decision Process (MDP) where agents observe market states, execute actions (buy/sell/hold), and receive rewards based on portfolio performance."
+    },
+    {
+      "nombre": "order flow imbalance",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Feature de microestructura del libro construida como diferencia normalizada entre la suma de los primeros 10 niveles de bid y de ask, incluida entre las 50 dimensiones de orderbook del vector de estado.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "Order book imbalance: OBIt = P10 i=1 bidi −P10 i=1 aski P10 i=1 bidi + P10 i=1 aski"
+    },
+    {
+      "nombre": "explainable AI",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Conjunto de técnicas (aquí SHAP y LIME) integradas para dar transparencia a las decisiones del agente DRL, cumpliendo requisitos regulatorios sin sacrificar la latencia sub-10ms necesaria en HFT.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "SHAP"},
+        {"tipo": "USA", "objeto": "LIME"},
+        {"tipo": "APLICA_A", "objeto": "high-frequency trading"}
+      ],
+      "cita_textual": "The explainability component integrates SHAP for global feature importance and LIME for local decision interpretation, maintaining sub-10ms latency to meet HFT requirements."
+    },
+    {
+      "nombre": "SHAP",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de explicabilidad global basada en valores de Shapley de teoría de juegos; el paper usa aproximación TreeSHAP para reducir la complejidad y lograr 8.3ms de latencia promedio con procesamiento GPU en batch.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "feature importance"},
+        {"tipo": "PARTE_DE", "objeto": "explainable AI"}
+      ],
+      "cita_textual": "SHAP leverages game-theoretic principles to compute feature importance through Shapley values"
+    },
+    {
+      "nombre": "LIME",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de explicabilidad local que ajusta un modelo sustituto lineal interpretable alrededor de una instancia específica para explicar decisiones individuales del agente.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "explainable AI"},
+        {"tipo": "SE_OPONE_A", "objeto": "SHAP"}
+      ],
+      "cita_textual": "LIME, alternatively, explains predictions by fitting interpretable surrogate models to local neighborhoods around specific instances"
+    },
+    {
+      "nombre": "reward shaping",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Función de recompensa compuesta que pondera cuatro objetivos (retorno, riesgo, robustez, explicabilidad) con pesos fijos w1=1.0, w2=0.3, w3=0.2, w4=0.1 para entrenar el agente DRL.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "deep reinforcement learning"}
+      ],
+      "cita_textual": "rt = w1 ·rprofit t +w2 ·rrisk t +w3 ·rrobust t +w4 ·rexplain t"
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica de retorno ajustado por riesgo utilizada para comparar el desempeño del agente robusto frente a baselines; el agente propuesto obtiene Sharpe 2.18 vs 2.31 del PPO vanilla.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "trading performance degradation"}
+      ],
+      "cita_textual": "Sharpe Ratio : SR = µr −rf σr"
+    },
+    {
+      "nombre": "maximum drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica de riesgo reportada en la tabla de resultados; el agente robusto muestra drawdown de -12.4% frente a -18.3% del PPO vanilla, señalando mejor gestión de riesgo en condiciones adversas.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "trading performance degradation"}
+      ],
+      "cita_textual": "Maximum drawdown improves substantially (- 12.4% vs. -18.3%), indicating better risk management during adverse conditions."
+    },
+    {
+      "nombre": "attack success rate",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica de robustez adversarial definida como el porcentaje de ejemplos adversariales que causan una reducción de retorno mayor a 20%; el framework propuesto reduce el ASR promedio a 10.3% frente a 74.2% del PPO vanilla.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "adversarial attack"}
+      ],
+      "cita_textual": "Attack Success Rate (ASR): Percentage of adversarial examples causing ¿20% return reduction"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo señalado en la literatura revisada: la mayoría de estudios de DRL para trading evalúan desempeño solo con backtests históricos sin considerar escenarios adversariales, asumiendo un entorno operativo benigno poco realista.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "adversarial training"}
+      ],
+      "cita_textual": "Most studies evaluate performance using historical backtests without considering adversarial scenarios or model robustness under attack"
+    },
+    {
+      "nombre": "trading performance degradation",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Pérdida de rendimiento (retorno, Sharpe) que sufre un agente de trading al ser sometido a ataques adversariales o al aplicarle mecanismos de defensa; el paper reporta que el framework robusto retiene 94.3% del desempeño baseline.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "adversarial attack"}
+      ],
+      "cita_textual": "Our proposed PPO-Robust achieves 47.3% cumulative return, representing 94.3% of vanilla PPO's performance while maintaining robustness guarantees."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El agente PPO robusto retiene la mayor parte del retorno del PPO vanilla a costa de menor retorno absoluto pero mejor drawdown.",
+      "mercado": "BTC/USDT, ETH/USDT, BNB/USDT, SOL/USDT, XRP/USDT (cripto)",
+      "periodo": "enero 2024 - junio 2025 (test set de 3 meses sobre 18 meses totales)",
+      "magnitud": "Retorno 47.3% (robusto) vs 50.2% (vanilla PPO) = 94.3% del baseline; Sharpe 2.18 vs 2.31; Max DD -12.4% vs -18.3%; Win rate 62.1% vs 63.7%",
+      "condiciones": "Backtest sobre split temporal train/val/test (12/3/3 meses); no se especifica inclusión de costos de transacción ni slippage",
+      "robustez": "baja",
+      "cita_textual": "Our proposed PPO-Robust achieves 47.3% cumulative return, representing 94.3% of vanilla PPO's performance while maintaining robustness guarantees."
+    },
+    {
+      "afirmacion": "El framework de defensa ensemble reduce fuertemente la tasa de éxito de ataques adversariales frente a un agente DRL sin protección.",
+      "mercado": "BTC/USDT, ETH/USDT, BNB/USDT, SOL/USDT, XRP/USDT (cripto)",
+      "periodo": "enero 2024 - junio 2025",
+      "magnitud": "ASR promedio 10.3% (propuesto) vs 19.9% (adv. training estándar) vs 74.2% (PPO vanilla); tasa de defensa exitosa 89.7%",
+      "condiciones": "Evaluado contra cinco vectores de ataque (FGSM, PGD, C&W, OBMA, LAA) con parámetros fijos de perturbación; no se reportan ataques adaptativos que conozcan la defensa",
+      "robustez": "baja",
+      "cita_textual": "Our proposed ensemble defense achieves 10.3% average ASR—an 89.7% defense success rate. Vanilla DRL methods are highly vulnerable with 74.2% average ASR."
+    },
+    {
+      "afirmacion": "Los ataques adversariales específicos de microestructura cripto propuestos por el paper (manipulación de order book y ataque basado en latencia) son efectivos contra agentes DRL desprotegidos.",
+      "mercado": "cripto (BTC, ETH, altcoins)",
+      "periodo": "no especificado dentro del rango 2024-2025",
+      "magnitud": "OBMA logra 73.4% de tasa de éxito; LAA logra 68.9% de tasa de éxito contra agentes sin defensa",
+      "condiciones": "Ataques definidos y evaluados por los propios autores contra su propio setup, sin comparación con ataques de terceros ni validación independiente",
+      "robustez": "baja",
+      "cita_textual": "These attacks achieve 73.4% and 68.9% success rates respectively against unprotected DRL agents."
+    },
+    {
+      "afirmacion": "El entrenamiento adversarial multi-escala mejora la robustez frente al entrenamiento adversarial estándar de escala única.",
+      "mercado": "cripto (BTC, ETH, altcoins)",
+      "periodo": "no especificado",
+      "magnitud": "Mejora de robustez de 34.7% respecto al entrenamiento adversarial estándar",
+      "condiciones": "Comparación ablation interna, sin especificar intervalos de confianza ni test estadístico",
+      "robustez": "baja",
+      "cita_textual": "This approach improves robustness by 34.7% compared to standard adversarial training."
+    },
+    {
+      "afirmacion": "El framework de explicabilidad combinado (SHAP+LIME+Attention) mantiene latencia por debajo de 10ms manteniendo buena correlación con importancia de features esperada.",
+      "mercado": "cripto (BTC, ETH, altcoins)",
+      "periodo": "no especificado",
+      "magnitud": "Latencia combinada 8.3ms (SHAP 6.7ms, LIME 9.2ms, Attention 3.1ms); Feature correlation combinada 0.863; Consistency 0.912",
+      "condiciones": "Medición de percentil 95 de latencia; correlación de Spearman contra rankings de expertos (metodología de esos rankings no detallada)",
+      "robustez": "baja",
+      "cita_textual": "The explainability framework provides transparent insights into trading decisions with 8.3ms average latency."
+    },
+    {
+      "afirmacion": "En el análisis de ablación, remover el mecanismo de adaptación dinámica de defensa aumenta fuertemente la latencia de inferencia.",
+      "mercado": "cripto (BTC, ETH, altcoins)",
+      "periodo": "no especificado",
+      "magnitud": "Latencia sube de 8.3ms (framework completo) a 14.7ms al remover la adaptación dinámica; retorno cae levemente de 47.3% a 46.8% y ASR de 10.3% a 10.7%",
+      "condiciones": "Ablation study interno sin repeticiones ni bandas de error reportadas",
+      "robustez": "baja",
+      "cita_textual": "Configuration Return ASR Latency Full Framework 47.3% 10.3% 8.3ms - Dynamic Adaptation 46.8% 10.7% 14.7ms"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper es sobre cripto 24/7 con foco en defensa adversarial de agentes DRL y explicabilidad, no en señales de trading transferibles a ES; su único aporte reusable es la taxonomía de ataques adversariales sobre microestructura (OBMA, LAA) como marco de auditoría de robustez de sistemas ML, pero carece de rigor metodológico (todas las citas son placeholders '[?]', sin mención de costos de transacción ni de validación OOS real)."
+  }
+}

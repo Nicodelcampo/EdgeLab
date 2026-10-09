@@ -1,0 +1,5036 @@
+Dry Markets and Statistical Arbitrage Bounds for
+European Derivatives
+Jo~ao Amaro de Matos
+Faculdade de Economia
+Universidade Nova de Lisboa
+Campus de Campolide
+1099-032 Lisboa, Portugal
+Ana Lacerda
+Department of Statistics
+Columbia University
+1255 Amsterdam Avenue
+New York, NY 100027, USA
+January 2, 2006
+Abstract
+We derive statistical arbitrage bounds for the buying and selling
+price of European derivatives under incomplete markets. In this paper,
+incompleteness is generated due to the fact that the market is dry, i.e.,
+the underlying asset cannot be transacted at certain points in time. In
+particular, we re¯ne the notion of statistical arbitrage in order to extend the procedure for the case where dryness is random, i.e., at each
+point in time the asset can be transacted with a given probability. We
+analytically characterize several properties of the statistical arbitragefree interval, show that it is narrower than the super-replication interval and dominates somehow alternative intervals provided in the
+literature. Moreover, we show that, for su±ciently incomplete markets, the statistical arbitrage interval contains the reservation price of
+the derivative.
+1
+Introduction
+In complete markets and under the absence of arbitrage opportunities, the
+value of a European derivative must be the same as the cheapest portfolio
+that replicates exactly its value at any given point in time. However, in the
+presence of some market imperfections, markets may become incomplete,
+and it is not possible to exactly replicate the value of the European derivative
+at all times anymore. Nevertheless, it is possible to derive an arbitrage-free
+range of variation for the value of the derivative. This interval depends on
+1
+
+two di®erent factors. First, on the nature of market incompleteness; second,
+on the notion of arbitrage opportunities.
+In what follows we consider that market incompleteness is generated
+by the fact that agents cannot trade the underlying asset on which the
+derivative is written whenever they please. In fact, and as opposed to the
+traditional asset pricing assumptions, markets are very rarely liquid and
+immediacy is not always available. As Longsta® (1995, 2001, 2004) recalls,
+the relevance of this fact is pervasive through many ¯nancial markets. The
+markets for many assets such as human capital, business partnerships, pension plans, saving bonds, annuities, trusts, inheritances and residential real
+estate, among others, are generally very illiquid and long periods of time
+(months, sometimes years) may be required to sell an asset. This point
+becomes extremely relevant for the case of option pricing when we consider
+that it is an increasingly common phenomenon even in well-established securities markets, as illustrated by the 1998 Russian default crisis, leading
+many traders to be trapped in risky positions they could not unwind.
+To address the impact of this issue on derivatives' pricing, we consider
+a discrete-time setting such that transactions are not possible within a subset of points in time. Although clearly very stylized, the advantage of this
+setting is that it incorporates in a very simple way the notion of market
+illiquidity as the absence of immediacy. Under such illiquidity we say that
+markets are dry. In this framework, dryness changes what is otherwise a
+complete market into a dynamically incomplete market. This was also the
+approach in Amaro de Matos and Ant~ao (2001) when characterizing the
+speci¯c superreplication bounds for options in such markets and its implications. We further extend this setting by assuming that transactions occur
+at each point in time with a given probability, re°ecting a more realistic
+ex-ante uncertainty about the market.
+As stressed above, there is not a unique arbitrage-free value for a derivative under market incompleteness. However, for any given derivative, portfolios can be found that have the same payo® as the derivative in some states
+of nature, and higher payo®s in the other states. Such portfolios are said to
+be superreplicating. Holding such a portfolio should be worth more than the
+option itself and therefore, the value of the cheapest of such portfolios should
+be seen as an upper bound on the selling value of the option. Similarly, a
+lower bound for the buying price can be constructed. The nature of the
+superreplicating bounds is well characterized in the context of incomplete
+markets in the papers by El Karoui and Quenez (1991,1995), Edirisinghe,
+Naik and Uppal (1993) and Karatzas and Kou (1996). The superreplicating bounds establish the limits of the interval for arbitrage-free value of the
+2
+
+option. If the price is outside this range, then a positive pro¯t is attainable with probability one. Therefore, the equilibrium prices at which the
+derivative is transacted should lie between those bounds.
+Most of the times, however, these superreplicating bounds are trivial, in
+the sense that they are too broad, not allowing a useful characterization of
+equilibrium prices' vicinity. As an alternative, Bernardo and Ledoit (2000)
+propose a utility-based approach, restricting the no-arbitrage condition to
+rule out investment opportunities o®ering high gain-loss ratios, where gain
+(loss) is the expected positive (negative) part of excess payo®. In this way,
+narrower bounds are obtained.
+Analogously, Cochrane and Sa¶a-Requejo
+(2000) also restrict the no-arbitrage condition by not allowing transactions of
+\good deals", i.e. assets with very high Sharpe ratio. Following Hansen and
+Jagannathan (1991), they show that this restriction imposes an upper bound
+on the pricing kernel volatility and leads to narrower pricing implications
+when markets are incomplete.
+Given a set of pricing kernels compatible with the absence of arbitrage
+opportunities, Cochrane and S¶aa-Requejo exclude pricing kernels implying
+very high Sharpe ratios, whereas Bernardo and Ledoit exclude pricing kernels implying very high gain-loss ratios for a benchmark utility. Notice that,
+for a di®erent utility, Bernardo and Ledoit would exclude a di®erent subset of
+pricing kernels, for the same levels of acceptable gain-loss ratios. Also notice
+that the interval designed by Cochrane and S¶aa-Requejo is not necessarily
+arbitrage free, and therefore does not necessarily contain the equilibrium
+price.
+In order to avoid ad-hoc thresholds in either Sharpe or gain-loss ratios,
+or to make some parametric assumptions about a benchmark pricing kernel,
+as in Bernardo and Ledoit (2000), the work of Bondarenko (2003) introduces
+the notion of statistical arbitrage opportunity, by imposing a weak assumption on a functional form of admissible pricing kernels, yielding narrower
+pricing implications as compared to the superreplication bounds. A statistical arbitrage opportunity is characterized as a zero-cost trading strategy for
+which (i) the expected payo® is positive, and (ii) the conditional expected
+payo® in each ¯nal state of the economy is nonnegative. Unlike a pure arbitrage opportunity, a statistical arbitrage opportunity may allow for negative
+payo®s, provided that the average payo® in each ¯nal state is nonnegative.
+In particular, ruling out statistical arbitrage opportunities imposes a novel
+martingale-type restriction on the dynamics of securities prices. The important properties of the restriction are that it is model-free, in the sense that
+it requires no parametric assumptions about the true equilibrium model,
+and continues to hold when investors' beliefs are mistaken. Although Bon3
+
+darenko's interval can be shown to be in the arbitrage-free region, it does
+not necessarily contain the equilibrium value of the derivative.
+In this paper we extend the notion of statistical arbitrage opportunity to
+the case where the underlying asset can be transacted at each point in time
+with a given probability, and compare the statistical arbitrage-free bounds
+with the superreplication bounds. We show that the statistical arbitrage-free
+interval is narrower than the pure arbitrage bounds, and show also that, for
+su±ciently incomplete markets (probability not too close to 1), the statistical
+arbitrage interval contains the reservation price of the derivative. We also
+provide examples that allow comparison with the results of Cochrane and
+Sa¶a-Requejo (2000) and discuss the comparison with Bernardo and Ledoit
+(2000).
+This paper is organized as follows. In section 2, the model is presented
+and the pure arbitrage results are derived. In section 3 the notion of statistical arbitrage in the spirit of Bondarenko (2003) is de¯ned. In section
+4, the main results are presented. In Section 5 we ¯rst characterize the
+reservation prices and then show that, in a su±ciently dry market, they are
+contained in the statistical arbitrage interval. In Section 6 we illustrate how
+the statistical arbitrage-free interval somehow dominates alternative intervals provided in the literature. In section 7 some numerical examples are
+presented in order to illustrate some important properties of the bounds. In
+the last section several conclusions are presented.
+2
+The Model
+Consider a discrete-time economy with T periods, with a risky asset and
+a riskless asset. At each point in time the price of the risky asset can be
+multiplied either by U or by D to get the price of the next point in time.
+Equilibrium requires that U > R > D, where R denotes one plus the risk-free
+interest rate. At time t = 0 and t = T transactions are certainly possible.
+However, at t = 1;:::; T ¡ 1 there is uncertainty about the possibility of
+transaction of the risky asset. Transactions will occur with probability p
+at each of these points in time. A European Derivative with maturity T is
+considered.
+Consider the Binomial tree process followed by the price of the risky
+asset. Let the set of nodes at date t be denoted by It; and let each of the
+t + 1 elements of It be denoted by it = 1; :: : ;t + 1. For any t0 < t, let Iit
+t0
+denote the set of all the nodes at time t
+0 that are predecessors of a given
+node it: A path on the event tree is a set of nodes w = [t2f0;1;:::;Tgit such
+4
+
+that each element in the union satis¯es it¡1 2 Iit
+t¡1: Let - denote the set of
+all paths on the event tree:
+The payo®s of a European derivative, at each terminal node, will be denoted GiT
+T : At each node it; the stock price is given by Sit
+t = U t+1¡itDit¡1S0:
+Moreover, at each node it; there is a number ¢it
+t representing the number of
+shares bought (or sold, if negative), and a number Bit
+t denoting the amount
+invested (or borrowed, if negative) in the risk-free asset. Hence, at t there
+are t + 1 values of ¢it
+t , composing a vector ¢t ´ (¢1
+t ;:: : ;¢t+1
+t
+) 2 Rt+1:
+Similarly, we construct the vector Bt ´ (B1
+t ; :: : ;Bt+1
+t
+) 2 Rt+1:
+De¯nition 1 A trading strategy is a portfolio process µt = (¢t; Bt); composed of ¢t units of the risky asset and an amount Bt invested in the riskless
+asset, such that the portfolio's cost is ¢tSt + Bt for t = 0;1;: ::T ¡ 1:
+In order to ¯nd the upper (lower) bound of the arbitrage-free range
+of variation for the value of a European derivative we consider a ¯nancial
+institution that wishes to be fully hedged when selling (buying) that derivative. The objective of the institution is to minimize (maximize) the cost of
+replicating the exercise value of the derivative at maturity. The value determined under such optimization procedure avoids what is known as arbitrage
+opportunities, re°ecting the possibility of certain pro¯ts at zero cost.
+This section is organized as follows.
+We ¯rst characterize the upper
+bound, and then the lower bound for the interval of no-arbitrage admissible prices. For each bound, we ¯rst deal with the complete market case,
+and then with the fully incomplete market case, ¯nally introducing random
+incompleteness.
+2.1
+The upper bound in the case p = 0 and p = 1:
+First, we present the well-known case where p = 1. The usual de¯nition of
+an arbitrage opportunity in our economy is as follows.
+De¯nition 2 (Pure Arbitrage in the case p = 1) In this economy, an
+arbitrage opportunity is a zero cost trading strategy µt such that
+1. the value of the portfolio is positive at any ¯nal node, i.e., ¢iT¡1
+T¡1SiT
+T +
+RBiT ¡1
+T¡1 ¸ 0; for any iT¡1 2 IiT
+T¡1 and all iT 2 IT; and
+2. the portfolio is self-¯nancing, i.e., ¢it¡1
+t¡1Sit
+t + RBit¡1
+t¡1 ¸ ¢it
+t Sit
+t + Bit
+t ;
+for any it¡1 2 Iit
+t¡1; all it 2 It and all t 2 f0;:::;T ¡ 1g:
+5
+
+The upper bound for the value of the European option is the maximum
+value for which the derivative can be transacted, without allowing for arbitrage opportunities. This is the value of the cheapest portfolio that the
+seller of the derivative can buy in order to completely hedge his position
+against the exercise at maturity, without the need of additional ¯nancing at
+any rebalancing dates. Hence, for p = 1; the upper bound is C1
+u; given by
+C1
+u =
+min
+f¢t;Btgt=0;::::;T ¡1
+¢0S0 + B0
+subject to ¢iT¡1
+T ¡1SiT
+T + RBiT¡1
+T¡1 ¸ GiT
+T ; with iT ¡1 2 IiT
+T¡1 and all iT 2 IT;
+and the self-¯nancing constraints ¢it¡1
+t¡1 Sit
+t + RBit¡1
+t¡1 ¸ ¢it
+t Sit
+t + Bit
+t ; for all
+it¡1 2 Iit
+t¡1; all it 2 It and all t 2 f0;:::; T ¡ 1g; where the constraints re°ect
+the absence of arbitrage opportunities. This problem leads to the familiar
+result
+C1
+u = 1
+RT
+T
+X
+j=0
+µT
+j
+¶µR ¡ D
+U ¡ D
+¶j µU ¡ R
+U ¡ D
+¶T¡j
+GT+1¡j
+T
+:
+Consider now the case where p = 0. In this case, the notion of a trading
+strate#iTgy satisfying the self-¯nancing constraint is innocuous, since the
+portfolio µt cannot be rebalanced during the life of the option. Under the
+absence of arbitrage opportunities, the upper bound for the value is C0
+u
+satisfying
+C0
+u =
+min
+f¢0;B0g¢0S0 + B0
+subject to ¢0SiT
+T + RT¢0 ¸ GiT
+T ; for all iT 2 IT: In this case, the bound
+C0
+u can be shown to solve the maximization problem on a set of positive
+constants f#iTg ; with PT +1
+iT =1 #iT = 1;
+C0
+u = max
+#iT
+1
+RT
+XT+1
+iT =1 #iT GiT
+T
+subject to
+S0 =
+1
+RT
+XT+1
+iT =1#iTSiT
+T ;
+For instance, if a call option with exercise K is considered, we have1
+C0
+u = 1
+RT
+·µRT ¡ DT
+U T ¡ DT
+¶¡
+UTS0 ¡ K
+¢+ +
+µU T ¡ RT
+UT ¡ DT
+¶¡
+DTS0 ¡ K
+¢+
+¸
+:
+1See Amaro de Matos and Ant~ao (2001).
+6
+
+2.2
+The lower bound in the case p = 0 and p = 1:
+The lower bound for the value of an American derivative is the minimum
+value for which the derivative can be transacted without allowing for arbitrage opportunities. This is the value of the most expensive portfolio that
+the buyer of the option can sell in order to be fully hedged, and without the
+need of additional ¯nancing at rebalancing dates.
+For p = 1, the lower bound for the value of the derivative under the
+absence of arbitrage opportunities is thus C1
+l ; given by
+C1
+l =
+max
+f¢t;Btgt=0;::::;T ¡1
+¢0S0 + B0
+subject to ¢iT¡1
+T ¡1SiT
+T + RBiT¡1
+T¡1 · GiT
+T , with iT¡1 2 IiT
+T¡1 and all iT 2 IT;
+and the self-¯nancing constraints ¢it¡1
+t¡1 Sit
+t + RBit¡1
+t¡1 · ¢it
+t Sit
+t + Bit
+t ; for all
+it¡1 2 Iit
+t¡1; all it 2 It and all t 2 f0;:::; T ¡ 1g; where the constraints re°ect
+the absence of arbitrage opportunities This problem leads to the familiar
+result
+C1
+l = 1
+RT
+T
+X
+j=0
+µT
+j
+¶µR ¡ D
+U ¡ D
+¶j µU ¡ R
+U ¡ D
+¶T ¡j
+GT+1¡j
+T
+;
+(1)
+that coincides with the solution obtained for C1
+u:
+In the case where p = 0; the lower bound for the value of the derivative
+is C0
+l ; satisfying
+C0
+l = max
+f¢0;B0g¢0S0 + B0
+subject to ¢0ST+RTB0 · GiT
+T : As above, it follows that, for a set of positive
+constants f#iTg ; with PT +1
+iT =1 #iT = 1; this bound is given by
+C0
+u = min
+#iT
+1
+RT
+XT+1
+iT =1#iTGiT
+T
+subject to
+S0 =
+1
+RT
+XT +1
+iT =1 #iTSiT
+T :
+7
+
+In the case of a call option with exercise K,we have2
+C0
+l
+=
+1
+RT
+Ã
+RT ¡ U T¡(i+1)Di+1
+UT¡iDi ¡ U T¡(i+1)Di+1
+!
+¡
+U T¡iDiS0 ¡ K
+¢+
+(2)
++ 1
+RT
+µ
+UT ¡iDi ¡ RT
+U T¡iDi ¡ UT¡(i+1)Di+1
+¶¡
+UT¡i¡1Di+1S0 ¡ K
+¢+:
+where i is de¯ned as the unique integer satisfying Un¡(i+1)Di+1 < Rn <
+Un¡iDi, and 0 · i · n ¡ 1:
+2.3
+The Bounds on Probabilistic Markets
+In the aforementioned cases we considered the cases where either p = 0 or
+p = 1. However, if p is not equal to neither 0 nor 1, the formulation has to
+be adjusted. If the risky asset can be transacted with a given probability
+p 2 (0;1), then the usual de¯nition of arbitrage opportunity reads as follows.
+De¯nition 3 (Pure Arbitrage for p 2 (0;1)) In this economy, an arbitrage opportunity is a zero cost trading strategy such that
+1. the value of the portfolio is positive at any ¯nal node, i.e.,
+¢itt SiT
+T + RT¡tBitt ¸ 0;
+it 2 IiT
+t
+and all iT 2 IT; and the self-¯nancing constraints
+2. the portfolio is self-¯nancing, i.e.,
+¢it¡j
+t¡j Sit
+t + RjBit¡j
+t¡j ¸ ¢it
+t Sit
+t + Bit
+t ;
+for all it¡j 2 Iit
+t¡j; all it 2 It and all t 2 f0;:::;T ¡ 1g:
+The upper bound Cp
+u is the solution of the following problem:
+Cp
+u =
+min
+f¢t;Btgt=0;:::;T¡1
+¢0S0 + B0
+where ¢t;Bt 2 Rt+1;t = 0;:::; T ¡ 1; subject to the superreplicating conditions ¢it
+t SiT
+T + RT¡tBit
+t ¸ GiT
+T ; with it 2 IiT
+t
+and all iT 2 IT; and the self-
+¯nancing constraints ¢it¡j
+t¡j Sit
+t + RjBit¡j
+t¡j ¸ ¢it
+t Sit
+t + Bit
+t for all it¡j 2 Iit
+t¡j;
+all it 2 It and all t 2 f0;:::; T ¡ 1g :
+On the other hand, the lower bound Cp
+l solves the following problem:
+2See Amaro de Matos and Ant~ao (2001).
+8
+
+Cp
+l =
+max
+f¢t;Btgt=0;:::;T¡1
+¢0S0 + B0
+where ¢t; Bt 2 Rt+1;t = 0;:::;T ¡ 1; subject to the conditions ¢it
+t SiT
+T +
+RT¡tBitt · GiT
+T ; with it 2 IiT
+t
+and all iT 2 IT; and the self-¯nancing constraints ¢
+it¡j
+t¡j Sit
+t + RjB
+it¡j
+t¡j · ¢it
+t Sit
+t + Bit
+t for all it¡j 2 Iit
+t¡j; all it 2 It and
+all t 2 f0;:::; T ¡ 1g :
+Notice that the constraints in the above optimization problems are implied by the absence of arbitrage opportunities and do not depend on the
+probability p:3 Therefore, neither Cp
+u nor Cp
+l will depend on p: We are now
+in conditions to relate these values to C0
+u and C0
+l as follows.
+Theorem 4 For p 2 (0; 1) the upper and lower bound for the prices above do
+not depend on p: The optimization problems above lead to the same solutions
+as when p = 0:
+Proof. Consider ¯rst the case of the upper bound. The constraints
+characterizing Cp
+u include all the constraints characterizing C0
+u: Thus, Cp
+u ¸
+C0
+u. Now, let ¢0
+0 and B0
+0 denote the optimal values invested, at time t = 0;
+when p = 0.
+The trading strategy ¢p
+t = ¢0
+0 and Bp
+t = RtB0
+0, for all
+t = 1;:::; T ¡ 1, is an admissible strategy for any given p, hence Cp
+u = C0
+u:
+The case of the lower bound is analogous.
+The intuition for this result is straightforward. The upper (lower) bound
+of the European derivative remains the same as when p = 0; because with
+probability 1 ¡ p it would not be possible to transact the stock at each
+point in time. In order to be fully hedged, as required by the absence of
+arbitrage opportunities, the worse scenario will be restrictive in spite of its
+possibly low probability. The fact that no intermediate transactions may
+occur dominates all other possibilities.
+The above result is strongly driven by the de¯nition of arbitrage opportunities. Nevertheless, if this notion is relaxed in an economic sensible way,
+a narrower arbitrage-free range of variation for the value of the European
+derivative may be obtained, possibly depending now on p: This is the subject
+of the rest of the paper.
+3This happens since, in order to have an arbitrage opportunity, we must ensure that,
+whether market exists or not at each time t 2 f1;:::;T ¡ 1g ; the agent will never lose
+wealth. Therefore, the optimization problem cannot depend on p:
+9
+
+3
+Statistical Arbitrage Opportunity
+Consider the economydescribed in the previous section. LetTp = f1;:::; T ¡ 1g
+denote the set of points in time. At each of these points there is market with
+probability p; and there is no market with probability 1 ¡ p: The existence
+(or not) of the market at time t corresponds to the realization of a random
+variable yt that assumes the value 0 (when there is no market) and 1 (when
+there is market). This random variable is de¯ned for all t 2 Tp and it is
+assumed to be independent of the ordinary source of uncertainty that generates the price process. We can therefore talk about a market existence
+process. In order to construct one such process, let us start with the state
+space. Let #(Tp) denote the number of points in Tp: At each of these points,
+market may either exist or not exist, leading to 2#(Tp) possible states of
+nature. We then have the collection of possible states of nature denoted by
+^- = fvigi=1;:::;2#(Tp) ; each vi corresponding to a distinct state. Moreover,
+let ^F = ^F1;: :: ; ^FT¡1; where ^Ft is the ¾-algebra generated by the random
+variable yt. Let py be the probability associated with the random variable
+yt: For all t 2 Tp; we have py (yt = 1) = p and py (yt = 0) = 1 ¡ p:
+3.1
+The expected value of a portfolio
+We now construct a random variable that allows to construct the expected
+future value of a portfolio in this setting. For t < t0; let xt;t0 be a random
+variable identifying the last time that transactions take place before date t0;
+given that we are at time t; and transactions are currently possible. Let ^-t
+be the subset of ^- such that ^-t =
+n
+vi 2 ^- : yt (vi) = 1
+o
+: Then,
+xt;t0 : ^-t !
+©
+t;: :: ; t0 ¡ 1
+ª
+Let pxt;t0 be the probability associated with xt;t0: Then,
+pxt;t0
+¡
+xt;t0 = t
+¢
+= (1 ¡ p)t0¡t¡1 :
+Moreover, for a given s 2 (t;t0);
+pxt;t0 ¡
+xt;t0 = s
+¢
+= p (1 ¡ p)t0¡s¡1 :
+Also note that
+Xt0¡1
+s=t pxt;t0 ¡
+xt;t0 = s
+¢
+= (1 ¡ p)t0¡t¡1 +
+Xt0¡1
+s=t p (1 ¡ p)t0¡s¡1 = 1;
+10
+
+as it should.
+Consider a given trading strategy (¢t; Bt)t=0;::: ;T ; where (¢t; Bt) ´
+(¢it
+t ; Bit
+t )it2It is a (t + 1)¡dimensional vector. Consider a given path w
+and (is)s2ft;::: ;Tg ½ w. Suppose that the agent is at a given node it; where
+rebalancing is possible. As there is uncertainty about the existence of market at the future points in time, there is also uncertainty about the portfolio
+that the agent will be holding at a future node it0: In fact, the portfolio at
+it0 may be any of
+³
+¢it
+t ; Bit
+t
+´
+;
+³
+¢it+1
+t+1;Bit+1
+t+1
+´
+;: :: ; or
+³
+¢
+it0¡1
+t0¡1 ; B
+it0¡1
+t0¡1
+´
+; where
+(is)s2ft;::: ;t0¡1g ½ w:
+Clearly, the expected value of a given trading strategy at node it0, given
+that we are at node it; is
+E
+pxt;t0
+it
+h
+¢ix
+x Si
+t0 + Rt0¡xBix
+x
+i
+=
+X
+s=t;::: ;t0¡1 pxt;t0
+¡xt;t0 = s¢ h
+¢iss Si
+t0 + Rt0¡sBiss
+i
+;
+where we use x to short notation for xt;t0:
+3.2
+Statistical versus pure arbitrage
+A pure arbitrage opportunity is a zero-cost portfolio at time t, such that the
+value of each possible portfolio at node iT is positive, i.e.,
+¢it+j
+t+j SiT
+T + RT ¡t¡jBit+j
+t+j ¸ 0
+for all it+j such that it is a predecessor, j = 0;1;: :: ;T ¡ t ¡ 1 and
+E
+pxt;T
+it
+h
+¢ix
+x SiT
+T + RT¡xBix
+x
+i
+> 0;
+together with the self-¯nancing constraints
+¢it
+t S
+it+j
+t+j + Rj¡tBit
+t ¸ ¢
+it+j
+t+j S
+it+j
+t+j + B
+it+j
+t+j ;
+for all it+j such that it is a predecessor, and j = 1; :: : ;T ¡ t ¡ 1:
+If statistical arbitrage is considered, however, an arbitrage opportunity
+requires only that, at node iT; the expected value of the portfolio at T is
+positive,
+E
+pxt;T
+it
+h
+¢ix
+x SiT
+T + RT¡xBix
+x
+i
+¸ 0;
+together with weaker self-¯nancing conditions. Let us regard these latter
+conditions in some detail.
+11
+
+Suppose that we are at a given node it: If there is market at the next
+point in time we then have, for sure, the portfolio
+³
+¢itt ;Bit
+t
+´
+at time t + 1.
+Hence, if node it+1 is reached, the self-¯nancing condition is
+¢it
+t Sit+1
+t+1 + RBit
+t ¡
+³
+¢it+1
+t+1Sit+1
+t+1 + Bit+1
+t+1
+´
+¸ 0
+Consider now that t +2 is reached. At time t there is uncertainty about
+the existence of the market at time t + 1: Hence, at time t + 2 we can either have the portfolio
+³
+¢it
+t ; Bit
+t
+´
+or the portfolio
+³
+¢it+1
+t+1 ;Bit+1
+t+1
+´
+: Under the
+concept of statistical arbitrage, we want to ensure that, in expected value,
+we are not going to lose at node it+2: Hence, the self-¯nancing condition
+becomes
+X
+s=t;t+1 pxt;t+2 (xt;t+2 = s)
+³
+¢iss Sit+2
+t+2 + Rt+2¡sBis
+s
+´
+¸
+³
+¢it+2
+t+2St+2
+t+2 + Bit+2
+t+2
+´
+More generally, for any t at which transaction occurs and t < t0 < T; the
+statistical self-¯nancing condition becomes
+E
+pxt;t0
+it
+h
+¢ixx Sit0
+t0 + Rt0¡xBix
+x
+i
+¸
+³
+¢it0
+t0 Sit0
+t0 + Bit0
+t0
+´
+De¯nition 5 4 A statistical arbitrage opportunity is a zero-cost trading
+strategy for which
+1. At any node it, the expected value of the portfolio at any ¯nal node
+is positive, i.e.,
+E
+pxt;¶T
+it
+h
+¢ix
+xt;TSi
+T + RT¡xBix
+xt;T
+i
+¸ 0
+4This notion of Arbitrage Opportunity is in the spirit of Bondarenko (2003). In his
+de¯nition 2, a Statistical Arbitrage Opportunity (SAO) is de¯ned as a zero-cost trading
+strategy with a payo® ZT = Z (FT ), such that
+(i) E [ZT jF0] > 0; and
+(ii) E [ZT jF0; »T] ¸ 0; for all »T ;
+where »t denotes the state of the Nature at time t; and Ft = (»1; :: : ; »t) is the market
+information set, with F0 = Á. Also, the second expectation is taken at time t = 0 and
+is conditional to the terminal state »T . However, notice that eliminating SAO's at time
+t = 0 does not imply the absence of SAO's at future times t 2 [1; T ¡ 1]. Hence, in order
+to incorporate a dynamically consistent absence of SAO's, we re¯ne the de¯nition of a
+SAO as a zero-cost trading strategy with a payo® ZT = Z (FT ), such that
+(i) E [ZT jF0] > 0; and
+(ii) E [ZT jFt; »T] ¸ 0; for all »T
+and all t 2 [0;T ¡ 1] :
+12
+
+for any it 2 It and t 2 f0;1; :: : ;T ¡ 1g; and
+2. The portfolio is statistically self-¯nancing, i.e:,
+E
+pxt;¶t0
+it
+h
+¢ix
+xt;t0Si
+t0 + Rt0¡xBix
+xt;t0
+i
+¡
+³
+¢it0
+t0 Sit0
+t0 + Bit0
+t0
+´
+¸ 0
+for any it 2 It; t0 > t, t 2 f0;1; :: : ;T ¡ 2g and t0 2 f1;: :: ;T ¡ 1g :
+The two de¯nitions of arbitrage are related in the following.
+Theorem 6 If there are no statistical arbitrage opportunities, then there
+are no pure arbitrage opportunities.
+Proof. If there is a pure arbitrage opportunity then the inequalities
+present in the de¯nition of arbitrage opportunity, de¯nition 3, are respected.
+Hence, as these expressions are the terms under expectation in the de¯nition
+of Statistical Arbitrage opportunity, presented in de¯nition 5, there is also
+a statistical arbitrage opportunity.
+The set of portfolios that represent a pure arbitrage opportunity is a
+subset of the portfolios that represent a statistical arbitrage opportunity, i.e.,
+there are portfolios that, in spite of not being a pure arbitrage opportunity,
+represent a statistical arbitrage opportunity.
+In order to have a statistical arbitrage opportunity it is not necessary
+(although it is su±cient) that the value of the portfolio at the ¯nal date is
+positive. It is only necessary that, for all t, the expected value of the portfolio
+at the ¯nal date is positive.
+Consider now the self-¯nancing conditions under statistical arbitrage.
+When rebalancing the portfolio it is not necessary (although it is su±cient)
+that the value of the new portfolio is smaller than the value of the old one.
+This happens because future rebalancing is uncertain, leading to uncertainty
+about the portfolio that the agent will be holding in any future moment. In
+order to avoid a statistical arbitrage opportunity it is only necessary that
+the expected value of the portfolio at a given point in time is larger than the
+value of the rebalancing portfolio.
+Finally, notice that the concept of statistical arbitrage opportunity reduces to the usual concept of arbitrage opportunity in the limiting case
+p = 0:
+3.3
+Augmented measures
+For technical reasons, we now de¯ne an augmented probability space Q on
+-. In order to do that, we de¯ne a semipath m from it to it0, which is a set
+13
+
+of nodes m = [k2ft;::: ;t0gik such that ik 2 Iik+1
+k
+: Let -+
+it;it0 denote the set of
+semipaths from it to it0:
+De¯nition 7 An augmented probability space in - is a set of probabilities
+n
+q(iT;T);m
+(it;t)
+o
+such that it 2 It; m 2 -+
+it;iT, t = 0;: :: ;T and
+X
+iT
+T¡1
+X
+t=0
+X
+it
+X
+m
+q(iT ;T);m
+(it;t)
+= 1;
+De¯nition 8 A modi¯ed martingale probability measure is an augmented
+probability measure Q 2 Q which satis¯es
+(i)
+S0 = 1
+RT
+X
+fiT 2IT g qiTSiT
+T
+where
+qiT =
+T¡1
+X
+t=0
+X
+n
+it:it2I
+iT
+t
+o
+X
+n
+m2-+
+it;iT
+o q(iT ;T);m
+(it;t)
+SiT
+T ;
+(ii)
+SiT¡1
+T¡1 = 1
+R
+X
+n
+iT :iT¡12IiT
+T¡1
+o ¼(iT;T);m
+(it;t)
+SiT
+T
+with
+X
+n
+iT :iT¡12IiT
+T¡1
+o ¼(iT ;T);m
+(it;t)
+= 1
+and
+¼(iT ;T);m
+(it;t)
+= 1
+¥
+T ¡1
+X
+t=0
+pxt;T (xt;T = T ¡ 1)
+X
+n
+it:it2I
+iT¡1
+t
+o
+X
+n
+m2-+
+it;iT :iT¡12m
+o q(iT ;T);m
+(it;t)
+where
+¥ =
+T¡1
+X
+t=0
+pxt;T (xt;T = T ¡ 1)
+X
+n
+iT:iT¡12IiT
+T¡1
+o
+X
+n
+it:it2I
+iT ¡1
+t
+o
+X
+n
+m2-+
+it;iT :iT¡12m
+o q(iT;T);m
+(it;t)
+;
+14
+
+(iii) there exists
+n
+®(it0 ;t0);m
+(it;t)
+o
+;for all it0 2 It0; it 2 It; m 2 -+
+it;iT and
+t0 > t for all t = 0;:: : ;T ¡ 1 such that, for all 0 < k < T;
+Sik
+k =
+1
+RT ¡k
+X
+n
+iT:ik2I
+iT
+k
+o µ(iT ;T);m
+(it;t)
+SiT
+T +
+X
+t0>k
+1
+Rt0¡k "(it0;t0);m
+(it;t)
+Sit0
+t0 ;
+where
+X
+n
+iT :ik2IiT
+k
+o µ(iT ;T);m
+(it;t)
++
+X
+t0>k
+"(it0;t0);m
+(it;t)
+= 1
+and
+µ(iT ;T);m
+(it;t)
+=
+1
+£
+k
+X
+t=0
+pxt;T (xt;T = k)
+X
+n
+it:it2Iik
+t
+o
+X
+n
+m2-+
+it;iT :ik2m
+o q(iT ;T);m
+(it;t)
+"(it0;t0);m
+(it;t)
+=
+1
+£
+X
+t<k
+pxt;t0
+¡
+xt;t0 = k
+¢X
+n
+it:it2I
+ik
+t
+o
+X
+n
+m2-+
+it;it¶:ik2m
+o ®(it0;t0);m
+(it;t)
+with
+£
+=
+X
+n
+iT :ik2I
+iT
+k
+o
+k
+X
+t=0
+pxt;T (xt;T = k)
+X
+n
+it:it2I
+ik
+t
+o
+X
+n
+m2-+
+it;iT :ik2m
+o q(iT ;T);m
+(it;t)
++
+X
+t0>k
+X
+t<k
+pxt;t0
+¡
+xt;t0 = k
+¢X
+n
+it:it2Iik
+t
+o
+X
+n
+m2-+
+it;it¶:ik 2m
+o ®(it0 ;t0);m
+(it;t)
+:
+We denote by QS: the set of modi¯ed martingale probability measure.
+Such measures will help writing down the upper and lower bounds for the
+value of European derivatives under the absence of statistical arbitrage opportunities.
+4
+Main Results
+4.1
+The upper bound
+4.1.1
+The Problem
+The problem of determining the upper bound of the statistical arbitrage-free
+range of variation for the value of a European derivative, can be stated as
+Cu =
+min
+f¢t;Btgt=0;:::;T¡1
+¢0S0 + B0
+15
+
+where
+¢t;Bt 2 Rt+1;t = 0; :::;T ¡ 1
+subject to the conditions of a positive expected payo®
+E
+pxt;¶T
+it
+£¢ix
+x Si
+T + RT¡xBix
+x
+¤ ¸ GiT
+T ;
+for any it 2 It and t 2 f0;1;: :: ;T ¡ 1g 5; and self-¯nancing conditions
+E
+pxt;¶t0
+it
+h
+¢ix
+x Si
+t0 + Rt0¡xBix
+x
+i
+¡
+³
+¢it0
+t0 Sit0
+t0 + Bit0
+t0
+´
+¸ 0
+for any it 2 It; t0 > t, t 2 f0; 1;: :: ; T ¡ 2g and t0 2 f1;: :: ; T ¡ 1g 6:
+Example 9 Illustration of the optimization problem with T = 3. The evolution of the price underlying asset can be represented by the tree in ¯gure
+1.
+t=3
+t=2
+t=1
+t=0
+t=3
+t=2
+t=1
+t=0
+Figure 1: Evolution of the undelying asset' price.
+In what concerns the evolution of the price process there are eight di®erent states, i.e., - = fwigi=1;::: ;8 : The problem that must be solved in order
+to ¯nd the upper bound is the following.
+Cu =
+min
+f¢t;Btgt=0;:::;2
+¢0S0 + B0
+where
+f¢0; B0g
+=
+f(¢0;B0)g
+f¢1; B1g
+=
+©¡
+¢1
+1;B1
+1
+¢
+;
+¡
+¢2
+1; B2
+1
+¢ª
+f¢2; B2g
+=
+©¡
+¢1
+2;B1
+2
+¢
+;
+¡
+¢2
+2; B2
+2
+¢
+;
+¡
+¢3
+2; B3
+2
+¢ª
+5For each it there are 2(T¡t) paths, and as a result, 2(T¡t)(t+ 1) restrictions at time t.
+The total number of restrictions isPT¡1
+t=0 2(T¡t)(t + 1):
+6For each it there are PT¡1
+t0=t+1 2t0¡t: Hence, for each t there are (t + 1) PT¡1
+t0=t+1 2t0¡t:
+Hence, there are PT¡2
+t=0 (t + 1) PT¡1
+t0=t+1 2t0¡t restrictions.
+16
+
+subject to the conditions of a positive expected payo®
+h
+¢i2
+2 Si3
+3 + RBi2
+2
+i
+¸ Gi3
+3 ;
+for all i3 2 I3 and i2 2 I2 such that i2 2 Ii3
+2 : (these are 6 constraints);
+p
+h
+¢i2
+2 Si3
+3 + RBi2
+2
+i
++ (1 ¡ p)
+h
+¢i1
+1 Si3
+3 + R2Bi1
+1
+i
+¸ Gi3
+3
+for all i3 2 I3; i2 2 I2 and i1 2 I1 such that i2 2 Ii3
+2 : and i1 2 Ii2
+1 ; i.e., i1; i2
+and i3 belong to the same path (these are 8 constraints) and
+£
+p2 + p (1 ¡ p)
+¤ h
+¢i2
+2 Si3
+3 + RBi2
+2
+i
++ p (1 ¡ p)
+h
+¢i1
+1 Si3
+3 + R2Bi1
+1
+i
++
++(1 ¡ p)2 h
+¢0Si3
+3 + R3Bi2
+2
+i
+¸ Gi3
+3
+for all i3 2 I3; i2 2 I2 and i1 2 I1 such that i2 2 Ii3
+2 : and i1 2 Ii2
+1 ; i.e., i1;
+i2 and i3 belong to the same path (these are 8 constraints). Moreover, the
+self-¯nancing constraints must also be considered
+¢0Si1
+1 + RB0 ¸ ¢i1
+1 Si1
+1 + Bi1
+1
+for any i1 2 I1 (2 constraints),
+(1 ¡ p)
+h
+¢0Si2
+2 + R2Bi2
+2
+i
++ p
+h
+¢i1
+1 Si2
+2 + RBi1
+1
+i
+¸ ¢i2
+2 Si2
+2 + Bi2
+2
+for any i2 2 I2 and i1 2 I1 such that i1 2 Ii2
+1 ; i.e., i1;and i2 belong to the
+same path (these are 4 constraints) and, ¯nally,
+¢i1
+1 Si2
+2 + RBi1
+1 ¸ ¢i2
+2 Si2
+2 + Bi2
+2
+for any i2 2 I2 and i1 2 I1 such that i1 2 Ii2
+1 ; i.e., i1;and i2 belong to the
+same path (these are 4 constraints).
+4.1.2
+Solution
+Theorem 10 There exists a modi¯ed martingale probability measure, qiT 2
+QS; such that the upper bound for arbitrage-free value of a European option
+can be written as
+Cu = max
+qiT 2QS
+1
+RT
+X
+fiT 2IT g qiT GiT
+T :
+(3)
+17
+
+Proof. See proof in appendix A.1.
+Remark 11 If a Call Option is considered, the values for qiT; in a model
+with two periods are explicitly calculated in appendix A.3. In that case it
+can be shown that for a strictly positive p; the q1; q2 and q3 are also strictly
+positive.
+In what follows we characterize some relevant properties of Cu:
+1. Cu · C0u
+Proof. Let ¢0
+0 and B0
+0denote the optimal values invested, at time
+t = 0; in the stock and in the risk-free asset respectively, when p = 0.
+The trading strategy ¹¢t = ¹¢P=0
+0
+and ¹Bt = Rt ¹Bp=0
+0
+, for t = 1;:::; T¡1,
+is an admissible strategy for any given p. As a result, the solution of
+the problem for any p cannot be larger that the value of this portfolio
+at t = 0 (which is C0
+u).
+2. Cu ¸ C1
+u:
+Proof. Consider the trading strategy ¡¹¢¤
+t ; ¹B¤
+t
+¢
+t=0;::: ;T¡1 that solves
+the maximization problem that characterizes the upper bound for a
+p 2 (0;1): This is an admissible strategy for the case p = 1, because
+it is self-¯nancing, i.e.,
+¢it¡1
+t¡1Sit
+t + RBit¡1
+t¡1 ¸ ¢it
+t Sit
+t + Bit
+t ;
+and superreplicates the payo® of the European derivative at maturity,
+i.e.,
+¢iT¡1
+T¡1SiT
+T + RBiT¡1
+T¡1 ¸ GiT
+T :
+Hence, the solution of the problem for p = 1 cannot be higher than
+the value of this portfolio at t = 0 (which is Cu).
+3. limp!0 Cu = C0
+u and limp!1 Cu = C1
+u:
+Proof. See Appendix A.4
+An example for a Call Option and T=2 is also show in appendix A.4.
+4. Cu is a decreasing function of p.
+Proof. See Appendix A.4
+18
+
+5. For a Call Option and T = 2, we can prove that
+Cu · pC1
+u + (1 ¡ p)C0
+u
+meaning that the probabilistic upper bound is a convex linear combination of the perfectly liquid upper bound and the perfectly illiquid
+upper bound.
+Proof. See appendix A.4.
+4.2
+The Lower Bound
+The organization of this section is analogous to the section for the upper
+bound.
+4.2.1
+The Problem
+The problem of determining the lower bound of the statistical arbitrage-free
+range of variation for the value of an European derivative, can be stated as
+Cl =
+max
+f¢t;Btgt=0;:::;T¡1
+¢0S0 + B0
+where
+¢t;Bt 2 Rt+1;t = 0; :::;T ¡ 1
+subject to the conditions of a positive expected payo®
+E
+pxt;¶T
+it
+£¢ix
+x Si
+T + RT¡xBix
+x
+¤ · GiT
+T ;
+for any it 2 It and t 2 f0;1;: :: ;T ¡ 1g 7;and self-¯nancing conditions
+E
+pxt;¶t0
+it
+h
+¢ix
+x Si
+t0 + Rt0¡xBix
+x
+i
+¡
+³
+¢it0
+t0 Sit0
+t0 + Bit0
+t0
+´
+· 0
+for any it 2 It; t0 > t, t 2 f0; 1;: :: ; T ¡ 2g and t0 2 f1;: :: ; T ¡ 1g 8:
+7As in the upper bound case, for each it there are 2(T¡t) paths, and as a result,
+2(T¡t)(t+ 1) restrictions at time t. The total number of restrictions isPT ¡1
+t=0 2(T¡t)(t+ 1):
+8As in the upper bound case, for each it there are PT¡1
+t0=t+1 2t0¡t: Hence, for each t
+there are (t + 1) PT¡1
+t0=t+1 2t0¡t: Hence, there are PT¡2
+t=0 (t + 1) PT¡1
+t0=t+1 2t0¡t restrictions.
+19
+
+4.2.2
+Solution
+Theorem 12 There exists an modi¯ed martingale probability measure, qiT 2
+QS; such that the upper bound for arbitrage-free value of an European option
+can be written as
+Cl =
+min
+qiT 2QS
+1
+RT
+X
+fiT 2ITg qiTGiT
+T :
+Proof. The proof is analogous to the upper bound.
+Remark 13 If a call option is considered, the values for qiT; in a model
+with two periods are explicitly calculated in appendix B.2. In that case it
+can be shown that for a strictly positive p; the q1; q2 and q3 are also strictly
+positive.
+In what follows we characterize some relevant properties of Cl:
+1. Cl ¸ C0
+l :
+2. Cl · C1
+l :
+3. limp!0 Cl = C0
+l and limp!0 Cl = C1
+l :
+An example for a call option and T = 2 is shown in appendix ??
+4. Cl is a increasing function of p.
+The proofs of these properties are analogous to those presented for the
+upper bound.
+5
+Utility Functions and Reservation Prices
+In this section we show that the price for which any agent is indi®erent between transacting or not transacting the derivative, to be called the reservation price of the derivative, is contained within the statistical arbitrage
+bounds derived above.
+Let ut (:) denote a utility function representing the preferences of an
+agent at time t. The argument of the utility function is assumed to be the
+consumption at time t. Let y be the initial endowment of the agent, and Zt
+denote the vector of consumption at time t; i.e., Zt =
+³
+Zit
+t
+´
+it2It : Let ½ be
+a discount factor. If an agent sells a European derivative by the amount C;
+20
+
+and that derivative has a payo® at maturity given GiT
+T , the maximum utility
+that he or she can attain is
+u¤
+sell (C;p) =
+sup
+f¢t;Btgt=0;:::;T¡1
+EG;P
+0
+XT
+t=0 ½tut (Zt)
+subject to
+Z0 + ¢0S0 + B0 · C + y
+Zit
+t + ¢itt Sit
+t + Bitt · ¢
+iit
+t¡j
+t¡j Sit
+t + RjB
+iit
+t¡j
+t¡j
+ZiT
+T · ¢
+i
+iT
+T¡j
+T¡j SiT
+T + RjB
+i
+iT
+T¡j
+T¡j ¡ GiT
+T
+for all iT 2 IT; it 2 It, j · t and t = 1;: :: ; T ¡ 1 where EG;P
+0
+denotes a
+bivariate expected value, at t = 0, with respect to the probability P induced
+by the market existence and the probability G underlying the stochastic
+evolution of the price process.
+Similarly, if the agent decides not to include derivatives in his or her
+portfolio, the maximum utility that he or she can attain is given by
+u¤ (p) =
+sup
+f¢t;Btgt=0;:::;T¡1
+EG;P
+0
+XT
+t=0 ½tut (Zt)
+subject to
+Z0 + ¢0S0 + B0 · y
+Zit
+t + ¢itt Sit
+t + Bitt · ¢
+iit
+t¡j
+t¡j Sit
+t + RjB
+iit
+t¡j
+t¡j
+ZiT
+T · ¢
+i
+iT
+T¡j
+T ¡j SiT
+T + RjB
+i
+iT
+T¡j
+T¡j
+Lemma 14 In the case of random dryness, there is p¤ > 0 such that, for
+all p < p¤; the utility attained selling the derivative by Cu, is larger than the
+utility attained if the derivative is not included in the portfolio.
+u¤
+sell (Cu; p) ¸ u¤(p):
+Proof. Let, for a given p; f¢t; Btgt=0;:::;T¡1 denote the solution of the
+utility maximization problem with no derivative and f¢u
+t ;Bu
+t gt=0;:::;T¡1 denote the solution of the minimization problem that must be solved to ¯nd
+the upper bound if statistical arbitrage opportunities are considered (see
+section 4.1). Moreover, let
+©
+¢sell
+t
+;Bsell
+t
+ª
+t=0;:::;T¡1 denote an admissible solution of the utility maximization problem when the agent sells one unit of
+21
+
+the derivative. Now, consider the limit case, when p approaches zero. In
+that case, the portfolio
+n
+¢sell
+t
+;Bsell
+t
+o
+t=0;:::;T¡1 ´ f¢t + ¢u
+t ;Bt + Bu
+t gt=0;:::;T¡1
+is an admissible solution of the utility maximization problem when the agent
+sells one unit of derivative by Cu. The reason is as follows. The constraint
+set of the problem that must be solved to ¯nd the upper bound is continuous
+in p: Hence, when p ! 0; the solution of the problem is f¢u
+t ;Bu
+t gt=1;::: ;T¡1 =
+©¢u
+0;RtBu
+0
+ª where f¢u
+0;Bu
+0g is the solution of following problem
+½
+min
+¢;B ¢S0 + B s.a. ¢SiT
+T + RTB ¸ GiT
+T ;8iT
+¾
+:
+As C = Cu = ¢u
+0S0 + B0; the portfolio f¢ut ;But gt=1;::: ;T¡1 is an admissible solution of the utility maximization problem when one unit of the
+derivative is being sold. Moreover, it guarantees a positive expected utility.9
+Hence, the portfolio
+©
+¢sell
+t
+; Bsell
+t
+ª
+t=0;:::;T ¡1 is also admissible solution for the
+optimization problem, when one unit of the derivative is being sold, which
+guarantees a higher payo® than the portfolio f¢t;Btgt=0;:::;T ¡1 : Hence,
+u¤
+sell (Cu; 0) ¸ u¤(0):
+Continuity on p of both u¤
+sell and u¤ ensure the result.
+Remark 15 Notice that the existence of p¤ follows from the continuity of
+the utilities in p: Furthermore, it is possible to have p¤ = 1. Examples with
+di®erent values of p¤ are given in the end of this paper. The range of values
+p < p¤ characterizes what was vaguely described as \su±ciently incomplete
+markets" in the introduction.
+The reservation price for an agent that is selling the option is de¯ned
+as the value of C that makes u¤
+sell (C;p) = u¤ (p).
+Let Ru denote such
+reservation price.
+Theorem 16 For all p < p¤ we have Ru · Cu:
+Proof. The optimal utility value;
+u¤
+sell (C; p) =
+sup
+f¢t;Btgt=0;:::;T¡1
+C + y ¡ (¢0S0 + B0) + EG;P
+0
+XT
+t=1 ½tut (Zt);
+9It su±ces to consider Z0 = y; Zit = 0 and ZiT = ¢SiT
+T + RT B ¡ GiT
+T ¸ 0:
+22
+
+is increasing in C: This, together with lemma 14 leads to the result.
+The same applies for the case when the agent is buying a derivative. In
+that case, if an agent is buying the derivative by C, the maximum utility
+that he or she can attain is
+u¤
+buy (C;p) =
+sup
+f¢t;Btgt=0;:::;T¡1
+EG;P
+0
+XT
+t=0 ½tut (Zt)
+subject to
+Z0 + ¢0S0 + B0 · ¡C + y
+Zit
+t + ¢it
+t Sit
+t + Bit
+t · ¢
+iit
+t¡j
+t¡j Sit
+t + RjB
+iit
+t¡j
+t¡j
+ZiT
+T · ¢
+i
+iT
+T¡j
+T¡j SiT
+T + RjB
+i
+iT
+T¡j
+T¡j + GiT
+T
+Lemma 17 In the case of random dryness, there is p¤ > 0 such that, for
+all p < p¤; the utility attained buying the derivative by Cl, is larger than the
+utility attained if the derivative is not included in the portfolio.
+u¤
+buy (Cl;p) ¸ u¤ (p):
+Proof. The proof is analogous to the one in proposition 14
+Let Rl denote the reservation selling price, i.e., the price such that
+u¤ (p) = u¤
+buy (Rl; p).
+Theorem 18 For all p < p¤ we have Rl ¸ Cp
+l :
+Proof. The proof is analogous to the one presented in theorem (16).
+However, in this case the utility is a decreasing function of C; and we obtain
+u¤
+buy (Cl; p) ¸ u¤ (p) ) Rl ¸ Cl:
+Several illustrations are presented in section 7.
+6
+Comparisons with the Literature
+In what follows we compare our methodology with others in the literature,
+namely Bernardo and Ledoit (2000) and Cochrane and Sa¶a-Requejo (2000).
+Cochrane and Sa¶a-Requejo (2000) introduce the notion of \good deals", or
+investment opportunities with high Sharpe ratios. They show that ruling out
+investment opportunities with high Sharpe ratios, they can obtain narrower
+23
+
+bounds on securities prices. However, as stressed in Bondarenko (2003), not
+all pure arbitrage opportunities qualify as \good deals". Moreover, for a
+given set of parameters we found out that in order to contain the reservation
+prices of a risk neutral agent the interval is more broad than the one that
+was obtained in our formulation.
+We ¯rst provide a simple example to compare our bounds with pure
+arbitrage bounds.
+Example 19 Consider a simple two periods example, where transactions
+are certainly possible at times t = 0 and t = 2: At time t = 1 there are
+transactions with a given probability p = 0:65: The initial stock price is
+S0 = 100 and it may either increase in each period with a probability 0:55; or
+decrease with a probability 0:45: We take and U = 1:2;D = 0:8 and R = 1:1:
+A call option that matures at time T = 2 with exercise price K = 80 is
+considered. Using pure arbitrage arguments we ¯nd the following range of
+variation for the value of the call option
+[33:88; 37:69]
+Using the notion of statistical arbitrage opportunity, the above range gets
+narrower and is given by
+[34:31; 35:17];
+clearly narrower that the above interval.
+If markets were complete (p = 1), the value of the option would be 34:71.
+Also, the reservation price10 for a risk neutral agent is equal to 35:09. Notice
+that both intervals include the complete market value and the reservation
+price.
+We now use the same example to compare our methodology with the
+one presented by Cochrane and Sa¶a-Requejo (2000). We show that either
+our interval is contained in theirs, or else, their interval do not contain the
+above mentioned reservation price.
+With the Sharpe ratio methodology the lower bound is given by
+C¹ = min
+fmg E ©m[S2 ¡ K;0]+ª
+10In this example, the reservation price for an agent who is buying the derivative coincides with that of an agent who is selling it.
+24
+
+subject to
+S0 = E [mS2]; m ¸ 0; ¾ (m) · h
+R2;
+where S0 is the initial price of the risky asset, and S2 is the price of the risky
+asset at time t = 211: The upper bound is
+¹C = max
+fmg E
+©
+m[S2 ¡ K; 0]+ª
+subject to
+p = E [mS2] ;m ¸ 0; ¾ (m) · h
+R2:
+Example 20 In order to compare the statistical arbitrage interval with the
+Sharpe ratio bounds, we must choose the ad-hoc factor h so as to make one
+of the limiting bounds to coincide. If we want the upper bound of the Sharpe
+Ratio methodology to coincide with the upper bound obtained with statistical
+arbitrage, we must take h = 0:3173: In that case, the lower bound will be
+33:88 and the range of variation will be
+[33:88; 35:17];
+worse than the statistical arbitrage interval.
+Alternatively, if we want the lower bound of the Sharpe Ratio methodology
+to coincide with the lower bound obtained with statistical arbitrage, we must
+take h = 0:28359:12 In that case, the upper bound will be 34:49 and the range
+of variation will be
+[34:31; 34:49]:
+Although this interval is tighter than the statistical arbitrage interval, it does
+not contain the reservation price for a risk neutral agent.
+In a di®erent paper Bernardo and Ledoit (2000) preclude investments
+o®ering high gain-loss ratios to a benchmark investor, somehow analogous
+11As stressed by Cochrane and Sa¶a-Requejo, in a former paper Hansen and Jagannathan
+(1991) have shown that a constraint on the discount factor volatility is equivalent to impose
+an upper limit on the Sharpe ratio of mean excess return to standard deviation.
+12In order to get a lower bound higher than 33:88 it is necessary to impose aditionally
+that m > 0: If that were not the case, then the lower bound would only be de¯ned for h
+¸ 0:2980 and would be equal to 33:88:
+25
+
+to the \good deals" of Cochrane and S¶aa-Requejo. The criterion, however,
+is di®erent since Bernardo and Ledoit (2000) propose a utility-based approach, as stressed in the Introduction. In this way, the arbitrage-free range
+of variation for the value of the European derivative is narrower than in
+the case of pure arbitrage. Let ~z+ denote the (random) gain and ~z¡ denote the (random) loss of a given investment opportunity. The utility of a
+benchmark agent characterizes a pricing kernel that induces a probability
+measure, according to which the expected gain-loss ratio is bounded from
+above
+E (~z+)
+E (~z¡) · ¹L:
+The fair price is the one that makes the net result of the investment to
+be null. In other words, for a benchmark investor, it would correspond to
+the pricing kernel that would make
+E
+¡
+~z+ ¡ ~z¡¢
+= 0 , E (~z+)
+E (~z¡) = 1:
+This last equality characterizes the benchmark pricing kernel for a given
+utility.
+Notice that the fair price constructed in this way coincides with our
+de¯nition of the reservation price. Therefore, by choosing ¹L larger than
+one, the interval built by Bernardo and Ledoit contains by construction the
+reservation price of the benchmark agent.
+On the other hand, the arbitrary threshold ¹L can be chosen such that
+their interval is contained in the statistical arbitrage-free interval.
+The disadvantages, however, are clear. First, the threshold is ad-hoc,
+just as in the case of Cochrane and S¶aa-Requejo; second, the constructed
+interval depends on the benchmark investor; and ¯nally, the only reservation
+price that is contained for sure in that interval, is the reservation price of
+the benchmark investor.
+In other words, we cannot guarantee that the
+reservation price of an arbitrary agent, di®erent from the benchmark, is
+contained in that interval.
+7
+Numerical Examples
+7.1
+Upper and Lower Bounds
+In this section several numerical examples are provided in order to illustrate
+the properties of the upper and lower bounds presented in the previous
+26
+
+sections.
+Using numerical examples we can conclude that, for a call option,
+Cu · pC1
+u + (1 ¡ p)C0
+u:
+If the Call Option is sold by the expected value of the call, regarding the
+existence (or not) of market, there will be an arbitrage opportunity in statistical terms. The reason is that the agent that sells the call option can
+buy a hedging portfolio (in a statistical sense) by an amount smaller than
+the expected value of the call option. As a result, there is an arbitrage opportunity, because he is receiving more for the call option than is paying for
+the hedging portfolio.
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+33
+34
+35
+36
+37
+38
+39
+40
+p
+Upper
+Lower
+Figure 2: The Upper and Lower Bounds for a European Call Option with
+di®erent value of p in a two period model, with U = 1:2, R = 1:1, D = 0:8;
+S0 = 100 and K = 80:
+However, in what concerns the lower bound, it is not possible to conclude
+whether Cl · pC1
+l +(1¡p)C0
+l or Cl ¸ pC1
+l +(1¡p)C0
+l : That depends on the
+value of the parameters. Although in the two-period simulation in Figure 2
+we seem to have the former case, the three period example in Figure 3 seems
+to suggest the latter, since the lower bound behaves as a concave function
+of p for most of its domain.
+27
+
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+p
+Upper Bound
+Lower Bound
+Figure 3: The Upper and Lower Bounds for a European Call Option with
+di®erent value of p in a three period model, with U = 1:3, R = 1, D = 0:6;
+S0 = 100 and K = 100:
+Finally, we may use Figure 4 to illustrate several features.
+The Upper and Lower bounds of an European Call Option for di®erent
+values of p and K (K = 80, K = 100, K = 120, K = 140 e K = 160) in a
+three period model, with U = 1:2; R = 1:1; D = 0:8 and S = 100.
+First, let us regard the situations in this Figure that are related to pure
+arbitrage. This includes the value of the derivative under perfectly liquid
+(p = 1) and perfectly illiquid (p = 0) markets. In the former case, the
+unique value of the derivative clearly decreases with the exercise price K; as
+it should. In the latter, both the upper bound C0
+u and the lower bound C0
+l
+also decrease with K: More curiously, however, the spread C0
+u ¡ C0
+l has a
+non-monotonic behaviour. Obviously this di®erence is null for K less than
+the in¯mum value of the stock at maturity and must go to zero as the strike
+approaches the supremum of the stock's possible values at maturity. In the
+middle of this range it attains a maximum. In our numerical example we
+observe that the maximum value of the spread is attained for K close to
+120.
+28
+
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+p
+K=80
+K=100
+K=120
+K=140
+K=160
+Figure 4: The Upper and Lower bounds of an European Call Option for
+di®erent values of p and K (K = 80, K = 100, K = 120, K = 140 e
+K = 160) in a three period model, with U = 1:2; R = 1:1; D = 0:8 and
+S = 100.
+Regarding the statistical arbitrage domain when p 2 (0; 1); we notice
+that all the above remarks remain true. Figure 4 also suggests that, for any
+given p; the spread attains its maximum for the same value of K as before.
+Notice that the spread Cu¡Cl decreases with p for ¯xed strike K converging
+to zero as p ! 1: Hence, although somehow di®erent from the traditional
+de¯nition of arbitrage, the notion of statistical arbitrage seems to provide a
+very nice bridge, for 0 < p < 1, between the two extreme cases above (p = 0
+and p = 1), where the original concept of arbitrage makes sense. This is
+illustrated in a more direct way in Figure 5.
+A third issue driven by Figure 4 is that coexisting derivatives may restrict
+more the no-arbitrage interval. As an example, suppose that derivatives
+with K = 120 and K = 140 coexist. When p = 0, the upper bound for
+K = 140 is above the lower bound when K = 120. In orderto avoid arbitrage
+opportunities, the equilibrium selling price of the K = 120 derivative has to
+be above the equilibrium buying price of the K = 140 derivative. Otherwise
+29
+
+40
+60
+80
+100
+120
+140
+160
+180
+-2
+0
+2
+4
+6
+8
+10
+12
+14
+16
+K
+Cu-Cl
+p=0
+p=1
+Figure 5: The Spread (Cu ¡ Cl) of an European Call Option for di®erent
+values of K and p (p = 0; :: : ;1 with increments of 0:1) in a three period
+model, with U = 1:2; R = 1:1; D = 0:8 and S = 100.
+one would buy the K = 120 derivative with the proceeds of selling the
+K = 140 derivative, to get a net positive payo® at maturity at no cost.
+This implies that the upper bound of the K = 140 derivative should be
+the equilibrium selling price of the K = 120 derivative and not necessarily
+the bound we derived above.
+This situation stresses the limitation that
+our bounds were constructed assuming that there was only one derivative
+that, aditionally, was not part of the replicating portfolio.
+In fact, the
+presence of more derivatives may help to complete the market, making the
+overlapping arbitrage-free regions not viable. As markets become complete,
+the arbitrage-free regions shrink to a point, corresponding to the unique
+value of the derivatives under complete markets.
+7.2
+Utility and Reservation Prices
+In this section we illustrate several aspects related to the determination of
+the reservation price. In Figure 6 we represent the utility of an agent in
+three di®erent situations. Without the derivative; a short position on the
+30
+
+derivative, when the instrument is sold by the statistical arbitrage upper
+bound; and a long position on the derivative when the instrument is bought
+by the statistical arbitrage lower bound. Notice that for p = 0 the best
+situation is the short position on the derivative and the worst is without
+trading the derivative. This is consistent with lemma 14 and lemma 17.
+Notice that there is a value of p such that, for larger probabilities, the
+utility without trading the derivative is no longer the worst. That critical
+value of p is what we called p¤:
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+55
+60
+65
+70
+75
+80
+85
+p
+Utility Value
+Without Derivative
+Selling Derivative
+Buying Derivative
+Figure 6: Utility value for the following parameters: U = 1:3, D = 0:6,
+R = 1, S0 = 100, K = 100, ½ = 1=R, q = 0:5, y = 50 and T = 3.
+Figure 7 represents the statistical arbitrage-free interval together with
+the reservation price for a risk neutral agent. By construction, the probability associated to the point where the reservation price coincides with the
+upper bound, corresponds to the critical probability p¤: Notice from Figure
+6 that the utility of the position associated to a long position on the derivative is always above the utility without trading the derivative. This implies
+that the reservation price is always above the lower bound. Likewise, the
+fact that the utility of the short position on the derivative goes below the
+utility without trading the derivative, implies that the reservation price goes
+above the upper bound.
+31
+
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+p
+Reservation Selling Price
+Reservation Buying Price
+Upper Bound
+Lower Bound
+Figure 7: Statistical Arbitrage free bounds and reservation prices for the
+following parameters:
+U = 1:3, D = 0:6, R = 1, S0 = 100, K = 100,
+½ = 1=r, q = 0:5, y = 40 and T = 3.
+32
+
+8
+Conclusion
+In this paper we have characterized the statistical arbitrage-free bounds for
+the value of an option written on an asset that may not be transacted.
+This statistical arbitrage-free interval is by construction tighter than the
+usual arbitrage-free interval, obtained under the superreplication strategy.
+In that sense, our result is close to the results of Bernardo and Ledoit (2000)
+and Cochrane and Sa¶a-Requejo (2000). By using a concept of statistical arbitrage, in the spirit of Bondarenko's (2003), we were able to avoid the arbitrary threshold that led the former approaches to constrain the arbitrage-free
+interval.
+In a framework characterized by the fact that transactions of the underlying asset are possible with a given probability, we derived the range of
+variation for the statistical arbitrage-free value of an European derivative.
+If transactions were possible at all points in time there would be a unique
+arbitrage-free value for the European derivative that is contained in the statistical arbitrage-free range. Moreover, the statistical arbitrage-free range is
+contained in the arbitrage-free range of variation if the market is perfectly
+illiquid. The upper bound is a decreasing function in the probability of existence of the market and the lower bound is a increasing function. They
+are asymptotically well behaved both when p ! 0 and when p ! 1.
+Finally, we could also prove that, in the case of random illiquidity, the
+reservation prices (both for selling and buying positions) are contained in
+the statistical arbitrage-free range of variation for the value of the European
+Option.
+33
+
+References
+[1] Amaro de Matos, J. and P. Ant~ao, 2001, \Super-Replicating Bounds
+on European Option Prices when the Underlying Asset is Illiquid",
+Economics Bulletin, 7, 1-7.
+[2] Bernardo, A. and Ledoit, O., 2000, Gain, Loss, and Asset Pricing,
+Journal of Political Economy, 108, 1, 144-172.
+[3] Bondarenko, O., 2003, Statistical Arbitrage and Securities Prices, Review of Financial Studies, 16, 875-919.
+[4] Cochrane, J. and Sa¶a-Requejo, J., 2000, Beyond Arbitrage: Good-Deal
+Asset Price Bounds in Incomplete Markets, Journal of Political Economy, 108, 1, 79-119.
+[5] Edirisinghe, C., V. Naik and R. Uppal, 1993, Optimal Replication of
+Options with Transaction Costs and Trading Restrictions, Journal of
+Financial and Quantitative Analysis, 28, 117-138.
+[6] El Karoui, N. and M.C. Quenez, 1991, Programation Dynamique et
+¶evaluation des actifs contingents en march¶e incomplet, Comptes Rendues de l' Academy des Sciences de Paris, S¶erie I, 313, 851-854
+[7] El Karoui, N. and M.C. Quenez, 1995, Dynamic programming and
+pricing of contingent claims in an incomplete market, SIAM Journal of
+Control and Optimization, 33, 29-66.
+[8] Hansen. L.P. and R. Jagannathan. Implications of Security Market Data
+for Models of Dynamic Economies. Journal of Political Economy, 99,
+225-262, 1991.
+[9] Karatzas, I. and S. G. Kou, 1996, On the Pricing of Contingent Claims
+with Constrained Portfolios, Annals of Applied Probability, 6, 321-369.
+[10] Longsta®, F., 1995, How Much Can Marketability A®ect Security Values?, The Journal of Finance, 50, 1767{1774.
+[11] Longsta®, F., 2001, Optimal Portfolio Choice and the Valuation of Illiquid Securities, Review of Financial Studies, 14, 407-431.
+[12] Longsta®, F., 2004, The Flight-to-Liquidity Premium in U.S. Treasury
+Bond Prices, Journal of Business, 77, 3.
+[13] Mas-Colell, A., Whiston, M. and Green, J., 1995, Microeconomic Theory, Oxford University Press.
+34
+
+A
+Some Proofs on the Solution of the Upper Bound
+for Statistical Arbitrage Opportunities
+A.1
+Proof of theorem 10
+Proof.
+For any given path m 2 -+
+it;iTlet ¸(iT ;T);m
+(it;t)
+be the dual variable
+associated with the superreplication constraint
+E
+pxt;¶T
+it
+hX
+s=t;::: ;t0¡1 pxt;t0
+¡xt;t0 = s¢h
+¢iss Si
+t0 + Rt0¡sBis
+s
+ii
+¸ GiT
+T
+with ik 2 Iik+1
+k
+and k = t;: :: ; T ¡ 1: Let niT
+t
+be the number of nodes that
+are predecessors of node iT at time t; where niT
+t
+is given by
+niT
+t = minfT ¡ (iT ¡ 1);iT ¡ 1;T ¡ tg + 1
+At each node it; that is a predecessor of iT; there are #
+³
+-+
+it;iT
+´
+paths to
+reach iT: For any given path m 2 -+
+it;it0 let ®(it0 ;t0);m
+(it;t)
+be the dual variable
+associated with the self-¯nancing constraints
+E
+pxt;¶t0
+it
+h
+¢ix
+xt;t0Si
+t0 + Rt0¡xBix
+xt;t0
+i
+¡
+³
+¢it0
+t0 Sit0
+t0 + Bit0
+t0
+´
+¸ 0:
+Considering nit0
+t
+be the number of nodes that are predecessors of node it0 at
+time t we have
+nit0
+t = min
+©
+t0 ¡ (it0 ¡ 1);it0 ¡ 1;t0 ¡ t
+ª
++ 1
+At each node it that is a predecessor of it0 there are #
+³
+-+
+it;it0
+´
+.
+The problem that must be solved in order to ¯nd the upper bound of
+the range of variation of the arbitrage-free value of an European derivative
+is a linear programming problem. Its dual problem is
+min
+¸iT
+T +1
+X
+j=1
+¸iTGiT
+T
+where ¸iT is the sum of the dual variables associated with the positive expected payo® constraints that have the right member equal to GiT
+T ; i.e.,
+¸iT =
+T¡1
+X
+t=0
+X
+fit:it2Itg
+X
+n
+m2-+
+it;iT
+o ¸(iT ;T);m
+(it;t)
+SiT
+T
+35
+
+The ¯rst set of constraints is of nonnegativity of each dual variable, i.e,
+¸(iT ;T );m
+(it;t)
+;®(it0;t0);m
+(it;t)
+¸ 0: The other set of constraints consists of equality constraints, one constraint associated with each variable of the primal problem.
+As there are
+2
+XT¡1
+t=0 (t + 1) = 21 + (T ¡ 1 + 1)
+2
+T = T (T + 1)
+primal variables there are also T(T + 1) constraints of the dual problem,
+which are equality constraints because the variables of the primal problem
+are free.
+The constraint for ¢0 is:
+px0;T (x0;T = 0)
+·P
+iT 2IT
+P
+m2-+
+i0;iT ¸(iT ;T);m
+(i0;0)
+SiT
+T
+¸
++ ®(1;1)
+(i0;0)S1
+1 + ®(2;1)
+(i0;0)S2
+1
++ PT¡1
+t=2
+½Qt¡1
+j=1 py (yj = 0)Pn
+it:i02Iit
+0
+o P
+m2-+
+i0;it ®(it;t);m
+(i0;0) Sit
+t
+¾
+= S0
+The constraint for B0 is:
+px0;T (x0;T = 0)RT P
+iT 2IT
+P
+m2-+
+i0;iT ¸iT;m
+i0
++ R
+³
+®(1;1)
+(i0;0) + ®(2;1)
+(i0;0)
+´
++ PT ¡1
+t=2
+½Qt¡1
+j=1py (yj = 0)Rt Pn
+it:i02Iit
+0
+o P
+m2-+
+i0;it ®(it;t);m
+(i0;0)
+¾
+= 1
+For the constraint that concerns ¢ik the term in ¸ is
+px0;T (x0;T = k)P
+m2-+
+i0k;iT
+Pn
+iT:i02IiT
+0
+o ¸(iT;T );m
+(i0;0)
+SiT
+T +
+px1;T (x1;T = k)Pn
+i1:i12Iik
+1
+o Pn
+m2-+
+i1;iT :ik2m
+o Pn
+iT:ik 2IiT
+k
+o ¸(iT ;T);m
+(i1;1)
+SiT
+T
+::::
+pxt;T (xt;T = k)Pn
+it:it2I
+ik
+t
+o Pn
+m2-+
+it;iT :ik2m
+o Pn
+iT :ik2I
+iT
+k
+o ¸(iT;T );m
+(it;t)
+SiT
+T =
+Pk
+t=0
+·
+pxt;T (xt;T = k)Pn
+m2-+
+it;iT :ik 2m
+o Pn
+it:it2Iik
+t
+o Pn
+iT :ik2IiT
+k
+o ¸(iT;T);m
+(it;t)
+SiT
+T
+¸
+The terms that involve ® are
+P
+t<k
+P
+t0>k
+·
+pxt;t0
+¡
+xt;t0 = k
+¢Pn
+it:it2Iik
+t
+o Pn
+m2-+
+it;it¶:ik2m
+o ®(it0;t0);m
+(it;t)
+Sit0
+t0
+¸
+¡
+¡ P
+t<k
+Pn
+it:it2I
+ik
+t
+o ®(ik;k);m
+(it;t)
+Sik
+k = 0:
+36
+
+Hence, the constraint for ¢ik is
+Pk
+t=0
+·
+pxt;T (xt;T = k)Pn
+iT:ik2IiT
+k
+o Pn
+it:it2Iik
+t
+o Pn
+m2-+
+it;iT :ik2m
+o ¸(iT;T);m
+(it;t)
+SiT
+T
+¸
++
+P
+t<k
+P
+t0>k
+·
+pxt;t0
+¡
+xt;t0 = k
+¢Pn
+it:it2Iik
+t
+o Pn
+m2-+
+it;it¶:ik2m
+o ®(it0;t0);m
+(it;t)
+Sit0
+t0
+¸
++
+¡ P
+t<k
+Pn
+it:it2Iik
+t
+o ®(ik;k);m
+(it;t)
+Sik
+k = 0
+The constraint for Bik is:
+Pk
+t=0
+·
+pxt;T (xt;T = k)Pn
+it:it2Iik
+t
+o Pn
+m2-+
+it;iT :ik2m
+o Pn
+iT :ik2IiT
+k
+o ¸(iT;T);m
+(it;t)
+RT¡k
+¸
++
+P
+t<k
+P
+t0>k
+·
+pxt;t0
+¡xt;t0 = k¢Pn
+it:it2I
+ik
+t
+o Pn
+m2-+
+it;it¶:ik2m
+o ®(it0 ;t0);m
+(it;t)
+Rt0¡t
+¸
+¡ P
+t<k
+Pn
+it:it2Iik
+t
+o ®(ik ;k);m
+(it;t)
+= 0
+Note that if k = T ¡ 1;the constraint for ¢iT¡1 the constraint for ¢ik is
+PT¡1
+t=0
+·
+pxt;T (xt;T = T ¡ 1)Pn
+iT :iT¡12I
+iT
+T¡1
+o Pn
+it:it2I
+iT¡1
+t
+o Pn
+m2-+
+it;iT :iT¡12m
+o ¸(iT ;T );m
+(it;t)
+SiT
+T
+¸
++
+¡ P
+t<T¡1
+Pn
+it:it2I
+iT ¡1
+t
+o ®(iT¡1;T¡1);m
+(it;t)
+SiT ¡1
+T¡1 = 0
+The constraint for BiT¡1 is
+PT¡1
+t=0
+·
+pxt;T (xt;T = T ¡ 1)Pn
+iT :iT¡12IiT
+T¡1
+o Pn
+it:it2I
+iT¡1
+t
+o Pn
+m2-+
+it;iT :iT¡12m
+o ¸(iT ;T );m
+(it;t)
+R
+¸
++
+¡ P
+t<T¡1
+Pn
+it:it2I
+iT¡1
+t
+o ®(iT¡1;T¡1);m
+(it;t)
+= 0
+The left member of each constraint is a linear combination of the variables of the dual problem. The right member is equal to S0 and 1 for the
+dual constraints associated with the variables ¢0 and B0,respectively: For
+the remaining constraints the right member is equal to zero. First, let us
+consider only the constraints associated with primal variables ¢'s. For a
+given iT the terms involving ¸ in the dual constraints regarding ¢ik is
+pxt;T (xt;T = k)
+X
+n
+it:it2I
+ik
+t
+o
+X
+n
+m2-+
+it;iT :ik 2m
+o ¸(iT ;T);m
+(it;t)
+SiT
+T
+37
+
+Summing up all the constraints that concern ¢ik with ik 2 Ik the term
+associated with and the term associated with Si
+T is
+pxt;T (xt;T = k)
+X
+fit:it2Itg
+X
+n
+m2-+
+it;iT
+o ¸(iT ;T);m
+(it;t)
+SiT
+T
+As,
+T¡1
+X
+k=t
+pxt;T (xt;T = k) = 1;
+summing for all k ¸ t, the term associated with SiT
+T that is multiplying by
+pxt;T (xt;T = :) is
+X
+fit:it2Itg
+X
+n
+m2-+
+it;iT
+o ¸(iT ;T);m
+(it;t)
+SiT
+T
+Hence, summing up over all constraints associated with primal variables
+¢'s we have that the terms in ¸ associated with SiT
+T are
+T¡1
+X
+t=0
+X
+fit:it2Itg
+X
+n
+m2-+
+it;iT
+o ¸(iT ;T);m
+(it;t)
+SiT
+T
+Therefore, the sum over all SiT
+T is
+X
+fiT :iT 2IT g
+T¡1
+X
+t=0
+X
+fit:it2Itg
+X
+n
+m2-+
+it;iT
+o ¸(iT ;T);m
+(it;t)
+SiT
+T = S0
+Still considering only the constraints associated with primal variables
+¢'s; in what follows we describe the terms in ®. For a given Sit
+t ; the terms
+in ® are
+¡
+X
+s<t
+X
+n
+is:is2Iit
+s
+o®(it;t);m
+(is;s) Sit
+t
+|
+{z
+}
+from the constraint ¢it
++
+t¡1
+X
+k=0
+t¡1
+X
+s=k
+2
+664pxk;t (xk;t = s)
+X
+n
+ik:ik2Iit
+k
+o
+X
+n
+m2-+
+ik;it:is2m
+o ®(it;t);m
+(ik;k) Sit
+t
+3
+775
+|
+{z
+}
+summing up all the constraints ¢ik; with ik 2 Iit
+k
+38
+
+As,
+t¡1
+X
+s=k
+pxk;t (xk;t = s) = 1
+the above equations sum up to zero. Summing up over all Sit
+t a zero will
+also be obtained. Hence, if all dual constraints that concern Sit
+t are summed
+up, the following relation is obtained:
+S0 =
+X
+fiT:iT 2ITg
+T¡1
+X
+t=0
+X
+fit:it2Itg
+X
+n
+m2-+
+it;iT
+o ¸(iT ;T);m
+(it;t)
+SiT
+T
+(4)
+Now, proceeding in a similar way but considering the dual constraints associated with B¶s: Because the right member of the constraints is equal to 0,
+excepting the one associated B0; we multiply each constraint by a constant.
+The constraint associated with the variable Bik is multiplied by Rk: Then,
+all the constraints associated with B¶s are summed up, and
+X
+fiT :iT2IT g
+T¡1
+X
+t=0
+X
+fit:it2Itg
+X
+n
+m2-+
+it;iT
+o q(iT ;T);m
+(it;t)
+= 1
+where
+q(iT ;T);m
+(it;t)
+= RT¡t¸(iT ;T);m
+(it;t)
+:
+Denoting,
+qiT =
+T¡1
+X
+t=0
+X
+fit:it2Itg
+X
+n
+m2-+
+it;iT
+o q(iT ;T);m
+(it;t)
+SiT
+T
+equation (4) can be written as
+S0 = 1
+RT
+X
+fiT:iT 2ITg
+qiT SiT
+T
+with
+X
+fiT :iT 2IT g
+qiT = 1
+39
+
+A.2
+Proof of theorem 10 with T=3
+Proof. As the problem sketched in the example of section to obtain the upper bound is a linear programming problem, considering Sit
+t = U t¡(it¡1)Dit¡1;
+its dual is written as follows:
+min½
+¸(iT ;T);m
+(it;t)
+¾
+;
+(
+®(it0 ;t0);m
+(it;t)
+) ³
+¸(1;3)
+(0;0) + ¸(1;3)
+(1;1) + ¸(1;3)
+(1;2)
+´
+G1
+3
++
+³
+¸(2;3);1
+(0;0)
++ ¸(2;3);3
+(0;0)
++ ¸(2;3);3
+(0;0)
++ ¸(2;3);1
+(1;1)
++ ¸(2;3);2
+(1;1)
++ ¸(2;3)
+(2;1) + ¸(2;3)
+(1;2) + ¸(2;3)
+(2;2)
+´
+G2
+3
++
+³
+¸(3;3);1
+(0;0)
++ ¸(3;3);2
+(0;0)
++ ¸(3;3);3
+(0;0)
++ ¸(3;3)
+(1;1) + ¸(3;3);1
+(2;1)
++ ¸(3;3);2
+(2;1)
++ ¸(3;3)
+(2;2) + ¸(3;3)
+(3;2)
+´
+G3
+3
++
+³
+¸(4;3)
+(0;0) + ¸(4;3)
+(2;1) + ¸(4;3)
+(3;2)
+´
+G4
+3
+subject to the non-negativity constraints of the dual variables
+¸(iT ;T);m
+(it;t)
+¸ 0;
+for all it 2 IiT
+t ; iT 2 IT and t = 0; 1 and 2;
+®(it0 ;t0);m
+(it;t)
+¸ 0;
+for all it 2 Iit0
+t ; it0 2 It0 and t0 = 0; 1 and 2; and subject to twelve equality
+constraints, each one associated with a variable of the primal problem. The
+constraint associated with ¢0 is given by
+(1 ¡ p)2
+"
+¸(1;3)
+(0;0)S1
+3 +
+P
+m=1;2;3
+¸(2;3);m
+(0;0)
+S2
+3 +
+P
+m=1;2;3
+¸(3;3);m
+(0;0)
+S3
+3 + ¸(4;3)
+(0;0)S4
+3
+#
++®(1;1)
+(0;0)S1
+1 + ®(2;1)
+(0;0)S2
+1+
++ (1 ¡ p)
+h
+®(1;2)
+(0;0)S1
+2 +
+³
+®(2;2);1
+(0;0)
++ ®(2;2);2
+(0;0)
+´
+S2
+3 + ®(3;2)
+(0;0)S3
+2
+i
+= S0
+(5)
+The constraint associated with B0 is given by
+(1 ¡ p)2 R3
+"
+¸(1;3)
+(0;0) +
+P
+m=1;2;3
+¸(2;3);m
+(0;0)
++
+P
+m=1;2;3
+¸(3;3);m
+(0;0)
++ ¸(4;3)
+(0;0)
+#
++R
+³
+®(1;1)
+(0;0) + ®(2;1)
+(0;0)
+´
++ (1 ¡ p)R2 h
+®(1;2)
+(0;0) + ®(2;2);1
+(0;0)
++ ®(1;2);2
+(0;0)
++ ®(3;2)
+(0;0)
+i
+= 1
+(6)
+40
+
+The constraint associated with ¢1
+1 is given by
+(1 ¡ p)
+"
+¸(1;3)
+(1;1)S1
+3 + P
+m=1;2
+¸(2;3);m
+(1;1)
+S2
+3 + ¸(3;3)
+(1;1)S3
+3
+#
++
++p (1 ¡ p)
+"
+¸(1;3)
+(0;0)S1
+3 + P
+m=1;2
+¸(2;3);m
+(0;0)
+S2
+3 + ¸(3;3);1
+(0;0) S3
+3
+#
++
+¡®(1;1)
+(0;0)S1
+1 + p
+h
+®(1;2)
+(0;0)S1
+2 + ®(2;2);1
+(0;0) S2
+2
+i
++ ®(1;2)
+(1;1)S1
+2 + ®(2;2)
+(1;1)S2
+2 = 0
+(7)
+The constraint associated with B1
+1 is given by
+(1 ¡ p)R2
+"
+¸(1;3)
+(1;1) + P
+m=1;2
+¸(2;3);m
+(1;1)
++ ¸(3;3)
+(1;1)
+#
++
++p (1 ¡ p)R2
+"
+¸(1;3)
+(0;0) + P
+m=1;2
+¸(2;3);m
+(0;0)
++ ¸(3;3);1
+(0;0)
+#
++
+¡®(1;1)
+(0;0) + pR
+h
+®(1;2)
+(0;0) + ®(2;2);1
+(0;0)
+i
++ R
+h
+®(1;2)
+(1;1) + ®(2;2)
+(1;1)
+i
+= 0
+(8)
+The constraint associated with ¢2
+1 is given by
+(1 ¡ p)
+"
+¸(2;3);3
+(1;1) S2
+3 +
+P
+m=1;2
+¸(3;3);m
+(1;1)
+S3
+3 + ¸(4;3)
+(1;1)S4
+3
+#
++
++p (1 ¡ p)
+"
+¸(2;3);3
+(0;0) S2
+3 + P
+m=2;3
+¸(3;3);m
+(0;0)
+S3
+3 + ¸(4;3)
+(0;0)S4
+3
+#
++
+¡®(2;1)
+(0;0)S2
+1 + p
+h
+®(2;2);2
+(0;0) S2
+2 + ®(3;2)
+(0;0)S3
+2
+i
++ ®(2;2)
+(2;1)S2
+2 + ®(3;2)
+(2;1)S3
+2 = 0
+(9)
+41
+
+The constraint associated with B2
+1 is given by
+(1 ¡ p) R2
+"
+¸(2;3);3
+(1;1)
++
+P
+m=1;2
+¸(3;3);m
+(1;1)
++ ¸(4;3)
+(1;1)
+#
++
++p (1 ¡ p)R2
+"
+¸(2;3);3
+(0;0)
++ P
+m=2;3
+¸(3;3);m
+(0;0)
++ ¸(4;3)
+(0;0)
+#
++
+¡®(2;1)
+(0;0) + pR
+h
+®(2;2);2
+(0;0)
++ ®(3;2)
+(0;0)
+i
++ R
+h
+®(2;2)
+(2;1) + ®(3;2)
+(2;1)
+i
+= 0
+(10)
+The constraint associated with ¢1
+2 is given by
+¸(1;3)
+(1;2)U 3S0 + ¸(2;3)
+(1;2)U2DS0 + p
+³
+¸(1;3)
+(1;1)U3S0 + ¸(2;3);1
+(1;1) U2DS0
+´
++p
+³
+¸(1;3)
+(0;0)U 3S0 + ¸(2;3);1
+(0;0) U 2DS0
+´
+¡ ®(1;2)
+(0;0)U 2S0 ¡ ®(1;2);1
+(1;1) U 2S0 = 0
+(11)
+The constraint associated with B1
+2 is given by
+R
+h
+¸(1;3)
+(1;2) + ¸(2;3)
+(1;2)
+i
++ pR
+h
+¸(1;3)
+(1;1) + ¸(2;3);1
+(1;1)
+i
++pR
+h
+¸(1;3)
+(0;0) + ¸(2;3);1
+(0;0)
+i
+¡ ®(1;2);1
+(0;0)
+¡ ®(1;2)
+(1;1) = 0
+(12)
+The constraint associated with ¢2
+2 is given by
+¸(2;3)
+(2;2)S2
+3 + ¸(3;3)
+(2;2)S3
+3 + p
+h³
+¸(2;3);2
+(1;1)
++ ¸(2;3)
+(2;1)
+´
+S2
+3 +
+³
+¸(3;3)
+(1;1) + ¸(3;3);1
+(2;1)
+´
+S3
+3
+i
++p
+h³
+¸(2;3);2
+(0;0)
++ ¸(2;3);3
+(0;0)
+´
+S2
+3 +
+³
+¸(3;3);1
+(0;0)
++ ¸(3;3);2
+(0;0)
+´
+S3
+3
+i
+¡
+h
+®(2;2);1
+(0;0)
++ ®(2;2);2
+(0;0)
+i
+S2
+2 ¡
+h
+®(2;2)
+(1;1) + ®(2;2)
+(2;1)
+i
+S2
+2 = 0
+(13)
+The constraint associated with B2
+2 is given by
+R
+h
+¸(2;3)
+(2;2) + ¸(3;3)
+(2;2)
+i
++ pR
+h
+¸(2;3);2
+(1;1)
++ ¸(2;3)
+(2;1) + ¸(3;3)
+(1;1) + ¸(3;3);1
+(2;1)
+i
++pR
+h
+¸(2;3);2
+(0;0)
++ ¸(2;3);3
+(0;0)
++ ¸(3;3);1
+(0;0)
++ ¸(3;3);2
+(0;0)
+i
+¡
+h
+®(2;2);1
+(0;0)
++ ®(2;2);2
+(0;0)
+i
+¡
+h
+®(2;2)
+(1;1) + ®(2;2)
+(2;1)
+i
+= 0
+(14)
+42
+
+The constraint associated with ¢3
+2 is given by
+¸(3;3)
+(3;2)UD2S0 + ¸(4;3)
+(3;2)D3S0 + p
+h
+¸(3;3);2
+(2;1) UD2S0 + ¸(4;3)
+(2;1)D3S0
+i
++p
+h
+¸(3;3);3
+(0;0) UD2S0 + ¸(4;3)
+(0;0)D3S0
+i
+¡ ®(3;2)
+(0;0)D2S0 ¡ ®(3;2)
+(1;1)D2S0 = 0
+(15)
+The constraint associated with B3
+2 is given by
+R
+h
+¸(3;3)
+(3;2) + ¸(4;3)
+(3;2)
+i
++ pR
+h
+¸(3;3);2
+(2;1)
++ ¸(4;3)
+(2;1)
+i
++
++pR
+h
+¸(3;3);3
+(0;0)
++ ¸(4;3)
+(0;0)
+i
+¡ ®(3;2)
+(0;0) ¡ ®(3;2)
+(1;1) = 0
+(16)
+Summing up equations (5), (7), (9), (11),(13) and (15) we obtain
+S0 =
+³
+¸(1;3)
+(0;0) + ¸(1;3)
+(1;1) + ¸(1;3)
+(1;2)
+´
+S1
+3+
++
+Ã
+P
+m=1;2;3
+¸(2;3);m
+(0;0)
++
+P
+m=1;2
+¸(2;3);m
+(1;1)
++ ¸(2;3)
+(2;1) + ¸(2;3)
+(1;2) + ¸(2;3)
+(2;2)
+!
+S2
+3
++
+Ã
+P
+m=1;2;3
+¸(3;3);m
+(0;0)
++ ¸(3;3)
+(1;1) +
+P
+m=1;2
+¸(3;3);m
+(2;1)
++ ¸(3;3)
+(2;2) + ¸(3;3)
+(3;2)
+!
+S3
+3
++
+³
+¸(4;3)
+(0;0) + ¸(4;3)
+(2;1) + ¸(4;3)
+(3;2)
+´
+S4
+3
+(17)
+Multiplying equations (8) and (10) by R and equations (12), (14) and
+(15) by R2 and then summing up with equation (6) we obtain
+¸(1;3)
+(0;0) +
+P
+m=1;2;3
+¸(2;3);m
+(0;0)
++
+P
+m=1;2;3
+¸(3;3);m
+(0;0)
++ ¸(4;3)
+(0;0)+
+¸(1;3)
+(1;1) + P
+m=1;2
+¸(2;3);m
+(1;1)
++ ¸(3;3)
+(1;1) + ¸(2;3)
+(2;1) + P
+m=1;2
+¸(3;3);m
+(2;1)
++ ¸(4;3)
+(2;1)+
++¸(1;3)
+(1;2) + ¸(2;3)
+(1;2) + ¸(2;3)
+(2;2) + ¸(3;3)
+(2;2) + ¸(3;3)
+(3;2) + ¸(4;3)
+(3;2) =
+1
+R3
+Hence, denoting
+q(it0;t0)
+(it;t)
+= R3¸(it0;t0)
+(it;t)
+43
+
+and
+q1 = q(1;3)
+(0;0) + q(1;3)
+(1;1) + q(1;3)
+(1;2)
+q2 =
+P
+m=1;2;3
+q(2;3);m
+(0;0)
++ P
+m=1;2
+q(2;3);m
+(1;1)
++ q(2;3)
+(2;1) + q(2;3)
+(1;2) + q(2;3)
+(2;2)
+q3 =
+P
+m=1;2;3
+q(3;3);m
+(0;0)
++ q(3;3)
+(1;1) + P
+m=1;2
+q(3;3);m
+(2;1)
++ q(3;3)
+(2;2) + q(3;3)
+(3;2)
+q4 = q(4;3)
+(0;0) + q(4;3)
+(2;1) + q(4;3)
+(3;2)
+we can rewrite (17) as
+S0 =
+1
+R3
+£
+q1S1
+3 + q2S2
+3 + q3S3
+3 + q4S4
+3
+¤
+with qi are de¯ed above and q1 + q2 + q3 + q4 = 1:
+Taking into consideration equation (10), equation (9) can be rewritten
+as
+S1
+2 = 1
+R
+h
+¼(1;3)
+(1;2)S1
+3 + ¼(2;3)
+(1;2)S2
+3
+i
+where
+¼(1;3)
+(1;2) =
+¸(1;3)
+(1;2)+p¸(1;3)
+(1;1)+p¸(1;3)
+(0;0)
+¸(1;3)
+(1;2)+p¸(1;3)
+(1;1)+p¸(1;3)
+(0;0)+¸(2;3)
+(1;2)+p¸(2;3);1
+(1;1) +p¸(2;3);1
+(0;0)
+¼(2;3)
+(1;2) =
+¸(2;3)
+(1;2)+p¸(2;3);1
+(1;1)
++p¸(2;3);1
+(0;0)
+¸(1;3)
+(1;2)+p¸(1;3)
+(1;1)+p¸(1;3)
+(0;0)+¸(2;3)
+(1;2)+p¸(2;3);1
+(1;1) +p¸(2;3);1
+(0;0)
+and ¼(1;3)
+(1;2) + ¼(2;3)
+(1;2) = 1: Proceeding in an analogous way with constraints
+(13), (14), (15) and (16) we obtain
+S2
+2 = 1
+R
+h
+¼(2;3)
+(2;2)S2
+3 + ¼(3;3)
+(2;2)S3
+3
+i
+where
+¼(2;3)
+(2;2) =
+¸(2;3)
+(2;2)+p
+³
+¸(2;3);2
+(1;1) +¸(2;3)
+(2;1)+¸(2;3);2
+(0;0) +¸(2;3);3
+(0;0)
+´
+¸(2;3)
+(2;2)+p
+³
+¸(2;3);2
+(1;1)
++¸(2;3)
+(2;1)+¸(2;3);2
+(0;0) +¸(2;3);3
+(0;0)
+´
++¸(3;3)
+(2;2)+p
+³
+¸(3;3)
+(1;1)+¸(3;3);1
+(2;1) +¸(3;3);1
+(0;0)
++¸(3;3);2
+(0;0)
+´
+¼(3;3)
+(2;2) =
+¸(3;3)
+(2;2)+p
+³
+¸(3;3)
+(1;1)+¸(3;3);1
+(2;1)
++¸(3;3);1
+(0;0) +¸(3;3);2
+(0;0)
+´
+¸(2;3)
+(2;2)+p
+³
+¸(2;3);2
+(1;1)
++¸(2;3)
+(2;1)+¸(2;3);2
+(0;0) +¸(2;3);3
+(0;0)
+´
++¸(3;3)
+(2;2)+p
+³
+¸(3;3)
+(1;1)+¸(3;3);1
+(2;1) +¸(3;3);1
+(0;0)
++¸(3;3);2
+(0;0)
+´
+with ¼(2;3)
+(2;2) + ¼(3;3)
+(2;2) = 1; and
+S3
+2 = 1
+R
+h
+¼(3;3)
+(3;2)S3
+3 + ¼(4;3)
+(3;2)S4
+3
+i
+44
+
+where
+¼(3;3)
+(3;2) =
+¸(3;3)
+(3;2)+p
+³
+¸(3;3);2
+(2;1)
++¸(3;3);3
+(0;0)
+´
+¸(3;3)
+(3;2)+p
+³
+¸(3;3);2
+(2;1) +¸(3;3);3
+(0;0)
+´
++¸(4;3)
+(3;2)+p
+³
+¸(4;3)
+(2;1)+¸(4;3)
+(0;0)
+´
+¼(4;3)
+(3;2) =
+¸(4;3)
+(3;2)+p
+³
+¸(4;3)
+(2;1)+¸(4;3)
+(0;0)
+´
+¸(3;3)
+(3;2)+p
+³
+¸(3;3);2
+(2;1) +¸(3;3);3
+(0;0)
+´
++¸(4;3)
+(3;2)+p
+³
+¸(4;3)
+(2;1)+¸(4;3)
+(0;0)
+´
+with ¼(3;3)
+(3;2) + ¼(4;3)
+(3;2) = 1:
+Moreover, using equations (7), (8), (9) and (10) we have
+S1
+1 = 1
+R2
+h
+µ(1;3)
+(1;1)S1
+3 + µ(2;3)
+(1;1)S2
+3 + µ(3;3)
+(1;1)S3
+3
+i
++ 1
+R
+h
+"(1;2)
+(1;1)S1
+2 + "(2;2)
+(1;1)S2
+2
+i
+where
+µ(1;3)
+(1;1) =
+R2h
+(1¡p)¸(1;3)
+(1;1)+p(1¡p)¸(1;3)
+(0;0)
+i
+£
+µ(2;3)
+(1;1) =
+R2
+"
+(1¡p)
+P
+m=1;2
+¸(2;3);m
+(1;1)
++p(1¡p)
+P
+m=1;2
+¸(2;3);m
+(0;0)
+#
+£
+µ(3;3)
+(1;1) =
+R2h
+(1¡p)¸(3;3)
+(1;1)+p(1¡p)¸(3;3);1
+(0;0)
+i
+£
+"(1;2)
+(1;1) =
+R
+h
+p®(1;2)
+(0;0)+®(1;2)
+(1;1)
+i
+£
+; "(2;2)
+(1;1) =
+R
+h
+p®(2;2);1
+(0;0) +®(2;2)
+(1;1)
+i
+£
+£
+=
+R2 h
+(1 ¡ p)¸(1;3)
+(1;1) + p (1 ¡ p)¸(1;3)
+(0;0)
+i
++R2
+2
+4(1 ¡ p)
+X
+m=1;2
+¸(2;3);m
+(1;1)
++ p (1 ¡ p)
+X
+m=1;2
+¸(2;3);m
+(0;0)
+3
+5
++R2 h
+(1 ¡ p)¸(3;3)
+(1;1) + p(1 ¡ p)¸(3;3);1
+(0;0)
+i
++ R
+h
+p®(1;2)
+(0;0) + ®(1;2)
+(1;1) + p®(2;2);1
+(0;0)
++ ®(2;2)
+(1;1)
+i
+and
+S2
+1 = 1
+R2
+h
+µ(1;3)
+(2;1)S2
+3 + µ(2;3)
+(2;1)S3
+3 + µ(3;3)
+(2;1)S4
+3
+i
++ 1
+R
+h
+"(1;2)
+(2;1)S2
+2 + "(2;2)
+(2;1)S3
+2
+i
+, with
+µ(1;3)
+(2;1) =
+R2h
+(1¡p)¸(2;3);3
+(1;1) +p(1¡p)¸(2;3);3
+(0;0)
+i
+¨
+µ(2;3)
+(2;1) =
+R2
+"
+(1¡p)
+P
+m=1;2
+¸(3;3);m
+(1;1)
++p(1¡p)
+P
+m=2;3
+¸(3;3);m
+(0;0)
+#
+¨
+µ(3;3)
+(2;1) =
+R2h
+(1¡p)¸(4;3)
+(1;1)+p¸(4;3)
+(0;0)(1¡p)
+i
+¨
+"(1;2)
+(2;1) =
+R
+h
+p®(2;2);2
+(0;0) +®(2;2)
+(2;1)
+i
+¨
+, "(2;2)
+(2;1) =
+R
+h
+p®(3;2)
+(0;0)+®(3;2)
+(2;1)
+i
+¨
+45
+
+¨
+=
+R2 h
+(1 ¡ p)¸(2;3);3
+(1;1)
++ p(1 ¡ p) ¸(2;3);3
+(0;0)
+i
++R2
+2
+4(1 ¡ p)
+X
+m=1;2
+¸(3;3);m
+(1;1)
++ p (1 ¡ p)
+X
+m=2;3
+¸(3;3);m
+(0;0)
+3
+5 +
++R2 h
+(1 ¡ p)¸(4;3)
+(1;1) + p¸(4;3)
+(0;0) (1 ¡ p)
+i
++ R
+h
+p®(2;2);2
+(0;0)
++ ®(2;2)
+(2;1) + p®(3;2)
+(0;0) + ®(3;2)
+(2;1)
+i
+:
+A.3
+Upper Bound for T=2
+For T = 2 the problem that must be solved to ¯nd the upper bound of the
+arbitrage free range of variation is the following
+Cu =
+min
+f¢0;B0;¢1
+1;B1
+1;¢2
+1;B2
+1g
+¢0S0 + B0
+subject to the conditions of positive expected payo® at time t = 0;
+p
+¡
+¢1
+1U2S0 + RB1
+1
+¢
++ (1 ¡ p)
+¡
+¢0U 2S0 + R2B0
+¢
+¸
+¡
+U 2S0 ¡ K
+¢+(18)
+p
+¡
+¢1
+1UDS0 + RB1
+1
+¢
++ (1 ¡ p)
+¡
+¢0UDS0 + R2B0
+¢
+¸
+(UDS0 ¡ K)+
+p
+¡
+¢2
+1UDS0 + RB2
+1
+¢
++ (1 ¡ p)
+¡
+¢0D2S0 + R2B0
+¢
+¸
+(UDS0 ¡ K)+
+p
+¡
+¢2
+1D2S0 + RB2
+1
+¢
++ (1 ¡ p)
+¡
+¢0D2S0 + R2B0
+¢
+¸
+¡
+D2S0 ¡ K
+¢+(19)
+positive expected payo® at time t = 1;
+¡
+¢1
+1U 2S0 + RB1
+1
+¢
+¸
+¡
+U2S0 ¡ K
+¢+
+¡¢1
+1UDS0 + RB1
+1
+¢
+¸
+(UDS0 ¡ K)+
+(20)
+¡
+¢2
+1UDS0 + RB2
+1
+¢
+¸
+(UDS0 ¡ K)+
+(21)
+¡¢2
+1D2S0 + RB2
+1
+¢
+¸
+¡D2S0 ¡ K¢+
+and self-¯nancing,
+¢1
+1US0 + B1
+1
+·
+¢0US0 + RB0
+(22)
+¢2
+1DS0 + B2
+1
+·
+¢0DS0 + RB0:
+(23)
+46
+
+Construct the Lagrangean
+L
+=
+¢0S0 + B0 +
++¸(1;2)
+(0;0)
+h¡
+U 2S0 ¡ K
+¢+ ¡ p
+¡
+¢1
+1U 2S0 + RB1
+1
+¢
+¡ (1 ¡ p)
+¡
+¢0U2S0 + R2B0
+¢i
++
++¸(2;2);1
+(0;0)
+£
+(UDS0 ¡ K)+ ¡ p
+¡
+¢1
+1UDS0 + RB1
+1
+¢
+¡ (1 ¡ p)
+¡
+¢0UDS0 + R2B0
+¢¤
++¸(2;2);2
+(0;0)
+£
+(UDS0 ¡ K)+ ¡ p
+¡
+¢2
+1UDS0 + RB2
+1
+¢
+¡ (1 ¡ p)
+¡
+¢0D2S0 + R2B0
+¢¤
++¸(3;2)
+(0;0)
+h¡
+D2S0 ¡ K
+¢+ ¡ p
+¡
+¢2
+1D2S0 + RB2
+1
+¢
+¡ (1 ¡ p)
+¡
+¢0D2S0 + R2B0
+¢i
++®(2;1)
+(0;0)
+£
+¢1
+1US0 + B1
+1 ¡ ¢0US0 ¡ RB0
+¤
++®(1;1)
+(0;0)
+£
+¢2
+1DS0 + B2
+1 ¡ (¢0DS0 + RB0)
+¤
++¸(1;2)
+(1;1)
+h¡
+U 2S0 ¡ K
+¢+ ¡
+¡
+¢1
+1U 2S0 + RB1
+1
+¢i
++¸(2;2)
+(1;1)
+£
+(UDS0 ¡ K)+ ¡
+¡
+¢1
+1UDS0 + RB1
+1
+¢¤
++¸(2;2)
+(2;1)
+£(UDS0 ¡ K)+ ¡ ¡¢2
+1UDS0 + RB2
+1
+¢¤
++¸(3;2)
+(2;1)
+h¡D2S0 ¡ K¢+ ¡ ¡¢2
+1D2S0 + RB2
+1
+¢i
+The solution is characterized by
+¸(2;2);1
+(0;0)
+= ¸(2;2);2
+(0;0)
+= ¸(1;2)
+(1;1) = ¸(3;2)
+(2;1) = 0
+and
+¸(1;2)
+(0;0);¸(3;2)
+(0;0);®(2;1)
+(0;0); ®(1;1)
+(0;0);¸(2;2)
+(1;1);¸(2;2)
+(2;1) ¸ 0
+Using the fact that equations (18), (19), (22), (23), (20) and (21) are
+binding the optimal values ¢¤
+0; B¤
+0; ;¢1¤
+1 ; B1¤
+1 ;¢2¤
+1 ; B2¤
+1 can be obtained. In
+particular, ¢¤
+0 e B¤
+0 are given by
+47
+
+¢¤
+0
+=
+¡U 2S0 ¡ K¢+ h
+(U ¡ R)(R ¡ D) + p (R ¡ D)2i
+S0¤
+(24)
+¡
+¡
+D2S0 ¡ K
+¢+ h
+(U ¡ R)(R ¡ D) + p (R ¡ U)2i
+S0¤
+¡p (UDS0 ¡ K)+ £¡2DR + 2RU + D2 ¡ U 2¤
+S0¤
+B¤
+0
+=
+¡
+¡
+U 2S0 ¡ K
+¢+ h
+D2(U ¡ R)(R ¡ D) + pUD (R ¡ D)2i
+R2¤
++
+¡D2S0 ¡ K¢+ h
+U 2(U ¡ R)(R ¡ D) + pUD (R ¡ U)2i
+R2¤
++pR (UDS0 ¡ K)+ ¡
+¡2DU2 + RU2 ¡ RD2 + 2D2U
+¢
+R2¤
+where
+¤
+=
+U2 £(U ¡ R)(R ¡ D) ¡ p ¡¡R2 + 4RD ¡ DU¢¤
+¡D2 £(U ¡ R)(R ¡ D) ¡ p¡¡R2 ¡ UD + 4RU¢¤
+The remaining equations are also satis¯ed.
+As a result, after some trivial algebra, we obtain
+Cu = ¢¤
+0S0 + B¤
+0 = 1
+R2
+h
+q1
+¡
+U 2S0 ¡ K
+¢+ + q2 (UDS0 ¡ K)+ + q3
+¡
+D2S0 ¡ K
+¢+i
+with
+q1
+=
+(U ¡ R)(R ¡ D)
+¡
+R2 ¡ D2¢
++ p(R ¡ D)2 ¡
+R2 ¡ UD
+¢
+¤
+q2
+=
+p(R ¡ D)2 ¡
+U2 ¡ R2¢
++ (R ¡ U)2 ¡
+R2 ¡ D2¢
+¤
+q3
+=
+(U ¡ R)(R ¡ D)
+¡
+U 2 ¡ R2¢
++ p(R ¡ U)2 ¡
+UD ¡ R2¢
+¤
+It is easy to check that q1;q2; q3 ¸ 0 and q1 + q + q3 = 1:
+48
+
+A.4
+Proofs of the Properties and Examples
+A.4.1
+Property 3
+1. Proof. Let the set of admissible solutions that characterize the upper
+bound for the case p 2 (0;1) be denoted by A(p);where A(p) is a
+correspondence such that
+A(p) : [0; 1] ! Rt(t+1):
+The portfolio (¢;B) = (¢it; Bit)it2It; t=0;::: ;T ¡1 2 Rt(t+1) is said to
+be an admissible solution for the problem de¯ned in section 4.1.1 if
+(¢;B) 2 A(p):
+Moreover, let A(p = 0) and A (p = 1) denote, respectively, the admissible solutions for the problems characterizing the upper bound in the
+case p = 0 and p = 1; presented in section 2.1.
+By the Theorem of the Maximum,13 if the constraint correspondence
+A(p) is continuous and if the objective function is continuous on p,
+then the value of the objective function in the optimum is also continuous on p.
+First consider the case p ! 1: In this case, limp!1A (p) = A(p = 1):
+Hence,
+lim
+p!1Cp
+u = Cp
+u (p = 1) = C1
+u:
+However, the same does not apply when p ! 0: In this case
+lim
+p!0A(p) µ A(p = 0)
+which implies that
+Cp
+u (p = 0) ¸ C0
+u:
+However, using property 1, we conclude Cp
+u (p = 0) = C0
+u:
+Example 21 (for T=2.) When p ! 0, and in the case of a Call Option,
+which means that the market is completely illiquidity, the optimal values of
+¢0 and B0 in expression (24) converge to
+¢¤
+0
+=
+¡U2S0 ¡ K¢+ ¡ ¡D2S0 ¡ K¢+
+S0 [U2 ¡ D2]
+B¤
+0
+=
+U2 ¡
+D2S0 ¡ K
+¢+ ¡ D2 ¡
+U2S0 ¡ K
+¢+
+R2 (U2 ¡ D2)
+13See, for instance, Mas-Collel et al. (1995), page 963.
+49
+
+then,
+lim
+p!0Cp
+u
+=
+¢¤
+0S0 + B¤
+0
+=
+1
+R2
+·µR2 ¡ D2
+U 2 ¡ D2
+¶ ¡U 2S0 ¡ K¢+ +
+µU 2 ¡ R2
+U2 ¡ D2
+¶¡D2S0 ¡ K¢+
+¸
+;
+i.e., limp!0 Cp
+u = C0
+u: On the other hand, when p ! 1, which means that
+there is no illiquidity, the optimal values of ¢0 and B0 in expression (24)
+converge to
+¢¤
+0
+=
+¡
+U 2S0 ¡ K
+¢+ (R ¡ D) ¡
+¡
+D2S0 ¡ K
+¢+ (U ¡ R) + (UDS0 ¡ K)+ (U ¡ 2R + D)
+S0R (U ¡ D)2
+B¤
+0
+=
+¡ D (R ¡ D)
+R2 (U ¡ D)2
+¡
+U2S0 ¡ K
+¢+ + U (U ¡ R)
+R2(U ¡ D)2
+¡
+D2S0 ¡ K
+¢+
++[¡D (U ¡ R) + U (R ¡ D)]
+R2(U ¡ D)2
+(UDS0 ¡ K)+
+then,
+lim
+p!0Cp
+u
+=
+¢¤
+0S0 + B¤
+0
+=
+1
+R2
+2
+X
+j=0
+µ2
+j
+¶µR ¡ D
+U ¡ D
+¶j µU ¡ R
+U ¡ D
+¶2¡j ¡
+U jDT¡jS0 ¡ K
+¢+ ;
+i.e., limp!0Cp
+u = C1
+u:
+A.4.2
+Property 4
+Proof.
+Consider the trading strategy
+¡ ¹¢¤
+t ; ¹B¤
+t
+¢
+t=0;::: ;T¡1 that solves the
+maximization problem that characterizes the upper bound for a p 2 (0;1):
+Fix a given path w, such that (it)t=0;::: ;T 2 w: For each path we have T
+superreplicating constraints, one for each t 2 f0;:: : ;T ¡ 1g : For T ¡ 1;
+¹¢¤
+iT¡1SiT
+T + R ¹B¤
+iT¡1 ¸ GiT
+T ;
+for t = T ¡ 2
+(1 ¡ p)
+³
+¹¢¤
+iT¡2SiT
+T + R2 ¹B¤
+iT¡2
+´
++ p
+³
+¹¢¤
+iT¡1SiT
+T + R ¹B¤
+iT¡1
+´
+¸ GiT
+T ;
+50
+
+which can be rewritten as
+(1 ¡ p)
+h
+¹¢¤
+iT¡2SiT
+T + R2 ¹B¤
+iT¡2 ¡ GiT
+T
+i
++ p
+h
+¹¢¤
+iT¡1SiT
+T + R ¹B¤
+iT¡1 ¡ GiT
+T
+i
+¸ 0;
+for t = T ¡ 3
+(1 ¡ p)2 ³
+¹¢¤
+iT¡3SiT
+T + R3 ¹B¤
+iT¡3
+´
++ p (1 ¡ p)
+³
+¹¢¤
+iT¡2SiT
+T + R2 ¹B¤
+iT¡2
+´
++
++
+£
+p (1 ¡ p) + p2¤³
+¹¢¤
+iT¡1SiT
+T + R ¹B¤
+iT¡1
+´
+¸ GiT
+T ;
+which can be rewritten as
+(1 ¡ p)2 h
+¹¢¤
+iT¡3SiT
+T + R3 ¹B¤
+iT¡3 ¡ GiT
+T
+i
++ p
+h
+¹¢¤
+iT¡1SiT
+T + R ¹B¤
+iT¡1 ¡ GiT
+T
+i
++p(1 ¡ p)
+h
+¹¢¤
+iT¡2SiT
+T + R2 ¹B¤
+iT¡2 ¡ GiT
+T
+i
+¸ 0;
+More generally, for t
+Eit
+=
+Eit+1 + (1 ¡ p)T¡t¡1³
+¢¤
+itSiT
+T + RT¡tB¤
+it
+´
++
+¡ (1 ¡ p)T¡t¡1³
+¢¤
+it+1SiT
+T + RT¡tB¤
+it+1
+´
+=
+Eit+1 + (1 ¡ p)T¡t¡1h³
+¢¤
+itSiT
+T + RT¡tB¤
+it
+´
+¡
+³
+¢¤
+it+1SiT
+T + RT¡tB¤
+it+1
+´i
+¸ 0
+By backward induction since T = t¡1;we can prove that Eit+1 is positive.
+Hence, if Eit is positive for a given p it will also be positive for another p;
+because when p increases (1 ¡ p)T¡t¡1 decreases. Hence, whatever the sign
+of
+³
+¢¤
+itSiT
+T + RT¡tB¤
+it
+´
+¡
+³
+¢¤
+it+1SiT
+T + RT¡tB¤
+it+1
+´
+Eit will remain positive.
+The same applies for the self-¯nancing conditions.
+A.4.3
+Property 5
+The upper bound of the ask price in a complete market can be written as
+C1
+u = 1
+R2
+h
+¼liq
+1
+¡
+U 2S0 ¡ K
+¢+ + ¼liq
+2 (UDS0 ¡ K)+ + ¼liq
+3
+¡
+D2S0 ¡ K
+¢+i
+51
+
+with
+¼liq
+1
+=
+(R ¡ D)2
+(U ¡ D)2
+¼liq
+1
+=
+(R ¡ D) (U ¡ R)
+(U ¡ D)2
+¼liq
+1
+=
+(U ¡ R)2
+(U ¡ D)2
+and the upper bound of the ask price in an illiquid market can be written
+as
+C0
+u = 1
+R2
+h
+¼illiq
+1
+¡
+U 2S0 ¡ K
+¢+ + ¼illiq
+3
+¡
+D2S0 ¡ K
+¢+i
+with
+¼illiq
+1
+=
+R2 ¡ D2
+U 2 ¡ D2
+¼illiq
+3
+=
+U 2 ¡ R2
+U 2 ¡ D2
+Hence, the upper bound for the ask price in a random dry market can
+be written
+Cp
+u = ®C1
+u + (1 ¡ ®)C0
+u
+(25)
+with
+®
+=
+p
+R(U¡D)2
+(U¡R)(U+D)(R¡D)
+1 + p
+h
+R(U¡D)2
+(U¡R)(U+D)(R¡D) ¡ 1
+i
+1 ¡ ®
+=
+1 ¡ p
+1 + p
+h
+R(U¡D)2
+(U¡R)(U+D)(R¡D) ¡ 1
+i
+Taking the derivative of ® with respect to p we obtain
+@®
+@p =
+R (U ¡ D)2(R + D)(U ¡ R)(U + D)
+¡
+R2 ¡ D2¢
+n
+(U ¡ R)(U + D)(R2 ¡ D2) + p
+h
+(R ¡ D)2U (R + D) + (U ¡ R)2 D (R + D)
+io2 ¸ 0
+52
+
+Hence, taking the derivative of C0
+u with respect to p we conclude that
+C0
+u is a decreasing function of p;
+@Cp
+u
+@p
+=
+@®
+@p C1
+u ¡ @®
+@p C0
+u
+=
+@®
+@p
+¡
+C1
+u ¡ C0
+u
+¢
+· 0:
+Taking the second derivative we can also conclude that Cp
+u is a convex function with respect to p;
+@2Cp
+u
+@p2
+=
+@2®
+@p2 C1
+u ¡ @2®
+@p2 C0
+u
+=
+@2®
+@p2
+¡C1
+u ¡ C0
+u
+¢
+as
+@2®
+@p2 · 0
+we have
+@2Cp
+u
+@p2 ¸ 0:
+Alternative proof: After some algebra we obtain that following relation
+between ®; in equation (25) and p:
+® > p
+So, as
+Cask liq
+0
+¡ Cask illiq
+0
+· 0
+we obtain,
+(p ¡ ®)
+³
+Cask liq
+0
+¡ Cask illiq
+0
+´
+¸
+0
+pCask liq
+0
++ (1 ¡ p)Cask illiq
+0
+¡
+h
+®Cask liq + (1 ¡ ®)Cask illiqi
+¸
+0
+and follows that
+Cask
+0
+· pCask liq
+0
++ (1 ¡ p)Cask illiq
+0
+:
+53
+
+B
+Some Proofs on the Solution of the Lower Bound
+for Statistical Arbitrage Opportunities
+B.1
+Proof of theorem 12
+Proof. The problem that must be solved in order to ¯nd the upper bound of
+the range of variation of the arbitrage-free value of an European derivative
+is a linear programming problem. Its dual problem is
+max
+¸iT
+T+1
+X
+j=1
+¸iT GiT
+T
+where ¸iT is the sum of the dual variables associated with the positive expected payo® constraints that have the right member equal to GiT
+T , i.e.,
+¸iT =
+T¡1
+X
+t=0
+X
+fit:it2Itg
+X
+n
+m2-+
+it;iT
+o ¸(iT ;T);m
+(it;t)
+SiT
+T
+The ¯rst set of constraints is of nonnegativity of each dual variable, i.e,
+¸(iT ;T );m
+(it;t)
+;®(it0;t0);m
+(it;t)
+¸ 0: The other set of constraints consists of equality constraints, one constraint associated with each variable of the primal problem.
+The other set are equality constraints which are equal to the ones obtained
+for the upper bound. Using the same argument as in the proof of theorem
+1 the proof is straightforward.
+B.2
+Lower Bound for T=2
+For T = 2 the problem that must be solved to ¯nd the lower bound of the
+arbitrage free range of variation is the following
+Cl =
+max
+f¢0;B0;¢1
+1;B1
+1;¢2
+1;B2
+1g
+¢0S0 + B0
+subject to the conditions of positive expected payo® at time t = 0;
+p
+¡
+¢1
+1U2S0 + RB1
+1
+¢
++ (1 ¡ p)
+¡
+¢0U 2S0 + R2B0
+¢
+·
+¡
+U 2S0 ¡ K
+¢+
+p
+¡
+¢1
+1UDS0 + RB1
+1
+¢
++ (1 ¡ p)
+¡
+¢0UDS0 + R2B0
+¢
+·
+(UDS0 ¡ K)+
+p
+¡
+¢2
+1UDS0 + RB2
+1
+¢
++ (1 ¡ p)
+¡
+¢0D2S0 + R2B0
+¢
+·
+(UDS0 ¡ K)+
+p
+¡
+¢2
+1D2S0 + RB2
+1
+¢
++ (1 ¡ p)
+¡
+¢0D2S0 + R2B0
+¢
+·
+¡
+D2S0 ¡ K
+¢+
+54
+
+positive expected payo® at time t = 1;
+¡¢1
+1U 2S0 + RB1
+1
+¢
+·
+¡U2S0 ¡ K¢+
+¡
+¢1
+1UDS0 + RB1
+1
+¢
+·
+(UDS0 ¡ K)+
+¡¢2
+1UDS0 + RB2
+1
+¢
+·
+(UDS0 ¡ K)+
+¡
+¢2
+1D2S0 + RB2
+1
+¢
+·
+¡
+D2S0 ¡ K
+¢+
+and self-¯nancing,
+¢1
+1US0 + B1
+1
+¸
+¢0US0 + RB0
+¢2
+1DS0 + B2
+1
+¸
+¢0DS0 + RB0:
+The Lagrangean of the problem is
+L
+=
+¢0S0 + B0 +
++¸(1;2)
+(0;0)
+h¡
+U 2S0 ¡ K
+¢+ ¡ p
+¡
+¢1
+1U 2S0 + RB1
+1
+¢
+¡ (1 ¡ p)
+¡
+¢0U2S0 + R2B0
+¢i
++
++¸(2;2);1
+(0;0)
+£(UDS0 ¡ K)+ ¡ p ¡¢1
+1UDS0 + RB1
+1
+¢¡ (1 ¡ p)¡¢0UDS0 + R2B0
+¢¤
++¸(2;2);2
+(0;0)
+£
+(UDS0 ¡ K)+ ¡ p
+¡
+¢2
+1UDS0 + RB2
+1
+¢
+¡ (1 ¡ p)
+¡
+¢0D2S0 + R2B0
+¢¤
++¸(3;2)
+(0;0)
+h¡
+D2S0 ¡ K
+¢+ ¡ p
+¡
+¢2
+1D2S0 + RB2
+1
+¢
+¡ (1 ¡ p)
+¡
+¢0D2S0 + R2B0
+¢i
++®(2;1)
+(0;0)
+£
+¢1
+1US0 + B1
+1 ¡ ¢0US0 ¡ RB0
+¤
++®(1;1)
+(0;0)
+£¢2
+1DS0 + B2
+1 ¡ (¢0DS0 + RB0)¤
++¸(1;2)
+(1;1)
+h¡U 2S0 ¡ K¢+ ¡ ¡¢1
+1U 2S0 + RB1
+1
+¢i
++¸(2;2)
+(1;1)
+£
+(UDS0 ¡ K)+ ¡
+¡
+¢1
+1UDS0 + RB1
+1
+¢¤
++¸(2;2)
+(2;1)
+£
+(UDS0 ¡ K)+ ¡
+¡
+¢2
+1UDS0 + RB2
+1
+¢¤
++¸(3;2)
+(2;1)
+h¡
+D2S0 ¡ K
+¢+ ¡
+¡
+¢2
+1D2S0 + RB2
+1
+¢i
+The constraints that are binding depend on the value of the parameters.
+First, if R2 ¡ UD < 0 and p >
+UD¡R2
+UD¡R2+R(U¡D)or R2 ¡ UD > 0 and p >
+R2¡UD
+R2¡UD+R(U¡D) the optimal solution of the dual problem is characterized by
+¸(1;2)
+(0;0) = ¸(3;2)
+(0;0) = ¸(2;2)
+(1;1) = ¸(2;2)
+(2;1) = 0
+55
+
+and
+¸(2;2);1
+(0;0) ;¸(2;2);2
+(0;0) ; ®(2;1)
+(0;0);®(1;1)
+(0;0);¸(1;2)
+(1;1);¸(3;2)
+(2;1) ¸ 0:
+Second, if R2¡ UD < 0 and p <
+UD¡R2
+UD¡R2+R(U¡D) the optimal solution of the
+dual problem is characterized by
+¸(1;2)
+(0;0) = ¸(2;2);1
+(0;0)
+= ¸(1;2)
+(1;1) = ¸(2;2)
+(1;1) = ®(1;1)
+(0;0) = 0
+and
+¸(2;2);2
+(0;0) ;¸(3;2)
+(0;0);®(2;1)
+(0;0); ¸(2;2)
+(2;1); ¸(3;2)
+(2;1) ¸ 0:
+Finally, if R2¡ UD > 0 and p <
+R2¡UD
+R2¡UD+R(U¡D) the optimal solution of the
+dual problem is characterized by
+¸(2;2);2
+(0;0)
+= ¸(3;2)
+(0;0) = ¸(2;2)
+(2;1) = ¸(3;2)
+(2;1) = ®(2;1)
+(0;0) = 0
+and
+¸(1;2)
+(0;0); ¸(2;2);1
+(0;0) ;®(1;1)
+(0;0); ¸(1;2)
+(1;1); ¸(2;2)
+(1;1) ¸ 0:
+Hence, after some algebra the lower bound can be written as:
+Cl = q1£
+U 2S0 ¡ K
+¤+ + q2 [UDS0 ¡ K]+ + q3 £
+U 2S0 ¡ K
+¤+
+(26)
+with
+q1
+=
+(R ¡ D)2 ¡
+UD ¡ R2¢
++ p (U ¡ R)(R ¡ D)
+¡
+D2 ¡ R2¢
+R2
+h
+(U ¡ R)2 (D2 ¡ UD) + (R ¡ D)2 (UD ¡ D2) + p (U ¡ R)(R ¡ D)(D2 ¡ U2)
+i
+q2
+=
+(U ¡ R)2 ¡
+D2 ¡ R2¢
++ (R ¡ D)2 ¡
+R2 ¡ U 2¢
+R2
+h
+(U ¡ R)2 (D2 ¡ UD) + (R ¡ D)2 (UD ¡ D2) + p (U ¡ R)(R ¡ D)(D2 ¡ U2)
+i
+q3
+=
+(U ¡ R)2 ¡R2 ¡ UD¢ + p (U ¡ R)(R ¡ D)¡R2 ¡ U2¢
+R2
+h
+(U ¡ R)2 (D2 ¡ UD) + (R ¡ D)2 (UD ¡ D2) + p (U ¡ R)(R ¡ D)(D2 ¡ U2)
+i
+if R2 ¡ UD < 0 and p >
+UD¡R2
+UD¡R2+R(U¡D)or R2 ¡ UD > 0 and p >
+R2¡UD
+R2¡UD+R(U¡D),
+Cl = 1
+R2
+· R2 ¡ D2
+D (U ¡ D) [UDS0 ¡ K]+ + UD ¡ R2
+D (U ¡ D)
+£D2S0 ¡ K¤+
+¸
+(27)
+56
+
+if R2 ¡ UD < 0 and p <
+UD¡R2
+UD¡R2+R(U¡D) and
+Cl = 1
+R2
+· R2 ¡ UD
+U (U ¡ D)
+£
+U2S0 ¡ K
+¤+ + U2 ¡ R2
+U (U ¡ D) [UDS0 ¡ K]+
+¸
+(28)
+if R2 ¡ UD > 0 and p <
+R2¡UD
+R2¡UD+R(U¡D):
+B.3
+Example on Property 3
+Example 22 (for T=2) When p ! 0, which means that the market is
+completely illiquidity, the values of the lower bound are given by (27) or (28)
+depending on R2 ¡ UD 7 0. These values coincide with the ones presented
+in (2) for T=2. On the other hand, when p ! 1, which means that there is
+no illiquidity, the values of q1; q2 and q3 presented in (26) tend to
+lim
+p!1q1
+=
+(R ¡ D)2 ¡
+UD ¡ R2¢
++ (U ¡ R)(R ¡ D)
+¡
+D2 ¡ R2¢
+R2 (U ¡ R)2(D2 ¡ UD)+ R2 (R ¡ D)2(UD ¡ U2)+ R2 (U ¡ R)(R ¡ D)(D2 ¡ U 2
+=
+(R ¡ D)2
+R2 (U ¡ D)2
+lim
+p!1q2
+=
+(U ¡ R)2 ¡
+D2 ¡ R2¢
++ (R ¡ D)2¡
+R2 ¡ U 2¢
+R2 (U ¡ R)2(D2 ¡ UD)+ R2 (R ¡ D)2(UD ¡ D2)+ R2 (U ¡ R)(R ¡ D)(D2 ¡ U 2
+=
+2(R ¡ D)(U ¡ R)
+R2 (U ¡ D)2
+lim
+p!1q3
+=
+(U ¡ R)2 ¡
+R2 ¡ UD
+¢
++ (U ¡ R)(R ¡ D)
+¡
+R2 ¡ U2¢
+R2 (U ¡ R)2(D2 ¡ UD)+ R2 (R ¡ D)2(UD ¡ D2)+ R2 (U ¡ R)(R ¡ D)(D2 ¡ U 2
+(U ¡ R)2
+R2 (U ¡ D)2
+then,
+lim
+p!0Cl
+=
+(R ¡ D)2
+R2 (U ¡ D)2
+£
+U 2S0 ¡ K
+¤+ + 2(R ¡ D)(U ¡ R)
+R2(U ¡ D)2
+[UDS0 ¡ K]+
++
+(U ¡ R)2
+R2 (U ¡ D)2
+£
+U2S0 ¡ K
+¤+
+which coincides with Cl; presented in equation (1).
+57

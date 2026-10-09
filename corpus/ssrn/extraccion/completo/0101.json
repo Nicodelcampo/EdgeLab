@@ -1,0 +1,121 @@
+{
+ "doc_id": 101,
+ "titulo": "Dynamic execution of VWAP orders with short-term predictions",
+ "resumen_operativo": "El paper propone un marco dinámico para la ejecución de órdenes VWAP, reemplazando la ejecución basada en una curva estática por una curva de trading adaptativa basada en predicciones a corto plazo (señales de trading). El algoritmo ajusta la tasa de participación en cada intervalo de tiempo en función del valor esperado del precio, capturado por señales como Forward y Backward. Para evitar comportamientos extremos de agresividad o conservadurismo, la curva de trading se limita dentro de un 'trading envelope' (banda de confianza calculada empíricamente). Las validaciones usando datos del activo BNP Paribas (CAC40) demuestran mejoras (slippage positivo) frente a curvas estáticas, particularmente en días sin tendencias sostenidas.",
+ "calidad_paper": "media",
+ "conceptos": [
+  {
+   "nombre": "Adaptive trading curve",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Curva de ejecución generada al modificar iterativamente una curva de trading estática en respuesta a las señales de trading durante el transcurso del día, permitiendo capitalizar oportunidades de precio a corto plazo.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "Trading signal"
+    },
+    {
+     "tipo": "USA",
+     "objeto": "Decay adaptive strategy"
+    }
+   ],
+   "cita_textual": "The class of adaptive trading curve is a collection of all possible trading curves which is based on a static trading curve and a trading signal"
+  },
+  {
+   "nombre": "Trading envelope",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Bandas que delimitan las curvas de trading. Se calculan usando cuantiles históricos de curvas de ejecución acumulativas, con el fin de controlar el riesgo limitando la desviación de la curva adaptativa frente a la curva de volumen real del mercado.",
+   "relaciones": [
+    {
+     "tipo": "MITIGA",
+     "objeto": "Extreme behaviors"
+    },
+    {
+     "tipo": "APLICA_A",
+     "objeto": "Adaptive trading curve"
+    }
+   ],
+   "cita_textual": "A trading envelope is a band delimited by two bound curves... One can interprete these two bounds as the lower/upper thresholds for proportion of cumulative executed volume at the end of each slice."
+  },
+  {
+   "nombre": "Decay adaptive strategy",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Algoritmo recursivo para generar la curva adaptativa. Incrementa la proporción de volumen en el segmento de tiempo actual si hay una señal favorable, reduciendo proporcionalmente los volúmenes de los períodos futuros restantes.",
+   "relaciones": [
+    {
+     "tipo": "GENERA",
+     "objeto": "Adaptive trading curve"
+    }
+   ],
+   "cita_textual": "we increase our volume proportion pn in the case that wn is better than W(p)... Since the sum of all slice weights must be unchanged, we decrease proportionally all remaining slices."
+  },
+  {
+   "nombre": "Backward signal",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Señal predictiva basada en una combinación lineal del VWAP acumulado y el precio actual que sirve como proxy del VWAP de cierre de la jornada para medir la distancia u 'opportunity zone'.",
+   "relaciones": [
+    {
+     "tipo": "PREDICE",
+     "objeto": "Oracle trading signal"
+    }
+   ],
+   "cita_textual": "By considering the impact of current price on final VWAP, we can use a linear combination of cumulative VWAP and the current price as the benchmark..."
+  },
+  {
+   "nombre": "Forward signal",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Señal de predicción basada en la distancia entre el precio spot actual y el precio VWAP acumulado hasta ese punto. Sirve para detectar una tendencia de reversión o tendencia local respecto a lo ya ejecutado.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "Trading signal"
+    }
+   ],
+   "cita_textual": "we base the forward signal on the distance between the current price and the cumulative VWAP up to that point."
+  },
+  {
+   "nombre": "Relative slippage",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Medición (en basis points) de qué tanto mejora la curva de trading adaptativa propuesta respecto al benchmark elegido (la curva de trading estática o pre calculada).",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "Adaptive trading curve"
+    }
+   ],
+   "cita_textual": "The relative slippage measures how much adaptive trading curve is better than static trading curve."
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "La estrategia adaptativa ('decay adaptive strategy') basada en señales a corto plazo logra superar a los enfoques de ejecución estáticos con una probabilidad empírica superior al 50%.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "La señal Backward posee una mayor tasa predictiva (predict rate) general que la señal Forward para acercarse a la 'Oracle trading signal', pero sus señales ocurren de forma desproporcionada hacia el cierre del día, a diferencia de Forward que se distribuye de manera más uniforme.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "El uso de señales no resulta infalible en días que presentan una fuerte relación tendencia/volatilidad. En esos casos de fuerte drift o tendencia persistente sostenida, un enfoque limitado por un 'trading envelope' sirve como filtro o cota de riesgo robusta, previniendo empeorar sustancialmente la métrica VWAP.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "alta",
+  "nota": "El artículo proporciona fórmulas detalladas y heurísticas sobre cómo deformar ('decay update') estrategias estáticas de participación usando señales de predicción de muy corto plazo (5 minutos) generadas por un entorno tipo bandas de Bollinger sobre precio spot / VWAP acumulado. Esto es directamente aplicable a la construcción y optimización de routers/algoritmos en un Execution Server intradía."
+ }
+}

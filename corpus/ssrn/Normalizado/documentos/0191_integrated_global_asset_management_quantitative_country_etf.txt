@@ -1,0 +1,4361 @@
+ 
+ 
+* Corresponding Author: E-mail wen.jiang@uchicago.edu, Physical Sciences Division, University of 
+Chicago, 5640 S. Ellis Avenue, Chicago, IL 60637. These authors are also the first author of this paper 
+and these authors thank those in WorldQuant who made helpful comments and suggestions. 
+ 
+ 
+ 
+ 
+ 
+Integrated Global Asset Management:  
+Quantitative Country ETF Trading Strategy 
+ 
+𝐴𝑟𝑡𝑢𝑟𝑜 𝐴𝑔𝑢𝑖𝑙𝑎𝑟∗, 𝑋𝑖𝑎𝑜𝑐ℎ𝑒𝑛 𝐿𝑖𝑛∗, 𝑊𝑒𝑛 𝐽𝑖𝑎𝑛𝑔∗ 
+ 
+arturo.aguilarts@gmail.com, xiaochen.lin.2005@gmail.com, mikemailboxes@gmail.com 
+ 
+April 2020 
+ 
+ 
+ 
+Abstract 
+  
+This paper unveils the processes for building a country’ trading strategy can outperform the 
+MSCI Indexes and on the factor basis. By exploring the belief and experimenting with the structure in 
+place, there seems to be enough room to build a quantitative investment strategy that generates highquality predictive signals (alphas) considering each countries’ expected equity and currency 
+performances. We created, developed and deployed a set of systematic strategies which produces 
+impressive returns using country Exchange-Traded Funds (ETFs) with the objective to generate returns, 
+risk profiles, automations, modernizations, and optimizations to outperform the iShares MSCI ACWI 
+ETF (ACWI) and the iShares MSCI ACWI ex US ETF (ACWX) and similar benchmarks and evidences 
+within the industry based on extensive data, mathematical, market, and statistical analysis that we used 
+in 1) risk and scoring metrics such as technical, fundamental, economic, market sentiment and 
+alternative descriptors and 2) factor modeling paradigms and developments could reveal the weighted 
+market exposure for the dynamic multi-step asset allocation by country in a world of multi-period 
+electronic trading and information.  
+  
+The necessary codes and details can be found in the following link and are published on GitHub: 
+https://github.com/xlinGithub/Quantitative-Country-ETF-Trading-Strategy. 
+ 
+ 
+ 
+JEL Classification: C38; G11; G15 
+Key Words: Asset, Capital, Economics, Data, Equity, ETF, Investing, Management, Portfolio, R&D, 
+Risk, Strategy, Systematics, Technology, Trading, Wealth 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+2 
+1. Introduction 
+ 
+Over the last 20 years, we have seen many changes in the interactions of global markets and how they 
+had become more economically, quantitatively and technically dependent on each other; financial 
+diversification is becoming more complex that requires more than just managing the investments in the 
+developed and emerging markets, and that the underlying correlations are becoming more dynamic and 
+changing faster due to different exposed factors and control measures. 
+ 
+“The main task for every fund manager is to deliver a better-diversified portfolio that is stable and with 
+positive returns. To generate positive returns, managers are innovating based on methods and 
+organizations such as those are inspired by the fundamental and quantitative analysis, shareholder 
+activism, technological edge, superior understanding of the macroeconomics, geopolitical 
+developments, human and others. As most managers can apply leverages to increase the returns and 
+risks of their strategies, the task of reducing portfolio correlations, therefore, reducing portfolio 
+risk, has become an equivalent reason for seeking new alpha opportunities. Strong growth in 
+active assets under management over the past two decades has therefore led to an unrelenting search 
+both for alpha and pockets of weakly correlated assets. For instance, in the 1990s, it was sufficient 
+to include emerging market assets to lower portfolio correlations. An endowment model through 
+allocation that included alternative assets, such as commodities and real estate, easily outperformed 
+traditional bond-equity portfolios on a risk-adjusted basis. However, the growth in active assets and 
+increased use of leverage depleted alpha and increased the correlation across all risky assets. In 
+the 2008 market, the crisis exposed the limited diversification benefits of traditional assets, resulting in 
+a total sharp increase in the portfolio risks and financial losses (Kolanovic & Wei 2013).” 
+ 
+This study analyses, explains and provides insights for the management of an investment countryspecific ETF trading strategy which aims to outperform the MSCI Indexes. The executions behind this 
+financial objective is to create systematic processes in order to take a well-informed balance between 
+the overweight and the underweight positions in each country and taking into consideration of their 
+expected performances. 
+ 
+We assume the reader has a background in portfolio, trading, and finance. We also assume that the 
+reader is comfortable with data, programming, science, and research. In a nutshell, our target reader is 
+a professional who works with or for or employs in a data or investment-related position.  
+ 
+Aiming to deliver custom solutions and key and sourcing initiatives in furthering our developed data 
+analytics, mathematical and statistical tools of the market and scaling the integrations within the models 
+and ensure that and how it contributed to  innovation in data-driven finance and analytics with the stateof-the-art data engineering, management, and governance and explore hands-on technologies to 
+automate processes between development and operation and to define our data universe of the countries, 
+we incorporate the following definition from MSCI Inc: 
+ 
+The MSCI ACWI Index, a modern index strategy, is designed to represent the performance of the full 
+opportunity set of large-cap and mid-cap stocks across 23 developed and 26 emerging markets. As of 
+December 2019, it covers more than 3,000 constituents across 11 sectors and approximately 85% of the 
+free float-adjusted market capitalization in each market. The index is built using MSCI’s Global 
+Investable Market Index (GIMI) methodology, which is designed to take into account the variations 
+reflecting conditions across regions, market-cap sizes, sectors, style segments and combinations (MSCI 
+Inc, 2020). 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+3 
+According to MSCI’s methodology, these markets include the Developed and Emerging Markets, 
+Americas, 
+Europe & Middle East, Pacific Americas, 
+Europe, 
+Middle 
+East, 
+Africa
+ Asia, and their countries as specified in the following: 
+ 
+Table 1. MSCI ACWI Index 
+ 
+Developed Markets 
+Emerging Markets 
+Americas 
+Europe & 
+Middle East 
+Pacific 
+Americas 
+Europe, 
+Middle East 
+& Africa 
+Asia 
+Canada 
+Austria 
+Australia 
+Argentina 
+Czech 
+Republic 
+China 
+United States 
+Belgium 
+Hong Kong 
+Brazil 
+Egypt 
+India 
+ 
+Denmark 
+Japan 
+Chile 
+Greece 
+Indonesia 
+ 
+Finland 
+New Zealand 
+Colombia 
+Hungary 
+Korea 
+(South) 
+ 
+France 
+Singapore 
+Mexico 
+Poland 
+Malaysia 
+ 
+Germany 
+ 
+Peru 
+Qatar 
+Pakistan 
+ 
+Ireland 
+ 
+ 
+Russian 
+Federation 
+Philippines 
+ 
+Israel 
+ 
+ 
+Saudi Arabia 
+Taiwan 
+ 
+Italy 
+ 
+ 
+South Africa 
+Thailand 
+ 
+Netherlands 
+ 
+ 
+Turkey 
+ 
+ 
+Norway 
+ 
+ 
+United Arab 
+Emirates 
+ 
+ 
+Portugal 
+ 
+ 
+ 
+ 
+ 
+Spain 
+ 
+ 
+ 
+ 
+ 
+Sweden 
+ 
+ 
+ 
+ 
+ 
+Switzerland 
+ 
+ 
+ 
+ 
+ 
+United 
+Kingdom 
+ 
+ 
+ 
+ 
+Source: MSCI ACWI Index (MSCI Inc, 2020) 
+ 
+The investment strategy relies on the trading model for most of the countries from the list above and 
+uses the country-specific ETFs as instruments for its implementations. It mainly relays on ETFs for 
+which the underlined assets made up an MSCI country-specific index. In specific countries, ETFs that 
+don’t use MSCI directly, we will use the most liquid ETF, i.e. S&P 500. The only countries we exclude, 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+4 
+because there is no ETF to track, are the Czech Republic and Hungary as in our ETF’s initial universe, 
+see appendix A; later we also drop the other ETFs depending on their liquidity and data availability. 
+ 
+ 
+2. Design and Framework 
+ 
+Many institutional investors such as pension and mutual funds, insurance companies among others; 
+usually have in their asset allocation mandates the MSCI ACWI Index as the benchmark for their 
+international equity exposure. Taking this into consideration, there are many approaches and strategies 
+of how they invest and try to outperform the index. There are teams that do stock picking; however, 
+usually need large assets under management (AUM) to justify all the resources needed for stock 
+selection; these constraints have pushed firms to use countries exchange-traded funds (ETFs) to 
+accomplish this task, instead of just owning passively an AWCI ETF or Mutual Fund, and exploit 
+market movements to generate alpha on a country level. 
+ 
+Managing 47 equity country indexes and 37 currencies could be a complex task to achieve where there 
+are too many variables to track in order to find good investment opportunities; so we think that using 
+ETFs for each country as a building block can help us reduce this complexity such as those are 
+associated with trading costs, taxes, operational trading complexity, and etc.. With this dispersion, we 
+create value as the historical performance varies by country in the chart below for their ETF returns 
+over a 12-month period. 
+ 
+Chart 1. Countries’ ETFs 12 Months Performance in USD 2018-2019 
+ 
+ 
+Source: Own elaboration based on data from Yahoo Finance!) 
+ 
+The objective of this paper is to analyze economic, financial, market, sentiment and alternative data to 
+engineer the process using data science and programming on features, signals, variables, and models 
+could lead us to generate signals that help us decide when to buy or sell each country's ETF and our 
+overall exposure in each one academically and commercially. 
+ 
+This led us to many of the major questions and some of the points we are trying to understand and 
+explain.: 1) Should we consider only a long/short strategy? 2) Should we consider it as a benchmarked 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+5 
+long only? 3) 1 and 2 at the same time? 4) How should we implement the strategy rotation rebalances? 
+5) Should we reallocate ETF´s weights in the portfolio monthly or semi-annually? 6) Should we have a 
+threshold for each ETF to rebalance its weight when it reaches a specific level? 7) Should we use a 
+triple barrier method for closing our bets? 
+ 
+By collecting and collating our data, we further strengthen the belief that there could be enough room 
+to design and build a set of strategic solutions to outperform the returns of the MSCI ACWI Index; as 
+we could support our market and quantitative research findings with the wide correlations among them 
+and returns as suggested in the heatmap below. 
+ 
+Chart 2: Correlation Matrix since Jan 2016 - Feb 2020 
+ 
+ 
+Source: Own elaboration based on data from Yahoo Finance!) 
+ 
+Market conditions not only depend on the market data, fundamental and economic data; many 
+movements are triggered by the quantitative within the financial systems, i.e. non-linear models 
+powered by big data, commodity trading advisors (CTA), etc.), sentiment and alternative strategies; 
+which have evolved from traditional multi-factor models like those are developed by Barra Inc in the 
+70s to 80s. Understanding all these changes is important so we take advantage of the inefficiency of 
+markets, when we incorporate enterprise reporting analytics such as geopolitical risks, extreme 
+valuations, central bank’s policy rates, flows, etc.; cocreates buying/selling opportunities that could be 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+6 
+tracked using algorithmics of the systematics via data filtering, processing and wrangling to leverage, 
+find outliers, simulate, and profit from these movements. 
+ 
+Our choice of software and programming language used in development follow another important 
+changeover the last 10 to 15 years is the advancement of information technologies like the open-source 
+software such as the popular programming languages, Python, R, client software such as those are in 
+Google Products and MS Office, platforms like Bloomberg and Operating Systems, and cloud solutions 
+such as QuantConnect and Quantopian, and the externalities with cheaper or free hardware; however, 
+has high computational power. Being able to create and manage these changes in IT are requirements 
+of understanding and taking advantage of the current sophisticated markets where active and passive 
+trading, many other strategies and agents and participants interact in-person and online systematically, 
+especially in international settings. 
+ 
+All the above makes us think that market evolution will persist and despite its complexity, we develop 
+smarter models and tools to create possible scenarios; giving us the edge to outperform competitors and 
+implement new ideas. 
+ 
+ 
+3. Development and Methodology 
+ 
+In this section, we set the notation and provided some detailed descriptions of our simplified data and 
+models we used and the market researches we conducted to define our own factors and is also supported 
+by the book Advances in Financial Machine Learning by Marcos Lopez de Prado, where he highlights 
+how we can structure the discovery of investment strategies as a production chain process is also 
+included and independent of portfolio selection and evaluation. 
+ 
+Solving in a systematic or discretionary way in an investment strategy is a complex task due to the 
+combination of all the possible events and technologies; making it hard for investors to track all these 
+information bases and define an objective strategy for the investment decision. To avoid biases is also 
+complicated as investors usually have aspects which are regarding what should be rational or expected. 
+Once the specific data sets and models are selected to create our factor signals; we should always keep 
+in mind the process used to reach those results, clarity is obtained in the final portfolio selection and 
+weightings to avoid a “black box or overfitting approach”. 
+ 
+3.1 Scientific Literature 
+ 
+Our findings contribute to the recent but limited literature showing that integrated asset managed in a 
+modern strategic manner can yield significant values on the factor basis and to the understanding of the 
+investment and procedure regarding each country and market. For developing investment strategies, 
+there are many conditions and facts. After understanding our universe expansion with the specified asset 
+classes, to work with the teams, we started looking at and reasoning which papers could help us to 
+formula within our modern asset management practices. 
+ 
+To achieve our goal, we started a brainstorming session in order to explore a top-down approach. We 
+found the correct documentation to develop a data-driven strategy that contributed to various solutions 
+to this problem. After some discussions and different points of views had been considered, we agreed 
+to design models that are on the factor basis for which it could help us to track the investment 
+opportunities to generate leading alpha among countries in the developed and emerging markets; and 
+from this point, we started researching into the traditional papers and those from the practices, including 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+7 
+but not limited to Barra GEM (MSCI Inc, 1998) & USE3 (MSCI Inc, 1998) Handbooks, Fama/French 
+3 (Kenneth, 1993) & 5 Factors (Kenneth, 2014), Systematic Strategies Across Asset Classes (Marko 
+and Zhen, 2013), and Factor Investing (Andrew, 2013). 
+ 
+Most of the definitions from the papers specified the architecture above are more oriented on the style 
+factors rather than on the macroeconomic factors, yet, we were able to find a mix of good examples 
+from each one.  
+ 
+Another important point to start is to have a clear definition of what is factor investing. For example: 
+ 
+“Factor investing is a strategy that chooses securities on attributes that are associated with 
+higher returns. There are two main types of factors that have driven returns of stocks, bonds, 
+and other factors: macroeconomic factors and style factors. The former captures broad risks 
+across asset classes while the latter aims to explain returns and risks within asset classes. 
+ 
+Some common macroeconomic factors include credit, inflation, and liquidity, whereas style 
+factors embrace style, value, and momentum—just to name a few. (Investopedia, 2020).” 
+ 
+During this process, how the definitions had evolved and varied interestingly depending on the asset 
+class or author should be found; which could explain the reason why the same factor returns varied so 
+much like in the following: 
+ 
+“Value investing looks to “buy low and sell high”, combining the market for stocks that are under or 
+overvalued relative to their fundamentals. Problem is, what are these fundamentals? How do you define 
+Value in a company? Is it P/E, Dvd Yield, Cash Flow, P/B, a combination of all, none of the above? 
+These Quant approaches to investing, hence, include human skill or better said, human bias. Consider 
+the chart below, 7 different types of Value investing vehicles, with an outperformance of almost 20% 
+between them. Flaws in the accounting of intangibles, fundamental economic shifts, structural 
+transformations and maybe even Social and Impact investing can partly explain the difference in Value 
+strategies (Alberto, 2020).” 
+ 
+Chart 3. Value By Another Name 
+ 
+ 
+Source: Bloomberg (Bloomberg LP, 2020) 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+8 
+3.1.1 From GEM Handbook (Barra 1998) [5, page 13 & 53-55]: 
+ 
+Factor Model Definition 
+ 
+The long-term assumption and development of multiple-factor models (MFMs) are in pace with the 
+theoretical advances of arbitrage pricing theory (APT) for the capital market. MFMs further partitioned 
+the residual risk into specific and common factor risks. Moving beyond APT to select and estimate 
+factors that affect the expected returns and risks of a security or portfolio, our expected asset return in 
+excess of risk-free rate will then be the sum of all of product of beta and risk premium in each rewarded 
+risk factor. These models provide the frameworks in understanding the business challenges and drive 
+technical and quantitative solutions and tools for risk measurement, portfolio construction, and 
+performance attribution. 
+ 
+Risk Index Formulas 
+ 
+1. Size 
+A measure of company size 
+ 
+             𝑆𝑖𝑧𝑒 = 𝑙𝑛[(𝑠ℎ𝑎𝑟𝑒𝑠 𝑜𝑢𝑡𝑠𝑡𝑎𝑛𝑑𝑖𝑛𝑔) ∗(𝑝𝑟𝑖𝑐𝑒 𝑝𝑒𝑟 𝑠ℎ𝑎𝑟𝑒)𝑡] 
+where 
+price = the latest monthly closing price. 
+ 
+2. Success 
+Stock price momentum 
+ 
+Success = ∑𝑖=1,12
+𝑙𝑛(1 + 𝑟𝑓𝑡−𝑖)  - ∑𝑖=1,12
+𝑙𝑛(1 + 𝑟𝑓𝑙𝑡−𝑖)  
+where 
+𝑟𝑙= local return and 𝑟𝑓𝑙 = local risk-free rate. 
+ 
+3. Value 
+Includes the following four descriptors: 
+ 
+i)  
+Forecast E/P = (IBES fiscal year 1 earnings / share) / price 
+where 
+price = the latest monthly closing price. 
+ii)  
+Reported E/P = income before extraordinary items / (total shares outstanding) 
+* price 
+iii)  
+Reported B/P = common equity / market capitalization 
+where 
+market capitalization = shares outstanding*(price per share) 
+and 
+price = the latest monthly closing price. 
+iv)  
+Yield = predicted annual dividend / pricet 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+9 
+4. Variability in Markets 
+ 
+rl - rfl = 𝛼+ 𝛽(𝑟𝑚−𝑟𝑓𝑙) + 𝜀 
+where 
+𝜎𝜖= the standard deviation of the residual term 𝜖in the regression: 
+where 
+rl = local return, 
+rfl = local risk-free return, 
+rm= local market return, 
+𝛼= intercept, 
+𝛽= beta, and 
+𝜀= residual term. 
+ 
+3.1.2 From USE3 Handbook (Barra 1998) [6, page 71-76] 
+ 
+Risk Index Definitions 
+ 
+1. Volatility 
+This risk index captures relative volatility using measures of both long-term historical volatility (such 
+as historical residual standard deviation) and near-term volatility (such as high-low price ratio, daily 
+standard deviation, and cumulative range over the last 12 months). Other proxies for volatility (log of 
+stock price), corrections for thin trading (serial dependence), and changes in volatility (volume beta) 
+are also included in this descriptor. 
+ 
+Descriptors: 
+i. 
+Beta times sigma 
+ii. 
+Daily standard deviation 
+iii. 
+High-low price 
+iv. 
+Log of stock price 
+v. 
+Cumulative range 
+vi. 
+Volume beta 
+vii. 
+Serial dependence 
+viii. 
+Option-implied standard deviation 
+ 
+2. Momentum  
+This risk index captures common variation in returns related to recent stock price behavior. Stocks that 
+had positive excess returns in the recent past are grouped separately from those that displayed negative 
+excess returns. 
+ 
+Descriptors: 
+i. 
+Relative strength 
+ii. 
+Historical alpha 
+ 
+3. Size 
+This risk index captures differences in stock returns due to differences in the market capitalization of 
+companies. 
+ 
+Descriptor(s): 
+i. 
+Log of market capitalization 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+10 
+4. Size Nonlinearity 
+This risk index captures deviations from linearity in the relationship between returns and log of market 
+capitalization. 
+ 
+Descriptor(s): 
+i. 
+Cube of log of market capitalization 
+ 
+5. Trading Activity 
+This risk index measures the amount of relative trading in each stock. Stocks that are highly traded are 
+likely to be those with greater institutional interest. Such stocks may display different returns behavior 
+compared with those that are not widely held by institutions. 
+ 
+Descriptors: 
+i. 
+Share turnover rate (annual) 
+ii. 
+Share turnover rate (quarterly) 
+iii. 
+Share turnover rate (monthly) 
+iv. 
+Share turnover rate (five years) 
+v. 
+Indicator for forward split 
+vi. 
+Volume to variance 
+ 
+6. Growth 
+This risk index uses historical growth and profitability measures to predict future earnings growth. 
+ 
+Descriptors: 
+i. 
+Payout ratio over five years 
+ii. 
+Variability in capital structure 
+iii. 
+Growth rate in total assets 
+iv. 
+Earnings growth rate over the last five years 
+v. 
+Analyst-predicted earnings growth 
+vi. 
+Recent earnings change 
+ 
+7. Earnings Yield 
+This risk index combines current and historical earnings-to-price ratios with a measure of analystpredicted earnings-to-price. Stocks with similar values of earnings yield behave in a similar fashion 
+with respect to their returns. 
+ 
+Descriptors: 
+i. 
+Analyst-predicted earnings-to-price 
+ii. 
+Trailing annual earnings-to-price 
+iii. 
+Historical earnings-to-price 
+ 
+8. Value 
+This risk index distinguishes between value stocks and growth stocks using the ratio of book value of 
+equity to market capitalization. 
+ 
+Descriptor(s): 
+i. 
+Book-to-price ratio 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+11 
+9. Earnings Variability 
+This risk index measures the variability in earnings and cash flows using both historical measures and 
+analyst predictions. 
+ 
+Descriptors: 
+i. 
+Variability in earnings 
+ii. 
+Variability in cash flows 
+iii. 
+Extraordinary items in earnings 
+iv. 
+Standard deviation of analyst-predicted earnings-to-price 
+ 
+10. Leverage 
+This risk index measures the financial leverage of a company. 
+ 
+Descriptors: 
+i. 
+Market leverage 
+ii. 
+Book leverage 
+iii. 
+Debt to total assets 
+iv. 
+Senior debt rating 
+ 
+11. Currency Sensitivity 
+This risk index measures the sensitivity of a company’s stock return to the return on a basket of foreign 
+currencies. 
+ 
+Descriptor(s): 
+i. 
+Exposure to foreign currencies 
+ 
+12. Dividend Yield 
+This risk index computes a measure of predicted dividend yield using the past history of dividends and 
+the market price behavior of the stock. 
+ 
+Descriptor(s): 
+i. 
+Predicted dividend yield 
+ 
+3.1.3 From Fama/French 3 Factors (Kenneth, 1993) 
+ 
+The Fama/French factors are constructed using the 6 value-weight portfolios formed on size and bookto-market. 
+  
+  
+  
+SMB (Small Minus Big) is the average return on the three small portfolios minus the average return 
+on the three big portfolios, 
+ 
+SMB = 1/3 (Small Value + Small Neutral + Small Growth) - 1/3 (Big Value + Big Neutral + Big 
+Growth). 
+ 
+HML (High Minus Low) is the average return on the two value portfolios minus the average return on 
+the two growth portfolios, 
+ 
+HML = 1/2 (Small Value + Big Value) - 1/2 (Small Growth + Big Growth). 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+12 
+Rm-Rf, the excess return on the market, value-weight return of all CRSP firms incorporated in the US 
+and listed on the NYSE, AMEX, or NASDAQ that have a CRSP share code of 10 or 11 at the beginning 
+of month t, good shares and price data at the beginning of t, and good return data for t minus the onemonth Treasury bill rate (from Ibbotson Associates). 
+ 
+Rm-Rf includes all NYSE, AMEX, and NASDAQ firms. SMB and HML for July of year t to June of 
+t+1 include all NYSE, AMEX, and NASDAQ stocks for which we have market equity data for 
+December of t-1 and June of t, and (positive) book equity data for t-1. 
+ 
+3.1.4 From AQR Daily 4 Factors (AQR Factor/Style Investing) [15 and 16] 
+ 
+The difference between AQR and Fama/French Factors are 1) Sorting is a differentiator – We do a 
+dependent sort (firstly, sort by size and then by metric), whereas French does an independent sort. 2) 
+Universe is a differentiator – We use the same data sources as French (CRSP and XF), and we apply 
+filters to get close to French’s universe, however, there is no guarantee that the universes will be exactly 
+the same. 3) Historical refreshes are a differentiator – French refreshes his entire history every month, 
+whereas AQR has not historically done that. We’ve just appended the last month to the time series. 
+However as of late July, we started refreshing the historical data monthly. 4) Cutoffs are not a 
+differentiator – We both use 30th and 70th NYSE percentiles for high/low and the median NYSE 
+breakpoint for small/big. 5) Risk-free rate is not a differentiator – Both market and factor returns are in 
+excess of the risk-free rate (t-bills).  
+ 
+AQR Capital Management, LLC — Betting Against Beta: Equity Factors, Daily is the file contains 
+daily self-financing excess returns of long/short equity Betting Against Beta (BAB) factors. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+The portfolios are an updated and extended version of the equity portfolios used in Frazzini, Andrea 
+and Lasse H. Pedersen (2014), “Betting Against Beta," Journal of Financial Economics, 111, 1–25. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+The portfolio construction is based on Frazzini and Pedersen (2014), however there can be differences 
+in data sources and methodology. See the Data Sources and Definition tabs for details. 
+ 
+ 
+MKT is a market factor in which the value-weighted return on all available stocks minus the one-month 
+Treasury bill rate. 
+ 
+RF is the daily U.S. Treasury bill rates.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+SMB is the total market value of equity or the average return on the 3 small portfolios minus the average 
+return on the 3 big portfolios. 
+ 
+SMB = 1/3 (Small Value + Small Neutral + Small Growth) - 1/3 (Big Value + Big Neutral + Big Growth) 
+ 
+BAB factors are portfolios that are long low-beta securities and that short-sell high-beta securities.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Here we construct BAB factors for U.S. equities and 23 international equity markets, as well as multiple 
+aggregates. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+AQR Capital Management, LLC — Quality Minus Junk: Factors, Daily is a file contains daily 
+self-financing excess returns of long/short Quality Minus Junk (QMJ) factors. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+13 
+The portfolios are an updated and extended version of the equity portfolios used in Asness, Frazzini 
+and 
+Lasse 
+H. 
+Pedersen, 
+2014, 
+"Quality 
+Minus 
+Junk," 
+working 
+paper, 
+http://papers.ssrn.com/sol3/papers.cfm?abstract_id=2312432. 
+ 
+ 
+ 
+ 
+ 
+ 
+The portfolio construction is based on Asness, Frazzini and Pedersen (2014), however there can be 
+differences in data sources and methodology. See the Data Sources and Definition tabs for details. 
+ 
+ 
+QMJ is our quality-minus-junk factor that goes long high-quality stocks and short low-quality stocks.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+We 
+construct QMJ factors for U.S. equities and 23 international equity markets, as well as multiple 
+aggregates. 
+ 
+QMJ = ½ (Small Quality – Small Junk) + ½ (Big Quality – Big Junk) = ½ (QMJ in small stocks) + ½ (QMJ in 
+big stocks) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+3.1.5 From Fama/French 5 Factors (Kenneth, 2014) 
+ 
+The Fama/French 5 factors (2x3) are constructed using the 6 value-weight portfolios formed on size 
+and book-to-market, the 6 value-weight portfolios formed on size and operating profitability, and the 6 
+value-weight portfolios formed on size and investment. 
+ 
+SMB (Small Minus Big) is the average return on the nine small stock portfolios minus the average 
+return on the nine big stock portfolios, 
+ 
+SMB(B/M) = 1/3 (Small Value + Small Neutral + Small Growth) - 1/3 (Big Value + Big Neutral + Big 
+Growth). 
+ 
+SMB(OP) = 1/3 (Small Robust + Small Neutral + Small Weak) - 1/3 (Big Robust + Big Neutral + Big 
+Weak). 
+ 
+SMB(INV) = 1/3 (Small Conservative + Small Neutral + Small Aggressive) - 1/3 (Big Conservative + 
+Big Neutral + Big Aggressive). 
+ 
+SMB = 1/3 (SMB(B/M) + SMB(OP) + SMB(INV)). 
+ 
+HML (High Minus Low) is the average return on the two value portfolios minus the average return on 
+the two growth portfolios, 
+ 
+HML = 1/2 (Small Value + Big Value) - 1/2 (Small Growth + Big Growth). 
+  
+ 
+RMW (Robust Minus Weak) is the average return on the two robust operating profitability portfolios 
+minus the average return on the two weak operating profitability portfolios, 
+ 
+RMW = 1/2 (Small Robust + Big Robust) - 1/2 (Small Weak + Big Weak). 
+  
+ 
+CMA (Conservative Minus Aggressive) is the average return on the two conservative investment 
+portfolios minus the average return on the two aggressive investment portfolios, 
+ 
+CMA = 1/2 (Small Conservative + Big Conservative) - 1/2 (Small Aggressive + Big Aggressive). 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+14 
+Rm-Rf, the excess return on the market, value-weight return of all CRSP firms incorporated in the US 
+and listed on the NYSE, AMEX, or NASDAQ that have a CRSP share code of 10 or 11 at the beginning 
+of month t, good shares and price data at the beginning of t, and good return data for t minus the onemonth Treasury bill rate (from Ibbotson Associates). 
+Rm-Rf includes all NYSE, AMEX, and NASDAQ firms. SMB, HML, RMW, and CMA for July of 
+year t to June of t+1 include all NYSE, AMEX, and NASDAQ stocks for which we have market equity 
+data for December of t-1 and June of t, (positive) book equity data for t-1 (for SMB, HML, and RMW), 
+non-missing revenues and at least one of the following: cost of goods sold, selling, general and 
+administrative expenses, or interest expense for t-1 (for SMB and RMW), and total assets data for t-2 
+and t-1 (for SMB and CMA). 
+ 
+3.1.6 From J.P. Morgan Systematic Strategies Across Asset Classes (Kolanovic & Wei 2013)  and 
+(Marko and Zhen, 2013) 
+ 
+Table 2. Stylized examples of risk factors across asset classes, with 365-day rolling 
+ 
+Asset Classes Traditional 
+Carry* 
+Momentum* 
+Value* 
+Volatility 
+Equities 
+S&P 500 
+Dividend 
+yield 
+Past 12month price 
+return 
+Book to price 
+ratio 
+Option 
+writing on 
+SPX 
+Rates and 
+Credit 
+US Treasury 
+Bond 
+Slope of yield 
+curve 
+Past 12month price 
+return 
+Past 3-year 
+change in 
+yield 
+Option 
+writing on 
+UST futures 
+Currencies 
+DXY 
+Short-term 
+deposit rate 
+Past 12month price 
+return 
+Past 5-year 
+loss of PPP 
+Rolling 
+currency vol 
+swap 
+Commodities S&P GSCI 
+Ex-ante roll 
+yield 
+Past 12month price 
+return 
+Past 5-year 
+average to 
+current price 
+Option 
+writing on 
+gold 
+Source: J.P. Morgan Quantitative and Derivatives Strategy.) 
+ 
+The Risk factors are created via a long-short portfolio of corresponding assets according to the 
+definitions of Carry, Momentum, and Value respectively (MSCI Inc, 1998). 
+ 
+Carry – Equities: Excess return of a long position in three equity indices with the highest dividend 
+yield and a short position in the three equities indices with the lowest dividend yield (monthly 
+rebalanced). Our index universe consisted of country equity benchmarks for Australia, Canada, France, 
+Germany, HK, Italy, Japan, Netherlands, Spain, Sweden, Switzerland, the UK, and the U.S.. 
+ 
+Carry – Currencies: Excess return of a long position in the top-three yielding currencies and a short 
+position in the bottom-three yielding currencies (month míoly rebalanced). We used G10 versus USD 
+pairs for the currency universe, and domestic short-term deposit rates for yields. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+15 
+Momentum – Equities: Excess return of a long position in three equity indices with the highest past 
+12-month returns and a short position in the three equities indices with lowest past 12-month returns 
+(monthly rebalanced); Our index universe of country equity benchmarks included: Australia, Canada, 
+France, Germany, HK, Italy, Japan, Netherlands, Spain, Sweden, Switzerland, the U.K., and the U.S.. 
+ 
+Momentum – Currencies: Excess return of a long position in the three G10 currencies with the highest 
+past 12-month returns and a short position in the three G10 currencies with lowest past 12-month returns 
+(monthly rebalanced). 
+ 
+Value – Equities: Fama-French (1993) HML value factor. The factor is long the top decile and short 
+bottom decile of US stocks ranked by book to price ratio; the universe covers all non-financial firms 
+listed on the NYSE, AMEX and NASDAQ exchanges. 
+ 
+Value – Currencies: Asness et.al (2013) currency value factor which is a long/short currency portfolio 
+based on the 5-year change in purchasing power parity. The universe covers spot exchange rates of the 
+following G10 currencies: Australia, Canada, Germany (spliced with the Euro), Japan, New Zealand, 
+Norway, Sweden, Switzerland, the United Kingdom, and the United States. 
+ 
+Volatility – Equities: Equal weighted combination of S&P 500 Buy-write (BXM) and Put-write (PUT) 
+Index. 
+ 
+Volatility – Currencies: Excess return of an equal-weighted position of volatility swaps on USD/JPY, 
+USD/AUD and USD/CHF (receiving implied volatility swap) with unit vega notional, rolled monthly. 
+ 
+3.1.7 From Factor Investing (Ang 2013) [9, page 40-42] 
+ 
+Macro Factor Investing 
+ 
+We have taken an investment and style approach to factor investing as our factors have all been 
+tradeable investing strategies. An alternative approach to factor investing can be based on (non-traded) 
+macro factors. This is academically purer, however, much harder to implement. 
+ 
+This is because asset classes do not move one-for-one with macro factors, and in fact, many of their 
+movements are perverse or at least unintuitive. Equities, for example, are a claim on real assets yet a 
+terribly inadequate choice for tracking inflation (see Chapter 8). Real estate is a better inflation hedge; 
+however, it is only partially “real” (see Chapter 11). Bond prices reflect inflation risk, however, other 
+factors such as monetary policy risk and illiquidity risk are important drivers of long-term bonds (see 
+Chapter 9). 
+ 
+3.1.8 Theoretical Models 
+ 
+Taking a macro view requires a framework for how macro factors simultaneously affect many asset 
+classes. Ang and Ulrich (2012) is one model that could be used for macro-factor investing. We develop 
+a model where real bonds, nominal bonds, and equities are jointly determined by two macro factors, 
+inflation, and economic growth, along with a factor capturing how the Fed sets monetary policy. If there 
+is an inflation shock, for example, the model shows how the prices of all asset prices move. Macro 
+factors are responsible for a very large amount of variation in expected returns: economic growth 
+accounts for approximately 60% of the variation in the equity risk premium, while expected inflation 
+accounts for 40% of the variation in real rates and 90% of the variation in nominal bonds. 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+16 
+ 
+3.1.9 Corporate Models 
+ 
+Bridgewater Associates, LP 
+ 
+A practitioner framework where macro factors affect asset prices has been developed by 
+Bridgewater Associates, a large hedge fund. Bridgewater’s All-Weather Strategy considers 
+inflation and economic growth as macro factors, as shown in Figure 14.8. Although Bridgewater 
+deviated from its originally intended strategy during the financial crisis, it is worth examining the 
+overall framework. Bridgewater estimates how different assets perform during periods when growth is 
+high or low, or when inflation is rising or falling. They fill in a 2x2 matrix corresponding to these 
+scenarios. In Figure 14.8, they expect that nominal bonds do well when growth is falling and inflation 
+is falling. Equities, on the other hand, outperform when growth is high and inflation is subdued. This is 
+clearly a much more simplified version compared to a formal model like Ang and Ulrich (2012). The 
+idea is the same, in order to observe how assets, react when macro factors change. 
+ 
+Table 4.18. Bridgewater’s All-Weather Strategy 
+ 
+ 
+Growth 
+Inflation 
+Rising 
+25% of risk 
+25% of risk 
+- Equities 
+- Inflation-Linked Bonds 
+- Corporate Spreads 
+- Commodities 
+- Commodities 
+- EM Debt Spreads 
+- EM Debt Spreads 
+Falling 
+25% of risk 
+25% of risk 
+- Nominal Bonds 
+- Nominal Bonds 
+- Inflation-Linked Bonds 
+- Equities 
+Source: Factor Investing (Andrew, 2013) 
+ 
+Alaska Permanent Fund Corporation 
+ 
+Table 14.9 reports the asset allocation of Alaska’s sovereign wealth fund, officially Alaska Permanent 
+Fund Corporation, which is funded by mineral lease rentals and royalties. Alaska places its asset classes 
+into different groups motivated by how they respond to different macro factor risks. The company 
+exposure category contains equities, naturally, and “benefits from times of growth and prosperity.” Note 
+that corporate bonds are also lumped in the same category – not in a separate fixed income allocation. 
+Chapter 9 shows that corporate bonds are affected by many of the factors that affect equity – if a 
+company is doing poorly, both bondholders and shareholders suffer. The correlations between corporate 
+bond returns and stock returns, both in excess of Treasury bonds, turn out to be high: at 48% for Baa 
+grade bonds and 65% for high yield bonds (see Figure 9.17 and Section 4.3 of Chapter 9). Alaska does 
+not consider them separate asset classes as they respond in the same way to macro risk. 
+ 
+Table 4.19. Alaska Permanent Fund Asset Allocation at April 2012 
+ 
+Asset Class 
+Weights 
+Comment 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+17 
+Cash 
+2% 
+Aim: To meet expected liabilities and manage liquidity 
+needs from rebalancing. 
+Interest Rates 
+6% 
+Example: Safe sovereign bonds. 
+Aim: To provide insurance against severe equity market 
+correlations and to provide high liquidity. 
+Company 
+Exposure 
+55% 
+Examples: Global equities, corporate bonds, bank loans, 
+private equity. 
+Aim: Benefit from times of growth and prosperity. 
+Real Assets 
+19% 
+Examples: Real bonds, real estate, infrastructure. 
+Aim: Hedge inflation risk. 
+Special 
+Opportunities 
+18% 
+Examples: Absolute and real return mandates, emerging 
+markets, distressed debt. 
+Aim: Take advantage of special investment opportunities. 
+The allocation is not fixed, and the allocation not invested 
+resides in the company exposure risk class. 
+Source: Factor Investing (Andrew, 2013) 
+ 
+Alaska is also interesting because it follows the Merton (1971) model outlined in Chapter 4 for longhorizon investing. It has a special opportunities class, with a target allocation of 18%. Long-horizon 
+investors take positions in a portfolio that is optimal for short-run investors, called the myopic portfolio, 
+as well as an opportunistic portfolio (Merton actually labels it a long-run hedging demand portfolio) in 
+which the long-horizon investor takes advantage of time-varying expected returns. When there are 
+special deals for distressed assets, or it believes there are good deals in more illiquid investment 
+opportunities which Alaska can exploit because of its long horizon, it invests through its Special 
+Opportunities allocation. If there are no such attractive opportunities, the allocation not invested resides 
+in the Company Exposure asset class. 
+ 
+In summary, Alaska’s macro factor investing looks through asset class labels by categorizing the way 
+different asset classes react to economic growth, inflation, and other macro risks. 
+ 
+3.2 Development Process 
+ 
+There is no specific magic formula or recipe to generate a unique and successful trading strategy, 
+however, from our experience how one can structure the process in empirical research is fundamental 
+for the development and implementation of an idea. Therefore, we followed with the principles as 
+suggested for the following teams and responsibilities breakdowns within our process.  
+ 
+3.2.1 Unit Management 
+ 
+Data Curators 
+ 
+This is the station responsible for collecting, cleaning, indexing, storing, adjusting and delivering all 
+data to the production chain [4, page 7th]. 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+18 
+During this stage, we tried to understand the availability of the data we thought would be useful to 
+develop the model. We searched in different sources like Quandl, Bloomberg, Yahoo Finance and 
+Trading Economics; after gathering the raw data, we analyzed it and kept the most representative data 
+sets. 
+ 
+Feature Analysts 
+ 
+This is the station responsible for transforming raw data into informative signals. Team members are 
+experts in information theory, signal extraction and processing, visualization, labeling, weighting, 
+classifiers and feature importance techniques [4, page 7th]. 
+ 
+We divided the work, so the person who collected the data was different from the feature analyst to 
+avoid missing errors in the data sets and open communication for ideas to create some features. 
+ 
+Strategists 
+ 
+In this station, informative features are transformed into actual investment algorithms. Team members 
+are data scientists with a deep knowledge of financial markets and the economy [4, page 7th]. 
+ 
+We worked together in developing the idea and divide the tasks for writing and coding in constant 
+communication; with the objective of avoiding useless work and keeping the idea together.   
+ 
+Backtesters 
+ 
+This station assesses the profitability of an investment strategy under various scenarios. Team members 
+are data scientists with a deep understanding of empirical and experimental techniques [4, page 8th]. 
+ 
+Once we had the investment model, we did backtesting analysis, optimized the portfolio and assessed 
+the associated risk to see how reliable it was through the lens of the middle office. 
+ 
+The following two steps should be the ones we could try once we had decided to implement the strategy 
+and have a seed capital investment. 
+  
+Deployment Team 
+ 
+The deployment team is tasked with integrating the strategy code into the production line. Team 
+members are algorithm specialists and hardcore mathematical programmers [4, page 8th]. 
+ 
+Portfolio Oversight 
+ 
+Once a strategy is deployed, it follows a cursus honorum, which entails the following stages or lifecycle 
+[4, page 8-9]: 
+i. 
+Embargo - if embargoed performance is consistent with backtest results, the strategy is 
+promoted to the next stage. 
+ii. 
+Paper trading - paper trading will take place for as long as it is needed to gather enough 
+evidence that the strategy performs as expected. 
+iii. 
+Graduation - Performance is evaluated precisely, including attribute risk, returns and costs.  
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+19 
+iv. 
+Re-allocation - the initial allocation (at graduation) is small. As time passes, and the strategy 
+performs as expected, the allocation is increased. Over time, performance decays, and 
+allocations become gradually smaller.  
+v. 
+Decommission - eventually, all strategies are discontinued.  
+ 
+3.2.2 Organizational Management 
+ 
+While we are doing the project in the financial engineering and data science domains, the above 
+interconnected components for the data aspects of our project can be better visualized as below. 
+ 
+Chart 4. DataOps Components  
+ 
+ 
+Source: Eckerson (Wayne, 2018) 
+ 
+To build and support the analytics application, performance reporting and information technology for 
+the asset manager using each of the above domain for differentiating capabilities, we rely on the skill 
+sets from each other and are able to coordinate and execute each of our specialized plan in 
+monitoring, managing and researching for innovative risk assessment and reporting used in the 
+industry globally in a control environment, data center, end user computing and virtualization.  
+ 
+3.3 Our Factors 
+ 
+Some of the common factors that influence stock price include the fundamental factors, technical factors 
+news and market sentiment factors. Within the technical factors, we decided to specify some of those 
+highly influential or major factors into a standalone economic factors category. 
+ 
+To help us decide how we can measure our factors; we have been taking into consideration the previous 
+definitions, data availability and our experience for defining them. 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+20 
+Below are the concepts and data to describe and calculate the descriptors we are planning to use to 
+generate our first attempt to build our buy/sell factors signals: 
+ 
+Chart 5. The First Definition of our Country ETF Trading Strategy Factors 
+ 
+ 
+Source: Own Elaboration 
+ 
+3.4 Data and ETF Universe 
+ 
+3.4.1 Raw Data 
+ 
+As mentioned above, our initial universe consisted of 47 countries with 37 different currencies; 
+therefore, the data sets we firstly considered for the descriptors are the following: 
+ 
+i. 
+Price data for the 47 Country ETFs (see appendix A for the whole list of ETFs, we downloaded 
+the data using download price data.ipynb code). 
+ii. 
+Fundamental data which includes: Dividend Yield, P/E, P/CF & P/B of the underlying or proxy 
+index for each Country ETF. 
+iii. 
+Economic data for each country: PMI, Expected GDP Growth, Debt/GDP & REER. 
+iv. 
+Sentiment data of each ETF: Put/Call Ratio, Short Interest & Fund Flow. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+21 
+3.4.2 Factor Data 
+ 
+Once we had the raw data described in our descriptors from above stored and cleaned, we generate each 
+factor using the following codes: 
+ 
+i. 
+process price data into factor data.ipynb 
+ii. 
+process raw data into factor data.ipynb 
+iii. 
+process price data into forward return.ipynb 
+ 
+Table 3. Factors Description 
+ 
+Short Name 
+Name 
+Category 
+mom_21 
+Short-term Absolute Momentum (21-trading day) 
+Technical 
+mom_63 
+Medium-term Absolute Momentum (63-trading day) 
+mom_252 
+Long-term Absolute Momentum (252-trading day) 
+mr_21 
+Percentage over Short-term Moving Average (21-... 
+mr_63 
+Percentage over Medium-term Moving Average (63... 
+mr_252 
+Percentage over Long-term Moving Average (252-... 
+div_yield 
+Dividend Yield 
+Fundamental 
+pb 
+Price/Book Ratio 
+pe 
+Price/Earning Ratio 
+pcf 
+Price/Cash Flow Ratio 
+pmi 
+PMI 
+Economic 
+gdp_growth 
+QoQ GDP Growth 
+debt_gdp 
+National Debt/GDP Ratio 
+reer 
+REER 
+pc_ratio 
+Put/Call Ratio 
+Sentimental and 
+Alternative 
+short_int 
+Short Interest 
+short_int_ratio 
+Short Interest/Market Capitalization 
+f_flow 
+Fund Flow 
+sh_out 
+Share Outstanding 
+NaN 
+mkt_cap 
+Market Capitalization 
+f_rtn 
+Forward Return (one month, 21-trading day) 
+Source: Own Elaboration 
+ 
+Once we processed the output from these codes, we made a data availability check in order to find 
+which data we were missing to decide the final factors’ descriptors and ETF Universe; below the list 
+of changes we implemented (please see appendix B to check the data availability review). 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+22 
+ 
+i. 
+Dropped PMI & Fund Flow descriptors 
+ii. 
+Replaced Expected GDP Growth with QoQ GDP Growth 
+iii. 
+Countries & tickers we dropped out: 
+◆ Colombia (ICOL) 
+◆ Denmark (EDEN) 
+◆ Egypt (EGPT) 
+◆ Finland (EFNL) 
+◆ India (INDA) 
+◆ Ireland (EIRL) 
+◆ Israel (EIS) 
+◆ Norway (ENOR) 
+◆ Pakistan (PAK) 
+◆ Portugal (PGAL) 
+◆ Qatar (QAT) 
+◆ United Arab Emirates (UAE) 
+ 
+After making all these changes, we finally reach our final definition of the factors we are going to use 
+in the trading model: 
+ 
+Chart 6. Final Factors of Quantitative Country ETF Trading Strategy 
+ 
+ 
+Source: Own Elaboration 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+23 
+Technical Score 
+ 
+Momentum: 
+ 
+i. 
+Long term momentum (mom_252) = (Adj Close_t0 - Adj Close_t-252) / Adj Close_t-252 
+ii. 
+Medium term momentum (mom_63) = (Adj Close_t0 - Adj Close_t-63) / Adj Close_t-63 
+iii. 
+Short term momentum (mom_21) = (Adj Close_t0 - Adj Close_t-21) / Adj Close_t-21 
+ 
+Mean-Reversion: 
+ 
+i. 
+Long term mean reversion (mr_252) = (Adj Close_t0 - moving average of Adj Close for last 
+252 trading days) / moving average of Adj Close for last 252 trading days 
+ii. 
+Medium term mean reversion (mr_63) = (Adj Close_t0 - moving average of Adj Close for last 
+63 trading days) / moving average of Adj Close for last 63 trading days 
+iii. 
+Short term mean reversion (mr_21) = (Adj Close_t0 - moving average of Adj Close for last 21 
+trading days) / moving average of Adj Close for last 21 trading days 
+ 
+Fundamental Score 
+ 
+Dividend Yield: 
+ 
+i. 
+Index estimated dividend yield current year. Calculated as estimated dividends FY1 divided by 
+the last price (Bloomberg LP, 2020). 
+ 
+P/E: 
+ 
+i. 
+Ratio of the price of a stock and the company's earnings per share; it is calculated as the last 
+price divided by trailing 12M EPS before XO items or basic EPS Before XO if only annual 
+earnings exist. 
+Current Price / Earnings Ratio 
+Calculated as last price divided by trailing weighted EPS (Bloomberg LP, 2020). 
+ 
+P/CF: 
+ 
+i. 
+The price/cash flow ratio is the ratio of a stock's price divided by the cash flow per share.  
+Average shares outstanding is used when calculating cash flow per share. Cash Flow Per Share 
+is calculated on a trailing 12-month basis where available. Trailing values are calculated by 
+adding the most recent four quarters. 
+Current Price / Cash Flow Ratio 
+Calculated as the last price divided by trailing 12M cash flow per share (Bloomberg LP, 2020). 
+ 
+P/B: 
+ 
+i. 
+Ratio of the stock price to the book value per share. Calculated as: 
+Price to Book Ratio = Last Price / Book Value Per Share 
+Data from the most recent reporting period (quarterly, semi-annual or annual) 
+used in the calculation (Bloomberg LP, 2020). 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+24 
+Economic Score 
+ 
+QoQ GDP Growth: 
+ 
+i. 
+Bloomberg Real GDP (QoQ% SAAR) (Bloomberg LP, 2020). 
+ 
+Debt/GDP:  
+ 
+i. 
+Bloomberg Debt as a Percentage of GDP (Bloomberg LP, 2020). 
+ 
+RFER: 
+ 
+i. 
+Real Effective Exchange Rate Broad Index (Bloomberg LP, 2020). 
+ 
+Market Sentiment & Alternative Score 
+ 
+Put/Call Ratio: 
+ 
+i. 
+Ratio of total put open interest to total call open interest traded so far in the current trading day. 
+Open interest is the total number of option contracts (all strike prices and expiration dates) that 
+have not been closed, liquidated, or delivered (Bloomberg LP, 2020). 
+ 
+Short Interest: 
+ 
+i. 
+Total number of shares investors have sold short, however, have not yet bought back. Returns 
+the total number of shares, including margin trading short and SBL. The amount is the sum of 
+short balance and SBL short sell balance for ETFs. 
+ 
+For historical values, the dates represent the end date of the period the data is for, 
+not the date when the data was made publicly available. For example, if the data 
+is for the two-week period ending on October 15 and that data is made publicly 
+available on October 25, the date shown is October 15 (Bloomberg LP, 2020). 
+ 
+After the data availability analysis, we dropped countries were there were too much missing data, we 
+reached our final country ETF universe that represents 96.26% with 35 countries of MSCI ACWI Index 
+weighting composition as of March 23rd, 2020: 
+ 
+Table 4. Country ETF Universe 
+ 
+Ticker 
+Country 
+Name 
+Underlying 
+or Proxy* 
+Index 
+Weight in 
+ACWI as 
+23/03/20 
+ARGT 
+Argentina 
+Global X MSCI Argentina ETF 
+MXAR* 
+0.01% 
+EWA 
+Australia 
+iShares MSCI Australia ETF 
+NDDUAS 
+1.69% 
+EWO 
+Austria 
+iShares MSCI Austria ETF 
+MXAT* 
+0.03% 
+EWK 
+Belgium 
+iShares MSCI Belgium ETF 
+M1BE5IM 
+0.26% 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+25 
+EWZ 
+Brazil 
+iShares MSCI Brazil ETF 
+MXBR* 
+0.59% 
+EWC 
+Canada 
+iShares MSCI Canada ETF 
+M1CXCAS 
+2.64% 
+ECH 
+Chile 
+iShares MSCI Chile ETF 
+M1CL5IM 
+0.10% 
+MCHI 
+China 
+iShares MSCI China ETF 
+NDEUCHF 
+4.96% 
+EWQ 
+France 
+iShares MSCI France ETF 
+NDDUFR 
+3.11% 
+EWG 
+Germany 
+iShares MSCI Germany ETF 
+NDDUGR 
+2.34% 
+GREK 
+Greece 
+Global X MSCI Greece ETF 
+MXGR* 
+0.01% 
+EWH 
+Hong Kong 
+iShares MSCI Hong Kong ETF 
+NDDUHK 
+1.10% 
+EIDO 
+Indonesia 
+iShares MSCI Indonesia ETF 
+NU724020 
+0.21% 
+EWI 
+Italy 
+iShares MSCI Italy ETF 
+MXIT* 
+0.64% 
+EWJ 
+Japan 
+iShares MSCI Japan ETF 
+NDDUJN 
+7.18% 
+EWY Korea (South) 
+iShares MSCI South Korea ETF 
+M1KR2550 
+1.34% 
+EWM 
+Malaysia 
+iShares MSCI Malaysia ETF 
+MXMY* 
+0.21% 
+EWW 
+Mexico 
+iShares MSCI Mexico ETF 
+MXMX* 
+0.22% 
+EWN 
+Netherlands 
+iShares MSCI Netherlands ETF 
+MXNL* 
+1.19% 
+ENZL New Zealand 
+iShares MSCI New Zealand ETF 
+MXNZ* 
+0.08% 
+EPU 
+Peru 
+iShares MSCI Peru ETF 
+M1PECAPD 
+0.04% 
+EPHE 
+Philippines 
+iShares MSCI Philippines ETF 
+MIMUPHIN 
+0.09% 
+EPOL 
+Poland 
+iShares MSCI Poland ETF 
+MXPL* 
+0.08% 
+ERUS 
+Russian 
+Federation 
+iShares MSCI Russia ETF 
+MSEURU$N 
+0.40% 
+KSA 
+Saudi Arabia 
+iShares MSCI Saudi Arabia ETF 
+MXSAD* 
+0.30% 
+EWS 
+Singapore 
+iShares MSCI Singapore ETF 
+M1CXBLY 
+0.31% 
+EZA 
+South Africa 
+iShares MSCI South Africa ETF 
+M1CXBAC 
+0.42% 
+EWP 
+Spain 
+iShares MSCI Spain ETF 
+M1CXBLRP 
+0.73% 
+EWD 
+Sweden 
+iShares MSCI Sweden ETF 
+M1CXBLV 
+0.76% 
+EWL 
+Switzerland 
+iShares MSCI Switzerland ETF 
+MXCH* 
+3.10% 
+EWT 
+Taiwan 
+iShares MSCI Taiwan ETF 
+M1CXBLZ 
+1.50% 
+THD 
+Thailand 
+iShares MSCI Thailand ETF 
+MXTH 
+0.26% 
+TUR 
+Turkey 
+iShares MSCI Turkey ETF 
+NU724019 
+0.04% 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+26 
+EWU 
+United 
+Kingdom 
+iShares MSCI United Kingdom ETF 
+NDDUUK 
+4.13% 
+VOO 
+United States 
+Vanguard S&P 500 ETF 
+SPTR 
+56.19% 
+Source: Own elaboration based on data from Bloomberg (Bloomberg LP, 2020) & (BlackRock Inc, 
+2020) 
+ 
+By setting 𝑤𝑖 to be each country ETF weight and 𝑤 as all of country ETF portfolio weights, let 𝑅𝑡 be 
+the N by 1 return vector, 
+ 
+𝑅𝑝,𝑡= 𝑤′𝑅𝑡= ∑𝑤𝑖𝑅𝑖𝑡 
+ 
+We devise the return from each or all factors as well as the resultant variance of the factors, 
+ 
+𝑅𝑡= 𝛼+ 𝐵𝑓𝑡+ 𝜖𝑡 
+𝑅𝑝,𝑡= 𝑤′𝑎+ 𝑤′𝜖𝑡𝑝𝑓𝑡+ 𝜖𝑝,𝑡 
+𝐷= 𝐸[𝑓𝑡] 
+𝑣𝑎𝑟(𝑅𝑝,𝑡) = 𝑤′𝐵𝛺𝑓𝐵′𝑤+ 𝑤′𝐷𝑤 
+ 
+which differ from tracking portfolio by net present value, our alpha, 
+ 
+𝐸(𝑅𝑝,𝑡) ≠𝐸(𝑅̃𝐴𝑇𝑃) 
+ 
+3.5 Financial Machine Learning Algorithms 
+ 
+Please find below a small description of the computational algorithms we used to develop our final 
+model; both are included in scikit-learn library. 
+ 
+Chart 7. Typical tasks and frequently used Machine Learning methods 
+ 
+ 
+Source: J.P. Morgan Big Data and AI Strat QDS (Marko and Rajesh, 2017) 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+27 
+“The figure below shows the correlation of different Machine Learning algorithms between themselves. 
+One can notice that regression-based strategies tend to be more correlated (e.g. Lasso CV is strongly 
+correlated to Elastic Net, etc.); however, on average the pairwise correlation of all strategies was only 
+~20%, which offers the potential to combine strategies at a portfolio level (Marko and Rajesh, 2017).” 
+ 
+Chart 8. Correlation of Machine Learning strategies amongst themselves 
+ 
+ 
+Source: J.P. Morgan Macro QDS (Marko and Rajesh, 2017) 
+ 
+3.5.1 Random Forest Regressor 
+ 
+A random forest is a meta estimator that fits a number of classifying decision trees on various subsamples of the dataset and uses averaging to improve the predictive accuracy and control over-fitting. 
+The sub-sample size is always the same as the original input sample size, however, the samples are 
+drawn with a replacement if bootstrap=True by default. (SciKit-Learn, 2020). 
+ 
+(𝛽̂𝑙,𝑛, 𝛽̂𝑟,𝑛, 𝑑𝑛) ∈𝑎𝑟𝑔𝑚𝑖𝑛 ∑[𝑌𝑖−𝛽𝑙1𝑥𝑖≤𝑑−𝛽𝑙1𝑥𝑖>𝑑]
+2   
+ 
+Pros:  1) Accuracy and Stability Improvement 2) Overfit Prevention 
+Cons: 1) Time and resource requirement 
+2) Low Model Interpretability 
+ 
+3.5.2 Ridge Regression 
+ 
+This model solves a regression model where the loss function is the linear least-squares function and 
+regularization is given by the l2-norm. Also known as Ridge Regression or Tikhonov regularization. 
+This estimator has built-in support for multi-variate regression, i.e., when y is a 2d-array of shape 
+(n_samples, n_targets. (SciKit-Learn, 2020). 
+ 
+𝛽̂
+𝑟𝑖𝑑𝑔𝑒=𝑎𝑟𝑔𝑚𝑖𝑛 {||𝑌−𝑋𝛽||2
+2 + 𝜆||𝛽||2
+2}   
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+28 
+𝛽̂
+𝑟𝑖𝑑𝑔𝑒= (𝑋𝑇𝑋+ 𝜆𝐼)−1𝑋𝑇𝑌 
+ 
+Pro:  
+1) L2 Regulation 
+2) Overfit Prevention 
+Con: 
+1) Bias Increment 
+2) Low Model Interpretability 
+ 
+4. Results 
+ 
+4.1 Factor Analysis 
+ 
+After generating all our factor data, we did an analysis to understand what makes a good factor; to reach 
+these result we  used a winsorization transformation to limit extreme values, for details please check 
+this code factor analysis.ipynb. 
+ 
+During the process, we applied these steps to understand the quality and find the linear trend we are 
+looking across the quantile groups: 
+ 
+➔ Winsorized Factor 
+➔ Normalized Winsorized Factor 
+➔ Normalized Winsorized Factor Quartile 
+ 
+Chart 9. Factor Analysis Framework 
+ 
+ 
+ 
+Developed Markets 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+29 
+Emerging Markets 
+ 
+ 
+ 
+Normalized Winsorized Factor Quartile Charts 
+ 
+➔ Technical factors: 
+ 
+Charts 9-11. Momentum 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+30 
+ 
+ 
+ 
+Charts 12-14. Mean-Reversion 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+31 
+ 
+ 
+ 
+➔ Fundamental factors: 
+ 
+Chart 15. Dividend Yield 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+32 
+Chart 16. P/E 
+ 
+ 
+ 
+Chart 17. P/CF 
+ 
+ 
+ 
+ 
+Chart 18. P/B 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+33 
+➔ Economic factors: 
+ 
+Chart 19. QoQ GDP Growth 
+ 
+ 
+ 
+Chart 20. National Debt/GDP Ratio 
+ 
+ 
+ 
+ 
+Chart 21. REER 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+34 
+➔ Market sentimental and alternative factors: 
+ 
+Chart 22. Put/Call ratio 
+ 
+ 
+ 
+Chart 23. Short interest 
+ 
+ 
+ 
+So far, we have generated all the data. We will need in our model to build our signals and implement 
+our strategy with the results and proper backtesting. 
+ 
+Presently, we are ready to test our factors and develop our final model. 
+ 
+4.1 Modeling Data 
+ 
+Using the process factor data into modeling data.ipynb code from our repository, we processed the 
+factor data and our forward return to generate our modeling data.  
+ 
+To do this, we grouped into quartiles and then took at the average forward return for each group and 
+factor: 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+35 
+Table 5. Technical factors 
+ 
+Date 
+Market Ticker f_rtn mom_252 mom_63 mom_21 mr_252 mr_63 mr_21 
+4/1/2016 Developed ENZL -0.035 
+0.303 
+1.562 
+2.005 
+1.970 1.892 2.293 
+4/1/2016 Developed EWA -0.072 
+-0.819 
+1.183 
+0.878 
+-0.222 1.476 2.293 
+4/1/2016 Developed EWC -0.013 
+-1.876 
+-1.626 
+-1.386 
+-1.444 -1.532 -0.568 
+4/1/2016 Developed EWD -0.061 
+-0.193 
+-0.601 
+-1.026 
+-0.496 -0.380 -0.578 
+4/1/2016 Developed EWG -0.055 
+-0.039 
+0.630 
+-0.673 
+-0.327 -0.178 -1.153 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+30/12/2019 Emerging GREK -0.039 
+2.183 
+0.249 
+-0.403 
+1.538 0.172 0.134 
+30/12/2019 Emerging KSA 
+-0.021 
+-0.476 
+-1.026 
+-0.254 
+-1.019 -0.206 -0.983 
+30/12/2019 Emerging MCHI -0.043 
+0.553 
+1.215 
+0.165 
+0.600 1.018 0.578 
+30/12/2019 Emerging THD 
+-0.083 
+-0.424 
+-1.501 
+-1.661 
+-0.934 -1.494 -1.033 
+30/12/2019 Emerging TUR 
+0.032 
+-0.037 
+-0.886 
+-0.488 
+0.671 0.418 -0.595 
+Source: Own Elaboration 
+ 
+Table 7. Fundamental factors 
+ 
+Date 
+Market Ticker f_rtn div_yield 
+pe 
+pb 
+pcf 
+4/1/2016 Developed ENZL -0.035 
+1.681 -0.177 0.284 0.597 
+4/1/2016 Developed EWA -0.072 
+1.546 -0.259 0.208 -0.613 
+4/1/2016 Developed EWG -0.055 
+-0.467 -0.250 -0.021 -0.736 
+4/1/2016 Developed EWH -0.098 
+-0.156 -1.124 -1.086 2.674 
+4/1/2016 Developed EWI 
+-0.142 
+0.558 2.913 -1.279 -0.661 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+30/12/201
+9 Emerging GREK -0.039 
+-0.340 1.667 1.529 2.102 
+30/12/201
+9 Emerging KSA 
+-0.021 
+1.560 1.667 0.595 0.267 
+30/12/201
+9 Emerging MCHI -0.043 
+-1.400 -0.360 0.212 -0.377 
+30/12/201
+9 Emerging THD 
+-0.083 
+-0.196 0.550 0.596 -0.300 
+30/12/201
+9 Emerging TUR 
+0.032 
+0.432 -1.574 -1.438 -1.072 
+Source: Own Elaboration 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+36 
+Table 8. Economic factors 
+ 
+Date 
+Market Ticker f_rtn gdp_growth debt_gdp reer 
+4/1/2016 Developed ENZL -0.035 
+1.820 
+-1.412 0.357 
+4/1/2016 Developed EWA -0.072 
+0.604 
+-1.119 -0.912 
+4/1/2016 Developed EWC -0.013 
+-1.145 
+0.610 -1.828 
+4/1/2016 Developed EWD -0.061 
+1.820 
+-1.151 -0.267 
+4/1/2016 Developed EWG -0.055 
+-0.385 
+-0.261 -0.459 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+30/12/201
+9 Emerging GREK -0.039 
+0.185 
+1.736 -0.263 
+30/12/201
+9 Emerging KSA 
+-0.021 
+-0.347 
+-1.439 1.250 
+30/12/201
+9 Emerging MCHI -0.043 
+1.780 
+-1.421 1.446 
+30/12/201
+9 Emerging THD 
+-0.083 
+-0.028 
+0.472 1.446 
+30/12/201
+9 Emerging TUR 
+0.032 
+-0.900 
+-0.225 -1.785 
+Source: Own Elaboration 
+ 
+Table 9. Sentimental and alternative factors 
+ 
+Date 
+Market Ticker f_rtn pc_ratio short_int_ratio 
+4/1/2016 Developed EWA -0.072 
+0.899 
+1.801 
+4/1/2016 Developed EWC -0.013 
+0.889 
+1.610 
+4/1/2016 Developed EWD -0.061 
+-0.388 
+-0.343 
+4/1/2016 Developed EWG -0.055 
+-0.526 
+-0.732 
+4/1/2016 Developed EWH -0.098 
+-0.172 
+1.033 
+... 
+... 
+... 
+... 
+... 
+... 
+30/12/2019 Emerging GREK -0.039 
+-0.902 
+0.731 
+30/12/2019 Emerging KSA 
+-0.021 
+-0.810 
+1.903 
+30/12/2019 Emerging MCHI -0.043 
+-0.040 
+0.014 
+30/12/2019 Emerging THD 
+-0.083 
+0.024 
+-1.068 
+30/12/2019 Emerging TUR 
+0.032 
+1.122 
+1.414 
+Source: Own Elaboration 
+ 
+To see all the modeling data files for each factor you can download them in this link. 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+37 
+4.2 Multivariate Modeling and Prediction 
+ 
+Using the modeling data from above, we applied the random forest regressor and ridge regression 
+methods to each factor to train and test our signals for the developed and emerging markets; we 
+developed, implemented and structured the realistic and predicted distributions with the practical 
+assessments. To see all the details, please review the following code modeling.ipynb. 
+ 
+Chart 24. Technical Random Forest Regressor – Developed Markets 
+ 
+ 
+ 
+Chart 25. Technical Ridge Regression – Developed Markets 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+38 
+Chart 26. Technical Random Forest Regressor – Emerging Markets 
+ 
+ 
+ 
+Chart 27. Technical Ridge Regression – Emerging Markets 
+ 
+ 
+ 
+Chart 28. Fundamental Random Forest Regressor – Developed Markets 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+39 
+Chart 29. Fundamental Ridge Regression – Developed Markets 
+ 
+ 
+ 
+Chart 30. Fundamental Random Forest Regressor – Emerging Markets 
+ 
+ 
+ 
+ 
+Chart 31. Fundamental Ridge Regression – Emerging Markets 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+40 
+Chart 32. Economic Random Forest Regressor – Developed Markets 
+ 
+ 
+Chart 33. Economic Ridge Regression – Developed Markets 
+ 
+ 
+Chart 34. Economic Random Forest Regressor – Emerging Markets 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+41 
+Chart 35. Economic Ridge Regression – Emerging Markets 
+ 
+ 
+ 
+Chart 36. Sentimental and Alternative Random Forest Regressor – Developed Markets 
+ 
+ 
+ 
+Chart 37. Sentimental and Alternative Ridge Regression – Developed Markets 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+42 
+Chart 38. Sentimental and Alternative Random Forest Regressor – Emerging Markets 
+ 
+ 
+ 
+ 
+Chart 39. Sentimental and Alternative Ridge Regression – Emerging Markets 
+ 
+ 
+ 
+Final Model at Asset Manager Level 
+ 
+Once we generated all the data sets for each signal, we analyze their correlation and combine them to 
+generate our developed and emerging predication files located in this folder link.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+43 
+Chart 40. Emerging Markets Factors Correlation 
+ 
+ 
+Source: Own Elaboration 
+ 
+4.3 Performance Analysis: Algorithmic Backtesting 
+  
+For the backtesting of our strategy, we used Quantopian website to understand the performance vs its 
+benchmark. Our first attempt included the 35 countries from our ETFs universe; we used the following 
+code quantopian_backtest_ACWI.py to test from 01/01/2019 – 12/31/2019, USD$10mn and no trading 
+costs. 
+ 
+Screenshot 1. Quantopian Build Algorithm ($ in 10 millions) 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+44 
+After building the algorithm, we run the full backtest and got the following results: 
+Quantitative Country ETF Trading Strategy  
+Total return: 22.40% 
+Specific return: 8.53% 
+Common Return: 12.77% 
+Sharpe: 0.87 
+Max Drawdown: -8.50% 
+Volatility: 0.12 
+iShares MSCI ACWI ETF benchmark return: 26.55%  
+ 
+Screenshot 2. Quantopian Backtest ($ in 10 millions) 
+ 
+ 
+ 
+2019 is a very strong year for equities mainly because of the U.S. market which represents more than 
+50% of MSCI ACWI Index weight; our strategy underperformed by 4.15% its benchmark so that makes 
+us think that maybe we can test it excluding U.S. equity and see if results improve.  
+ 
+For our second scenario, we tried our model, however, only for 34 countries excluding VOO ETF (S&P 
+500 Index) and used as a benchmark, iShares MSCI ACWI ex US ETF; you can see the following code 
+for details quantopian_backtest_ACWX.py. 
+ 
+After building the algorithm, we run the full backtest and got the following results: 
+Quantitative Country ETF Trading Strategy  
+Total return: 22.01% 
+Specific return: 8.22% 
+Common Return: 12.73% 
+Sharpe: 0.84 
+Max Drawdown: -8.64% 
+Volatility: 0.12 
+iShares MSCI ACWI ex US ETF benchmark return: 21.09%  
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+45 
+Screenshot 3. Quantopian Bascktest ($ in 10 millions) 
+ 
+ 
+ 
+In our second attempt, we were able to beat the benchmark by 0.92%. It seems we are in the right 
+direction for our country trading strategy and we need to understand how we can incorporate some other 
+metrics that can help us track U.S. market versus the rest of the world in order to blend our strategy 
+among these two groups. 
+ 
+4.4 U.S. Subcase 
+ 
+After reached the results from above and understanding that some markets like the U.S. are very large 
+that can be played as another universe, we applied a style factor analysis as shown below, in order to 
+complement our idea in case we will decide to split the universe for part of the strategy using FamaFrench, one of the best price return models. Without a loss of generality, modifying the above country 
+model can also be adjusted for the studies against the book to market equity excess on the domestic, 
+world and international setting.  
+ 
+Table 10. Option to Reduce Exposure to Economic Factor 
+ 
+ 
+Source: Strategic Factor Allocation (Andrew et al, 2017) 
+ 
+The idea we are proposing is that we can combine both macro factors for country selection and for large 
+equity markets we can try to generate alpha using style factors daily; please visit the following code for 
+more details US Three, Four and Five Factors Models 2017-2018.ipynb.  
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+46 
+US: VOO is a S&P 500 Index, representing 500 of the largest U.S. companies. The goal is to closely 
+track the index’s return, which is considered a gauge of overall U.S. stock returns; please visit the 
+following website for more details https://investor.vanguard.com/etf/profile/VOO  
+ 
+We employed the Augmented Dickey-Fuller (ADF) unit root test to test for stationary for all of the 
+used factors comprise of the return, risk free rate, adjusted rate of return, Fama French as well as the 
+AQR factors. We do not find any of our factor being greater than the critical Dickey-Fuller values at 
+5%.  
+ 
+One of the major problems in the regression-based analysis is the existence of multicollinearity 
+between factors. There are also a variety of tests to choose from such as the Variance Inflation Factor 
+and Tolerance methods. We decomposed the correlation matrix for all the factors and found that all of 
+our eigenvalues were very large.  
+ 
+In conclusion, all the tested factors were stationary without concerns about collinearity, therefore, we 
+could proceed to obtain the direct exposure by feeding our data to our empirical model. 
+ 
+Mkt-RF, SMB & HML Daily Factors: 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+47 
+ 
+ 
+MRT, SMB, BAB & QMJ Daily Factors: 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+48 
+ 
+ 
+ 
+Mkt-RF, SMB, HML, RMW & CMA Daily Factors: 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+49 
+ 
+ 
+ 
+ 
+5. Crisis, Risk and Regime Stability 
+ 
+Despite of the high correlation, we see in episodes of the crisis among risky assets like what is happened 
+in 2008; there are also wide correlations and returns among countries’ currencies and equity 
+performance; that can be explored as demonstrated in the current paper, or could be appreciated in the 
+table below with each country return since February 21st to March 30th , 2020 due to COVID-19 global 
+risk-off and supply chain disruptions. 
+ 
+Table 11. Country ETFs Performance During Black Swan, COVID-19 
+ 
+Country 
+Ticker 
+ETF Chg Since 
+21st 
+Currency Chg 
+Since 21st 
+~Local Equity 
+Return 
+Brazil 
+EWZ 
+-43.97% 
+-17.19% 
+-35% 
+Colombia 
+ICOL 
+-43.30% 
+-20.38% 
+-33% 
+Argentina 
+ARGT 
+-40.57% 
+-4.25% 
+-43% 
+Indonesia 
+EIDO 
+-40.13% 
+-18.73% 
+-26% 
+Mexico 
+EWW 
+-40.10% 
+-28.76% 
+-23% 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+50 
+South Africa 
+EZA 
+-38.24% 
+-19.72% 
+-28% 
+Norway 
+ENOR 
+-38.16% 
+-14.03% 
+-25% 
+Greece 
+GREK 
+-37.10% 
+1.70% 
+-40% 
+Australia 
+EWA 
+-36.24% 
+-7.12% 
+-33% 
+Russian 
+Federation 
+ERUS 
+-35.85% 
+-24.95% 
+-21% 
+Peru 
+EPU 
+-35.70% 
+-1.23% 
+-32% 
+Pakistan 
+PAK 
+-34.32% 
+-7.21% 
+-36% 
+Austria 
+EWO 
+-33.97% 
+1.70% 
+-39% 
+Canada 
+EWC 
+-32.55% 
+-6.99% 
+-29% 
+Chile 
+ECH 
+-32.10% 
+-5.58% 
+-28% 
+India 
+INDA 
+-31.82% 
+-5.48% 
+-28% 
+Philippines 
+EPHE 
+-30.59% 
+-0.09% 
+-29% 
+Ireland 
+EIRL 
+-30.48% 
+1.70% 
+-30% 
+Spain 
+EWP 
+-30.31% 
+1.70% 
+-31% 
+Italy 
+EWI 
+-30.22% 
+1.70% 
+-32% 
+Poland 
+EPOL 
+-30.12% 
+-4.34% 
+-30% 
+Thailand 
+THD 
+-29.30% 
+-3.62% 
+-25% 
+Turkey 
+TUR 
+-28.92% 
+-8.07% 
+-24% 
+United Kingdom 
+EWU 
+-28.59% 
+-4.38% 
+-25% 
+Egypt 
+EGPT 
+-28.33% 
+-1.24% 
+-29% 
+Portugal 
+PGAL 
+-28.04% 
+1.70% 
+-25% 
+Israel 
+EIS 
+-27.70% 
+-4.45% 
+-23% 
+Germany 
+EWG 
+-27.52% 
+1.70% 
+-29% 
+Belgium 
+EWK 
+-27.45% 
+1.70% 
+-29% 
+Sweden 
+EWD 
+-26.67% 
+-3.16% 
+-26% 
+France 
+EWQ 
+-26.33% 
+1.70% 
+-28% 
+Finland 
+EFNL 
+-26.11% 
+1.70% 
+-26% 
+United Arab 
+Emirates 
+UAE 
+-24.74% 
+0.00% 
+-24% 
+New Zealand 
+ENZL 
+-24.72% 
+-5.43% 
+-15% 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+51 
+Netherlands 
+EWN 
+-24.43% 
+1.70% 
+-20% 
+United States 
+VOO 
+-23.68% 
+-0.19% 
+-24% 
+Singapore 
+EWS 
+-23.44% 
+-1.88% 
+-21% 
+Korea (South) 
+EWY 
+-22.37% 
+-1.28% 
+-20% 
+Saudi Arabia 
+KSA 
+-21.10% 
+-0.29% 
+-20% 
+Denmark 
+EDEN 
+-19.58% 
+1.70% 
+-18% 
+Hong Kong 
+EWH 
+-18.11% 
+0.43% 
+-16% 
+Taiwan 
+EWT 
+-17.22% 
+0.47% 
+-17% 
+Switzerland 
+EWL 
+-17.03% 
+1.87% 
+-18% 
+Malaysia 
+EWM 
+-16.72% 
+-3.23% 
+-12% 
+China 
+MCHI 
+-13.14% 
+-1.16% 
+-11% 
+Japan 
+EWJ 
+-11.39% 
+3.13% 
+-14% 
+Qatar 
+QAT 
+-10.79% 
+-0.25% 
+-11% 
+Source: Bloomberg (Bloomberg LP, 2020) 
+ 
+The evidence is consistent with the negative influence on the investment performance and the motive 
+for investment. Despite there is no systematic risk, the economies of the U.S., U.K., Russia, Europe and 
+China are expected to have steep declines and follow by negative growth rates in post-recoveries. 
+Considering the above and rich countries will stabilize the markets to prevent multiple Black Swan 
+events, we think there are serial ways to find the correct data sets to implement a systematic strategy 
+that could generate alpha consistently; predominately, we are focused and result-driven professionals 
+with communication and relation building skills, also have been able to expose some interesting steps 
+to do this and how working as a team with different backgrounds and skills can complement in the 
+investment process. 
+ 
+ 
+6. Discussion 
+ 
+We continuously enhance the vision for our investment processes and identify opportunities to further 
+enhance our portfolio and its performances beneficially such as by systematically deferring the 
+realization of capital gain and accelerating the realization of capital loss and the relations of analyzing 
+the objectives and feedbacks professionally.  
+ 
+Some analysts might believe investment decision can be manually made by relying on individual 
+crowdsourcing purely across the globe. However, in this information age, we observed that such 
+feedbacks or communications from this proposed individual crowdsourcing model was often not 
+substantial, coherent, delayed, altruistic or useful (Oguz, 2019). Also, the fresh individual analysts 
+require commitments themselves and significant efforts from the experienced senior often to identify, 
+educate, coordinate or help them to remove constraints in completing a single task accordingly.  
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+52 
+We developed our codes to create and structure the modules for achieving data-driven automation and 
+business intelligence solution with machine learning capabilities for the enhancement and specification. 
+Regarding machine learning models; we can also try different methods and combinations for further 
+research as well as alternative datasets that help us find alpha. 
+ 
+“Datasets and Methodologies: There are two main components of a Big Data investment approach: 
+acquiring and understanding the data, and using appropriate technologies and methods to analyze those 
+data. New datasets are often larger in volume, velocity and variability as compared to traditional 
+datasets such as daily stock prices. Alternative datasets include data generated by individuals (social 
+media posts, product reviews, search trends, etc.), data generated by business processes (company 
+exhaust data, commercial transaction, credit card data, etc.) and data generated by sensors (satellite 
+image data, foot and car traffic, ship locations, etc.). In most cases, these datasets need a level of analysis 
+before they can be used in a trading strategy… Methods to analyze big and alternative datasets with 
+traditional statistics; however, also methods of Machine Learning. Machine Learning techniques 
+include Supervised Learning (regressions, classifications), Unsupervised Learning (factor analysis, 
+clustering) as well as novel techniques of Deep and Reinforcement Learning that are often used to 
+analyze unstructured data and show promise in identifying data patterns in structured data (Marko and 
+Rajesh, 2017)”. 
+ 
+ 
+7. Conclusion 
+ 
+This paper creates and demonstrates the worldwide investment spans across the economics, 
+fundamental, technical and markets in the investment industry and display significant investment 
+opportunities and implications. We centralize the sporadic data into a well-structured monthly and daily 
+dataset for countries that can mostly capture the global investment market. We apply and analyze crosssectional studies with innovative factors and professional realization methods better integrate into the 
+ETF investment portfolio. By leveraging or relying on these strategies in hand, we rebalance portfolios 
+freely and backtest quantitatively. 
+ 
+Efficient market hypothesis states prices fully reflect all available information in any given time and 
+random walk theory asserts that pattern and trend will not dictate the price movement and the 
+historical cannot be used to predict future price movement. In practice, sometimes, we missed by the 
+book trading ideas, because we lack a suggested model to track changes in a systematic way; taking 
+us to decide with biases that sometimes are just fulfilled by emotions. Therefore, it is crucial to design 
+or track a transparent set of rules to help us make decisions in our investment process.  
+ 
+Our findings suggest we will continue to discover new ways to design factors and more training data. 
+It is essential for investors to have access to these kinds of studies and codes to generate more scenarios 
+using new methods to understand markets inefficiencies, exploitable systematics, and harvest alpha 
+opportunities. The integrated approach combines value estimates to increase accuracy, we elaborated, 
+have room for improvement with other descriptors to explain each factor and more combinations; 
+likewise, as shown in this paper, we can create a set of systematic strategies to solve the country 
+selection process and provide multiple options to understand and adjust the factors influence investment. 
+ 
+Finally, given the extent of the changes highlighted in the investigation, the evolution of factors and 
+how the design is crucial to capture the characteristics, it is important that we are looking to have 
+exposure and that returns can vary considerably due to this aspect and the uncorrected usage will 
+understate the areas, but unwarranted biases.  
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+53 
+Acknowledgment 
+ 
+We thank all those who made helpful comments and suggestions and also want to make a special 
+recognition to those in WorldQuant for their support for the Master of Science in Financial 
+Engineering. 
+ 
+ 
+Conflict of Interest 
+ 
+The authors have no conflict of interest with the companies and markets appeared on this article. 
+Additionally, the authors have no position and are not under any influence in any stock, ETF, ETN and 
+trading instruments mentioned on this paper. 
+ 
+Disclaimer 
+ 
+The views expressed are the authors’ and do not necessarily reflect those of the organizations 
+affiliated; nor is it to be solely relied on for financial investment or such particular course of action. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+54 
+References 
+ 
+[1] Marko Kolanovic & Zhen Wei (2013). Systematic Strategies Across Asset Classes. J.P. Morgan. 
+Available at: https://www.cmegroup.com/education/files/jpm-systematic-strategies-2013-12-111277971.pdf (Accessed: February, 2020). 
+ 
+[2] MSCI Inc (2020). MSCI ACWI Index. Available at: https://www.msci.com/acwi (Accessed: 
+February, 2020). 
+ 
+[3] Bloomberg (2020). Market Data. Available at: https://www.bloomberg.com/professional/ 
+(Accessed: February, 2020). 
+ 
+[4] Marcos Lopéz de Prado (2018). Advances in Financial Machine Learning. 
+ 
+[5] MSCI Inc (1998). Barra GEM. Available at: 
+https://www.alacra.com/alacra/help/barra_handbook_GEM.pdf (Accessed: March, 2020). 
+ 
+[6] MSCI Inc (1998). Barra USE3. Available at: 
+http://www.alacra.com/alacra/help/barra_handbook_US.pdf (Accessed: March 2020). 
+ 
+[7] Kenneth R. French (1993). Description of Fama/French 3 Factors. Available at: 
+https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/f-f_factors.html (Accessed: 
+March, 2020). 
+ 
+[8] Kenneth R. French (2014). Description of Fama/French 5 Factors (2x3). Available at: 
+https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/f-f_5_factors_2x3.html 
+(Accessed: March 2020). 
+ 
+[9] Andrew Ang (2013). Factor Investing. Available at: 
+https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2277397 (Accessed: February 2020). 
+ 
+[10] Markit Economics (2020). PMI by IHS Markit. Available at: 
+https://ihsmarkit.com/products/pmi.html (Accessed: March 2020). 
+  
+[11] Investopedia (2020). Factor Investing. Available at: 
+https://www.investopedia.com/terms/f/factor-investing.asp (Accessed: March 2020). 
+ 
+[12] BlackRock Inc (2020). iShares MSCI ACWI ETF. Available at: 
+https://www.ishares.com/us/products/239600/ishares-msci-acwi-etf (Accessed: March 2020). 
+ 
+[13] Wayne Eckerson (2018). The Flavors of Data Science and Engineering. Eckerson Group. 
+Available at: https://www.eckerson.com/articles/diving-into-dataops-the-underbelly-of-modern-datapipelines (Accessed: March 2020). 
+ 
+[14] Alberto Gomez (2020). Finamex: Friday's Good Read - Explaining the Recent Failure of Value 
+Investing (Email: January 2020). 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+55 
+[15] AQR Capital Management, Betting Against Beta: Equity Factors, Daily (2020). Factor Investing. 
+Available at: https://www.aqr.com/Insights/Datasets/Betting-Against-Beta-Equity-Factors-Daily 
+(Accessed: March 2020). 
+ 
+[16] AQR Capital Management, Quality Minus Junk: Factors, Daily (2020). Factor Investing. 
+Available at: https://www.aqr.com/Insights/Datasets/Quality-Minus-Junk-Factors-Daily (Accessed: 
+March 2020). 
+  
+[17] Scikit-learn (2020). sklearn.ensemble.RandomForestRegressor. Available at: https://scikitlearn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html (Accessed: March 
+2020). 
+ 
+[18] Scikit-learn (2020). sklearn.linear_model.Ridge. Available at: https://scikitlearn.org/stable/modules/generated/sklearn.linear_model.Ridge.html (Accessed: March 2020). 
+ 
+[19] Marko Kolanovic & Rajesh T. Krishnamachari (2017). Big Data and AI Strategies - Machine 
+Learning and Alternative Data Approach to Investing. J.P. Morgan. Available at: 
+https://www.cfasociety.org/cleveland/Lists/Events%20Calendar/Attachments/1045/BIG-Data_AIJPMmay2017.pdf (Accessed: March, 2020). 
+ 
+[20] Andrew Ang, Bob Bass, Sara Shores (2017). Strategic Factor Allocation. BlackRock. Available 
+at: https://files.assettv.com/live/blk-strategic-factor-allocation-2017.pdf (Accessed: March, 2020). 
+  
+[21] Oguz A. Acar (2019). Why Crowdsourcing Often Leads to Bad Ideas. Harvard Business Review. 
+Available at: https://hbr.org/2019/12/why-crowdsourcing-often-leads-to-bad-ideas (Accessed: March, 
+2020). 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+56 
+Appendix 
+ 
+Appendix A. 1st Country ETF Universe 
+ 
+Ticker 
+Country 
+Name 
+Inception 
+ARGT 
+Argentina 
+Global X MSCI Argentina ETF 
+03/03/2011 
+EWA 
+Australia 
+iShares MSCI Australia ETF 
+18/03/1996 
+EWO 
+Austria 
+iShares MSCI Austria ETF 
+18/03/1996 
+EWK 
+Belgium 
+iShares MSCI Belgium ETF 
+18/03/1996 
+EWZ 
+Brazil 
+iShares MSCI Brazil ETF 
+14/07/2000 
+EWC 
+Canada 
+iShares MSCI Canada ETF 
+18/03/1996 
+ECH 
+Chile 
+iShares MSCI Chile ETF 
+16/11/2007 
+MCHI 
+China 
+iShares MSCI China ETF 
+31/03/2011 
+ICOL 
+Colombia 
+iShares MSCI Colombia ETF 
+20/06/2013 
+EDEN 
+Denmark 
+iShares MSCI Denmark ETF 
+26/01/2012 
+EGPT 
+Egypt 
+VanEck Vectors Egypt Index ETF 
+18/02/2010 
+EFNL 
+Finland 
+iShares MSCI Finland ETF 
+26/01/2012 
+EWQ 
+France 
+iShares MSCI France ETF 
+18/03/1996 
+EWG 
+Germany 
+iShares MSCI Germany ETF 
+18/03/1996 
+GREK 
+Greece 
+Global X MSCI Greece ETF 
+08/12/2011 
+EWH 
+Hong Kong 
+iShares MSCI Hong Kong ETF 
+18/03/1996 
+INDA 
+India 
+iShares MSCI India ETF 
+03/02/2012 
+EIDO 
+Indonesia 
+iShares MSCI Indonesia ETF 
+07/05/2010 
+EIRL 
+Ireland 
+iShares MSCI Ireland ETF 
+07/05/2010 
+EIS 
+Israel 
+iShares MSCI Israel ETF 
+28/03/2008 
+EWI 
+Italy 
+iShares MSCI Italy ETF 
+18/03/1996 
+EWJ 
+Japan 
+iShares MSCI Japan ETF 
+18/03/1996 
+EWY 
+Korea (South) 
+iShares MSCI South Korea ETF 
+12/05/2000 
+EWM 
+Malaysia 
+iShares MSCI Malaysia ETF 
+18/03/1996 
+EWW 
+Mexico 
+iShares MSCI Mexico ETF 
+18/03/1996 
+EWN 
+Netherlands 
+iShares MSCI Netherlands ETF 
+18/03/1996 
+ENZL 
+New Zealand 
+iShares MSCI New Zealand ETF 
+02/09/2010 
+ENOR 
+Norway 
+iShares MSCI Norway ETF 
+24/01/2012 
+PAK 
+Pakistan 
+Global X MSCI Pakistan ETF 
+23/04/2015 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+57 
+EPU 
+Peru 
+iShares MSCI Peru ETF 
+22/06/2009 
+EPHE 
+Philippines 
+iShares MSCI Philippines ETF 
+29/09/2010 
+EPOL 
+Poland 
+iShares MSCI Poland ETF 
+26/05/2010 
+PGAL 
+Portugal 
+Global X MSCI Portugal ETF 
+13/11/2013 
+QAT 
+Qatar 
+iShares MSCI Qatar ETF 
+01/05/2014 
+ERUS 
+Russian Federation 
+iShares MSCI Russia ETF 
+10/11/2010 
+KSA 
+Saudi Arabia 
+iShares MSCI Saudi Arabia ETF 
+17/09/2015 
+EWS 
+Singapore 
+iShares MSCI Singapore ETF 
+18/03/1996 
+EZA 
+South Africa 
+iShares MSCI South Africa ETF 
+07/02/2003 
+EWP 
+Spain 
+iShares MSCI Spain ETF 
+18/03/1996 
+EWD 
+Sweden 
+iShares MSCI Sweden ETF 
+18/03/1996 
+EWL 
+Switzerland 
+iShares MSCI Switzerland ETF 
+18/03/1996 
+EWT 
+Taiwan 
+iShares MSCI Taiwan ETF 
+23/06/2000 
+THD 
+Thailand 
+iShares MSCI Thailand ETF 
+28/03/2008 
+TUR 
+Turkey 
+iShares MSCI Turkey ETF 
+28/03/2008 
+UAE 
+United Arab Emirates 
+iShares MSCI UAE ETF 
+01/05/2014 
+EWU 
+United Kingdom 
+iShares MSCI United Kingdom ET 
+18/03/1996 
+VOO 
+United States 
+Vanguard S&P 500 ETF 
+09/09/2010 
+Source: Own elaboration based on data from Bloomberg (Bloomberg LP, 2020) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+58 
+Appendix B. Data Availability Review 
+ 
+Ticker 
+Country 
+Market 
+debt_gdp 
+div_yield 
+f_flow 
+gdp_growth 
+ARGT 
+Argentina 
+Emerging 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWA 
+Australia 
+Developed 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWO 
+Austria 
+Developed 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWK 
+Belgium 
+Developed 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWZ 
+Brazil 
+Emerging 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWC 
+Canada 
+Developed 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+ECH 
+Chile 
+Emerging 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+MCHI 
+China 
+Emerging 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+ICOL 
+Colombia 
+Emerging 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+EDEN 
+Denmark 
+Developed 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+EGPT 
+Egypt 
+Emerging 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+EFNL 
+Finland 
+Developed 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+EWQ 
+France 
+Developed 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWG 
+Germany 
+Developed 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+GREK 
+Greece 
+Emerging 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWH 
+Hong Kong 
+Developed 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+INDA 
+India 
+Emerging 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+EIDO 
+Indonesia 
+Emerging 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EIRL 
+Ireland 
+Developed 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+EIS 
+Israel 
+Developed 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+EWI 
+Italy 
+Developed 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWJ 
+Japan 
+Developed 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWY 
+Korea 
+(South) 
+Emerging 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWM 
+Malaysia 
+Emerging 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWW 
+Mexico 
+Emerging 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWN 
+Netherlands 
+Developed 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+ENZL 
+New Zealand Developed 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+ENOR 
+Norway 
+Developed 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+PAK 
+Pakistan 
+Emerging 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+59 
+EPU 
+Peru 
+Emerging 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EPHE 
+Philippines 
+Emerging 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EPOL 
+Poland 
+Emerging 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+PGAL 
+Portugal 
+Developed 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+QAT 
+Qatar 
+Emerging 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+ERUS 
+Russian 
+Federation 
+Emerging 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+KSA 
+Saudi Arabia Emerging 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWS 
+Singapore 
+Developed 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EZA 
+South Africa Emerging 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWP 
+Spain 
+Developed 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWD 
+Sweden 
+Developed 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWL 
+Switzerland 
+Developed 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWT 
+Taiwan 
+Emerging 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+THD 
+Thailand 
+Emerging 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TUR 
+Turkey 
+Emerging 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+UAE 
+United Arab 
+Emirates 
+Emerging 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+EWU 
+United 
+Kingdom 
+Developed 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+VOO 
+United States Developed 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+ 
+Ticker 
+mkt_cap 
+mom_21 
+mom_252 
+mom_63 
+mr_21 
+mr_252 
+ARGT 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWA 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWO 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWK 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWZ 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWC 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+ECH 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+MCHI 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+ICOL 
+FALSE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EDEN 
+FALSE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+60 
+EGPT 
+FALSE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EFNL 
+FALSE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWQ 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWG 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+GREK 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWH 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+INDA 
+FALSE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EIDO 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EIRL 
+FALSE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EIS 
+FALSE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWI 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWJ 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWY 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWM 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWW 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWN 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+ENZL 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+ENOR 
+FALSE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+PAK 
+FALSE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EPU 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EPHE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EPOL 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+PGAL 
+FALSE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+QAT 
+FALSE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+ERUS 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+KSA 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWS 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EZA 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWP 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWD 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWL 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWT 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+61 
+THD 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TUR 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+UAE 
+FALSE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWU 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+VOO 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+ 
+Ticker 
+mr_63 
+pb 
+pcf 
+pc_ratio 
+pe 
+pmi 
+ARGT 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+EWA 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWO 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWK 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+EWZ 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWC 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+ECH 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+MCHI 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+ICOL 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+TRUE 
+EDEN 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+TRUE 
+EGPT 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+FALSE 
+EFNL 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+FALSE 
+EWQ 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWG 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+GREK 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWH 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+INDA 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+TRUE 
+EIDO 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EIRL 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+TRUE 
+EIS 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+FALSE 
+EWI 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWJ 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWY 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWM 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWW 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWN 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+62 
+ENZL 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+ENOR 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+FALSE 
+PAK 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+FALSE 
+EPU 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+EPHE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EPOL 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+PGAL 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+FALSE 
+QAT 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+FALSE 
+ERUS 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+KSA 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+EWS 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+EZA 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+EWP 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWD 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+EWL 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+EWT 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+THD 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TUR 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+UAE 
+TRUE 
+TRUE 
+TRUE 
+FALSE 
+TRUE 
+FALSE 
+EWU 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+VOO 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+ 
+Ticker 
+reer 
+short_int 
+short_int_ratio 
+sh_out 
+ARGT 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWA 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWO 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWK 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWZ 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWC 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+ECH 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+MCHI 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+ICOL 
+TRUE 
+FALSE 
+FALSE 
+FALSE 
+EDEN 
+TRUE 
+FALSE 
+FALSE 
+FALSE 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+ 
+63 
+EGPT 
+FALSE 
+FALSE 
+FALSE 
+FALSE 
+EFNL 
+TRUE 
+FALSE 
+FALSE 
+FALSE 
+EWQ 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWG 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+GREK 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWH 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+INDA 
+TRUE 
+FALSE 
+FALSE 
+FALSE 
+EIDO 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EIRL 
+TRUE 
+FALSE 
+FALSE 
+FALSE 
+EIS 
+TRUE 
+FALSE 
+FALSE 
+FALSE 
+EWI 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWJ 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWY 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWM 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWW 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWN 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+ENZL 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+ENOR 
+TRUE 
+FALSE 
+FALSE 
+FALSE 
+PAK 
+FALSE 
+FALSE 
+FALSE 
+FALSE 
+EPU 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EPHE 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EPOL 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+PGAL 
+TRUE 
+FALSE 
+FALSE 
+FALSE 
+QAT 
+FALSE 
+FALSE 
+FALSE 
+FALSE 
+ERUS 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+KSA 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWS 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EZA 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWP 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWD 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWL 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+EWT 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+Electronic copy available at: https://ssrn.com/abstract=3570128
+
+ 
+64 
+THD 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+TUR 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+UAE 
+TRUE 
+FALSE 
+FALSE 
+FALSE 
+EWU 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+VOO 
+TRUE 
+TRUE 
+TRUE 
+TRUE 
+Source: Own Elaboration 
+Electronic copy available at: https://ssrn.com/abstract=3570128

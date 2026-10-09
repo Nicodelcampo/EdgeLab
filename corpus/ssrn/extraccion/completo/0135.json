@@ -1,0 +1,104 @@
+{
+  "doc_id": 135,
+  "titulo": "From Implied Volatility Surface To Quantitative Options Relative Value Trading",
+  "resumen_operativo": "Este documento detalla un marco cuantitativo para operar valor relativo en opciones, proponiendo un modelo paramétrico de volatilidad implícita libre de arbitraje en espacio y tiempo. Ofrece soluciones analíticas para derivar griegas, asimetría (skew) y convexidad, lo que permite a los quants evaluar dinámicamente desviaciones del precio teórico sin recalibrar constantemente.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "implied volatility surface",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Representación tridimensional de la volatilidad en función del tiempo a expiración y el precio de ejercicio. En lugar de interpolar directamente, se propone modelarla paramétricamente para asegurar la ausencia de arbitraje espacial y temporal.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "future volatility"},
+        {"tipo": "USA", "objeto": "Black-Scholes model"}
+      ],
+      "cita_textual": "options on a single stock with diﬀerent strikes and maturities are functions of the same IV surface and depend in non-trivial ways on the same underlying dynamics"
+    },
+    {
+      "nombre": "relative value trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategias de inversión que explotan desajustes de precios en el mercado de opciones vendiendo los instrumentos sobrevaluados (volatilidad alta) y comprando los subvaluados (volatilidad baja).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "implied volatility surface"}
+      ],
+      "cita_textual": "Relative value is the attractiveness of one instrument relative to another measured in terms of risk, liquidity, and return."
+    },
+    {
+      "nombre": "volatility skew",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Estructura por la cual opciones de distintos strikes transan con diferentes volatilidades, reflejando expectativas de riesgo del mercado o preferencias de cobertura.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "implied volatility surface"}
+      ],
+      "cita_textual": "This relative value is deﬁned as options skewness, or skew, and can be used to identify trading opportunities."
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Tendencia de la volatilidad a regresar a su nivel promedio histórico, lo que justifica la implementación de estrategias que apuestan en contra de niveles extremos de volatilidad implícita.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "term structure of volatility"}
+      ],
+      "cita_textual": "Volatility in ﬁnancial markets tends to be a mean reverting process."
+    },
+    {
+      "nombre": "term structure of volatility",
+      "tipo": "concepto",
+      "definicion_en_contexto": "La curva o estructura temporal de las volatilidades implícitas que permite analizar opciones de corto plazo frente a las de largo plazo para capturar valor relativo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "implied volatility surface"}
+      ],
+      "cita_textual": "Options at diﬀerent dates or tenors Ti for i = 1, .., n reveal a term structure of implied volatilities that is a useful tool in relative value analysis."
+    },
+    {
+      "nombre": "dispersion trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia que intercambia volatilidad de un índice bursátil contra la volatilidad de sus componentes individuales, motivada por dislocaciones en la correlación implícita.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "implied correlation"}
+      ],
+      "cita_textual": "It trades the relative value relationship between the implied volatility of an Index option and the implied volatilities of the Component Stocks that comprise the Index."
+    },
+    {
+      "nombre": "volatility risk premium",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Prima exigida por el mercado por asumir riesgos de volatilidad que se manifiesta en volatilidades implícitas típicamente superiores a la volatilidad futura real.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "volatility skew"}
+      ],
+      "cita_textual": "evidence indicates the existence of a negative volatility risk premium in the options market"
+    },
+    {
+      "nombre": "digital option",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Opciones binarias utilizadas como bloques fundamentales para la valoración de opciones vainilla, permitiendo obtener el sesgo (skew) y curvatura analíticamente de la superficie.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "European options"}
+      ],
+      "cita_textual": "Such a contract is called a binary option or a cash-or-nothing option and we will call it a Digital Bond."
+    },
+    {
+      "nombre": "arbitrage-free interpolation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de suavizado e interpolación de los precios de opciones en el mercado que impone restricciones para evitar oportunidades de arbitraje a lo largo del tiempo o entre distintos strikes.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "implied volatility surface"}
+      ],
+      "cita_textual": "generating a smooth and robust implied volatility surface without arbitrage in space and time."
+    },
+    {
+      "nombre": "walk-forward validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método empírico (rolling horizon) para calibrar y proyectar la matriz de volatilidad implícita avanzando dinámicamente la ventana de estimación histórica.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "used the rolling horizon technique to build a 1 and 5 day forecasts of the volatility skews"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper se orienta al modelado analítico de superficies de opciones (equity y FX) para horizontes temporales de varios días/meses; su aplicación a futuros de ES requeriría un mercado líquido de opciones intradía y adaptar las métricas a esa escala."
+  }
+}

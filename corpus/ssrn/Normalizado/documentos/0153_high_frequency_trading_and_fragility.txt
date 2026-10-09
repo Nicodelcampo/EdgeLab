@@ -1,0 +1,3177 @@
+ 
+ 
+IESE Business School-University of Navarra - 1 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+HIGH FREQUENCY TRADING 
+AND FRAGILITY 
+ 
+Giovanni Cespa 
+Xavier Vives 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+IESE Business School – University of Navarra 
+Av. Pearson, 21 – 08034 Barcelona, Spain. Phone: (+34) 93 253 42 00 Fax: (+34) 93 253 43 43 
+Camino del Cerro del Águila, 3 (Ctra. de Castilla, km 5,180) – 28023 Madrid, Spain. Phone: (+34) 91 357 08 09 Fax: (+34) 91 357 29 13 
+ 
+Copyright © 2016 IESE Business School. 
+Working Paper 
+WP-1161-E 
+November, 2016 
+
+IESE Business School-University of Navarra 
+The Public-Private Sector Research Center is a Research Center based at IESE Business 
+School. Its mission is to develop research that analyzes the relationships between the 
+private and public sectors primarily in the following areas: regulation and competition, 
+innovation, regional economy and industrial politics and health economics. 
+Research results are disseminated through publications, conferences and colloquia. These 
+activities are aimed to foster cooperation between the private sector and public 
+administrations, as well as the exchange of ideas and initiatives.  
+The sponsors of the Public-Private Sector Research Center are the following: 
+
+Ajuntament de Barcelona
+
+Departament d’ Economia i Coneixement de la Generalitat de Catalunya
+
+Departament d’ Empresa i Ocupació de la Generalitat de Catalunya
+
+Diputació de Barcelona
+
+EVERIS
+
+Fundació AGBAR
+
+Institut Català de les Empreses Culturals (ICEC)
+
+PricewaterhouseCoopers
+
+Sanofi
+The contents of this publication reflect the conclusions and findings of the individual 
+authors and not the opinions of the Center's sponsors. 
+
+High Frequency Trading and Fragility∗
+Giovanni Cespa† and Xavier Vives‡
+November, 2016
+Abstract
+We show that limited dealer participation in the market, coupled with an informational friction resulting from high frequency trading, can induce demand for liquidity to
+be upward sloping and strategic complementarities in traders’ liquidity consumption decisions: traders demand more liquidity when the market becomes less liquid, which in
+turn makes the market more illiquid, fostering the initial demand hike. This can generate
+market instability, where an initial dearth of liquidity degenerates into a liquidity rout
+(as in a ﬂash crash). While in a transparent market, liquidity is increasing in the proportion of high frequency traders, in an opaque market strategic complementarities can
+make liquidity U-shaped in this proportion as well as in the degree of transparency.
+Keywords: Market fragmentation, high frequency trading, ﬂash crash, asymmetric information.
+JEL Classiﬁcation Numbers: G10, G12, G14
+∗A previous version of this paper circulated with the tile “The welfare impact of high frequency trading.” For
+helpful comments we thank Bruno Biais, Evangelos Benos, Thierry Foucault, Denis Gromb, Albert Menkveld,
+Sophie Moinas, Andreas Park, Jo¨el Peress, Laura Veldkamp, Liyan Yang, Bart Yueshen, and seminar participants at INSEAD, HEC (Paris), Rotterdam School of Management, Stockholm School of Economics, the
+9th Annual Central Bank Workshop on Microstructure (Frankfurt, 9/13), the conference on High Frequency
+Trading at Imperial College, Brevan Howard Centre (London, 12/14), the Workshop on Microstructure Theory
+and Applications (Cambridge, 3/15), the third workshop on Information Frictions and Learning (Barcelona,
+6/15), the Bank of England, the AFA (San Francisco, 1/16), and the Wharton Conference on Liquidity and
+Financial Crises (Philadelphia, 10/16). Cespa acknowledges ﬁnancial support from the Bank of England (grant
+no. RDC151391). This paper has been prepared by Vives under the Wim Duisenberg Research Fellowship
+Program sponsored by the ECB. Any views expressed are only those of the authors and do not necessarily
+represent the views of the ECB or the Eurosystem.
+†Cass Business School, City, University of London, and CEPR. 106, Bunhill Row, London EC1Y 8TZ, UK.
+e-mail: giovanni.cespa@gmail.com
+‡IESE Business School, Avinguda Pearson, 21 08034 Barcelona, Spain.
+1
+
+“The report describes how on October 15, some algos pulled back by widening
+their spreads and other reduced the size of their trading interest. Whether such
+dynamic can further increase volatility in an already volatile period is a question
+worth asking, but a diﬃcult one to answer.” (Remarks Before the Conference on the
+Evolving Structure of the U.S. Treasury Market (Oct. 21, 2015), Timothy Massad,
+Chairman, CFTC.)
+1
+Introduction
+Concern for crashes has recently revived, in the wake of the sizeable number of “ﬂash events”
+that have aﬀected diﬀerent markets. For futures, in the 5-year period from 2010, more than
+a 100 ﬂash events have occurred (see Figure 1). For other contracts, the list of events where
+markets suddenly crash and recover is by now quite extensive.1
+Hourly Flash Events for Selected 
+Contracts 
+1 
+  
+  
+  
+ 
+Figure 1: Number of ﬂash events in futures contracts from 2010 to 2015. A ﬂash event is
+an episode in which “the price of a contract moved at least 200 basis points within a trading
+hour but returned to within 75 basis points of the original or starting price within that same
+hour.” (Source: Remarks Before the Conference on the Evolving Structure of the U.S. Treasury
+Market (Oct. 21, 2015), Timothy Massad, Chairman, CFTC.).
+A common trait of these episodes seems to be the apparent jamming of the “rationing”
+function of market illiquidity. Indeed, in normal market conditions, traders perceive a lack of
+liquidity as a cost, which in turn leads them to limit their demand for immediacy (i.e., the
+demand for liquidity is downward sloping in the illiquidity of the market).2 This eases the
+1Starting with the May 6, 2010 U.S. “ﬂash-crash” where U.S. equity indices dropped by 5-6% and recovered
+within half an hour; moving to the October 15, 2014 Treasury Bond crash, where the yield on the benchmark
+10-year U.S. government bond, dipped 33 basis points to 1.86% and reversed to 2.13% by the end of the trading
+day; to end with the August 25, 2015 ETF market freeze, during which more than a ﬁfth of all U.S.-listed
+exchange traded funds and products were forced to stop trading. More evidence of ﬂash events is provided by
+NANEX.
+2To minimize market impact and the associated trading costs they incur (e.g., by using algorithms that
+parcel out their orders).
+2
+
+pressure on liquidity suppliers, thereby producing a stabilizing eﬀect on the market. However,
+on occasions a bout of illiquidity can have a destabilizing impact, and foster a disorderly “run
+for the exit” that is conducive to a rout. In this case traders attempt to place orders despite
+the liquidity shortage, and demand for liquidity may be upward sloping. In such conditions,
+liquidity is fragile. What can account for such a dualistic feature of market illiquidity?
+In this paper, we argue that the fragmentation of liquidity supply and the informational
+frictions induced by computerized trading, are important ingredients in the answer to this
+question.3 Indeed, trading automation boosts liquidity supply fragmentation by limiting the
+market participation of some liquidity suppliers (Duﬃe (2010) and SEC (2010)); at the same
+time, computerized trading creates informational frictions by hampering some traders’ access
+to reliable and timely market information (Ding et al. (2014)).4 Such frictions seem to have a
+bearing on episodes of sudden liquidity crashes. For example, in their account of the May 10,
+2010 “Flash Crash” Easley et al. (2011) state: “This generalized severe mismatch in liquidity
+was exacerbated by the withdrawal of liquidity by some electronic market makers and by
+uncertainty about, or delays in, market data aﬀecting the actions of market participants.”
+We analyze a model in which two classes of risk-averse dealers provide liquidity to two
+cohorts of risk-averse, short-term traders who receive a common endowment shock, in a twoperiod market. Traders enter the market to partially hedge their exposure to the risky asset.
+In the ﬁrst round of trade both dealers’ types absorb the (market) orders of the ﬁrst traders’
+cohort. In the second trading round, only one class of dealers, named ‘full,’ is able to participate.
+Full dealers, like stylized high frequency traders (HFTs), are continuously in the market and
+can therefore accommodate the reverting orders of the ﬁrst traders’ cohort, as well as those
+of the incoming second cohort who observe an imperfect signal about the ﬁrst period order
+imbalance.
+In a nutshell, the message of the paper is as follows. When all market participants share the
+same information, the market is stable, and increasing the proportion of dealers with full market
+participation is good for liquidity.
+Suppose now that, due to a technological development,
+trading can be made more frequent but at the cost of introducing an informational friction
+(with some of the liquidity traders not able to know precisely the state of market imbalances
+in previous periods).
+Then the market may be unstable, and increasing the proportion of
+full dealers, or the degree of market transparency may be bad for liquidity (liquidity can be
+U-shaped in either variable).
+More in detail, we start by showing that dealers’ limited market participation favors the
+propagation of the endowment shock across time, inducing a predictable price pressure. This
+is because when ﬁrst period traders load their positions, a part of their orders is absorbed by
+standard dealers. These agents, however, are not in the market in the second period, when ﬁrst
+3Automated trading is by now pervasive across diﬀerent markets. For ﬁnancial futures, automated trading
+accounts for about two-thirds of the activity in Eurodollars and Treasury contracts (Source: Keynote Address
+of CFTC Commissioner J. Christopher Giancarlo before the 2015 ISDA Annual Asia Paciﬁc Conference).
+4Ding et al. (2014) argue that in the U.S. “. . . not all market participants have equal access to trade and
+quote information. Both physical proximity to the exchange and the technology of the trading system contribute
+to the latency.”
+3
+
+period traders unwind. As a consequence, an order imbalance (induced by ﬁrst period traders’
+unwinding orders and) aﬀecting the second period price, arises. As standard dealers are unable
+to rebalance in the second period, they require a larger price concession to absorb traders’
+orders. Thus, if liquidity dries up, standard dealers absorb a larger imbalance, magnifying the
+propagation eﬀect. Importantly, second period traders speculate on the induced price pressure,
+and the eﬀects of such activity depend on the transparency regime governing the market.
+In our transparent market benchmark, second period traders have a perfect signal on the
+ﬁrst period imbalance, a situation which is likely to arise at low trading frequencies (e.g., intradaily), or in a transparent setup where all market participants have access to the same type
+of feed, even at high frequencies. In this case, second period traders’ speculation has a stabilizing impact on the market as it oﬀsets the propagated price pressure. As a consequence, ﬁrst
+period traders’ demand for liquidity is a decreasing function of illiquidity (i.e., the compensation that dealers demand to hold the asset inventory in equilibrium): the less liquid is the
+market, the higher is the cost these traders incur to reduce exposure, and the less aggressive is
+their liquidity consumption (the lower is their hedging aggressiveness). Furthermore, illiquidity
+is increasing in traders’ hedging aggressiveness (the inverse supply for liquidity is upward sloping). This is because lower aggressiveness limits liquidity consumption, which in turn shrinks
+dealers’ inventory, allowing for cheaper liquidity provision. Thus, illiquidity in this case has a
+direct, “rationing” eﬀect on traders’ liquidity consumption, and a unique equilibrium arises.
+Furthermore, along this equilibrium, small shocks to the model’s parameters have a minimal
+impact on market liquidity.
+In contrast, when access to imbalance information is impaired, second period traders’ speculation can boost ﬁrst period traders’ uncertainty, introducing a feedback, liquidity consumption
+“expanding” eﬀect of illiquidity. This can create a self-sustaining loop that turns the demand
+for liquidity into an increasing function of illiquidity, fostering stronger liquidity consumption,
+and leading to multiple equilibria. To see this, note that as a higher illiquidity strengthens the
+endowment shock propagation (because standard dealers intermediate more of the outstanding
+imbalance), it also heightens second period traders’ speculative activity. However, as information on the ﬁrst period imbalance is noisy, speculation increases the ﬁrst period uncertainty
+about the second period price. This can lead ﬁrst period traders to consume more liquidity (as
+holding exposure to the asset becomes riskier), and liquidity suppliers to charge more to absorb
+the order imbalance (as their inventory of the risky asset increases), eventually reinforcing the
+initial, negative shock to market liquidity.
+Equilibrium multiplicity induces three levels of liquidity that can be ranked in an increasing
+order (low, intermediate, and high). At the low (respectively, intermediate, and high) liquidity
+equilibrium, volatility and liquidity consumption are high (respectively, intermediate, and low).
+Thus, our paper highlights a channel through which the combined eﬀect of a heightened demand
+for liquidity, and a reduced liquidity provision conjure to increase market volatility.
+The liquidity consumption ranking across equilibria is a further manifestation of the fact
+that opaqueness jams the direct, rationing eﬀect of illiquidity, while it strengthens its feedback,
+4
+
+liquidity consumption enhancing eﬀect. The end result is that traders’ demand for liquidity
+peaks at the equilibrium where the cost of trading is at its highest, consistently with the pattern
+observed in many crash events. Importantly, we also ﬁnd that along a unique equilibrium with
+market opaqueness, illiquidity can be hump-shaped in the proportion of fast dealers, or in the
+degree of market transparency.
+The strategic complementarity loop arising with market opaqueness implies that liquidity
+can be “fragile” in our setup. We show this with two types of examples. In the ﬁrst one, we
+exploit equilibrium multiplicity and illustrate how a small shock to some parameter values can
+produce a switch from the high liquidity equilibrium to an equilibrium with low liquidity. In
+particular, we focus on the consequence of a shock that disconnects a small mass of full dealers
+from the market (a technological ‘glitch’). We then analyze the eﬀect of a positive shock to the
+volatility of ﬁrst and second period traders’ demand. These are meant to capture, respectively,
+an increase in the probability of a large order hitting the ﬁrst period market (which is consistent
+with some narratives of the ﬂash crash, see e.g. Easley et al. (2011)), and an increase in the
+uncertainty ﬁrst period traders face on their endowment value. In all these examples small
+parameter shocks produce large liquidity withdrawals.
+In the second type of example we review the impact of the glitch, but in this case taking
+account of the result that along a unique equilibrium with market opaqueness, illiquidity can be
+hump-shaped in the proportion of fast dealers. Based on this ﬁnding, we show that a high level
+of liquidity can suddenly evaporate because of a reduction in full dealers’ participation along
+the same equilibrium. Furthermore, the evaporation of liquidity is related to a large increase
+in volatility. This provides an insight into the question of this paper’s opening quotation.
+It is also the case that illiquidity can be hump-shaped in the degree of market transparency.
+The reason is that ﬁrst period illiquidity is positively associated to the return uncertainty faced
+by ﬁrst period traders. For low transparency, a more informative signal for second period traders
+makes the market less liquid, as those traders speculate more aggressively on the propagated
+imbalance, increasing ﬁrst period traders’ uncertainty. However, as second period traders’ signal
+precision increases, these traders’ speculation increasingly reduces the propagated imbalance,
+lowering ﬁrst period traders’ uncertainty.
+This paper is related to four strands of the literature. First, equilibrium multiplicity, complementarities, and liquidity fragility are phenomena known to obtain in economies where asset
+prices are driven by fundamentals information and noise trading (see, e.g., Cespa and Foucault
+(2014), Cespa and Vives (2015), Goldstein et al. (2014), and Goldstein and Yang (2015)). In
+this setup, in contrast, asset prices are exclusively driven by non-fundamentals information.
+However, the demand of all traders is responsive to the volatility of the price at which agents
+unwind their positions. In turn, such volatility depends on traders’ demand. It is precisely this
+two-sided loop—which in a noise traders’ economy cannot possibly arise—that is responsible
+for our multiplicity result. Other authors obtain multiple equilibria in setups where order ﬂows
+are driven by only one type of shock (see, e.g., Spiegel (1998)). However, multiplicity there
+arises from the bootstrap nature of expectations in the steady-state equilibrium of an overlap5
+
+ping generations (OLG) model in which investors live for two periods. Our setup, in contrast,
+considers an economy with a ﬁnite number of trading rounds.
+Second, the paper adds to the theoretical literature on the impact of high frequency trading (HFT) on market performance, by showing that an informational friction arising from
+liquidity provision fragmentation can be responsible for liquidity fragility, and reverses the
+common wisdom that associates an increase in computerized trading with more liquid markets. Diﬀerently from our setup, the HFT literature has mostly concentrated on modeling risk
+neutral agents (e.g., Budish et al. (2015), Hoﬀmann (2014), Du and Zhu (2014), Bongaerts
+and Van Achter (2015), Foucault et al. (2015), and Menkveld and Zoican (2015); see O’Hara
+(2015) and Menkveld (2016) for literature surveys).5 Easley et al. (2011, 2012), ﬁnd that in the
+hours preceding the ﬂash crash, signed order imbalance for the E-mini S&P500 futures contract
+was unusually high. They interpret this evidence as supportive of a high order ﬂow “toxicity,”
+which led HFTs to ﬂee the market, eventually precipitating the crash. As argued above, our
+model also predicts that large imbalances can lead to a huge liquidity withdrawal. However,
+the channel we highlight is not related to adverse selection, but emphasizes the multiplier eﬀect
+of illiquidity on the demand for immediacy that can arise when some traders have access to
+opaque information on imbalances. Menkveld and Yueshen (2012) argue that market spatial
+fragmentation can be detrimental to stability. In their model, HFTs have access to a private
+reselling opportunity which, due to impaired intermarket connectivity, can break down. When
+this happens, HFTs trade among themselves, providing an ‘illusion’ of liquidity to traders who
+observe volume, which in turn fosters further liquidity demand. Our focus is on the liquidity
+provision fragmentation induced by an informational friction in a single, concentrated market,
+a feature that is consistent with the futures markets ﬂash events discussed above. Finally, Han
+et al. (2014), in a Glosten and Milgrom (1985) setup with HFT and low frequency market
+makers, also ﬁnd that illiquidity is hump-shaped in the proportion of HFT. However, in their
+model this result arises from an adverse selection problem that HFT’s ability to cancel quotes
+upon the arrival of a negative signal creates for low frequency dealers. In our model, instead,
+dealers face no adverse selection risk, and hump-shaped illiquidity arises because of strategic
+complementarities between traders’ liquidity consumption decisions.
+Third, the paper relates to the literature that assesses the impact of limited market participation. Heston et al. (2010) and Bogousslavsky (2014) ﬁnd that some liquidity providers’
+limited market participation can have implications for return predictability. Chien et al. (2012)
+focus instead on the time-series properties of risk premium volatility. Hendershott et al. (2014)
+concentrate on the eﬀect of limited market participation for price departures from semi-strong
+eﬃciency. Our focus is, instead, on the destabilizing dynamics that is generated by bouts of
+illiquidity. In this respect, our paper is also related to Huang and Wang (2009) who show
+that with costly market participation, idiosyncratic endowment shocks can yield crashes. Note,
+5Biais et al. (2015) study the welfare implications of investment in the acquisition of HFT technology. In their
+model HFTs have a superior ability to match orders, and possess superior information compared to human (slow)
+traders. They ﬁnd excessive incentives to invest in HFT technology, which, in view of the negative externality
+generated by HFT, can be welfare reducing.
+6
+
+however, that in our setup traders are exposed to the same shock, which yields a diﬀerent
+mechanism for market instability.
+Fourth, by highlighting the ﬁrst order asset pricing impact of uninformed traders’ imbalance predictability, this paper shares some features of our previous work (Cespa and Vives
+(2012), and Cespa and Vives (2015)). In that setup, however, predictability obtained because
+of the assumed statistical properties of noise traders’ demands, whereas in this paper it arises
+endogenously, because of a participation friction. A growing literature investigates the asset
+pricing implications of noise trading predictability. Collin-Dufresne and Vos (2015) argue that
+informed traders time their entry to the presence of noise traders in the market. This, in turn,
+implies that standard measures of liquidity (e.g., Kyle’s lambda), may fail to pick up the presence of such traders. Peress and Schmidt (2015) estimate the statistical properties of a noise
+trading process, ﬁnding support for the presence of serial correlation in demand shocks.
+The rest of the paper is organized as follows. In the next section we introduce the model,
+and show that with limited market participation, endowment shocks propagate across trading
+dates. Next, we analyze the benchmark with a transparent market. We then illustrate how the
+presence of an informational friction can generate strategic complementarities between traders’
+liquidity consumption decisions. We show that such complementarities are at the root of the
+loop responsible for equilibrium multiplicity and liquidity fragility. A ﬁnal section contains
+concluding remarks. All proofs are in the appendix.
+2
+The model
+A single risky asset with liquidation value v ∼N(0, τ −1
+v ), and a risk-less asset with unit return
+are exchanged in a market during two trading rounds.
+Three classes of traders are in the
+market. First, a continuum of competitive, risk-averse, High Frequency Traders (which we
+refer to as “Full Dealers” and denote by FD) in the interval (0, µ), are active at both dates.
+Second, competitive, risk-averse dealers (D) in the interval [µ, 1], are active only in the ﬁrst
+period. Finally, a unit mass of short-term traders enters the market at date 1. At date 2, these
+traders unwind their position, and are replaced by a new cohort of short-term traders (of unit
+mass). The asset is liquidated at date 3. We now illustrate the preferences and orders of the
+diﬀerent players.
+2.1
+Liquidity providers
+A FD has CARA preferences (we denote by γ his risk-tolerance coeﬃcient) and submits pricecontingent orders xFD
+t
+, t = 1, 2, to maximize the expected utility of his ﬁnal wealth: W FD =
+(v −p2)xFD
+2
++ (p2 −p1)xFD
+1
+.6 A Dealer also has CARA preferences with risk-tolerance γ, but is
+in the market only in the ﬁrst period. He thus submits a price-contingent order xD
+1 to maximize
+the expected utility of his wealth W D = (v −p1)xD
+1 . The inability of D to trade in the second
+6 We assume, without loss of generality with CARA preferences, that the non-random endowment of FDs
+and dealers is zero. Also, as equilibrium strategies will be symmetric, we drop the subindex i.
+7
+
+period captures some liquidity suppliers’ limited market participation. This friction could be
+due to technological reasons (as, e.g. in the case of standard dealers with impaired access to a
+technology that allows trading at high frequencies).
+2.2
+Short-term traders
+In the ﬁrst period a unit mass of short-term traders is in the market. A short-term trader
+receives a random endowment of a risky asset u1 whose payoﬀis perfectly correlated with the
+one of the asset traded in the market, and posts a market order xL
+1 anticipating that it will
+unwind its holdings in the following period, and leave the market. We assume u1 ∼N(0, τ −1
+u1 ),
+and Cov[u1, v] = 0.7 First period traders have identical CARA preferences (we denote by γL
+1
+the common risk-tolerance coeﬃcient). Formally, a trader maximizes the expected utility of his
+wealth πL
+1 = u1p2 + (p2 −p1)xL
+1 :
+E
+
+−exp{−πL
+1 /γL
+1 }|ΩL
+1
+
+,
+where ΩL
+1 denotes his information set. In period 2, ﬁrst period traders are replaced by a new
+(unit) mass of traders receiving a random endowment of the same risky asset as their previous
+period peers u2, where u2 ∼N(0, τ −1
+u2 ) and Cov[u2, v] = Cov[u2, u1] = 0. A second period trader
+has CARA utility function with risk-tolerance γL
+2 , and submits a market order to maximize the
+expected utility of his wealth πL
+2 = u2v + (v −p2)xL
+2 :
+E
+
+−exp{−πL
+2 /γL
+2 }|ΩL
+2
+
+,
+where ΩL
+2 denotes his information set.8
+We can interpret the second period traders as the
+proprietary desk of investment banks that trade to hedge their exposure to an asset whose
+payoﬀis perfectly correlated with the one of the asset traded in the market.
+2.3
+Information sets
+We restrict attention to linear equilibria and conjecture that at equilibrium a period 1 trader
+submits an order xL
+1 = bL
+1 u1, where bL
+1 is the portion of the endowment shock a trader hedges,
+to be determined in equilibrium, while a FD and a dealer respectively post a limit order
+xFD
+1
+= ϕFD
+1
+(p1), xD
+1 = ϕD
+1 (p1) where ϕFD
+1
+(·), ϕD
+1 (·) are linear functions of p1. In the second
+period, a FD submits a limit order xFD
+2
+= ϕ2(p1, p2), where ϕ2(·) is a linear function of prices.
+A second period trader observes a signal of the ﬁrst period endowment shock su1 = u1 + η,
+with η ∼N(0, τ −1
+η ), and independent from all the other random variables in the model, and
+submits a market order xL
+2 = bL
+21u2 + bL
+22su1, where bL
+21 and bL
+22 are respectively the fraction of
+7 The assumption of a random endowment in the risky asset is akin to Huang and Wang (2009), and Vayanos
+and Wang (2012) who instead posit that traders receive an endowment in a consumption good that is perfectly
+correlated with the value of the risky asset at the terminal date.
+8 Our results are robust to the case in which the ﬁrst period market is populated by a mass β of short-term
+traders, that unwind at date 2, and a mass (1 −β) of long-term ones that hold their position until liquidation.
+8
+
+the endowment shock hedged by second period traders, and the response to the second period
+signal. With these assumptions, we obtain
+Lemma 1. At equilibrium, p1 is observationally equivalent to u1, and the sequence {p1, p2} is
+observationally equivalent to {u1, xL
+2 }.
+A ﬁrst period trader observes the endowment shock u1.
+Therefore, his information set
+coincides with the one of Ds and FDs: ΩL
+1 = ΩFD
+1
+= ΩD
+1 = {u1}. A second period trader
+receives an endowment shock u2, and can observe a signal su1. Thus, his information set is
+ΩL
+2 = {u2, su1}. Finally, a FD in period 2 observes the sequence of prices: ΩFD
+2
+= {p1, p2} from
+which he retrieves {u1, xL
+2 }.
+Thus, according to our model, liquidity provision is fragmented because (i) only one class
+of dealers is able to participate in the second period and (ii) some traders (the second cohort of
+short-term traders) have access to opaque information on the ﬁrst period price. This assumption
+is consistent with the evidence that exchanges sell fuller access to their matching engine, as well
+as direct feeds of their market information at a premium (see, e.g., O’Hara (2015)).9 Figure 2
+displays the timeline of the model.
+1
+−Liquidity traders
+receive
+u1
+and
+submit
+market
+order xL
+1 .
+−FDs submit limit
+order µxF D
+1
+.
+−
+Dealers
+submit
+limit
+order
+(1 −µ)xD
+1 .
+2
+−
+1st
+period
+liquidity
+traders
+liquidate
+their
+positions.
+−New cohort of
+liquidity traders receives u2, observes
+su1,
+and
+submits
+market order xL
+2 .
+−FDs submit limit
+order µxF D
+2
+.
+3
+−Asset liquidates.
+Figure 2: The timeline.
+2.4
+Limited market participation and the propagation of endowment shocks
+Due to limited market participation, the ﬁrst period endowment shock propagates to the second
+trading round, thereby aﬀecting p2.
+To see this, consider the ﬁrst period market clearing
+equation
+µxFD
+1
++ (1 −µ)xD
+1 + xL
+1 = 0.
+(1)
+9 This assumption is also similar to Foucault et al. (2015) who posit that HFTs receive market information
+slightly ahead of the rest of the market. Ding et al. (2014) compare the NBBO (National Best Bid and Oﬀer,
+which is the price feed computed by the Security Industry Processors in the US) to the fuller feeds market
+participants obtain via a direct access to diﬀerent trading platforms. Their ﬁndings point to sizeable price
+diﬀerences that can yield substantial proﬁts to HFTs. Latency in the reporting of market data can also be
+proﬁtably exploited for securities with centralized trading, see “High-speed traders exploit loophole,” Wall
+Street Journal, May 1, 2013.
+9
+
+At equilibrium the orders of ﬁrst period traders are absorbed by both FDs and Ds. Thus,
+when µ < 1, FDs’ aggregate position falls short of xL
+1 : µxFD
+1
++ xL
+1̸ = 0. As a consequence, the
+inventory FDs carry over from the ﬁrst period is insuﬃcient to absorb the reverting orders that
+ﬁrst period traders post in period 2. This creates an order imbalance driven by the ﬁrst period
+endowment shock u1 that adds to the one originating from second period trades, and aﬀects
+the second period price. Formally, from the second period market clearing equation we have
+µ(xFD
+2
+−xFD
+1
+) + (xL
+2 −xL
+1 ) = 0.
+Substituting (1) in the latter and rearranging yields:
+µxFD
+2
++ xL
+2 + (1 −µ)xD
+1 = 0.
+(2)
+According to Lemma 1, at equilibrium xD
+1 depends on u1. Thus, when µ < 1, p2 also reﬂects
+the ﬁrst period endowment shock.
+3
+Market transparency and the rationing eﬀect of illiquidity
+In this section, we assume that second period traders have a perfect signal on the ﬁrst period
+endowment shock: τ η →∞. This captures a scenario in which information on the ﬁrst period
+imbalance is public, as is the case in a low frequency trade environment (e.g., intradaily).
+Alternatively, it represents a setup in which second period traders have access to the same
+information as FDs, or the same technology that parses demand information from prices. In
+this case, we obtain the following result:
+Proposition 1. When the market is transparent there exists a unique equilibrium in linear
+strategies, where xD
+1 = −γτ vp1, xFD
+1
+= −(γ/γL
+1 Λ∗
+1)(1+bL
+1 )p1−γτ vp1, xFD
+2
+= −γτ vp2, xL
+1 = bL
+1 u1,
+xL
+2 = bL
+21u2 + bL
+22u1,
+p2 = −Λ∗
+2 (u2 −(1 −µ)γτ vΛ∗
+1u1)
+(3a)
+p1 = −Λ∗
+1u1,
+(3b)
+Λ∗
+2 = −
+1
+µγτ v
+bL
+21 > 0
+(4a)
+Λ∗
+1 =
+1
+γτ v
+
+1 −(µγ + γL
+1 )(1 + bL
+1 )
+γL
+1
+
+> 0,
+(4b)
+10
+
+bL
+1 = γL
+1
+Cov[p2, u1]τ u1 + Λ∗
+1
+Var[p2|u1]
+−1 ∈
+
+−1, −
+µγ
+µγ + γL
+1
+
+(5a)
+bL
+21 = γL
+2
+Λ∗
+2
+Var[v −p2|ΩL
+2 ] −1 ∈(−1, 0)
+(5b)
+bL
+22 = −(1 + bL
+21)(1 −µ)γτ vΛ∗
+1 < 0,
+(5c)
+Cov[p2, u1] = (1 −µ)γΛ∗
+1
+τ u1(µγ + γL
+2 )
+(6a)
+Var[p2|u1] =
+1
+(µγ + γL
+2 )2τ 2
+vτ u2
+,
+(6b)
+Var[v −p2|ΩL
+2 ] = 1/τ v.
+The coeﬃcient Λ∗
+t in (3a) and (3b), i.e. the period t endowment shock’s negative price
+impact, is our measure of illiquidity:
+Λ∗
+t = −∂pt
+∂ut
+.
+(7)
+In the second period, FDs supply liquidity by posting a price contingent order, with an aggressiveness that is inversely proportional to their risk aversion and the risk of the asset payoﬀ.
+Other things equal, a lower liquidity increases the size of their position. A similar behavior is
+displayed by standard dealers in the ﬁrst period. The ﬁrst period strategy of a FD has two
+components:
+XFD
+1
+(p1) = −γ 1 + bL
+1
+γL
+1 Λ∗
+1
+p1
+|
+{z
+}
+Speculation
+−
+γτ vp1
+| {z }
+Market making
+,
+(8)
+where p1 = −Λ∗
+1u1, and it is worth remarking that 1+bL
+1 > 0. According to the above expression,
+a FD provides liquidity in two distinct ways. First, for given u1 he speculates on short-term
+returns, buying in the face of a price drop (i.e., when u1 > 0), and selling otherwise. This is
+because he anticipates the future price impact of ﬁrst period liquidity traders’ reversion.10 In
+this respect, FDs supply liquidity by placing “directional bets,” consistently with the literature
+linking liquidity supply to sophisticated traders’ contrarian behavior (Nagel (2012), Brogaard
+et al. (2014), and Biais et al. (2015)). Additionally, a FD places a price contingent order to
+absorb the residual imbalance, like a standard dealer.
+According to (5a) and (5b), ﬁrst and second period traders demand liquidity to hedge a
+fraction of their endowment shock. Other things equal, the more liquid is the market, the more
+volatile is the short term return, and the less risk tolerant traders are, the higher is the hedging
+“aggressiveness” (|bL
+1 | and |bL
+21|) for traders at both dates. Additionally, ﬁrst period traders
+hedge more aggressively when the second period price is less positively associated with the ﬁrst
+period endowment shock, and when the second period endowment shock is more dispersed.
+10This is consistent with Hirschey (2016) who ﬁnds that HFTs trade ahead of other investors’ order ﬂow.
+11
+
+For the ﬁrst eﬀect, note that holding a fraction of the endowment shock, allows ﬁrst period
+traders to speculate on the future price impact of their reversion. Since a lower Cov[p2, u1]
+reduces the predictable impact of the ﬁrst period endowment shock on p2 (see (6a)), it also
+lowers ﬁrst period traders’ return from speculation. For the second eﬀect, note that second
+period traders’ hedging activity creates price volatility which heightens ﬁrst period traders’
+uncertainty (see (6b)), leading to a higher liquidity demand in the ﬁrst period.
+According to (5c), second period traders also speculate on the propagated order imbalance
+by putting a negative weight on their signal (bL
+22 < 0), which is decreasing in the ﬁrst period
+illiquidity Λ∗
+1, that is, the “speculative aggressiveness” |bL
+22| increases in ﬁrst period illiquidity.
+This is because, for u1 > 0, ﬁrst period traders’ reversion has a positive impact on p2, which
+prompts second period traders to short the asset. A less liquid ﬁrst period market increases
+the position held by standard dealers, strengthening the positive dependence between p2, and
+u1 (see (6a)), and leading second period traders to step up their speculative aggressiveness.
+Using equation (8) to compute FDs’ aggregate position shows that ﬁrst period traders’
+liquidity demand and FDs’ aggregate directional bets are negatively related:
+µXFD
+1
+(p1) = −µγ 1 + bL
+1
+γL
+1 Λ∗
+1
+p1
+|
+{z
+}
+Speculation
+−
+µγτ vp1
+| {z }
+Market making
+.
+(9)
+Intuitively, for given endowment shock, ﬁrst period traders scale up their hedging when
+facing higher uncertainty over p2 (|bL
+1 | increases, see (5a)). But these conditions also increase
+the risk implied by FDs’ speculation, and discourage these traders from placing directional
+bets.
+As is standard in economies with risk-averse liquidity suppliers, Λ∗
+t reﬂects dealers’ riskrelated compensation to absorb the outstanding imbalance in their inventory: the cost of
+supplying liquidity.
+However, diﬀerently from a noise trader economy, in this model dealers’ inventory depends on the equilibrium trading decisions of FDs and liquidity traders. For
+Λ∗
+2 (see (4a)), this is immediate, since bL
+21 measures the fraction of the second period endowment
+shock that traders hedge (see (5b)), the risk of the asset payoﬀis Var[v] = 1/τ v, and second
+period dealers’ aggregate risk bearing capacity is given by µγ.11
+For Λ∗
+1 (see (4b)), the argument is as follows. In view of (5a), at equilibrium ﬁrst period
+traders hold a fraction
+1 + bL
+1 = γL
+1
+Cov[p2, u1]τ u1 + Λ∗
+1
+Var[p2|u1]
+,
+(10)
+of their endowment shock. At the same time, according to (9), FDs aggregate speculative
+position per unit of endowment shock is given by
+µγ 1 + bL
+1
+γL
+1
+.
+(11)
+Thus, summing (10) and (11) yields the total speculative exposure of FDs and ﬁrst period
+11Limited market participation implies that only a proportion µ of FDs is in the market at date 2.
+12
+
+traders per unit of u1, i.e., the fraction of the endowment shock that does not dent liquidity
+suppliers’ “inventory bearing” capacity:
+1 + bL
+1 + µγ 1 + bL
+1
+γL
+1
+= (µγ + γL
+1 )(1 + bL
+1 )
+γL
+1
+,
+(12)
+while the complement to one of (12) captures dealers’ inventory (per unit of endowment shock):
+Dealer’s inventory per unit of endowment shock = 1 −(µγ + γL
+1 )(1 + bL
+1 )
+γL
+1
+.
+(13)
+At date 1, FDs know that they will be able to unwind their inventory in the second trading
+round, when xL
+1 reverts. However, at that point in time, a new generation of traders enters
+the market. These traders hedge a new endowment shock, exposing FDs to the risk of holding
+their initial inventory until the liquidation date. Thus, for given inventory (13), the riskier is
+the asset, and the more risk averse FDs are, the higher is the risk borne by liquidity suppliers,
+and, according to (4b), the less liquid is the market.
+When second period traders’ endowment shock is null, liquidity suppliers’ risk vanishes, bL
+1
+reaches its upper bound, and the market is inﬁnitely liquid:
+Corollary 1. In a transparent market, when the second period endowment shock is null (τ u2 →
+∞), ﬁrst period traders’ liquidity demand matches FDs’ relative risk-bearing capacity, and the
+market is inﬁnitely liquid (bL
+1 →−(µγ + γL
+1 )−1µγ, and Λ∗
+1 →0).
+The equilibrium (Λ∗
+1, bL
+1 ) obtains as the unique solution to the system (4b)–(5a):
+Λ1 =
+1
+γτ v
+
+1 −(µγ + γL
+1 )(1 + bL
+1 )
+γL
+1
+
+(14a)
+bL
+1 = γL
+1 (γ + γL
+2 )(µγ + γL
+2 )τ 2
+vτ u2Λ1 −1,
+(14b)
+where (14b) obtains by replacing (6a) and (6b) in (5a) (and evaluating the resulting expression
+at Λ1).
+Such solution can be understood as the intersection between the “inverse supply”
+and “demand” of liquidity (respectively, (14a) and (14b)). This is so because bL
+1 measures
+the fraction of the endowment shock that ﬁrst period traders hedge in the market, while Λ1
+captures the price adjustment dealers require to accommodate the order imbalance. A less
+liquid ﬁrst period market increases the cost of scaling down traders’ exposure, and leads the
+latter to hedge less of their endowment. Thus, in this case a drop in liquidity has a “rationing”
+eﬀect on liquidity consumption, and the demand for liquidity is a decreasing function of Λ1.12
+Conversely, a lower hedging aggressiveness implies a larger speculative position for FDs, which
+shrinks the imbalance that liquidity suppliers have to clear in the ﬁrst period, and leads to
+a more liquid market. Hence, the (inverse) supply of liquidity is decreasing in bL
+1 . Figure 3,
+Panel (a), provides a graphical illustration of the equilibrium determination. In Panel (b) we
+12 As bL
+1 < 0, and positively sloped in Λ1, a higher illiquidity implies that traders shed a lower fraction of
+their endowment, or that their liquidity demand subsides.
+13
+
+plot FDs’ aggregate directional bets per unit of endowment shock, as a function of Λ1 which,
+consistently with (11), are increasing in Λ1. Thus, in the symmetric information benchmark,
+an increase in illiquidity increases the expected return from speculation, without aﬀecting its
+implied risk (see (6b)).
+Λ1, μ=1/10
+b1L, μ=1/10
+Λ1, μ=1/5
+b1L, μ=1/5
+0.2
+0.4
+0.6
+0.8
+1.0
+Λ1
+-1.0
+-0.8
+-0.6
+-0.4
+-0.2
+0.0
+b1L
+γ=1, γ1L=1/2, γ2L=1, τu1=1/10, τu2=200, τv=1/10
+(a)
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Λ1
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+μγ (1+b1L)/γ1L
+γ=1, γ1L=1/2, γ2L=1, μ=1/10, τu1=1/10, τu2=200, τv=1/10
+(b)
+Figure 3: Transparency and equilibrium uniqueness. For Panel (a): the green (blue) curve
+represents ﬁrst period traders’ liquidity demand (inverse liquidity supply); the solid (dashed)
+curves are drawn assuming µ = 1/10 (µ = 1/5). When µ = 1/10, {Λ∗
+1, bL
+1 } = {.4, −.2}, while
+when µ = 1/5, {Λ∗
+1, bL
+1 } = {.3, −.3}. For Panel (b): the purple curve represents FDs aggregate
+directional bets.
+In Panel (a) of Figure 3 we also graphically analyze the eﬀect of an increase in the mass of
+FDs on Λ∗
+1. The solid (dashed) curves in the ﬁgure are drawn for µ = 1/10 (µ = 1/5). A larger
+µ has a positive eﬀect on the cost of trading for all levels of bL
+1 , since, according to (11), the
+aggregate speculative position of FDs increases, lowering dealers’ inventory. As a result, when
+µ increases, the new function Λ1 shifts downwards. Consider now bL
+1 . Based on (10), a larger µ
+has two contrasting eﬀects on ﬁrst period traders’ hedging aggressiveness: on the one hand, as
+implied by (6b), ﬁrst period return uncertainty is decreasing in µ. Therefore, a larger µ lowers
+ﬁrst period traders’ uncertainty about p2, and makes them consume less liquidity. However,
+according to (6a),
+∂Cov[p2, u1]
+∂µ
+< 0
+(15)
+and a higher µ lowers the positive association between the second period price and the ﬁrst
+period endowment shock, making speculation less proﬁtable. This pushes ﬁrst period traders
+to shed a larger fraction of their endowment, increasing dealers’ inventory, and consuming more
+liquidity. When the market is transparent, this latter eﬀect is never strong enough to oﬀset the
+former two and we obtain:
+Corollary 2. In a transparent market, liquidity increases in the proportion of fast dealers
+(∂Λ∗
+1/∂µ < 0).
+14
+
+We concentrate our analysis on the liquidity of the ﬁrst period market. However, note that
+as the volatility of the ﬁrst period price is given by
+Var[p1] = (Λ∗
+1)2τ −1
+u1 ,
+our liquidity results can also be interpreted in terms of price volatility.
+4
+Opaqueness and the feedback eﬀect of illiquidity
+Suppose now that second period traders’ signal on u1 has a bounded precision (τ η < ∞). This
+setup characterizes a scenario where some traders (FDs, in our setup) have access to better
+market information (for example on order imbalances) compared to others (the second cohort
+of traders), and given our previous discussion, is likely to hold at a high trading frequency.
+Alternatively, this assumption captures a situation where all traders can observe past prices in
+real time but in which only FDs have the ability to exactly parse u1 out of p1. In this case, we
+obtain the following result:
+Proposition 2. When 0 < τ η < ∞, an equilibrium exists. At equilibrium: ﬁrst period strategies
+and p1 are as in Proposition 1, xL
+2 = bL
+21u2 + bL
+22su1,
+p2 = −Λ∗
+2u2 −1 −µ
+µ
+Λ∗
+1
+ 1 + bL
+21κ
+
+βu1|su1η +
+ 1 + bL
+21κ
+
+βu1|su1 −1
+
+u1
+
+,
+(16)
+bL
+21 = γL
+2
+Λ∗
+2
+Var[v −p2|ΩL
+2 ] −1
+κ ∈(−1, 0)
+(17a)
+bL
+22 = −(1 −µ)γτ vΛ∗
+1βu1|su1(1 + bL
+21κ) < 0,
+(17b)
+where
+κ ≡τ vVar[v −p2|ΩL
+2 ] > 1
+(18a)
+βu1|su1 = Cov[su1, u1]
+Var[su1]
+,
+(18b)
+the ﬁrst and second period return uncertainty are respectively given by Var[p2|u1] = λ2
+2((bL
+21)2/τ u2+
+(bL
+22)2/τ η), Var[v −p2|ΩL
+2 ] = Var[v] + (λ2(1 −µ)γτ vΛ∗
+1)2Var[u1|su1], and the covariance between
+the second period price and the ﬁrst period endowment shock is given by
+Cov[p2, u1] = −1 −µ
+µ
+Λ∗
+1
+ 1 + bL
+21κ
+
+βu1|su1 −1
+
+τ −1
+u1 > 0.
+(19)
+Diﬀerently from the transparent market benchmark, the second period price now loads also
+on the error term η (see (16)), and second period traders face uncertainty on the price at
+which their order is executed, besides that on the liquidation value (this additional source of
+15
+
+uncertainty is captured by the coeﬃcient κ, see (18a)). As a consequence, they hedge a lower
+fraction of their endowment shock:
+Corollary 3. When the market is opaque, second period traders hedge a lower portion of their
+endowment shock compared to the transparent market case:
+|bL
+21|τ η<∞< |bL
+21|τ η→∞.
+(20)
+The next result shows that, as in the transparent market benchmark, a less liquid ﬁrst period
+market strengthens the propagation of the ﬁrst period imbalance to the second trading date,
+increasing the positive association between p2 and u1. Additionally, because of opaqueness,
+a lower ﬁrst period liquidity also heightens the return uncertainty of second period traders,
+lowering their hedging aggressiveness:
+Corollary 4. At equilibrium, the impact of the ﬁrst period endowment shock on the second
+period price, second period traders’ return uncertainty are increasing in illiquidity, while hedging
+aggressiveness decreases in illiquidity:
+∂Cov[p2, u1]
+∂Λ1
+> 0, ∂Var[v −p2|ΩL
+2 ]
+∂Λ1
+> 0, ∂|bL
+21|
+∂Λ1
+< 0.
+(21)
+Thus, ﬁrst period illiquidity impacts second period traders’ strategies (see (21) and (17a),
+(17b)). In turn, second period traders’ strategies impact the return uncertainty faced by ﬁrst
+period traders (Var[p2|u1]—see Proposition 2), and thus these agents’ liquidity demand. Hence,
+while the equilibrium still obtains as a solution of the system (4b)–(5a), bL
+1 becomes a non-linear
+function of Λ1. More in detail, substituting the expressions for Cov[p2, u1] and Var[p2|u1] that
+appear in Proposition 2 in (5a), and rearranging, yields:
+bL
+1 = γL
+1 τ u2τ η
+λ2(bL
+22 + (1 −µ)γτ vΛ1) + Λ1
+λ2
+2((bL
+21)2τ η + (bL
+22)2τ u2)
+−1.
+(22)
+To assess the eﬀect of a shock to ﬁrst period illiquidity on the ﬁrst period liquidity demand,
+we need to pin down how bL
+21 and Var[p2|u1] react to an increase in Λ1. First, a higher illiquidity
+has two contrasting eﬀects on the speculative aggressiveness of second period traders (|bL
+22|).
+Substituting (17a) in (17b), rearranging, and considering the absolute value of bL
+22, yields
+|bL
+22| =
+γL
+2 (1 −µ)τ vβu1|su1
+µ
+Λ∗
+1|bL
+21|.
+Diﬀerentiating the above expression, and determining its sign:
+sign
+∂|bL
+22|
+∂Λ1
+
+= sign
+
+
+
+
+
+|bL
+21|
+|{z}
+Speculation eﬀect (+)
++
+Λ1
+|∂bL
+21|
+∂Λ1
+|
+{z
+}
+Uncertainty eﬀect (−)
+
+
+
+
+.
+(23)
+16
+
+On the one hand, like in the transparent market benchmark, an increase in Λ1 augments
+second period traders’ speculative opportunities, and drives them to trade more against the
+u1-led imbalance (the ﬁrst term in the parenthesis in (23)). On the other hand, a higher Λ1
+augments second period traders return uncertainty, and makes them speculate less (the second
+term in the parenthesis in (23)).
+Consider now the eﬀect of an increase in Λ1 on Var[p2|u1]:
+∂Var[p2|u1]
+∂Λ1
+= 2λ2
+2
+
+
+
+
+
+bL
+21
+τ u2
+∂bL
+21
+∂Λ1
+|
+{z
+}
+(−)
++ bL
+22
+τ η
+∂bL
+22
+∂Λ1
+| {z }
+(±)
+
+
+
+
+.
+(24)
+In the transparent market benchmark, a higher illiquidity has no impact on ﬁrst period traders’
+uncertainty over p2 (see (6b)). In contrast, according to (21), opaqueness introduces two channels through which a shock to liquidity feeds back to ﬁrst period traders’ uncertainty. First, an
+increase in Λ1 lowers second period traders’ hedging activity, lowering Var[p2|u1].13 However, as
+we argued above, a less liquid ﬁrst period market can spur more speculation by second period
+traders. As traders’ information is imprecise, this yields a second feedback channel that can
+instead magnify ﬁrst period traders’ uncertainty. Thus, according to (24), the ultimate impact
+of a shock to Λ1 on ﬁrst period traders’ uncertainty depends on the strength of the speculation
+eﬀect.
+Finally, because of opaqueness, an increase in Λ1 introduces an additional eﬀect on bL
+1 .
+Diﬀerentiating (5a):
+∂bL
+1
+∂Λ1
+=
+γL
+1
+Var[p2|u1]2×
+(25)
+
+
+
+
+∂Cov[p2, u1]
+∂Λ1
+τ u1 + 1
+
+Var[p2|u1]
+|
+{z
+}
+Direct eﬀect (+)
+−∂Var[p2|u1]
+∂Λ1
+(Cov[p2, u1]τ u1 + Λ1)
+|
+{z
+}
+Feedback eﬀect (±)
+
+
+
+.
+For given Var[p2|u1], as p2 is more positively associated with u1, a larger Λ1 leads ﬁrst period
+traders to speculate more (and hedge less, that is bL
+1 is closer to zero), as per the direct liquidity
+consumption “rationing” eﬀect of the transparent market benchmark.
+However, when the
+speculation eﬀect leads Var[p2|u1] to increase in Λ1, a less liquid market now also has a feedback
+liquidity consumption “expanding” eﬀect on bL
+1 . As a higher Λ1 increases the risk to which ﬁrst
+period traders are exposed, a less liquid market can lead them to hedge more (that is, a more
+negative bL
+1 ). As a result, ﬁrst period traders’ demand for liquidity can become increasing in
+Λ1, as shown in Panel (a) of Figure 4. In this case, an increase in the cost of liquidity provision
+incites more liquidity consumption. Mirroring the discussion around Figure 3, Panel (b) in
+the ﬁgure illustrates the eﬀect of opaqueness on FDs’ directional bets. Diﬀerently from the
+13According to Corollary 4, ∂|bL
+21|/∂Λ1 < 0, or equivalently ∂bL
+21/∂Λ1 > 0, and since bL
+21 < 0, we have
+bL
+21 × (∂bL
+21/∂Λ1) < 0.
+17
+
+transparent market benchmark, an increase in Λ1 leads FDs to scale down their speculative
+activity, exacerbating the price impact of the liquidity demand hike. This is because a higher
+Λ1 has a positive impact on traders’ expected returns and risk from speculation. However, as
+the ﬁgure shows, the impact on the latter can overcome the one on the former.
+The expanding eﬀect of illiquidity can be responsible for a destabilizing dynamic whereby
+to a sizeable evaporation of liquidity, ﬁrst period traders respond with an even more aggressive
+liquidity consumption, while FDs scale down their directional bets. In the ﬁgure we use the
+same parameter values of Figure 3, but assume that τ η = 10 (instead of τ η →∞). As a result,
+at equilibrium we obtain bL
+1 |τ η=10 = −0.5, and Λ∗
+1|τ η=10 = 3.8. Compared to the values of
+the example of Figure 3, these results correspond to a more than two- and an almost ten-fold
+increase in liquidity consumption and illiquidity.
+Λ1, Opaque
+b1L, Opaque
+b1L, Transparent
+1
+2
+3
+4
+Λ1
+-2.0
+-1.5
+-1.0
+-0.5
+0.0
+b1L
+γ=1, γ1L=1/2, γ2L=1, τu1=1/10, τu2=200, τv=1/10, τη=10, μ=1/10
+(a)
+μγ (1+b1L)/γ1L, Transparent
+μγ (1+b1L)/γ1L, Opaque
+0
+1
+2
+3
+4
+Λ1
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+μγ (1+b1L)/γ1L
+γ=1, γ1L=1/2, γ2L=1, τu1=1/10, τu2=200, τv=1/10, τη=10, μ=1/10
+(b)
+Figure 4: When the market is opaque, ﬁrst period traders’ demand for liquidity can turn
+increasing in Λ1 (Panel (a)) and FDs’ directional bets decreasing in Λ1 (Panel (b)).
+The
+dashed curves in the two panels corresponds respectively to bL
+1 , and FDs’ aggregate directional
+bets in the transparent market case.
+4.1
+Equilibrium multiplicity
+A second eﬀect of opaqueness is the possibility of multiple, self-fulﬁlling equilibria which arise
+out of strategic complementarities in liquidity demand. According to Corollary 4, a less liquid
+ﬁrst period market heightens the time-propagation of the ﬁrst period shock. This, in turn, can
+lead second period traders to speculate more aggressively on the u1-led imbalance (see (23)),
+which can increase the uncertainty faced by ﬁrst period traders on p2 (see (24)). As a consequence, ﬁrst period traders can decide to hedge more, and FDs to speculate less (see (25)).
+This chain of eﬀects turns out to be particularly strong when the risk bearing capacity of FDs
+is not too low, ﬁrst period traders are suﬃciently risk averse, second period traders have a
+suﬃciently informative signal, and face low endowment risk, and the risk of the asset payoﬀis
+large. In these conditions, an initial dearth of liquidity escalates into a loop that sustains three
+equilibrium levels of liquidity:
+18
+
+Proposition 3. There exists a set of parameter values, such that for, τ v < ¯τ v, µ < ¯µ, and
+γL
+1 < ¯γL
+1 , three equilibrium levels of liquidity (Λ∗
+1)H, (Λ∗
+1)I, (Λ∗
+1)L arise, where
+0 < (Λ∗
+1)H <
+µ
+1 −µ < (Λ∗
+1)I <
+1
+1 −µ < (Λ∗
+1)L <
+1
+γτ v
+.
+(26)
+We will refer to the equilibrium where Λ∗
+1 is low (resp., intermediate, and high) as the High,
+(resp., Intermediate, and Low) liquidity equilibrium (HLE, ILE, and LLE). Note that since
+the function Λ∗
+1(bL
+1 ) is decreasing in bL
+1 (see (14a)), the hedging activity of ﬁrst period traders
+is respectively high, intermediate, and low along (Λ∗
+1)L, (Λ∗
+1)I, and (Λ∗
+1)H. This is a further
+manifestation of the fact that the feedback eﬀect of liquidity jams the stabilizing impact of an
+increase in illiquidity on traders’ hedging demand. Figure 5 provides a numerical example of
+the proposition.
+Λ1, Opaque
+b1L, Opaque
+b1L, Transparent
+1
+2
+3
+4
+5
+Λ1
+-2.0
+-1.5
+-1.0
+-0.5
+0.0
+b1L
+γ=9/10, γ1L=1/5, γ2L=9/10, τu1=2, τu2=600, τv=1/10, τη=10, μ=1/5
+Λ1
+*
+Λ1
+*
+Figure 5:
+Market opaqueness and equilibrium multiplicity.
+At equilibrium {Λ∗
+1, bL
+1 } ∈
+{{0.4, −0.5}, {1, −0.5}, {3.9, −0.7}}.
+The following corollary follows from Proposition 3:
+Corollary 5. When the volatility of the second period endowment shock vanishes (τ u2 →∞)
+and the following parameter restriction applies: τ v < ¯τ v, τ η > τ η, µ < ¯µ, γL
+1 < ¯γL
+1 , then
+(Λ∗
+1)H = 0.
+When τ u2 →∞, second period traders have no endowment to hedge, and only trade to
+speculate on the u1-induced imbalance. In the equilibrium where Λ∗
+1 = 0, xD
+1 = 0, so that
+ﬁrst period traders’ orders are absorbed by FDs’ speculative trades, no imbalance arises in
+the second period, and bL
+22 = 0 (see (17b)). When second period traders’ signal on u1 is fully
+revealing, this equilibrium is unique (Corollary 1). For τ η ﬁnite, however, ﬁrst period traders
+cannot rule out the possibility that second period traders speculate on a certain realization of
+su1 that gives an incorrect signal about u1 (e.g., su1 > 0, while u1 < 0). This increases the
+uncertainty they face, and triggers the loop that can lead to the appearance of two further
+equilibria.
+To study comparative statics, it is convenient to introduce the “best response” function
+ψ(Λ1), which collapses the demand and supply of liquidity equations (respectively (22), and (14a))
+into a single one that can be interpreted as an aggregate best response of ﬁrst period traders
+to a change in ﬁrst period illiquidity. As we explain in the appendix, the ﬁxed points of ψ(Λ1)
+19
+
+correspond to the equilibria of the market.14 Figure 6 provides a graphical representation of
+the best response, for a set of parameters yielding multiple equilibria.
+0
+1
+2
+3
+4
+5
+Λ1
+1
+2
+3
+4
+5
+ψ(Λ1)
+γ=9/10, γ1L=1/5, γ2L=9/10, τu1=2, τu2=400, τη=10, τv=1/10, μ=0.2
+(Λ1
+* )H=0.35
+(Λ1
+* )L=3.89
+(Λ1
+* )I=1.03
+Figure 6: The best response mapping ψ(Λ1) for γ = γL
+2 = 9/10, γL
+1 = 1/5, τ u1 = 2, τ u2 = 400,
+τ η = 10, τ v = 1/10, and µ = 1/5.
+Higher values of τ u2, γL
+2 , and intermediate values of τ η, strengthen the degree of strategic
+complementarity, facilitating equilibrium multiplicity. Intuitively, under these conditions second period traders are relatively better positioned to speculate on the propagated imbalance,
+which reinforces the impact of their orders on ﬁrst period traders’ uncertainty. A positive shock
+to µ, γ, γL
+1 , τ u1, and τ v moves the best response down and also mildly decreases the degree of
+strategic complementarity. These shocks increase the risk bearing capacity of the market, and
+reduce the risk to which ﬁrst period traders are exposed. As a consequence, they weaken the
+impact of second period traders’ orders on ﬁrst period traders’ uncertainty
+More in detail, as shown in Figures 12 and 13 (in the Appendix):
+1. An increase in µ increases the risk bearing capacity of the market, and lowers the second
+period imbalance due to u1. This shifts the best response mapping downwards, implying
+a higher (lower) liquidity at (Λ∗
+1)H, (Λ∗
+1)L ((Λ∗
+1)I). A similar eﬀect obtains when γ or τ v
+increase (see Figure 12, Panel (a), (b), and (c)).
+2. An increase in γL
+1 or in τ u1 works to lower the supply shock that Ds and FDs absorb in the
+ﬁrst period, and thus the second period imbalance due to u1, shifting the best response
+mapping downwards (see Figure 12, Panel (d) and (e)).
+3. An increase in τ η has two contrasting eﬀects on the strength of strategic complementarity.
+For τ η small, a more precise signal on u1 boosts second period traders’ speculation on the
+u1-induced imbalance, heightening ﬁrst period traders’ uncertainty on p2, increasing Λ∗
+1,
+and strengthening complementarity. As τ η increases further, Var[p2|u1] starts decreasing
+(see the expression in Proposition 2), leading ﬁrst period traders to hold more of their
+14See the proof of Proposition 2, and in particular the discussion around (A.23).
+20
+
+endowment shock, increasing the liquidity of the ﬁrst period market, reducing the size of
+the u1-led imbalance, and weakening complementarity. When τ η →∞, ﬁrst period short
+term traders anticipate the trades of second period short term traders. The consequence
+is that (i) the impact of second period traders’ speculation on Var[p2|u1] disappears,
+and (ii) second period traders’ uncertainty no longer depends on Λ∗
+1 (see the expression
+for Var[v −p2|ΩL
+2 ] in Proposition 2). This severs the link between trading decisions at
+the two dates, yielding a unique equilibrium (as we know from the analysis of Section 3).
+Figure 13, panel (a), illustrates this eﬀect. Note that as τ η increases, the intermediate and
+low liquidity equilibria eventually disappear, but liquidity at the high liquidity equilibrium
+diminishes (compared with the case with low signal precision).
+4. An increase in γL
+2 increases the strength of strategic complementarity. Other things equal,
+according to (17a) and (17b), when second period traders become more risk tolerant they
+hedge less of their endowment shock, and speculate more aggressively against the u1-led
+imbalance. The ﬁrst of the above eﬀects works to weaken strategic complementarities,
+because it reduces the impact of the endowment shock on ﬁrst period traders’ uncertainty.
+Conversely, the second eﬀect strengthens them, and always prevails in our simulations as
+illustrated in Figure 13, Panel (b).
+5. Finally, for τ u2 < ∞, a lower τ u2 magniﬁes the risk to which ﬁrst period traders are
+exposed, and works to shift the best response upwards. The smaller τ u2 becomes, the
+harder it is to sustain the equilibrium with high liquidity. When τ u2 becomes very small,
+our simulations show that only the low liquidity equilibrium survives. Figure 13, Panel
+(c) in the Appendix illustrates this eﬀect.15 In the limit case where τ u2 →0, we obtain
+the following result:
+Corollary 6. When τ u2 →0, Λ∗
+1 = 1/γτ v, and bL
+1 = −1.
+Therefore, when second period traders’ endowment shock volatility explodes, ﬁrst period traders
+cannot anticipate p2, and hedge all of their endowment, like noise traders.
+4.2
+Fragility
+The feedback loop induced by market opaqueness implies that liquidity can be “fragile,” in
+the sense that a relatively small shock to one of the model’s parameters can lead to a disproportionately large change in liquidity. We show this with two examples. In the ﬁrst one, we
+consider the eﬀect of a parameter shock yielding a switch from the HLE to an equilibrium with
+low liquidity. In the second example, we show that when a unique equilibrium obtains, with
+opaqueness Λ∗
+1 can be hump-shaped in µ. This implies that a sudden reduction in the mass of
+FDs can lead to a large drop in liquidity.
+15 According to Corollary 5 in the extreme case in which the second period endowment shock is null (almost
+surely), there always exist an equilibrium where Λ∗
+1 = 0, xD
+1 = 0, so that ﬁrst period traders’ orders are absorbed
+by FDs’ speculative trades, which implies that no imbalance arises in the second period, and bL
+22 = 0 (see (17b)).
+A full analytical characterization of this equilibrium is complex. Numerically, it can be seen that ﬁrst period
+liquidity traders hedge the smallest possible fraction of their endowment shock: bL
+1 →−µγ/(µγ + γL
+1 ).
+21
+
+4.2.1
+Equilibrium switch
+Consider Panel (a) in Figure 7, and suppose that initially the market is at the high liquidity
+equilibrium, where Λ∗
+1 = 0.22. Suppose that a technical “glitch” disconnects 6% of the FDs. In
+this new situation, the plot for Λ1(bL
+1 ) shifts upwards, while the one for bL
+1 (Λ1) moves downwards,
+as illustrated in panel (b) of the ﬁgure. As a result, a new, unique equilibrium obtains with
+Λ∗
+1 = 3.5, which corresponds to a 16-fold liquidity decrease.
+A similar eﬀect also arises if we shock the volatility of ﬁrst or second period traders’ endowment. To see this, suppose now that starting from Panel (a) in the ﬁgure, we introduce
+a 5% negative shock to τ u1 (i.e., we move τ u1 from 2 to 1.9), which increases the likelihood
+that an order of an unusual magnitude hits the ﬁrst period market. As shown in Panel (c) of
+Figure 7, this leads to a downward shift in the plot for bL
+1 which is large enough to eliminate
+the HLE and move the market towards a new equilibrium with low liquidity in which Λ∗
+1 = 3.5
+and bL
+1 = −0.6. Finally, suppose that we increase the volatility of the second period endowment shock, introducing a 7% negative shock to τ u2 (lowering it to 620). In this new situation,
+the plot for the function bL
+1 (Λ∗
+1) moves downwards, while the one for Λ∗
+1(bL
+1 ) is unchanged (see
+Panel (d) in Figure 7). A unique equilibrium obtains, where Λ∗
+1 = 3.5, implying liquidity dry-up
+comparable to the one of the previous examples.
+Table 1 summarizes the results of these exercises and compares them with the eﬀects that
+obtain in the transparent market case.
+22
+
+Λ1
+b1L
+1
+2
+3
+4
+5
+Λ1
+-2.0
+-1.5
+-1.0
+-0.5
+0.0
+b1L
+γ=9/10, γ1L=1/5, γ2L=9/10, τu1=2, τu2=661, τv=1/10, τη=3, μ=3/20
+Λ1
+* =0.22, b1L=-0.4
+(a)
+Λ1, μ=0.14
+b1L, μ=0.14
+1
+2
+3
+4
+5
+Λ1
+-2.0
+-1.5
+-1.0
+-0.5
+0.0
+b1L
+γ=9/10, γ1L=1/5, γ2L=9/10, τu1=2, τu2=661, τv=1/10, τη=3, μ=7/50
+Λ1
+* =3.5, b1L=-0.6
+(b)
+Λ1, τu1=1.9
+b1L, τu1=1.9
+1
+2
+3
+4
+5
+Λ1
+-2.0
+-1.5
+-1.0
+-0.5
+0.0
+b1L
+γ=9/10, γ1L=1/5, γ2L=9/10, τu1=1.9, τu2=661, τv=1/10, τη=3, μ=3/20
+Λ1
+* =3.5, b1L=-0.6
+(c)
+Λ1, τu2=620
+b1L, τu2=620
+1
+2
+3
+4
+5
+Λ1
+-2.0
+-1.5
+-1.0
+-0.5
+0.0
+b1L
+γ=9/10, γ1L=1/5, γ2L=9/10, τu1=2, τu2=620, τv=1/10, τη=3, μ=3/20
+Λ1
+* =3.5, b1L=-0.6
+(d)
+Figure 7: Liquidity fragility. Comparing panel (a) with (b) illustrates the eﬀect of a decrease in the mass of FDs. Comparing panel (a) with
+(c) and (d) illustrates the eﬀect of an increase in the volatility of ﬁrst and second period liquidity traders’ demand.
+23
+
+Status quo Λ∗
+1
+Shock to parameter
+New Λ∗
+1
+∆Λ∗
+1/Λ∗
+1
+Transparent market (τ η →∞)
+0.237
+∆µ/µ = −6%
+0.245
+3.2%
+∆τ u1/τ u1 = −5%
+0.237
+0%
+∆τ u2/τ u2 = −7%
+0.252
+6.3%
+Opaque market (τ η < ∞)
+0.22
+∆µ/µ = −6%
+3.5
+1470%
+∆τ u1/τ u1 = −5%
+3.5
+1470%
+∆τ u2/τ u2 = −7%
+3.5
+1470%
+Table 1: Equilibrium switch: The impact of a shock to µ, τ u1, and τ u2, in the transparent, and
+opaque market case. Other parameters’ values are as in Figure 7.
+4.2.2
+Fragility along a unique equilibrium
+Liquidity fragility can also arise when the equilibrium is unique. This is because, with opaqueness, parameter shocks can have a non monotone eﬀect on market liquidity. For example, an
+increase in µ triggers two potentially contrasting eﬀects on liquidity:
+∂Λ∗
+1
+∂µ = −1
+γτ v
+×
+
+
+
+
+
+γ(1 + bL
+1 )
+γL
+1
+|
+{z
+}
+Direct eﬀect (+)
++ ∂bL
+1
+∂µ
+
+1 + µγ
+γL
+1
+
+|
+{z
+}
+Indirect eﬀect (±)
+
+
+
+
+.
+(27)
+For given bL
+1 , the direct eﬀect captures the increase in FDs’ aggregate speculative position,
+which works to lower dealers’ inventory, and make the market more liquid. The indirect eﬀect
+reﬂects the impact of the change in µ on ﬁrst period traders’ demand for liquidity (∂bL
+1 /∂µ),
+and on each FD’s speculative position ((µγ/γL
+1 )(∂bL
+1 /∂µ)). The sign of this eﬀect is, instead,
+ambiguous. Indeed, an increase in the mass of FDs can lower the impact of second period
+traders’ orders on p2, thereby lowering Var[p2|u1] and leading ﬁrst period traders to hold more
+of their endowment, and each FD to speculate more on the short term capital gain;16 at the
+same time, however, it can also lower the propagation of u1 to the second period, impairing
+the predictability of p2, and inducing traders to shed more of their endowment, and each FD
+to speculate less.17
+When the market is opaque, second period traders face execution risk,
+which tames their hedging aggressiveness (see (17a)), and lowers ﬁrst period traders’ return
+uncertainty.
+In this situation, the uncertainty reduction eﬀect of µ on bL
+1 can be dwarfed
+by the one due to reduced predictability. As a consequence, when µ increases, ﬁrst period
+16 The volatility reduction can happen for two diﬀerent reasons. As µ increases, (i) less of the ﬁrst period
+endowment shock propagates to the second period, and (ii) more FDs absorb second period liquidity traders’
+orders, enhancing risk sharing.
+17 In a transparent market, this latter eﬀect is never strong enough to overcome the previous two, and liquidity
+increases in the mass of FDs (see Corollary 2).
+24
+
+traders’ demand for immediacy can increase (see Figure 11 in the Appendix) and the individual
+speculative activity of each FD can abate, oﬀsetting the direct positive eﬀect of FDs’ aggregate
+speculative trades. Hence, a wider FDs’ participation can impair liquidity.
+This implies that illiquidity can be hump-shaped in the proportion of FDs, as shown in
+Figure 9 (Panel (a)). The non-monotone relationship between Λ∗
+1 and µ illustrates an additional
+channel through which liquidity fragility can arise. To see this, suppose that the proportion
+of FDs in the market is initially µ = 0.4. According to the ﬁgure, for this fraction of FDs’
+participation, in the opaque market case we have Λ∗
+1 = 0.5, and bL
+1 = −0.47 (see Panel (a) and
+Panel (b)). Suppose now that a glitch disconnects 10% of FDs, implying that a proportion
+µ = 0.36 of FDs supplies liquidity. In the opaque market case, this implies a new illiquidity
+level Λ∗
+1 = 1.58, corresponding to a 216% liquidity withdrawal. Conversely, in the case with
+transparent markets, when µ = 0.4, Λ∗
+1 = 0.38, while when µ = 0.36, Λ∗
+1 = 0.41, corresponding
+to an 8% liquidity decrease. This shows that along an equilibrium with low liquidity, following
+a reduction in FD participation, liquidity can dry up quite dramatically.
+The example highlights an additional implication of our analysis. When µ = 0.36, bL
+1 =
+−0.51 (see Figure 9, Panel (b)), which, compared to the status quo liquidity demand, corresponds to a 9% increase in liquidity consumption by ﬁrst period traders (i.e., bL
+1 = −0.47
+when µ = 0.4). How can such a comparatively small increase in liquidity consumption generate an illiquidity spike of this magnitude? To understand this, note that increased liquidity
+consumption only accounts for part of the total eﬀect, as it occurs jointly with a steep increase
+in ﬁrst period return uncertainty (according to Panel (c) in the ﬁgure, Var[p2|u1] experiences
+a 310% increase across the two equilibrium outcomes). This, leads each FD to scale down his
+speculative position, thereby adding to the aggregate eﬀect of a reduced liquidity supply. Using
+expression (27) to break down the diﬀerent eﬀects yields:
+∆Λ∗
+1
+∆µ
+|{z}
+≈−27
+≈−
+1
+γτ v
+|{z}
+= −10
+×
+(28)
+ 
+γ(1 + bL
+1 )
+γL
+1
+|
+{z
+}
+∆in FDs’ aggregate speculative position ≈1
++
+µγ
+γL
+1
+|{z}
+= 4/5
+×
+∆bL
+1
+∆µ
+|{z}
+∆in each FD speculative position ≈1
++
+∆bL
+1
+∆µ
+!
+| {z }
+∆in liquidity demand ≈1
+Thus, the increase in liquidity consumption accounts for roughly 36% of the drought, whereas
+the lion share of it (about 64%) is due to the combined eﬀect of the aggregate and individual
+reduction in FDs’ speculative activity.18 This suggests that in the wake of a liquidity crash, we
+should observe HFTs unwinding their directional bets.19
+A ﬁnal implication of this example is that when information on prices and/or order im18 According to (28), the sum of ∆in FDs’ aggregate speculative position, ∆in each FD speculative position,
+and ∆in traders’ liquidity demand amounts to 2.8, of which ∆bL
+1 /∆µ accounts for 1.
+19 In this example too, for µ small, the stabilizing eﬀect of illiquidity is jammed and ﬁrst period traders
+demand more immediacy precisely when the cost of liquidity supply is increasing.
+25
+
+balances is opaque, an increase in the mass of HFTs (promoting full participation), can lower
+market liquidity. This ﬁnding is consistent with Boehmer et al. (2015) who show that greater
+algorithmic trading intensity is associated with more liquidity for average ﬁrm size, the same
+is not true for small market cap ﬁrms. For these ﬁrms, when algorithmic trading increases,
+liquidity declines.20
+4.2.3
+Transparency and liquidity
+An important feature of the example in Figure 9 is that for all values of µ the market is at least
+as liquid with full transparency as it is with opaqueness. This result is not general. In Figure 10
+we reproduce Panel (a) of Figure 9, and in panels (b), (c), and (d), investigate the eﬀect of
+progressively lowering the informativeness of the signal observed by second period traders. The
+ﬁgure shows that while the hump-shaped feature of the illiquidity plot is preserved, the liquidity
+ranking is progressively reversed. In fact, we can prove the following result:
+Corollary 7. When the market is strongly opaque (τ η →0), there exists a unique equilibrium
+along which liquidity is higher than in the transparent market benchmark:
+Λ∗
+1|τ η→0 ≤Λ∗
+1|τ η→∞.
+(29)
+Intuitively, if second period traders receive an uninformative signal, they stop speculating on
+the propagated imbalance, killing the loop that is responsible for equilibrium multiplicity. Thus,
+in this case, ﬁrst period traders’ uncertainty only depends on bL
+21, similarly to the transparent
+benchmark where ﬁrst period traders can perfectly anticipate the impact of second period
+speculation. Furthermore, due to execution risk, second period traders also hedge less of their
+endowment shock when the signal is uninformative (since κ > 1) than when it is perfect (in
+which case, instead, κ = 1). As a consequence, with strong opaqueness, ﬁrst period traders
+face lower uncertainty than in the transparent market benchmark. Thus, in the latter case they
+hedge more, and FDs speculate less, lowering market liquidity.
+Figure 10 also suggests that for µ < 1, increasing transparency won’t necessarily enhance
+market liquidity, precisely because a more informative signal leads second period traders to
+trade more aggressively, increasing ﬁrst period traders’ uncertainty. This insight is conﬁrmed
+in Figure 8, where we plot Λ∗
+1 in the opaque market case, as a function of τ η. For low values
+of transparency, a more informative signal makes the market less liquid.
+This is because,
+second period traders speculate more aggressively on the propagated imbalance, increasing
+ﬁrst period traders’ uncertainty (as we observed in Section 4.1). As second period traders’
+signal precision increases, ﬁrst period traders become increasingly better able to anticipate
+their strategy, and face lower return uncertainty. This explains the declining branch of the
+plot. As argued in Corollary 7, a very precise signal (τ η large) fosters second period traders’
+hedging aggressiveness, which heightens ﬁrst period traders’ uncertainty compared to the case
+20See also Breckenfelder (2014) for other evidence on the negative impact of an increase in HFT competition
+on market liquidity for a sample of stocks traded on the Stockholm Stock Exchange.
+26
+
+Λ1*, τη=1
+Λ1*, τη→∞
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+μ
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+Λ1*
+γ=1, γ1L=1/2, γ2L=1, τu1=1/10, τu2=100, τv=1/10
+Λ1*=0.5
+Λ1*=1.58
+(a)
+b1L, τη=1
+b1L, τη→∞
+0.2
+0.4
+0.6
+0.8
+1.0
+μ
+-0.7
+-0.6
+-0.5
+-0.4
+-0.3
+-0.2
+-0.1
+0.0
+b1L
+γ=1, γ1L=1/2, γ2L=1, τu1=1/10, τu2=100, τv=1/10
+b1L=-0.47
+b1L=-0.51
+(b)
+Var[p2|u1], τη=1
+Var[p2|u1], τη→∞
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+μ
+0
+1
+2
+3
+4
+5
+Var[p2|u1]
+γ=1, γ1L=1/2, γ2L=1, τu1=1/10, τu2=100, τv=1/10
+Var[p2|u1]=0.72
+Var[p2|u1]=2.88
+(c)
+Figure 9: Fragility at an equilibrium with low liquidity. In panel (a), (b), and (c) we plot Λ∗
+1, bL
+1 , and Var[p2|u1], for τ v = τ u1 = 0.1, τ u2 = 100,
+τ η = γ = γL
+2 = 1, γL
+1 = 0.5, and µ ∈{0.01, .02, . . . , 1}; the blue (green) plot relates to the transparent (opaque) case. A glitch disconnecting
+10% of FDs yields a 9% increase in the demand for immediacy, a 310% increase in ﬁrst period uncertainty and a 216% illiquidity spike. The
+gridlines are drawn at µ = ˆµ ∈{0.36, 0.4} and at the corresponding values for Λ∗
+1, bL
+1 , and Var[p2|u1].
+27
+
+Λ1*, τη=1
+Λ1*, τη→∞
+0.2
+0.4
+0.6
+0.8
+1.0
+μ
+0.5
+1.0
+1.5
+2.0
+2.5
+Λ1*
+γ=1, γ1L=1/2, γ2L=1, τu1=1/10, τu2=100, τv=1/10
+(a)
+Λ1*, τη=1/10
+Λ1*, τη→∞
+0.2
+0.4
+0.6
+0.8
+1.0
+μ
+0.2
+0.4
+0.6
+0.8
+1.0
+1.2
+Λ1*
+γ=1, γ1L=1/2, γ2L=1, τu1=1/10, τu2=100, τv=1/10
+(b)
+Λ1*, τη=1/100
+Λ1*, τη→∞
+0.2
+0.4
+0.6
+0.8
+1.0
+μ
+0.2
+0.4
+0.6
+0.8
+Λ1*
+γ=1, γ1L=1/2, γ2L=1, τu1=1/10, τu2=100, τv=1/10
+(c)
+Λ1*, τη=1/1000
+Λ1*, τη→∞
+0.2
+0.4
+0.6
+0.8
+1.0
+μ
+0.2
+0.4
+0.6
+0.8
+Λ1*
+γ=1, γ1L=1/2, γ2L=1, τu1=1/10, τu2=100, τv=1/10
+(d)
+Figure 10: Liquidity comparison between the opaque and transparent market case. In panel (a), we plot Λ∗
+1, for τ v = τ u1 = 0.1, τ u2 = 100,
+τ η = γ = γL
+2 = 1, γL
+1 = 0.5, and µ ∈{0.01, .02, . . . , 1}; the blue (green) plot relates to the transparent (opaque) case. In panel (b), (c), and (d)
+we progressively reduce τ η.
+28
+
+in which the signal is uninformative (τ η ≈0).
+20
+40
+60
+80
+100
+τη
+2.5
+3.0
+3.5
+4.0
+Λ1*
+γ=1, γ1L=1/2, γ2L=1, τu1=1/10, τu2=100, τv=1/10, μ=1/10
+Figure 8: Illiquidity as a function of transparency, for τ v = τ u1 = 0.1, τ u2 = 100, γ = γL
+2 = 1,
+γL
+1 = 0.5, µ = 0.1.
+4.2.4
+Summary
+This section highlights the role of informational frictions in generating a liquidity feedback loop
+that can have a destabilizing eﬀect on the market. Second period traders, endowed with a noisy
+signal on the ﬁrst period endowment shock, speculate against the propagated order imbalance,
+generating additional volatility. This can feed back on ﬁrst period traders’ strategies, leading
+them to consume more liquidity and FDs to retreat from speculation, thereby magnifying the
+outstanding imbalance liquidity suppliers need to absorb, and further lowering market liquidity.
+This self-sustaining loop can induce multiple equilibria and liquidity fragility. Equilibria can
+be ranked in terms of liquidity and ﬁrst period traders’ hedging activity, with the most (least)
+liquid equilibrium occurring with the least (highest) liquidity consumption. Thus, with market opaqueness, the self-stabilizing mechanism whereby an illiquidity spike depresses liquidity
+consumption can jam, and instead be replaced by a vicious cycle that creates a liquidity rout.
+Transparent (τ η →∞)
+Opaque (0 < τ η < ∞)
+Equilibrium
+Unique
+Possible ME
+Illiquidity
+Decreasing in µ
+Can be ‘fragile’ and
+hump-shaped in µ and
+τ η (Numerical)
+First period traders’ demand for
+immediacy
+Decreasing in Λ1
+Can be increasing in Λ1
+Table 2: Summary of results.
+29
+
+5
+Concluding remarks
+We study a 2-period model in which two classes of dealers—full and standard—intermediate
+the orders of two successive cohorts of short-term traders, in a context where markets are
+fragmented due to both an informational and a participation friction. We show that dealers’
+limited market participation favors the propagation of ﬁrst period traders’ endowment shock
+across time, inducing a predictable price pressure. This, in turn, leads second period traders to
+speculate against the propagated endowment shock. The eﬀect of speculation crucially depends
+on the transparency regime governing the market. With full transparency the market is stable
+and increasing the proportion of full dealers is good for liquidity. With opaqueness, the market
+may be unstable, and liquidity hump-shaped in the proportion of full dealers and in the degree
+of transparency. More in detail, our main ﬁndings can be summarized as follows (see Table 2):
+1. When second period traders have perfect information about the ﬁrst period endowment
+shock, speculation exerts a stabilizing eﬀect. In this context, a unique equilibrium obtains,
+and a dearth of liquidity increases ﬁrst period traders’ cost of hedging, reducing their
+liquidity consumption. Furthermore, higher FDs participation always has a beneﬁcial
+impact on liquidity.
+2. When the market is opaque—in that second period traders’ information is imprecise—
+speculation can augment ﬁrst period traders’ uncertainty, leading them to demand more
+immediacy when the market is less liquid. This can oﬀset the rationing impact of illiquidity, and trigger a liquidity feedback loop in which a liquidity dry-up breeds a further,
+larger liquidity withdrawal. We show that in this scenario,
+(a) Multiple equilibria—that can be ranked in terms of liquidity, price volatility, and
+demand for immediacy—can arise.
+(b) Liquidity can be fragile, either because a shock to parameter values can prompt a
+switch from the high liquidity equilibrium to an equilibrium with low liquidity; or,
+with a unique equilibrium, because illiquidity may be hump-shaped and with steep
+slope in the mass of full dealers, implying that a reduction in FDs participation can
+generate a large spike in illiquidity.
+3. Our results are robust to the case in which the ﬁrst period market is populated by a proportion β of short-term traders, that unwind at date 2, and a complementary proportion
+(1 −β) of long-term ones that hold their position until liquidation.
+From a methodological point of view, our work shows that because of market opaqueness,
+uncertainty on future prices can become an increasing function of current illiquidity, implying
+that fragility can arise in a context where prices are driven by a non-payoﬀrelated shock. We
+view this as a realistic feature of trading at high frequencies since in those conditions, the
+chances that payoﬀfundamentals drive prices are negligible. This also allows us to oﬀer an
+alternative explanation for how the buildup of a large imbalance can precipitate the market
+into a crash, which does not rely on the eﬀect of order ﬂow toxicity (Easley et al. (2011, 2012)).
+30
+
+From a policy perspective, our paper has two important implications. First, our analysis
+of the opaque market model shows that favoring FDs’ entry (i.e., reducing the participation
+friction) doesn’t necessarily enhance liquidity. Indeed, illiquidity can be hump-shaped in the
+proportion of FDs. This can also serve as a guide to empirical analysis, as it suggests that the
+liquidity impact of HFT entry should be assessed taking into account the eﬀect of frictions in the
+access to market information. Second, with noisy market information, the presence of liquidity
+providers acting with diﬀerent trading frequencies may make liquidity fragile, either because a
+shock to parameters can prompt a switch across equilibria; or because, due to the hump-shaped
+relationship between illiquidity and the proportion of FDs, a sudden reduction of these dealers’
+participation can lead to a large liquidity withdrawal. This supports regulatory concerns about
+the potential drawbacks of automated trading due to operational and transmission risks and
+implies that fragility can arise in the absence of order ﬂow toxicity.21
+Finally, our analysis of fragility along a unique equilibrium highlights the role that changes
+in HFTs’ strategies in the wake of crashes have to explain huge illiquidity spikes. As we argued
+in our numerical example, the unwinding of HFTs’ directional bets can act as a multiplier of
+the initial increase in traders’ liquidity consumption. This can be of help in empirical analyses
+of these events, in that an exclusive focus on changes in liquidity consumption can miss an
+important explanatory factor and suggests the following empirical prediction. We expect that
+in the wake of a liquidity crash, HFTs should unwind their directional bets, thereby depleting
+the market of the liquidity that they otherwise supply with contrarian marketable orders (see
+the evidence in Brogaard et al. (2014), and Biais et al. (2015)).
+21See Joint StaﬀReport: The U.S. Treasury Market on October 15, 2014.
+31
+
+References
+Biais, B., F. Declerck, and S. Moinas (2015). Who supplies liquidity, how and when? Working
+paper.
+Biais, B., T. Foucault, and S. Moinas (2015). Equilibrium fast trading. Journal of Financial
+Economics 116, 292–313.
+Boehmer, E., K. Fong, and J. Wu (2015).
+International evidence on algorithmic trading.
+Working paper.
+Bogousslavsky, V. (2014). Infrequent rebalancing and short-term return predictability. Working
+Paper.
+Bongaerts, D. and M. Van Achter (2015). High frequency trading and market stability. Working
+Paper, Erasmus University.
+Breckenfelder, H. J. (2014). Competition between high-frequency traders, and market quality.
+Working Paper.
+Brogaard, J., T. Hendershott, and R. Riordan (2014). High frequency trading and price discovery. Review of Financial Studies 27, 2267–2306.
+Budish, E., P. Cramton, and J. Shim (2015). The high-frequency trading arms race: Frequent
+batch auctions as a market design response. Quarterly Journal of Economics 139, 1547–1621.
+Cespa, G. and T. Foucault (2014).
+Illiquidity contagion and liquidity crashes.
+Review of
+Financial Studies 27(6), 1615–1660.
+Cespa, G. and X. Vives (2012). Dynamic trading and asset prices: Keynes vs. Hayek. Review
+of Economic Studies 79, 539–580.
+Cespa, G. and X. Vives (2015).
+The Beauty Contest and short-term trading.
+Journal of
+Finance 70(5), 2099–2154.
+Chien, Y., H. Cole, and H. Lustig (2012). Is the volatility of the market price of risk due to
+intermittent portfolio rebalancing? American Economic Review 102(6), 2859–96.
+Collin-Dufresne, P. and V. Vos (2015). Do prices reveal the presence of informed trading?
+Journal of Finance 70, 1555–1582.
+Ding, S., J. Hanna, and T. Hendershott (2014). How slow is the NBBO? a comparison with
+direct exchange feeds. Financial Review (49), 313–332.
+Du, S. and H. Zhu (2014). Welfare and optimal trading frequency in dynamic double auctions.
+Working paper.
+32
+
+Duﬃe, D. (2010). Presidential address: Asset price dynamics with slow-moving capital. Journal
+of Finance 65(4), 1237–1267.
+Easley, D., M. O’Hara, and M. L´opez de Prado (2011). The microstructure of the Flash-Crash:
+ﬂow toxicity, liquidity crashes, and the probability of informed trading. Journal of Portfolio
+Management 37, 118–128.
+Easley, D., M. O’Hara, and M. L´opez de Prado (2012). Flow toxicity and liquidity in a highfrequency world. Review of Financial Studies 25, 1457–1493.
+Foucault, T., J. Hombert, and I. Rosu (2015). News trading and speed. Journal of Finance
+(Forthcoming).
+Glosten, L. and P. Milgrom (1985). Bid, ask and transaction prices in a specialist market with
+heterogeneously informed traders. Journal of Financial Economics 14, 71–100.
+Goldstein, I., Y. Li, and L. Yang (2014). Speculation and hedging in segmented markets. Review
+of Financial Studies 27(3), 881–922.
+Goldstein, I. and L. Yang (2015). Information diversity and complementarities in trading and
+information acquisition. Journal of Finance 70, 1723–1765.
+Han, J., M. Khapko, and A. S. Kyle (2014). Liquidity with high-frequency market making.
+Working Paper.
+Hendershott, T., S. Li, A. Menkveld, and M. Seasholes (2014). Asset price dynamics with
+limited attention. Working Paper.
+Heston, S. L., R. A. Korajczyk, and R. Sadka (2010). Intraday patterns in the cross-section of
+stock returns. The Journal of Finance 65(4), 1369–1407.
+Hirschey, N. H. (2016).
+Do high-frequency traders anticipate buying and selling pressure?
+Working paper.
+Hoﬀmann, P. (2014). A dynamic limit order market with fast and slow traders. Journal of
+Financial Economics 113(1), 156–169.
+Huang, J. and J. Wang (2009). Liquidity and market crashes. Review of Financial Studies 22(7),
+2607–2643.
+Menkveld, A. J. (2016). The economics of high-frequency trading: Taking stock. Annual Review
+of Financial Economics (Forthcoming).
+Menkveld, A. J. and B. Yueshen (2012). Middlemen interaction and its eﬀect on market quality.
+Working Paper.
+Menkveld, A. J. and M. A. Zoican (2015). Need for speed? exchange latency and liquidity.
+Working Paper, Timbergen Institute.
+33
+
+Nagel, S. (2012). Evaporating liquidity. Review of Financial Studies 25(7), 2005–2039.
+O’Hara, M. (2015).
+High frequency market microstructure.
+Journal of Financial Economics 116, 257–270.
+Peress, J. and D. Schmidt (2015). Noise traders incarnate: Describing a realistic noise trading
+process. Working paper.
+SEC (2010). Concept release on equity market structure. Federal Register.
+Spiegel, M. (1998). Stock price volatility in a multiple security overlapping generations model.
+Review of Financial Studies 11(2), 419–447.
+Vayanos, D. and J. Wang (2012). Liquidity and asset returns under asymmetric information
+and imperfect competition. Review of Financial Studies 25(5), 1339–1365.
+Vives, X. (2008). Information and learning in markets: the impact of market microstructure.
+Princeton University Press.
+34
+
+A
+Appendix
+The following is a standard results (see, e.g. Vives (2008), Technical Appendix, pp. 382–383)
+that allows us to compute the unconditional expected utility of market participants.
+Lemma 2. Let the n-dimensional random vector z ∼N(0, Σ), and w = c + b′z + z′Az, where
+c ∈R, b ∈Rn, and A is a n×n matrix. If the matrix Σ−1 +2ρA is positive deﬁnite, and ρ > 0,
+then
+E[−exp{−ρw}] = −|I + 2ρΣA|−1/2 exp{−ρ(c −ρb′(Σ + 2ρA)−1b)}.
+Proof of Lemma 1
+Denote by µxFD
+1
+=
+R µ
+0 xFD
+1
+di, (1 −µ)xD
+1 =
+R 1
+µ xD
+1 di, and by xL
+1 respectively the aggregate
+position of FDs, dealers and liquidity traders in the ﬁrst period. Imposing market clearing
+yields:
+µxFD
+1
++ (1 −µ)xD
+1 + xL
+1 = 0 ⇐⇒µϕFD
+1
+(p1) + (1 −µ)ϕD(p1) + bL
+1 u1 = 0.
+(A.1)
+At equilibrium the coeﬃcients of traders’ strategies are known, which implies that, provided
+bL
+1̸ = 0 (which is true in equilibrium), p1 is observationally equivalent to u1 and that both FDs
+and dealers can retrieve u1 from the price. Therefore, the information set of a FD and a dealer
+in the ﬁrst period coincide and are given by ΩFD
+1
+= ΩD
+1 = {u1}. In the second period, denote
+by µxFD
+2
+=
+R µ
+0 xFD
+2
+di and by xL
+2 , respectively the aggregate position of FDs and second period
+liquidity traders. Impose market clearing:
+µ(xFD
+2
+−xFD
+1
+) + (xL
+2 −xL
+1 ) = 0,
+and rearrange the ﬁrst period market clearing condition as follows
+(1 −µ)xD
+1 = −
+ µxFD
+1
++ xL
+1
+
+.
+Substitute the latter in the second period clearing equation to obtain
+µxFD
+2
++ xL
+2 + (1 −µ)xD
+1 = 0.
+(A.2)
+Once again, at a linear equilibrium the coeﬃcient of traders’ strategies are known, which implies
+that the price sequence {p1, p2} is observationally equivalent to {u1, xL
+2 }.
+2
+Proof of Proposition 1
+From the proof of Proposition 2 (see (A.30)) we know that when τ η →∞, a unique equilibrium obtains where
+Λ∗
+1 =
+1
+τ v(γ + (µγ + γL
+1 )(µγ + γL
+2 )(γL
+2 + γ)τ u2τ v).
+(A.3)
+35
+
+Substituting (A.3) in (4b) and solving for bL
+1 yields
+bL
+1 = γL
+1 (γL
+2 + γ)(γL
+2 + µγ)Λ∗
+1τ u2τ 2
+v −1.
+Furthermore, limτ η→∞Var[v −p2|ΩL
+2 ] = τ −1
+v , so that limτ η→∞κ = 1, implying that (A.14a)
+and (A.14b) have a closed form solution.
+To see why the expression for the second period price simpliﬁes to (3a), note that when
+τ η →∞, βu1|su1 →1, while η
+p→0, implying that p2 = −Λ∗
+2(u2 −(1 −µ)γτ vΛ∗
+1u1).
+2
+Proof of Corollary 1
+Taking the limit for τ u2 →∞in (A.3) yields the desired result.
+2
+Proof of Corollary 2
+Diﬀerentiating (A.3) with respect to µ yields the desired result.
+2
+Proof of Proposition 2
+We prove our argument by backward induction. In the second period a new mass of liquidity
+traders with risk-tolerance coeﬃcient γL
+2 > 0 enters the market.
+A date-2 liquidity trader
+submits a market order
+XL
+2 (u2, su1) = bL
+21u2 + bL
+22su1,
+(A.4)
+with u2 ∼N(0, τ −1
+u2 ), and su1 = u1 + η, with η ∼N(0, τ −1
+η ) and u2, η independent of all the
+other random variables in the model. Consider the sequence of market clearing equations
+µxFD
+1
++ (1 −µ)xD
+1 + xL
+1 = 0
+(A.5a)
+µ(xFD
+2
+−xFD
+1
+) + (bL
+21u2 + bL
+22su1 −xL
+1 ) = 0.
+(A.5b)
+Rearrange (A.5a) as follows: (1 −µ)xD
+1 = −
+ µxFD
+1
++ xL
+1
+
+. Substituting the latter in (A.5b)
+yields:
+µxFD
+2
++ bL
+21u2 + bL
+22su1 + (1 −µ)xD
+1 = 0.
+(A.6)
+Consider ﬁrst Full Dealers. A FD maximizes the expected utility of his second period wealth:
+E
+
+−exp
+
+−1
+γ
+
+(p2 −p1)xFD
+1
++ (v −p2)xFD
+2
+
+|p1, p2
+
+=
+(A.7)
+= exp
+
+−1
+γ (p2 −p1)xFD
+1
+
+−exp
+
+−1
+γ
+
+E[v −p2|p1, p2]xFD
+2
+−(xFD
+2
+)2
+2γ
+Var[v −p2|p1, p2]
+
+,
+where the last expression in (A.7) is due to CARA and normality. For given xFD
+1
+the above is
+a concave function of the second period strategy xFD
+2
+. Solving the ﬁrst order condition, yields
+36
+
+that a second period FD’s strategy is given by XFD
+2
+(p1, p2) = −γτ vp2. Similarly, due to CARA
+and normality, in the ﬁrst period a traditional market maker maximizes
+E
+
+−exp
+
+−1
+γ (v−p1)xD
+1
+
+|p1
+
+= −exp
+
+−1
+γ
+
+E[v−p1|p1]xD
+1 −(xD
+1 )2
+2γ
+Var[v−p1|p1]
+
+. (A.8)
+Hence, his strategy is given by XD
+1 (p1) = −γτ vp1. Substituting these strategies in (A.6) and
+solving for p2 yields
+p2 = λ2
+ bL
+21u2 + bL
+22su1
+
+−1 −µ
+µ
+p1,
+(A.9)
+where λ2 = 1/µγτ v. The assumption that ﬁrst period liquidity traders’ strategies are linear
+implies that p1 = −Λ1u1 (see below). As a consequence we can rewrite (A.9) as follows:
+p2 = λ2(bL
+21u2 + bL
+22su1) + λ2(1 −µ)γτ vΛ1u1.
+(A.10)
+CARA and normality assumptions imply that the objective function of a second period liquidity
+trader is given by
+E[−exp{−πL
+2 /γL
+2 }|ΩL
+2 ] = −exp
+
+−1
+γ
+
+E[πL
+2 |ΩL
+2 ] −1
+2γ Var[πL
+2 |ΩL
+2 ]
+
+,
+(A.11)
+where ΩL
+2 = {u2, su1}, and πL
+2 ≡(v −p2)xL
+2 + u2v. Maximizing (A.11) with respect to xL
+2 , and
+solving for the strategy yields:
+XL
+2 (u2, su1) = γL
+2
+E[v −p2|ΩL
+2 ]
+Var[v −p2|ΩL
+2 ] −Cov[v −p2, v|ΩL
+2 ]
+Var[v −p2|ΩL
+2 ] u2,
+(A.12)
+where
+E[v −p2|ΩL
+2 ] = −
+
+λ2(bL
+21u2 + bL
+22su1) + 1 −µ
+µ
+Λ1
+τ η
+τ η + τ u1
+su1
+
+(A.13a)
+Var[v −p2|ΩL
+2 ] = µ2(τ u1 + τ η) + ((1 −µ)Λ1)2τ v
+µ2(τ u1 + τ η)τ v
+(A.13b)
+Cov[v −p2, v|ΩL
+2 ] = 1
+τ v
+.
+(A.13c)
+Substituting (A.13a), (A.13b), and (A.13c) in (A.12) and identifying coeﬃcients yields XL
+2 (u2, su1) =
+bL
+21u2 + bL
+22su1, where
+bL
+21 = −
+1
+τ v(γL
+2 λ2 + Var[v −p2|ΩL
+2 ]) = −
+µγ
+γL
+2 + µγκ,
+(A.14a)
+bL
+22 = −
+γL
+2 τ ηλ2(1 −µ)γτ vΛ1
+(τ η + τ u1)(γL
+2 λ2 + Var[v −p2|ΩL
+2 ]),
+(A.14b)
+and κ ≡τ vVar[v −p2|ΩL
+2 ].
+Consider now the ﬁrst period. We start by characterizing the strategy of a FD. Substituting
+a FD’s second period strategy in (A.7), rearranging and applying Lemma 2 yields the following
+37
+
+expression for the ﬁrst period objective function of a FD:
+E[U((p2 −p1)xFD
+1
++ (v −p2)xFD
+2
+)|u1] = −
+
+1 + Var[p2|u1]
+Var[v]
+−1/2
+×
+(A.15)
+exp
+(
+−1
+γ
+ 
+γτ v
+2 ν2 + (ν −p1)xFD
+1
+−(xFD
+1
++ γτ vν)2
+2γ
+
+1
+Var[p2|u1] +
+1
+Var[v]
+−1!)
+,
+where
+ν ≡E[p2|u1] =
+
+λ2bL
+22 + 1 −µ
+µ
+Λ1
+
+u1
+(A.16a)
+Var[p2|u1] = λ2
+2
+(bL
+21)2
+τ u2
++ (bL
+22)2
+τ η
+
+.
+(A.16b)
+Maximizing (A.15) with respect to xFD
+1
+and solving for the ﬁrst period strategy yields
+XFD
+1
+(p1) =
+γ
+Var[p2|u1]ν −γ
+
+1
+Var[p2|u1] +
+1
+Var[v]
+
+p1.
+(A.17)
+As we argued above, due to CARA and normality, for traditional market makers at date 1 we
+have XD
+1 (p1) = −γτ vp1. At equilibrium we then have
+µ
+
+γ
+Var[p2|u1]ν −γ
+
+1
+Var[p2|u1] +
+1
+Var[v]
+
+p1
+
++ (−(1 −µ)γτ vp1) + bL
+1 u1 = 0,
+implying that p1 is linear in u1: p1 = −Λ1u1, with Λ1 to be determined.
+We now turn to the characterization of ﬁrst period liquidity traders’ strategies. CARA and
+normality imply
+E[−exp{−πL
+1 /γL
+1 }] = −exp
+
+−1
+γ
+
+E[πL
+1 |u1] −
+1
+2γL
+1
+Var[πL
+1 |u1]
+
+,
+(A.18)
+where πL
+1 ≡(p2 −p1)xL
+1 + u1p2. Maximizing (A.18) with respect to xL
+1 , and solving for the
+optimal strategy, yields
+XL
+1 (u1) = γL
+1
+E[p2 −p1|u1]
+Var[p2 −p1|u1] −Cov[p2 −p1, p2|u1]
+Var[p2 −p1|u1]
+u1,
+(A.19)
+where
+p2 −p1 =
+
+λ2bL
+22 + Λ1
+µ
+
+u1 + λ2
+ bL
+21u2 + bL
+22η
+
+,
+and
+E[p2 −p1|u1] =
+
+λ2bL
+22 + Λ1
+µ
+
+u1
+(A.20a)
+Cov[p2 −p1, p2|u1] = Var[p2|u1].
+(A.20b)
+38
+
+Substituting the above in (A.19) and identifying yields
+XL
+1 (u1) = bL
+1 u1,
+(A.21)
+where
+bL
+1 = γL
+1
+µλ2bL
+22 + Λ1
+µVar[p2|u1] −1.
+(A.22)
+Substituting (A.17), xD
+1 , and (A.21) in the ﬁrst period market clearing condition and solving
+for the price yields p1 = −Λ1u1, where
+Λ1 = ψ(Λ1) ≡−
+
+µγ
+
+1
+Var[p2|u1] +
+1
+Var[v]
+
++ (1 −µ)γ
+1
+Var[v]
+−1
+µ
+γCov[p2, u1]
+Var[p2|u1]Var[u1] + bL
+1
+
+= −µγCov[p2, u1]τ u1 + bL
+1 Var[p2|u1]
+γ(µ + τ vVar[p2|u1])
+.
+(A.23)
+According to (A.22), the equilibrium coeﬃcient of a ﬁrst period liquidity trader depends on
+bL
+21, and bL
+22, both of which in turn depend on Λ1. Therefore, recursive substitution of the
+equilibrium strategies’ coeﬃcients in (A.23) shows that Λ1 is pinned down by the solution of
+the following equation in Λ1:
+ψ(Λ1) −Λ1 = (µγ + γL
+1 )(Cov[p2, u1]τ u1 + Λ1) + Var[p2|u1](γτ vΛ1 −1)
+γ(µ + τ vVar[p2|u1])
+= 0.
+(A.24)
+For µ ∈(0, 1] the denominator in the above expression is positive, which implies that equilibria
+are pinned down by solutions to the quintic at the numerator of (A.24), which is given by:
+f(Λ1) = γ2(1 −µ)4Λ5
+1(µγ + γL
+1 )τ u2τ 4
+v
++ µγ(1 −µ)2τ u2τ 3
+vΛ3
+1
+ ((µγ + γL
+1 )(2µγ + γL
+2 (1 + µ)) + (γL
+2 )2)τ η + 2τ u1(µγ + γL
+1 )(µγ + γL
+2 )
+
+−(γL
+2 )2(1 −µ)2µτ ητ u2τ 2
+vΛ2
+1
+(A.25)
++ µ2(τ η + τ u1)τ vΛ1
+ µγ(τ η + τ u1) + (µγ + γL
+1 )(µγ + γL
+2 )(µγ(τ η + τ u1) + γL
+2 (µτ η + τ u1))τ u2τ v
+
+−µ3(τ η + τ u1)2 = 0.
+The above expression shows that there are three sign changes in the sequence formed by the
+quintic’s coeﬃcients. Therefore, by Descartes’ rule of sign, there are up to three positive roots
+of the equation f(Λ1) = 0.
+Compute Cov[p2, u1]:
+Cov[p2, u1] = (1 −µ)Λ1(τ u1γL
+2 λ2 + (τ u1 + τ η)Var[v −p2|ΩL
+2 ])
+µτ u1(τ u1 + τ η)(γL
+2 λ2 + Var[v −p2|ΩL
+2 ])
+,
+(A.26)
+which is positive if and only if Λ1 > 0. Consider (A.24) and suppose that at equilibrium Λ∗
+1 < 0.
+From (A.26), Cov[p2, u1] < 0. Due to (A.24) this implies f(Λ∗
+1) < 0, which is impossible. Thus,
+at equilibrium, Λ∗
+1 > 0, and Cov[p2, u1] ≥0.
+39
+
+To sign the strategy coeﬃcient of a ﬁrst period liquidity trader, we use (A.22):
+bL
+1 = γL
+1
+Cov[p2, u1]τ u1 + Λ1
+Var[p2|u1]
+−1.
+(A.27)
+From (A.27) we obtain Var[p2|u1](1+bL
+1 )/γL
+1 = Cov[p2, u1]τ u1 +Λ1, which substituted in (A.24)
+yields
+f(Λ1) = Var[p2|u1]
+γL
+1
+ (µγ + γL
+1 )(1 + bL
+1 ) + γL
+1 (γτ vΛ1 −1)
+
+= 0.
+(A.28)
+Solving the above for Λ1 yields: Λ∗
+1 = (−µγ −bL
+1 (µγ + γL
+1 ))/γL
+1 γτ v. Since Λ∗
+1 > 0, the previous
+equation implies that at equilibrium bL
+1 < 0. Furthermore, using (A.27), 1 + bL
+1 > 0, which
+proves our result. Finally, deﬁning Λ∗
+2 ≡−λ2bL
+21 and rearranging (A.10) yields (16). Taking
+the limit for τ η →∞in ψ(Λ1) yields:
+lim
+τ η→∞ψ(Λ1) = 1 −Λ1(γL
+2 + µγ)(γL
+1 (γ + γL
+2 ) + µγ2(1 −µ))τ u2τ 2
+v
+γτ v(1 + µ(γL
+2 + µγ)2τ u2τ v)
+.
+(A.29)
+Identifying Λ1 yields
+Λ∗
+1 =
+1
+τ v(γ + (µγ + γL
+1 )(µγ + γL
+2 )(γL
+2 + γ)τ u2τ v).
+(A.30)
+2
+Proof of Corollary 3
+With a transparent market, solving for bL
+21 yields bL
+21 = −µγ/(γL
+2 +µγ). When the market is
+opaque, instead, replacing Λ∗
+2 in (17a) and solving for bL
+21 yields bL
+21 = −µγ/(γL
+2 + µγκ). Since
+κ > 1, the result follows.
+2
+Proof of Corollary 4
+From Proposition 2 it is immediate that Var[v −p2|ΩL
+2 ] is increasing in Λ1. Diﬀerentiating
+Cov[p2, u1] yields
+∂Cov[p2, u1]
+∂Λ1
+=
+1 −µ
+µ(τ u1 + τ η)+
+(1 −µ)τ η(Var[v −p2|ΩL
+2 ](γL
+2 λ2 + Var[v −p2|ΩL
+2 ]) + γL
+2 λ2Λ1Var[v −p2|ΩL
+2 ])
+µτ u1(τ u1 + τ η)(γL
+2 λ2 + Var[v −p2|ΩL
+2 ])2
+≥0,
+for µ ≤1.
+Finally, from Proposition 2 we know that bL
+21 is increasing in κ, and thus in
+Var[v −p2|ΩL
+2 ]. This implies that bL
+21 is increasing in Λ1.
+2
+40
+
+Proof of Proposition 3
+The equilibrium quintic (A.25) can be expressed as the sum of two polynomials: a quintic
+in Λ∗
+1 that multiplies τ u2, and a ﬁrst degree polynomial in Λ∗
+1 that does not depend on τ u2, as
+shown in the expression below:
+f(Λ1) =
+h
+Λ1(τ u1(γL
+2 λ2 + Var[v −p2|ΩL
+2 ]) + τ η(µγL
+2 λ2 + Var[v −p2|ΩL
+2 ]))(µγ + γL
+1 )×
+(A.31)
+(τ u1 + τ η)(γL
+2 λ2 + Var[v −p2|ΩL
+2 ])τ η + λ2
+2(γL
+2 τ ηλ2(1 −µ)γτ vΛ1)2(γτ vΛ1 −1)µ
+i
+τ u2τ 2
+v
++ λ2
+2(τ u1 + τ η)2µτ η(γτ vΛ1 −1).
+Inspection of the equilibrium mapping ψ(Λ1) shows that if we let τ u2 →∞, the corresponding
+equilibrium quintic is proportional to the term in square brackets in (A.31) (i.e., the one that
+multiplies τ u2). We ﬁrst concentrate on the analysis of this quintic:
+ˆf(Λ1) = Λ1(τ u1(γL
+2 λ2 + Var[v −p2|ΩL
+2 ]) + τ η(µγL
+2 λ2 + Var[v −p2|ΩL
+2 ]))(µγ + γL
+1 )×
+(A.32)
+(τ u1 + τ η)(γL
+2 λ2 + Var[v −p2|ΩL
+2 ])τ η + λ2
+2(γL
+2 τ ηλ2(1 −µ)γτ vΛ1)2(γτ vΛ1 −1)µ.
+First, note that ˆf(0) = 0, implying that when τ u2 →∞, Λ∗
+1 = 0 is an equilibrium of the model.
+Additionally, considering h(Λ1) ≡ˆf(Λ1)/Λ1, a quartic in Λ1, we can pin down parameter
+restrictions that ensure the existence of two additional equilibria. To see this, we start by
+evaluating h(·) at Λ1 = 0 obtaining:
+h(0) = τ η(µγ + γL
+1 )(µγ + γL
+2 )(τ u1 + τ η)(µγ(τ u1 + τ η) + γL
+2 (τ u1 + µτ η))
+γ2µ2
+> 0.
+(A.33)
+Next, evaluating h(·) at the point ¯Λ∗
+1 = 1/(1 −µ), yields
+h(¯Λ∗
+1) =
+τ η
+γ2τ 4
+η
+×
+(A.34)
+
+(µγ + γL
+1 )(µ(µγ + γL
+2 )(τ u1 + τ η) + γτ v)(µγL
+2 µ(τ u1 + µτ η) + γ(µ2(τ η + τ u1) + τ v))
+−µ(γL
+2 )2τ η(1 −µ −γτ v)
+
+,
+which is negative when the following parameter restrictions are satisﬁed:
+0 < µ < ¯µ ≡γL
+2 (
+p
+5γ2 + γL
+2 (2γ + γL
+2 ) −(γ + γL
+2 ))
+2γ2
+(A.35a)
+0 < τ v < ¯τ v ≡(1 −µ)(γL
+2 )2 −µγ(µγ + γL
+2 )
+γ(γL
+2 )2
+(A.35b)
+τ η > τ η ≡
+γ(µ(µγ + γL
+2 )τ u1 + γτ v)
+(1 −µ −γτ v)(γL
+2 )2 −µγ(µγ + γL
+2 )
+(A.35c)
+0 < γL
+1 < ¯γL
+1 ≡µ((γL
+2 )2τ η(1 −µ −γτ v) −µγγL
+2 (τ u1 + τ η) −γ2(τ v + µ2(τ u1 + τ η)))
+γτ v + µ(µγ + γL
+2 )(τ u1 + τ η)
+. (A.35d)
+41
+
+Therefore, when (A.35a)-(A.35d) hold, two additional equilibria exist (Λ∗
+1)I ∈(0, ¯Λ∗
+1), and
+(Λ∗
+1)L ∈(¯Λ∗
+1, 1/γτ v). This establishes that in the case τ u2 →∞, when (A.35a)-(A.35d) hold,
+three equilibria: 0 < (Λ∗
+1)I < ¯Λ∗
+1 < (Λ∗
+1)L < 1/γτ v, arise. Consider now the general quintic (A.31). First, note that
+f(0) = −τ η(τ η + τ u1)2
+µ(γτ v)2
+< 0.
+(A.36)
+Next, evaluating f(·) at Λ∗
+1 = µ/(1 −µ) < ¯Λ∗
+1 yields
+f(Λ∗
+1) = τ η
+µγ2
+(
+(τ η + τ u1)2(µγτ v −(1 −µ))
+(1 −µ)τ 2
+v
++
+τ u2
+1 −µ
+ 
+(γL
+2 )2τ η(µγτ v −(1 −µ)) +
+(A.37)
++ (µγ + γL
+1 )(γL
+2 (τ u1 + τ η) + µγ(τ u1 + τ η + τ v))(γL
+2 (τ u1 + µτ η) + µγ(τ u1 + τ η + τ v))
+!)
+.
+The sign of (A.37) is determined by the sign of the expression inside the curly brackets. As
+Λ∗
+1 < 1/γτ v, the term µγτ v−(1−µ) < 0. Also, by inspection, the expression within parentheses
+is positive provided that
+γ > γ ≡(1 −µ)τ η −γL
+1 (τ u1 + τ η)(τ u1 + µτ η)
+µ(τ vτ η + (τ u1 + τ η)(τ u1 + µτ η))
+.
+(A.38)
+Hence, if (A.38) holds, and
+τ u2 > τ u2 ≡
+ (τ 2
+v((γL
+2 )2(τ η(µγτ v −(1 −µ)) + (µγ + γL
+1 )(τ 1 + τ η)(τ u1 + µτ η)) + µγγL
+2 ×
+(µγ + γL
+1 )(τ 1 + τ v + τ η)(2τ u1 + τ η(1 + µ)) + (µγ + γL
+1 )(µγ)2(τ u1 + τ η + τ v)2))
+−1×
+ (τ u1 + τ η)2(1 −µ −µγτ v)
+
+,
+(A.39)
+expression (A.37) is positive. This establishes the existence of an equilibrium 0 < (Λ∗
+1)H < Λ∗
+1.
+Finally, provided (A.35a)-(A.35d) hold, f(¯Λ∗
+1) < 0, since ˆf(¯Λ∗
+1) < 0 and γτ v/(1 −µ) < 1.
+Therefore, we can conclude that when τ u2 < ∞, if (A.35a)-(A.35d), and (A.38), (A.39) hold,
+the model displays three equilibria:
+0 < (Λ∗
+1)H < Λ∗
+1 < (Λ∗
+1)I < ¯Λ∗
+1 < (Λ∗
+1)L <
+1
+γτ v
+.
+(A.40)
+2
+Proof of Corollary 5
+See the proof of Proposition 3.
+2
+Proof of Corollary 6
+Taking the limit for τ u2 →0 in the equilibrium quintic (A.25), and collecting terms yields
+lim
+τ u2→0 f(Λ1) = µ3(τ u1 + τ η)2(γτ vΛ1 −1) = 0.
+(A.41)
+42
+
+The above equation has a unique real solution Λ∗
+1 = 1/γτ v. Substituting this solution in (4b)
+implies that at this equilibrium bL
+1 = −1.
+2
+Proof of Corollary 7
+If we let τ η →0, (A.25) reads as follows:
+f(Λ1) = −µ3τ 2
+u1(1 −γτ vΛ1) + Λ1(γL
+1 + µγ)τ u2τ 2
+v(γτ vΛ2
+1(1 −µ)2 + µτ u1(γL
+2 + µγ))2 = 0.
+(A.42)
+By inspection, f(0) < 0, f(1/γτ v) > 0, and f ′(Λ1) > 0, which implies that in this case there
+exists a unique positive root. Evaluating (A.42) at (A.30) yields f(Λ∗
+1) > 0 which implies that
+a strongly opaque market is more liquid than a fully transparent one.
+2
+43
+
+Figure 11: When the market is opaque, an increase in µ can have a non-monotone eﬀect on
+market liquidity.
+44
+
+μ=0.2
+μ=0.22
+0
+1
+2
+3
+4
+5
+Λ1
+1
+2
+3
+4
+5
+ψ(Λ1)
+(a)
+γ=0.9
+γ=1
+0
+1
+2
+3
+4
+5
+Λ1
+1
+2
+3
+4
+5
+ψ(Λ1)
+(b)
+τv=0.1
+τv=0.2
+0
+1
+2
+3
+4
+5
+Λ1
+1
+2
+3
+4
+5
+ψ(Λ1)
+(c)
+γ1
+L=0.2
+γ1
+L=0.3
+0
+1
+2
+3
+4
+5
+Λ1
+1
+2
+3
+4
+5
+ψ(Λ1)
+(d)
+τu1=2
+τu1=3
+0
+1
+2
+3
+4
+5
+Λ1
+1
+2
+3
+4
+5
+ψ(Λ1)
+(e)
+Figure 12: Comparative statics. The ﬁgure displays the eﬀect of a change in the proportion of
+FD (Panel (a)), the risk tolerance of D and FD (Panel (b)), the volatility of the payoﬀ(Panel
+(c)), the risk tolerance of ﬁrst period traders (Panel (d)), and the volatility of the ﬁrst period
+endowment shock (Panel (e)). The continuous blue curve represents the function ψ(Λ1) for the
+set of parameters’ values used in Figure 6.
+45
+
+τη=1
+τη=15
+τη=25
+0
+1
+2
+3
+4
+5
+Λ1
+1
+2
+3
+4
+5
+ψ(Λ1)
+(a)
+γ2
+L=0.3
+γ2
+L=0.5
+γ2
+L=1
+0
+1
+2
+3
+4
+5
+Λ1
+1
+2
+3
+4
+5
+ψ(Λ1)
+(b)
+τu2=200
+τu2=400
+τu2=104
+τu2=1010
+0
+1
+2
+3
+4
+5
+Λ1
+1
+2
+3
+4
+5
+ψ(Λ1)
+(c)
+Figure 13: Comparative statics. The ﬁgure displays the eﬀect of a change in the precision of
+second period liquidity traders’ signal (Panel (a)), second period liquidity traders’ risk tolerance
+(Panel (b)), and the precision of second period liquidity traders’ endowment shock (Panel (c)).
+The other parameters’ values are as in Figure 6.
+46

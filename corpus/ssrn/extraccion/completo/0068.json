@@ -1,0 +1,109 @@
+{
+  "doc_id": 68,
+  "titulo": "Auditing the Audit Trails: A Cryptographic Framework and a Compliance Survey of 185 Published Machine-Learning Papers in Quantitative Finance",
+  "resumen_operativo": "Presenta mr-audit, un paquete Python open-source que genera audit trails inmutables por predicción de ML (SHA-256 hash chain) capturando git commit, versiones de librerías, input hash, parámetros, semilla aleatoria y predicción. Incluye replay engine, drift detection (KS + PSI) y export bundle para reguladores. Evalúa el paquete contra 5 herramientas existentes en 9 capacidades de audit trail y 3 benchmarks cuantitativos. Adicionalmente, audita 185 papers de ML en finanzas cuantitativas (1952-2025) con un rubric de 12 dimensiones de compliance: score estático medio 1.52/6 (full corpus) y 3.28/6 (con código disponible). Solo 11 papers (5.9%) obtienen 6/6. La pendiente temporal de compliance es +0.088 puntos/año. FinRL, FinGPT y Grinsztajn logran score perfecto.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "audit trail",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Registro inmutable por predicción de ML requerido por SR 11-7 y EU AI Act que captura: código, datos, modelo, entorno de cómputo y predicción. El paper propone MVAT-7 como estándar mínimo con 7 componentes.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "model risk management"},
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "SR 11-7 requires firms to maintain per-prediction audit trails: code state, data state, model state, compute environment, and the prediction itself, recorded with enough integrity protection that an external reviewer can verify any claim ex post"
+    },
+    {
+      "nombre": "model risk management",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Gestión de riesgo de modelo requerida por regulación bancaria (SR 11-7/OCC 2011-12). El paper argumenta que las herramientas actuales de ML (MLflow, W&B, DVC) no producen audit trails compatibles con SR 11-7.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "audit trail"},
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "Existing open-source ML tooling targets experiment tracking or artifact versioning; none produces an SR 11-7-shaped audit trail"
+    },
+    {
+      "nombre": "SHA-256",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Función hash criptográfica usada para encadenar registros de audit trail. Cada registro contiene el hash del registro anterior, formando una linked hash chain: alterar cualquier registro rompe la cadena completa, garantizando integridad.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "audit trail"}
+      ],
+      "cita_textual": "Records form a linked hash chain via SHA-256; tampering with any record breaks the chain"
+    },
+    {
+      "nombre": "drift detection",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Módulo de detección de drift incluido en mr-audit usando Kolmogorov-Smirnov test y Population Stability Index (PSI) para monitorear degradación de modelos en producción.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "audit trail"},
+        {"tipo": "MITIGA", "objeto": "model risk management"}
+      ],
+      "cita_textual": "a drift-detection module (Kolmogorov-Smirnov plus Population Stability Index)"
+    },
+    {
+      "nombre": "reproducibility",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Capacidad de reproducir exactamente una predicción de ML dado el estado completo del sistema. El paper incluye un replay engine que reconstruye predicciones a partir del audit trail. Solo el 13.8% de papers con código logran score completo de compliance.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "audit trail"},
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "mean static-rubric score of 1.52 of 6 (full corpus); mean of 3.28 of 6 conditional on the paper carrying a discoverable code link"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo que el audit trail busca mitigar: sin registro inmutable de qué modelo, datos y código generaron cada predicción, es imposible para un revisor externo verificar que los resultados reportados no son producto de overfitting o data snooping.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "audit trail"},
+        {"tipo": "CONTRADICE_A", "objeto": "walk-forward validation"}
+      ],
+      "cita_textual": "the static-six analysis followed a pre-specified plan; we are explicit that this is a pre-specified plan, not a timestamp-enforced pre-registration"
+    },
+    {
+      "nombre": "look-ahead bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo de información futura que el audit trail busca prevenir mediante el registro temporal inmutable de inputs, modelo y predicción con timestamping preciso.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "audit trail"}
+      ],
+      "cita_textual": "code state, data state, model state, compute environment, and the prediction itself, recorded with enough integrity protection"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La compliance estática media de 185 papers de ML en finanzas cuantitativas es 1.52 de 6 dimensiones auditables automáticamente. Condicionado a papers con enlace a código descubrible (80 de 185), el score sube a 3.28/6. Solo 11 papers (5.9% del corpus, 13.8% del subconjunto con código) obtienen el puntaje completo 6/6.",
+      "mercado": "N/A (meta-estudio de papers de ML en finanzas)",
+      "periodo": "1952-2025",
+      "magnitud": "Mean static score: 1.52/6 (N=185); 3.28/6 (N=80 con código); 11/185 (5.9%) full score; pendiente temporal: +0.088 score/año; 10% rot rate en URLs de código (21% non-GitHub)",
+      "condiciones": "Rubric de 12 dimensiones; 6 automatizadas en esta versión (código, datos, entorno, semilla, linaje de inputs, persistencia de modelo); 6 dimensiones de revisión manual diferidas a v2.1",
+      "robustez": "media",
+      "cita_textual": "a mean static-rubric score of 1.52 of 6 (full corpus, N = 185); 11 of 185 papers (5.9%) score the full 6 of 6"
+    },
+    {
+      "afirmacion": "El paquete mr-audit supera a 5 herramientas existentes (MLflow, W&B, DVC, etc.) en la producción de audit trails compatibles con SR 11-7, cubriendo 9 de 9 capacidades requeridas mientras que las alternativas cubren entre 2 y 5.",
+      "mercado": "N/A (benchmarking de herramientas)",
+      "periodo": "2025-2026",
+      "magnitud": "mr-audit: 9/9 capacidades; throughput, storage overhead y tamper-detection sensitivity reportados cuantitativamente en el paper (no detallados en el abstract)",
+      "condiciones": "Demostración sobre panel de volatility forecasting de 7 modelos; 6,825 registros de audit log generados",
+      "robustez": "media",
+      "cita_textual": "We compare mr-audit head-to-head against five existing tools on nine audit-trail capabilities and on three quantitative benchmarks"
+    },
+    {
+      "afirmacion": "La pendiente temporal de compliance en papers de ML financiero es +0.088 puntos/año en el rango [0.05, 0.20], estadísticamente no nula, indicando mejora gradual pero lenta en prácticas de reproducibilidad.",
+      "mercado": "N/A (meta-estudio)",
+      "periodo": "1952-2025",
+      "magnitud": "Temporal slope: +0.088 score units/year; 10% rot rate en código descubierto",
+      "condiciones": "Corpus incluye 119 papers del survey de Khan (2026b) + extensión arXiv q-fin 2024-2025; pipeline automatizado de scoring",
+      "robustez": "media",
+      "cita_textual": "the temporal slope of compliance is +0.088 score units per year (in the pre-specified range [0.05, 0.20], statistically nonzero)"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper no trata estrategias de trading sino infrastructure de audit trail para ML regulado. Es relevante como herramienta de gobernanza para cualquier sistema de trading algorítmico que use ML, pero no aporta señales ni estrategias directamente aplicables al ecosistema de ES intradía."
+  }
+}

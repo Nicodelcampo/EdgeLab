@@ -1,0 +1,933 @@
+Optimal Statistical Arbitrage for
+Generalized Ornstein-Uhlenbeck Process
+with L´evy Stable Distribution
+M´ıngsh¯u W´ang∗
+June 2024
+We explore optimal statistical arbitrage for the generalized Ornstein-Uhlenbeck
+(OU) process driven by a L´evy stable distribution. Former results by Bertram
+(2010) have limitations from the non-Gaussian nature of asset returns. By
+extending the framework to incorporate L´evy stable processes, which better
+capture the heavy-tailed characteristics of financial returns, we confirm that
+optimal entry and exit points lie symmetrically around the mean, consistent
+with previous Gaussian-based findings. We also derive first-passage time,
+expected return, and variance under the new L´evy stable driven process.
+1. Introduction
+Statistical arbitrage has been a popular strategy for trading since the 1980s (Feng et al.,
+2016). This strategy leverages fluctuations in price action irrespective of overall trends.
+Methods like error correction models give StatArb traders a convenient way to short
+relatively overvalued assets and long undervalued ones.
+Bertram (2010) derived optimal levels where StatArb traders could enter and exit
+trades. With a Gaussian driven Ornstein–Uhlenbeck (OU) process as basis, he discovered
+that optimal entry and exit levels in fact lie symmetrical around each other. His result
+contrasted popular StatArb strategies that used asymmetric entry and exit.
+His findings have a key weakness, however, in that he relied on Gaussian driven OU
+processes.
+It is well known (??Officer, 1972) that asset price returns follow a L´evy
+stable distribution more closely.
+Stein et al. (2021) discuss properties of generalized
+OU processes, including L´evy Stable and Poisson driven ones among others.
+Their
+framework lends a convenient base for us to extend Bertram’s results. We will show that
+his findings do extend to the general case where a L´evy stable distribution drives the
+∗The Open University UK
+adriel.ong@ou.ac.uk
+1
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5211809
+Preprint not peer reviewed
+
+OU process. Stephenson et al. (2021) note how conventional statistical arbitrage models
+fail from their use of an OU process with constant mean. While our results still rely on
+a stationary mean, we also derive in the appendix how orthogonal deviations from the
+time-varying mean give a stationary generalized OU process. We thus have unified all
+these frameworks to give optimal results for statistical arbitrage in the general case.
+2. Generalized OU Process
+The generalized OU process with a time-varying mean µ(t) and driven by a L´evy stable
+process Lt is defined by the stochastic differential equation (SDE):
+dXt = −α(Xt −µ(t))dt + dLt,
+(1)
+where:
+• α > 0 is the rate of mean reversion,
+• Lt is a L´evy stable process.
+L´evy stable processes are a class of stochastic processes with stationary independent
+increments and heavy-tailed distributions, which can model various types of market
+shocks better than Gaussian processes.
+To solve the SDE, we use the integrating factor method. We introduce an integrating
+factor I(t) = eαt:
+I(t)dXt = −αI(t)(Xt −µ(t))dt + I(t)dLt,
+(2)
+Substituting I(t) = eαt, we get:
+eαtdXt = −αeαt(Xt −µ(t))dt + eαtdLt.
+(3)
+Simplifying, we obtain:
+eαtdXt + αeαtXtdt = αeαtµ(t)dt + eαtdLt,
+(4)
+Recognizing that the left-hand side is the differential of eαtXt:
+d(eαtXt) = αeαtµ(t)dt + eαtdLt.
+(5)
+Integrating both sides from 0 to t:
+eαtXt = X0 +
+Z t
+0
+αeαsµ(s)ds +
+Z t
+0
+eαsdLs,
+(6)
+Solving for Xt:
+Xt = e−αtX0 + e−αt
+Z t
+0
+αeαsµ(s)ds + e−αt
+Z t
+0
+eαsdLs.
+(7)
+This solution plays into our derivation of first-passage times and trade lengths.
+2
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5211809
+Preprint not peer reviewed
+
+3. First-Passage Time
+To keep our analysis simple, we use a stationary mean. Appendix B explains how one
+can use orthogonal deviations to construct a generalized OU process with stationary
+mean from one with a time varying mean.
+For statistical arbitrage, we are interested in the first-passage times and trade lengths.
+Let a be the entry level and m be the exit level. The first-passage time from a to m is
+defined as:
+T1 = inf{t > 0 : Xt ≥m | X0 = a},
+(8)
+and from m to a:
+T2 = inf{t > 0 : Xt ≤a | X0 = m}.
+(9)
+Given that Xt is driven by a L´evy stable process, exact closed-form solutions for the
+distributions of T1 and T2 are challenging.
+However, approximations can be derived
+using the properties of stable distributions.
+The total trade length T is given by T = T1 + T2. The expected trade length and its
+variance are expressed as:
+E[T] = E[T1] + E[T2],
+(10)
+V [T] = V [T1] + V [T2].
+(11)
+For a L´evy stable process, the first-passage time T1 follows a stable law, and its
+moments can be expressed in terms of the parameters of the stable distribution. Let αL
+and βL be the stability and skewness parameters of the L´evy stable process. The mean
+and variance of T1 can be approximated by:
+E[T1] ≈aα
+c1
+,
+(12)
+V [T1] ≈a2α
+c2
+,
+(13)
+where c1 and c2 are constants dependent on αL and βL.
+By definition of the first-passage time T1, LT1 = a. Using the scaling property of the
+L´evy stable process:
+a ∼T 1/αL
+1
+,
+thus,
+E[T1] ∼aαL.
+3
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5211809
+Preprint not peer reviewed
+
+The first-passage time T1 has a distribution related to the inverse of a L´evy stable
+distribution. Specifically, if Lt is a L´evy stable process, T1 is distributed according to a
+stable distribution with parameters αT = 1/αL and βT = −βL.
+We know that the moments of a stable distribution in terms of the stability parameter
+α. For a stable distribution with parameter α:
+E[Xk] =
+(
+0
+if k̸ = n/α,
+c · Γ(1 −k/α)
+if k = n/α.
+For k = αL:
+E[T1] = aαL · Γ(1 −αL)
+Γ(1 + αL).
+Therefore,
+c1 = Γ(1 + αL)
+Γ(1 −αL).
+For the second moment
+E[T 2
+1 ] ∼a2αL,
+the variance is
+V [T1] = E[T 2
+1 ] −(E[T1])2 ∼a2αL
+c2
+,
+so we have that
+c2 = Γ(1 + 2αL)
+Γ(1 −2αL).
+Similarly, for T2, we have
+E[T2] ≈mα
+c1
+,
+(14)
+V [T2] ≈m2α
+c2
+,
+(15)
+with the same constants c1 and c2 as derived for T1.
+4. Expected Return and Variance
+The return per trade r(a, m, c) is given by:
+r(a, m, c) = (m −a −c)
+where:
+4
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5211809
+Preprint not peer reviewed
+
+• a is the entry level,
+• m is the exit level,
+• c is the transaction cost per trade.
+This expression represents the net gain from executing a trade, considering the cost
+of entering and exiting the trade.
+4.1. Expected Return per Unit Time
+To derive the expected return per unit time, we start by considering the expected trade
+length E[T], which represents the average duration of one complete trade cycle.
+We can approximate the expected number of trades per unit time as the reciprocal
+of the expected trade length. We justify this choice using renewal theory. The renewal
+function M(t) denotes the expected number of renewals by time t. Trades would reflect
+renewals in our case since we go from open to closed orders. For a renewal process, the
+renewal function approximates the expected trade length E[T], the average duration of
+one complete trade cycle.
+M(t) ≈
+t
+E[T]
+for large t.
+Taking the derivative with respect to t, we get the expected rate of renewals:
+dM(t)
+dt
+≈
+1
+E[T]
+This shows that the average number of trades per unit time can be approximated by the
+reciprocal of the expected trade length:
+E
+ 1
+T
+
+≈
+1
+E[T]
+For a L´evy stable process, E[T] can be approximated as:
+E[T] = E[T1] + E[T2]
+(16)
+where T1 and T2 are the first-passage times from a to m and from m to a, respectively.
+The first-passage time T1 follows a stable law. Using the properties of stable distributions:
+E[T1] ≈aα
+c1
+(17)
+E[T2] ≈mα
+c1
+(18)
+We derived approximations for c1 in the previous section. Combining these results:
+E[T] ≈aα
+c1
++ mα
+c1
+(19)
+5
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5211809
+Preprint not peer reviewed
+
+Using the fact that
+µ(a, m, c) = r(a, m, c) · E
+ 1
+T
+
+≈r(a, m, c) ·
+1
+E[T],
+(20)
+we have
+µ(a, m, c) ≈m −a −c
+E[T]
+= m −a −c
+aα
+c1 + mα
+c1
+(21)
+Simplifying, we get:
+µ(a, m, c) = c1(m −a −c)
+aα + mα
+.
+(22)
+We thus have these lemmas.
+Lemma 1 (Scaling Property of First-Passage Time T1). For a generalized OrnsteinUhlenbeck (OU) process Xt driven by a L´evy stable process Lt with stability parameter
+αL, the first-passage time T1 from an entry level a to an exit level m scales as:
+T1 ∼
+ a
+|m|
+αL
+Proof. L´evy stable processes exhibit self-similarity, meaning that for any scaling factor
+c > 0, the process cLt has the same distribution as Lc1/αLt. This property is pivotal in
+analyzing the behavior of first-passage times under scaling transformations.
+Consider scaling the entry level a by a factor c, resulting in a new entry level a′ = ca,
+and correspondingly scaling the exit level m to m′ = cm. The first-passage time for this
+scaled process is T ′
+1.
+Given the self-similarity of Lt, the scaled process X′
+t = cXc1/αLt satisfies the SDE:
+dX′
+t = −α(X′
+t −µ′(t))dt + dL′
+t
+where µ′(t) = cµ(c1/αLt) and L′
+t = cLc1/αLt, which preserves the L´evy stable nature with
+the same stability parameter αL.
+The first-passage time T ′
+1 for the scaled process satisfies:
+X′
+T ′
+1 = m′ = cm
+⇒
+X′
+T ′
+1 = cXT1 = cm
+Therefore:
+cXT1 = cm
+⇒
+XT1 = m
+This implies that:
+T ′
+1 = cαLT1
+Hence:
+T1 =
+ a
+|m|
+αL
+T ′
+1
+The first-passage time T1 scales with
+
+a
+|m|
+αL, establishing the scaling relationship:
+T1 ∼
+ a
+|m|
+αL
+6
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5211809
+Preprint not peer reviewed
+
+Lemma 2 (Distribution of First-Passage Time T1 as a Stable Law). Under the generalized OU process driven by a L´evy stable process Lt with stability parameter αL and
+skewness parameter βL, the first-passage time T1 from level a to level m approximately
+follows a stable distribution with stability parameter αT = 1/αL and skewness parameter
+βT = −βL:
+T1 ∼Stable
+
+αT = 1
+αL
+, βT = −βL
+
+Proof. The generalized OU process driven by a L´evy stable process inherits the heavytailed characteristics of the driving process. The first-passage time T1 is a functional of
+the process’s path and, due to the scaling property established in Lemma 1, is expected
+to exhibit stable behavior.
+From Lemma 1, T1 ∼
+
+a
+|m|
+αL.
+If we consider T ′
+1 as the first-passage time for a
+unit-scaled process (i.e., a′ = 1, m′ = 1), then:
+T1 =
+ a
+|m|
+αL
+T ′
+1
+Assuming T ′
+1 follows a stable distribution Stable(αT , βT ), the scaling implies that T1 also
+follows a stable distribution with:
+αT = 1
+αL
+,
+βT = −βL
+This inversion in stability and skewness parameters arises from the reciprocal scaling
+and the directional nature of the first-passage time relative to the process’s movement.
+The characteristic function of a stable distribution is given by:
+ϕT1(u) = exp
+n
+−γ|u|αT
+h
+1 −iβT sign(u) tan
+παT
+2
+io
+Given the scaling relationship, the characteristic function of T1 aligns with that of a
+stable distribution with the specified parameters αT and βT .
+Through scaling and alignment of characteristic functions, T1 is approximated to follow
+a stable distribution with αT = 1/αL and βT = −βL.
+T1 ∼Stable
+
+αT = 1
+αL
+, βT = −βL
+
+This is an approximation based on scaling properties and assumes that the first-passage
+time inherits the stable characteristics of the driving process in an inverted manner.
+Empirical validation through simulations is recommended to assess the accuracy of this
+approximation.
+Lemma 3 (Moments of First-Passage Time T1). For the first-passage time T1 following
+a stable distribution with stability parameter αT = 1/αL and skewness parameter βT =
+−βL, the expectation E[T1] is given by:
+E[T1] =
+ a
+|m|
+αL
+· Γ(1 −αL)
+Γ(1 + αL)
+7
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5211809
+Preprint not peer reviewed
+
+Proof. For a stable distribution Stable(αT , βT ), moments of order k exist only if k < αT .
+Given αT = 1/αL, the first moment (mean) exists provided:
+1 < 1
+αL
+⇒
+αL < 1
+The k-th moment of a stable distribution, when it exists, can be expressed using
+Gamma functions:
+E[T k
+1 ] = γk · Γ(1 −kαT )
+Γ(1 + kαT )
+Substituting k = 1 and αT = 1/αL:
+E[T1] = γ · Γ(1 −αL)
+Γ(1 + αL)
+From Lemma 1, the scaling relationship implies:
+γ =
+ a
+|m|
+αL
+Substituting γ into the moment expression:
+E[T1] =
+ a
+|m|
+αL
+· Γ(1 −αL)
+Γ(1 + αL)
+The expectation of the first-passage time T1 is derived as:
+E[T1] =
+ a
+|m|
+αL
+· Γ(1 −αL)
+Γ(1 + αL)
+This expression holds under the condition αL < 1, ensuring the existence of the first
+moment.
+4.2. Variance of Return per Unit Time
+The variance of the return per unit time σ2(a, m, c) takes into account the variability
+of the trade length. For a renewal process, the variance of the reciprocal of the trade
+length can be approximated by:
+V
+ 1
+T
+
+≈V [T]
+E[T]3
+This approximation arises from renewal theory and can be derived using the delta method
+applied to the first-order Taylor expansion of 1/T.
+Consider the Taylor expansion of 1/T around E[T]:
+1
+T ≈
+1
+E[T] −T −E[T]
+E[T]2
+8
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5211809
+Preprint not peer reviewed
+
+Taking the variance of both sides, we get:
+V
+ 1
+T
+
+≈
+
+1
+E[T]2
+2
+V [T] = V [T]
+E[T]3
+Given this approximation, we get the variance of the return per unit time as
+σ2(a, m, c) = r(a, m, c)2 · V
+ 1
+T
+
+≈r(a, m, c)2V [T]
+E[T]3
+= (m −a −c)2V [T]
+E[T]3
+.
+Lemma 4 (Variance of First-Passage Time T1). For the first-passage time T1 following
+a stable distribution with stability parameter αT = 1/αL and skewness parameter βT =
+−βL, the variance V [T1] is given by:
+V [T1] =
+ a
+|m|
+2αL
+· Γ(1 −2αL)
+Γ(1 + 2αL)
+Proof. For a stable distribution Stable(αT , βT ), the second moment (variance) exists
+only if:
+2 < αT
+⇒
+αL < 1
+2
+Using the moment formula for stable distributions:
+E[T 2
+1 ] = γ2 · Γ(1 −2αT )
+Γ(1 + 2αT )
+Substituting αT = 1/αL:
+E[T 2
+1 ] = γ2 · Γ(1 −2αL)
+Γ(1 + 2αL)
+From Lemma 1:
+γ =
+ a
+|m|
+αL
+The variance V [T1] is:
+V [T1] = E[T 2
+1 ] −(E[T1])2
+Substituting the expressions from Lemma 3 and the current lemma:
+V [T1] =
+ a
+|m|
+2αL
+· Γ(1 −2αL)
+Γ(1 + 2αL) −
+ a
+|m|
+αL
+· Γ(1 −αL)
+Γ(1 + αL)
+2
+To simplify, define:
+c2 = Γ(1 + 2αL)
+Γ(1 −2αL).
+Then:
+V [T1] =
+ a
+|m|
+2αL
+· 1
+c2
+−
+ a
+|m|
+2αL
+·
+Γ(1 −αL)
+Γ(1 + αL)
+2
+.
+9
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5211809
+Preprint not peer reviewed
+
+For the purposes of approximation, one may focus on the leading term:
+V [T1] ≈
+
+a
+|m|
+2αL
+c2
+The variance of the first-passage time T1 is approximated as:
+V [T1] ≈
+ a
+|m|
+2αL
+· 1
+c2
+where
+c2 = Γ(1 + 2αL)
+Γ(1 −2αL)
+This approximation holds under the condition αL < 1
+2, ensuring the existence of the
+second moment.
+5. Optimal Trading Strategy
+5.1. Expected Return
+For expected returns, we show that Bertram’s results extend to our general model of a
+time varying mean reverting process driven by a L´evy Stable distribution.
+Proposition 1 (Optimal Entry and Exit Levels). For the generalized OU process driven
+by a L´evy stable process with stability parameter αL, the optimal entry level a∗and exit
+level m∗that maximize the expected return per unit time µ(a, m, c) satisfy the following
+system of equations:
+(
+−αaα−1(m −a −c) = 1
+αmα−1(m −a −c) = 1
+Proof. The expected return per unit time is defined as:
+µ(a, m, c) = c1(m −a −c)
+aα + mα
+where c1 = Γ(1+αL)
+Γ(1−αL).
+To find the optimal a∗and m∗, we set the partial derivatives of µ(a, m, c) with respect
+to a and m to zero. Taking the partial derivative with respect to a:
+∂µ
+∂a = −c1αaα−1(m −a −c)
+(aα + mα)2
+−
+c1
+aα + mα = 0.
+Simplifying:
+−αaα−1(m −a −c) = 1.
+Now take the partial derivative with respect to m:
+∂µ
+∂m = c1αmα−1(m −a −c)
+(aα + mα)2
++
+c1
+aα + mα = 0.
+10
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5211809
+Preprint not peer reviewed
+
+Simplifying:
+αmα−1(m −a −c) = 1.
+The optimal levels a∗and m∗must satisfy:
+(
+−αaα−1(m −a −c) = 1
+(Equation 1)
+αmα−1(m −a −c) = 1
+(Equation 2)
+We now derive the relationship between a∗and m∗. From Equation 1:
+m −a −c = −
+1
+αaα−1
+(Equation 3)
+From Equation 2:
+m −a −c =
+1
+αmα−1
+(Equation 4)
+Equating Equation 3 and Equation 4:
+−
+1
+αaα−1 =
+1
+αmα−1
+⇒
+−mα−1 = aα−1
+Solving for m∗in Terms of a∗:
+mα−1 = −aα−1
+⇒
+m = −a
+The system of equations inherently leads to the condition m∗= −a∗, indicating that
+under the current optimization framework, the optimal entry and exit levels are symmetric.
+Thus we have symmetrical entry and exit levels. One must find the exact levels by
+numerical optimization and backtesting. Our results pose great importance for practitioners, since it justifies use of Bertram’s results with Stephenson et al.’s suggestion of
+using Kalman Filters or other smoothing methods within Stein et al.’s generalized OU
+process framework.
+5.2. Sharpe Ratio
+The variance of the trade length V [T] is:
+V [T] = a2α + m2α
+c2
+.
+The variance of the return per unit time is:
+σ2(a, m, c) = (m −a −c)2V [T]
+E[T]3
+=
+(m −a −c)2 a2α+m2α
+c2
+
+aα+mα
+c1
+3
+= (m −a −c)2(a2α + m2α)c3
+1
+c2(aα + mα)3
+.
+11
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5211809
+Preprint not peer reviewed
+
+Figure 1: One clearly sees local maxima in the Sharpe Ratio whenever m = −a.
+Thus, the Sharpe ratio is:
+S(a, m, c) = µ(a, m, c) −rf
+σ(a, m, c)
+=
+c1(m−a−c)
+aα+mα
+−rf
+q
+(m−a−c)2(a2α+m2α)c3
+1
+c2(aα+mα)3
+.
+Simplifying further, we get:
+S(a, m, c) = c1(m −a −c) −rf(aα + mα)
+(m −a −c)
+q
+c3
+1
+c2
+q
+a2α+m2α
+(aα+mα)3
+.
+This term proves quite hard to perform differentiation on. Thus, we use numerical
+methods to show that m = −a. Algorithm 5.2 has our pseudocode for showing this. We
+visualize our results in Figure 1, where one clearly sees local maxima whenever m = −a.
+6. Conclusion
+We have shown that the optimal statistical arbitrage strategy for a generalized OU
+process with a L´evy stable process has symmetric entry and exit levels a and m that
+maximize expected return and Sharpe ratio. We have thus extended Bertram’s results
+into a general case. Statistical arbitrage practitioners can still rely on finding symmetric
+entry and exit even as asset returns follow a L´evy stable distribution.
+The analytical derivation above concludes that m∗= −a∗, enforcing symmetry in the
+optimal trading strategy. However, this outcome emerges from the specific structure of
+the expected return function µ(a, m, c) and the underlying assumptions. The current
+formulation of µ(a, m, c) does not explicitly account for the skewness βL of the driving
+process. To allow for asymmetric optimal levels, future research may modify the expected
+return to incorporate the directional bias introduced by βL. For example, one introduce
+weighting factors that reflect the skewness:
+µ(a, m, c) = c1(m −a −c)(1 + βL)
+aα + mα
+.
+This modification breaks the inherent symmetry, allowing m∗and a∗to diverge.
+12
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5211809
+Preprint not peer reviewed
+
+Algorithm 1 Numerical Partial Differentiation of the Sharpe Ratio
+1: Input:
+2: arange ←linspace(−10, 10, 50)
+▷Investment amount range
+3: mrange ←linspace(−10, 10, 50)
+▷Margin range
+4: c, c1, c2, rf, α
+▷Financial parameters
+5: h ←1 × 10−5
+▷Step size for differentiation
+6: Output: Derivative matrices for ∂S
+∂a and ∂S
+∂m
+7:
+8: procedure SharpeRatio(a, m, c, c1, c2, rf, α)
+9:
+E[T] ←aα+mα
+c1
+10:
+V [T] ←a2α+m2α
+c2
+11:
+µ ←c1·(m−a−c)
+E[T]
+12:
+σ2 ←(m−a−c)2·V [T]·c13
+(E[T])3·c2
+13:
+σ ←
+√
+σ2
+14:
+return µ−rf
+σ
+15: end procedure
+16:
+17: procedure NumericalDerivative(a, m, c, c1, c2, rf, α, h)
+18:
+Derivativea ←SharpeRatio(a+h,m,c,c1,c2,rf,α)−SharpeRatio(a−h,m,c,c1,c2,rf,α)
+2h
+19:
+Derivativem ←SharpeRatio(a,m+h,c,c1,c2,rf,α)−SharpeRatio(a,m−h,c,c1,c2,rf,α)
+2h
+20:
+return Derivativea, Derivativem
+21: end procedure
+22:
+23: for a in arange do
+24:
+for m in mrange do
+25:
+da, dm ←NumericalDerivative(a, m, c, c1, c2, rf, α, h)
+26:
+Store da and dm in derivative matrices
+27:
+end for
+28: end for
+13
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5211809
+Preprint not peer reviewed
+
+With the modified expected return, one may then set up a new optimization problem:
+max
+a,m
+S(a, m, c) = µ(a, m, c) −rf
+σ(a, m, c)
+The first-order conditions will now yield a different relationship between a∗and m∗,
+potentially allowing for m∗̸ = −a∗. Given the complexity introduced by asymmetry,
+analytical solutions may no longer enforce m∗= −a∗. Instead, employ numerical optimization techniques to identify the optimal a∗and m∗that maximize the Sharpe ratio.
+7. Data Availability Statement
+No data was used for this study, thus no data is available.
+8. Conflict of Interest Statement
+The author declares that he has no known competing financial interests or personal
+relationships that could have appeared to influence the work reported in this paper.
+9. Funding Statement
+The work reported in this paper was completely self-funded.
+References
+Bertram, W. K. (2010).
+Analytic solutions for optimal statistical arbitrage trading.
+Physica A: Statistical mechanics and its applications, 389(11):2234–2243.
+Feng, Y., Palomar, D. P., et al. (2016). A signal processing perspective on financial
+engineering. Foundations and Trends® in Signal Processing, 9(1–2):1–231.
+Officer, R. R. (1972). The distribution of stock returns. Journal of the american statistical association, 67(340):807–812.
+Stein, J., Lopes, S., and Medino, A. (2021). A generalization of the ornstein-uhlenbeck
+process: Theoretical results, simulations and parameter estimation. arXiv preprint
+arXiv:2108.06374.
+Stephenson, J., Vanstone, B., and Hahn, T. (2021).
+A unifying model for statistical arbitrage: Model assumptions and empirical failure. Computational Economics,
+58(4):943–964.
+14
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5211809
+Preprint not peer reviewed
+
+A. First-Passage Time Approximations
+B. Transforming to a Stationary Process
+To make the generalized OU process stationary, we redefine the process by considering
+deviations from the time-varying mean. Define Yt = Xt −µ(t). Then:
+dYt = dXt −dµ(t).
+(23)
+Substituting the original SDE:
+dYt = [−α(Xt −µ(t))dt + dLt] −˙µ(t)dt.
+(24)
+Since Yt = Xt −µ(t):
+dYt = −αYtdt + dLt −˙µ(t)dt.
+(25)
+To make Yt stationary, we need to remove the time dependency introduced by ˙µ(t).
+We introduce a new process Zt that incorporates the effect of the time-varying mean
+such that Zt is stationary.
+Define Zt as:
+Zt = Yt + f(t),
+(26)
+where f(t) is a function chosen to cancel out the ˙µ(t) term. Substituting Yt = Zt−f(t)
+into the SDE for Yt:
+d(Zt −f(t)) = −α(Zt −f(t))dt + dLt −˙µ(t)dt.
+(27)
+Differentiating f(t) and rearranging terms:
+dZt −˙f(t)dt = −α(Zt −f(t))dt + dLt −˙µ(t)dt.
+(28)
+For Zt to be stationary, the term involving ˙µ(t) must be canceled by ˙f(t). Set:
+˙f(t) = αf(t) + ˙µ(t).
+(29)
+Solving this differential equation for f(t):
+f(t) = eαt
+
+f(0) +
+Z t
+0
+e−αs ˙µ(s)ds
+
+.
+(30)
+For simplicity, let f(0) = 0, then:
+f(t) = eαt
+Z t
+0
+e−αs ˙µ(s)ds.
+(31)
+Now substituting f(t) back into the equation for Zt:
+15
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5211809
+Preprint not peer reviewed
+
+dZt = −αZtdt + dLt.
+(32)
+We thus have a new generalized OU process Zt, which has stationary increments and
+is easier to analyze.
+C. Simplified Sharpe Ratio where m = −a
+Given the solution m = −a:
+E[T] = aα + (−a)α
+c1
+= 2aα
+c1
+,
+V [T] = a2α + (−a)2α
+c2
+= 2a2α
+c2
+,
+µ(a, c) = c1(−a −a −c)
+2aα
+= −c1(2a + c)
+2aα
+,
+σ2(a, c) = (2a + c)2c3
+12a2α
+c2(2aα)3
+= 2(2a + c)2c3
+1a2α
+c28a3α
+= (2a + c)2c3
+1
+4c2aα
+,
+σ(a, c) =
+s
+(2a + c)2c3
+1
+4c2aα
+= (2a + c)
+p
+c3
+1
+2√c2aα
+.
+Thus, the Sharpe ratio is
+S(a, c) =
+−c1(2a+c)
+2aα
+−rf
+(2a+c)√
+c3
+1
+2√c2aα
+.
+Simplifying further,
+(2a + c)
+p
+c3
+1
+2√c2aα
+= (2a + c)
+p
+c3
+1
+2√c2
+√
+aα
+= (2a + c)
+p
+c3
+1
+2√c2aα/2 ,
+S(a, c) = −c1(2a + c) −2aαrf
+(2a + c)
+√
+c3
+1
+2√c2aα/2
+,
+S(a, c) = −c1(2a + c) −2aαrf
+(2a + c)
+· 2√c2aα/2
+p
+c3
+1
+.
+The complexity of these derivatives suggests that numerical optimization techniques
+are needed to find the exact solutions for a and m. Numerical methods such as gradient
+descent or other optimization algorithms can be used to find the optimal values that
+maximize the expected return and the Sharpe ratio.
+16
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5211809
+Preprint not peer reviewed
+
+Preprint not peer reviewed

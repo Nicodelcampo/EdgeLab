@@ -1,0 +1,177 @@
+{
+  "doc_id": 56,
+  "titulo": "Application of Path Integral in Quantum Mechanics and Statistical Mechanics to Quantitative Finance: Explicit Approximate Expression of Probability Distribution of the Local Volatility Model",
+  "resumen_operativo": "El paper traslada el formalismo de integral de caminos de mecánica cuántica al modelo de volatilidad local, derivando una fórmula aproximada (semi-clásica) para la volatilidad de la distribución del activo como promedio armónico de la volatilidad local a lo largo de la trayectoria clásica. Es un aporte de pricing/calibración de derivados (no de trading intradía de futuros), útil para quien calibra superficies de volatilidad o quiere entender atajos analíticos al estilo SABR/Hagan. La validación empírica es un único experimento de Monte Carlo con ajuste pobre en el sesgo (skew), lo que limita su aplicabilidad práctica inmediata.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "path integral",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Formalismo de mecánica cuántica que representa la amplitud de transición como una suma sobre todos los caminos posibles; el paper lo usa para derivar el propagador del modelo de volatilidad local.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "local volatility model"},
+        {"tipo": "USA", "objeto": "propagator"}
+      ],
+      "cita_textual": "The transition amplitude is given in path integral formulation by"
+    },
+    {
+      "nombre": "propagator",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Función que da la distribución de probabilidad del valor futuro del activo x(T) dado su valor inicial x(t); es la variable central que el paper deriva vía integral de caminos.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "probability distribution"},
+        {"tipo": "PARTE_DE", "objeto": "local volatility model"}
+      ],
+      "cita_textual": "𝑃(𝑡, 𝑥(𝑡); 𝑇, 𝑥(𝑇)): Propagator gives the probability distribution of 𝑥(𝑇) at time 𝑇,  when at time 𝑡, the state is 𝑥(𝑡)."
+    },
+    {
+      "nombre": "local volatility model",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo donde la volatilidad depende del tiempo y del nivel del activo, dx(t)=σ(t,x(t))dW(t); se usa habitualmente para capturar el skew de volatilidad implícita.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Dupire formula"},
+        {"tipo": "EQUIVALE_A", "objeto": "stochastic volatility model"},
+        {"tipo": "APLICA_A", "objeto": "volatility skew"}
+      ],
+      "cita_textual": "the local volatility model is frequently used to capture the volatility skew"
+    },
+    {
+      "nombre": "Dupire formula",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método estándar de calibración del modelo de volatilidad local a partir de precios de opciones de mercado.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "local volatility model"}
+      ],
+      "cita_textual": "The local volatility model is typically calibrated via the Dupire formula"
+    },
+    {
+      "nombre": "semi-classical approximation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Expansión perturbativa alrededor de la trayectoria clásica (de volatilidad cero) que el paper aplica a la representación de integral de caminos del modelo de volatilidad local para obtener una fórmula analítica aproximada de la distribución.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "path integral"},
+        {"tipo": "PREDICE", "objeto": "distribution volatility"}
+      ],
+      "cita_textual": "The semi-classical approximation is applied to the Local Volatility model, and the approximated probability distribution of it is derived."
+    },
+    {
+      "nombre": "distribution volatility",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Volatilidad efectiva que caracteriza la distribución del activo bajo la aproximación semi-clásica; se calcula como promedio armónico de la varianza de la volatilidad local a lo largo de la trayectoria recta entre spot y strike.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "local volatility model"},
+        {"tipo": "MEJORA_A", "objeto": "arithmetic average of local volatility"}
+      ],
+      "cita_textual": "the square of the volatility of the distribution is the harmonic average of the square of the local volatility"
+    },
+    {
+      "nombre": "harmonic average",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Tipo de promedio (no aritmético) que, según el paper, es el correcto para combinar la varianza de la volatilidad local a lo largo de la trayectoria clásica y obtener la volatilidad de la distribución.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "arithmetic average of local volatility"},
+        {"tipo": "PARTE_DE", "objeto": "distribution volatility"}
+      ],
+      "cita_textual": "the average is not the arithmetic average or its continuous limit, but it is a harmonic average"
+    },
+    {
+      "nombre": "classical trajectory",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Camino que minimiza la acción en la representación de integral de caminos; en el límite de volatilidad pequeña, la partícula sigue esta trayectoria, sobre la cual se promedia la volatilidad local.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "path integral"},
+        {"tipo": "PARTE_DE", "objeto": "semi-classical approximation"}
+      ],
+      "cita_textual": "The path which minimize the action gives classical trajectory."
+    },
+    {
+      "nombre": "SABR model",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo estocástico de volatilidad (Stochastic Alpha Beta Rho) usado como referencia comparativa; su fórmula aproximada de Hagan también exhibe un promedio armónico en el límite de correlación cero y baja vol de vol.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "local volatility model"},
+        {"tipo": "USA", "objeto": "harmonic average"}
+      ],
+      "cita_textual": "Hagan et. al. proposed an approximate formula 𝜎𝐻𝑎𝑔𝑎𝑛(𝑇, 𝐾) and analyzed the dynamics of the implied volatility surface"
+    },
+    {
+      "nombre": "stochastic volatility model",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Familia de modelos donde la volatilidad es un proceso aleatorio propio; el paper señala que su distribución puede mapearse al modelo de volatilidad local, por lo que sus resultados también aplicarían a su calibración.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "local volatility model"}
+      ],
+      "cita_textual": "the distribution of the stochastic volatility model can be mapped to the local volatility model"
+    },
+    {
+      "nombre": "implied volatility",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Volatilidad extraída de precios de opciones bajo el modelo (normal) de Black; el paper aclara que difiere de la volatilidad de la distribución derivada en presencia de skew.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "distribution volatility"}
+      ],
+      "cita_textual": "the distribution volatility is different to the implied volatility of the (normal) Black model, in the skew surface"
+    },
+    {
+      "nombre": "volatility skew",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Dependencia del nivel de volatilidad implícita respecto del strike; el modelo de volatilidad local se usa para capturarla, y el paper analiza casos de skew positivo y negativo.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "local volatility model"}
+      ],
+      "cita_textual": "the local volatility model is frequently used to capture the volatility skew"
+    },
+    {
+      "nombre": "Monte Carlo simulation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método numérico usado como benchmark de referencia (100.000 caminos) para contrastar la precisión de la aproximación semi-clásica del propagador.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "semi-classical approximation"}
+      ],
+      "cita_textual": "The distribution function of the model is calculated in our semi-classical approximation and compared to the Monte Carlo simulation with 100,000 paths."
+    },
+    {
+      "nombre": "Brownian motion",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Proceso de volatilidad constante dx(t)=σdW(t) que en la representación de integral de caminos corresponde a una partícula libre en mecánica cuántica; sirve de caso base antes de introducir volatilidad local.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "local volatility model"},
+        {"tipo": "USA", "objeto": "path integral"}
+      ],
+      "cita_textual": "The Brownian motion corresponds to free particles in Quantum Mechanics."
+    },
+    {
+      "nombre": "skewness",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Tercer momento estandarizado de la distribución del activo, usado como métrica de precisión numérica para comparar la aproximación semi-clásica contra la simulación Monte Carlo.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "semi-classical approximation"}
+      ],
+      "cita_textual": "skew ((1/𝑁∑(𝑥(𝑖) −𝑚𝑒𝑎𝑛)3𝑁𝑖) of  both in our approximation and Monte Carlo simulation are caculated"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "En el caso de skew positivo, la aproximación semi-clásica de integral de caminos subestima fuertemente el sesgo (skewness) de la distribución respecto de la simulación Monte Carlo de referencia.",
+      "mercado": "no especificado (modelo sintético normal de volatilidad local, sin activo real)",
+      "periodo": "no especificado",
+      "magnitud": "skew aproximación semi-clásica = 0.15219106163181195 vs. skew Monte Carlo = 0.22236858294930395 (subestimación ≈32%)",
+      "condiciones": "modelo de volatilidad local sintético σ_loc(t,x)=a+bx+cx² con a=0.3, b=0.082, c=0.008; comparación in-sample contra 100.000 trayectorias Monte Carlo, sin datos de mercado, sin costos, un solo escenario",
+      "robustez": "baja",
+      "cita_textual": "In the semi-classical approximation of path integral, it is 0.15219106163181195, and in the Monte Carlo simulation, it is 0.22236858294930395."
+    },
+    {
+      "afirmacion": "En el caso de skew negativo, la discrepancia entre la aproximación semi-clásica y la simulación Monte Carlo es aún mayor, con la aproximación subestimando el sesgo por un factor de casi 4.",
+      "mercado": "no especificado (modelo sintético normal de volatilidad local, sin activo real)",
+      "periodo": "no especificado",
+      "magnitud": "skew aproximación semi-clásica = -0.22777512562616942 vs. skew Monte Carlo = -0.8644323047716206 (razón ≈3.8x)",
+      "condiciones": "modelo de volatilidad local sintético con a=0.3, b=-0.082, c=0.008; comparación in-sample contra 100.000 trayectorias Monte Carlo, un solo escenario, sin validación fuera de muestra",
+      "robustez": "baja",
+      "cita_textual": "In the positive skew case, the skew by the semi-classical approximation of path integral approach is given by -0.22777512562616942, and by the Monte Carlo simulation, it is given by -0.8644323047716206."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "nula",
+    "nota": "El paper trata pricing/calibración de opciones vía integral de caminos y no aporta señales, microestructura ni métricas de validación de backtest aplicables al trading intradía de futuros ES."
+  }
+}

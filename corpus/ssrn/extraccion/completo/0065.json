@@ -1,0 +1,126 @@
+{
+ "doc_id": 65,
+ "titulo": "Asymmetric Effects of the Limit Order Book on Price Dynamics",
+ "resumen_operativo": "El estudio analiza cómo la forma del Limit Order Book (LOB), medida a través de las pendientes (slopes) de los niveles inferiores (superficiales) y superiores (profundos), afecta la dinámica de precios a muy corto plazo. Utilizando un modelo VAR basado en Hasbrouck y datos de alta frecuencia, los autores demuestran un impacto asimétrico: las pendientes de los niveles profundos del LOB tienen un impacto predictivo inmediato en el precio significativamente mayor que las pendientes de los niveles superficiales. Sin embargo, este efecto inicial exhibe un overshooting (sobrerreacción) que se revierte, resultando en un impacto acumulado menor para los niveles profundos. Atribuyen esta asimetría a la concentración de 'patient traders' (operadores pacientes) que prefieren ubicar liquidez más lejos del midquote. Desde un punto de vista práctico, demuestran que un modelo de trading algorítmico de alta frecuencia que incorpora explícitamente estas asimetrías predictivas logra un outperformance de 16 a 25 puntos básicos mensuales sobre modelos simétricos estándar.",
+ "calidad_paper": "alta",
+ "conceptos": [
+  {
+   "nombre": "Limit order book slope",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Medida que resume la forma y presión de distintas partes del LOB. Se calcula como la relación (ratio) entre la diferencia de precio y la diferencia en cantidad acumulada (profundidad) entre dos niveles de un lado del book.",
+   "relaciones": [
+    {
+     "tipo": "PREDICE",
+     "objeto": "midquote return"
+    }
+   ],
+   "cita_textual": "To summarize the information in these different parts of the LOB, we use their slope, which is defined as the ratio of the change in price to the change in the cumulative quantity (depth) available between two given levels of a given side."
+  },
+  {
+   "nombre": "Hasbrouck VAR model",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Modelo econométrico de vectores autorregresivos estructurado en base temporal de transacciones (tick-by-tick), utilizado para modelar conjuntamente los retornos, la dirección del trade y las pendientes del LOB, y así aislar el impacto inmediato y acumulado sobre los precios.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "Limit order book slope"
+    },
+    {
+     "tipo": "MIDE",
+     "objeto": "Asymmetric price impact"
+    }
+   ],
+   "cita_textual": "We then consider stock-specific vector autoregressive (VAR) models that include midquote return, trade direction, and four slope measures, i.e., the bid- and ask-side slopes based on the lower and higher levels."
+  },
+  {
+   "nombre": "Patient traders",
+   "tipo": "concepto",
+   "definicion_en_contexto": "Participantes del mercado dispuestos a incurrir en costos de espera con tal de obtener mejores precios de ejecución, quienes estratégicamente sitúan su liquidez en los niveles profundos del LOB.",
+   "relaciones": [
+    {
+     "tipo": "CAUSA",
+     "objeto": "LOB convexity"
+    }
+   ],
+   "cita_textual": "Rosu (2009) shows that patient traders place their orders in the higher levels of the ask side when they expect to take advantage of large market orders that are more likely to arrive."
+  },
+  {
+   "nombre": "Asymmetric price impact",
+   "tipo": "fenomeno",
+   "definicion_en_contexto": "Fenómeno microestructural según el cual la información (pendiente) contenida en niveles profundos y niveles superficiales del LOB tiene un impacto dispar sobre los retornos futuros, siendo el impacto inmediato mucho más marcado para los niveles profundos.",
+   "relaciones": [
+    {
+     "tipo": "CAUSA",
+     "objeto": "Price overshooting"
+    }
+   ],
+   "cita_textual": "The slopes of the higher levels have significantly greater (in terms of absolute value) immediate effects on prices than do the corresponding slopes of the lower levels."
+  },
+  {
+   "nombre": "Price overshooting",
+   "tipo": "fenomeno",
+   "definicion_en_contexto": "Comportamiento temporal de los precios donde la sobrerreacción inicial generada por el estado de los niveles profundos del libro de órdenes se revierte parcialmente, haciendo que el impacto acumulativo a lo largo del tiempo sea inferior al impacto inicial.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "Asymmetric price impact"
+    }
+   ],
+   "cita_textual": "The immediate effects of the slope variable are reversed when we take the cumulative effects into consideration, suggesting that prices overreact to information embedded in the LOB."
+  },
+  {
+   "nombre": "LOB convexity",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Ratio entre la pendiente de los niveles altos y la pendiente de los niveles bajos del LOB. Se utiliza metodológicamente como un proxy intradía para detectar la predominancia de patient traders en un momento dado.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "Patient traders"
+    }
+   ],
+   "cita_textual": "We use the convexity of the LOB as our proxy for traders' patience, motivated by Rosu’s finding relating the two."
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "La pendiente de los niveles superiores del book (niveles 5 a 20) afecta al retorno inmediato del precio con una magnitud significativamente mayor que la de los niveles inferiores (1 a 5).",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "Los impactos en el precio experimentan 'overshooting': el mercado sobrerreacciona de forma inicial a la liquidez profunda, revirtiéndose posteriormente de forma tal que el efecto acumulado de dichos niveles termina siendo inferior.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "La convexidad del LOB aumenta durante la jornada (hay más patient traders al principio del día). Congruentemente, la asimetría del impacto inmediato de los niveles profundos es máxima en la apertura y decrece hacia el cierre de la sesión.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "El outperformance empírico de operar bajo una estrategia HFT predictiva que reconoce esta asimetría es de 16 a 25 basis points por mes, indicando que el efecto es altamente explotable económicamente a pesar de los costos transaccionales limitados.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "alta",
+  "nota": "Altamente aplicable. Los hallazgos confirman la validez de generar features separados para los niveles internos y externos (profundos) del Order Book en el ES, como así también crear features derivados como LOB Slope y Convexity. La evidencia de un price overshooting predictivo impulsado por los niveles de profundidad ofrece un patrón (mean reversion corto vs impulso inicial) sumamente compatible con estrategias algorítmicas intradía."
+ }
+}

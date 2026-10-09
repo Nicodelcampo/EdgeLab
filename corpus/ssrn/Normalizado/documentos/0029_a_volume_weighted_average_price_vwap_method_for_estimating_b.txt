@@ -1,0 +1,710 @@
+ Electronic copy available at: https://ssrn.com/abstract=3123725 
+A volume-weighted-average-price (VWAP) 
+method for estimating beta in the context of 
+reference-day risk. 
+ 
+Keshav Sahadev 
+Mike Ward 
+Chris Muller 
+ 
+Gordon Institute of Business Science 
+University of Pretoria 
+South Africa 
+ 
+Partially funded by a National Research Foundation Grant 
+ 
+February 2018 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+ Electronic copy available at: https://ssrn.com/abstract=3123725 
+Introduction 
+The risk-reward tradeoff has been a prominent focus for empirical finance literature and investment practitioners 
+since the 1950s. The parsimony of this risk-reward relationship is intuitively captured by the capital asset pricing 
+model (CAPM), jointly ascribed to Markowitz (1952; 1956; 1959), Treynor (1961), Sharpe (1964), Lintner (1965) 
+and Mossin (1966) for their respective contributions to its development.  
+The CAPM describes a simple linear model for estimating the expected return on an asset in terms of its 
+systematic risk, and by doing so, provides a formal relationship between risk and return (Ward & Muller, 2012; 
+Fama & French, 2004). The CAPM can be expressed as: 
+E(Ri) = Rf + βi (E(Rm) −Rf) 
+ (Equation 1) 
+Where;  
+E(Ri) is the expected return on the share (asset), 
+Rf is the risk-free rate of interest, such as interest arising from government bonds,  
+E(Rm) is the expected return of the market, and  
+βi is the “beta” (a term originally coined by Sharpe (1964, p. 440)) and represents the systematic risk component 
+of an asset, as propagated by the CAPM. In essence, beta describes the sensitivity of the expected excess returns 
+of an asset to the expected excess returns earned by the market, and is expressed as; 
+βi = Cov (Ri, Rm)
+Var (Rm) 
+(Equation 2) 
+where Cov (Ri, Rm) is the covariance between the return on asset i and the return on the market portfolio, using 
+historical data (Heymans & Brewer, 2015; Chen & Reeves, 2012). Simply stated, the CAPM emphasizes that the 
+risk of an asset is a function of its beta (Gonzalez, Rodriguez & Stein, 2014). Along with all applications of the 
+CAPM, beta is used extensively for portfolio construction, capital budgeting, investment performance evaluation, 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+risk management and business valuation (Gonzalez et al, 2014). Accurate beta measurement is therefore not 
+only desirable, but necessary for prudent financial management.  
+Since its development, the CAPM in its simplicity and intuition, was not earnestly questioned until the publication 
+of a controversial paper by Fama and French (1992), who suggested that if assets are priced rationally, then 
+share risks are not one-dimensional (i.e. exclusively a function of beta) but rather, multi-dimensional. This 
+assertion drew considerable criticism given the extensive use of beta and the CAPM in academia and practice. 
+Moreover, it spurred significant research aimed at testing the validity and robustness of beta.  
+Despite the theoretical and practical appeal of the CAPM, the empirical evidence in support of the model is at 
+best, weak (Ward & Muller, 2012). Most of this criticism has emanated from investigations focused on beta. 
+Studies conducted by Brooks, Faff, Gangemi and Lee (1997), Faff and Brooks (1996), Fabozzi and Francis (1978) 
+and Collins, Ledolter and Rayburn (1987) have analysed a variety of financial markets and found evidence of beta 
+instability in individual shares, a finding which has profound ramifications for portfolio construction. Furthermore, 
+Novak (2015) suggests that the traditional method for estimating beta has been criticized for low explanatory 
+power in explaining share returns. Along with the estimation criticism, Fama and French (1992; 2004), Montier 
+(2009), van Rensburg and Robertson (2003), Strugnell, Gilbert and Kruger (2011) and Ward and Muller (2012), 
+suggest that there is essentially little to no evidence of a positive, linear relationship between systematic risk and 
+returns. In contrast, research has concluded that there is an inverse relationship between systematic risk and 
+return when one approximates systematic risk using beta, a finding which is unequivocally contradictory to the 
+underlying tenet of the CAPM (Ward and Muller, 2012; Montier, 2009). According to Novak (2015), the wave of 
+literature documenting the low explanatory power of beta and the inverse relationship previously documented by 
+some authors has led some to proclaim beta “dead” (p. 168). One of the foremost criticisms against beta is the 
+concept of reference-day risk.  
+In a topical paper, Acker and Duck (2007) introduced the concept of “reference-day risk” (p. 2) to refer to large 
+sampling variations and estimation risks that can be detected in share returns, variances and share betas, and 
+which is simply attributable to the choice of an initial reference day when calculating monthly share returns. In 
+summary, reference-day risk creates additional uncertainty for investors and finance practitioners and leads to 
+inadvertent or unwarranted outcomes based on beta estimates. As a result, reference-day risk has become one 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+of the most preeminent research areas to gain momentum in recent years, as it has significant implications for 
+accurate beta estimation. Investigations conducted by Baker, Rajaratnam and Flint (2016); Gonzalez et al (2014); 
+Acker and Duck (2007) and Dimitrov and Govindaraj (2007) have all evidenced that by using any five-year sample, 
+and selecting one day of the first month as the reference day to construct a series of monthly returns, different 
+choices for the reference day produce large variations in estimated betas. 
+The findings from the original investigation by Acker and Duck (2007) have prompted significant research into 
+developing and testing alternative, independent-reference-day methods for estimating beta. Among the beta 
+estimation methods tested, were the Blume (1971) regression method, the Dimson (1979) adjustment for thin 
+trading, the Vasicek (1973) Bayesian beta estimate and the t-distribution method for adjusting beta as developed 
+by Cademartori, Romo, Campos and Galea (2003), with only the latter method having any promising result for 
+accurately estimating systematic risk in the presence of reference-day risk.  
+This paper aims to resurrect the systematic risk parameter, beta, by contributing a volume-weighted-averageprice (VWAP) estimate for beta which can be employed in the context of reference day risk. To achieve this, this 
+research first evidences the degree to which reference-day risk leads to variations in beta for shares on the JSE 
+ALSI. Thereafter, estimates of beta using the VWAP methodology are statistically tested to determine the 
+robustness and applicability of applying the VWAP method as a variation to the standard method of estimating 
+beta.  
+Lastly, this research transcends prior research investigations of a similar nature by determining whether the 
+reference-day-independent beta adheres to the underlying tenets of the CAPM. This is achieved by employing a 
+graphical time-series analysis to observe whether VWAP betas are a more reliable representation of systematic 
+risk in the risk-return tradeoff.  
+Consequently, an appropriate methodology is derived to test each of these objectives.  
+This paper is therefore organized as follows. The following section reviews the literature on the subject. Thereafter, 
+the sample, methodology and results are detailed and discussed. The last section offers concluding comments 
+and guidelines for future research.  
+Literature review 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+Reference-day risk and the mitigation of it thereof, is one of the most contemporary issues contributing to financial 
+literature intended for accurate beta measurement. The results of the original investigation by Acker and Duck 
+(2007) have prompted significant research into developing and testing alternative, independent-reference-day 
+methods for estimating beta. This section presents some of the empirical literature describing reference-day risk 
+and the variations that different choices of reference day have on beta estimates.  
+Estimating beta in the context of reference-day risk 
+Acker and Duck (2007) demonstrate the existence of reference-day risk associated with monthly returns implicit 
+in shares listed on the S&P500 Index and set out to explore the level of reference-day risk implicit in estimates of 
+beta.  
+Using data from a sample of 459 companies sourced through Datastream, Acker and Duck (2007) examined data 
+for a fifteen-year period, across three five-year sub-intervals. The results from the investigation prove that 
+estimates of beta are highly sensitive to the choice of reference day. In extreme cases, the choice of referenceday can significantly amplify the estimate of a share’s beta as well as alter the polarity of beta estimates. Drawing 
+on the sample of listed companies on the S&P500, the authors present evidence of a share’s beta falling by 0.931 
+and rising by 3.454 depending on the choice of reference-day. Perhaps more pertinent to this investigation 
+however, is the finding that approximately 75% of all observed betas estimated using the conventional 
+methodology could be classified as either positive or negative by an appropriate choice of reference day. This 
+finding has profound ramifications for both academia and industry, as it renders risk-adjusted asset selection using 
+conventional beta estimates impractical, inconsequential and insufficient for portfolio construction.  
+Acker and Duck (2007) thereafter commence with investigating whether the Blume (1971) regression method, the 
+Vasicek (1973) Bayesian beta and the Dimson (1979) adjustment for thin trading reduces the variation and range 
+of beta estimates for which the unadjusted beta is highly sensitive to the choice of reference day.  
+The authors report that the Blume (1971) regression method reduces only the most severe reference-day 
+variability. Similarly, the Vasicek (1973) Bayesian estimation method also reduces the range and variation of beta 
+estimates for shares which have high sensitivity to the selection of a reference day (Acker & Duck, 2007). 
+However, both estimation methods exhibit sensitivity to the choice of reference day (although this variation is less 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+marked for estimates of Blume (1971) betas). The findings however purport that estimated betas using both the 
+Blume (1971) and Vasicek (1973) adjustments are indeed subject to reference-day risk, causing shares to be 
+incorrectly classified as either aggressive or defensive based on the selection of an initial reference day (Acker & 
+Duck, 2007). 
+Lastly, even though the investigation evidenced the presence of reference-day risk for both individual shares and 
+equity indices, Acker and Duck (2007) hypothesize that the effect of reference-day risk may be amplified by thin 
+trading. Accordingly, the authors apply the Dimson (1979) adjustment method for thin trading in estimating betas 
+in the context of reference-day risk. The results of the investigation suggest that the Dimson (1979) adjustment 
+method only slightly reduces the variability of beta estimates for the highest ranges. Furthermore, the authors 
+observe a tendency for estimated betas to exhibit significant variation based on the choice of reference day, 
+indicating that the Dimson (1979) adjustment does not yield any significant difference in estimating systematic 
+risk in the presence of reference-day risk. 
+Dimitrov and Govindaraj (2007) set out to investigate the findings from Acker and Duck’s (2007) study from a data 
+dependency perspective. The authors argue that Acker and Duck’s (2007) sample (which was drawn from 
+Datastream) may not be applicable for the United States context and propose replicating the analysis using data 
+sourced from the Centre for Research in Security Prices (CRSP). Furthermore, Dimitrov and Govindaraj (2007) 
+expand the study by Acker and Duck (2007) by investigating the existence of reference-day risk using daily returns 
+(as opposed to monthly returns) over a five-year period.  
+Using data sourced from the CRSP from the period January 1995 to December 1999, Dimitrov and Govindaraj 
+(2007) use daily dividend-adjusted share returns to construct a series of sixty monthly returns across nineteen 
+different reference days, for each of 439 sample companies. Congruous to the findings of Acker and Duck (2007), 
+the investigation verifies the existence of reference-day risk in companies listed on the S&P500, using data 
+sourced from the CRSP (Dimitrov & Govindaraj, 2007). Moreover, Dimitrov and Govindaraj (2007) also report that 
+betas estimated from the sample exhibit significant variation when different choices of the initial reference day are 
+used in the computation. Furthermore, the findings from the investigation suggest that reference day risk is implicit 
+for both individual shares and market indices.  
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+Gonzalez et al (2014) explicate the research conducted by both Acker and Duck (2007) and Dimitrov and 
+Govindaraj (2007) by expanding the data dependency and methodology parameters employed in the previous 
+studies. Gonzalez et al (2014) compare the t-distribution method for adjusting beta as developed by Cademartori 
+et al (2003) to the OLS method and Blume’s (1971) regression method for estimating beta.  
+According to Gonzalez et al (2014), the t-distribution method proposes a replacement of the standard normal 
+distribution with the Student’s t, which is a symmetric distribution with heavier tails than the normal distribution. 
+Gonzalez et al (2014) further purport that the heavier tails in the Students t is more appropriate in estimating beta 
+in the context of reference-day risk as it more aptly compensates for the error term in the linear regression used 
+to estimate share betas. Furthermore, Cademartori et al (2003) prove that the t-distribution method for adjusting 
+beta is better able to incorporate the influence of outliers in estimating beta. Lastly, Blume’s (1971) method was 
+selected by Gonzalez et al (2014) for comparison to the t-distribution method, as it was the method which reduced 
+the effect of reference-day risk the most in Acker and Duck’s (2007) investigation. 
+Gonzalez et al (2014) select a sample of 1563 shares, traded on the NYSE, AMEX and NASDAQ exchanges 
+obtained from the CRSP, for the period 2007 to 2011 and report that the choice of reference day results in 
+significant variations in estimated betas. Moreover, Gonzalez et al (2014) report that betas estimated using 
+Blume’s (1971) regression method also exhibited significant variations across different reference days. Using the 
+t-distribution method however, the authors record that the choice of reference day becomes less significant with 
+the larger recorded ranges decreasing significantly for the observed betas. The investigation concludes that the 
+t-distribution method for adjusting beta most significantly reduces reference-day variation when compared to 
+Blume’s (1971) method and the OLS method.  
+More recently, Baker et al (2016) set out to establish the existence of reference-day risk in the JSE Top 40. Baker 
+et al (2016) use daily closing levels of the ALSI and closing prices for shares making up the JSE Top 40 index for 
+the period January 2000 to July 2015, sourced from Datastream.  
+Congruous to the findings of Acker and Duck (2007), Dimitrov and Govindaraj (2007) and Gonzalez et al (2014), 
+the authors conclude that reference-day risk exists and creates additional uncertainty for investors intending to 
+create share portfolios, valuing companies or managing capital (Baker et al, 2016). Furthermore, the authors test 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+the Blume (1971), Dimson (1979) and Vasicek (1973) Bayesian methods for adjusting beta to investigate whether 
+the adjusted betas exhibit lower reference-day ranges than unadjusted betas (Baker et al, 2016).  
+In estimating the betas calculated using Blume’s (1971) regression method, Baker et al (2016) report that the 
+Blume-adjusted betas increase the variation and range of beta estimates for 19 out of 31 companies and conclude 
+that the Blume (1971) regression method for estimating beta does not consistently and considerably reduce the 
+variation and range for betas in the context of reference day risk. Analogous to the results of the Blume (1971) 
+regression method, the average range for the Dimson-adjusted betas was significantly larger than that of the 
+standard betas. Moreover, the range for beta estimates using the Dimson (1979) adjustment increased for 30 out 
+of the 40 companies sampled, leading the authors to conclude that the Dimson (1979) adjustment for thin trading 
+actually pronounces the reference day variation in systematic risk estimates. Lastly, the authors report that the 
+Vasicek (1973) Bayesian adjustment method was the only estimation method yielding any promising results, with 
+35 out of the JSE Top 40 companies exhibiting lower reference-day ranges than unadjusted betas.  
+Baker et al (2016) then introduce a nonparametric bootstrap method to determine potential beta estimates which 
+are independent of reference-day risk. Using this method, the authors note that for shares on the JSE Top 40, the 
+expected value of a reference-day independent beta was approximately equal to the average of the 20 unadjusted 
+betas estimated for each day. Baker et al (2016) propose that the mean value of the bootstrapped beta distribution 
+therefore provides a reference-day independent estimate of systematic risk for a particular share, even though 
+further investigation is required to recover the mean value of a set of beta standard deviations. Even though the 
+results of the investigation do not yield the desired result, the authors do note some benefits of employing this 
+method in estimating beta (Baker et al, 2016).  
+In summary, the literature discussed above has not revealed a methodology which is independent of the 
+reference-day problem in beta estimation. The final component of this theoretical discussion now focuses on the 
+relevant literature regarding the proposed VWAP methodology.  
+Empirical evidence of VWAP as a method to eliminate the reference-day problem 
+The is little to no literature available on estimating beta through employing a VWAP adjustment or VWAP 
+methodology in the context of reference-day risk. However, perhaps the most pertinent literature is presented by 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+Ting (2006; 2005) who suggests that a VWAP is closer to the equilibrium price of a share than the daily closing 
+price. Ting (2006; 2005) bases this on the premise that VWAP considers all the intra-day prices at which 
+transactions have occurred and evidences that daily returns computed with VWAP have a smaller realized 
+variance than that with the closing price. Moreover, Ting (2006) concludes that the variance spread between 
+VWAP and the closing price is economically significant and has implications for performance measurement and 
+pricing of derivatives.  
+More critical to this research however, Ting (2006) provides an example which evidences that, relative to the 
+volatility of VWAP returns, the volatility of closing price returns tends to understate the beta risk estimation result. 
+By consequence, the research suggests that by using VWAP along with the closing price, estimation of financial 
+risk and asset pricing can be performed with considerably less noise (Ting, 2006).  
+The literature presented above has verified the existence of reference-day risk on the S&P500 as well as for the 
+JSE Top 40 index, even after applying various adjustments to the estimation method for beta. Analogous to the 
+South African studies, the question of whether reference-day risk can be observed on the JSE ALSI beckons. 
+Moreover, where estimation methodologies indicate an improvement in the robustness of beta estimates, none of 
+the estimated betas were empirically tested to verify whether beta estimates adhered to the tenets of the CAPM. 
+The empirical evidence presented in the literature also evidences the critical need for a methodology which 
+produces a stable estimate for beta which is independent of the reference day. 
+This research contributes to this body of literature and proposes a methodology for estimating beta which is 
+intuitively simple, yet differs markedly from the empirical methods tested previously. Additionally, this research 
+aims to redeem the underlying tenet of the CAPM, in attempting to explain a positive risk-reward relationship 
+between the systematic risk parameter, beta, and expected returns.  
+The sample 
+This research uses the daily closing level of the JSE ALSI and closing prices of each of the qualifying shares 
+making up the index between 31 December 1992 and 30 June 2017, sourced from Datastream and Ward and 
+Muller’s (2015) style engine. The choice of the JSE ALSI as the selected sample, ensured that 99% of South 
+Africa’s market capitalization was accounted for in this research (JSE, 2017). Given the longitudinal time-based 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+nature of the research, the qualification of companies to the population applied to any firm which at any stage 
+between 1985 and 2016 had sufficient market capitalisation, irrespective of their eventual state. This eliminated 
+the potential for survivorship bias.  
+Consistent with the studies by Baker et al (2016), Gonzalez et al (2014), and Carter, Muller and Ward (2017), all 
+share prices included adjustments for any unbundling, mergers, share splits and dividend pay-outs. For all 
+comparisons of standard betas against the estimated VWAP betas, all qualifying companies on the JSE ALSI 
+during the period 3 January 2012 until 31 January 2017 with at least five years historical share price data were 
+considered. This resulted in a total of 136 shares under observation.  
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+Methodology and results  
+Investigating the existence of reference-day risk 
+Every month within the sample period has approximately 20 trading days, as the trading of listed shares on the 
+JSE typically excludes weekends and South African public holidays. The daily closing share prices and JSE ALSI 
+levels can therefore be organized per 20 trading days, with the first trading day corresponding to the first working 
+day of the initial month, in a five-year time series. Monthly log returns for each of the qualifying shares on the JSE 
+ALSI and the index are thereafter calculated for the period 3 January 2012 to 31 January 2017. This resulted in a 
+series of monthly returns (one series for each of the 20 trading days) for each of the 136 sampled shares and the 
+JSE ALSI. 
+Using this data, 20 different estimates of beta were generated for each share, by approximating the slope of the 
+regression between an individual share’s returns and the JSE ALSI returns (or equivalently, by using Equation 2).  
+Consistent with the findings of Baker et al (2016) and Gonzalez et al (2014), first inspection of the unadjusted 
+betas reveals that there is indeed an effect on beta when the reference day is varied. Using the range of beta 
+across the 20 trading days, reference-day risk is most pronounced in Lonmin (LON), Kumba Iron Ore (KIO) and 
+Royal Bafokeng Platinum (RBP). Similarly, there are also companies for which share betas are relatively constant 
+across the 20 trading days, which includes Remgro (REM), Rebosis Property Fund (REB) and British American 
+Tobacco (BTI).  
+Alarmingly, 15 out of the 136 sampled companies also exhibited standard betas which could be classified as 
+either positive or negative by an appropriate choice of the reference day. An equally noteworthy observation is 
+that nine out of ten companies with the highest ranges in betas across the 20 trading days were resources 
+companies. This finding potentially indicates a systemic characteristic in the way resources shares exhibit 
+reference-day risk, or is merely a function of the JSE ALSI being more heavily weighted toward resources shares 
+as compared to other stock exchanges.  
+Table 1: Smallest and largest ranges in standard betas 
+ 
+Smallest ranges 
+ 
+Largest ranges 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+ 
+REM 
+REB 
+BTI 
+ 
+LON 
+KIO 
+RBP 
+Max 
+1.173 
+0.618 
+0.589 
+ 
+5.148 
+3.010 
+1.965 
+Min 
+0.896 
+0.323 
+0.288 
+ 
+2.259 
+0.488 
+0.474 
+Range 
+0.277 
+0.295 
+0.301 
+ 
+2.890 
+2.521 
+1.491 
+Mean 
+1.049 
+0.482 
+0.463 
+ 
+3.486 
+1.776 
+0.985 
+Variance 
+0.005 
+0.006 
+0.010 
+ 
+0.571 
+0.545 
+0.209 
+Median 
+1.052 
+0.471 
+0.492 
+ 
+3.458 
+1.776 
+0.779 
+ 
+As suggested by Acker and Duck (2007), Gonzalez et al (2014) and Baker et al (2016), the differences in betas 
+have profound implications on all applications of beta. One could consider beta-style portfolio construction as 
+such a case.  
+Consider the investor with a risk-averse profile intending to construct a portfolio of mainly defensive shares. Such 
+a portfolio will have the characteristics of being weakly correlated with the market and having a positive portfolio 
+beta, which is low in value and less than 1. If such an investor were to estimate the betas for KIO or RBP on a 
+trading day which yields a relatively low beta, such a portfolio may have a positive beta ranging between 0.488 (if 
+the portfolio is constructed entirely of KIO shares) or 0.474 (if the portfolio is constructed entirely of RBP shares) 
+– varying according to the weightings of each of the shares held. Applying beta to the CAPM, one could therefore 
+expect returns from such a portfolio which have a low correlation with the market. This implies that the investor 
+would realise smaller positive returns when the market moves up, but be shielded from all downward movements 
+in the market.  
+However, the investor has inadvertently constructed a portfolio with a worst-case scenario beta ranging between 
+1.965 and 3.010, being the largest betas for RBP and KIO, respectively. Such a portfolio would exhibit extreme 
+fluctuations in value when the market moves in either direction. The systematic risk of the investor’s portfolio has 
+been severely misestimated due to reference-day risk. Baker et al (2016) further indicate that an in such a case, 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+an investor may be leisurely to react to a sharp decline in the market, believing his portfolio is weakly correlated 
+with the market.  
+Equivalent results would be reached for an investor looking to create a portfolio of shares which are negatively 
+correlated with the market. Such an investor may achieve this by including shares with a negative beta in a 
+portfolio. However, the choice of reference day may once again, severely undermine the investors ability to 
+construct such a portfolio, as some shares yield estimates of beta which can be classified as either positive or 
+negative based on the choice of the reference day (E.g. Brimstone Investment Corporation (BRN)). In similar 
+fashion, managing reference-day risk is made even more complex when one is looking to construct a diversified 
+portfolio of shares or when used in the construction of market-neutral hedge funds. In such cases, variations in 
+beta may yield unintended and potentially severe consequences for the performance of the fund.  
+To statistically determine the degree to which varying the reference day leads to variations in estimated betas, an 
+ANOVA was performed for the 20 trading days. Even though the preliminary analysis of estimated betas across 
+the 20 trading days suggests that there is indeed a trading day effect when estimating share betas, at both the 
+5% and 10% level of significance, the ANOVA reveals insufficient evidence to verify a definitive trading day effect 
+of beta, when the reference day is varied (p-value = 0.501). The result is indeed surprising when one considers 
+the large variation in estimated betas exhibited by some shares, suggesting that perhaps the covariance between 
+shares within individual trading days may cancel each other out. Not surprisingly however, a similar result was 
+also reported by Baker et al (2016), who could not statistically verify a trading day effect on beta across their 20 
+estimates of share betas for the JSE Top 40. Different results are however reached when comparing the minimum 
+and maximum estimated betas for each share.  
+Each share has a trading day corresponding to its highest beta estimate and equivalently, a trading day which 
+yields its lowest beta estimate. Using a (two-tailed) t-test to compare the means of these beta values across firms 
+indicated that the highest and lowest beta values are significantly different at the 5% level (p < 0.0001). This result 
+indicates that for some part, reference-day risk does indeed create additional uncertainty when estimating share 
+betas. Baker et al (2016) also tested this hypothesis and noted a significant difference in minimum and maximum 
+betas for 22 out of the 40 sampled shares. The variation in beta estimates across reference days implies that any 
+application of share betas (and consequently, the CAPM) may severely undermine one’s understanding of risk. It 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+may further lead to inefficient share selection when creating portfolios and ultimately, increase the likelihood of 
+sub-optimal investment decisions, especially when valuing companies or constructing market-neutral hedge 
+funds.  
+Developing a point estimate of systematic risk for application when reference-day risk is observed 
+The primary aim of this research was to develop a more robust point estimate of beta when reference-day risk is 
+exhibited in estimates of systematic risk. Baker et al (2016) presented the potential for using an average of the 
+betas across the 20 trading days as an estimate of systematic risk for a share, but note the potential introduction 
+of errors due to small sample size. In this subsection, the research investigated the feasibility of using a VWAP 
+method for estimating beta when reference-day risk is observed.  
+Using the total daily value of shares traded together with the number of shares traded for each share on the JSE 
+ALSI, a daily 60-day ex-ante VWAP was estimated for the sample, as per the computation prescribed by Ting 
+(2006); 
+𝑉𝑊𝐴𝑃= 
+∑
+𝑃k𝑉k
+𝑛
+𝑘=1
+𝑉
+= ∑𝑊k 𝑃k
+𝑛
+𝑘=1
+ 
+(Equation 3) 
+Where; 
+Wk is the weight and calculated as Vk / V, 
+Pk are the n intraday prices at which transactions have occurred during the period, 
+V is the total share volume traded over the period and is equal to ∑
+𝑉k
+𝑛
+𝑘=1
+, 
+Vk are the subtotals of all shares transacted at the price Pk (Ting, 2006). 
+The equation simply states that the VWAP is a combination of all intraday prices, which for the case of this 
+research, occurred over the past 60 days for a share, inclusive of the reference-day. For the JSE ALSI however, 
+the VWAP is a function of the daily movement in share prices for the qualifying shares on the index. Accordingly, 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+the VWAP of the index is weighted on a per share basis, and changes daily with movements in the market 
+capitalisation of firms.  
+Having computed the daily VWAP for all shares and the JSE ALSI, the log returns for each share and the ALSI 
+were computed over a five-year period, using the 60-day ex-ante VWAP as a substitute for the monthly closing 
+price. VWAP betas were then estimated for each share by approximating the slope of a linear regression of 
+individual share returns on market returns for the period 30 March 2012 to 31 March 2017.  
+At this point, Gonzalez et al (2014) tested the significance of the differences between standard betas against 
+Blume (1971) betas and betas approximated using a student’s t-distribution method. The authors focused on 
+comparing mean share beta variances for each of the three methods, across 20 trading days. Baker et al (2016) 
+employed a different approach and compared adjusted regression coefficients using the Blume (1971), Dimson 
+(1979) and Vasicek (1973) Bayesian adjustment methods.  
+This research employed a unique approach in estimating beta which was simple and intuitive, yet distinctly 
+different from the previous investigations on reference-day risk. The conventional method for estimating beta was 
+maintained, however monthly closing prices were substituted with the 60-day ex-ante VWAP. This was done prior 
+to regressing individual share returns against the market returns. Reiterating Ting (2006; 2005), the VWAP is 
+statistically more efficient than the closing price in reflecting value as it is closer to the unobservable equilibrium 
+price, resulting in a smaller realized variance, which is the essence of the beta measure.   
+To understand whether the VWAP beta is a more robust estimate of systematic risk when reference-day risk is 
+observed, VWAP betas were compared to standard betas. To achieve this, both the standard betas and VWAP 
+betas were estimated using the same sample period and tested for statistical difference. This test is critical to the 
+investigation as estimates of VWAP betas employ the same computational methodology as the standard beta. 
+Even though the estimation methods are different, the two measures must produce statistically independent 
+estimates of systematic risk. A positive result is therefore fundamental in proposing VWAP as an alternate 
+estimation method in the context of reference-day risk. A paired t-test at the 5% level of significance confirms that 
+the two measures are statistically different.  
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+Application of the VWAP beta and understanding whether VWAP betas perform better under conditions of 
+reference-day risk 
+The first step in this analysis was to understand how estimates of VWAP betas for the 136 sampled shares were 
+distributed, and whether tighter estimates of share betas were possible using the conventional method. 
+Furthermore, the research also aimed to understand if there exists a trading day within the 20-day range for which 
+betas tend to be more robust. A visual and statistical comparison was conducted, in analogous fashion to Baker 
+et al (2016), when attempting to understand whether systematic risk estimates using the bootstrapped beta 
+method were more robust for shares on the JSE Top 40 index.  
+VWAP betas for the sample shares were plotted on a histogram to understand the sample characteristics of 
+estimated share betas, particularly focusing on the skewness and tightness of the distribution. Similarly, beta 
+estimates for the sample shares were thereafter plotted using the median beta for each share from the 20 trading 
+days. This process was then repeated for all share betas estimated using the 20th trading day (as this day yielded 
+the tightest distribution in estimated betas). For control, standard betas were also estimated for the sample and 
+equivalently plotted. The resultant distributions were then visually compared. Figure 1 (below) plots each of the 
+distributions for estimates of share betas for the same sample. A positive result would be a normally distributed 
+set of betas, tightly distributed around the mean value, 1 (which represents the market beta).  
+ 
+Figure 1: Distribution of estimated betas 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+ 
+ 
+To test the various distributions statistically, the Kolmogorov-Smirnov, Cramer-Von Mises and Anderson-Darling 
+were performed to understand whether the estimated betas were normally distributed. Furthermore, the variance 
+for each of the distributions was analysed to determine which method yielded the tightest share beta estimates 
+around the mean, congruent to the method employed by Gonzalez et al (2014). Thereafter, a Levene’s test was 
+conducted to statistically verify that the variances were distinctly different across the alternate measures, 
+consequently verifying the visual result.  
+As evident in Figure 1, betas estimated using the 20th trading day of the month produced the most robust estimates 
+in share betas for the sample period, even more so than the standard betas which use month end share values. 
+Counter -intuitively, the VWAP method produces a less robust set of share betas for the sample. This was also 
+verified statistically as described above. 
+Following this result, there may yet be application for the VWAP betas. As per the method conducted by Baker et 
+al (2016), beta estimates using the VWAP method were also tested on a per share basis. This is achieved by 
+comparing the distribution of standard beta across the 20 trading days against estimates of beta using the VWAP 
+method. To ensure a robust test of the VWAP beta method on a share by share basis, additional VWAP betas 
+were generated from a non-overlapping, out-of-sample period. As conducted prior, differences were tested both 
+visually and statistically.  
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+The results indicate that for most shares, the distributions of VWAP betas are not statistically different from the 
+standard betas. However, upon closer inspection, some positive results were observed when analysing the shares 
+with the largest distributions in standard betas. For the top three shares with the largest ranges in standard beta 
+across the 20 trading days (LON, KIO and RBP), KIO and RBP had statistically different distributions (p = 0.004 
+and p = 0.002, respectively) for which the VWAP estimates were significantly tighter around the mean. This is 
+illustrated in Figure 2. For LON, this was not the case. Further inspection into LON’s share price history does 
+however reveal that the share did experience significant volatility during the sample period, potentially influencing 
+estimates of share betas for the company.  
+ 
+Figure 2: Distribution of estimated betas for Kumba Iron Ore and Royal Bafokeng Platinum 
+ 
+ 
+ 
+As expected for the three shares with the smallest range in estimated betas (REM, REB and BTI), there was little 
+evidence of a VWAP method improving the range of estimates.  
+This result suggests that, for cases of extreme reference-day variation in estimated betas, the VWAP beta 
+estimation method does indicate some evidence of a more robust estimate of systematic risk. The VWAP method 
+for estimating beta could consequently be applied alongside other measures of systematic risk. This is especially 
+the case when estimating betas for shares which exhibit a large degree of reference-day variation. Furthermore, 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+future research could contemplate the appropriateness of the VWAP beta, when estimating systematic risk for 
+resources shares, as these were evidenced to have the highest effect when the reference day was varied.  
+Understanding whether the VWAP betas adhere to the tenets of the CAPM 
+To consolidate the findings between the standard beta and VWAP beta, the VWAP beta must adhere to the 
+underlying tenet of the CAPM, which states that higher betas would lead to higher returns, and vice versa. This 
+was investigated by means of a graphical time series style analysis, congruent to the methodology employed by 
+Muller and Ward (2013) and Ward and Muller (2012).  
+To conduct this, each share in the sample was ranked according to the magnitude of the 60-day ex-ante VWAP 
+betas and placed into virtual portfolios in the form of quintiles. Portfolio 1 contained the shares with the highest 
+VWAP betas whereas Portfolio 5 contains the shares with the lowest VWAP betas. The performance of each of 
+the portfolios was thereafter simulated using the Ward and Muller (2015) style engine, which contained share 
+returns data over the period 1985 to 2017. The simulation was then run over the sample period. 
+To ensure a robust analysis, each of the VWAP betas for shares within the ALSI are recalculated and ranked 
+every three months. This was done in a similar fashion to that of Carter et al (2017) and ensured that the correct 
+shares were placed in the appropriate portfolios according to their updated betas. The portfolios are rebalanced 
+quarterly on this basis.  
+Consistent with Ward and Muller (2012), the graphical time series analysis also plots a price relative line to indicate 
+the relationship between quintile 1 (which had shares with the highest VWAP betas) and quintile 5 (which had 
+shares with the lowest VWAP betas). The graphical time series analysis also plots a price relative line between 
+quintile 1 and the market. This acts as a control variable would in the investigation, and is used to test whether 
+high VWAP beta shares lead to abnormal returns (i.e. returns more than what the market could provide), as 
+specified by the CAPM. The performance of the portfolios as well as the relationship between each portfolio and 
+the market was then visually analysed. 
+Figure 3: Ranked portfolios in terms of VWAP betas 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+ 
+ 
+The analysis indicates that the quintiles ranked from highest to lowest, according to the simulated annualized 
+returns, were quintile 4, quintile 3, quintile 5, quintile 2 and lastly, quintile 1. The price relative further indicates 
+that since December 1999, the quintile with the lowest VWAP betas (quintile 5) consistently outperformed quintile 
+1, which contained the highest ranked VWAP betas. The data suggests that, even though the VWAP betas are 
+statistically different from the standard betas, the VWAP betas do not adhere to the tenet of the CAPM that a 
+higher level of risk (as estimated by beta) will lead to higher returns, and vice versa. Counter intuitively, the 
+analysis has suggested that shares with a lower VWAP beta tend to outperform shares with high VWAP betas. 
+This is consistent with the findings of Ward and Muller (2012), who found that estimates of standard betas also 
+invert the CAPM.   
+Conclusion 
+This paper set out to resurrect the systematic risk parameter, beta, by contributing a volume-weighted-averageprice (VWAP) point estimate for beta when reference-day risk is observed. This investigation evidenced a 
+significant degree of reference-day risk when estimating share betas on the JSE ALSI, congruous to the findings 
+of Baker et al (2016), Gonzalez et al (2014), Dimitrov and Govindaraj (2007) and Acker and Duck (2007). As a 
+result, this creates additional uncertainty for investors and practitioners applying beta in portfolio construction, risk 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+management, business valuation and all applications of the CAPM. Moreover, this finding underpins the need for 
+a more accurate estimate of systematic risk, when reference-day risk is observed. 
+VWAP betas were also found to be statistically different from standard betas. Despite the indication from Ting 
+(2006; 2005), there is however limited evidence to suggest that a VWAP method improves estimates of systematic 
+risk for shares. Even so, the investigation recommends that for cases of extreme reference-day variations, the 
+VWAP beta may be applied alongside other measures to improve financial decision making.  
+Lastly, this research contributes further insight into the risk-relationship trade-off postulated by the CAPM. A 
+graphical time-series style analysis revealed that estimates of beta employing a VWAP methodology still inverts 
+the expected returns. In addition to the empirical findings documented by other researchers, this investigation 
+suggests that the CAPM appears to imperfectly specify the risk-reward trade-off (Montier, 2009; van Rensburg & 
+Robertson, 2003; Strugnell et al, 2011; Ward & Muller, 2012). Further research is however required to verify this.  
+For further research, the investigation evidenced a significant degree of reference day risk when estimating share 
+betas for resources shares. Appreciating that the composition of the JSE ALSI is weighted heavily towards 
+resources shares, further research may potentially uncover additional characteristics in the way resources shares 
+exhibit reference-day risk.  
+To end, this research also evidenced that for shares on the JSE ALSI, VWAP returns produced more robust 
+covariance matrices for shares. Financial practitioners may find this result useful for many financial applications. 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+References 
+Acker, D., & Duck, N. W. (2007). Reference-day risk and the use of  
+monthly returns data. Journal of 
+Accounting, Auditing &  Finance, 22(4), 527-557. 
+Baker, C., Rajaratnam, K., & Flint, E. J. (2016). Beta estimates of  
+shares on the JSE Top 40 in the 
+context of reference-day  
+risk. Environment Systems and Decisions, 36(2), 126-141. 
+Blume, M. E. (1971). On the assessment of risk. The Journal of  Finance, 26(1), 1-10. 
+Brooks, R. D., Faff, R.W., Gangemi, M.A.M., & Lee, J.H.H. (1997).  
+A further examination of the effect of 
+diversification on the  
+stability of portfolio betas. Applied Financial Economics,  Vol. 7,  9-14. 
+Cademartori, D., Romo, C., Campos, R., & Galea, M. (2003). Robust  
+estimation of systematic risk using the 
+t distribution in the  
+Chilean stock markets. Applied Economics Letters, 10(7), 447- 
+453. 
+Carter, B., Muller, C., & Ward, M. (2017). The applicability of Black’s  
+variation of the capital asset pricing 
+model (CAPM) in the South  
+African context (Master’s thesis). Illovo, South Africa: Gordon  
+Institute of 
+Business Science.  
+Chen, B., & Reeves, J. J. (2012). Dynamic asset beta measurement.  
+Applied Financial Economics, 22(19), 
+1655-1664, DOI:  
+10.1080/09603107.2012.674203. 
+Collins, D. W., Ledolter, J., & Rayburn, J. (1987). Some further  evidence on the stochastic properties of 
+systematic  
+risk. Journal of Business, 425-448. 
+Dimitrov, V., & Govindaraj, S. (2007). Reference-day risk:  
+observations and extensions. Journal of 
+Accounting,  
+Auditing & Finance, 22(4), 559-572. 
+Dimson, E. (1979). Risk measurement when shares are subject to  
+infrequent trading. Journal of Financial 
+Economics, 7(2),  
+197- 
+226. 
+Fabozzi, F. J., & Francis, J. C. (1978). Beta as a random coefficient.  
+Journal of Financial and Quantitative 
+Analysis, 13, 101-15. 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+Faff, R., & Brooks, R. (1996). Further evidence on the relationship  
+between beta stability and the length 
+of the estimation  
+period (No. 96-10). Retrieved from:  
+https://ideas.repec.org/p/fth/melrfi/96-10.html 
+Fama, E. F., & French, K. R. (1992). The cross section of expected stock  
+returns. Journal of Finance, 
+47(2), 427- 
+465. 
+Fama, E. F., & French, K. R. (2004). The capital asset pricing model:  
+theory and evidence. Journal of 
+Economic Perspectives, 18(3),  25–46.  http://dx.doi.org/10.1257/0895330042162430. 
+Gonzalez, M., Rodriguez, A., & Stein, R. (2014). Adjusted betas under  
+reference-day risk. The Engineering 
+Economist,  
+59(1), 79-88. 
+Heymans, A., & Brewer, W. P. (2015). The influence of volatility spill- 
+overs and market beta on portfolio 
+construction. South African  
+Journal of Economic and Management Sciences, 18(3), 277- 
+290. 
+JSE. (2017). What is the JSE All Share Index (ALSI)? Retrieved from:  
+https://www.jse.co.za/grow-mywealth/what-is-the-jse-all-share- index. 
+Lintner, J. (1965). The Valuation of Risk Assets and the Selection  
+of Risky Investments in Stock 
+Portfolios and Capital  Budgets. The Review of Economics and Statistics, 47(1),  
+13–17. 
+http://doi.org/10.2307/1924119. 
+Markowitz, H. M. (1952). Portfolio Selection. The Journal of  
+Finance, 7(1), 77. 
+http://doi.org/10.2307/2975974. 
+Markowitz, H.M. (1956). The optimization of a quadratic  function subject  
+to linear constraints. Naval 
+Research Logistics Quarterly, 3(1- 
+2):111-133. 
+Markowitz, H.M. (1959). Portfolio selection: Efficient diversification  
+of investments. New York: Wiley. 
+Montier, J. (2009). Behavioural Investing: a practitioner’s guide to  
+applying behavioural finance. John 
+Wiley & Sons. 
+Mossin, J. (1966). Equilibrium in a Capital Asset Market.  Econometrica,  34(4), 768–783. 
+http://doi.org/10.2307/1910098. 
+Electronic copy available at: https://ssrn.com/abstract=3123725
+
+Muller, C., & Ward, M. (2013). Style-based effects on the Johannesburg  Stock Exchange: A graphical timeseries approach. Investment  
+Analysts Journal, 77, 1–16.  
+Novak, J. (2015). Systematic risk changes, negative realized excess  
+returns and time-varying CAPM beta. 
+Journal of  
+Economics and  Finance, 65, 2015 (2), 167-190. 
+Sharpe, W. F. (1964). Capital Asset Prices: A Theory of Market  Equilibrium under Conditions of Risk. The 
+Journal of  
+Finance, 19(3), 425–442. http://doi.org/10.2307/2977928. 
+Strugnell, D., Gilbert, E., & Kruger, R. (2011). Beta, size and value  
+effects on the JSE, 1994–
+2007. Investment Analysts  
+Journal, 40(74), 1-17. 
+Ting, C. (2005). Which daily price is more efficient? (Vol. 1).  
+Working paper, Singapore Management 
+University.  
+Retrieved from:  https://www.researchgate.net/profile/Christopher_Ting/publ
+ 
+ication/260399763_Which_Daily_Price_is_More_Efficient/li 
+nks/53d5c5d70cf228d363ea103a.pdf. 
+Ting, C. (2006). Which daily price is less noisy?. Financial  
+Management, 35(3), 81-95. 
+Treynor, J. (1961). Market value, time, and risk. Unpublished  
+manuscript dated 08/08/1961, No. 95-209. 
+Van Rensburg, P., & Robertson, M. (2003). Size, price-to-earnings and  beta on the JSE Securities 
+Exchange. Investment Analysts  Journal, 32(58), 7-16. 
+Vasicek, O. A. (1973). A Note on Using Cross‐sectional  Information in  Bayesian Estimation of Security 
+Betas. The Journal of  Finance, 28(5), 1233-1239. 
+Ward, M., & Muller, C. (2012). Empirical Testing of the CAPM on  
+the JSE. Investment Analysts Journal, 
+76, 1–12.  
+Ward, M., & Muller, C. (2015). The Risk-Free Rate and the CAPM on the  
+JSE. Unpublished, 1–7. 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3123725

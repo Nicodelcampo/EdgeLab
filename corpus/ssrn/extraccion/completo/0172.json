@@ -1,0 +1,159 @@
+{
+  "doc_id": 172,
+  "titulo": "How Trading Barriers in Underlying Asset Markets Impact ETF Trading and Characteristics",
+  "resumen_operativo": "El paper examina cómo la unidad mínima de negociación (MTU) en los mercados subyacentes afecta al mercado de ETFs, usando datos manuales de 40 country ETFs listados en EE.UU. Los inversores institucionales negocian menos en ETFs cuyos subyacentes tienen MTU elevadas, con menor actividad de arbitraje institucional, mayor tracking error y menor probabilidad de informed trading (PIN). Un experimento natural con cambios de MTU en Japón, Singapur y Vietnam confirma que tras relajar las barreras de entrada, la actividad institucional en ETFs aumenta gradualmente y los indicadores mejoran de forma persistente.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Minimum Trading Unit",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Unidad mínima de acciones o valor monetario necesario para realizar una transacción en un mercado. Actúa como barrera de entrada que afecta la accesibilidad del mercado subyacente y, por ende, al ETF correspondiente.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "tracking error"},
+        {"tipo": "CAUSA", "objeto": "probability of informed trading"},
+        {"tipo": "APLICA_A", "objeto": "institutional trading activity"}
+      ],
+      "cita_textual": "MTUs represent the minimum number of shares or the minimum monetary value necessary for a transaction. They play a vital role in the efficient management and regulation of financial markets."
+    },
+    {
+      "nombre": "Exchange-Traded Fund",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Vehículo de inversión que replica índices de países específicos listado en el mercado estadounidense, permitiendo a inversores acceder a mercados extranjeros con la misma facilidad que el trading doméstico.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market linkage"},
+        {"tipo": "REQUIERE", "objeto": "underlying market accessibility"}
+      ],
+      "cita_textual": "These country ETFs have emerged as viable options for individual investors who want easy access to overseas markets."
+    },
+    {
+      "nombre": "Probability of Informed Trading",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de la probabilidad de que una transacción provenga de un inversor informado. En este estudio, una mayor accesibilidad del mercado subyacente se correlaciona con un PIN más alto en ETFs.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "PIN"},
+        {"tipo": "USA", "objeto": "informed trading"}
+      ],
+      "cita_textual": "Improved accessibility in the underlying market correlates with increased arbitrage activity, better tracking ability, and a higher probability of informed trading in ETFs."
+    },
+    {
+      "nombre": "Tracking Error",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre el precio del ETF y su Net Asset Value (NAV). Barreras de entrada elevadas en el mercado subyacente se asocian con mayores tracking errors.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "ETF pricing efficiency"},
+        {"tipo": "SE_OPONE_A", "objeto": "arbitrage activity"}
+      ],
+      "cita_textual": "Those that have high entry barriers exhibit a lower institutional arbitrage activity, a greater spread between the ETF price and the net asset value (NAV), greater tracking errors."
+    },
+    {
+      "nombre": "Institutional Trading Activity",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Actividad de negociación de inversores institucionales en ETFs, medida por el número y volumen de transacciones institucionales. Es sensible a las barreras del mercado subyacente.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "market accessibility"},
+        {"tipo": "USA", "objeto": "arbitrage activity"}
+      ],
+      "cita_textual": "Institutional investors are less active in ETFs when the underlying market is less accessible."
+    },
+    {
+      "nombre": "Market Accessibility",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Grado de facilidad con que los inversores pueden participar en un mercado, medido a través de la MTU como proxy. Afecta los patrones de inversión y características de los ETFs.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "trading barriers"},
+        {"tipo": "CAUSA", "objeto": "institutional trading activity"}
+      ],
+      "cita_textual": "We adopt the minimum trading unit (MTU) as a proxy for market accessibility."
+    },
+    {
+      "nombre": "Arbitrage Activity",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Actividad de arbitraje institucional entre el ETF y su subyacente. Mercados subyacentes más accesibles fomentan mayor actividad de arbitraje en ETFs.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "tracking error"},
+        {"tipo": "REQUIERE", "objeto": "market accessibility"}
+      ],
+      "cita_textual": "Improved accessibility in the underlying market correlates with increased arbitrage activity, better tracking ability, and a higher probability of informed trading in ETFs."
+    },
+    {
+      "nombre": "Natural Experiment",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Diseño empírico que explota cambios exógenos de MTU en los mercados de Japón, Singapur y Vietnam para aislar el efecto causal de la accesibilidad del subyacente sobre los ETFs.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Minimum Trading Unit"},
+        {"tipo": "APLICA_A", "objeto": "panel regression"}
+      ],
+      "cita_textual": "We construct a natural experiment based on exogenous events, specifically MTU changes in the Japanese, Singapore, and Vietnam stock markets."
+    },
+    {
+      "nombre": "Panel Regression",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de regresión con datos de panel aplicado a 40 country ETFs listados en EE.UU. para examinar el impacto de la accesibilidad del mercado subyacente sobre los ETFs.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "country ETF"},
+        {"tipo": "APLICA_A", "objeto": "institutional trading activity"}
+      ],
+      "cita_textual": "We employ a panel regression model to examine the impact of underlying market accessibility on ETFs using US-listed 40 country ETFs."
+    },
+    {
+      "nombre": "Net Asset Value",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Valor liquidativo del ETF. La diferencia entre el precio del ETF y su NAV (spread) es mayor cuando el mercado subyacente tiene barreras de entrada elevadas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "tracking error"},
+        {"tipo": "EQUIVALE_A", "objeto": "NAV"}
+      ],
+      "cita_textual": "A greater spread between the ETF price and the net asset value (NAV), greater tracking errors, and a lower probability of informed trading (PIN)."
+    },
+    {
+      "nombre": "Market Linkage",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Conexión entre el mercado del ETF y su mercado subyacente, afectada por las barreras de negociación. Cambios regulatorios en el subyacente impactan significativamente al ETF.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "arbitrage activity"},
+        {"tipo": "PARTE_DE", "objeto": "ETF market structure"}
+      ],
+      "cita_textual": "Due to the high trading volume and the varied objectives of institutional investors in the ETF market, even minor impacts on the underlying market result in substantial gains or losses for numerous stakeholders."
+    },
+    {
+      "nombre": "Informed Trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Negociación basada en información privada. En este contexto, la probabilidad de informed trading en ETFs es menor cuando el mercado subyacente tiene barreras de entrada elevadas.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "Probability of Informed Trading"},
+        {"tipo": "SE_OPONE_A", "objeto": "trading barriers"}
+      ],
+      "cita_textual": "Improved accessibility in the underlying market correlates with increased arbitrage activity, better tracking ability, and a higher probability of informed trading in ETFs."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Los inversores institucionales negocian menos en ETFs cuyos mercados subyacentes tienen MTU elevadas. El coeficiente de MTU sobre el volumen institucional de 20K shares es 3.1581 con t-stat de 19.65 (Panel C) incluyendo EWY y DXJ.",
+      "mercado": "40 US-listed country ETFs",
+      "periodo": "Panel completo con 2,273-2,893 observaciones",
+      "magnitud": "Coeficiente MTU sobre 20K INST #: 3.1581*** (t=19.65); R-squared hasta 0.164",
+      "condiciones": "Panel regression con variables de control y efectos fijos de ETF",
+      "robustez": "alta",
+      "cita_textual": "3.1581*** (19.65) ... R-squared 0.162 Obs 2,893"
+    },
+    {
+      "afirmacion": "La actividad de arbitraje institucional es menor, el tracking error mayor y el PIN menor en ETFs con barreras de entrada elevadas en sus subyacentes.",
+      "mercado": "US-listed country ETFs",
+      "periodo": "Muestra completa",
+      "magnitud": "No se reportan magnitudes exactas de arbitraje y PIN en la sección visible, pero los coeficientes son estadísticamente significativos",
+      "condiciones": "Modelos con efectos fijos de ETF y variables de control",
+      "robustez": "alta",
+      "cita_textual": "Those that have high entry barriers exhibit a lower institutional arbitrage activity, a greater spread between the ETF price and the net asset value (NAV), greater tracking errors, and a lower probability of informed trading (PIN)."
+    },
+    {
+      "afirmacion": "Tras la reducción de MTU en Japón, Singapur y Vietnam, el trading institucional en ETFs aumenta gradualmente, el tracking error disminuye y el PIN aumenta de forma persistente.",
+      "mercado": "Country ETFs que siguen a Japón, Singapur y Vietnam",
+      "periodo": "Ventana alrededor de los cambios de MTU en cada país",
+      "magnitud": "Efecto creciente post-cambio de MTU con persistencia a largo plazo",
+      "condiciones": "Experimento natural con eventos exógenos de cambio de MTU",
+      "robustez": "alta",
+      "cita_textual": "The proportion of institutional trading in each country ETFs decreases, the institutional arbitrage activity increases, tracking errors decrease, and PIN increases after the relaxation of underlying markets trading barriers."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "El estudio usa datos diarios/semanales de country ETFs; la relación MTU-PIN es relevante para ajustes intradía de arbitraje pero no se trabaja con frecuencias intraday."}
+}

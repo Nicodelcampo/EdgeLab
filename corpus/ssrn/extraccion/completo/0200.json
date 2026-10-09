@@ -1,0 +1,98 @@
+{
+ "doc_id": 200,
+ "titulo": "LLM-Driven Drift Models for Brownian Motion in Quantitative Finance",
+ "resumen_operativo": "Propone un marco teórico que integra Modelos de Lenguaje Grande (LLMs) con modelos de tiempo continuo basados en movimiento browniano. Plantea utilizar los embeddings de LLMs extraídos de textos del mercado (noticias, order-book) para parametrizar el 'drift' (y la volatilidad) de Ecuaciones Diferenciales Estocásticas (SDEs). El paper prueba matemáticamente la buena formulación (existencia y unicidad), detalla la obtención de medidas neutrales al riesgo mediante la transformada de Girsanov y define un estimador de Minimización de Riesgo Empírico (ERM) consistente en alta frecuencia. Es un documento puramente conceptual, ya que delinea un protocolo de evaluación pero explícitamente no aporta resultados numéricos empíricos.",
+ "calidad_paper": "media",
+ "conceptos": [
+  {
+   "nombre": "LLM-driven drift SDE",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Ecuación diferencial estocástica en la cual el drift (y opcionalmente la difusión) se modela como un funcional paramétrico medible de representaciones embebidas (LLM embeddings) del contexto de mercado.",
+   "relaciones": [],
+   "cita_textual": "We define SDEs whose drift is a measurable functional of LLM embeddings of contextual text."
+  },
+  {
+   "nombre": "Girsanov transform",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Herramienta de cálculo estocástico utilizada para cambiar la medida de probabilidad física a una medida equivalente de martingala (risk-neutral), manteniendo la estructura del SDE modificado por el LLM.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "LLM-driven drift SDE"
+    }
+   ],
+   "cita_textual": "We describe an equivalent martingale measure via a Girsanov transform and specify sufficient integrability (Novikov/Kazamaki-type) conditions."
+  },
+  {
+   "nombre": "Empirical risk minimization (ERM)",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Técnica estadística propuesta para estimar los parámetros del drift condicionado por el texto, usando un enfoque de mínimos cuadrados sobre incrementos muestreados en alta frecuencia.",
+   "relaciones": [
+    {
+     "tipo": "ESTIMA",
+     "objeto": "LLM-driven drift SDE"
+    }
+   ],
+   "cita_textual": "We propose ERM for drift estimation from high-frequency increments with LLM features and provide a consistency theorem under standard M-estimation conditions."
+  },
+  {
+   "nombre": "LLM-Conditioned Volatility",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Una extensión del modelo base donde el coeficiente de difusión o volatilidad depende directamente del embedding de texto, permitiendo capturar saltos o regímenes heterocedásticos.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "LLM-driven drift SDE"
+    }
+   ],
+   "cita_textual": "Empirically, text-driven regimes often change volatility, not just drift. We therefore consider: dXt = µθ(t, Xt, Zt) dt + σφ(t, Xt, Zt) dWt."
+  },
+  {
+   "nombre": "hitting times",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Tiempo de primer impacto sobre una barrera de precios, sugerido como un estadístico de tiempo continuo para validar si el modelo responde adecuadamente a regímenes definidos por el embedding.",
+   "relaciones": [],
+   "cita_textual": "Another intrinsic continuous-time statistic is the first hitting time of a barrier a ∈ R"
+  },
+  {
+   "nombre": "quadratic variation",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Medida empleada para diagnosticar empíricamente si la función de volatilidad condicionada ajusta correctamente las variaciones de precio en regímenes de mercado detectados textualmente.",
+   "relaciones": [],
+   "cita_textual": "regime-wise quadratic variation becomes a direct diagnostic for how well σφ responds to embedding-defined regimes."
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "La inclusión del estado textual (embeddings de un LLM) en el drift de una SDE no destruye las propiedades de martingala ni la existencia de soluciones fuertes, siempre que se cumplan condiciones clásicas de Lipschitz y de crecimiento lineal.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "Bajo condiciones estándar de M-estimation y ergodicidad estacionaria, el estimador de Minimización de Riesgo Empírico (ERM) propuesto en el régimen de alta frecuencia converge asintóticamente a los parámetros poblacionales.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "El documento no presenta pruebas experimentales cuantitativas en datasets reales, dejando la validación de sus beneficios predictivos para trabajo futuro.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "media",
+  "nota": "El marco teórico está directamente pensado para integrar señales del orden de la microestructura y sampling de alta frecuencia con representaciones semánticas del LLM (noticias o textos del libro de órdenes). A nivel conceptual resulta un avance muy prometedor para trading algorítmico intradía, pero su aplicabilidad concreta está severamente restringida por la ausencia de implementaciones prácticas o mediciones del costo computacional de evaluación en tiempo real."
+ }
+}

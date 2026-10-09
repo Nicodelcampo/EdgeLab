@@ -1,0 +1,1711 @@
+ Electronic copy available at: http://ssrn.com/abstract=2387626 
+Transparency and Volatility: A Study of Electronic
+Security Trading Platform with Algorithmic Trading
+Li, Xihao∗
+working paper
+2014
+Abstract
+Under the background of the electronic security trading platform Xetra
+operated by Frankfurt Stock Exchange, we consider the Xetra auction market system (XAMS) from ‘bottom-up’, which the interaction among heterogeneous traders and Xetra auction market mechanism generates nonequilibrium price dynamics. We construct the corresponding agent-based
+model of XAMS and conduct market experiments with the Monte Carlo
+computer simulation.
+Then we investigate the role of the price setter
+who assumes its trading behavior can manipulate the market price. The
+main ﬁnding is that the introduction of the price setter in the setting of
+XAMS improves market eﬃciency while does not signiﬁcantly inﬂuence
+price volatility of the market.
+Keywords: market microstructure, transparency, volatility, algorithmic
+trading, electronic security trading platform, auction market.
+JEL
+Classiﬁcation:
+B4, C6, C9, D4, D5, D6, G1.
+∗Department of Economics and Social Sciences (DiSES), Universit`a Politecnica delle
+Marche, Piazzale Martelli 8, 60121 Ancona, Italy.
+Email: xihao.li@gmail.com.
+1
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+ Electronic copy available at: http://ssrn.com/abstract=2387626 
+1
+Introduction
+The advance in Information Technology has constantly injected faster and
+cheaper computational power in every corner of our society, ﬁnancial industry is with no exception. As a consequence, new pattern of trading has risen in
+ﬁnancial industry. On one hand, we have witnessed the prevalence of electronic
+security trading platforms in global markets. On the other hand, it becomes
+fashionable among players in electronic trading platforms to promote algorithmic trading - the use of computer algorithm to automatically execute order
+ﬂows to trade in electronic platforms.
+The driving force of this fashionable
+trend in algorithmic trading is on its proﬁtability. It becomes inevitable for the
+prevailing on this pattern of trading.
+As the other side of the same coin, electronic trading platforms provide extensive market transparency, when combining with extensive employment of
+algorithmic trading, have brought us unprecedented speed of market crashes,
+for example, in 2010 US Flash Crash, US ﬁnancial markets recorded within
+30 minutes its biggest one-day point decline on the intraday basis in history,
+see SEC report (CFTC/SEC, 2010). This brings a new challenge to regulation
+in this type of digital markets, specially concerned with the market volatility
+under ”the race to zero”, e.g. see (Haldane, 2011). It leads to an open issue
+on studying in the ﬁeld of economic research the relationship between market
+transparency and market volatility under the new environment of electronic
+trading platforms with prevailing algorithmic trading.
+The relationship between market transparency and volatility has been pervasively investigated in the economic literature of market microstructure.
+For
+example, theoretical research in (Madhavan, 1996) develops a model of imperfect information game between strategic traders in auction markets. It shows
+transparency can increase price volatility and lower liquidity due to the increasing eﬀects of asymmetric information between traders. Contrary result has been
+obtained in (Pagano & R¨oell, 1996) which considers order book transparency,
+and compares the eﬀect of market transparency in auction markets and dealer
+markets with informed traders and uninformed traders. It shows these market
+mechanisms are attached with diﬀerent levels of transparency, and higher degree of transparency generally lowers trading costs for uninformed traders while
+it does not necessarily increase price variability as the implicit bid-ask spread
+gets tighter.
+Empirically, the relationship between transparency and volatility has been examined with market data among global stock exchanges. For example, (Madhavan et al., 2005) shows that an increase in market transparency on Toronto
+Stock Exchange in 1990 leads to an increase in price volatility. Contrary result
+proposes in (Boehmer et al., 2005), which investigates NYSE market data. It
+shows an increase in pre-trade transparency attracts traders to manage limit2
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+order exposure by submitting smaller orders with less price impacts, thus results in an improvement in certain dimensions of market quality. (Sakawa &
+Ubukata, 2012) investigates the market data in Tokyo Stock Exchange. It shows
+an increase in market transparency insigniﬁcantly improves market volatility.
+Other research results has been investigated in the survey of (Madhavan, 2000),
+(Stoll, 2003), and (Biais et al., 2005), among others. The research in the strand
+of market microstructure has a mixed conclusion that the relationship between
+market transparency and market volatility depends on speciﬁc forms of market
+mechanism such as (opening/closing) auctions or continuous trading. Market
+transparency tends to be linked with information asymmetry among diﬀerent
+groups of traders, which has impact on market volatility.
+Another strand of research one may consult is on the role of algorithmic trading in electronic trading platforms. In this strand, algorithmic trading is also
+coined with the name of high frequency trading (HFT). Empirically, (Gerig,
+2012) studies NASDAQ data. It shows price synchronization generated by HFT
+leads to market instability during times of stress. Contrary ﬁnding is shown in
+(Hendershott & Riordan, 2011b), (Brogaard, 2011), and (Hasbrouck & Saar,
+2013). These authors share the ﬁnding that HFT does not increase intraday
+volatility in NASDAQ market. (Hendershott & Riordan, 2011a) and (Groth,
+2011) analyze the market data in Deutsche Boerse. Both ﬁnd no positive correlation between HFT and market volatility in German markets. (Kirilenko
+et al., 2011) conducts an empirical case study on the 2010 US Flash Crash.
+It concludes that HFTs did not trigger the Flash Crash, but they ampliﬁed
+market volatility when responding to the unusual selling pressure.
+Theoretically, Martinez & Rosu (2011) develops an equilibrium model by following the classical model in Kyle (1985). It shows HFTs does not destabilize
+markets, although HFTs generate a large percentage of trading volume and
+price volatility. Jarrow & Protter (2012) models HFT to trade quickly to exploit the mispricing or the market signal. It shows the introduction of HFT both
+increases market volatility and generates abnormal opportunities for HFT at
+the expense of slow traders. It shows a mixed ﬁnding that algorithmic trading
+generates low latency which lowers market volatility, while large trading volumes has a negative impact on price volatility. Although this strand of research
+comes to no consensus on whether market transparency with participation of
+HFT and algorithmic trading leads to market volatility or not, it indicates that
+algorithmic trading promotes a new type of information asymmetry, i.e. HFT
+has the speed advantage for proﬁt exploitation by realizing its order speciﬁcation in a faster pace than conventional traders with low trading frequency,
+see Foucault et al. (2013). On the other hand, it has diﬃculty to develop a
+formal model for strategies that HFT adopts to utilize the speed advantage for
+proﬁt, for the reason that these strategies are at the core of the proﬁt generator
+for trading ﬁrms, which remains black-box for outsiders. Another factor that
+3
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+contributes to the diﬃculty is that strategies on HFT are contingent to speciﬁc
+form of market mechanism that is generically complex computational process.
+In view of this diﬃculty, we apply a pragmatic perspective to conduct our
+research. First, we consider as background a speciﬁc form of market mechanism, (opening/closing) auction conducted in Xetra, the pan-European electronic trading system operated by Deutsche Boerse, see Deutsche B¨orse Group
+(2013).
+Xetra auction belongs to the type of multi-unit double auction.
+It
+mainly consists of the call phase and the price determination phase. During
+the call phase, traders submit to the system order speciﬁcations, e.g. market
+orders and limit orders.
+The system collects these orders into a central order book without giving rise to transactions. The price determination phase
+follows when the call phase stops randomly after a ﬁxed time span.
+Given
+the central order book, the system applies Xetra auction market mechanism
+(XAMM) determines the trading price and the trading volume in the price determination phase by applying Xetra auction trading rules speciﬁed in Deutsche
+B¨orse Group (2013). Under the background of Xetra auction market, we assume pre-trade transparency as the market transparency, i.e. during the call
+phase, traders obtain real-time information about the central order book. This
+assumption is mainly for simplifying our modeling work, but considering the
+current Xetra auction provides the real-time information for the ﬁrst ﬁve best
+prices listed on both the buy side and the sell side of the central order book
+during the call phase, this assumption is by no means unrealistic.
+We then develop the representation of HFT with speed advantage by the role
+of price setter that is assumed to obtain ﬁrst priority for its order execution
+in Xetra auction market. We further assume, besides pre-trade transparency,
+the price setter has full knowledge on the market microstructure of Xetra auction, which implies that, by submitting calculated order speciﬁcation, the price
+setter has the capability of intentional price manipulation against the central
+order book. When combining with the assumption that the price setter’s order speciﬁcation is to be executed with ﬁrst priority, We grant the price setter
+the trading strategy of utilizing the market transparency given by Xetra auction market and its speed advantage for proﬁt exploitation by means of price
+manipulation.
+To investigate the relationship between market transparency and market volatility in Xetra auction market, we develop a market experiment to compare the
+market dynamics generated by Xetra auction market system (XAMS) with the
+participation of the price setter with that generated by a benchmark of Xetra auction market system without the participation of the price setter. This
+market experiment is involved with modeling XAMM to determine the market price and the trading volume as well as modeling the price setter’s trading
+strategy, which are generically computational process. In this regard, we develop the market experiment by computer simulation with the methodology of
+4
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+agent-based modeling.
+Computer simulation with the methodology of agent-based modeling in studying trading behavior and market mechanism is not new, e.g. see LeBaron (2006)
+for an early review of applying agent-based modeling in ﬁnancial market. A
+more recent study is shown in Gsell (2008) that simulates with two types of
+traders in continuous double auction market: stylized traders (combination
+of informed trader, momentum trader, noise trader) and algorithmic traders.
+This strand of study tends to use simpliﬁed model of market mechanism such
+as continuous double auction or single-unit double auction. In our work, we
+aim at including the actual auction market mechanism, XAMM. The inclusion of XAMM has inﬂuences in two aspects. First, XAMM determines the
+trading price and trading volume in market dynamics. Secondly, we have to
+provide explicit model on how the trader utilize the knowledge of XAMM for
+its trading strategy. We show how to handle these two aspects by developing
+the agent-based model of XAMS in section 2. Then with the implementation
+of the agent-based model by employing the computer programming language
+Groovy/Java, we conduct in section 3 the computational market experiment to
+simulate XAMS and preform statistical analysis on simulation results to compare the market dynamics for XAMS and the benchmark system. 4 concludes
+with a brief discussion on implications and possible extensions of our work.
+2
+Agent-based Model of Xetra Auction Market System
+We follow the methodology for standardized agent-based modeling proposed in
+Li (2014). Consider an economy with one risky asset market and one risk-free
+asset market for trading periods t = 1, . . . , T. The economy applies Euro (e)
+as the currency.
+The risky asset considered in the market has no dividend.
+Moreover, the risky asset is traded in integer units, i.e. traders can trade 19
+shares of the risky asset but not 19.81 shares. The risk-free asset is divisible in
+any trading quantity with the trading price normalized to 1. It has a constant
+interest factor R = 1 + r with r denoting the nominal interest rate. N traders
+participate in the economy to trade in both markets. The economy considers
+no transaction cost and no short sale constraint for traders.
+The risky asset market is a Xetra auction market that holds one Xetra auction
+for each trading period to determine the market price and the trading volume
+by the market mechanism of XAMM. Speciﬁcally, XAMM opens the market
+at the call phase, disseminating the real-time information of the central order
+book.
+Upon observing the real-time trading data from the market, traders
+perform their investment decisions and submit orders. XAMM then collects
+the submitted orders to the central order book and simultaneously updates the
+5
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+real-time trading data. The call phase stops randomly after a ﬁxed time span
+and the price determination phase follows to determine Xetra auction price and
+the ﬁnal transaction volumes. After that, XAMM cancels the unexecuted part
+of the orders and conducts the settlement to complete the payment for each
+transaction. After trading in Xetra auction market, traders interact with the
+risk-free asset market and trade for the risk-free asset.
+We regard the risk-free asset market as the environment of Xetra auction market.
+Given the information ﬂows from the risk-free asset market, the interactions among traders and XAMM provide the functionality of Xetra auction
+market, i.e.
+determining the trading price and reallocating the risky asset
+among traders. The ﬁrst step for developing the agent-based model of XAMS
+is to specify constructive aspects of the system as follows.
+Example 1 (Constructive aspects of XAMS).
+I. XAMS considers economic entities which operate in the market, i.e. N
+traders, XAMM, the numeraire employed in the market, and the risky
+asset traded in the market. The environment of XAMS is the risk-free
+asset market.
+II. XAMS connects to the risk-free asset market to request the information of the interest factor R as well as to transmit trader’s trading request
+on the risk-free asset. The risk-free asset market connects to XAMS to
+inform traders the interest factor R as well as their realized trading quantities of the risk-free asset. These information ﬂows represent the interrelation between XAMS and its environment.
+III. XAMS is regarded as a dynamical system. We apply the concept of
+the system clock to represent the time horizon considered in the model.
+Thus, elements of XAMS are: N traders, XAMM, the risky asset, the
+numeraire, and the system clock.1
+IV. Consider a decentralized market. Traders connect with XAMM in
+order to perform the trading behavior, whereas there is no direct connection among traders. Traders and XAMM connect to the risky asset, the
+numeraire, and the system clock to have access to the associated information. Denote Xetra auction market center in the agent-based model
+as a composite of XAMM, the numeraire, the risky asset, and the system
+clock. Then the structure of XAMS follows the type of the star network,
+see Figure 1. Xetra auction market center as the central node in the star
+network connects with all other nodes of traders in the agent-based model.
+1One can exclude listing the numeraire and the system clock as the elements of XAMS, by
+assuming these two elements are automatically attached in the agent-based model.
+6
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+…………..…...
+Risky
+Asset
+XAMM
+System
+Clock
+Numeraire
+Figure 1: Network diagram for the agent-based model of XAMS.
+Classify agents in XAMS as active economic agents of N traders and XAMM
+with passive economic agents of the risky asset, the numeraire, and the system
+clock. The second step for standardized agent-based modeling is to construct
+these agents respectively.
+We consider three types of traders in XAMS. The ﬁrst type is the price setter
+who assumes that, with the knowledge on XAMM and the real-time trading
+data, it could manipulate the current trading price as well as its transaction
+volume by its trading behavior. The second type is the price taker who believes
+that its trading behavior has no impact on the market. The last type is the noise
+trader who is assumed to act randomly in the market. Assume trader 1 in the
+agent-based model as the price setter, trader j ∈{2, . . . , N −1} as price takers,
+and trader N as the noise trader.
+For simplicity, further assume that each
+trader submits at most one order in each trading period with price setter and
+noise trader submitting market order and price takers submitting limit order.
+We follow Module of Active Economic Agent (MAEA) proposed in Li (2014)
+as the blueprint for modeling active economic agent, with emphasis on agent’s
+information acquirement, forecasting, objective, and action transmission. We
+construct trader 1 in Example 2, trader j ∈{2, . . . , N −1} in Example 3, and
+7
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+trader N in Example 4 respectively.
+Example 2 (Trader 1). Trader 1 connects with Xetra auction market center
+and the risk-free asset market. At the beginning of the trading period t, trader
+1 is with the initial endowment (y(1)
+0 [t], Z(1)
+0 [t]) where y(1)
+0 [t] is the initial holding
+of the risk-free asset and Z(1)
+0 [t] is the initial holding of the risky asset. Trader 1
+obtains the information of the interest factor R from the risk-free asset market
+and the real-time data set I0[t] of the central order book from XAMM.
+Then trader 1 computes its forecast on the expected mean value qe(1)[t] of the
+risky asset price for the next trading period t + 1 and its associated variance
+V e(1)[t]. As trader 1 can manipulate the current trading price as well as its
+transaction volume by submitting its market order, it performs its subjective
+forecast P e(1)
+X
+[t](Qm) on the current Xetra auction price and Ze(1)
+X
+[t](Qm) on
+the ﬁnal transaction volume for period t which are functions with the control
+variable Qm of the quoted trading quantity in its market order. The values of
+P e(1)
+X
+[t](Qm) and Ze(1)
+X
+[t](Qm) are the trading price and the ﬁnal transaction
+volume that XAMM would realize by perceiving the trader’s market order with
+quoted trading quantity Qm would be added to the current central order book
+in the market.
+With its forecast of {P e(1)
+X
+[t](Qm), Ze(1)
+X
+[t](Qm), qe(1)[t], V e(1)[t]}, the trader has
+the budget constraint:
+P e(1)
+X
+[t](Qm) · Ze(1)
+X
+[t](Qm) + ye(1)[t] = 0,
+(1)
+where ye(1)[t] is the trader’s expected trading quantity of the risk-free asset in
+period t. The trader expects the portfolio holding after trading in period t as
+(y(1)
+0 [t] + ye(1)[t], Z(1)
+0 [t] + Ze(1)
+X
+[t](Qm)). With the budget constraint (1), the
+trader considers the mean value mean(1)[t] of its future wealth at the end of
+the trading period t as:
+mean(1)[t]
+=
+{qe(1)[t] −R · P e(1)
+X
+[t](Qm)} · Ze(1)
+X
+[t](Qm)
++qe(1)[t] · Z(1)
+0 [t] + Ry(1)
+0 [t].
+(2)
+The associated variance var(1)[t] is as:
+var(1)[t] = {Z(1)
+0 [t] + Ze(1)
+X
+[t](Qm)}2 · V e(1)[t].
+(3)
+We assume that trader 1 takes the linear mean-variance preference. The trader
+presents its objective as the portfolio selection problem:
+max
+Qm∈Z
+mean(1)[t] −α1
+2 var(1)[t]
+(4)
+⇔
+max
+Qm∈Z
+{qe(1)[t] −R · P e(1)
+X
+[t](Qm)} · Ze(1)
+X
+[t](Qm)
++qe(1)[t] · Z(1)
+0 [t] + Ry(1)
+0 [t] −α1
+2 {Z(1)
+0 [t] + Ze(1)
+X
+[t](Qm)}2 · V e(1)[t],
+8
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+where α1 is a constant measure of absolute risk aversion. Trader 1 solves this
+portfolio selection problem (4) and obtains the integer maximizer Q(1)
+m [t] with
+Q(1)
+m [t] > 0 denoting the trading quantity on the demand side and Q(1)
+m [t] < 0
+denoting the trading quantity on the supply side. Then the trader transmits its
+action by submitting the market order with the quoted trading quantity Q(1)
+m [t]
+to XAMM.
+Trader 1 realizes the trading price PX[t] and its transaction volume Z(1)
+X [t]
+after XAMM determines the trading price and the trading volume in the price
+determination phase. Then the trader completes with XAMM the payment for
+its transaction.
+After that, trader 1 obtains from the risk-free asset market the share y(1)[t] =
+−PX[t] · Z(1)
+X [t] of the risk-free asset.
+The portfolio holding that the trader
+acquires after trading in period t is (y(1)
+0 [t] + y(1)[t], Z(1)
+0 [t] + Z(1)
+X [t]) and the
+trader’s initial endowment of the next trading period t + 1 is
+(
+y(1)
+0 [t + 1]
+= R(y(1)
+0 [t] + y(1)[t]),
+Z(1)
+0 [t + 1]
+= Z(1)
+0 [t] + Z(1)
+X [t].
+(5)
+The dynamics of trader 1, i.e.
+its decision making process, is illustrated in
+Figure 2.
+Example 3 (Trader j = 2, . . . , N −1). Analogous to trader 1, trader j connects with Xetra auction market center and the risk-free asset market.
+At
+the beginning of the trading period t, trader j is with the initial endowment
+(y(j)
+0 [t], Z(j)
+0 [t]). The trader obtains the information of the interest factor R and
+the real-time order book data set I0[t].
+Trader j computes its forecast on the expected mean value qe(j)[t] of the risky
+asset price for the next trading period t + 1 and its associated variance V e(j)[t].
+As the trader has to decide a limit price to quote in its limit order, the trader
+conducts its subjective forecast P e(j)
+X
+[t] on the current Xetra auction price and
+regards its forecast as the limit price. The trader expects it will realize from
+the market the quoted trading quantity Ql in its limit order.
+With its forecast of {qe(j)[t], V e(j)[t], P e(j)
+X
+[t]}, the trader has the budget constraint:
+P e(j)
+X
+[t] · Ql + ye(j)[t] = 0,
+(6)
+where ye(j)[t] is the trader’s expected trading quantity of the risk-free asset in
+period t.
+The trader expects the portfolio holding after trading in period t
+as (y(j)
+0 [t] + ye(j)[t], Z(j)
+0 [t] + Ql). With the budget constraint (6), the trader
+considers the mean value mean(j)[t] of its future wealth at the end of the trading
+period t as:
+mean(j)[t] = {qe(j)[t] −R · P e(j)
+X
+[t]} · Ql + qe(j)[t] · Z(j)
+0 [t] + Ry(j)
+0 [t].
+(7)
+9
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+Collect information
+START
+END
+Generate initial state
+Trade for             of the risk-free asset from 
+the risk-free asset market 
+]
+[
+)1(
+t
+y
+Complete the payment for the transaction
+Select the optimal market order 
+to 
+maximize the trader’s expected utility on the 
+mean-variance preference 
+]
+[
+)1(
+t
+Qm
+Realize the final transaction volume
+with the trading price
+]
+[
+)
+1
+(
+t
+Z X
+]
+[t
+PX
+Forecast the expected mean value
+, 
+the associated variance    
+, the expected 
+Xetra auction price function 
+, 
+and the expected Xetra auction allocation 
+function
+]
+[
+)
+1
+(
+t
+qe
+)
+](
+[
+)1(
+m
+e
+X
+Q
+t
+Z
+)
+](
+[
+)1(
+m
+e
+X
+Q
+t
+P
+]
+[
+)
+1
+(
+t
+V e
+Submit the optimal market order
+]
+[
+)
+1
+(
+t
+Q m
+Figure 2: Decision making process of trader 1 in Example 2.
+The associated variance var(j)[t] is as:
+var(j)[t] = {Z(j)
+0 [t] + Ql}2 · V e(j)[t].
+(8)
+Assume that trader j takes the linear mean-variance preference. The trader
+presents its objective as the portfolio selection problem:
+max
+Ql∈Z
+mean(j)[t] −αj
+2 var(j)[t]
+(9)
+⇔
+max
+Ql∈Z
+{qe(j)[t] −R · P e(j)
+X
+[t]} · Ql
++ qe(j)[t] · Z(j)
+0 [t] + Ry(j)
+0 [t] −αj
+2 {Z(j)
+0 [t] + Ql}2 · V e(j)[t],
+10
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+where αj is a constant measure of absolute risk aversion. Trader j solves this
+portfolio selection problem (9) and obtains the integer maximizer Q(j)
+l [t]. Then
+the trader transmits its action by submitting its limit order with the pricequantity pair (P e(j)
+X
+[t], Q(j)
+l [t]) to XAMM.
+Trader j realizes the trading price PX[t] and its transaction volume Z(j)
+X [t]
+after XAMM determines the trading price and the trading volume in the price
+determination phase. Then the trader completes with XAMM the payment for
+its transaction.
+After that, trader j attains from the risk-free asset market the share of risk-free
+asset y(j)[t] = −PX[t] · Z(j)
+X [t]. The portfolio holding that the trader acquires
+after trading in period t is (y(j)
+0 [t] + y(j)[t], Z(j)
+0 [t] + Z(j)
+X [t]) and the trader’s
+initial endowment of the next trading period t + 1 is
+(
+y(j)
+0 [t + 1]
+= R(y(j)
+0 [t] + y(j)[t]),
+Z(j)
+0 [t + 1]
+= Z(j)
+0 [t] + Z(j)
+X [t].
+(10)
+The decision making process of trader j is illustrated in Figure 3.
+Example 4 (Trader N). Consider trader N is with the initial endowment of
+(y(N)
+0
+[t], Z(N)
+0
+[t]) at the beginning of the trading period t. Trader N obtains the
+information of the interest factor R from the risk-free asset market.
+The trader conducts no forecasting, it simply selects Q(N)
+m [t] randomly from
+the set Qrange of all possible trading quantities considered by the noise trader.
+Then the trader constructs its market order with the quoted trading quantity
+Q(N)
+m [t] and submits the order to XAMM.
+Trader N realizes the trading price PX[t] and its transaction volume Z(N)
+X [t]
+after XAMM determines the trading price and the trading volume in the price
+determination phase. Then the trader completes with XAMM the payment for
+its transaction.
+After that, trader N obtains from the risk-free asset market the shares of the
+risk-free asset y(N)[t] = −PX[t] · Z(N)
+X [t]. The portfolio holding that the trader
+acquires after trading in period t is (y(N)
+0
+[t] + y(N)[t], Z(N)
+0
+[t] + Z(N)
+X [t]) and the
+trader’s initial endowment for the next trading period t + 1 is
+(
+y(N)
+0
+[t + 1]
+= R(y(N)
+0
+[t] + y(N)[t]),
+Z(N)
+0
+[t + 1]
+= Z(N)
+0
+[t] + Z(N)
+X [t].
+(11)
+The decision making process of trader N is illustrated in Figure 4.
+XAMM is another type of active economic agent considered in the agent-based
+model. It has the objective of determining Xetra auction price and the ﬁnal
+transaction volume according to the central order book.
+11
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+Collect information
+START
+END
+Generate initial state
+Complete the payment for the transaction
+Trade for             of the risk-free asset from 
+the risk-free asset market 
+]
+[
+)
+(
+t
+y j
+Forecast the expected mean value
+, 
+the associated variance    
+, and the 
+expected Xetra auction price
+]
+[
+)
+(
+t
+q
+j
+e
+]
+[
+)
+(
+t
+P
+j
+e
+X
+]
+[
+)
+(
+t
+V
+j
+e
+Submit the optimal limit order
+])
+[
+],
+[
+(
+)
+(
+)
+(
+t
+Q
+t
+P
+j
+l
+j
+e
+X
+Select the optimal limit order
+to maximize the trader’s 
+expected utility 
+])
+[
+],
+[
+(
+)
+(
+)
+(
+t
+Q
+t
+P
+j
+l
+j
+e
+X
+Realize the final transaction volume
+with the trading price
+]
+[
+)
+(
+t
+Z
+j
+X
+]
+[t
+PX
+Figure 3: Decision making process of trader j in Example 3.
+Example 5 (XAMM). At the beginning of the trading period t, XAMM has
+historical trading prices PX[i] for trading period i ∈{−KXAMM + 1, . . . , 0}
+with the memory span KXAMM > 0.
+It contains trading information (I0[i],
+PX[i], ZX[i]) for trading period i ∈{1, . . . , t −1} where I0[i] is the order book
+data set at the end of the call phase, PX[i] is the Xetra auction price, and
+ZX[i] = {Z(1)
+X [i], . . . , Z(N)
+X [i]} is the collection of the ﬁnal transaction volume
+Z(j)
+X [i] for each trader j ∈{1, . . . , N}. In summary, XAMM at the beginning of
+the trading period t is with the historical trading information set
+Infor[t −1]
+=
+
+(I0[t −1], PX[t −1], ZX[t −1]), . . . , (I0[1], PX[1], ZX[1]),
+PX[0], . . . , PX[−KXAMM + 1]
+	
+.
+(12)
+12
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+Collect information
+START
+END
+Generate initial state
+Complete the payment for the transaction
+Trade for
+  of the risk-free asset from 
+the risk-free asset market 
+]
+[
+)
+(
+t
+y N
+Select the market order
+randomly
+]
+[
+)
+(
+t
+Q N
+m
+Realize the final transaction volume
+with the trading price
+]
+[
+)
+(
+t
+Z N
+X
+]
+[t
+PX
+Submit the market order
+]
+[
+)
+(
+t
+Q N
+m
+Figure 4: The decision making process of trader N in Example 4.
+XAMM starts the trading period with the call phase. During the call phase,
+XAMM collects and stores order speciﬁcations {Q(1)
+m [t], . . . , (P e(j)
+X
+[t], Q(j)
+l [t]),
+. . . , Q(N)
+m [t]} submitted by traders. It simultaneously disseminates the real-time
+order book data set I0[t].
+Forecast is not required in XAMM. The objective of XAMM is to determine
+in the price determination phase the Xetra auction price PX[t] and the ﬁnal
+transaction volumes ZX[t] = {Z(1)
+X [t], . . . , Z(N)
+X [t]} by applying Xetra auction
+trading rules stated in Deutsche B¨orse Group (2013), see the formulation in
+Appendix A. After determining Xetra auction price and the trading volume,
+XAMM cancels the unexecuted part of order speciﬁcations and conducts the
+settlement process to complete the payment for each transaction. Then XAMM
+closes the market until the next trading period t + 1. The dynamics of XAMM
+are depicted in Figure 5.
+The numeraire, the risky asset, and the system clock are passive economic
+13
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+START
+END
+Time to end the call phase?
+yes
+no
+End the trading period
+Start the trading period
+The price determination phase: compute the 
+trading price and the final transaction volume, 
+send out the trading information, cancel the 
+unexecuted part of the order specifications
+The settlement process: conduct the payment 
+process for transactions among traders
+The call phase: disseminate the real-time 
+trading information, collect the order 
+specifications
+Figure 5: Dynamics of XAMM.
+agents considered in the agent-based model. They act as information providers
+to provide on request the information about the currency employed in the market, the risky asset traded in the auction market, and the time considered in
+the model. As the environment of the agent-based model, the risk-free asset
+market provides the trading on the risk-free asset.
+We consider dynamics of XAMS with T trading periods. XAMM starts the
+call phase at the beginning of the trading period. It disseminates to traders
+the real-time trading information of the central order book and simultaneously
+collects order speciﬁcations submitted by traders. Assume traders submit their
+order speciﬁcations in a random sequence during the call phase. To simplify our
+analysis, we further assume that price takers submit limit orders prior to the
+price setter and noise trader submit their market orders. The call phase stops
+randomly after a ﬁxed time span and is followed by the price determination
+14
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+phase. XAMM determines in the price determination phase the Xetra auction
+price and the ﬁnal transaction volume. Then it cancels the unexecuted part of
+the orders and conducts the settlement process to complete the payment for each
+transaction. After trading in the Xetra auction market, traders obtain the riskfree asset holdings via the interaction with the risk-free asset market. XAMS
+iterates to the next trading period until it reaches the last trading period T.
+The diagram of agent interaction in Figure 6 explicitly illustrates the sequence
+of activities among agents in the system dynamics.
+3
+Market Experiment
+We implement the agent-based model of XAMS by applying the computer language Groovy/Java with the database back-end of Microsoft Access.
+Then
+we construct the market experiment and conduct the computer simulation of
+XAMS. The focus of the market experiment is on the generated dynamics of
+Xetra auction price.
+3.1
+Experimental Setup
+We setup the simulation proﬁle for the Xetra auction market experiment by
+initializing the parameters and by specifying the forecasting methods employed
+by agents.
+Model’s Parameters to Initialize
+• T = 250 . . . time horizon. The time horizon approximates the time span
+of one year when considering one auction for each trading day and around
+250 trading days for Frankfurt Stock Exchange in one year.
+• N = 22 . . . number of traders. Three types of traders are considered in
+the model with 1 price setter, 20 price takers, and 1 noise trader.
+• r . . . the interest rate of the risk-free asset. The interest rate is assumed
+to be constant in each proﬁle. According to the Eurostat2, the 3-months
+interest rate in European Union (27 countries) for the period of October
+2008 to September 2009 is in the range of [1.04%, 5.52%]. We choose r
+randomly from this range.
+2See http://epp.eurostat.ec.europa.eu.
+15
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+START
+END
+Time to end the call phase?
+yes
+no
+XAMM: end the trading period
+Trader: acquire the trading quantity of the risk-free asset from 
+the risk-free asset market
+The trading period is T?
+XAMM: start the trading period
+no
+yes
+The call phase
+XAMM: disseminate the 
+‘real-time’ trading 
+information, collect the 
+order specifications
+Trader: make 
+investment decision, 
+submit order 
+specifications
+trading information
+order specifications
+The price determination phase
+XAMM: compute the 
+trading price and the final 
+transaction volume, send 
+out the trading information, 
+cancel the unexecuted part 
+of the order
+Trader: obtain the 
+realization of the trading 
+price and the final 
+transaction volume
+trading information
+The settlement process
+XAMM: conduct the 
+payment process for the 
+transactions among traders
+Trader: complete the 
+payment for the 
+transaction
+payment
+ information
+payment
+ information
+Figure 6: Diagram of agent interaction for the agent-based model of XAMS.
+XAMM’s Parameters to Initialize
+• {PX[0], . . . , PX[−KXAMM + 1]} . . . the historical trading prices. We consider PX[0], . . . , PX[−KXAMM +1] as historical auction prices of the stock
+“Deutsche B¨orse AG” listed in Xetra for the period from August 27, 2009
+16
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+to November 04, 2009, with the memory span KXAMM = 100.3
+• rangep = 10% . . . the percentage of the price range.
+The Xetra platform requires transactions executed under certain price range from the
+last traded price Pref. While it does not publicly provide the information
+of the percentage of the price range, another electronic trading platform
+Euronext requires the percentage of ±10%. We employ the setting in Euronext and choose rangep = 10%. Thus, XAMM considers Xetra auction
+price in the range of [Pref(1 −10%), Pref(1 + 10%)].
+Trader’s Parameters to Initialize
+• y(j)
+0 [1] . . . trader j’s initial risk-free asset holding at the beginning of the
+trading period 1. We take y(j)
+0 [1] as a random positive number.
+• Z(j)
+0 [1] . . . trader j’s initial risky asset holding at the beginning of the
+trading period 1. We take Z(j)
+0 [1] as a random integer number. To simplify
+the analysis, we assume that the aggregated volume in the market is
+constant with P22
+j=1 Z(j)
+0 [1] = 1000.
+• α(j) . . . the measure of absolute risk aversion in the trader’s utility function
+with the linear mean-variance preference. α(j) is assumed to be constant
+in each proﬁle and is selected randomly from the range of (0, 2].
+• Qrange . . . the set of the trading behavior for the noise trader j = 22
+depicted in Example 4.
+We assume that the noise trader randomly chooses for each trading period
+the trading behavior from the set of Qrange = { selling 1 unit, buying 1
+unit }.
+We keep the noise trader’s random choice of trading behavior
+for each period the same in the benchmark market experiment as in the
+Xetra auction market experiment.
+Trader’s Forecasting Methods to Initialize
+1. Forecasting Methods in Common
+For each period t, trader j = 1 depicted in Example 2 and price takers
+j ∈{2, . . . , 21} depicted in Example 3 compute the expected mean value
+qe(j)[t] of the risky asset price for the next trading period t + 1 and its
+associated variance V e(j)[t].
+We assume two types of forecasting: the
+fundamentalist and the chartist. The forecasting type remains unchanged
+in each proﬁle after trader j randomly chooses the forecasting type with
+equal probability.
+3This historical data of the stock trading price is provided online by Deutsche B¨orse, see
+http://deutsche-boerse.com.
+17
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+(a) The Fundamentalist
+• qe(j)[t] . . . The fundamentalist believes the mean value and the
+associated variance of the market price remain unchanged. It
+computes qe(j)[t] as the mean value of the historical trading
+prices {PX[0], . . . , PX[−KXAMM + 1]} with
+qe(j)[t] =
+1
+KXAMM
+KXAMM
+X
+n=1
+PX[1 −n].
+• V e(j)[t] . . . The fundamentalist computes V e(j)[t] as the associated variance of the historical trading prices {PX[0], . . . ,
+PX[−KXAMM + 1]} with
+V e(j)[t] =
+1
+KXAMM −1
+KXAMM
+X
+n=1
+(PX[1 −n] −qe(j)[t])2.
+The fundamentalist has constant forecast of qe(j)[t] and V e(j)[t] for
+each trading period.
+(b) The Chartist
+• qe(j)[t] . . . The chartist expects the trend of the price movement
+based on the historical price movement. There are two types of
+chartists in our simulation: the trend follower and the contrarian. The trend follower expects the trading price will increase
+(decrease) given the trading price increased (decreased) in the
+last trading period while the contrarian expects the opposite.
+Let the indicator idc = 1 for trend follower and idc = −1 for contrarian. With historical trading prices PX[t −1] and PX[t −2],
+the forecasting of the chartist at period t is
+qe(j)[t] =
+
+
+
+
+
+
+
+PX[t −1](1 + idc · ω(j))
+if PX[t −1] > PX[t −2],
+PX[t −1]
+if PX[t −1] = PX[t −2],
+PX[t −1](1 −idc · ω(j))
+if PX[t −1] < PX[t −2];
+where ω(j) measures how aggressive of the price movement that
+the trader expects.
+idc and ω(j) are assumed to be constant after idc is chosen randomly from {−1, 1} with equal probability and ω(j) is chosen
+randomly from the range of (0, rangep].
+• V e(j)[t] . . . It is assumed that the chartist keeps V e(j)[t] constant
+in the proﬁle after it is chosen randomly from the range (0, 5].
+2. Forecasting Method for Price Setter j = 1 depicted in Example 2
+18
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+• P e(1)
+X
+[t] . . . the forecast on Xetra auction price in the current trading
+period t. By applying formulation (16) in Appendix B, the price
+setter computes the forecast P e(1)
+X
+[t](Q(1)
+m [t]) that is a function of the
+quoted trading quantity Q(1)
+m [t] in its market order.
+• Ze(1)
+X
+[t] . . . the forecast on the trader’s ﬁnal transaction volume in the
+current trading period t. By applying formulation (17) in Appendix
+B, the price setter computes Ze(1)
+X
+[t](Q(1)
+m [t]) that is a function of the
+quoted trading quantity Q(1)
+m [t] in its market order.
+3. Forecasting Method for Price Taker j = 2, . . . , 21 depicted in Example 3
+• P e(j)
+X
+[t] . . . the forecast on Xetra auction price in the current trading
+period t. It is assumed that P e(j)
+X
+[t] is randomly chosen from the
+price range [Pref(1 −10%), Pref(1 + 10%)] stipulated in XAMM.
+3.2
+Experimental Procedure
+To investigate the market dynamics and the impact of the price setter in Xetra
+auction market, we construct along with the Xetra auction market experiment
+a benchmark market experiment. The benchmark market experiment has the
+same setup as the Xetra auction market experiment except for the price setter
+j = 1 depicted in Example 2. The benchmark market experiment replaces the
+price setter j = 1 with the benchmark trader which follows the same setup as
+depicted in Example 2 except for adopting the forecast Ze(1)
+X
+[t](Qm) = Qm and
+P e(1)
+X
+[t](Qm) = Pref where Pref is the last traded price in Xetra auction market.
+Thus, the benchmark trader considers its objective as the portfolio selection
+problem:
+max
+Qm∈Z
+{qe(1)[t] −R · Pref} · Qm + qe(1)[t] · Z(1)
+0 [t] + Ry(1)
+0 [t]
+−α1
+2 {Z(1)
+0 [t] + Qm}2 · V e(1)[t],
+(13)
+where α1 is a constant measure of absolute risk aversion. As observed in (13),
+the trader considers in its portfolio selection problem that the current trading
+price and the trader’s ﬁnal trading volume are independent of Qm. The benchmark trader is thus regressed to a price taker who has no capability of price
+manipulation.
+We consider 50 rounds of market experiments.
+It starts with initiating 50
+simulation proﬁles for each round of the market experiment with the index
+s ∈{1, . . . , 50}. Then for each proﬁle s, we conduct the benchmark market
+experiment and the Xetra auction market experiment with 250 trading periods
+of simulations.
+19
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+3.3
+Experimental Results
+0
+50
+100
+150
+200
+250
+0
+50
+100
+150
+200
+period
+price
+Figure 7: The price dynamics in 50 proﬁles.
+Price Dynamics.
+We consider the price dynamics for 250 trading periods
+generated in the market experiment. Figure 7 illustrates the price dynamics
+generated by all 50 simulation proﬁles. The blue color in this ﬁgure as well as
+in the following ﬁgures is for the benchmark market experiment and the red
+color is for the Xetra auction market experiment.
+Figure 7 demonstrates the divergence of the price dynamics in the market experiment. Consider the end-of-period trading price as the market price in the
+last trading period t = 250. It ranges [0, 182.67] for all 50 benchmark market
+experiments and [0, 205.39] for all 50 Xetra auction market experiments in the
+simulation. The histogram of the end-of-period trading price depicted in Figure
+8 illustrates the divergence emerges in both market experiments.
+Property of Non-equilibrium Trading Price.
+We employ the percentage of the non-equilibrium trading price percent(s)
+non to investigate the nonequilibrium property of the trading price for each proﬁle s ∈{1, . . . , 50} with
+percent(s)
+non = ♯{trading periods with non market-clearing trading price}
+♯{trading periods with trading price}
+.
+20
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+benchmark market
+price
+frequency
+0
+50
+100
+200
+0
+2
+4
+6
+8
+10
+12
+Xetra auction market
+price
+frequency
+0
+50
+100
+200
+0
+2
+4
+6
+8
+10
+12
+Figure 8: The histogram of the end-of-period trading price in the market experiments.
+Figure 9 shows the percentage for the benchmark market experiment and for
+the Xetra auction market experiment in each proﬁle. The lowest percentage of
+non-equilibrium trading price is 41.82% and the highest percentage is 96.58%
+in our simulation results, which implies that Xetra auction price generated in
+the market experiments is generically non-equilibrium. This property can be
+easily observed in Figure 9 where the blue line and the red line are far above
+the x-axis.
+We conduct statistical test to investigate the impact of the price setter on the
+percentage of the non-equilibrium trading price. We speciﬁcally test whether
+percent(s)
+non associated with the benchmark market experiment is greater than
+that associated with the Xetra auction market experiment. We apply the nonparametric statistical test – the Wilcoxon signed ranks test – and verbally
+present the null hypothesis as: percent(s)
+non in the benchmark market experiment is no greater than that in the Xetra auction market experiment. The
+test result has p −value = 0.0659 < 0.1. Thus, we reject the null hypothesis
+with 90% level of conﬁdence and accept that percent(s)
+non in the benchmark market experiment is greater than that in the Xetra auction market experiment.
+Thus, the Xetra auction market experiment where the price setter participates
+has a higher percentage of market equilibrium than the benchmark market experiment. This implies that the introduction of the price setter increases the
+possibility of market equilibrium and thus increases the market eﬃciency in
+Xetra auction market.
+21
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+0
+10
+20
+30
+40
+50
+0
+20
+40
+60
+80
+100
+profile
+percent (%)
+Figure 9: The percentage of non market-clearing price.
+Intuitively, when Xetra auction market exists a surplus, i.e. the discrepancy
+between the aggregate demand and the aggregate supply, the price setter could
+submit a market order to accept the surplus without aﬀecting the trading price
+in the market. When the price setter would submit a market order exceeding
+the surplus, the trading price would jump to an inferior position such that the
+trading price would fall down when the price setter would submit a market
+order in the sell side and vice versa. Thus the price setter has the incentive
+to meet but not outnumber the surplus in the market. When the price setter
+submits its market order to fully accept the surplus, Xetra auction market
+drives to equilibrium. The introduction of the price setter thus increases the
+market eﬃciency in Xetra auction market.
+Price Volatility.
+We apply in this work the variance of the price dynamics {P (s)
+X [1], . . . , P (s)
+X [250]} for each proﬁle s to measure price volatility in the
+market experiment. The variance of the price dynamics is formulated as:
+V ar(s) =
+1
+249
+250
+X
+n=1
+(P (s)
+X [n] −P (s)
+X )2,
+where P (s)
+X
+is the mean value of {P (s)
+X [1], . . . , P (s)
+X [250]}. Figure 10 shows the
+variance for the benchmark market experiment and for the Xetra auction market
+experiment.
+We use the Wilcoxon signed ranks test to investigate the impact of the price set22
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+0
+10
+20
+30
+40
+50
+0
+100
+200
+300
+400
+500
+600
+700
+profile
+variance
+Figure 10: The variance of the trading price dynamics.
+ter on the price volatility. The null hypothesis that we test is verbally presented
+as: the variance on the price dynamics for the benchmark market experiment
+has the same measure as that for the Xetra auction market experiment. The test
+result has p −value = 0.8545. We can not reject the null hypothesis to accept
+that the variance on the price dynamics for the benchmark market experiment
+is signiﬁcantly diﬀerent from that for the Xetra auction market experiment. It
+seems that the introduction of the price setter does not signiﬁcantly impact the
+price volatility in Xetra auction market.
+Intuitively the price setter inﬂuences the price volatility of Xetra auction market
+in two diﬀerent directions. The price setter exploits the market for a proﬁt by its
+aggressive trading behavior, which would increase the price volatility in Xetra
+auction market. On the other hand, the introduction of the price setter increases
+the possibility of market equilibrium. The increase in market eﬃciency would
+allow traders to eﬃciently adjust their trading behavior to stabilize the market
+in equilibrium, which implies a decrease in the price volatility of the market.
+These two opposite impacts oﬀset against each other so that the participation
+of the price setter would not signiﬁcantly inﬂuence the price volatility in Xetra
+auction market.
+23
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+4
+Concluding Remarks
+We have developed in this work the agent-based model of XAMS with the
+formulation of XAMM and of the price setter that represents HFT with the
+speed advantage to utilize the market transparency provided in Xetra auction
+market for proﬁt exploitation. By implementing the agent-based model with
+the computer software system, we have conducted the computer simulation for
+market experiments. By investigating simulation results on market dynamics,
+we have discovered that the introduction of the price setter does not signiﬁcantly
+inﬂuence price volatility in Xetra auction market. This ﬁnding implies that the
+role of algorithmic trading or HFT does not signiﬁcantly generate negative
+impact on price volatility under the background of Xetra auction market with
+pre-trade transparency. Moreover, the investigation of simulation results on
+market dynamics has validated the property of non-equilibrium trading price
+in Xetra auction market. We have found by the market experiment that the
+introduction of the price setter improves market eﬃciency to some extent.
+References
+Biais, B., Glosten, L. & Spatt, C. (2005). Market microstructure: A survey
+of microfoundations, empirical results, and policy implications. Journal of
+Financial Markets 8(2), 217–264.
+Boehmer, E., Saar, G. & Yu, L. (2005). Lifting the veil: An analysis of
+pre-trade transparency at the nyse. The Journal of Finance 60(2), 783–815.
+Brogaard, J. (2011). High frequency trading and volatility .
+CFTC/SEC (2010). Report of the staﬀs of the cftc and sec to the joint advisory
+committee on emerging regulatory issues: Findings regarding the market
+events of may 6, 2010 .
+Deutsche B¨orse Group (2013). Xetra Release 14.0 Market Model Equities.
+Frankfurt a. M.: Deutsche B¨orse AG.
+Foucault, T., Kadan, O. & Kandel, E. (2013).
+Liquidity cycles and
+make/take fees in electronic markets. The Journal of Finance 68(1), 299–
+341.
+Gerig, A. (2012). High-frequency trading synchronizes prices in ﬁnancial markets. Available at SSRN 2173247 .
+Groth, S. S. (2011). Does algorithmic trading increase volatility? empirical
+evidence from the fully-electronic trading platform xetra. Wirtschaftinformatik Proceedings .
+24
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+Gsell, M. (2008). Assessing the impact of algorithmic trading on markets: A
+simulation approach. Tech. rep., CFS working paper.
+Haldane, A. (2011). The race to zero. In: speech at the International Economic Association Sixteenth World Congress, Beijing, vol. 8.
+Hasbrouck, J. & Saar, G. (2013). Low-latency trading. Johnson school
+research paper series (35-2010).
+Hendershott, T. & Riordan, R. (2011a). Algorithmic trading and information Manuscript.
+Hendershott, T. & Riordan, R. (2011b). High frequency trading and price
+discovery. Manuscript, University of California, Berkeley 3.
+Jarrow, R. A. & Protter, P. (2012).
+A dysfunctional role of high frequency trading in electronic markets. International Journal of Theoretical
+and Applied Finance 15(03).
+Kirilenko, A., Kyle, A. S., Samadi, M. & Tuzun, T. (2011).
+The
+ﬂash crash: The impact of high frequency trading on an electronic market.
+Manuscript, U of Maryland .
+Kyle, A. (1985). Continuous auctions and insider trading. Econometrica 53.
+LeBaron, B. (2006). Agent-based computational ﬁnance. In: Handbook of
+Computational Economics, Vol. 2: Agent-Based Computational Economics.
+(Tesfatsion, L. S. & Judd, K. L., eds.), Handbooks in Economics Series,
+chap. 9. North-Holland.
+Li, X. (2014). Standardization of agent-based modeling in economic system.
+Journal of discontinuity, nonlinearity and complexity Forthcoming.
+Madhavan, A. (1996). Security prices and market transparency. Journal of
+Financial Intermediation 5(3), 255–283.
+Madhavan, A. (2000). Market microstructure: A survey. Journal of Financial
+Markets 3.
+Madhavan, A., Porter, D. & Weaver, D. (2005). Should securities markets be transparent? Journal of Financial Markets 8(3), 265–287.
+Martinez, V. & Rosu, I. (2011). High frequency traders, news and volatility.
+News and Volatility (December 29, 2011) .
+Pagano, M. & R¨oell, A. (1996). Transparency and liquidity: a comparison
+of auction and dealer markets with informed trading. The Journal of Finance
+51(2), 579–611.
+25
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+Sakawa, H. & Ubukata, M. (2012).
+Does pre-trade transparency aﬀect
+market quality in the tokyo stock exchange?
+Economics Bulletin 32(3),
+2103–2112.
+Stoll, H. (2003).
+Market microstructure.
+Handbook of the Economics of
+Finance .
+26
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+A
+Xetra Auction Trading Rules
+The Xetra auction trading rules are composed of the Xetra auction pricing
+rules and the allocation rules to determine the Xetra auction price and the
+trading volume respectively. Based on Deutsche B¨orse Group (2013), Figure
+11 illustrates the Xetra auction pricing rules in which the subprocess XetraAuction-PDA(I0) is depicted in Figure 12. The formulation of the Xetra auction
+allocation rules is illustrated in Figure 13.
+START
+GIVEN: order 
+book data set Ɛ0
+Limit order exists?
+( 0=ø? )
+Market orders
+in both sides of the 
+market?
+RETURN: Pxetra = Pref
+END
+Vmax=0?
+RETURN: no PXetra
+SUBPROCESS:
+Xetra-Auction-PDA( Ɛ0)
+no
+yes
+yes
+yes
+no
+no
+COMPUTE: Highest 
+trading volume Vmax for 
+all limit price p in 0
+COMPUTE: the set of all 
+volume maximizing prices 
+V={p 0 | ĭV(p) =Vmax}
+RETURN: no PXetra
+Figure 11: Flowchart of Xetra auction pricing rules.
+27
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+Surplus on the 
+demand side? 
+
+
+Z
+Z
+P
+0
+)
+! ?
+END
+COMPUTE: the lowest 
+surplus Zmin in V
+Zmin={ |ĭZ(p)| | p ࣅV }
+START
+COMPUTE: the lowest 
+candidate price with surplus on 
+the supply side
+Pmax=min{pࣅZ | ĭZ(p)= – Zmin}
+COMPUTE: the highest 
+candidate price with surplus on 
+the demand side
+Pmin=max{p ࣅZ | ĭZ(p) = Zmin}
+RETURN:
+PXetra=max{Pmin, min {Pref, Pmax}}
+yes
+no
+yes
+no
+yes
+no
+yes
+no
+No Surplus? 
+
+
+
+
+Z
+Z
+Z
+Z
+P
+P
+0
+)
+ )
+ ?
+Surplus on the 
+supply side? 
+
+
+Z
+Z
+P
+0
+)
+ ?
+RETURN: 
+Xetra
+P
+ 
+^
+`
+^
+`
+Z
+ref
+Z
+max P ,min P
+,P
+RETURN: 
+Xetra
+Z
+P
+P
+ 
+RETURN: 
+Xetra
+Z
+P
+P
+ 
+COMPUTE: The highest 
+candidate price 
+Z
+P max
+Z
+:
+COMPUTE: The lowest 
+candidate price 
+Z
+P min
+Z
+:
+Only one 
+candidate price? 
+#Z=1?
+RETURN: 
+Xetra
+P
+ 
+Z
+P
+for 
+Z
+P 
+Z
+:
+COMPUTE: the set of all 
+candidate prices with the 
+highest trading volume and 
+the lowest surplus 
+Z={p ࣅV | |ĭZ(p)| =Zmin}
+Figure 12: Flowchart of subprocess: Xetra-Auction-PDA(I0).
+The function QV (Ord) in Figure 13 returns the quoted trading quantity of the
+order Ord and the function RV (Ord) denotes the realized trading volume for
+the order Ord.
+28
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+START
+GIVEN: Trading volume 
+Vmax>0 and Xetra 
+auction price PXetra
+END
+RV(OrdD[i]) = min { DVdist,
+QV(OrdD[i]) }
+DVdist = Vmax
+DVdist = max { DVdist -
+RV(OrdD[i]), 0 }
+i = 1
+i = i+1
+i points to the 
+end of OrdD[ ]?
+Sort the bid order sequence 
+OrdD[ ] with index i ccording 
+to time/price priority and 
+market orders are prior to 
+limit orders
+Sort the ask order sequence 
+OrdS[ ] with index j according 
+to time/price priority  and 
+market orders are prior to 
+limit orders
+RV(OrdS[j]) = min { SVdist,
+QV(OrdS[j]) }
+SVdist = Vmax
+DVdist = max { DVdist -
+RV(OrdS[j]), 0 }
+j = 1
+j = j+1
+j points to the 
+end of OrdS[ ]?
+yes
+yes
+no
+no
+Figure 13: Flowchart of Xetra auction allocation rules.
+B
+Subjective Forecast of Price Setter
+We present the price setter’s forecasting on the Xetra auction price and the
+ﬁnal transaction volume. Introduce a new notation “
+
+” to represent a closed
+half or an open half of an interval. For example, for any real numbers a and
+b with a < b,
+
+a, b
+
+:= [a, b] , [a, b) , (a, b] , or (a, b). For trading period t,
+consider the central order book data set I0[t] in Xetra auction contains a series
+of limit prices P1 ≤P2 ≤· · · ≤PNl and the reference price Pref that is the last
+trading price. The excess demand function for the order book I0[t] is a step
+function with
+ΦZ(p; I0[t]) =
+Nl
+X
+n=0
+φZ
+n 1AZ
+n (p),
+(14)
+where φZ
+n is a constant for n = 0, . . . , Nl and {AZ
+0 , AZ
+1 , . . . , AZ
+Nl} is a partition
+of R+ with AZ
+0 := [0, P1
+
+; AZ
+n :=
+
+Pn, Pn+1
+
+for n = 1, . . . , Nl −1; and
+29
+Electronic copy available at: https://ssrn.com/abstract=2387626
+
+AZ
+Nl :=
+
+PNl, +∞).
+The price setter is to submit the market order Q(1)
+m [t] with Q(1)
+m [t] > 0 denoting
+a market order on the demand side and Q(1)
+m [t] < 0 denoting that on the supply
+side. After the price setter submit its market order, the excess demand function
+updates to the form
+Φ
+′
+Z(Q(1)
+m [t], p; I0[t])
+=
+ΦZ(p; I0[t]) + Q(1)
+m [t]
+=
+Nl
+X
+n=0
+φZ
+n 1AZ
+n (p) + Q(1)
+m [t].
+(15)
+The price setter expects to be the last trader submitting order to the market.
+Then the price setter’s forecast P e
+X(Q(1)
+m [t]) on the upcoming Xetra auction price
+is the step function:
+P e
+X(Q(1)
+m [t]) =
+
+
+
+
+
+
+
+
+
+
+
+
+
+P1
+when Q(1)
+m [t] ∈(−∞, −φZ
+1 );
+P ∗
+n
+when Q(1)
+m [t] = −φZ
+n,
+n ∈{1, 2, . . . , Nl −1};
+Pn
+when Q(1)
+m [t] ∈(−φZ
+n−1, −φZ
+n ),
+n ∈{2, 3, . . . , Nl −1};
+PNl
+when Q(1)
+m [t] ∈(−φZ
+Nl−1, +∞);
+(16)
+where for any n ∈{1, 2, · · · , Nl −1}
+P ∗
+n =
+
+
+
+
+
+
+
+Pn
+CASE 1;
+Pn+1
+CASE 2;
+max{Pn, min{Pref, Pn+1}}
+CASE 3;
+for CASE 1: either AZ
+n = [Pn, Pn+1) or AZ
+n = (Pn, Pn+1) with
+|Φ
+′
+Z(−φZ
+n , Pn; I0[t])|<|Φ
+′
+Z(−φZ
+n , Pn+1; I0[t])|;
+for CASE 2: either AZ
+n = (Pn, Pn+1] or AZ
+n = (Pn, Pn+1) with
+|Φ
+′
+Z(−φZ
+n , Pn; I0[t])|>|Φ
+′
+Z(−φZ
+n , Pn+1; I0[t])|;
+for CASE 3: either AZ
+n = [Pn, Pn+1] or AZ
+n = (Pn, Pn+1) with
+|Φ
+′
+Z(−φZ
+n , Pn; I0[t])|=|Φ
+′
+Z(−φZ
+n , Pn+1; I0[t])| .
+Consider the notation a+ := max{0, a} and a−:= min{0, a} for any a ∈R.
+The price setter’s forecast Ze
+X(Q(1)
+m [t]) on the its ﬁnal transaction volume is as:
+Ze
+X(Q(1)
+m [t]) = max{(−φZ
+0 )−, min{Q(1)
+m [t], (−φZ
+I+J)+}}.
+(17)
+30
+Electronic copy available at: https://ssrn.com/abstract=2387626

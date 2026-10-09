@@ -1,0 +1,75 @@
+{
+  "doc_id": 85,
+  "titulo": "Deep limit order book events dynamics",
+  "resumen_operativo": "El paper modela la dinámica de llegada de 86 tipos distintos de eventos en el limit order book (órdenes limitadas, cancelaciones y trades) hasta el nivel 20 de profundidad, utilizando procesos de Hawkes multivariados de alta dimensionalidad. A través del análisis de datos de alta frecuencia (microsegundos) de 3 acciones del DAX 30 (BMW, SAP, ADS), el estudio construye modelos descriptivos diarios y encuentra que el modelo ajusta bien para las órdenes y cancelaciones en los primeros 5 niveles. Los resultados muestran que los trades y limit orders con impacto en el mejor precio afectan significativamente la llegada de eventos en niveles más profundos, especialmente desencadenando cancelaciones. Es útil para entender la estructura de dependencia cruzada de eventos LOB y como base para simuladores LOB impulsados por eventos.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "High-dimensional Hawkes processes",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso puntual multivariado auto-excitado y mutuamente excitado utilizado para modelar la estructura de dependencia en la tasa de llegada de múltiples tipos de eventos del limit order book.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "limit order book (LOB) events"},
+        {"tipo": "USA", "objeto": "exponential kernel function"}
+      ],
+      "cita_textual": "This paper analyzes the limit order book events arrival dependency structure using highdimensional Hawkes processes."
+    },
+    {
+      "nombre": "Adjusted branching ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Proporción de la intensidad esperada de un evento sucesor que puede atribuirse a la ocurrencia de un tipo de evento predecesor (efectos de Hawkes), ajustada por sus intensidades incondicionales esperadas.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "events arrival dependency"}
+      ],
+      "cita_textual": "The resulting adjusted branching ratio 𝐵𝑅̃𝑛/𝑚 reveals the proportion of event 𝑚 intensity that may be related to occurrences of event type 𝑛."
+    },
+    {
+      "nombre": "Adjusted baseline",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Proporción de la intensidad de llegada de un evento que se atribuye a su componente base constante (efecto Poisson), en lugar de a la auto/mutua excitación de Hawkes.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "constant baseline contribution"}
+      ],
+      "cita_textual": "we define the adjusted baseline as 𝜇̂𝑑𝑚/𝐸[𝜆𝑑𝑚(𝑡)], which... reports the proportion of trading day 𝑑 event 𝑚 intensity attributable to its constant baseline."
+    },
+    {
+      "nombre": "Trades w/ BPI (Best Price Impact)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Operaciones (trades) que consumen enteramente el nivel de mejor precio del libro de órdenes, modificando el precio disponible y aumentando el bid-ask spread.",
+      "relaciones": [
+        {"tipo": "EXCITA", "objeto": "Limit order cancellations (LOC)"}
+      ],
+      "cita_textual": "transactions entirely consuming the first depth level and beyond, or trades-through... We denote Trades w/ BPI as Buy* (Sell*) events"
+    },
+    {
+      "nombre": "LOS w/ BPI (Limit Order Submissions with Best Price Impact)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Órdenes limitadas enviadas dentro del bid-ask spread que crean un nuevo nivel de mejor precio en el libro de órdenes.",
+      "relaciones": [
+        {"tipo": "EXCITA", "objeto": "Limit order cancellations (LOC)"}
+      ],
+      "cita_textual": "we identify bid and ask LOS w/ BPI as BA1* and AA1*. Representing the arrival of a new limit order inside the bid-ask spread"
+    }
+  ],
+  "hallazgos": [
+    {
+      "nombre": "Decreasing fit at deeper LOB levels",
+      "descripcion": "El ajuste de datos del modelo Hawkes decrece para órdenes y cancelaciones que ocurren más allá del nivel 6 del LOB, donde la contribución de los efectos de Hawkes decae y el componente de Poisson cobra mayor relevancia.",
+      "cita_textual": "we find that beyond depth levels 1 to 6 where our descriptive models offer a satisfactory data fitting performance for order submissions and cancellations, this performance shows a general decreasing trend as we move in events depth level of events occurrence."
+    },
+    {
+      "nombre": "Influence of best price impact events on deep LOB",
+      "descripcion": "Los eventos que impactan el mejor precio (trades y envíos de órdenes limitadas) afectan significativamente la llegada de envíos y cancelaciones de órdenes limitadas hasta en los niveles más profundos del libro, mientras que los eventos sin impacto en el mejor precio tienen un efecto más limitado.",
+      "cita_textual": "We show that while both trades and limit order submissions with best price impact may affect limit order book submissions and cancellation up to the highest depth levels, the effect of their counterpart events without best price impact is less extended."
+    },
+    {
+      "nombre": "Strong triggering of cancellations by price impact",
+      "descripcion": "Las cancelaciones de órdenes limitadas se ven particularmente afectadas (activadas) por eventos que tienen un impacto en el mejor precio, posiblemente debido a estrategias de cancelación sistemática basadas en el ranking de profundidad de la orden.",
+      "cita_textual": "We also find that both in terms of individual occurrence effects and global contribution, limit order cancellations appear particularly affected by the events having a best price impact."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "El paper utiliza datos de alta frecuencia (microsegundos) intradía del Xetra LOB para modelar interacciones entre múltiples eventos a lo largo de 20 niveles de profundidad del libro. La metodología de Hawkes y los hallazgos sobre la dinámica LOB son directamente aplicables a modelos de microestructura y diseño de estrategias HFT o ejecución algorítmica intradiaria."
+  }
+}

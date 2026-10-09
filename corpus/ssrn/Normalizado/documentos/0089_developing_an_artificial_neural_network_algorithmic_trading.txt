@@ -1,0 +1,581 @@
+DEVELOPING AN ARTIFICIAL NEURAL NETWORK ALGORITHMIC TRADING 
+SYSTEM 
+ 
+JEROME JOSHI 
+ 
+Acknowledgements 
+I would like to thank Dr. Khaldoun Khashanah from Stevens Institute of Technology and Mr. Ritabrata 
+Bhattacharyya from WorldQuant University for the opportunity to study and work on this project.  
+ 
+ABSTRACT 
+The project proposes a type of Artificial Neural Network (ANN) known as Long Short Term Memory 
+(LSTM) to predict the prices for a portfolio of best stocks from five different sectors since election. 
+The current price, technical and fundamental indicators will be learned to predict the next day’s price. 
+The LSTM model will modulate and internally optimize the prices based on certain rules. By 
+comparing the actual and predicted prices, the network provides trading signals which will then be 
+used to back-test the data on a reliable platform. Later, we compare the back-testing results to measure 
+the performance and risk metrics for two types of investors – risk-averse and risk-seeking. The main 
+purpose of this project is to develop a system which either performs on par or outperforms the market. 
+ 
+Keywords 
+Neural Network, Algorithmic Trading, Alpha, Artificial Intelligence, Portfolio Optimization, 
+Trading System, Factor Model 
+ 
+INTRODUCTION 
+ 
+Recurrent Neural Network 
+In this project, we will be using Recurrent Neural Network (RNN) for time series analysis. Recurrent 
+Neural Network (RNN) is a type of supervised deep learning which is specifically used for analysing 
+time series. Unlike other neural networks, here, the information is dependent on each other. It consists 
+of an internal memory, used to process various sequence of inputs. There are three layers in this 
+network namely, the input layer, hidden or feedback layer and output layer. The hidden layer or output 
+layer not only gives an output but also feeds in itself, which is the feedback is given from the output 
+to the hidden layer. The only problem with this network is the vanishing gradient wherein a layer is 
+created every time an input sequence is processed by the network. 
+ 
+Long Short Term Memory 
+Long Short Term Memory (LSTM) eliminates the vanishing gradient problem with its ability to learn 
+with many non-linear layers. It consists of memory cells or memory pipeline which flows freely 
+through time. The figure below consists of a diagrammatical representation of LSTM. Ct and Ct-1 are 
+Electronic copy available at: https://ssrn.com/abstract=3889600
+
+the memory cells for the given and previous modules through which memory flows. ht and ht-1 are the 
+outputs from the given and previous modules. Xt is the input of the given module. There are two 
+valves – x (allows the memory to flow freely when opened and cuts off supply when it is closed) and 
++ (also called as T-shaped valve which controls adding and updating new memory into the module). 
+Finally, there are two activation functions called sigmoid and tan symbolized by σ and tanh 
+respectively. 
+Figure 1 
+LSTM Architecture 
+ 
+ 
+BUILDING THE NETWORK 
+ 
+The idea for predicting time series data comes from the paper - A. Bernal, S. Fok & R. Pidaparthi 
+(2012), Financial Market Time Series Prediction with Recurrent Neural Networks. The authors claim 
+to have applied a type of RNN called Echo State Network (ESN) to predict the stock prices of S&P 
+500. To test if this idea is valid, we will use LSTM to replicate the results from the paper. The reason 
+for choosing LSTM over ESN is because it is more efficient and robust in addition to the many 
+features of LSTM mentioned in the previous sections. For the sake of simplicity, the data we will be 
+using is Google stock prices. The training period will be from 2012 to 2016 and the test period will 
+be the first 20 days of January 2017. Later we will compare our results with that of the paper. 
+Following is the modular code in Python, 
+Modular Code  
+Importing Libraries 
+import numpy as np 
+import matplotlib.pyplot as plt 
+import pandas as pd 
+import math 
+from sklearn.metrics import mean_squared_error 
+Electronic copy available at: https://ssrn.com/abstract=3889600
+
+Import Training Set 
+Here, we take the open prices for the last 5 years and train the RNN on those prices. While training, 
+we try to observe if a pattern exists. The input to the network is the opening stock price at time t and 
+the output is the opening stock price at time t+1 (a separate set is created for it) and it only contains 
+open prices. 
+training_set = pd.read_csv(‘Google_Stock_Price_Train.csv’) 
+training_set = training_set.iloc[:,1:2].values 
+ 
+Feature Scaling 
+There are two types of feature scaling, standardization and normalization. For our analysis, we will 
+be using normalization. This is because we will be using a sigmoid function which operates between 
+0 and 1 and normalization gives values between 0 and 1. 
+from sklearn.preprocessing import MinMaxScaler 
+sc = MinMaxScaler( ) 
+training_set = sc.fit_transform(training_set) 
+ 
+Getting Inputs & Outputs 
+Inputs X_train are all the stock prices at time t and outputs Y_train are all the stock prices at time t+1. 
+In other words, inputs are all stock prices except the last one and outputs are the stock prices plus one 
+time step. 
+X_train = training_set[0:1257] 
+Y_train = training_set[1:1258] 
+ 
+Reshaping 
+Reshaping is carried out by the numpy package. Here, we change the 2-d array into 3-d array. The 
+np.reshape function consists of batch size and the number of time steps. Batch size is the number of 
+observations in the training set and time steps is the difference between the stock prices at time t and 
+t+1 or the difference between the input and the output. 
+X_train = np.reshape(X_train, (1257, 1, 1)) 
+ 
+Importing Keras Libraries/Packages 
+We import three packages namely Sequential, Dense and LSTM. The Sequential package is 
+responsible for initialising the RNN. The Dense package is responsible for creating an output for the 
+RNN and the LSTM package basically performs the learning action. 
+from keras.models import Sequential 
+Electronic copy available at: https://ssrn.com/abstract=3889600
+
+from keras.layers import Dense 
+from keras.layers import LSTM 
+ 
+Architecture of RNN 
+The Sequential( ) function is responsible for initializing the RNN as a sequence of layers. The 
+regressor.add( ) function adds an input layer and LSTM layer. Within the LSTM( ) function, we have 
+units equal to 4 (parameters tuning) and input shape which consists of the number of time steps and 
+features. The Dense( ) function consists the dimension of the output stock price which is 1. For 
+compiling the RNN, we use the optimizer ‘adam’ as it is more efficient and faster. The loss is 
+measured in terms of mean squared error or MSE which acts as an optimizer by reducing the weights 
+and updating itself. Later, we fit the RNN to the training set. The epochs within the regressor.fit( ) 
+function are the sub-periods or iterations that learning takes to fit the inputs to the outputs. 
+# Initialising the RNN 
+regressor = Sequential( ) 
+# Adding the input layer & LSTM layer 
+regressor.add(LSTM(units = 4, activation = ‘sigmoid’, input_shape = (None, 1))) 
+# Adding the output layer 
+regressor.add(Dense(units = 1)) 
+# Compiling the RNN 
+regressor.compile(optimizer = ‘adam’, loss = ‘mean_squared_error’) 
+# Fitting the RNN to the training set 
+regressor.fit(X_train, Y_train, batch_size = 32, epochs = 200) 
+ 
+Predicting Stock Prices  
+The real_stock_price is the test set which consists of opening prices. For getting the predicted prices, 
+we scale the inputs and reshape it to a 3-d array. Further, we regress it to the input and then inverse 
+transform it to get the predicted prices. The predicted prices after regression would be between 0 and 
+1 and therefore we need to inverse transform it. 
+# Getting the real stock price of 2017 
+test_set = pd.read_csv(‘Google_Stock_Price_Test.csv’) 
+real_stock_price = test_set.iloc[:,1:2].values 
+# Getting the predicted stock price of 2017 
+inputs = real_stock_price 
+inputs = sc.transform(inputs) 
+Electronic copy available at: https://ssrn.com/abstract=3889600
+
+inputs = np.reshape(inputs, (20, 1, 1)) 
+predicted_stock_price = regressor.predict(inputs) 
+predicted_stock_price = sc.inverse_transform(predicted_stock_price) 
+ 
+Evaluating RNN 
+We evaluate the accuracy between the real stock prices and predicted stock prices by calculating its 
+root mean squared error or RMSE. 
+rmse = math.sqrt(mean_squared_error(real_stock_price, predicted_stock_price)) 
+print(“The RMSE for the above data is”, rmse) 
+ 
+RESULTS FOR LSTM 
+ 
+The results were observed for Google stock prices using LSTM. We have compared it with the results 
+from the paper [2]. The RMSE using LSTM is 7.747 and the predicted prices follows the same trend 
+as the actual prices. When compared to the error using ESN, the error is high and the accuracy is 
+lesser which is realistic and workable (accuracy for ESN is close to 99% which is not very realistic). 
+ 
+MODEL VALIDATION 
+ 
+Later, we validated the RNN (LSTM) for varying time frames and predicting longer time periods. 
+The purpose of this was to observe the trend, accuracy and patterns and come up with a conclusion. 
+The data will be the same which is Google stock prices and the source is Yahoo! Finance. Following 
+are the results that we can observe by varying the training and testing periods,  
+Table 1 
+Training, testing periods & RMSE 
+Training Period 
+Testing Period 
+RMSE 
+2007-2011 
+2012-2016 
+139.6 
+2007-2013 
+2014-2016 
+60.81 
+2012-2016 
+2017 
+15.49 
+ 
+ 
+IS LSTM ROBUST ENOUGH? 
+ 
+So there were a few conclusions that we could come up with, after varying the training and testing 
+periods. First, we can affirm that LSTM is more realistic when compared to ESN. LSTM gives 
+varying results depending on the time frames for training and testing as well as the input parameters 
+and window of prediction. ESN, on the other hand does very little to explain these aspects. Secondly, 
+Electronic copy available at: https://ssrn.com/abstract=3889600
+
+the network fails to give reliable results after the 400 day mark. The model fails to predict the prices 
+beyond 400 days (the high RMSE observed above is due to this drawback or else the RMSE would 
+be low). This means that best results can be seen for a period of 1 year or less. One thing to rectify 
+this problem is to experiment with the window of prediction and add extra layers into the network 
+(currently there are only three – Sequential, LSTM and Dense). If the ratio of training to testing period 
+is high then the accuracy is higher. However, in this project we will be using a ratio of 80:20 for the 
+training and testing period. 
+ 
+COMING UP WITH TRADING SIGNALS 
+ 
+Along with the code, I have also included an if-else loop which would compare the actual and 
+predicted prices and give a decision in terms of BUY/SELL. These signals can then be sent to a reliable 
+trading platform and we will observe how it performed in the real market. For an asset X, if we have 
+an initial capital of $200,000, the loop will give the trading decision and calculate the quantity of 
+shares that need to be bought or sold depending on the predicted prices. A demonstration of the result 
+can be seen below for the Google stock prices, 
+ 
+Table 2 
+Trade Decision & Quantity 
+Date 
+Trade Decision 
+Quantity 
+03-01-2017 
+BUY 
+1272 
+04-01-2017 
+SELL 
+1275 
+05-01-2017 
+BUY 
+1262 
+06-01-2017 
+BUY 
+1245 
+09-01-2017 
+SELL 
+1244 
+ 
+The reason for getting these decisions and quantities is because it can be easily sent to the trading 
+platform using a package such as zipline for getting the performance and risk metrics.  
+ 
+ALGORITHMIC TRADING USING NEURAL NETWORKS 
+ 
+In this section, we will be attempting to predict the opening prices of a set of equities which will be 
+then fed into the AI system to make optimal trading decisions. We will be trying to replicate the 
+moves of a day trader using three parameters – fundamental indicators, technical indicators and 
+prices. Fundamental indicators include market valuation, price-to-earning (PE) ratio, price-to-book 
+(PB) ratio, financial leverage and accounts receivable. These indicators will be calculated on a daily 
+basis using a concept called stochastic interpolation. Since, fundamental indicators are only released 
+quarterly, stochastic interpolation ensures that we get the indicators daily. This was a research 
+Electronic copy available at: https://ssrn.com/abstract=3889600
+
+problem in itself. Technical indicators include relative strength index (RSI), rate of change (ROC) 
+oscillator, bollinger bands and moving average convergence divergence (MACD). 
+We will be using an equally weighted portfolio of best stocks in five different sectors since election 
+– Advance Auto Parts (AAP) from consumer discretionary, Costco Wholesale (COST) from 
+consumer staples, Bank of America (BAC) from financials, Aetna (AET) from healthcare and Jacobs 
+Engineering Group (JEC) from industrials. 
+Methodology 
+Figure 2 
+Trading System Flow Chart 
+Current Price 
+Technical Indicators 
+Fundamental Indicators 
+Model A 
+(Supervised Learning) 
+Predicted Next Price 
+Next Price 
+State 
+Model B 
+(Reinforced Learning) 
+Return Optimal Action 
+Reward 
+Environment 
+(Zipline Backtesting) 
+Return Reward/Next State 
+Action 
+BUY (Stock, Volume) 
+SELL (Stock, Volume) 
+Electronic copy available at: https://ssrn.com/abstract=3889600
+
+Model A (Price Model) 
+Price model will be used to predict the stock’s price for the next time step. This model will be 
+trained with supervised learning algorithms using historical price data. While predicting the 
+next time step’s price is useful, it does not give an indicator as to what action a trader must 
+take. A simple strategy would be BUY when the next time step’s price is greater than the 
+previous time step’s price and SELL if it is not. A better strategy would be to provide these 
+predictions to another model which decides the actions for us. This will be carried out using 
+Model B or Decision model. 
+ 
+Model B (Decision Model) 
+To train the decision model, we will be using reinforcement learning where the agent can learn 
+the optimal action by interacting with the environment. Supervised learning is not used because 
+it does not seem possible to know the correct action to take at any given state. For this purpose, 
+we will use Quantopian’s zipline back-testing to simulate the environment as it provides 
+realistic conditions for our agent to learn the actions. The next state which is returned is then 
+added to the model’s next day price, the current capital of the trader and the three features 
+(fundamental and technical indicators, prices). 
+The AI trader’s goal is to optimize a policy that allows it to accumulate maximum reward 
+possible through the trading period. Therefore, the optimization problem would be to maximize 
+the profits by varying the reward. The reward is the difference in the trader’s capital from today 
+and tomorrow. 
+Since the model has to be capable of learning long term dependencies as changes in the prices 
+can be caused by an event several months or even years ago, we will be using LSTM to 
+effectively model the market behaviour. The methodology was implemented in Python and the 
+predictions for each day were used for back-testing on Quantopian. 
+ 
+IMPLEMENTATION OF STRATEGIES 
+ 
+It required close interaction with the back-testing unit to implement the decision model. Here, 
+we will be using a simple rule based decision model. The strategy adopted whilst back-testing 
+depends on the risk appetite of the trader. We will be testing a risk-seeking and risk-averse 
+strategy for the portfolio of five stocks for three quarters between January and September 2017. 
+In the risk-averse strategy, the decision for the trader will be BUY only if the change in the 
+stock price is positive and hold if it is negative. Conversely, for a risk-seeking strategy, the 
+decision for the trader will be BUY if the change in the stock price is positive or if the change 
+in the stock price is negative and within a certain threshold. When the change in the price goes 
+beyond the threshold, the position will be to hold. Following is the code which executes the 
+trades for back-testing, 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3889600
+
+for index, row in todayTrades.iterrows( ): 
+ 
+if((row[‘Action’] == “BUY”) and 
+(context.portfolio.positions[symbol(row[‘Ticker’])].amount == 0) and 
+(context.account.leverage <= context.targetLeverage)): 
+order_target_percent(symbol(row[‘Ticker’]), context.weights) 
+currentPrice = data.current(symbol(row[‘Ticker’]), ‘Price’) 
+context.holdings[row[‘Ticker’]]=[trade_date, currentPrice] 
+print(“BOUGHT”, row[‘Date’], row[‘Ticker’], currentPrice) 
+ 
+elif((row[‘Action’] == “SELL”) and 
+(context.portfolio.positions[symbol(row[‘Ticker’])].amount > 0)): 
+holdingPeriod = (trade_date-context.holdings[row[‘Ticker’]][0]).days 
+if(holdingPeriod > context.holdingPeriod): 
+print(“Holding period over”, context.holdingPeriod, “days”, 
+row[‘Ticker’], context.holdings[row[‘Ticker’]]) 
+order_target_percent(symbol(row[‘Ticker’]), 0) 
+print(“SOLD”, row[‘Date’], row[‘Ticker’]) 
+ 
+elif((row[‘Action’] == “SELL”) and 
+(context.portfolio.positions[symbol(row[‘Ticker’])].amount == 0) and 
+(context.sortSellingAllowed)): 
+ 
+order_target_percent(symbol(row[‘Ticker’]), context.weights) 
+ 
+print(“Short Sold”, row[‘Date’], row[‘Ticker’]) 
+ 
+elif((row[‘Action’] == “BUY”) and 
+(context.portfolio.positions[symbol(row[‘Ticker’])].amount < 0) and 
+(context.sortSellingAllowed)): 
+ 
+order_target_percent(symbol(row[‘Ticker’]), 0) 
+ 
+print(“Covered”, row[‘Date’], row[‘Ticker’]) 
+ 
+At first, the action is BUY if say the amount invested in a particular stock or its initial position 
+is 0. If say the action for the consecutive day is BUY then the code will not execute any decision 
+and will hold the stock. As the decision changes between consecutive days, the code will 
+execute the BUY/SELL decisions respectively. I have also included the logic for short selling 
+Electronic copy available at: https://ssrn.com/abstract=3889600
+
+and covered positions for the trade. The initial capital for the trader is assumed to be 
+$1,000,000. Other details for the trade are, 
+def initialize(context): 
+ 
+# Transaction data-frame that is used by Quantopian from the ANN output 
+ 
+context.df = quantopianInput 
+ 
+# User-defined holding period 
+ 
+context.holdingPeriod = holdingPeriod 
+ 
+# Track the holding and calculates the holding period  
+ 
+context.holdings = dict( ) 
+ 
+# Unique list of stocks that need to be loaded into the price history 
+ 
+context.security_list = [‘AAP’, ‘COST’, ‘BAC’, ‘AET’, ‘JEC’] 
+ 
+# Target leverage that we intend to have at a max 
+ 
+context.targetLeverage = 1.0 
+ 
+# Activate short-selling or not 
+ 
+context.shortSellingAllowed = False 
+ 
+# We intend to only have a maximum of 0.5% in a single stock 
+ 
+context.weights = 0.2 
+ 
+context.slippage = slippage.VolumeSharesSlippage(volume_limit = 0.025, 
+price_impact = 0.1) 
+context.comission = commission.PerShare(cost = 0.0075, min_trade_cost = 1) 
+ 
+print(“Weightage per stock”, context.weights) 
+print(“Total number of stocks under consideration”, len(context.security_list)) 
+ 
+schedule_function(func = rebalance, date_rule = date_rules.every_day( ), time_rule = 
+time_rules.market_open(minutes = 1), calendar = calendars.US_EQUITIES) 
+ 
+def handle_data(context, data): 
+ 
+pass 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3889600
+
+start = datetime(2017, 1, 1, 0, 0, 0, 0, pytz.utc) 
+end = datetime(2017, 9, 30, 0, 0, 0, 0, pytz.utc) 
+ 
+print “###Loading pricing data from Yahoo###” 
+data = load_from_yahoo(stocks = [‘AAP’, ‘COST’, ‘BAC’, ‘AET’, ‘JEC’], indexes = { }, start 
+= start, end = end) 
+print “###Running trading algorithm###” 
+olmar = TradingAlgorithm(handle_data = handle_data, initialize = initialize) 
+print “###Running olmar.run(data)###” 
+results = olmar.run(data) 
+ 
+As observed, the weights on each of the five stocks are equal (20%). I have set the target 
+leverage or the limit to borrow capital as 1. Short-selling is not activated for the trades. The 
+slippage spread is assumed as 0.025 and the trading costs are limited to $1 per trade. 
+Using the initial capital of $1,000,000, the back-testing unit invests a proportionate capital for 
+each trading day that gives various performance and risk metrics for the overall trading period. 
+The trading algorithm will rebalance its investments every day and then reinvests the gains on 
+the same stocks. Following were the results obtained from January to September 2017 (SPY 
+v/s Back-testing), 
+Figure 3 
+Risk-Averse & Risk-Taking Investor (Cumulative Returns) 
+ 
+ 
+As we can observe from the above plots, the trend for both the risk-averse and the risk-seeking 
+investor is positive. However, for the risk-averse investor, the noise and the magnitude of the 
+returns are less. This is because of the reduced risk appetite of the risk-averse investor when 
+compared with the risk-seeking investor. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3889600
+
+Table 3 
+Monthly Returns Distribution 
+Month 
+Risk-Averse Returns 
+Risk-Taking Returns 
+January 2017 
+-0.8% 
+1.1% 
+February 2017 
+1.7% 
+1.8% 
+March 2017 
+-0.2% 
+2.7% 
+April 2017 
+1.3% 
+2.4% 
+May 2017 
+1.6% 
+3.5% 
+June 2017 
+1.1% 
+0.3% 
+July 2017 
+0.5% 
+4.2% 
+August 2017 
+0.5% 
+1.7% 
+September 2017 
+0.2% 
+-1.2% 
+ 
+ 
+The above table shows the distribution of returns through every month. Both the strategies 
+show a positive distribution throughout the nine months. The only noticeable difference is that 
+the risk-averse strategy shows negative returns towards the initial months while the riskseeking strategy shows negative returns in the last month. 
+ 
+Table 4 
+Back-Testing Results (Performance & Risk Metrics) 
+Parameter 
+Risk-Averse 
+Risk-Taking 
+Annual Returns 
+8.0% 
+24.3% 
+Cumulative Returns 
+5.9% 
+17.6% 
+Annual Volatility 
+3.3% 
+7.5% 
+Sharpe Ratio 
+2.36 
+2.95 
+Calmar Ratio 
+4.65 
+9.80 
+Stability 
+0.92 
+0.96 
+Electronic copy available at: https://ssrn.com/abstract=3889600
+
+Max Drawdown 
+-1.7% 
+-2.5% 
+Omega Ratio 
+1.50 
+1.82 
+Sortino Ratio 
+3.67 
+5.83 
+Skew 
+-0.26 
+2.22 
+Kurtosis 
+1.67 
+14.95 
+Tail Ratio 
+1.44 
+1.42 
+Daily VaR 
+-0.4% 
+-0.9% 
+Gross Leverage 
+0.22 
+0.36 
+Daily Turnover 
+0.1% 
+0.1% 
+Alpha 
+0.04 
+0.13 
+Beta 
+0.19 
+0.50 
+ 
+When we look at the above performance and risk metrics, both strategies seem profitable. The 
+returns (annual and cumulative) for the risk-seeking investor is higher compared to the riskaverse investor. The volatility, skewness and kurtosis (peakedness) are also comparatively 
+higher owing to the investor’s risk appetite. The ratios (Sharpe, Calmar, Omega, Sortino, Tail) 
+gives a better idea about which strategy would be more feasible to go for, since it all signifies 
+the risk adjusted returns. All the ratios signify that the risk-seeking strategy gives higher risk 
+adjusted returns. The gross leverage or the borrowed capital is somewhat higher though. 
+Another thing to observe is that the alpha and beta is higher for the risk-seeking strategy. 
+Though a higher alpha means a higher relative performance to the market, a higher beta shows 
+that the strategy is more sensitive to the market changes when compared to the risk-averse 
+strategy, as the lower beta of the latter almost guarantees market neutrality. 
+Some of the reasons for this performance might be due to the strategies being high frequency 
+(more trades within lesser intervals), frequent rebalancing of the portfolio and lesser correlation 
+between the stocks and the back-testing period might have been prone to macroeconomic 
+changes. 
+ 
+CONCLUSION 
+Predicting prices has been successfully implemented using LSTM. Though, there is a chance 
+that the next day’s predicted prices has a look ahead bias but this is only the case  if you use 
+one feature, the previous day’s price. In our case, we have used three features including the 
+prices, daily technical and fundamental indicators. Later, we compared the predicted prices 
+with the actual prices and came up with the trading decisions or actions for each day. These 
+decisions were based on two strategies depending on the risk appetite of the investor (riskElectronic copy available at: https://ssrn.com/abstract=3889600
+
+averse/risk-seeking). When these decision were back-tested on Quantopian, we got the 
+performance and risk metrics as well as the returns and volatility plots for the overall trading 
+period. Thus, LSTM gave us decent results as a trading and optimization tool. However, there 
+are certain areas of improvements in ways that the model could use a larger dataset for training 
+as this would allow us for a more complicated model and avoid over-fitting. Another area to 
+improve on would be the decision model so that the decisions are more tuned with the market 
+data. 
+ 
+ 
+REFERENCES 
+ 
+1. Nelson, David MQ, Adriano CM Pereira & Renato A. de Oliveira, (2017). Stock 
+market's price movement prediction with LSTM neural networks. 2017 International 
+Joint Conference on Neural Networks (IJCNN), IEEE. 
+ 
+2. A. Bernal, S. Fok & R. Pidaparthi, (2012). Financial Market Time Series Prediction 
+with Recurrent Neural Networks. Technical Report, Stanford University. 
+ 
+3. L. Takeuchi & A. Yu-Ying Lee, (2013). Applying deep learning to enhance momentum 
+trading strategies in stocks. Technical Report, Stanford University.  
+ 
+4. K. Chen, Z. Yi, & D. Fangyan, (2015). A LSTM-based method for stock returns 
+prediction: A case study of China stock market. 2015 IEEE International Conference 
+on Big Data (Big Data), IEEE. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3889600

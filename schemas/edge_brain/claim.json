@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/claim.json",
+  "title": "EdgeLab Claim",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["claim_id", "statement", "claim_type", "status", "scope", "dependency_ids", "evidence_ids", "source_ids"],
+  "properties": {
+    "claim_id": {"type": "string", "pattern": "^CLAIM-[A-Za-z0-9._:-]+$"},
+    "statement": {"type": "string", "minLength": 1},
+    "claim_type": {"enum": ["LITERATURE", "MEASUREMENT", "STATISTICAL", "CAUSAL", "EXECUTABILITY", "METHODOLOGICAL"]},
+    "status": {"enum": ["LITERATURE_CLAIM_UNVERIFIED", "LLM_EXTRACTED_CONCEPT", "AUTHOR_REPORTED_RESULT", "HISTORICAL_EXPERIMENT_PENDING_REAUDIT", "PROPOSED", "SUPPORTED", "CONTRADICTED", "STALE_BY_DEPENDENCY", "REQUIRES_REAUDIT", "INVALIDATED_BY_MEASUREMENT_ERROR", "SUPERSEDED"]},
+    "scope": {"type": "string", "minLength": 1},
+    "dependency_ids": {"type": "array", "items": {"type": "string"}},
+    "evidence_ids": {"type": "array", "items": {"type": "string"}},
+    "source_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  }
+}

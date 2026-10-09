@@ -1,0 +1,136 @@
+{
+  "doc_id": 33,
+  "titulo": "AI-Driven Quantitative Trading System for Portfolio Optimization and Investment Decision-Making",
+  "resumen_operativo": "Describe un pipeline genérico de trading cuantitativo con ML: features técnicos (medias móviles, volatilidad, momentum, RSI), un Random Forest para predecir el retorno del día siguiente, ranking de acciones para armar portfolio, y backtesting walk-forward contra el S&P 500. No reporta ningún número concreto de performance (Sharpe, drawdown, retorno), por lo que su valor práctico para un quant es casi nulo más allá de recordar la estructura del pipeline.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "walk-forward validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Metodología de backtesting en la que el modelo se reentrena iterativamente sobre ventanas históricas y se testea en datos subsiguientes no vistos, para simular condiciones reales de trading y evitar look-ahead bias.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "look-ahead bias"},
+        {"tipo": "USA", "objeto": "random forest"}
+      ],
+      "cita_textual": "a walk-forward backtesting methodology is implemented. In this approach, the model is iteratively trained on historical data and tested on subsequent unseen data, simulating real-world trading conditions and avoiding look-ahead bias"
+    },
+    {
+      "nombre": "look-ahead bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo de usar información futura no disponible en el momento de la decisión; el paper dice evitarlo mediante walk-forward backtesting, aunque no muestra evidencia técnica de cómo se aisló.",
+      "relaciones": [],
+      "cita_textual": "ensure realistic performance assessment and avoid look-ahead bias"
+    },
+    {
+      "nombre": "random forest",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de ensemble (Random Forest Regressor) entrenado sobre indicadores técnicos para predecir el retorno del día siguiente de cada acción, elegido por su capacidad de capturar relaciones no lineales y reducir overfitting.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "next-day return"},
+        {"tipo": "USA", "objeto": "feature importance"}
+      ],
+      "cita_textual": "A Random Forest regression model is employed to predict next-day returns, enabling the generation of predictive signals for multiple equities"
+    },
+    {
+      "nombre": "next-day return",
+      "tipo": "dato",
+      "definicion_en_contexto": "Variable objetivo del modelo, construida desplazando la serie de retornos hacia adelante en el tiempo, para que el modelo aprenda la relación entre features históricas y movimientos futuros de precio.",
+      "relaciones": [],
+      "cita_textual": "The target variable is defined as the next-day return, constructed by shifting the return series forward in time"
+    },
+    {
+      "nombre": "relative strength index",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Indicador técnico de momentum incluido entre las features de entrada del modelo junto con medias móviles y volatilidad, para capturar el comportamiento del mercado.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "feature importance"}
+      ],
+      "cita_textual": "including moving averages, volatility measures, momentum, and relative strength index (RSI), to capture market behavior"
+    },
+    {
+      "nombre": "feature importance",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Análisis derivado del modelo Random Forest que muestra la contribución de cada indicador financiero a la predicción de retornos futuros, usado para mejorar la interpretabilidad del sistema.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "random forest"}
+      ],
+      "cita_textual": "The feature importance analysis highlights the contribution of various financial indicators in predicting future returns"
+    },
+    {
+      "nombre": "portfolio construction",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Etapa del pipeline en la que se seleccionan las acciones mejor rankeadas según la predicción del modelo y se les asigna capital mediante ponderación igualitaria o ponderación basada en el score predicho.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "random forest"},
+        {"tipo": "APLICA_A", "objeto": "position sizing"}
+      ],
+      "cita_textual": "Portfolio construction is performed by selecting the top-ranked stocks and allocating capital using either equal weighting or score-based weighting strategies"
+    },
+    {
+      "nombre": "position sizing",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Determinación del peso de cada activo en el portfolio (equal weighting o score-based weighting) a partir del ranking de retornos predichos.",
+      "relaciones": [],
+      "cita_textual": "allocating capital using either equal weighting or score-based weighting strategies"
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica de performance ajustada por riesgo usada para evaluar la estrategia; el paper afirma un 'favorable Sharpe ratio' pero no reporta el valor numérico.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"}
+      ],
+      "cita_textual": "Risk-adjusted performance is evaluated using the Sharpe ratio, which reflects the balance between return and volatility"
+    },
+    {
+      "nombre": "maximum drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica de riesgo a la baja evaluada para medir la resiliencia de la estrategia frente a fluctuaciones de mercado; se describe cualitativamente como 'controlado' sin cifras.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "downside risk"}
+      ],
+      "cita_textual": "Maximum drawdown is analyzed to assess the downside risk of the strategy"
+    },
+    {
+      "nombre": "benchmark comparison",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Comparación del desempeño de la estrategia contra el índice S&P 500 para evaluar su efectividad relativa; se reporta 'outperformance' sin cifras concretas.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "cumulative returns"}
+      ],
+      "cita_textual": "the strategy's performance is compared against a benchmark index, such as the S&P 500, to assess its relative effectiveness"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Costos de transacción y slippage no incorporados en el backtest actual; el paper los deja explícitamente como trabajo futuro, lo cual debilita la validez de cualquier resultado de retorno reportado.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "transaction costs, slippage, and real-world trading constraints can be incorporated into the backtesting framework to improve the realism of the evaluation"
+    },
+    {
+      "nombre": "momentum",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Indicador de tendencia usado como feature de entrada al modelo, junto con medias móviles y RSI, para capturar el carácter trend-following del mercado.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "The use of multiple financial indicators enables the model to capture both trend-following and mean-reversion patterns"
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Patrón complementario al momentum que las features del modelo (medias móviles, retornos de corto plazo) buscan capturar según el paper.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "momentum"}
+      ],
+      "cita_textual": "contributing to improved prediction accuracy"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "nula",
+    "nota": "El paper no reporta cifras de performance, opera en equities diarias (no intradía), y no cubre microestructura ni order flow relevante para ES futures; solo sirve como recordatorio genérico de un pipeline ML de stock-picking."
+  }
+}

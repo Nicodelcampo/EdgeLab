@@ -1,0 +1,149 @@
+{
+  "doc_id": 277,
+  "titulo": "Power Laws in Market Microstructure",
+  "resumen_operativo": "Modelo de equilibrio para market impact basado en Glosten (1994) con insiders que conocen el valor de liquidacion V y liquidity suppliers que postean ordenes limite. El price impact sigue una power law si la senal tiene fat tails, y es logaritmico para colas ligeras. La distribucion del volumen de equilibrio tambien sigue power law. El bid-ask spread disminuye con mas noise trading y aumenta con mas insiders. Con insiders compitiendo, el profit agregado tiende a cero.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Price Impact",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Efecto de una orden de mercado sobre el precio; en equilibrio sigue power law si V tiene fat tails y ley logaritmica si colas ligeras.",
+      "relaciones": [
+        {
+          "tipo": "EQUIVALE_A",
+          "objeto": "Implementation Shortfall"
+        },
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Market Microstructure"
+        }
+      ],
+      "cita_textual": "The price impact, and equivalently the implementation shortfall, has a power law if the market believes that the fundamental value has fat tails"
+    },
+    {
+      "nombre": "Fat Tails in Signal Distribution",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Distribucion del valor de liquidacion V con colas pesadas (power-like decay) que produce power law en el price impact.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "Power Law Price Impact"
+        }
+      ],
+      "cita_textual": "Fat tails in the signal distribution lead to a power law for price impact"
+    },
+    {
+      "nombre": "Tail Expectation Pricing",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Precios limite competitivos dados por expectativas condicionales de cola: h(y)=E[V|Y>=y] para y>0 y h(y)=E[V|Y<=y] para y<0.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "Glosten (1994) Model"
+        },
+        {
+          "tipo": "REQUIERE",
+          "objeto": "Adverse Selection"
+        }
+      ],
+      "cita_textual": "limit prices are given by tail expectations"
+    },
+    {
+      "nombre": "Regular Variation",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Propiedad matematica que describe comportamiento asintotico tipo power law: g(λx)/g(λ) -> x^ρ cuando λ->infinito.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "Price Impact Asymptotics"
+        }
+      ],
+      "cita_textual": "a function of regular variation behaves like a power function asymptotically"
+    },
+    {
+      "nombre": "Kyle Model Extension",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Extension del modelo de Kyle (1985) con Glosten (1994): insiders conocen V, liquidity suppliers postean primero, pricing discriminatorio.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "Kyle (1985) Model"
+        },
+        {
+          "tipo": "APLICA_A",
+          "objeto": "Adverse Selection"
+        }
+      ],
+      "cita_textual": "shares features from Kyle (1985) and Glosten (1994)"
+    },
+    {
+      "nombre": "Insider Competition",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Con N>=2 insiders compitiendo, el trading se vuelve mas agresivo, el profit agregado converge a 0 cuando N->infinito.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "Vanishing Insider Profit"
+        }
+      ],
+      "cita_textual": "competition among insiders leads to aggressive trading, hence vanishing profit in the limit"
+    },
+    {
+      "nombre": "Bid-Ask Spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "h(0+)-h(0-); el spread minimo para una orden infinitesimal es invariante a la varianza del noise trading sigma^2.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Limit Order Book"
+        },
+        {
+          "tipo": "MIDE",
+          "objeto": "Liquidity"
+        }
+      ],
+      "cita_textual": "the minimal bid-ask spread for an infinitesimal trade is the same regardless of the variance of the noise trades"
+    },
+    {
+      "nombre": "Discriminatory Pricing",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El costo marginal de una orden depende de su tamano porque los liquidity suppliers usan tail expectations que varian con la cantidad.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Tail Expectation Pricing"
+        }
+      ],
+      "cita_textual": "the marginal cost of a trade depends on the trade size leads to discriminatory pricing"
+    },
+    {
+      "nombre": "Trading Desk Cost Structure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El insider paga integral de 0 a X de h(Z+y)dy, donde Z es la demanda de noise traders que llego antes al desk.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Kyle Model Extension"
+        }
+      ],
+      "cita_textual": "the insider is charged integral_0^X h(Z+y)dy for an order of X units"
+    },
+    {
+      "nombre": "Noise Trading Variance Effect",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "A mayor varianza del noise trading (sigma^2), el order book se aplana y el spread para ordenes no infinitesimales disminuye.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "Order Book Flattening"
+        }
+      ],
+      "cita_textual": "the order book flattens as the amount of noise trading increases"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Modelo teorico de un solo periodo; los conceptos de price impact y tail expectations son directamente relevantes para ejecucion intradia."
+  }
+}

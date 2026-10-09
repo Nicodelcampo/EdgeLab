@@ -1,0 +1,76 @@
+{
+  "doc_id": 243,
+  "titulo": "Non-Parametric Prediction of the Mid-Price Dynamics in a Limit Order Book",
+  "resumen_operativo": "Propone un algoritmo no paramétrico de predicción de cambios en el mid-price de un libro de órdenes usando clustering de estados del LOB y features actualizadas intradía. Construye un vector de estado 3D (volumen best bid, best ask, spread) y predice si el mid-price cambiará en un horizonte fijo. Implementado en una estrategia de ejecución con datos NYSE OpenBook, logra mejoras de ~3 basis points sobre una estrategia uniforme de ejecución.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Mid-Price Prediction",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Predicción de corto plazo del cambio en el precio medio (average of best bid and best ask) usando información del libro de órdenes sin imponer un modelo paramétrico restrictivo.",
+      "relaciones": [{"tipo": "USA", "objeto": "Limit Order Book State"}, {"tipo": "APLICA_A", "objeto": "Optimal Execution"}],
+      "cita_textual": "We propose a novel non-parametric approach to short-term forecasting of the mid-price change in a limit order book"
+    },
+    {
+      "nombre": "State Vector Clustering",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica que agrupa estados similares del LOB mediante una métrica de distancia para reducir dimensionalidad y asegurar suficientes observaciones por cluster para estimación fiable de features.",
+      "relaciones": [{"tipo": "REQUIERE", "objeto": "Limit Order Book State"}, {"tipo": "USA", "objeto": "Feature Estimation"}],
+      "cita_textual": "We cluster similar states together so that each cluster has enough observations for reliable feature estimation"
+    },
+    {
+      "nombre": "Order Book State Vector",
+      "tipo": "dato",
+      "definicion_en_contexto": "Vector tridimensional S(t) = (shares at best bid/100, shares at best ask/100, bid-ask spread en cents) que caracteriza el estado del libro de órdenes en cada instante.",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "Mid-Price Prediction"}],
+      "cita_textual": "We describe the state of the order book at time t with a three-dimensional vector S(t)"
+    },
+    {
+      "nombre": "Non-Parametric Regression",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Enfoque de predicción que no asume una forma funcional específica para la relación entre el estado del LOB y los cambios de mid-price, a diferencia de modelos paramétricos previos.",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Parametric LOB Models"}],
+      "cita_textual": "The distinction of our approach from the previous ones is that it does not impose a restrictive parametric model"
+    },
+    {
+      "nombre": "Uniform Execution Benchmark",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Estrategia de referencia que ejecuta órdenes uniformemente en el tiempo sin usar predicciones, sirviendo como baseline para medir la mejora de costes de ejecución.",
+      "relaciones": [{"tipo": "SE_OPONE_A", "objeto": "Prediction-Based Execution"}],
+      "cita_textual": "our predictors result in a statistically significant average gain around three basis points"
+    },
+    {
+      "nombre": "Trade Execution Cost Improvement",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida relativa: (Coste ejecución uniforme - Coste estrategia con predictor) / Coste ejecución uniforme. Valores positivos indican outperformance de la estrategia predictiva.",
+      "relaciones": [{"tipo": "MIDE", "objeto": "Prediction Quality"}],
+      "cita_textual": "Cost of uniform execution - Cost of our strategy / Cost of uniform execution"
+    },
+    {
+      "nombre": "Order Book Resilience",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Propiedad asumida en modelos previos donde el LOB retorna a una forma simple tras la ausencia de órdenes grandes. El paper argumenta que esta asunción es demasiado restrictiva.",
+      "relaciones": [{"tipo": "CONTRADICE_A", "objeto": "Static LOB Shape Assumption"}],
+      "cita_textual": "the assumption of a single steady-state shape is not supported by empirical studies and appears to be too strong and too simplistic"
+    },
+    {
+      "nombre": "Acceleration-Deceleration Parameter",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Parámetro de trading que modula la intensidad de ejecución: se acelera la compra si se predice subida de precio y se desacelera si se predice bajada, optimizando el coste de ejecución.",
+      "relaciones": [{"tipo": "USA", "objeto": "Mid-Price Prediction"}],
+      "cita_textual": "Trade acceleration-deceleration parameter π"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La estrategia de ejecución con predictores no paramétricos mejora el coste de ejecución en 1.57 a 4.45 desviaciones estándar sobre cero respecto a la estrategia uniforme, siendo estadísticamente significativa.",
+      "mercado": "NYSE (acciones líquidas de EE.UU.)",
+      "periodo": "30 de junio de 2010",
+      "magnitud": "Mejora media de 1.08e-5 a 3.5e-4 (0.001% a 0.035%); mejor caso 4.45 desviaciones estándar",
+      "condiciones": "100 acciones más líquidas del NYSE; ejecución entre 15:00 y 16:00; tamaño M = 1% del volumen horario medio; δ=1 segundo",
+      "robustez": "media",
+      "cita_textual": "the mean relative cost improvement is at least 1.5 standard deviations above zero in all six experiments; and in three out of the six experiments, it is more than three standard deviations above zero"
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Diseñado específicamente para predicción intradía con resolución de segundos usando datos NYSE OpenBook; directamente aplicable a HFT y ejecución algorítmica."}
+}
