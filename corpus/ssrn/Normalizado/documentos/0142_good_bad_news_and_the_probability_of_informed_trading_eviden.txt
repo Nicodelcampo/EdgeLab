@@ -1,0 +1,403 @@
+ 1 / 7
+Good (bad) news and the probability of informed trading: Evidence from illegal insider 
+trading
+Shunyu Su1 and Yezhou Sha1*
+1: School of Finance, Capital University of Economics and Business
+*: Corresponding author. Email: shayezhou@cueb.edu.cn
+Abstract
+We present a closed-form solution connecting the probability of informed trading (PIN) to the 
+overlooked parameter that signaling private information is good or bad. Estimating PIN using illegal 
+insider trading data, we find it sensitive to the certainty of positive private information in addition 
+to the existed explanations, offering a new explanation for PIN's limitations in prior literature.
+Keywords: Probability of informed trading; liquidity; information asymmetry; insider trading
+JEL classifications:
+G12; G14
+Biography
+Shunyu Su is affiliated with the School of Finance at the Capital University of Economics and 
+Business. His research focuses on the stock market.
+Yezhou Sha is an Associate Professor at the Capital University of Economics and Business. His 
+interests lie in empirical asset pricing and household finance. Sha has published over 20 papers in 
+journals such as the International Journal of Finance and Economics and the Journal of International 
+Financial Markets, Institutions and Money. He currently serves as a Subject Editor for the journal 
+Emerging Markets Finance and Trade.
+Acknowledgement
+We thank Tao Bing and Nianling Wang from Capital University of Economics and Business, as 
+well as Cheng Yan from the University of Essex, for their helpful discussions. We are grateful to 
+Jaideep Oberoi from SOAS, University of London for estimating PIN with Bayesian approach. We 
+are also indebted to the FinTech Lab of the School of Finance at Capital University of Economics 
+and Business for providing high-performance computing resources for large dataset estimation. This 
+research is funded by Capital University of Economics and Business (Grant ID: QNTD202301). All 
+errors are our own responsibility.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4435058
+Preprint not peer reviewed
+
+ 2 / 7
+1.
+Introduction
+The Probability of informed trading (PIN, see Easley, Keifer, O’Hara and Paperman, 1996) is 
+frequently employed in financial market research to measure how private information affects asset 
+prices. By considering the size of trades, PIN models order imbalances triggered by informed traders 
+who trade stocks based on the private information signal. The model has been widely applied in the 
+literature as a proxy of informed trading, such as buy and sells around M&A announcement (Aktas, 
+de Bodt, Declerck and Oppens,2007; Na and Kim 2021), self-reported trading by firm’s top manager 
+or blockholders (Cai, He and He, 2010), and insider trading (see for example, Lee, Lemmon, Li and 
+Sequeira 2014; Ahern 2020). Although these terms are often used interchangeably in accounting 
+and finance research, few question whether PIN can truly capture different types of informed trading.
+When private information is not market-wide observable, the probability that such information 
+signals a good or bad news is intuitively equiprobable. However, this intuition faces two challenges. 
+The first is the certainty of informed information. Na and Kim (2021) and other studies have found 
+that PIN is higher when the signal of private information become clearer. Second, PIN is sensitive 
+to the market’s microstructure, such as short selling (Henry, 2019), and bid-ask spread (Lenkey, 
+2021). This research calls for a systematic review on PIN’s suitability when these parameters are 
+set by market conditions.  
+In this paper, we first examine the relation between the private information’s signal and PIN by 
+giving a numeric solution. Starting from the estimation of Easley’s PIN, we differentiate the PIN 
+function and show there is a partial derivative between PIN and the probability that private 
+information is good or bad, denoted 𝛿 in relevant literature. The function of partial derivatives 
+gives direct supporting evidence that any given 𝛿 is relating to a unique PIN value. We then assign 
+𝛿 with different value and visualize its economic implications by plotting the value of PIN under 
+different scenarios.
+We have two findings from empirical anlaysis. First, by using real-market data, the estimation of 
+PIN following Griffin, Oberoi, Oduro (2021)’s approach is particularly sensitive to whether 𝛿 is 
+non-zero (i.e. the private information is a sure thing and is a bad news). Even a very small change 
+of 𝛿 leads to a kinked PIN estimate. Second, the determinative power of 𝛿 is independent from 
+stock’s market value and bid-ask spread, two proxies for investor’s attention and market 
+microstructure. These findings suggest that the relation between private information signal and 𝑃𝐼𝑁 
+supplements the literature of understand informed trading by offering a new possible underlying 
+channel.
+2.
+Model
+We start from EKOP’s classical model in getting the PIN. The EKOP model extracts information 
+from imbalanced order placed by buyers and sellers where one side have private information. After 
+revisiting the model setting, we then show how the parameter is relating to the estimation of PIN. 
+A conventional equation for getting PIN is often viewed from literature in such from as shown in in 
+Equation 1.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4435058
+Preprint not peer reviewed
+
+ 3 / 7
+𝑃𝐼𝑁=
+𝛼𝜇
+𝛼𝜇+ 𝜀𝑏+ 𝜀𝑠#(1)
+The parameter 𝜇,𝜀𝑏 and 𝜀𝑠 are not directly observable. EKO’s paper introduced a parameter 𝜃 
+that these parameters 𝛼, 𝜇, 𝜀𝑏, 𝜀𝑠, are all embedded by extracting these information from the orders 
+from buyers (𝐵) and sellers (𝑆). The likelihood function of 𝜃, 𝐿(𝜃|𝐵,𝑆), is describe as a sum of 
+outcomes from three scenarios: no news (1 ― 𝛼), bad news (𝛼𝛿), and good news (𝛼(1 ― 𝛿)).
+ 𝐿(𝜃│𝐵,𝑆) = (1 ― 𝛼)𝑒―𝜀𝑏𝜀𝑏
+𝐵𝑡
+𝐵𝑖! 𝑒―𝜀𝑠𝜀𝑠
+𝑆𝑡
+𝑆𝑖!
++𝛼𝛿𝑒―𝜀𝑏𝜀𝑏
+𝐵
+𝑖
+𝐵𝑖! 𝑒―(𝜇+𝜀𝑠)(𝜇+ 𝜀𝑠)𝑆𝑡
+𝑆𝑖!
++𝛼(1 ― 𝛿)𝑒―(𝜇+𝜀𝑏)(𝜇+ 𝜀𝑏)𝐵𝑖 
+𝐵𝑖!
+𝑒―𝜀𝑠𝜀𝑠
+𝑆𝑖
+𝑆𝑖! #(2)
+By comparing Equation 1 and Equation 2, the parameter 𝛿 disappears. A reduced form of Equation 
+1 by using fixed parameter or assign observable variables as proxies, means the distribution of 𝛿 
+is not relating to the probability of informed trading. Hence the economic implication of 𝛿 is 
+clouded and seemingly trivial in earlier literature.
+As a model-implied probability, 𝛿 is the probability that only the informed trader believes whether 
+the private information is bad. This probability will directly lead the informed trader to go long or 
+short the stock, where the additional trade triggers order imbalance. Naturally speaking, the 
+probability of good (bad) news must be important in determining the direction of the trade.
+How important that 𝛿 matters 𝑃𝐼𝑁? we draw this inference by calculating the partial derivative 
+showing how they are connected. For brevity we define 𝑥, 𝑦, and 𝑧 as the following equation:
+𝑥= 𝑒―𝜀𝑏𝜀𝑏
+𝐵𝑖
+𝐵𝑖! 𝑒―𝜀𝑠𝜀𝑠
+𝑆𝑖
+𝑆𝑖!
+𝑦= 𝑒―𝜀𝑏𝜀𝑏
+𝐵𝑖
+𝐵𝑖! 𝑒―(𝜇+𝜀𝑠)(𝜇+ 𝜀𝑠)𝑆𝑖
+𝑆𝑖!
+𝑧= 𝑒―(𝜇+𝜀𝑏)(𝜇+ 𝜀𝑏)𝐵𝑖
+𝐵𝑖!
+𝑒―𝜀𝑠𝜀𝑠
+𝑆𝑖
+𝑆𝑖!
+The PDF of 𝑃𝐼𝑁 to 𝛿 therefore can be expressed as Equation 3 given below:
+∂𝑃𝐼𝑁
+∂𝛿
+=
+∂(
+𝛼𝜇
+𝛼𝜇+ 𝜀𝑏+ 𝜀𝑠)
+∂𝛿
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4435058
+Preprint not peer reviewed
+
+ 4 / 7
+= ∂𝑙𝑛𝑉
+∂𝛿
+(𝜀𝑏+ 𝜀𝑠)(
+𝛼
+∂𝑙𝑛𝑉
+∂𝜇
++
+𝜇
+∂𝑙𝑛𝑉
+∂𝛼) ― 𝛼𝜇(
+1
+∂𝑙𝑛𝑉
+∂𝜀𝑏
++
+1
+∂𝑙𝑛𝑉
+∂𝜀𝑠)
+(𝛼𝜇+ 𝜀𝑏+ 𝜀𝑠)2
+= (
+[𝛼𝑦― 𝛼𝑧] ) ×
+(
+(𝜀𝑏+ 𝜀𝑠)(𝛼/( ∑[ ―𝛼𝛿𝑦+ 𝛼𝛿𝑦
+𝜇+ 𝜀𝑠
+𝑆
++ ( ―𝛼(1 ― 𝛿))𝑧+ 𝛼(1 ― 𝛿)𝑧
+𝜇+ 𝜀𝑏
+𝐵
+] ))
+(𝛼𝜇+ 𝜀𝑏+ 𝜀𝑠)2
++
+(𝜀𝑏+ 𝜀𝑠)(𝜇/( ∑[ ―𝑥+ 𝛿𝑦+ (1 ― 𝛿)𝑧] ))
+(𝛼𝜇+ 𝜀𝑏+ 𝜀𝑠)2
+―
+𝛼𝜇(1/( ∑[ ― (1 ― 𝛼)𝑥+ (1 ― 𝛼)𝑥
+𝜀𝑏
+𝐵
++ ( ―𝛼𝛿𝑦) + 𝛼𝛿𝑦
+𝜀𝑏
+𝐵
++ ( ―𝛼(1 ― 𝛿))𝑧+ 𝛼(1 ― 𝛿)𝑧
+𝜇+ 𝜀𝑏
+𝐵
+] ))
+(𝛼𝜇+ 𝜀𝑏+ 𝜀𝑠)2
+―
+𝛼𝜇(1/( ∑[ ― (1 ― 𝛼)𝑥+ (1 ― 𝛼)𝑥
+𝜀𝑠
+𝑆
++ ( ―𝛼𝛿𝑦) + 𝛼𝛿𝑦
+𝜇+ 𝜀𝑠
+𝐵
++ ( ―𝛼(1 ― 𝛿))𝑧+ 𝛼(1 ― 𝛿)𝑧
+𝜀𝑠
+𝑆
+] ))
+(𝛼𝜇+ 𝜀𝑏+ 𝜀𝑠)2
+)
+= (
+[𝛼𝑦― 𝛼𝑧] ) ×
+((𝜀𝑏+ 𝜀𝑠)(𝛼/(
+[ ―𝛼𝛿𝑦+ 𝛼𝛿𝑦
+𝜇+ 𝜀𝑠
+𝑆
++ ( ―𝛼(1 ― 𝛿))𝑧+ 𝛼(1 ― 𝛿)𝑧
+𝜇+ 𝜀𝑏
+𝐵
+] ) + 𝜇/(
+[ ―𝑥+ 𝛿𝑦
++ (1 ― 𝛿)𝑧])) ―
+𝛼𝜇(1/(
+[ ― (1 ― 𝛼)𝑥+ (1 ― 𝛼)𝑥
+𝜀𝑏
+𝐵
++ ( ―𝛼𝛿𝑦) + 𝛼𝛿𝑦
+𝜀𝑏
+𝐵
++ ( ―𝛼(1 ― 𝛿))𝑧+ 𝛼(1 ― 𝛿)𝑧
+𝜇+ 𝜀𝑏
+𝐵
+] ) +
+1/(
+[ ― (1 ― 𝛼)𝑥+ (1 ― 𝛼)𝑥
+𝜀𝑠
+𝑆
++ ( ―𝛼𝛿𝑦) + 𝛼𝛿𝑦
+𝜇+ 𝜀𝑠
+𝑆
++ ( ―𝛼(1 ― 𝛿))𝑧+ 𝛼(1 ― 𝛿)𝑧
+𝜀𝑠
+𝑆
+] ))/(𝛼
++ 𝜀𝑏+ 𝜀𝑠)2
+(3)
+The outcome has following implications: First, by considering there’s a good news that is leaked to 
+the informed traders (implying 𝛼= 1 and 𝛿= 0), the model implies that the greater buy (𝐵↑) is 
+the sole result of an increase of informed probability, and an almost-for-certain good news (𝛼= 1 
+and, loosely speaking, 𝛿= 0.00001) will yield a similar result as when 𝛿= 0, since the partial 
+derivate is continuously differentiable as Equation 4 shows:
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4435058
+Preprint not peer reviewed
+
+ 5 / 7
+∂𝑃𝐼𝑁
+∂𝛿
+= (
+[𝑦― 𝑧]) ×
+((𝜀𝑏+ 𝜀𝑠)(
+[𝑧(
+𝐵
+𝜇+ 𝜀𝑏― 1)] + 𝜇/（
+(𝑧― 𝑥)) ―
+𝜇
+(𝜇+ 𝜀𝑏+ 𝜀𝑠)2 (
+[𝑧(
+𝐵
+𝜇+ 𝜀𝑏― 1)] +
+[𝑧(
+𝑆
+𝜀𝑠― 1)] ))    
+(4)
+3.
+Insider trading and estimation
+We use illegal insider trading from China’s stock market in the year of 2011-2018 as a sample to 
+estimate 𝑃𝐼𝑁 and then verify the implication of Equation 3 and Equation 4. Insider trading cases 
+are manually collected from China’s legal documents i.e. court verdicts, administrative orders. 
+Legal documents reveal some important trading-level information, such as the date of insider buy, 
+the transaction volume, spot price and the characters of insider information. All of which is to gauge 
+a precise framework when likelihood of informed trading is clustered.
+Using China as the test sample has some important advantage. First, due to the long lasting shortselling ban in China, only positive insider information is exploitable for profit and hence the 
+following insider action is to buy the target firm’s stock. This implies that the parameters are predetermined: 𝛼= 1, and 𝛿= 0. Second, comparing with informed trading, insider trading is purely 
+driven by the particular private information and is traded on the dates prior to the firm’s 
+announcement. This alleviates the cofounding effect around announcement day, where other 
+information publicized in the announcement may drive the trading behavior to the other way (Batten 
+et al., 2021).
+We obtain order information from RESSET, a Chinese data vendor that supplies 10-minute 
+frequency trading information for stocks that traded at China’s Shenzhen Stock Exchange (SZSE). 
+The high-frequency trading data is then used to estimate 𝑃𝐼𝑁 at daily level. We estimate each 
+stock’s 𝑃𝐼𝑁 15 days before and after the first buy from insiders. After removing observations with 
+key information missing, we got 2,787 𝑃𝐼𝑁 observations from 91 court fillings of insider trading. 
+The estimation method strictly follows Griffin et al., (2021)’s method. Table 1 reports the estimation 
+result and relevant parameters. 
+[Insert Table 1 near here]
+The interested parameter, the model-implied probability that the private information is a bad news, 
+has a mean value at 0.525. This value is considerably higher than the reported value of 0.25 in Griffn 
+et al (2021), and is sharply contrast to the intuition that insiders are expected to trade based because 
+the private information is good.
+Equation 3 has shown an analytical solution of 𝛿 from 𝑃𝐼𝑁 equation. We then see how 𝑃𝐼𝑁 
+variate by manually set 𝛿 as 0, 0.00001, and 0.5 while holding all other parameters unchanged. 
+Calibrated results, showing in Figure 1, show that when the private information is a sure good thing, 
+the estimated 𝑃𝐼𝑁 has a mean value merely at 0.21. If the private information is almost for sure, 
+the mean value of estimation rises 28.75%, to 0.27. An equiprobable probability, which close to the 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4435058
+Preprint not peer reviewed
+
+ 6 / 7
+market average value, yield an averaged 𝑃𝐼𝑁 at 0.36. 
+[Insert Figure 1 near here]
+We re-estimate the observations’ 𝑃𝐼𝑁 by generating 24 sets of buy and sell orders using MonteCarlo simulation. Each set contains 2,787 simulated bid and ask orders. The simulated observations 
+are then used to estimated 𝑃𝐼𝑁. We hold 𝛼, 𝜀, 𝜇 fixed as the mean value reported in Table 1. The 
+average 𝑃𝐼𝑁 where 𝛿= 0 is more deviate from 𝛿= 0.00001. As a comparison, setting 
+𝛿= 0.00001 and 0.5 yields indifferent 𝑃𝐼𝑁. These results show that 𝑃𝐼𝑁 is very sensitive to the 
+certainty degree that the private information is good. A very small degree of uncertainty, regardless 
+how much it is, will drive 𝑃𝐼𝑁 go higher and making the 𝛿 less important. This partially explains 
+why previous research didn’t pay special attention to this parameter, since if insider cast doubt on 
+the signal that private information implies, the stock’s 𝑃𝐼𝑁 will be almost independent from this 
+parameter.
+When the first die of insider trading has been cast, will market soon learn the private information (a 
+change of 𝛿) and reflects a different trading patter (different 𝑃𝐼𝑁)? We answer this by plotting the 
+time-series of 𝛿 and 𝑃𝐼𝑁 15 days before and after first insider trading is reported in Figure 3. We 
+show that there is a decline of 𝛿 and an increase of 𝑃𝐼𝑁 around the day 𝑇= 0. However the 
+changes are marginal, and in the post insider trading days, 𝛿 and 𝑃𝐼𝑁 do not show a pattern that 
+are largely deviate from what they were before the first insider trading. We conclude that the 𝑃𝐼𝑁 
+may be able to explain the behavior of insider trading with high-frequency trading or in short event 
+window, as Aktas et al (2007) and Brenna, Huh, and Subrahmanyam (2018). But for a long 
+observation period, identifying insider trading using 𝑃𝐼𝑁 seems difficult. Consider that our event 
+window has 30 days, a Brown and Warner (1985) style test statistic is likely to be upward biased.
+[Insert Figure 2 near here]
+The distribution of 𝑃𝐼𝑁 is affected by two underlying channels: information asymmetry (Lee et 
+al., 2014) and microstructure (Aktas et al., 2007). Is the relation between 𝛿 and 𝑃𝐼𝑁 subject to 
+these existing channels? We examine the relationship using 30-day estimations of 𝛿 and 𝑃𝐼𝑁, with 
+stock’s market value of equity (𝑀𝑉), as a proxy of information asymmetry, and with stock’s bidask spread (𝐵𝐴) as a proxy of stock’s microstructure. Results in Figure 4 shows that the distribution 
+of 𝛿 and 𝑃𝐼𝑁 is not clustered in high/low 𝑀𝑉 or 𝐵𝐴 samples, suggesting our findings are not 
+a result from coincide with the existing theories.
+[Insert Figure 3 near here]
+4.
+Conclusion
+We demonstrate that in the Probability of Informed Trading (𝑃𝐼𝑁) model, the implied 
+probability of private information being good or bad plays an independent role not extensively 
+investigated in prior literature. To test this relationship, we estimate 𝑃𝐼𝑁 using data from illegal 
+insider trading, a type of informed trading driven by a clear price signal. Our findings confirm our 
+model's proposition and reveal a new channel for understanding insider trading through the 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4435058
+Preprint not peer reviewed
+
+ 7 / 7
+relationship between good or bad news and the probability of informed trading.
+Our findings do not invalidate the PIN model. Our motivation stems from the confusion 
+between the terms "informed trading" and "insider trading." The simplification of these concepts 
+leads to PIN's misuse, as it should not be employed to gauge the probability of insider trading. Future 
+research should clarify the distinction between informed trading and insider trading from the outset. 
+A new model for capturing insider trading is needed, but it should not be based on the order 
+imbalance theory. We believe that this is where our contribution lies.
+References 
+Ahern, K. R. (2020). Do Proxies for Informed Trading Measure Informed Trading? Evidence from 
+Illegal 
+Insider 
+Trades. 
+The 
+Review 
+of 
+Asset 
+Pricing 
+Studies, 
+10(3), 
+397–440. 
+https://doi.org/10.1093/rapstu/raaa004
+Aktas, N., de Bodt, E., Declerck, F., & Van Oppens, H. (2007). The PIN anomaly around M&A 
+announcements. 
+Journal 
+of 
+Financial 
+Markets, 
+10(2), 
+169–191. 
+https://doi.org/10.1016/j.finmar.2006.09.003
+Batten, J. A., Lončarski, I., & Szilagyi, P. G. (2021). Strategic insider trading in foreign exchange 
+markets. Journal of Corporate Finance, 69, 101818. https://doi.org/10.1016/j.jcorpfin.2020.101818
+Brennan, M. J., Huh, S.-W., & Subrahmanyam, A. (2018). High-Frequency Measures of Informed 
+Trading and Corporate Announcements. The Review of Financial Studies, 31(6), 2326–2376. 
+https://doi.org/10.1093/rfs/hhy005
+Brown, S. J., & Warner, J. B. (1985). Using daily stock returns: The case of event studies. Journal 
+of Financial Economics, 14(1), 3–31. https://doi.org/10.1016/0304-405X(85)90042-X
+Cai, J., He, J., & He, J. (2010). How better informed are the institutional investors? Economics 
+Letters, 106(3), 234–237. https://doi.org/10.1016/j.econlet.2009.12.008
+Easley, D., Kiefer, N. M., O’hara, M., & Paperman, J. B. (1996). Liquidity, Information, and 
+Infrequently 
+Traded 
+Stocks. 
+The 
+Journal 
+of 
+Finance, 
+51(4), 
+1405–1436. 
+https://doi.org/10.1111/j.1540-6261.1996.tb04074.x
+Griffin, J., Oberoi, J., & Oduro, S. D. (2021). Estimating the probability of informed trading: A 
+Bayesian 
+approach. 
+Journal 
+of 
+Banking 
+& 
+Finance, 
+125, 
+106045. 
+https://doi.org/10.1016/j.jbankfin.2021.106045
+Henry, T. R. (2019). Security price formation and informed trading with constrained short selling. 
+Review of Quantitative Finance and Accounting, 53(1), 123–151. https://doi.org/10.1007/s11156018-0745-2
+Lee, I., Lemmon, M., Li, Y., & Sequeira, J. M. (2014). Do voluntary corporate restrictions on insider 
+trading eliminate informed insider trading? Journal of Corporate Finance, 29, 158–178. 
+https://doi.org/10.1016/j.jcorpfin.2014.07.005
+Lenkey, S. L. (2021). Informed Trading with a Short-Sale Prohibition. Management Science, 67(3), 
+1803–1824. https://doi.org/10.1287/mnsc.2019.3501
+Na, H., & Kim, S. (2021). Predicting stock prices based on informed traders’ activities using deep 
+neural networks. Economics Letters, 204, 109917. https://doi.org/10.1016/j.econlet.2021.109917
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4435058
+Preprint not peer reviewed
