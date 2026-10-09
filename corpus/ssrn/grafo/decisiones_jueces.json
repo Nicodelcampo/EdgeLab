@@ -1,0 +1,23 @@
+[
+  {"accion": "fusionar", "claves": ["market microstructure noise", "microstructure noise"], "canonico": "market microstructure noise", "motivo": "Mismo concepto (ruido de microestructura); el fuzzy-match no los unio por la palabra extra 'market'."},
+  {"accion": "fusionar", "claves": ["market impact", "price impact"], "canonico": "market impact", "motivo": "Sinonimos en la literatura de ejecucion; 'permanent price impact' y 'linear market impact model' quedan como sub-conceptos distintos, no se tocan."},
+  {"accion": "fusionar", "claves": ["mid price", "midpoint"], "canonico": "mid-price", "motivo": "midpoint = mid-price, mismo objeto."},
+  {"accion": "fusionar", "claves": ["liquidity", "market liquidity"], "canonico": "market liquidity", "motivo": "'liquidity' generico y 'market liquidity' son el mismo nodo; liquidity provision/taking quedan separados (son acciones distintas)."},
+  {"accion": "fusionar", "claves": ["out of sample testing", "out of sample validation"], "canonico": "out-of-sample testing", "motivo": "Mismo procedimiento de validacion; walk-forward validation queda aparte por ser un metodo especifico."},
+  {"accion": "fusionar", "claves": ["backtest overfitting", "overfitting"], "canonico": "backtest overfitting", "motivo": "En el corpus de trading, 'overfitting' generico se usa como sinonimo de backtest overfitting; se fusiona en el contexto del dominio."},
+
+  {"accion": "mapear_relacion", "tipo_original": "CAUSADO_POR", "tipo_destino": "CAUSA", "invertir": true, "motivo": "X CAUSADO_POR Y == Y CAUSA X."},
+  {"accion": "mapear_relacion", "tipo_original": "AUMENTA", "tipo_destino": "CAUSA", "invertir": false, "motivo": "X aumenta Y = efecto causal positivo."},
+  {"accion": "mapear_relacion", "tipo_original": "AFECTA", "tipo_destino": "CAUSA", "invertir": false, "motivo": "Afecta = relacion causal generica (direccion sujeto->objeto)."},
+  {"accion": "mapear_relacion", "tipo_original": "EXCITA", "tipo_destino": "CAUSA", "invertir": false, "motivo": "Auto-excitacion tipo Hawkes es causal."},
+  {"accion": "mapear_relacion", "tipo_original": "INFLUENCIADO_POR", "tipo_destino": "CAUSA", "invertir": true, "motivo": "X influenciado por Y == Y CAUSA X (debil)."},
+  {"accion": "mapear_relacion", "tipo_original": "DISMINUYE", "tipo_destino": "SE_OPONE_A", "invertir": false, "motivo": "X disminuye Y = efecto antagonico."},
+  {"accion": "mapear_relacion", "tipo_original": "LIMITA", "tipo_destino": "SE_OPONE_A", "invertir": false, "motivo": "Limitar/restringir = oposicion."},
+  {"accion": "mapear_relacion", "tipo_original": "APROXIMA", "tipo_destino": "EQUIVALE_A", "invertir": false, "motivo": "Aproxima ~ equivale (relacion de proxy)."},
+  {"accion": "mapear_relacion", "tipo_original": "ES_UN", "tipo_destino": "PARTE_DE", "invertir": false, "motivo": "Taxonomia is-a."},
+  {"accion": "mapear_relacion", "tipo_original": "EVALUA", "tipo_destino": "MIDE", "invertir": false, "motivo": "Evaluar = medir."},
+  {"accion": "mapear_relacion", "tipo_original": "EVALUADO_POR", "tipo_destino": "MIDE", "invertir": true, "motivo": "X evaluado por Y == Y MIDE X."},
+  {"accion": "mapear_relacion", "tipo_original": "MEJORADO_POR", "tipo_destino": "MEJORA_A", "invertir": true, "motivo": "X mejorado por Y == Y MEJORA_A X."},
+
+  {"accion": "no_mapear_relacion", "tipos": ["ASOCIADO_A", "COMPARA_CON", "NO_AFECTA", "COMPLEMENTA", "AUMENTA_CON", "DISMINUYE_CON", "LOGRA", "EMPEORADO_POR"], "motivo": "Se dejan caer a proposito: o son ruido generico (ASOCIADO_A, COMPARA_CON), o expresan ausencia de relacion (NO_AFECTA) que el schema no representa, o son correlaciones sin direccion causal clara (AUMENTA_CON/DISMINUYE_CON) que mapeadas a ciegas invertirian mal las aristas."}
+]
