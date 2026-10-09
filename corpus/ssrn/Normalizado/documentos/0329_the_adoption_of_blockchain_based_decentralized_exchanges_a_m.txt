@@ -1,0 +1,5413 @@
+Liquidity Provision on Blockchain-Based Decentralized
+Exchanges ∗
+Agostino Capponi†and Ruizhe Jia‡
+Abstract
+We show that the infrastructure of decentralized exchanges (DEXs) subjects liquidity providers (LPs) to a tragedy of the commons. LPs lack incentives to exit liquidity
+pools to prevent arbitrage losses, as these are collectively shared, while withdrawal
+costs are borne individually. Arbitrage rents primarily flow to validators as infrastructure fees, with the median arbitrageur transferring 96% of profits. Proposed solutions—speed technology, alternative sequencing rules, and flexible pricing curves—fail
+to reduce these rents. Leveraging the Silicon Valley Bank crisis as a natural experiment, we show that LPs defensively adopt more convex pricing curves to mitigate
+adverse selection risks.
+∗We appreciate insightful comments from Stefan Voigt (discussant), Katya Malinova (discussant), Thomas
+Joseph Rivera (discussant), Jiasun Li (discussant), Darrell Duffie, Andreas Park, Lin William Cong, Maureen O’Hara, Gideon Saar, Kose John, Fahad Saleh, Steve Kou, Lucy White, Shihao Yu, Liyan Yang,
+and seminar participants at the Cornell Finance Seminar Series, BU Questrom School of Business Finance
+Seminar Series, Warwick Business School, University of Texas at Dallas, Stevens Institute of Technology,
+Rensselaer Polytechnique Institute, Princeton University, Peking University, Scuola Normale Superiore of
+Pisa, U.S. Securities and Exchange Commission, the Bank for International Settlements, the SAFE Market Microstructure Conference, IAQF & Thalesians Seminar Series, Tokenomics 2021, Northern Finance
+Association, 2022 Annual Conference in Digital Economics, the 9th Annual Big Data Finance Conference,
+GSU-RFS Fintech Conference, CBER Webinar, and D. E. Shaw & Co. group
+†Corresponding author: Columbia University, Department of Industrial Engineering and Operations Research, NY 10027,
+USA. Telephone: +1(212) 854-4334. Email: ac3827@columbia.edu
+‡Columbia University, Department of Industrial Engineering and Operations Research, New York, NY 10027, Email:
+rj2536@columbia.edu.
+1
+
+1
+Introduction
+The advent of Bitcoin in 2008 has sparked extensive academic discourse around its underlying blockchain technology (Campbell (2016), Yermack (2017), Cong and He (2019), Chiu
+and Koeppl (2019), Gan, Tsoukalas, and Netessine (2021)). While initially serving as a decentralized payment infrastructure, blockchain’s capability expanded significantly with the
+introduction of smart contracts in 2015. These self-executing contracts enabled the emergence of decentralized finance (DeFi) - automated financial services that operate without
+traditional intermediaries. In their book “DeFi and the Future of Finance”, Harvey, Ramachandran, and Santoro (2021) present an ambitious vision:
+“We believe that DeFi will replace all meaningful centralized financial infrastructure in the future.”
+This vision stems from a fundamental premise: blockchain-based finance, through its inherent
+decentralization and transparency, should reduce costs and rent extraction compared to
+traditional financial systems.
+Traditional centralized exchanges (CEXs) face well-documented inefficiencies.
+Highfrequency trading firms (HFTs) extract significant arbitrage rents through speed advantages,
+while exchanges capitalize on infrastructure rents by selling preferential access through colocation services (see Budish, Cramton, and Shim (2015); Budish, Lee, and Shim (2019);
+Brolley and Zoican (2023a)). Moreover, these centralized venues have demonstrated reluctance to adopt more efficient market designs that might reduce infrastructure rents.
+Blockchain-based decentralized exchanges (DEXs), now representing roughly 20% of
+global spot cryptocurrency trading volume (The Block (2024)), aim to address these challenges. Unlike CEXs that utilize traditional limit order books, most DEXs employ automated
+market makers (AMMs)—smart contracts that eliminate the need for active market makers. AMMs operate on predetermined pricing algorithms that facilitate automatic quoting
+and risk sharing (Malinova and Park (2023)), allowing even retail investors to participate in
+2
+
+liquidity provision.
+In this paper, we argue that, contrary to the idealized vision, the current infrastructure design of DEXs imposes significant costs on liquidity provision—costs that can surpass
+those encountered in traditional markets. Specifically, we demonstrate that the integration
+of blockchain order execution with existing AMM designs disadvantages liquidity providers
+(LPs) and inevitably leads to arbitrage losses for them. These losses effectively transfer
+wealth from LPs to arbitrageurs and ultimately to blockchain validators, who extract infrastructure rents. These rents increase the cost of liquidity provision, especially in volatile
+markets, potentially leading to a liquidity freeze.
+Arbitrage opportunities in AMMs typically arise from external shocks to asset fundamentals or from price impacts caused by uninformed DEX trades, leading to deviations between
+AMM exchange rates and fundamental values. While LPs might attempt to withdraw their
+liquidity to avoid being exploited by arbitrageurs, the blockchain’s transaction execution
+mechanism prioritizes transactions based on gas fees rather than order timing. This creates
+a “tragedy of the commons”: losses to LPs are shared across the entire liquidity pool, but
+an arbitrageur offering the highest gas fee captures the entire arbitrage profit from trading
+against the pool. Each LP, acting rationally, will only bid up to their individual expected
+loss—a fraction of the total arbitrage gain—making it economically unfeasible to outbid arbitrageurs. Consequently, LPs collectively suffer from being arbitraged but lack individual
+incentives to act.
+Moreover, we demonstrate that intense competition among arbitrageurs leads to a Bertrandlike bidding war, with arbitrageurs offering gas fees up to their entire expected profit. As a
+result, arbitrage rents are almost entirely transferred to validators as infrastructure rents.
+Contrary to what one might expect given the decentralized nature of DEXs—where the
+exchange is not owned by any single entity and the underlying blockchain is maintained
+by a decentralized network of validators—our analysis shows that infrastructure rents can
+be substantial. Validators extract a significantly higher proportion of arbitrage rents (up
+3
+
+to 100%) compared to the estimated 30% in CEXs (Budish, Lee, and Shim (2019)). This
+disproportionality arises due to the block-by-block, first-price auction system that inherently
+disadvantages cancellation orders and favors arbitrage activities. Additionally, individual
+validators exert monopolistic control over transaction ordering within their assigned blocks,
+enabling them to maximize rent extraction.
+In contrast, market makers in CEXs wield
+bargaining power over co-location fees by leveraging their capacity to redirect liquidity to
+other exchanges (Budish, Lee, and Shim (2019)).
+To address these challenges, we consider potential modifications in market design that
+could mitigate arbitrage and infrastructure rents.
+First, we explore the impact of time
+priority and speed technology. While blocks are appended to the chain in discrete time
+intervals, investing in speed technology can provide a competitive advantage, especially when
+price shocks occur just before a new block is proposed or when block intervals are short.
+Speed technology allows agents to submit transactions for immediate inclusion, outpacing
+others who must wait for subsequent blocks. Our analysis reveals that speed technology
+is predominantly adopted by arbitrageurs and primarily serves to redistribute rents from
+validators to these fast arbitrageurs. Its overall effectiveness in reducing infrastructure rents
+is limited. In rare instances where a single liquidity provider controls a majority of the pool
+and can afford the technology, they can partially mitigate partially their own arbitrage risks.
+However, we show that due to the nature of liquidity pooling, widespread adoption of speed
+technology among multiple LPs is economically unfeasible.
+Second, we investigate the impact of alternative transaction sequencing rules on infrastructure rents. We demonstrate that validators are unlikely to implement random sequencing
+or prioritize liquidity providers, as such changes would diminish their ability to extract infrastructure rents. This behavior parallels the reluctance observed in centralized exchanges
+to adopt market designs that curtail arbitrage opportunities (Budish, Lee, and Shim (2019);
+Brolley and Zoican (2023a)). Similar to operators of CEXs, validators prioritize rules that
+optimize their revenues, even if it disadvantages other market participants.
+4
+
+Third, we allow liquidity providers to choose from various pricing curves differing in
+convexity levels. Higher convexity, while potentially reducing arbitrage rents, also leads to
+lower trading volumes and diminished fees for LPs. We show that when arbitrage rents are
+higher, LPs may choose more convex pricing curves in equilibrium.
+Our empirical analysis supports our theoretical implications, highlighting the contrasting behaviors of two stablecoin pairs, USDT-USDC and DAI-USDC, during the Silicon
+Valley Bank (SVB) crisis. While the USDT-USDC pair experienced significant volatility
+and exchange rate fluctuations, the DAI-USDC pair maintained relative stability due to the
+Peg Stability Module (PSM). This divergence provides a natural quasi-experimental setting.
+Employing a difference-in-differences approach, we present statistical evidence indicating liquidity withdrawal and increased usage of more convex pricing curves during periods marked
+by high volatility and elevated arbitrage rents.
+Furthermore, our empirical investigation confirms our theoretical prediction that a significant portion of arbitrage revenues is captured by validators as gas fees. With a median
+gas cost to arbitrage revenue ratio of 0.96, our findings suggest that at least half of the
+transactions incur gas costs nearing the total revenue earned.
+Literature Review.
+Our paper contributes to the rapidly growing literature on decentralized exchanges.
+The most closely related study to ours is Lehar and Parlour (2023). Their work highlights
+the essential distinctions between AMMs and limit order books, noting that AMMs separate
+price discovery, conducted by arbitrageurs, from liquidity provision, managed by liquidity
+providers. They compare these two market structures to explore the conditions under which
+trading through AMMs becomes more cost-effective.
+Trading motives in Lehar and Parlour (2023)’s model are similar to ours, as arbitrageurs
+either reverse liquidity traders’ transactions or exploit stale prices on DEXs. However, our
+work diverges in two main significant ways. First, unlike their focus on adverse selection
+5
+
+due to private information, we examine public information shocks on fundamental values,
+similar to Budish, Cramton, and Shim (2015). This modeling choice enables us to isolate the
+inefficiencies arising purely from market structure. We show how liquidity providers, even
+when equally informed as arbitrageurs, have no incentive to withdraw from the pool due to
+a “tragedy of the commons” problem. Second, we explicitly incorporate the settlement constraints imposed by the underlying blockchain infrastructure, and examine how competition
+for transaction priority impacts market outcomes, resulting in infrastructure rents extracted
+by validators.
+On the empirical side, Lehar and Parlour (2023) demonstrate how volatility and uninformed flows impact pool sizes on Uniswap V2. Our empirical analysis complements theirs
+by investigating how liquidity providers on Uniswap V3 strategically adjust the convexity of
+their pricing curves or withdraw liquidity during periods of heightened volatility.
+Milionis et al. (2024) link the costs of liquidity provision to token volatility with a
+continuous-time model, and derive a formula that quantifies pick-off risk in a fixed-size
+pool. In their framework, liquidity providers are not strategic, and the role of the underlying
+blockchain infrastructure is abstracted away. In contrast, we incorporate strategic interactions between liquidity providers and arbitrageurs and examine the mechanisms that lead to
+infrastructure rent extraction.
+The “tragedy of the commons” arising in our setting provides a rationale for some of the
+assumptions made in recent asset pricing studies on AMMs, including those by Hasbrouck,
+Rivera, and Saleh (2023) and Milionis et al. (2024).
+These studies assume that liquidity providers cannot adjust their positions or withdraw funds during specific periods. We
+demonstrate that the blockchain’s execution priority enables arbitrageurs to outbid liquidity
+providers, thereby justifying the use of fixed-duration constraints in these models.
+A few other studies have analyzed the role of gas fees on market quality in DEXs. Brolley
+and Zoican (2023b) suggest that DEXs may lower the overall computational costs linked to
+latency arbitrage races, providing an alternative perspective on infrastructure fees. Capponi,
+6
+
+Jia, and Yu (2022) show that price discovery on DEXs occurs as informed traders bid higher
+gas fees to gain execution priority over uninformed traders. Caparros†, Chaudhary, and
+Klein (2024) find that high infrastructure fees are a friction for liquidity providers; lower gas
+fees enable more frequent position updates, allowing for tighter price ranges on Uniswap V3.
+Several studies have analyzed trading costs and liquidity provision in AMMs.
+Park
+(2023) illustrate how the liquidity invariance of AMM pricing functions, together with the
+transparency of blockchain mempools, contributes to front-running and escalates trading
+costs. Aoyagi and Ito (2021) examine trader behaviors in markets where centralized and
+decentralized exchanges coexist. Barbon and Ranaldo (2021) compare price efficiency in
+centralized and decentralized exchanges, and highlight the increasing competitiveness of
+AMMs.
+Lehar, Parlour, and Zoican (2023) examine liquidity fragmentation across AMMs with
+varying fee structures and show how, in equilibrium, fragmented liquidity can outperform a
+single-fee market. Foley, O’Neill, and Putnins (2024) demonstrate that AMMs offer deep liquidity for high-volume, low-volatility assets and reduce trading costs compared to traditional
+markets across various asset classes, including foreign exchange, bonds, major commodities,
+and certain equities. Malinova and Park (2023) argue that that well-designed AMMs could
+substantially lower transaction costs in equity markets due to the risk-sharing properties of
+liquidity pools. Relative to these studies, our contribution lies in integrating the blockchain
+infrastructure with the AMM market design.
+More broadly, we contribute to market microstructure literature, particularly regarding arbitrage rents associated with stale orders in traditional, centralized limit-order-book
+exchanges, as explored in the studies of Foucault (1999) and Budish, Cramton, and Shim
+(2015). We underscore the shift in rent extraction dynamics from centralized to decentralized
+exchanges. Notably, while centralized platforms distribute these rents between exchanges
+and arbitrageurs (Budish, Lee, and Shim (2019), Brolley and Zoican (2023a)), decentralized
+exchanges see validators capturing the majority of arbitrage rents. Additionally, our study
+7
+
+offers a comprehensive comparison between DEXs and traditional equity markets, examining infrastructure, rent extraction, trade execution rules, settlement and pricing mechanisms,
+and trading costs.
+Our study also extends the literature on crypto trading. Prior research, such as Griffins
+and Shams (2020), Cong et al. (2020), and Li, Shin, and Wang (2018), has focused on trading
+activities and potential manipulation in centralized crypto exchanges. In contrast to studies
+examining blockchain as the underlying technology for cryptocurrency transactions (e.g.,
+Huberman, Leshno, and Moallemi (2021), Sockin and Xiong (2023), Easley, O’Hara, and
+Basu (2019), Pagnotta (2021), Schilling and Uhlig (2019), Athey et al. (2016), Cong, Li, and
+Wang (2020), Irresberger et al. (2020)), we incorporate the infrastructure layer of blockchain
+within the context of DEXs.
+The paper proceeds as follows. Section 2 provides institutional details of DEXs, and relates them to CEXs. Section 3 develops our game-theoretical model. We solve for the model
+equilibrium in Section 4, and conduct an in-depth analysis of arbitrage and infrastructure
+rents. Section 5 provides empirical evidence supporting our model’s implications. We conclude in Section 6. Appendix A explores analogies between automated market makers and
+traditional limit order books, while Appendix B provides robustness analysis for the key
+testable implications of our model. Technical proofs are detailed in Appendix C.
+2
+DEXs: Institutional Details and Relations to Limit
+Order Books
+In this section, we discuss the order execution mechanisms of the blockchain infrastructure
+and provide institutional details about decentralized exchanges (DEXs). We then highlight
+the similarities and differences between DEXs and traditional limit order books (LOBs).
+8
+
+2.1
+Blockchain Infrastructure
+The management and execution of orders on a DEX are fundamentally determined by its
+underlying blockchain technology, which plays a critical role in prioritizing and sequencing
+order executions. Unlike traditional financial markets where orders are typically prioritized
+based on time, blockchain transactions are often prioritized based on transaction fees rather
+than submission time.
+In DEXs, users submit trading orders to validators on the blockchain network and bid a
+transaction fee, commonly referred to as a gas fee on platforms like Ethereum.1 Validators
+function as service providers, selecting a subset of pending transactions from their memory
+pools to construct a new block. These transactions are executed in a predefined sequence
+before the block is appended to the blockchain.
+Blocks are constrained by size, and transaction inclusion is determined by bid gas fees.
+Transactions with higher fees are typically prioritized to maximize validators’ profits. Consequently, transactions with lower gas fees may remain pending in the memory pool for a
+longer time before being confirmed. Validators also have discretion over the sequencing of
+transactions within a block—that is, they decide the order in which transactions are executed.
+2.2
+Automated Market Makers (AMMs)
+The majority of DEXs function as Automated Market Makers (AMMs), a market structure
+characterized by the utilization of liquidity pools and algorithmic pricing mechanisms. While
+non-AMM DEXs exist2, AMM-based DEXs account for at least 80% of total DEX trading
+volumes as of September 2024 (see CoinGecko (2024)).
+Liquidity pools facilitate direct
+1On Ethereum, the gas fee is calculated by multiplying the gas price by the amount of gas needed to
+execute the transaction. The gas price represents the amount of ETH paid per unit of gas, and the gas
+amount indicates the computational resources required to execute the transaction. The unit for gas price is
+Gwei, where 1 Gwei equals 10−9 ETH.
+2One prominent example of a non-AMM DEX is SPEEDEX, as introduced by Ramseyer, Goel, and
+Mazi`eres (2023).
+9
+
+exchanges of tokens without the need to convert to fiat currency. While most liquidity pools
+support the exchange of two tokens, some pools, such as those on Curve, have multi-token
+functionalities.
+Liquidity Provision and Trading
+We describe the core mechanism of AMMs, focusing
+on the “constant product function” model used by leading decentralized exchange platforms,
+including Uniswap V2, SushiSwap, and PancakeSwap. Consider a liquidity pool that supports the exchange of two token types, A and B. Participants who hold both token types
+can act as liquidity providers (LPs) by depositing an equivalent value of both tokens into
+the pool. In return, LPs receive pool tokens (also known as liquidity tokens), representing
+their proportional stake in the pool.
+For example, suppose a liquidity pool initially contains 1 unit of token A and 1 unit of
+token B. If a LP contributes an additional 1 unit of token A and of token B, the pool now
+contains 2 units of each token, and the LP owns 50% of the pool. The value of the LP’s
+stake depends on the pool’s composition at the time of withdrawal. If, at withdrawal, the
+pool contains 4 units of token A and 1 unit of token B, the LP would receive 2 units of
+token A and 0.5 units of token B, assuming no other deposits or withdrawals occurred in
+the interim.
+Traders can exchange tokens with the pool using the constant product formula, which
+ensures that the product of the quantities of the two tokens remains invariant, maintaining a
+constant: xy = k, where x and y are the quantities of tokens A and B in the liquidity pool,
+respectively. For instance, starting with x = 2 and y = 2, the invariant is k = 4. If a trader
+wishes to withdraw ∆B = 1 token B from the pool, the constant product formula dictates
+that they must supply ∆A tokens A such that (2 + ∆A)(2 −∆B) = 2 × 2 = 4. Therefore, the
+trader must supply ∆A = 2 tokens A to withdraw 1 token B from the pool. The exchange
+rate in this transaction is thus ∆B
+∆A =
+1
+2. Figure 1 illustrates the pricing schedule for the
+AMM. Additionally, each transaction incurs a trading fee that is proportional to the size of
+10
+
+Figure 1: Graph of the AMM Bonding Curve. The invariant on the liquidity held in the
+pool is determined by the constant product function xy = k.
+the trade, akin to the half-bid-ask spread seen in traditional financial markets.
+Relation between DEX Trading and a Synthetic Limit Order Book
+To better understand AMM pricing rules, we can conceptualize them through the lens of a synthetic limit
+order book (LOB). This involves segmenting the AMM’s bonding curve into discrete intervals, each representing a specific price range for token exchanges, as illustrated in Figure1.
+By calculating the average price and tracking the corresponding changes in token quantities
+within these intervals, we construct a synthetic LOB, shown in Figure 2a.
+Trades that shift the pool’s inventory to the right of the current position on the bonding
+curve—where traders exchange token A for token B—are analogous to taking liquidity from
+the ask side of the limit order book. Conversely, trades that move the inventory to the
+left—swapping token B for token A—correspond to consuming liquidity from the bid side.
+Trades alter the spot exchange rate, analogous to changes in the mid-quote in a traditional
+limit order book. For instance, a trade where a trader exchanges 2 tokens A for 1 token B
+shifts the inventory position from (x, y) = (2, 2) to (x′, y′) = (4, 1). The spot exchange rate
+before the trade is y
+x = 2
+2 = 1, and after the trade, it becomes y′
+x′ = 1
+4 = 0.25. Figure 2b
+11
+
+(a) Synthetic LOB Before Trade
+(b) Synthetic LOB After Trade
+Figure 2: Visualization of the Synthetic LOB Before and After Trades in an AMM, illustrating changes in pricing and order placements.
+illustrates this post-trade scenario. Additional details of the methodology used to construct
+this mapping are provided in Appendix A.
+In contrast to traditional LOBs, where orders do not automatically replenish or adjust
+after execution and rely on active management by market makers, an AMM dynamically
+adjusts its implicit “bid” and “ask” quotes around the last traded price, highlighting its
+automated nature.
+2.3
+Enhanced Flexibility in Liquidity Provision
+Early AMMs, like Uniswap V2, used a constant product function, F(x, y) = xy, to determine
+prices for all liquidity providers. Recent innovations, exemplified by Uniswap V3, introduce
+greater flexibility by enabling liquidity providers to choose their preferred pricing schedules
+from a range of options.
+The pricing schedule in any AMM is specified through an invariance constraint on the
+pricing function F:
+F(dA + ∆A, dB −∆B) = F(dA, dB),
+(1)
+where dA and dB denote the current quantities of tokens in the pool, and ∆A and ∆B
+represent the amounts being exchanged.
+12
+
+Convexity of Pricing Curves
+The convexity of the pricing curve F(x, y) = c determines
+the relationship between trade size and price impact in an AMM. A more convex curve
+results in greater price impact per unit of trade size.
+For any trade, the relationship between the amounts of tokens A and B exchanged can
+be expressed as ∆B = g(∆A), where g is derived from the invariance condition (1) through
+implicit differentiation. Taking the negative of the derivative, −g′(∆A), gives the marginal
+exchange rate at which token A is exchanged for token B. The price impact arising from
+exchanging ∆A units of token A —the change in the exchange rate—is thus:
+Price Impact = |g′(∆A) −g′(0)| =
+
+Z ∆A
+0
+g′′(x), dx
+ .
+(2)
+A higher convexity of the pricing curve, indicated by a larger g′′(x), leads to a larger price
+impact for a given trade size.
+Example.
+To illustrate this relationship, consider a liquidity pool with initial holdings of
+dA = 2 units of token A and dB = 2 units of token B. Suppose a trader swaps ∆A = 2 units of
+token A for token B. Under a linear pricing curve F(x, y) = x+y = 4, the marginal exchange
+rate remains constant at 1, and there is no price impact. The trader receives ∆B = 2 units
+of token B, bringing the pool’s inventory to four units of token A and zero units of token
+B. In contrast, under the constant product curve F(x, y) = xy = 4, the marginal exchange
+rate drops from 1 before the trade to 0.25 after the trade, highlighting a price impact. The
+trader receives ∆B = 1 unit of token B, leaving the pool’s inventory at 4 units of token A
+and 1 unit of token B. We provide a graphical illustration of this comparison in Figure 3.
+Uniswap V3 and Adjustable Convexity
+Uniswap V3 introduces “concentrated liquidity”, allowing liquidity providers to specify a price range [pl, ph] within which they supply
+13
+
+Figure 3: This figure illustrates how the price impact changes with the convexity of the
+pricing curve. Starting from an initial position of (2, 2) tokens of A and B, we compare two
+pricing curves: a linear curve x + y = 4 and a constant product curve xy = 4. Swapping 2
+tokens A for B under the linear curve results in an exchange rate of 1 with no price impact,
+moving to (4, 0). Under the constant product curve, the same swap results in only 1 token
+B received, moving to (4, 1), demonstrating a price impact due to higher convexity.
+liquidity. The pricing curve follows the invariant:
+F(x, y) =
+
+x +
+L
+√ph
+
+(y + L√pl) = L2,
+where x and y are the quantities of tokens A and B, and L represents the liquidity provided.
+By expanding and rearranging the invariant, the pricing function can be decomposed
+into two familiar components: a constant product function (like Uniswap V2) and a linear
+function. Specifically:
+F(x, y) = xy + ρ(x + by) + c,
+(3)
+where ρ = L√pl determines the relative importance of the linear component, b =
+1
+√ph·√pl,
+and c = L2
+√pl
+√ph.
+The primary innovation, compared to Uniswap V2—where convexity was driven by total
+14
+
+pool liquidity (Lehar and Parlour (2023))—is that individual liquidity providers can now
+control convexity by setting their own preferred price range. For any given liquidity invariant
+L, if a liquidity provider widens their price range from [pl, ph] to [ pl
+1+a, (1 + a)ph] with a > 0,
+the weight ρ decreases by a factor of √1 + a. A wider price range reduces ρ, causing the
+function to behave more like a constant product function, increasing convexity. Conversely,
+narrowing the price range increases ρ, making the function more linear and less convex.3
+Example.
+Figure 4 illustrates the impact of price range selection on convexity using two
+Uniswap V3 curves: the curve corresponding to the price range [1/9, 9] exhibits greater
+convexity due to its larger ρ value. Consequently, a trade of 2 tokens from a pool inventory
+consisting of 2 tokens A and 2 tokens B incurs relatively larger price impact. In contrast,
+the curve associated with the range [1/4, 4], has a smaller convexity. This results in a lower
+price impact and a more favorable exchange rate. By adjusting the price range, liquidity
+providers can choose pricing curves that interpolate between linear and constant product
+functions, allowing them to customize the curve’s convexity.
+The Relation between Bonding Curve Convexity and Synthetic LOBs.
+The connection between an AMM’s bonding curve convexity and its analogous representation in a
+synthetic limit order book (LOB) provides further insight into the AMM’s pricing rules. As
+detailed in Appendix A, this relationship is established by segmenting the bonding curve,
+calculating exchange rates and quantities for each segment, and incorporating fees as a halfspread.
+The convexity of the AMM pricing curve directly determines the distribution of liquidity
+across price levels in the synthetic order book. More convex curves generate synthetic order
+books with liquidity distributed more widely across price levels, analogous to limit orders
+being placed further from the prevailing market price.
+3Mathematically, as the price range widens (pl →0 and ph →∞), the terms
+L
+√ph and L√pl in the invariant become negligible, and the pricing curve converges the constant product curve xy = L2, corresponding
+to maximal convexity.
+15
+
+Figure 4: This figure compares standard bonding curves with Uniswap V3 curves for different
+price ranges. The Uniswap V3 curves with price range [1/4, 4] and price range [1/9, 9] are
+plotted alongside the linear curve x+y = 4 and the constant product curve xy = 4. Starting
+from an initial inventory (2, 2) —consisting of 2 tokens A and 2 tokens B—trading in 2 tokens
+A moves the position along each curve. A wider price range increases convexity, leading to
+higher price impact and less favorable exchange rates for the same trade size.
+Figures 5a, 5b, and 5c illustrate this relationship across different AMM bonding curves.
+The constant product function (xy = 4) generates a synthetic order book with liquidity
+broadly distributed across price levels. The Uniswap V3 curve with price range [1/9, 9],
+depicted in Figure 5b, produces an intermediate liquidity distribution. In contrast, the linear
+pricing curve (x + y = 4) creates a synthetic order book with liquidity heavily concentrated
+near the mid-quote, as shown in Figure 5c.
+Table 1 summarizes the fundamental characteristics of DEXs and compares them with
+centralized exchanges, highlighting both similarities and operational differences.
+16
+
+(a) Synthetic LOB for xy = 4
+(b) Synthetic LOB for Uniswap V3 [1/9, 9]
+(c) Synthetic LOB for x + y = 4
+Figure 5: Synthetic limit order books corresponding to different AMM bonding curves. The
+figures illustrate the relationship between curve convexity and order positioning within the
+synthetic LOB. A higher convexity corresponds to orders placed further from the mid-quote.
+17
+
+Table 1: Comparison between Centralized and Decentralized Exchanges
+Category
+Centralized Limit Order
+Book Exchange
+Decentralized Exchange
+Infrastructure
+Operated by a centralized
+organization using a traditional order book system.
+Deployed on a decentralized blockchain network using smart contracts.
+Trade Execution
+Typically immediate, utilizing advanced order matching algorithms.
+Subject to being selected by
+blockchain
+validators
+and
+may
+vary
+depending
+on
+block generation speed.
+Execution Priority
+Based on traders’ speed;
+low-latency
+trading
+is
+prevalent.
+Determined by gas fees paid
+to the blockchain validators.
+Liquidity Provision
+Primarily via professional
+market makers through submission of buy and sell orders.
+Via liquidity pools where
+market makers deposit tokens.
+Pricing Mechanism
+Based on dynamic, active
+quoting/canceling of orders
+in the book by market makers.
+Automated
+adjustment
+near last traded price based
+on the bonding curve. This
+allows
+liquidity
+providers
+to remain passive in the
+process.
+Price Impact
+Dependent on order size and
+current order book depth.
+Determined by the order
+size as well as the liquidity
+pool’s depth and convexity
+of pricing curve.
+Trading Costs
+Bid-ask spreads and impact
+costs.
+Liquidity pool fees, and impact costs.
+Infrastructure Costs
+Exchange fees.
+Blockchain gas fees.
+Liquidity Provider Priority
+Time priority or Pro-rata
+sharing.
+Pro-rata sharing.
+18
+
+3
+Model
+Our model consists of three periods, indexed by t = 1, 2, 3, and includes a representative
+blockchain validator, multiple liquidity providers, two competing arbitrageurs, and two types
+of investors. All agents are risk-neutral and do not discount future utility.
+Token Fundamental Values
+The liquidity pool supports trading between two tokens, A
+and B. The fundamental value of token A at the end of period t is denoted by p(t), while
+the fundamental value of token B is fixed at one, serving as the numeraire. These values are
+public information. At the end of period 3, tokens can be liquidated at their fundamental
+values.
+The AMM Pricing Function
+The AMM utilizes a twice continuously differentiable
+function F(x, y) : R2
++ →R to determine the exchange rates between tokens. The function
+F, in conjunction with the token inventory within the liquidity pool, defines the pricing
+schedule. In a liquidity pool containing dA units of token A and dB units of token B, any
+trade involving the exchange of ∆A units of token A for ∆B units of token B must satisfy
+the invariant:
+F(dA + ∆A, dB −∆B) = F(dA, dB),
+with 0 ≤∆B ≤dB.
+(4)
+Additionally, the trader incurs a trading fee proportional to the trade size, f∆A, paid in
+units of token A, which are added to the pool.
+The spot exchange rate at which infinitesimal trades occur is given by:
+lim
+∆A→0
+∆A
+∆B
+= Fy(dA, dB)
+Fx(dA, dB).
+(5)
+We impose the following assumptions on the pricing function:
+Assumption 1. The function F(x, y) : R2 →R satisfies:
+19
+
+1. Fx > 0, Fy > 0.
+2. Fxx ≤0, Fyy ≤0, Fxy > 0.
+3. For all c ≥0, clF(x, y) = F(cx, cy) for some l > 0.
+These conditions ensure: (1) positive exchange rates for tokens; (2) convexity of the
+pricing curve F(x, y) = C, implying non-negative price impact; and (3) invariance of the
+spot exchange rate with respect to proportional changes in the quantities of deposited tokens.
+Transaction Execution Mechanism.
+For every transaction submitted to the blockchain,
+liquidity providers, arbitrageurs, and investors bid a gas fee.4 The representative validator,
+acting as an auctioneer for block space, prioritizes transactions based on the gas fees offered,
+processing them in descending order each period. Transactions with identical gas fees are
+processed randomly. In model extensions, we explore alternative rules for allocating block
+space.
+3.1
+Liquidity Providers
+There are n > 1 liquidity providers, indexed by N = {1, 2, . . . , n}, each endowed with
+positive quantities of tokens A and B, denoted by eAi > 0 and eBi > 0 for provider i ∈N.
+The total initial endowments across all liquidity providers are eA = Pn
+i=1 eAi and eB =
+Pn
+i=1 eBi.
+In period 1, each liquidity provider decides how many units of tokens A and B to deposit
+into the pool. The amounts deposited by provider i are d(1)
+Ai and d(1)
+Bi , respectively. The
+cumulative amounts of tokens held in the pool at the end of period t are denoted by d(t)
+A and
+d(t)
+B . The AMM requires that tokens be deposited at the fundamental exchange rate.5.Upon
+4Since transactions conducted on the same AMM typically consume similar amounts of gas, higher gas
+prices result in higher total gas fees. In our model, agents specify a direct gas fee rather than a gas price.
+5This rate is defined as Fx(d(1)
+A ,d(1)
+B )
+Fy(d(1)
+A ,d(1)
+B ) = p(1). For example, in a constant product AMM with F(x, y) = xy,
+the deposited values satisfy d(1)
+A p(1) = d(1)
+B .
+20
+
+depositing, liquidity provider i acquires a share wi =
+d(1)
+Ai
+d(1)
+A
+=
+d(1)
+Bi
+d(1)
+B
+of the pool.
+Liquidity
+providers choose deposit amounts to maximize the expected value of their portfolios at the
+end of period 3. We impose the following tie-breaking rule:
+Assumption 2. Liquidity providers choose to deposit their tokens if the expected payoff from
+depositing is equal to the expected payoff from not depositing.
+3.2
+Investor’s Trade and Arbitrage Opportunities
+Trade occurs in the model due to two reasons: (i) investors derive private benefits from
+holding specific tokens, and (ii) exogenous shocks affect the fundamental exchange rate
+between tokens.
+Investor’s Trade
+With probability κI, an investor arrives to trade in the pool.
+The
+investor is of either type A or type B, each with equal probability. A type A investor derives
+a private benefit of αp(1) per unit of token A held, in addition to its fundamental value.
+She values token B at its fundamental value of 1. Conversely, a type B investor derives a
+private benefit of α per unit of token B and values token A at p(1). The investor decides the
+quantities of tokens to swap and the gas fee to bid to maximize her net surplus from trading.
+Token Value Shock
+In period 2, the fundamental exchange rate p(2) may change due to
+an exogenous shock with probability κ > 0:
+p(2) = ζp(1),
+(6)
+where ζ is a random variable:
+ζ =
+
+
+
+
+
+
+
+1 + β
+with probability κu,
+1
+1+β
+with probability κd,
+21
+
+with β > 0 and κu + κd = 1. We assume (1 + β)κu +
+1
+1+βκd = 1 to ensure that the
+expected fundamental exchange rate remains unchanged. The standard deviation of p(2)
+increases with both the magnitude β and the probability κ of the shock.
+3.3
+Arbitrage and Liquidity Provider Withdrawal
+In period 3, arbitrageurs and liquidity providers act simultaneously.
+Arbitrage Opportunities
+There are two competing arbitrageurs, indexed by j = 1, 2.
+Each arbitrageur chooses a trade (∆q(3)
+Aj , ∆q(3)
+Bj ) and bids a gas fee g(3)
+(arb,j) to maximize profits.
+Arbitrage opportunities emerge due to:
+• Stale Price Arbitrage: After a shock to the fundamental value, the AMM’s spot exchange rate becomes outdated, creating an arbitrage opportunity similar to pick-off
+risks in traditional limit order books (see Budish, Cramton, and Shim (2015)).
+• Reverse Trade Arbitrage: Trades by investors in period 2 can push the AMM’s exchange
+rate away from the fundamental value, creating opportunities for arbitrageurs to profit
+by reversing these price impacts.
+Remark 1. Our model of arbitrage trading is related to that of Lehar and Parlour (2023),
+where arbitrageurs also exploit deviations of AMM exchange rates from their fundamental
+values.
+Their model, which incorporates private information, highlights how AMMs separate price
+discovery (by arbitrageurs) from liquidity provision. This separation enables a nuanced analysis of the differences between AMMs and limit order books, as well as their respective trading
+costs.
+In contrast to their study, we examine public information shocks to fundamental values.
+In this context, even when all participants are equally informed, the blockchain’s transaction
+22
+
+sequencing inherently disadvantages liquidity providers, who collectively share the losses from
+arbitrage by a single trader sniping the entire pool.6
+The potential gain for arbitrageur j is quantified as ∆q(3)
+Bj + p(2)∆q(3)
+Aj −g(3)
+(arb,j), contingent
+upon the successful execution of their order. The order is excluded from the blockchain if
+the arbitrage opportunity is no longer viable or if liquidity has already been withdrawn, akin
+to a Fill-Or-Kill order in traditional LOBs.7.
+Liquidity Provider Withdrawal
+Simultaneously, liquidity providers may choose to withdraw their tokens from the pool to avoid potential arbitrage losses. LP i submits a withdrawal
+order with an associated gas fee g(3)
+(lp,i). If executed, the LP pays the gas fee and retrieves
+d′
+Awi units of token A and d′
+Bwi units of token B, where d′
+A and d′
+B are the pool reserves
+prior to any withdrawals, and wi is LP i’s share of the pool. After withdrawal, liquidity
+providers liquidate their tokens at fundamental values.
+We visually illustrate the three stages of the game theoretical model in Figure 6.
+3.4
+Equilibrium Concept
+We consider a pure-strategy subgame perfect Nash equilibrium (SPNE). An equilibrium comprises deposit and withdrawal strategies (along with the associated gas fees) for liquidity
+providers, trading and gas fee bidding strategies for investors, and arbitrage and gas fee
+bidding strategies for arbitrageurs. In this equilibrium, each agent maximizes their expected
+payoff given the strategies of others, with no agent having an incentive to unilaterally deviate.
+6Other technical differences from Lehar and Parlour (2023) include our treatment of trading fees, which
+affect pool size directly rather than accumulating in a separate account, and our explicit modeling of partial
+price reversion in reverse-trade arbitrage due to transaction fees.
+7To mitigate risks associated with order execution, arbitrageurs employ smart contracts or off-chain
+mechanisms such as Flashbots through which they privately submit transactions to validators. This offchain bidding follows a sealed-bid first-price auction format, with the winning arbitrageur covering the gas
+fees. Unsuccessful bids through Flashbots incur no gas costs. We refer to Flashbots (2021) for additional
+details.
+23
+
+Figure 6: Timeline of the Model.
+4
+Arbitrage Profits, Infrastructure Costs, and Rent
+Mitigation Strategies
+In this section, we solve for the subgame perfect Nash equilibrium (SPNE) of our game
+theoretical model using backward induction. Our equilibrium analysis provides two main
+insights. First, the blockchain’s transaction sequencing mechanism creates a tragedy of the
+commons among liquidity providers: while arbitrage losses are shared across the entire pool,
+each individual LP bears the full cost of submitting a withdrawal order, making it unprofitable to outbid arbitrageurs. Second, arbitrageurs engage in a Bertrand-like bidding war
+competition for transaction priority, bidding gas fees up to their full expected arbitrage profit.
+This intense competition results in redirecting nearly all arbitrage profits into infrastructure
+rent that accrue to validators.
+In Section 4.1, we characterize these equilibrium outcomes and describe the underlying
+economic mechanisms. In Section 4.2, we analyze how infrastructure rents impact liquidity
+provision, demonstrating that high exchange rate volatility can trigger liquidity freezes. In
+Section 4.3, we evaluate potential modifications to the market design —including speed
+technology, alternative sequencing rules, and enhanced flexibility in liquidity provision (e.g.,
+Uniswap V3)—and assess their effectiveness in mitigating arbitrage and infrastructure rents.
+24
+
+4.1
+Arbitrage and Infrastructure Rents in DEXs
+We begin by characterizing the arbitrage opportunities that arise in period 3 when the
+AMM exchange rates deviate from fundamental values due to price shocks or large trades
+by investors. These deviations create profitable opportunities for arbitrageurs, as formalized
+in the following lemma.
+Lemma 1. Suppose liquidity providers deposit in period 1, i.e., d(1)
+A , d(1)
+B > 0. Then:
+1. A stale price arbitrage opportunity emerges when a fundamental price shock causes the
+exchange rate change to exceed the trading fee (β > f). The unique optimal arbitrage
+trade (∆q(3)∗
+A
+, ∆q(3)∗
+B
+) maximizes arbitrage profits and yields a profit π(d(2)
+A , d(2)
+B , p(2)) > 0
+upon execution. This profit increases with the size of the price shock β and decreases
+with the trading fee f.
+2. A reverse trade arbitrage opportunity arises if a trading investor executes a sufficiently
+large swap, causing the AMM price to deviate from the fundamental value. The unique
+optimal arbitrage trade (∆q(3)∗
+A
+, ∆q(3)∗
+B
+) yields a profit π(d(2)
+A , d(2)
+B , p(2)) > 0 upon execution, which decreases with the trading fee f.
+The blockchain settlement layer prioritizes transactions based on gas fees rather than
+submission time. The following proposition highlights how this sequencing mechanism enables systematic arbitrage exploitation, even if liquidity providers can observe arbitrage
+opportunities:
+Proposition 1. Arbitrageurs bid gas fees equal to the full amount of their arbitrage profits
+π(d(2)
+A , d(2)
+B , p(2)). As a result, at least one arbitrageur’s order is executed before any withdrawal
+request, leading each liquidity provider to incur losses proportional to their share of the pool,
+and given by wiπ(d(2)
+A , d(2)
+B , p(2)).
+To preempt arbitrageurs, a liquidity provider would need to submit a withdrawal order
+with a gas fee exceeding the arbitrageurs’ bids. However, arbitrageurs are willing to bid
+25
+
+up to their expected profits π(d(2)
+A , d(2)
+B , p(2)) to secure execution priority. Because arbitrage
+losses are distributed among all liquidity providers proportional to their ownership shares wi,
+the cost for any individual liquidity provider to outbid arbitrageurs exceeds their personal
+share of the potential loss, wiπ(d(2)
+A , d(2)
+B , p(2)). As a result, it is economically infeasible for
+any single liquidity provider to outbid arbitrageurs.
+This equilibrium outcome illustrates a tragedy of the commons among liquidity providers.
+Although losses from arbitrage are shared across all participants in the pool, each LP has
+only a limited incentive to withdraw, as their exposure is restricted to their fractional share
+of potential losses.
+This risk-sharing mechanism, arising from pooled liquidity, makes it
+economically unprofitable for individual LPs to outbid arbitrageurs on gas fees in order to
+exit their positions.
+Infrastructure Rents
+The arbitrage profits extracted from liquidity providers are ultimately transferred to validators through gas fee bidding. In equilibrium, intense competition
+among arbitrageurs (akin to Bertrand competition) for transaction priority drives gas fees
+up to their expected arbitrage profits π. This process effectively converts arbitrage rents
+into infrastructure rents captured by validators—a phenomenon commonly referred to as
+Maximal Extractable Value (MEV) in the blockchain community.8
+4.1.1
+Infrastructure Rents: DEXs versus CEXs
+One might intuitively expect that the decentralized nature of blockchain infrastructure would
+lead to lower infrastructure rent extraction in DEXs compared to CEXs. After all, DEXs
+eliminate centralized intermediaries, replace exchange operators with competing validators,
+and operate on open-source protocols. However, our analysis reveals the opposite: infrastructure rents in DEXs systematically exceed those in traditional markets.
+Both market structures require arbitrageurs to pay for execution priority—through gas
+fees in DEXs and co-location services in CEXs. However, validators in DEXs capture up
+8For an overview of MEV, see https://ethereum.org/en/developers/docs/mev/.
+26
+
+to 100% of arbitrage profits through gas fee bidding, far exceeding the approximately 30%
+extracted by exchanges through co-location fees (Budish, Lee, and Shim (2019)). Moreover,
+while fast liquidity providers in CEXs can often cancel orders to avoid adverse selection
+(Budish, Cramton, and Shim (2015)), DEX liquidity providers systematically fail to protect their positions from sniping due to the blockchain’s transaction sequencing mechanism
+(Proposition 1). This counterintuitive result—higher rent extraction in decentralized versus
+centralized venues—stems from two fundamental factors:
+1. Transaction Execution Mechanisms: DEXs employ a block-by-block, first-price auction for transaction ordering. Arbitrageurs compete for profits from the entire pool,
+while liquidity providers aim to protect only their proportional shares. Consequently,
+withdrawal orders systematically lose in gas fee competition because it is not profitable
+for individual liquidity providers to bid higher gas fees than arbitrageurs. This auction
+structure induces intense competition among arbitrageurs, driving gas fees up to their
+full arbitrage profits.
+In contrast, CEXs generally operate on a continuous-time trading model, where traders
+invest in low-latency technology and co-location services to secure execution priority.
+In this environment, fast liquidity providers can quickly update and cancel limit orders
+to avoid adverse selection, whereas slower liquidity providers remain vulnerable.
+2. Market Structure and Competition: Despite the decentralized nature of blockchain networks, individual validators exercise temporary but complete monopolistic control over
+transaction ordering during their block proposal windows. This monopoly inhibits the
+adoption of mechanisms aimed at reducing infrastructure rents because validators have
+little incentive to forgo their rent extraction opportunities. This structure contrasts
+sharply with traditional exchanges, where market makers can negotiate infrastructure
+fees by leveraging the threat of redirecting order flow to competing venues. As shown
+in Budish, Lee, and Shim (2019), this bargaining power limits rent extraction in CEXs.
+27
+
+Table 2: Infrastructure and Arbitrage Rents: DEXs vs. CEXs
+Category
+DEXs
+CEXs
+Infrastructure Rent Extraction
+Validators capture up to 100% of
+arbitrage profits through gas fee
+auctions
+Exchanges extract approximately
+30% of arbitrage profits through
+co-location fees (Budish, Lee, and
+Shim (2019))
+Execution Mechanism
+Block-by-block first-price auction
+prioritizing highest-fee transactions, favoring arbitrage orders
+(pool-wide profits) over cancellations (individual losses)
+Continuous-time execution where
+priority depends on latency investment
+Market Structure
+Individual
+validators
+exercise
+monopolistic control over block
+space allocation
+Market makers can negotiate fees
+by threatening to redirect order
+flow
+Arbitrage Rent Extraction
+Systematic failure to prevent arbitrage; liquidity providers incur
+losses due to inability to outbid
+arbitrageurs
+Fast liquidity providers can cancel orders to avoid being picked
+off; slower providers are more susceptible to sniping
+Impact on Market Liquidity
+Increased arbitrage rent extraction reduces market liquidity and
+may trigger liquidity freezes
+Increased arbitrage rent extraction results in wider spreads and
+lower book depth
+In DEXs, liquidity providers are decentralized and lack coordination mechanisms, preventing them from exercising similar leverage over validators.
+Table 2 summarizes the key differences in rent extraction mechanisms between decentralized and centralized exchanges.
+4.2
+The Costs of Liquidity Provision
+Having characterized how the blockchain infrastructure enables arbitrage rent extraction,
+we now analyze its implications for equilibrium liquidity provision. The central tension lies
+between the losses LPs incur from arbitrage and the trading fee revenues they earn from
+investors. This tension determines whether markets remain viable or experience breakdowns
+through liquidity freezes where no liquidity provider deposits tokens.
+Formally, in period 1, each liquidity provider i chooses deposit quantities d(1)
+Ai and d(1)
+Bi
+and a gas fee bid g(1)
+(lp,i) for the deposit, to maximize her expected utility:
+28
+
+wiE[p(3)d(3)
+A + d(3)
+B ] + E[p(3)(eAi −d(1)
+Ai ) + (eBi −d(1)
+Bi )] −g(1)
+(lp,i),
+where wi =
+d(1)
+Ai
+d(1)
+A
+=
+d(1)
+Bi
+d(1)
+B
+is her share of the pool, eAi and eBi are her initial endowments,
+and d(3)
+A and d(3)
+B are the total pool holdings in period 3.
+Theorem 2. For any given set of parameters α, β, f, κI, κ, there exists a unique subgame
+perfect equilibrium. Specifically, a liquidity freeze occurs if the fundamental exchange rate
+volatility exceeds a threshold (β > βfrz). Otherwise, each liquidity provider deposits her entire
+endowment. This threshold βfrz increases with investors’ token holding benefits α and with
+the probability κI of an investor’s trade, but decreases with the probability κ of a token price
+shock.
+High volatility in fundamental token exchange rates raises the cost of liquidity provision.
+Arbitrage profits can surpass the trading fees generated from investor transactions, disincentivizing liquidity providers from depositing tokens and leading to a liquidity freeze.9 When
+investors derive more value from holding tokens or engage in more frequent trading, the
+expected trading volumes and trading fees rise, thereby raising the threshold for a liquidity
+freeze. Conversely, a higher likelihood of fundamental price shocks amplifies arbitrage profits, discouraging liquidity provision and lowering the threshold for a liquidity freeze. These
+findings suggest that AMMs are best suited for assets with low price volatility, such as stablecoin pairs, or for assets with significant trading demand that generates compensatory fee
+revenue.
+4.3
+Rent Mitigating Strategies
+In this subsection, we explore extensions of our model to evaluate potential market design modifications that could mitigate infrastructure and arbitrage rents in decentralized
+exchanges. We first examine the role of speed technology and its impact on rent extraction.
+9Similar dynamics exist in traditional markets, where sniping and latency arbitrage can reduce liquidity
+provision (see Foucault, Kozhan, and Tham (2017), Budish, Cramton, and Shim (2015)).
+29
+
+Then, we analyze alternative transaction sequencing rules. Finally, we assess the effectiveness of enhanced flexibility in liquidity provision, as exemplified by mechanisms like those in
+Uniswap V3.
+4.3.1
+Time Priority and Speed Technology
+Recent blockchain innovations have focused on reducing block times to increase transaction
+throughput. This raises a natural question: Can faster block times mitigate the infrastructure rents we identified? Faster block times offer opportunities for speed advantages through
+technological investment; however, our model demonstrates that when market participants
+engage in speed competition, the underlying tragedy of the commons for liquidity providers
+persists. In this scenario, arbitrageurs may even extract additional rents.
+Speed advantages arise because transactions submitted immediately before block creation can secure inclusion in the current block, ahead of those submitted even slightly later.
+Market participants can gain these advantages by investing in specialized technology—such
+as optimized network connections or proximity hosting—that reduces latency in transaction
+submission.
+This advantage is particularly significant in high-frequency blockchain networks, where millisecond-level differences can determine whether a transaction is included
+in a block.10
+To analyze these effects formally, we augment our baseline model by introducing an
+initial investment period (t = 0). In this period, both arbitrageurs and liquidity providers
+have the option to invest in speed technology at cost cspeed. This investment allows them,
+with probability ν ∈(0, 1), to detect arbitrage opportunities and submit transactions in
+period 2, one period earlier than without the technology. Transactions submitted in period
+2 compete for inclusion in that block through gas fee bidding, following the same execution
+10For example, Solana has a block generation time of a few hundred milliseconds. In such an environment,
+a transaction submitted milliseconds ahead of another has a higher chance of being included in the current
+block, while the latter may miss the opportunity. In contrast, blockchains with longer block times, such as
+Ethereum (approximately 10 seconds), reduce the relative benefit of small latency advantages, as transactions
+submitted within milliseconds of each other are more likely to compete for inclusion in the same block.
+30
+
+priority rules as in our baseline model.
+Liquidity providers, similar to arbitrageurs, can
+utilize smart contracts or private submission channels (e.g., Flashbots) in period 2 to ensure
+their withdrawal orders are executed only if no preceding arbitrage activity has occurred.
+The following proposition characterizes how speed technology affects the equilibrium
+distribution of rents:
+Proposition 3. Let c∗represent the total expected arbitrage rent extracted from liquidity
+providers when they deposit their entire token holdings. Suppose that β < βfrz. Then the
+following statements hold:
+1. If the cost of speed technology is high, cspeed > νc∗, then it is not optimal for any agent
+to acquire the speed technology. In this case, the equilibrium mirrors that described in
+Theorem 2, with validators capturing the entirety of the infrastructure rents.
+2. If cspeed < νc∗, it becomes optimal for a single arbitrageur to invest in speed technology.
+This arbitrageur captures a fraction ν of the arbitrage rents, leaving the remainder
+(1 −ν) to be earned as infrastructure rents by validators. The liquidity freeze threshold
+remains unchanged.
+3. Suppose cspeed < νc∗and the ownership share, w, of the largest liquidity provider exceeds
+half of the total pool (w > 1
+2). In this case, a new equilibrium emerges if the cost of
+speed technology is lower than the maximum arbitrage loss that the largest provider
+can avoid by early withdrawal (cspeed < wνc∗) but higher than the potential arbitrage
+rents an arbitrageur can extract by outbidding this provider (cspeed > (1 −w)νc∗). At
+this equilibrium, the largest liquidity provider employs speed technology to withdraw
+early with probability ν, thereby reducing her share of arbitrage losses and raising the
+threshold for a liquidity freeze.
+Proposition 3 demonstrates that the adoption of speed technology primarily redistributes
+arbitrage rents between market participants rather than reducing the total amount of rents
+31
+
+extracted from liquidity providers. When the cost of speed technology is high (cspeed > νc∗),
+no market participant adopts it, preserving the baseline equilibrium where validators retain
+full infrastructure rents.
+If the cost of speed technology is moderate (cspeed < νc∗), the resulting equilibrium
+sees only one arbitrageur adopting the technology. This scenario unfolds like a classic anticoordination game, where being the sole adopter of speed technology is profitable, but if
+both arbitrageurs adopt it, Bertrand competition in gas fee bidding would drive their profits negative. Consequently, this leads to two pure-strategy equilibria, each with precisely
+one arbitrageur utilizing the technology.11
+In practice, this coordination problem is typically resolved through the sequential nature of market entry—early-moving arbitrageurs
+who invest in speed technology establish their position, deterring subsequent adoption by
+other arbitrageurs.12 The winning arbitrageur captures a fraction ν of the arbitrage rents
+by acting earlier, while validators retain the remaining fraction (1 −ν) as infrastructure
+rents. These theoretical findings align with empirical observations by Thiery (2023), who
+found that a single high-frequency arbitrageur often dominates cross-exchange (CEX-DEX)
+arbitrage opportunities.
+A distinct equilibrium emerges only when a single liquidity provider controls the majority
+of pool share (w > 1
+2) and technology costs fall in a specific range: wνc∗> cspeed > (1−w)νc∗.
+The upper bound (wνc∗> cspeed) ensures adoption is profitable for the LP: the cost of
+technology must be less than the expected arbitrage losses they can avoid through early
+withdrawal (wνc∗).
+The lower bound (cspeed > (1 −w)νc∗) prevents arbitrageurs from
+profitably adopting the technology to outbid the LP, as an arbitrageur would need to bid
+at least wc∗to execute before the LP’s withdrawal order. In this equilibrium, the dominant
+11While other coordination mechanisms such as pre-play communication or correlation devices exist in
+the game theory literature, they are less applicable in the decentralized blockchain context where anonymous
+participants cannot credibly commit to agreements.
+12Although validators have the capability to conduct arbitrage transactions themselves, due to their
+observability of all transactions, several barriers hinder their ability to fully capitalize on arbitrage opportunities. Specifically, validators encounter substantial costs and complexities involved in developing and
+maintaining advanced arbitrage strategies across different trading venues.
+32
+
+LP adopts speed technology and successfully withdraws with probability ν, reducing their
+exposure to arbitrage by that proportion. Importantly, this benefit accrues solely to the
+dominant LP—smaller LPs continue to bear the full risk of being arbitraged because they
+lack the scale to make technology adoption profitable.
+Limited Adoption Among Liquidity Providers.
+We now demonstrate why speed technology adoption is limited to at most one liquidity provider, even when technology costs
+appear low enough to benefit multiple providers. Consider two liquidity providers with pool
+shares wi and wj. The adoption of speed technology is economically viable for a liquidity provider if the expected savings from reduced arbitrage losses exceed the cost of the
+technology:
+wic∗ν > cspeed,
+wjc∗ν > cspeed,
+wi + wj ≤1,
+(7)
+where we recall that c∗represents the total expected arbitrage rent extracted from liquidity
+providers when they deposit all their tokens.
+However, the affordability of speed technology for these liquidity providers implies its
+accessibility to arbitrageurs as well. An arbitrageur, bearing the same cost cspeed for the
+technology, can strategically outbid the liquidity providers by bidding max{wi, wj}c∗+ ϵ in
+period 2. This bidding strategy ensures the arbitrageur’s transaction is prioritized over those
+of the liquidity providers. The arbitrageur’s potential profit in such a case is given by:
+(1 −max{wi, wj})c∗−ϵ −cspeed ≥min{wi, wj}c∗−ϵ −cspeed > 0,
+where the inequalities follow from (7).
+This implies that arbitrageurs can remain profitable even after outbidding liquidity
+providers and paying for the speed technology. As a result, liquidity providers who adopt
+the technology not only still face arbitrage losses but also bear the additional cost of the
+technology, making simultaneous adoption economically unfeasible. Therefore, speed tech33
+
+nology would be used by at most one liquidity provider to reduce her own share of arbitrage
+rents, and only if she owns at least half of the pool.
+Remark 2. Although advancements in blockchain technology have led to faster block times,
+these improvements offer limited benefits to liquidity providers. While our model assumes
+equal technology costs across participants, the reality likely skews even further in favor of
+arbitrageurs. Arbitrageurs can spread their technology investments across thousands of pools
+and trading opportunities, significantly lowering their per-pool costs compared to liquidity
+providers, who typically participate in only a few pools. Furthermore, our finding that only
+a single arbitrageur optimally adopts speed-enhancing technology highlights an additional
+insight: as blockchain networks become faster, arbitrage activities are likely to become increasingly concentrated among a small number of specialized firms, despite the inherently
+decentralized nature of blockchain architecture.
+For most liquidity providers, especially smaller ones, investing in speed technology is not
+economically viable due to the high costs relative to their individual benefits. While large,
+active, and sophisticated liquidity providers may occasionally find such investments worthwhile, this does not resolve the broader systemic issue. The majority of liquidity providers
+continue to face significant exposure to arbitrage losses.
+4.3.2
+Alternative Transaction Sequencing Rules
+An important question is whether alternative transaction sequencing rules could mitigate
+infrastructure rents. Traditional exchanges have experimented with various design modifications—such as speed bumps—to protect liquidity providers from adverse selection. We
+analyze whether similar approaches could succeed in decentralized markets.
+We extend our baseline model by introducing an initial period (t = 0) where validators
+choose among three possible sequencing rules:
+1. Random Sequencing: Transactions within a block are executed in a random order,
+independent of bid fees. This mirrors symmetrical speed bumps in CEXs, affecting
+34
+
+both incoming and cancellation orders equally.
+2. Priority for Liquidity Providers: Transactions submitted by liquidity providers,
+particularly withdrawal orders, are given execution priority over swap orders. This
+approach resembles asymmetrical speed bumps in CEXs, which apply delays only to
+incoming executable orders.
+3. Fee-Based Sequencing: Transactions are sequenced by bid fees, ordered from highest to lowest, consistent with our baseline model and standard practice in many
+blockchains.
+The following proposition demonstrates why validators have no incentive to implement
+sequencing rules that favor liquidity providers:
+Proposition 4. For validators, adhering to the fee-based sequencing rule remains the dominant strategy. The alternative sequencing rules yield the following outcomes in the subsequent
+subgame starting from period 1:
+1. Random Sequencing: Infrastructure rents decrease, but arbitrageurs capture all the
+rents.
+2. Priority for Liquidity Providers: Prioritizing the processing of withdrawal orders
+from liquidity providers eliminates arbitrage opportunities and prevents validators and
+arbitrageurs from profiting through rent extraction.
+Random sequencing eliminates validators’ ability to extract infrastructure rents through
+gas fee auctions, as execution priority no longer depends on fees. In equilibrium, arbitrageurs
+capture the entire arbitrage rents because they no longer need to bid high fees to secure
+priority. 13 Priority sequencing for liquidity provider withdrawals would, in theory, eliminate
+13One potential concern with random sequencing is that arbitrageurs could manipulate the system by
+submitting multiple orders through different accounts, though this is not formally considered in our model.
+35
+
+both arbitrage and infrastructure rents by ensuring withdrawals execute before arbitrage
+trades, similar to frequent batch auctions proposed by Budish, Cramton, and Shim (2015).
+However, neither alternative sequencing rule is incentive-compatible for validators. Implementing these rules reduces or eliminates the infrastructure rents that validators can
+extract. Consequently, validators prefer fee-based sequencing, which allows them to maximize their revenues from gas fees. This resistance to efficiency-enhancing market design
+parallels the reluctance of traditional exchanges to adopt mechanisms like frequent batch
+auctions, as documented by Budish, Lee, and Shim (2019). These findings highlight the
+necessity of accounting for validator incentive compatibility in DEX market design.
+Multi-Blockchain Competition
+Could competition among blockchains address the imbalance between validators and liquidity providers? This question is particularly relevant as
+blockchain platforms increasingly compete for market share. However, the effectiveness of
+such competition depends crucially on its nature.
+In current blockchain systems, competition largely focuses on technical parameters such
+as transaction speed and throughput. (TPS). Yet if competition remains limited to these
+dimensions without altering the fundamental structure of block space allocation, validators
+will maintain their monopolistic control over transaction ordering within their proposal windows. This control allows validators, acting as auctioneers, to extract infrastructure rents
+through order sequencing, perpetuating rent-maximizing behavior that disadvantages liquidity providers. Moreover, as shown in Section 4.3.1, increasing block speed makes speed
+technology more important, which primarily helps arbitrageurs capture a larger portion of
+rents rather than eliminating infrastructure rents.
+In theory, blockchains could compete by adopting sequencing protocols that favor liquidity providers, thereby attracting more liquidity and trading volume. However, competition on execution rules—specifically, protocols favoring liquidity providers—faces three
+significant challenges. First, validator incentive compatibility: when lucrative arbitrage op36
+
+portunities arise, validators controlling blocks retain strong incentives to prioritize high-fee
+transactions, undermining any commitment to liquidity-provider-friendly sequencing. Without mechanisms to ensure credible commitment, stated sequencing rules remain effectively
+unenforceable.
+Second, the feasibility of establishing consensus-based sequencing rules remains questionable in blockchain design. Geographic and network-induced variances in transaction receipt
+and ordering across decentralized validators make it difficult to establish and maintain consistent sequencing protocols across the network. This technical challenge compounds the
+economic problem of validator incentives.
+Third, it is difficult for liquidity providers to make ex-ante investments, such as paying
+for preferential execution arrangements. Unlike concentrated high-frequency trading firms in
+traditional markets that can invest in co-location, liquidity providers in DEXs are typically
+dispersed participants. This decentralized structure, combined with their limited participation across pools, makes it economically unfeasible for them to bear the fixed costs of
+sophisticated execution technology or priority arrangements. Moreover, their decentralized
+nature makes it challenging to coordinate collective action, further weakening their ability
+to advocate for and maintain liquidity-provider-friendly protocols.
+4.3.3
+Enhanced Flexibility in Liquidity Provision
+In this section, we explore how granting liquidity providers the flexibility to select pricing
+curves with different convexities affects rent extraction.
+Our analysis demonstrates that
+while choosing more convex bonding curves can mitigate arbitrage rents, it also leads to
+reduced trading volumes and lower fee revenues for liquidity providers.
+To endogenize the choice of the pricing function in our model, we introduce an initial
+period (t = 0) wherein liquidity providers select their pricing functions from a family parameterized by k ∈[0, 1]:
+37
+
+Fk(x, y) = (1 −k)A(p(1)x + y) + kxy.
+(8)
+Here, A =
+
+d(1)
+A d(1)
+B
+p(1)
+1/2
+is a scaling factor, and k is the convexity parameter.
+As k
+increases from 0 to 1, the curve Fk(x, y) = C transitions from linear to increasingly convex,
+becoming a constant product function at k = 1.
+This family of pricing functions Fk corresponds directly to a subset of Uniswap V3’s
+pricing mechanisms, as detailed in Section 2.3, where liquidity providers set upper and lower
+price bounds ph and pl symmetrically around the current price p(1) = √phpl. Higher values
+of k correspond to wider price ranges [pl, ph]. Hence, our analysis of k also provides insights
+into how liquidity providers can optimally select price ranges in Uniswap V3.
+Every liquidity provider i ∈N chooses a unique function Fki, collectively forming an
+aggregation.
+Equivalently, any trade, (∆A, ∆B), is effectively split among these curves,
+{(∆Ai, ∆Bi)}i∈N, where P
+i∈N ∆Ai = ∆A, P
+i∈N ∆Bi = ∆B, ensuring that firstly, every liquidity provider’s bonding curve invariance condition is satisfied:
+Fki(dAi + ∆Ai, dBi + ∆Bi) = Fki(dAi, dBi),
+∀i ∈N,
+(9)
+and secondly, the marginal price ratio is equalized across all chosen curves when the inventory
+is not exhausted:
+∂Fki/∂x
+∂Fki/∂y
+
+(dAi+∆Ai,dBi+∆Bi)
+= ∂Fkj/∂x
+∂Fkj/∂y
+
+(dAj +∆Aj ,dBj +∆Bj )
+,
+∀i, j ∈N such that dAi + ∆Ai > 0,
+dBi + ∆Bi > 0,
+dAj + ∆Aj > 0,
+dBj + ∆Bj > 0.
+(10)
+The convexity of the pricing curves govern the trade-off between arbitrage rent extraction
+and revenue from the trading fees, as formally stated in Lemma 2.
+38
+
+Lemma 2. Suppose liquidity provider i deposits tokens A and B in period 1. In the subgame
+starting in period 2:
+1. The expected arbitrage rent extracted from liquidity provider i decreases as the convexity
+parameter ki increases.
+2. The expected earnings from trading fees for liquidity provider i decrease as ki increases.
+The intuition behind Lemma 2 is as follows. As ki increases, the convexity of the pricing
+curve chosen by liquidity provider i becomes higher. This higher convexity, as explained in
+Section 2.3, results in a greater price impact, leading to higher trading costs. These increased
+costs reduce trading volumes from both investors and arbitrageurs. This dynamic has a dual
+effect for liquidity providers: it reduces rent extraction by arbitrageurs, which is beneficial,
+but also decreases their income from trading fees paid by investors, which negatively impacts
+their profits.
+The following theorem characterizes the pricing curves chosen by liquidity providers in
+the SPNE:
+Proposition 5. There exists an equilibrium convexity level k∗∈(0, 1) such that all liquidity
+providers select the pricing curve Fk∗. Moreover, k∗increases with the fundamental token
+exchange rate volatility β.
+As we increase the convexity of the pricing curve, two opposing economic forces emerge:
+a decrease in arbitrage rent for liquidity providers and a decline in fee income. When k
+takes on lower values, the marginal benefit from diminishing arbitrage rents surpasses the
+marginal cost associated with a reduction in fee revenue. This makes it advantageous for
+liquidity providers to increase the pricing curve convexity. In contrast, at higher values of
+k, the scenario reverses: the loss incurred in fee revenue becomes more significant than the
+benefits derived from reduced arbitrage rents. As a result, any further increase in convexity
+turns out to be disadvantageous. The equilibrium point Fk∗represents an optimal balance
+between these two contrasting effects.
+39
+
+The positive relationship between optimal convexity and volatility reveals how liquidity
+providers adjust to market conditions. When volatility increases, the threat of arbitrage
+dominates fee revenue consideration, leading providers to choose more convex pricing curves
+despite the associated reduction in trading volume.
+5
+Empirical Analysis
+In this section, we present empirical evidence substantiating the primary conclusions drawn
+from our model. The tested hypotheses are outlined in Section 5.1. In Section 5.2, we adopt
+a difference-in-difference (DiD) methodology and leverage the collapse of Silicon Valley Bank
+(SVB) as a natural, quasi-experimental event to show how increased arbitrage rents impact
+liquidity provision, particularly prompting liquidity providers to withdraw from liquidity
+pools and shift towards pricing curves with greater convexity. In Section 5.3, we show that a
+substantial portion of the profits generated by arbitrageurs is passed on to validators through
+gas fees.
+5.1
+Testable Implications
+The main implications of our model are as follows:
+(1) Arbitrage Rents, Volatility, and Withdrawals: Increased volatility in exchange rates elevates the value of arbitrage rents. Consequently, liquidity providers are incentivized to
+withdraw their deposits from liquidity pools. This relationship is formalized in Theorem
+2.
+(2) Arbitrage Rents and Convexity of Pricing Function: Higher exchange rate volatility incentivizes liquidity providers to choose more convex pricing schedules to reduce arbitrage
+rents, in line with the findings of Theorem 5.
+(3) Infrastructure Rents:
+gas fees consume a substantial portion of arbitrageurs’ trading
+40
+
+profits, indicating that much of the value captured from arbitrage opportunities is ultimately transferred to blockchain infrastructure providers, in line with the findings of
+Proposition 1.
+While implications (2) and (3) are unique to our model, alternative explanations exist for the relationship between volatility and pool liquidity described in implication (1).
+For instance, Milionis et al. (2024) analyze “quote-sniping” risk—analogous to the sniping risk faced by traditional market makers (see Budish, Cramton, and Shim (2015))—in
+a continuous-time framework. They demonstrate that higher volatility increases arbitrage
+costs for liquidity providers. However, their model is not an equilibrium model, and therefore
+cannot predict how liquidity providers react to increased arbitrage rents.
+Lehar and Parlour (2023) employ extensive Uniswap V2 data and panel regression techniques to show that volatility, as a proxy for adverse selection, negatively impacts pool size
+both cross-sectionally and over time. Our study complements these findings by employing a
+quasi-experimental design centered on the SVB collapse, enabling us to identify the causal
+effect of increased arbitrage rents on liquidity provision and the strategic adoption of more
+convex pricing curves in Uniswap V3.
+5.2
+Arbitrage Rents and Liquidity Provision
+To test our theoretical predictions about arbitrage rents and liquidity provision, we analyze
+liquidity pools of stablecoins—digital currencies designed to maintain a constant value relative to fiat currencies, such as the U.S. dollar. The stablecoin market provides an ideal
+setting for our analysis for two reasons. First, we can exploit the distinct pegging mechanisms across different stablecoins, particularly the relationship between USDC, DAI, and
+USDT. This includes contrasting pools where tokens maintain mechanical price relationships
+(USDC-DAI) against those with more flexible exchange rates (USDC-USDT). Second, the
+collapse of Silicon Valley Bank (SVB) serves as a natural quasi-experiment, enabling us to
+examine how exchange rate volatility affects both the level of liquidity provision and liquidity
+41
+
+providers’ choice of pricing curves.
+In Section 5.2.1, we describe the stablecoin market structure and detail how the SVB
+collapse generates our quasi-experimental variation. In Section 5.2.2, we describe the data
+set and our methodology. We provide descriptive and statistical evidence in support of our
+hypotheses in Section 5.2.3.
+5.2.1
+Stablecoin Market Segmentation
+Our analysis examines trading pools involving three major stablecoins that employ distinct
+mechanisms to maintain their dollar peg. The two largest, USDC and USDT, are fiat-backed
+stablecoins that maintain price stability through dollar collateral reserves. Each of them is
+managed by a central issuer responsible for maintaining these reserves. As of November 2023,
+these stablecoins hold a significant market presence: USDC boasts a market capitalization of
+$35 billion and a daily trading volume of $9 billion, while USDT has a market capitalization
+of $120 billion and a daily trading volume of $87 billion.
+The third stablecoin in our analysis, DAI, offers a key feature for our identification
+strategy. Unlike USDC and USDT, DAI is a decentralized stablecoin that maintains its
+value through crypto-collateralization, with USDC serving as its primary collateral. With
+a market capitalization of approximately 5 billion dollars, its most distinctive feature is its
+Peg Stability Module (PSM), which maintains a mechanical 1:1 exchange ratio with USDC,
+even during instances when USDC experiences de-pegging events. This close relationship
+with USDC through both collateralization and the PSM mechanism creates trading pairs
+where relative prices remain fixed (USDC-DAI) that we can compare against pools where
+prices float freely (USDC-USDT).
+The SVB collapse on March 10, 2023, provides our quasi-experimental variation. Circle,
+USDC’s issuer, had $3.3 billion in deposits at SVB, creating direct exposure to the bank’s
+failure. When SVB collapsed, concerns about these deposits led USDC to break its dollar
+peg, with its price falling to $0.88. As Figure 7 illustrates, this shock created two distinct
+42
+
+Figure 7: Price Trajectories of Stablecoins During and After the SVB Collapse. This line
+plot illustrates the price movements of USDC, USDT, and DAI with respect to the number of
+the Ethereum block. Prior to the SVB event, each of these stablecoins demonstrated a stable
+peg, maintaining values close to 1 USD. Post-collapse, USDC’s price deviated significantly
+from its 1 USD parity, as represented by the red dashed line on the plot. This deviation
+was marked by a drop below $0.99. DAI, which is pegged 1:1 to USDC through the PSM,
+mirrored USDC’s price fluctuation, exhibiting a similar decrease in value. On the other
+hand, USDT maintained its peg at around 1 USD throughout the period. The segment of
+the plot to the right of the purple dashed line corresponds to Ethereum blocks validated one
+week post-collapse. These numbers represent the stablecoin prices under market conditions
+that had some temporal distance from the immediate impact of the SVB shock.
+patterns in stablecoin prices. USDC deviated substantially from its dollar peg, while DAI,
+due to its PSM mechanism, tracked USDC’s movement. In contrast, USDT, which had no
+exposure to SVB, maintained its dollar peg throughout the event. This differential impact
+provides an ideal setting to examine how increased exchange rate volatility affect liquidity
+provision and pricing curve selection.
+5.2.2
+Data and Methodology
+Our empirical analysis uses transaction-level data from Uniswap V3, focusing on two liquidity
+pools on the Ethereum blockchain: USDC-USDT and USDC-DAI, both with 1 basis point
+43
+
+transaction fees level.14 The sample period spans Jan 9 to May 10, 2023, encompassing both
+pre- and post-SVB collapse periods.
+We collect comprehensive transaction data by running a dedicated Ethereum node using
+the geth execution client. Our transaction-level observations include the precise timing at
+the block level, participant identifiers (anonymized addresses), transaction identifier (transaction hash), and detailed transaction characteristics.
+For each transaction, we observe
+whether it represents a swap, deposit, or withdrawal, along with the quantities of each token involved. For deposit transactions, we additionally observe the price ranges selected by
+liquidity providers. For each pool, we track the evolution of total liquidity deposited by
+combining the initial pool state with the sequence of deposits and withdrawals. To address
+potential outliers in liquidity providers’ price range selections, we winsorize these values at
+the 95th percentile. Table 3 presents summary statistics for our final sample.
+Methodology
+One of the critical challenges in quantifying the impact of fundamental
+exchange rate volatility is the difficulty of directly observing the fundamental exchange rate
+itself. Further complicating matters, even in cases where an exogenous shock, such as a
+market event, heightens volatility in a specific trading pair, accurately estimating what the
+counterfactual level of volatility would have been (i.e., in the absence of such a shock) is a
+complex task.
+To circumvent these challenges, we employ a difference-in-differences (DiD) design that
+exploits the SVB collapse as an exogenous shock to exchange rate volatility.
+Our identification strategy leverages the distinct effects of the SVB collapse on USDT-USDC and
+DAI-USDC exchange rates described in the previous section: while the SVB collapse affected USDC’s dollar peg, the mechanical relationship between DAI and USDC through the
+PSM means that their relative exchange rate remained stable. This allows us to utilize the
+DAI-USDC pair as a control group, maintaining stability throughout the period, against
+14For robustness, we also analyze equivalent pools on alternative blockchain platforms (Optimism and
+Polygon). These results are reported in Appendix B.
+44
+
+Table 3: Descriptive Statistics of Stablecoin Liquidity Pools. This table provides summary
+statistics, including the 5th, 25th, 50th, 75th, and 95th percentiles, for the USDC-USDT and
+USDC-DAI Uniswap V3 liquidity pools with a 1 basis point transaction fee on the Ethereum
+network for the period emcompassing Jan 10 to May 10, 2023. All monetary values are
+winsorized at the 95th and 5th percentiles.
+Mean
+Std. Dev.
+p5
+p25
+Median
+p75
+p95
+N
+Panel A: USDC-USDT Pool
+Liquidity Provision Activities
+USDC Amount(thousands)
+-6.19
+3.60
+-1.60
+-2.76
+0.00
+100.00
+2.02
+5,373
+USDT Amount(thousands)
+-2.44
+1.98
+-2.03
+-0.76
+0.00
+78.98
+2.17
+5,373
+Price Range (bps)
+9.0
+13.6
+1.0
+1.0
+3.0
+9.9
+54.8
+5,373
+Trading Activities
+Net USDC Flow(thousands)
+0.18
+527.07
+-176.14
+-6.00
+-0.10
+5.00
+141.70
+148,474
+Net USDT Flow(thousands)
+-0.17
+526.47
+-140.89
+-5.00
+0.10
+6.00
+175.09
+148,474
+Panel B: DAI-USDC Pool
+Liquidity Provision Activities
+DAI Amount(thousands)
+-72.49
+40.49
+-87.26
+-0.57
+0.00
+0.50
+87.26
+832
+USDC Amount(thousands)
+-80.08
+47.97
+-113.11
+-1.02
+0.00
+0.71
+113.11
+832
+Price Range (bps)
+12.3
+11.2
+3.0
+4.0
+4.0
+20.0
+40.0
+832
+Trading Activities
+Net DAI Flow(thousands)
+0.11
+562.51
+-99.99
+-6.17
+0.01
+8.12
+100.91
+42,011
+Net USDC Flow(thousands)
+-0.10
+562.58
+-100.90
+-8.12
+-0.01
+6.18
+100.00
+42,011
+Panel C: Pool-Level Liquidity
+USDC-USDT Pool
+USDC Balance(millions)
+38.5
+22.1
+21.0
+21.0
+29.3
+56.2
+78.3
+496,110
+USDT Balance(millions)
+30.5
+23.4
+3.6
+10.4
+27.7
+41.5
+82.7
+496,110
+Total Pool Size(millions)
+69.0
+37.0
+25.4
+48.8
+58.1
+72.3
+148.0
+496,110
+DAI-USDC Pool
+DAI Balance(millions)
+84.6
+39.0
+41.4
+58.4
+70.0
+120.0
+154.0
+496,240
+USDC Balance(millions)
+67.3
+34.6
+32.2
+40.8
+62.1
+84.4
+129.0
+496,240
+Total Pool Size(millions)
+152.0
+57.6
+108.0
+109.0
+109.0
+231.0
+231.0
+496,240
+45
+
+the backdrop of the USDT-USDC pair, which serves as the treatment group experiencing
+increased volatility.
+Using a 15-day window around March 10, 2023 (7 days before and after the SVB collapse),
+we estimate the following two regressions to examine the impact of heightened exchange rate
+volatility on liquidity provision and pool size:
+PriceRangej,i,t = γ1Treatmenti × Aftert + Sizej,i,t + αi + δt + ϵj,i,t
+(11)
+TotalLiquiditye,i,t = γ2Treatmenti × Aftert + αi + δt + ϵe,i,t
+(12)
+where j indexes individual liquidity provision events, e indexes events that alter pool liquidity, i indexes pools (USDC-USDT or DAI-USDC), and t indexes days.
+The variable
+Treatmenti equals one for USDC-USDT pools and zero for DAI-USDC pools, while Aftert
+equals one for March 10 and subsequent days, zero otherwise. Following Section 2.3, PriceRangej,i,t
+measures the width between price bounds chosen by liquidity providers in event j, which directly determines pricing curve convexity. We measure pool size using TotalLiquiditye,i,t, the
+log of total tokens deposited.15 The control term Sizej,i,t represents the total amount of liquidity added in event j. Pool fixed effects αi control for time-invariant pool characteristics,
+while day fixed effects δt absorb market-wide shocks. The coefficients γ1 and γ2 measure
+how increased volatility affects price range selection and liquidity provision, respectively.
+Standard errors are clustered at the pool level.
+5.2.3
+Empirical Results
+We first present graphical evidence on how the SVB collapse affected liquidity provision
+before turning to formal statistical analysis. Our evidence focuses on two key outcomes:
+liquidity providers’ choice of price ranges, which determines pricing curve convexity, and
+changes in total pool liquidity.
+15We measure liquidity using token quantities rather than dollar values to avoid mechanical changes in
+pool size due to price movements during the depegging event.
+46
+
+Graphical Evidence.
+Figure 8 illustrates the differential response in price range selection
+across pools during the SVB collapse. Prior to the SVB collapse, liquidity providers in both
+USDC-USDT and DAI-USDC pools chose similarly narrow price ranges, consistent with
+low-convexity pricing curves.
+After the collapse, we observe a clear divergence: LPs in
+USDC-USDT pools significantly widened their price ranges, adopting more convex pricing
+curves. In contrast, DAI-USDC providers maintained narrow ranges, consistent with the
+mechanical price relationship maintained through the PSM.
+USDC/USDT Before
+USDC/USDT After
+DAI/USDC Before
+DAI/USDC After
+0.000
+0.002
+0.004
+0.006
+0.008
+0.010
+Price Range
+Figure 8: Price Range Selection Around SVB Collapse. This figure presents the distribution
+of price ranges chosen by liquidity providers in USDC-USDT and DAI-USDC Uniswap V3
+pools at 1bp fee level on Ethereum before and after March 10, 2023. The boxes represent
+the interquartile range, with the median shown as a horizontal line. Whiskers extend to
+1.5 times the interquartile range. USDC-USDT providers significantly widened their price
+ranges following the collapse, while DAI-USDC providers maintained stable ranges due to
+the mechanical relationship between these tokens through the PSM.
+Figure 9 tracks pool liquidity around the SVB collapse. Panel A shows that USDC-USDT
+pool liquidity declined by approximately 40% following the shock as providers withdrew their
+funds in response to increased volatility. Our liquidity measure accounts for the total tokens
+deposited in the pool, not merely the active liquidity within the current price ranges. There47
+
+fore, the observed decline indicates actual token withdrawals, rather than liquidity becoming
+inactive due to price movements outside of the deposited ranges. Panel B shows that DAIUSDC pool liquidity remained stable, with observed spikes reflecting normal rebalancing
+activity rather than permanent withdrawals.
+(a) USDC-USDT Pool
+(b) DAI-USDC Pool
+Figure 9: Pool Liquidity Around the SVB Collapse.
+This figure shows total stablecoin
+liquidity in 1 basis point fee Uniswap V3 pools on Ethereum around the SVB collapse (marked
+by vertical dashed line). Panel A shows USDC-USDT liquidity dropped by approximately
+40% following the collapse. Panel B shows DAI-USDC liquidity remained stable, with vertical
+spikes representing temporary rebalancing rather than permanent withdrawals.
+Statistical Evidence
+Table 4 presents formal tests of our predictions using the differencein-differences framework outlined in equations (11) and (12). All specifications include pool
+and day fixed effects, with standard errors clustered at the pool level.
+Column (1) shows that USDC-USDT liquidity providers significantly widened their price
+ranges following the SVB collapse. The coefficient on Treatmenti × Aftert indicates that
+price ranges in treated pools increased by 34 bps relative to control pools.
+This effect
+represents a substantial change in pricing curve selection: the average pre-shock price range
+was 9 bps, implying that treated providers nearly quadrupled their price ranges in response
+to increased volatility. The economic magnitude of this response persists when controlling
+for deposit size (Column (2)).
+Column (3) shows that the SVB collapse also triggered significant liquidity withdrawals.
+The coefficient on Treatmenti × Aftert indicates that treated pools experienced a decline
+48
+
+Table 4: Impact of SVB Collapse on Liquidity Provision. This table presents difference-indifferences estimates from equations (11) and (12) using data from USDC-USDT (treatment)
+and DAI-USDC (control) Uniswap V3 pools at 1bp fee level on Ethereum over a 15-day
+window around March 10, 2023. The dependent variable in columns (1) and (2) is Price
+Range, measuring the width between maximum and minimum exchange rates chosen by
+liquidity providers at each liquidity provision event, which serve proxy for convexity. The
+dependent variable in column (3) is Pool Liquidity, the natural logarithm of total tokens
+deposited after each event that alters pool liquidity. Treatment equals one for USDC-USDT
+pools, and Post equals one for March 10, 2023, and subsequent days. Deposit Size controls
+for the total amount of tokens being deposited. All specifications include pool and day fixed
+effects. Standard errors are clustered at the pool level.
+(1)
+(2)
+(3)
+Price Range
+Price Range
+Pool Liquidity
+Treatment × Post
+0.0034***
+0.0034***
+-0.725***
+(0.0004)
+(0.0005)
+(0.022)
+Deposit Size
+-7.93e-12***
+(1.14e-12)
+Pool FE
+Yes
+Yes
+Yes
+Day FE
+Yes
+Yes
+Yes
+Observations
+542
+542
+47,841
+R2
+0.17
+0.18
+0.94
+∗p<0.1; ∗∗p<0.05; ∗∗∗p<0.01
+in liquidity relative to control pools. The high statistical significance and large economic
+magnitude of this effect support our prediction that increased volatility leads to systematic
+liquidity withdrawals.
+Robustness
+An alternative explanation for our findings is that liquidity providers widen
+their price ranges during periods of high volatility to reduce the transaction costs associated
+with frequent position adjustments. Since each adjustment incurs gas fees, providers may
+choose wider ranges to lower the likelihood of spot exchange rates moving outside their
+selected bounds.
+To rule out this alternative explanation, we analyze equivalent pools on Layer 2 networks16, specifically Optimism and Polygon, where gas fees are significantly lower than on
+16A Layer 2 is an off-chain network, or technology built on top of a blockchain (commonly referred to as
+a Layer 1) to enhance the capabilities of the underlying base layer. Layer 2 networks improve features such
+49
+
+Ethereum. For instance, while the average gas fee per Uniswap V3 trade on Ethereum is
+approximately $14, trades on Polygon cost just $0.01 (see Caparros, Chaudhary, and Klein
+(2023)). Despite these dramatically lower transaction costs, we observe consistent results
+across all networks, as detailed in Appendix B. This consistency provides support against
+the hypothesis that liquidity providers primarily widen price ranges to minimize position
+adjustment costs. Instead, it provides strong evidence supporting our model’s implication
+that liquidity providers strategically adjust their positions to avoid adverse selection by arbitrageurs during periods of high volatility
+5.3
+Economic Significance of Infrastructure Rents
+In this section, we empirically test our third hypothesis, which asserts that arbitrageurs bid
+gas fees close to their overall profits, effectively transferring potential gains to infrastructure
+providers (validators) due to intense competition. Our methodology aligns with the approach
+outlined in Foucault, Kozhan, and Tham (2017). We specifically focus on cyclic (triangular)
+arbitrage cases, where revenue streams are clearly identifiable and profits can be precisely
+calculated.
+Triangular arbitrage involves a sequence of trades that starts and ends with the same
+token, typically executed atomically within a single transaction. For example, an arbitrageur
+might start with WETH (Wrapped Ether), trade it for USDC, then for DAI, and finally back
+to WETH, ending up with more WETH than initially held. The primary benefit of focusing
+on triangular arbitrage is the straightforward calculation of profits: the profit is simply
+the difference between the final and initial amounts of the starting token. This approach
+avoids the complexities associated with tracking profits across multiple tokens and fluctuating
+exchange rates.
+As outlined by Foucault, Kozhan, and Tham (2017), triangular arbitrage typically occurs
+under two conditions: (1) when at least one token’s price is outdated (analogous to our
+as transaction throughput and scalability.
+50
+
+model’s stale price arbitrage), or (2) when trading pressures impact at least one token pair’s
+price (similar to the reverse trade arbitrage in our model, also stemming from price impacts).
+Data Collection.
+We construct a dataset of cyclic arbitrage transactions executed on the
+Ethereum blockchain, spanning blocks 14,982,026 to 16,326,370 (June 18, 2022, to January
+3, 2023). To gather the data, we operated our own Ethereum node and employed the Geth
+execution client to extract transaction receipts that triggered a Swap event in the smart
+contracts of major DEX protocols: Uniswap V2, Uniswap V3, Balancer, SushiSwap, and
+Curve. The resulting transaction-level dataset includes block-level timestamps, anonymized
+participant identifiers (addresses), transaction hashes, gas fees, and the quantities of tokens
+exchanged in each transaction.
+To account for additional gas fees paid through private channels, we leverage the Flashbots Blocks API17, which records transaction hashes and total fees (including direct direct
+payments or “bribes”) paid by arbitrageurs for all successfully executed Flashbots transactions.
+We identify cyclic arbitrage transactions using the following criteria: the transaction
+includes multiple swaps executed within a single atomic operation, forming a closed loop
+where the output of each swap serves is the input for the next, except for one pair where
+the profit is realized.18 Since transaction fees on Ethereum are paid in Ether (ETH), our
+analysis centers on arbitrage trades where profits are realized in WETH, the ERC-20 token
+representation of Ether. By focusing exclusively on arbitrage profits realized in WETH, we
+eliminate additional variability introduced by currency conversion rates from other tokens
+to WETH, ensuring more precise calculations of profits and costs.
+To accurately measure arbitrage costs and liquidity providers’ revenues, we exclude transactions that combine cyclic arbitrage with unrelated DEX activities, such as liquidity provision or swaps in pools outside the arbitrage cycle. We retain transactions that involve
+17Flashbots provides a platform that allows users to submit transactions directly to validators.
+18In blockchain terminology, an atomic transaction is one that is executed in its entirety or not at all,
+ensuring that all component swaps occur simultaneously.
+51
+
+operations like flash loans and ETH wrapping/unwrapping, as these are integral to arbitrage
+execution.19 We also limit our analysis to transactions submitted through the Flashbots relay, as we do not have access to data on transactions submitted through other private pools.
+The final dataset comprises 386,178 cyclic arbitrage transactions. For each transaction, we
+record the gas used, gas price, total fees paid to the builder or validator (including direct
+payments through Flashbots), total revenue from the arbitrage trade.
+Methodology.
+We introduce the variable RevenueCostRatioi for each transaction i, defined as:
+RevenueCostRatioi = GasCosti
+Revenuei
+where GasCosti represents the total gas fee paid for transaction i, including any direct payments to validators through Flashbots, and Revenuei is the arbitrage revenue obtained from
+the transaction. Both quantities are measured in Gwei (10−9 ETH). The RevenueCostRatioi
+measures the proportion of the arbitrage revenue that is expended on gas costs. Our objective is to compute and analyze the statistical properties of this variable. Specifically, we aim
+to determine whether RevenueCostRatioi approximates 1 for the majority of transactions,
+indicating that gas costs consume nearly all of the revenue generated in arbitrage activities.
+Results.
+Table 5 presents the descriptive statistics of the revenue-cost ratio, RevenueCostRatioi.
+The mean ratio is 0.876, indicating that, on average, gas costs account for approximately
+87.6 percent of the revenue generated from arbitrage transactions, while the median value
+is 0.9633, suggesting that at least half of the transactions have gas costs consuming over 96
+percent of the revenue earned.
+Figure 10 illustrates the distribution of RevenueCostRatioi, highlighting the concentration of transactions with ratios close to 1. The distribution is tightly clustered, as reflected
+by a standard deviation of 0.2189. The 25th percentile is 0.92, and the 75th percentile is
+19Flash loans are uncollateralized loans that must be repaid within the same transaction; they allow
+arbitrageurs to execute trades with minimal capital by borrowing and repaying funds atomically.
+52
+
+0.98, indicating that the majority of transactions have a revenue-cost ratio close to 1. These
+findings support the hypothesis that arbitrageurs bid gas fees close to their overall profits,
+consistent with our theoretical framework.
+Figure 10: Distribution of the Revenue-Cost Ratio. The histogram displays the frequency
+distribution of the revenue-cost ratio (RevenueCostRatioi) for arbitrage transactions. The
+red dashed line represents the mean ratio, while the orange and green dashed lines denote
+the 25th and 75th percentiles, respectively. The concentration of values near 1 suggests that
+a significant portion of transactions have gas costs that approximate the revenue generated,
+highlighting the narrow profit margins in arbitrage opportunities.
+Table 5: Descriptive Statistics of the Revenue-Cost Ratio.This table reports the descriptive
+statistics for the revenue-cost ratio (RevenueCostRatioi) of cyclic arbitrage transactions executed on Ethereum from block number 14,982,026 to 16,326,370 (June 18, 2022, to January
+3, 2023). The revenue-cost ratio is defined as the ratio of the gas cost to the arbitrage revenue, both measured in Gwei (10−9 ETH). The sample includes 386,178 observations.
+Statistic
+Value
+Number of Observations
+386,178
+Mean
+0.8758
+Standard Deviation
+0.2189
+25th Percentile
+0.9177
+Median
+0.9633
+75th Percentile
+0.9800
+Maximum
+1.0000
+53
+
+6
+Concluding Remarks
+DeFi holds the promise of creating a more transparent and efficient financial system. However, our analysis reveals that transitioning from traditional CEXs to blockchain-based
+AMMs does not inherently eliminate the extraction of economic rents. In fact, blockchain
+infrastructure introduces its own forms of rent extraction that can exceed those in traditional markets. Our key insight is that blockchain’s transaction sequencing mechanism,
+while eliminating certain intermediaries, creates new forms of infrastructure rents and market
+imbalance.
+Our research highlights the critical role of blockchain validators in the operation of decentralized exchanges. By controlling transaction processing, validators can extract substantial
+rents, reflecting dynamics similar to those observed in centralized exchanges.
+This indicates that transitioning to decentralized systems alone does not eliminate the fundamental
+incentives for infrastructure rent extraction. Crucially, our findings emphasize that aligning validator incentives is essential for the effective design of decentralized exchange (DEX)
+markets. Moreover, recent developments such as Flashbots relays, Proposer-Builder Separation (PBS) frameworks, and Jito20 have raised concerns by providing mechanisms that,
+intentionally or unintentionally, allow validators to maximize their rent extraction. While
+these tools aim to increase transaction efficiency and reduce other problems such as negative
+externalities from frontrunning, they can also enhance validators’ ability to capture arbitrage
+rents and other forms of MEV (Capponi, Jia, and Wang (2024)).
+Will market fix the market? We argue that blockchain competition may not effectively resolve the problem of rent extraction. Competition focused on transaction speed and throughput may inadvertently benefit arbitrageurs, who can better exploit speed advantages. Moreover, competition on sequencing rules faces significant constraints. Validators have little
+incentive to adopt sequencing protocols that prioritize liquidity providers if such protocols
+diminish their own rents. Technical challenges inherent in decentralized sequencing, as well
+20Jito is a liquid staking platform on the Solana blockchain.
+54
+
+as coordination difficulties among liquidity providers—who are typically dispersed and lack
+the ability to make significant ex-ante investments—further limit the potential for competition to address rent extraction.
+Our analysis emphasizes the importance of transaction sequencing as a critical component
+of the blockchain infrastructure. Effective solutions may require revising the infrastructure
+to better align the incentives of validators with those of liquidity providers. One potential
+interim solution is to implement centralized sequencing protocols that prioritize liquidity
+providers over market-driven incentives, as seen in platforms like Hyperliquid. While this
+strategy may grant liquidity providers execution priority, it introduces a level of centralization
+into the underlying infrastructure.
+This suggests that the pursuit of liquidity provision
+incentives might lead to a partial re-centralization of certain blockchain functions.
+Alternatively, recent developments in hardcoding sequencing rules within DEX smart
+contracts—referred to as App-Specific Sequencing (ASS)—may help mitigate rent extraction
+by enforcing liquidity-provider-friendly protocols. Nevertheless, validators might circumvent
+these mechanisms by censoring or delaying LP transactions to maximize their own rent
+extraction.
+A different solution is to allow arbitrageurs to exploit their arbitrage opportunities while
+redistributing the associated rents or MEV through auction mechanisms.
+By designing
+protocols that capture MEV and allocate it among ecosystem participants or the protocol
+itself, the adverse effects of rent extraction on liquidity providers can be mitigated.
+In conclusion, while DeFi and blockchain technologies hold the promise of creating more
+open and efficient financial markets, our study underscores that without careful attention to
+market design, the transition to decentralized infrastructures may not eliminate, and could
+even exacerbate, economic rent extraction.
+55
+
+References
+Aoyagi, J., and Y. Ito. 2021. Coexisting exchange platforms: Limit order books and automated market makers. Working Paper.
+Athey, S., I. Parashkevov, V. Sarukkai, and J. Xia. 2016. Bitcoin pricing, adoption, and
+usage: Theory and evidence. Stanford University Graduate School of Business Research
+Paper No. 16-42. Available at SSRN: https://ssrn.com/abstract=2826674.
+Barbon, A., and A. Ranaldo. 2021. On the quality of cryptocurrency markets: Centralized
+versus decentralized exchanges. Working paper.
+Brolley, M., and M. Zoican. 2023a. Liquid speed: A micro-burst fee for low-latency exchanges.
+Journal of Financial Markets 64:100785–.
+———. 2023b. On-demand fast trading on decentralized exchanges. Finance Research Letters
+103350. ISSN 1544-6123. doi:https://doi.org/10.1016/j.frl.2022.103350.
+Budish, E., P. Cramton, and J. Shim. 2015. The high-frequency trading arms race: Frequent batch auctions as a market design response. The Quarterly Journal of Economics
+130:1547–621.
+Budish, E. B., R. S. Lee, and J. J. Shim. 2019. A theory of stock exchange competition and
+innovation: Will the market fix the market? NBER Working Paper 25855.
+Campbell, R. H. 2016. Cryptofinance. Working paper.
+Caparros, B., A. Chaudhary, and O. Klein. 2023. Blockchain scaling and liquidity concentration on decentralized exchanges doi:10.2139/ssrn.4475460.
+Caparros†, B., A. Chaudhary, and O. Klein. 2024. Blockchain scaling and liquidity concentration on decentralized exchanges. Working Paper .
+56
+
+Capponi, A., R. Jia, and Y. Wang. 2024. Maximal extractable value and allocative inefficiencies in public blockchains. Working Paper .
+Capponi, A., R. Jia, and S. Yu. 2022. Price discovery on decentralized exchanges. Working
+Paper .
+Chiu, J., and T. V. Koeppl. 2019. Blockchain-Based Settlement for Asset Trading. The
+Review of Financial Studies 32:1716–53.
+CoinGecko. 2024. Coingecko’s 2024 q3 crypto industry report.
+Cong, L., X. Li, K. Tang, and Y. Yang. 2020. Crypto wash trading. Management Science
+69:6417–7150.
+Cong, L. W., and Z. He. 2019. Blockchain Disruption and Smart Contracts. The Review of
+Financial Studies 32:1754–97.
+Cong, L. W., Y. Li, and N. Wang. 2020. Tokenomics: Dynamic Adoption and Valuation.
+The Review of Financial Studies 34:1105–55.
+Easley, D., M. O’Hara, and S. Basu. 2019. From mining to markets: The evolution of bitcoin
+transaction fees. Journal of Financial Economics 134:91–109.
+Flashbots.
+2021.
+Flashbots
+documents.
+https://docs.flashbots.net/flashbotsauction/overview/.
+Foley, S., P. O’Neill, and T. Putnins. 2024. A better market design? applying “automated
+market makers”’ to traditional financial markets. Working Paper .
+Foucault, T. 1999. Order flow composition and trading costs in a dynamic limit order market.
+Journal of Financial Markets 2:99–134.
+Foucault, T., R. Kozhan, and W. W. Tham. 2017. Toxic arbitrage. The Review of Financial
+Studies 30:1053–1094–. ISSN 0893-9454. doi:10.1093/rfs/hhw103.
+57
+
+Gan, J. R., G. Tsoukalas, and S. Netessine. 2021. Initial coin offerings, speculation, and
+asset tokenization. Management Science 67:914–31.
+Griffins, J. M., and A. Shams. 2020. Is Bitcoin really untethered? The Journal of Finance
+75:1913–64.
+Harvey, C. R., A. Ramachandran, and J. Santoro. 2021. DeFi and the future of finance.
+Working paper.
+Hasbrouck, J., T. J. Rivera, and F. Saleh. 2023. An economic model of a decentralized
+exchange with concentrated liquidity doi:10.2139/ssrn.4529513.
+Huberman, G., J. D. Leshno, and C. Moallemi. 2021. Monopoly without a Monopolist:
+An Economic Analysis of the Bitcoin Payment System. The Review of Economic Studies
+88:3011—-3040.
+Irresberger, F., K. John, P. Mueller, and F. Saleh. 2020. The public blockchain ecosystem:
+An empirical analysis. Working paper.
+Lehar, A., and C. Parlour. 2023. Decentralized exchanges: The Uniswap automated market
+maker. Journal of Finance, Forthcoming .
+Lehar, A., C. A. Parlour, and M. Zoican. 2023. Liquidity fragmentation on decentralized
+exchanges doi:10.2139/ssrn.4267429.
+Li, T., D. Shin, and B. Wang. 2018. Cryptocurrency pump-and-dump schemes. Working
+paper.
+Malinova, K., and A. Park. 2023. Learning from DeFi: Would automated market makers
+improve equity trading? doi:10.2139/ssrn.4531670.
+Milionis, J., C. C. Moallemi, T. Roughgarden, and A. L. Zhang. 2024. Automated market
+making and loss-versus-rebalancing. Working Paper .
+58
+
+Pagnotta, E. 2021. Decentralizing money: Bitcoin prices and blockchain security. Review of
+Financial Studies 34:1–42.
+Park, A. 2023. The Conceptual Flaws of Decentralized Automated Market Making. Management Science 69(11):6731–51.
+Ramseyer, G., A. Goel, and D. Mazi`eres. 2023. SPEEDEX: A scalable, parallelizable, and
+economically efficient decentralized exchange. In Proceedings of the 20th USENIX Symposium on Networked Systems Design and Implementation, NSDI ’23, 849–75.
+Schilling, L., and H. Uhlig. 2019. Some simple bitcoin economics. Journal of Monetary
+Economics 106:16–26.
+Sockin, M., and W. Xiong. 2023.
+A model of cryptocurrencies.
+Management Science
+69:6684–6707–.
+The
+Block.
+2024.
+DEX
+to
+CEX
+spot
+trading
+volume
+ratio.
+https:
+//www.theblock.co/data/decentralized-finance/dex-non-custodial/
+dex-to-cex-spot-trade-volume. Accessed: November 17, 2024.
+Thiery,
+T.
+2023.
+Empirical
+analysis
+of
+builders’
+behavioral
+profiles
+(bbps).
+Available
+at
+https://ethresear.ch/t/
+empirical-analysis-of-builders-behavioral-profiles-bbps/16327.
+Yermack, D. 2017. Corporate Governance and Blockchains. Review of Finance 21:7–31.
+59
+
+A
+The Map of an Automated Market Maker’s Pricing
+Curve to a Synthetic Limit Order Book
+In this appendix, we outline a procedure for translating an AMM pricing curve into a synthetic Limit Order Book (LOB). This involves dividing the AMM’s bonding curve into
+segments, determining the exchange quantities and rates for each segment, and organizing
+them in a structure similar to a traditional order book. Additionally, we incorporate the
+AMM’s transaction fees into this synthetic LOB as the half-spread. We remark that this
+transformation serves primarily as a tool to understand the relation between AMM pricing
+schedules and LOBs, without implying equivalence. Significant distinctions between AMMs
+and centralized LOBs exist, as detailed in Table 1. For instance, unlike AMMs, LOBs do
+not automatically quote around the last trade price.
+The conversion procedure involves the following steps:
+1. Segmenting the Bonding Curve: We partition the AMM’s bonding curve into
+distinct intervals, each demarcated by end points (xi, yi, pi), i = 1, 2, . . .. Here, xi, yi
+denote the quantities of tokens A and B in the pool, respectively, and pi is the marginal
+exchange rate at that specific inventory level.
+Each interval (pi, pi+1) delineates a
+particular range of exchange prices. Figure 1 illustrates this segmentation.
+2. Calculating Exchange Quantities: In each segment defined by points (xi, yi, pi)
+and (xi+1, yi+1, pi+1), we calculate the pooled quantity of token B within this curve
+section as qi = yi+1 −yi.
+3. Determining Exchange Rates: We determine the exchange rate for each segment,
+defined between points (xi, yi, pi) and (xi+1, yi+1, pi+1), as the average price across these
+points. It is calculated using the formula pi = xi+1−xi
+yi+1−yi .
+4. Constructing the Synthetic LOB: Utilizing the calculated exchange rates and
+quantities, we construct a synthetic LOB. Let (xk, yk, pk) be the current inventory
+60
+
+point in the liquidity pool. In the LOB, each segment’s exchange price and quantity
+pair, (pi, qi), is represented as an ask order if i ≥k or a bid order if i < k. This
+representation is based on the principle that purchasing B tokens with A tokens moves
+the liquidity pool’s inventory to the right of the current point on the bonding curve,
+while selling B tokens for A tokens moves it to the left. The layout of this synthetic
+LOB is illustrated in Figure 2a.
+5. Incorporating Transaction Fees as Half-Spread: In this synthetic LOB, we interpret the AMM’s transaction fee as the half-spread, which influences the effective
+exchange rates. For each i ≥k, we adjust the exchange rate pi to (1+f)pi, accounting
+for the cost of exchanging B tokens for A tokens, inclusive of fees. Conversely, for
+i < k, we modify the rate pi to
+1
+1+f pi to reflect the trading costs.
+61
+
+B
+Robustness Analysis Using Layer 2 Networks
+One of our key testable model implications is that a higher exchange rate volatility causes
+LPs to use more convex pricing schedules. Since each liquidity position adjustment requires
+gas fee payments, it may be argued that liquidity providers might choose wider price ranges
+during volatile periods primarily to minimize the frequency of costly position adjustments.
+To rule out this alternative explanation, we analyze equivalent pools on two of the most
+popular Layer 2 networks, specifically Optimism and Polygon, where gas fees are substantially lower than on Ethereum. For example, while the average gas fee per Uniswap V3
+trade on Ethereum is approximately $14, trades on Polygon cost only $0.01 (see Caparros,
+Chaudhary, and Klein (2023)).
+B.1
+Data and Empirical Strategy
+We replicate the analysis from Section 5.2 using transaction-level data from the USDC-USDT
+and USDC-DAI pools (1 basis point fee tier) on the Optimism and Polygon networks. For
+each network, we collect comprehensive deposit data through the Infura service21 over the
+same sample period, spanning from January 9 to May 10, 2023. This period encompasses
+both the pre- and post-SVB collapse phases. Consistent with the analysis in Section 5.2,
+we observe liquidity provision events at the block level, capturing the quantities of tokens
+deposited and the price ranges selected. We present summary statistics in Table B1.
+Using a 15-day window around March 10, 2023 (7 days before and after the SVB collapse),
+we estimate the linear model in equation (11) separately for each of the two networks, using
+Layer 2 data.
+21Infura is a service that offers secure and reliable access to various blockchain networks, including
+Ethereum. It simplifies blockchain integration by eliminating the need to run and maintain personal nodes,
+enabling instant access to major networks.
+62
+
+Table B1: Descriptive Statistics of Layer 2 Liquidity Pools. This table provides summary
+statistics, including the 5th, 25th, 50th, 75th, and 95th percentiles, for the USDC-USDT and
+USDC-DAI Uniswap V3 liquidity pools with a 1 basis point transaction fee on the Optimism
+and Polygon networks during the period from January 9 to May 10, 2023. Price Range
+measures the width between minimum and maximum exchange rates chosen by liquidity
+providers, expressed in basis points and winsorized at the 95th percentiles.
+Panel A: Optimism
+Mean
+Std. Dev.
+p5
+p25
+Median
+p75
+p95
+N
+USDC-USDT
+Price Range (bps)
+534.18
+2189.82
+2.00
+10.00
+19.99
+26.90
+100.07
+3,443
+DAI-USDC
+Price Range (bps)
+8.77
+3.55
+6.00
+8.00
+8.00
+8.00
+20.00
+12,015
+Panel B: Polygon
+Mean
+Std. Dev.
+p5
+p25
+Median
+p75
+p95
+N
+USDC-USDT
+Price Range (bps)
+31.06
+70.24
+1.00
+3.00
+7.99
+19.99
+30.25
+6,582
+DAI-USDC
+Price Range (bps)
+21.77
+37.60
+1.00
+3.00
+19.00
+20.00
+173.21
+1,521
+B.2
+Results
+Figures B1 and B2 provide graphical evidence supporting our model implication that liquidity
+providers select wider price ranges during periods of high exchange rate volatility, even in
+environments of low gas fees.
+On both Optimism and Polygon, USDC-USDT and DAI-USDC liquidity providers chose
+similar, narrow price ranges before the SVB collapse.
+After the collapse, USDC-USDT
+liquidity providers substantially widened their ranges while DAI-USDC providers maintained
+narrow ranges, consistent with the pattern we documented on the Ethereum network.
+Table B2 confirms this pattern statistically. The coefficient on Treatmenti × Aftert is
+positive and significant for both networks. These estimates are consistent with, yet larger
+than, the 34 basis points obtained using Ethereum data, despite transaction costs being
+significantly lower on Layer 2 networks. The consistency and magnitude of these effects rules
+out the alternative hypothesis that liquidity providers widen their price ranges primarily to
+minimize transaction costs associated with frequent position adjustments during periods of
+high exchange rate volatility.
+63
+
+USDC/USDT Before
+USDC/USDT After
+DAI/USDC Before
+DAI/USDC After
+0.00
+0.02
+0.04
+0.06
+0.08
+Price Range
+Figure B1: Price Range Strategy on Optimism. This figure shows the distribution of price
+ranges selected by liquidity providers in the USDC-USDT and USDC-DAI pools (1 basis
+point fee tier) on Optimism during a 15-day window surrounding the SVB collapse on March
+10, 2023 (7 days before and 7 days after). Boxes show the interquartile range and median,
+with whiskers extending to 1.5 times the interquartile range.
+64
+
+USDC/USDT Before
+USDC/USDT After
+DAI/USDC Before
+DAI/USDC After
+0.000
+0.002
+0.004
+0.006
+0.008
+0.010
+Price Range
+Figure B2: Price Range Strategy on Polygon. This figure shows the distribution of price
+ranges selected by liquidity providers in the USDC-USDT and USDC-DAI pools (1 basis
+point fee tier) on Polygon during a 15-day window surrounding the SVB collapse on March
+10, 2023 (7 days before and 7 days after). Boxes show the interquartile range and median,
+with whiskers extending to 1.5 times the interquartile range.
+65
+
+Table B2: Impact of SVB Collapse on Price Range Selection using Layer 2 Networks data.
+This table presents difference-in-differences estimates from equation (11) using data from
+USDC-USDT (treatment) and DAI-USDC (control) pools on Optimism and Polygon networks during a 15-day window surrounding the SVB collapse on March 10, 2023 (7 days
+before and 7 days after). The dependent variable, Price Range, represents the width between the maximum and minimum exchange rates selected by liquidity providers. Treatment
+equals one for USDC-USDT pools, and Post equals one for March 10, 2023, and subsequent
+days. All specifications include pool and day fixed effects. Standard errors (in parentheses)
+are clustered at the pool level.
+Price Range
+Optimism
+Polygon
+Treatment × Post
+0.0095***
+0.0096***
+(0.0005)
+(0.0030)
+Pool FE
+Yes
+Yes
+Day FE
+Yes
+Yes
+Total Observations
+2,160
+1,224
+R2
+0.12
+0.17
+∗p<0.1; ∗∗p<0.05; ∗∗∗p<0.01
+These findings provide confirmatory evidence supporting our model’s implication that
+liquidity providers widen price ranges primarily to mitigate increased arbitrage risk during
+periods of high exchange rate volatility, rather than to minimize transaction costs.
+C
+Technical Results and Proofs
+Proof of Lemma 1. Suppose that d(2)
+A , d(2)
+B > 0, and arbitrageurs trade in tokens A for tokens
+B.22 Arbitrageurs choose the buy order, (∆q(3)
+A , ∆q(3)
+B ), which solves the following optimization problem:
+max
+∆q(3)
+A ,∆q(3)
+B
+p(2)(1 + f)∆q(3)
+A + ∆q(3)
+B
+s.t.
+F(d(2)
+A , d(2)
+B ) = F(d(2)
+A −∆q(3)
+A , d(2)
+B −∆q(3)
+B )
+∆q(3)
+A ≤0, d(2)
+B ≥∆q(3)
+B ≥0,
+(C.1)
+22The case where arbitrageurs swap tokens B for tokens A is symmetric.
+66
+
+where p(2)(1 + f)∆q(3)
+A is the trading cost, that is, the value of tokens A traded in plus the
+trading fee paid to the liquidity providers, and ∆q(3)
+B is the value of tokens B received by the
+arbitrageur from the order. There exists an arbitrage opportunity if and only if the solution
+of (C.1), (∆q(3)∗
+A
+, ∆q(3)∗
+B
+), yields a positive profit, i.e., p(2)(1 + f)∆q(3)∗
+A
++ ∆q(3)∗
+B
+> 0. We
+distinguish between two types of arbitrage:
+(1) Stale price arbitrage. Without loss of generality, we assume the shock decreases
+the fundamental exchange rate. That is,
+p(2) =
+1
+1+βp(1). The other case can be handled
+symmetrically.
+We begin by showing that the two-variable constrained optimization problem (C.1) can be
+reduced to a single-variable unconstrained optimization problem which is easier to analyze.
+To obtain this equivalence result, we use the pricing function F to pin down the price
+schedule, i.e., to determine the amount ∆q(3)
+B of tokens B received by the arbitrageur upon
+depositing −∆q(3)
+A
+tokens A. Recall that F is twice continuously differentiable, and Fx >
+0, Fy > 0. By the Implicit Function Theorem, we can then rewrite the constraint of the
+arbitrageur’s optimization problem stated in (C.1), i.e., the constraint imposed by the pricing
+curve, as
+∆q(3)
+B = g(3)(∆q(3)
+A ), ∆q(3)
+A ≤0, d(2)
+B ≥∆q(3)
+B ,
+(C.2)
+where g(3) is a twice differentiable function. Hence, we write the amount of tokens B the
+arbitrageur can withdraw from the AMM, ∆q(3)
+B , as a function of the amount of tokens A
+deposited into the AMM by the arbitrageur, before paying the fee. The first order derivative
+of the above function,
+dg(3)
+d(∆q(3)
+A ), is the negative of the marginal exchange rate. Again, by the
+Implicit Function Theorem, we obtain:
+dg(3)
+d(∆q(3)
+A )
+= −Fx
+Fy
+
+(x,y)=(d(2)
+A −∆q(3)
+A ,d(2)
+B −∆q(3)
+B )
+< 0.
+67
+
+Differentiating the above equation on both sides with respect to ∆q(3)
+A , we obtain
+d2g(3)
+d(∆q(3)
+A )2 = −−F 2
+y Fxx + 2FyFxFxy −F 2
+xFyy
+F 3
+y
+
+(x,y)=(d(2)
+A −∆q(3)
+A ,d(2)
+B −∆q(3)
+B )
+.
+By the properties of the pricing function (see part 1 and 2 of Assumption 1), we obtain
+that the above expression is negative, which means that g(3) is concave.
+Using the relations p(2) =
+1
+1+βp(1) as well as the monotonicity of g(3) and (C.2), we obtain
+a single variable optimization problem equivalent to the arbitrageur’s optimization problem
+stated in (C.1):
+max
+(g(3))−1(d(2)
+B )<∆q(3)
+A ≤0
+1
+1 + β p(1)(1 + f)∆q(3)
+A + g(3)(∆q(3)
+A ),
+(C.3)
+where the first term is the cost of the arbitrage order, the second term is the value of tokens
+B received by the arbitrageur, and the inverse function (g(3))−1 exists and is monotone due
+to the monotonicity of g(3).
+We can now solve the arbitrageur’s optimization problem, using the monotonicity and
+convexity properties derived above. The first-order derivative of the objective function in
+(C.3) is:
+(1 + f) p(1)
+1 + β +
+dg(3)
+d(∆q(3)
+A )
+(C.4)
+The first term is the arbitrageur’s marginal cost of exchanging tokens A for tokens B,
+while the second term is the marginal benefit of this exchange. If the above expression is
+positive, then the marginal cost of trading exceeds the marginal benefit, which means that
+the arbitrageur should decrease the amount of swapped tokens A. By the concavity of g(3),
+we can conclude that the above expression is decreasing in ∆q(3)
+A .
+The arbitrageur would use tokens A to exchange for tokens B as long as the marginal
+benefit is larger than the marginal cost.
+We first calculate the marginal exchange rate
+if ∆q(3)
+A
+= 0, and solve for the condition under which the marginal benefit exceeds the
+68
+
+marginal cost in this case. The marginal exchange rate
+dg(3)
+d(∆q(3)
+A )
+
+∆q(3)
+A =0
+= −Fx
+Fy
+
+(x,y)=(d(1)
+A ,d(1)
+B )
+=
+−p(1). This is because in period 1, the liquidity providers deposit their tokens in the pool
+at the fundamental exchange rate.
+Hence, the first-order derivative in (C.4) is equal to
+
+1+f
+1+β −1
+
+p(1) at ∆q(3)
+A = 0, and it is positive if and only if f > β.
+If f > β, then the marginal cost exceeds the marginal benefit when ∆q(3)
+A
+= 0. Recall
+that the above first order derivative is decreasing. Thus, for any ∆q(3)
+A
+< 0, the marginal
+cost is larger than the marginal benefit from exchanging. This means that any trade will
+not be profitable for the arbitrageur. Thus, the optimal amount of tokens A exchanged for
+tokens B is ∆q(3)∗
+A
+= 0. If ∆q(3)∗
+A
+= 0, the value of the objective function is 0 because no
+arbitrage occurs. Hence, there is no stale price arbitrage opportunity.
+If β > f, the optimal exchange amount for the arbitrageur can be recovered using the
+Karush–Kuhn–Tucker (KKT) conditions. The value of the arbitrage is maximized either
+when the marginal cost equals the marginal benefit of the exchange or when the B tokens
+in the liquidity pool are completely utilized:
+(1 + f) = −1 + β
+p(1)
+dg(3)
+d(∆q(3)
+A )
+,
+d(2)
+B > g(3)(∆q(3)
+A ),
+(C.5)
+or
+(1 + f) ≤−1 + β
+p(1)
+dg(3)
+d(∆q(3)
+A )
+,
+d(2)
+B = g(3)(∆q(3)
+A ).
+(C.6)
+We first show that there exists a unique solution, ∆q(3)∗
+A
+, satisfying (C.5) or (C.6). By
+concavity of g(3), the first order derivative in (C.4) is decreasing in the interval (−∞, 0]; it
+is also negative at 0 because β > f.
+Suppose d(2)
+B > g(3)(∆q(3)
+A ) for any ∆q(3)
+A < 0. We must have
+dg(3)
+d(∆q(3)
+A ) →0, as ∆q(3)
+A →−∞.
+Otherwise, ∆q(3)
+A
+< c for some c < 0, and g(3)(∆q(3)
+A ) =
+R ∆q(3)
+A
+0
+dg(3)
+d(∆q(3)
+A )(x)dx > c∆q(3)
+A
+>
+d(2)
+B
+when ∆q(3)
+A
+is sufficiently large, which yields a contradiction. Thus, as ∆q(3)
+A
+→−∞,
+(1 + f) > −1+β
+p(1)
+dg(3)
+d(∆q(3)
+A ) →0. Recall that when ∆q(3)
+A = 0, (1 + f) < (1 + β) = −1+β
+p(1)
+dg(3)
+d(∆q(3)
+A ),
+so by continuity and monotonicity of the first-order derivative, there either exists a unique
+69
+
+∆q(3)∗
+A
+at which the derivative in (C.4) is 0, or (C.5) is satisfied.
+Suppose d(2)
+B = g(3)(∆q(3)
+A ) for some ∆q(3)
+A = x < 0. If (1 + f) ≤−1+β
+p(1)
+dg(3)
+d(∆q(3)
+A ) at x, then
+(C.6) is satisfied. There does not exist any ∆q(3)
+A
+satisfying (C.5), because any ∆q(3)
+A
+such
+that d(2)
+B
+> g(3)(∆q(3)
+A ) must be larger than x. Moreover, by monotonicity of g(3), and by
+monotonicity of
+dg(3)
+d(∆q(3)
+A ), we must still have (1 + f) < −1+β
+p(1)
+dg(3)
+d(∆q(3)
+A ). Consider the case where
+(1 + f) > −1+β
+p(1)
+dg(3)
+d(∆q(3)
+A ) at this point x. Recall that when ∆q(3)
+A
+= 0, (1 + f) < (1 + β) =
+−1+β
+p(1)
+dg(3)
+d(∆q(3)
+A ), so by continuity and monotonicity of the first-order derivative, there either
+exists a unique ∆q(3)∗
+A
+∈(0, x) at which the derivative expression in (C.4) equals 0, and (C.5)
+is satisfied.
+More generally, given the concavity of the objective function (C.3) (equivalently the
+negativity of its first-order derivative in (C.4)) and the linearity of the constraints (Slater’s
+condition also must hold), guarantee that the KKT conditions provide a unique solution
+that satisfies these criteria. Therefore, a unique optimal arbitrage quantity ∆q(3)∗
+A
+satisfying
+either (C.5) or (C.6) is guaranteed.
+We then prove that arbitrageurs can earn strictly positive profit from this optimal arbitrage. Recall that when β > f, p(1) < −1+β
+1+f
+d(g(3))
+d(∆q(3)
+A ) at ∆q(3)
+A = 0. As a result, the equality
+in (C.5) is not satisfied at ∆q(3)
+A
+= 0. More the condition (C.6) is obviously not satisfied
+because 0 < d(2)
+B . This implies that ∆q(3)∗
+A̸
+= 0. Because the arbitrageur’s objective function
+attains a strictly higher value at ∆q(3)∗
+A̸
+= 0 than at ∆q(3)
+A
+= 0, and the objective function
+equals 0 at ∆q(3)
+A = 0, we obtain π(d(2)
+A , d(2)
+B , p(2)) > 0 if β > f.
+We next prove that π(d(2)
+A , d(2)
+B , p(2)), |∆q(3)∗
+A
+|, and |∆q(3)∗
+B
+| are increasing in β and decreasing in f. If β ≤f, the arbitrageur does not trade, and thus π(d(2)
+A , d(2)
+B , p(2)) = 0, |∆q(3)∗
+A
+|= 0,
+|∆q(3)∗
+B
+|= 0, which are all independent of f and β.
+If β > f, we apply the Envelope Theorem and obtain ∂π
+∂f =
+p(1)
+1+β∆q(3)∗
+A
+< 0, and ∂π
+∂β =
+−
+1
+(1+β)2p(1)(1+f)∆q(3)∗
+A
+> 0, as ∆q(3)∗
+A
+< 0 because the fundamental exchange rate decreases
+and thus the investor swaps tokens A for tokens B. Therefore, π(d(2)
+A , d(2)
+B , p(2)) increases in
+β and decreases in f. The optimal arbitrage quantity ∆q(3)∗
+A
+is determined either by the
+70
+
+equality condition in Equation (C.5) or through the condition that d(2)
+B
+= g(3)(∆q(3)
+A ). By
+differentiating both sides of the equality in (C.5) with respect to f, we have
+p(1) = −(1 + β)
+d2g(3)
+d(∆q(3)
+A )2
+d∆q(3)∗
+A
+df
+.
+Recall that g(3) is concave, which means that
+d2g(3)
+d(∆q(3)
+A )2 < 0. This, along with the equality
+above, implies that
+d∆q(3)∗
+A
+df
+> 0, i.e., ∆q(3)∗
+A
+increases in f. Following the same procedure as
+above, we can show that ∆q(3)∗
+A
+decreases in β. Since ∆q(3)∗
+A
+< 0, |∆q(3)∗
+A
+| decreases in f, and
+increases in β. The condition d(2)
+B = g(3)(∆q(3)∗
+A
+) does not depend on f, β, thus the optimal
+trading quantities do not change with respect to f, β. In summary, the optimal trading
+quantities weakly decrease in f, and increase in β.
+Since ∆q(3)∗
+B
+= g(3)(∆q(3)∗
+A
+) and the derivative of g(3) is negative, we have that ∆q(3)∗
+B
+decreases in ∆q(3)∗
+A
+< 0 and increases in |∆q(3)∗
+A
+|= −∆q(3)∗
+A
+. Because |∆q(3)∗
+A
+| decreases in f
+and increases in β, we have that ∆q(3)∗
+B
+decreases in f, and increases in β.
+(2) Reverse trade arbitrage. Without loss of generality, we assume that the trading
+investor is of “type A”.
+After the investor trades, the amount of tokens A and B remaining in the pool are,
+respectively, d(2)
+A and d(2)
+B . The arbitrageur again solves the optimization problem stated in
+(C.1). We solve for the optimal arbitrage by following the same procedure as in the proof
+of part 1 of Lemma 1. We obtain that there exists a profitable reverse trade arbitrage if
+and only if
+1
+1+f
+Fx
+Fy
+
+(x,y)=(d(2)
+A ,d(2)
+B )
+> p(1), that is, the price impact of the investor’s trade is
+sufficiently large. This is because the marginal benefit of trading for an arbitrageur is larger
+than the marginal cost at ∆q(3)
+A = 0 if and only if
+1
+1+f
+Fx
+Fy
+
+(x,y)=(d(2)
+A ,d(2)
+B )
+> p(1). If this condition
+is not satisfied, then the arbitrageur does not trade, because the marginal cost exceeds the
+marginal benefit.
+If
+1
+1+f
+Fx
+Fy
+
+(x,y)=(d(2)
+A ,d(2)
+B )
+> p(1), then the arbitrageur chooses the optimal quantities ∆q(3)∗
+A
+, ∆q(3)∗
+B
+71
+
+such that the marginal benefit breaks even with the marginal cost:
+1
+1 + f
+Fx
+Fy
+
+(x,y)=(d(2)
+A −∆q(3)∗
+A
+,d(2)
+B −∆q(3)∗
+B
+)
+= p(1).
+(C.7)
+The optimal arbitrage order (∆q(3)∗
+A
+, ∆q(3)∗
+B
+) is unique as in part 1 of Lemma 1, for the
+same reason. Applying the Implicit Function Theorem to F(d(2)
+A −∆q(3)∗
+A
+, d(2)
+B −∆q(3)∗
+B
+) =
+F(d(2)
+A , d(2)
+B ) allows us to parameterize ∆q(3)
+B
+as a concave function of ∆q(3)
+A , i.e., ∆q(3)
+B
+=
+g(3)(∆q(3)
+A ). The derivative function
+d(g(3))
+d(∆q(3)
+A ) = Fx
+Fy
+
+(x,y)=(d(2)
+A −∆q(3)∗
+A
+,d(2)
+B −∆q(3)∗
+B
+)
+is monotone in
+∆q(3)
+A due to the concavity of the function. Following the same procedure as in the proof of
+part 1 of Lemma 1, we deduce that (∆q(3)∗
+A
+, ∆q(3)∗
+B
+)̸ = (0, 0) exists and is unique, and the
+profit from the optimal arbitrage is strictly positive. We then apply the Envelope Theorem
+and obtain that ∂π
+∂f = p(1)∆q(3)∗
+A
+≤0.
+Lemma C.1. Suppose d(1)
+A , d(1)
+B > 0. If f < α, then the investor trades and earns a positive
+surplus from the transaction, S(d(1)
+A , d(1)
+B , p(1)) > 0. Moreover, the surplus, S(d(1)
+A , d(1)
+B , p(1)),
+and the optimal trading quantities of the investor, |Q(2)∗
+A |, |Q(2)∗
+B |, are strictly positive, increasing in α, and decreasing in f. The investor does not trade if f ≥α.
+The investor bids
+a zero gas fee to execute her trade.
+Proof. Without loss of generality, we assume that the trading investor is of “type A”. The
+case where the investor is of “type B” can be handled using symmetric arguments. The
+investor decides the amount of A tokens to swap for, and she faces the following optimization
+problem:
+max
+∆Q(2)
+A ,∆Q(2)
+B
+(1 + α)p(1)∆Q(2)
+A + (1 + f)∆Q(2)
+B
+s.t.
+F(d(1)
+A , d(1)
+B ) = F(d(1)
+A −∆Q(2)
+A , d(1)
+B −∆Q(2)
+B )
+d(1)
+A ≥∆Q(2)
+A ≥0, ∆Q(2)
+B ≤0,
+(C.8)
+72
+
+where (1 + α)p(1)∆Q(2)
+A is the “type A” investor’s benefit from a trade , and −(1 + f)∆Q(2)
+B
+is the total value of tokens B paid by the investor.
+Recall that F is twice continuously differentiable, and Fx > 0, Fy > 0. We first pin down
+the pricing schedules. By the Implicit Function Theorem, we can rewrite the constraint of
+the investor’s optimization problem stated in (C.8) as
+∆Q(2)
+A = g(2)(∆Q(2)
+B ), −∞< ∆Q(2)
+B ≤0, d(1)
+A ≥∆Q(2)
+A ,
+(C.9)
+where g(2) is a twice differentiable function. In this way, we can write the amount of tokens
+A the investor can withdraw from the pool as a function of the negative of the amount of
+tokens B she has to deposit into the AMM, excluding the fee. The first order derivative of
+the above function is the negative of the marginal exchange rate:
+dg(2)
+d(∆Q(2)
+B )
+= −Fy
+Fx
+
+(x,y)=(d(1)
+A −∆Q(2)
+A ,d(1)
+B −∆Q(2)
+B )
+< 0.
+It follows from Assumption 1 that the function g(2) is concave, that is,
+d2g(2)
+d(∆Q(2)
+A )2 ≤0.
+Plugging (C.9) into the two-variable optimization problem stated in (C.8), we obtain the
+following equivalent, single-variable, optimization problem:
+max
+−∞<∆Q(2)
+B ≤0,g(2)(∆Q(2)
+B )≤d(1)
+A
+(1 + α)p(1)g(2)(∆Q(2)
+B ) + (1 + f)∆Q(2)
+B ,
+(C.10)
+where the first term is the total benefits from trades of investors, and the second term is the
+trading cost.
+The first-order derivative of the objective function in (C.10) is
+(1 + f) −
+ 
+−(1 + α)p(1)
+dg(2)
+d(∆Q(2)
+B )
+!
+(C.11)
+The first term is the marginal cost of exchanging a B token for an A token, and the
+second term is the marginal benefit of the trading investor. By concavity of the function
+73
+
+g(2), the above expression decreases in ∆Q(2)
+B . If ∆Q(2)
+B = 0, then
+dg(2)
+d(∆Q(2)
+B ) = −1
+p(1) because
+in period 1 the liquidity providers deposit their tokens in the AMM at the fair rate. Hence,
+the first-order derivative of the objective function stated in (C.11) is equal to (f −α) at
+∆Q(2)
+B = 0, which is positive if and only if f > α.
+If f ≥α, then the marginal cost exceeds the marginal benefit at ∆Q(2)
+B = 0. Since (C.11)
+decreases in ∆Q(2)
+B , then (C.11) is positive at any ∆Q(2)
+B ≤0. In this way, the marginal cost
+exceeds the marginal benefit at any ∆Q(2)
+B ≤0. Hence, the optimal trading size is zero, i.e.,
+the investor does not trade when the fee is larger than the private benefit.
+If α > f, by KKT conditions, the optimal exchange amount is obtained either if the
+marginal cost and the marginal benefit of exchanging are identical or all tokens A are exhausted:
+(1 + f) =
+ 
+−(1 + α)p(1)
+dg(2)
+d(∆Q(2)
+B )
+!
+, d(1)
+A > ∆Q(2)
+A ,
+(C.12)
+or,
+(1 + f) ≤
+ 
+−(1 + α)p(1)
+dg(2)
+d(∆Q(2)
+B )
+!
+, d(1)
+A = ∆Q(2)
+A .
+(C.13)
+Following the same procedure as in the proof of part 1 of Lemma 1 where we have shown that
+the optimal stale price arbitrage trade exists and is unique, we can show that the solution
+∆Q(2)∗
+B
+satisfying either (C.12) or (C.13) exists and is unique.
+Moreover, ∆Q(2)∗
+B̸
+= 0 because, if α > f, (1 + f) < −(1 + α)p(1)
+dg(2)
+d(∆Q(2)
+B ) when ∆Q(2)
+B = 0,
+which implies that (C.12) and (C.13) are not satisfied at ∆Q(2)
+B
+= 0 because d(1)
+A
+> 0.
+Therefore, the investor’s objective function attains a higher value at ∆Q(2)∗
+B
+than at 0, and
+thus the (“type A”) investor’s surplus SA(d(1)
+A , d(1)
+B , p(1)), defined as the maximum value of
+the objective function in (C.8) is strictly positive if α > f.
+We next prove that SA(d(1)
+A , d(1)
+B , p(1)), |∆Q(2)∗
+A |, and |∆Q(2)∗
+B | are increasing in α and
+decreasing in f. For the case α ≤f, the investor does not trade, and thus SA(d(2)
+A , d(2)
+B , p(2)) =
+0, |∆Q(2)∗
+A |= 0,|∆Q(2)∗
+B |= 0. As a result, ∂SA
+∂f
+= ∂SA
+∂α = 0,
+∂|∆Q(2)∗
+A
+|
+∂f
+=
+∂|∆Q(2)∗
+A
+|
+∂α
+=
+∂|∆Q(2)∗
+B
+|
+∂f
+=
+74
+
+∂|∆Q(2)∗
+B
+|
+∂α
+= 0.
+For the case α > f, we apply the Envelope Theorem and obtain ∂SA
+∂f = ∆Q(2)∗
+B
+< 0, and
+∂π
+∂α = p(1)∆Q(2)∗
+A
+> 0. Therefore, SA(d(1)
+A , d(1)
+B , p(1)) increases in α and decreases in f.
+The optimal trade quantity ∆Q(2)∗
+B
+is defined by the condition in (C.12) or (C.13). Differentiating both sides of the equality in (C.12) with respect to f, we obtain
+1 = −(1 + α)p(1)
+d2g(2)
+d(∆Q(2)
+B )2
+d∆Q(2)∗
+B
+df
+.
+Recall that g(2) is concave, thus
+d2g(2)
+d(∆Q(2)
+B )2 < 0. It then follows that
+d∆Q(2)∗
+B
+df
+> 0 because
+p(1) > 0, (1 + α) > 0. Using the same argument, we can show that
+d∆Q(2)∗
+B
+dα
+< 0. In addition,
+the equality constraint in (C.13) is not sensitive to f, β. Hence,
+d∆Q(2)∗
+B
+df
+≥0,
+d∆Q(2)∗
+B
+dα
+≤0.
+Since ∆Q(2)∗
+B
+< 0, we have that |∆Q(2)∗
+B | decreases in f, and increases in α. Since ∆Q(2)∗
+A
+=
+g(2)(∆Q(2)∗
+B ), and the derivative of g(2) is negative, we have
+∂∆Q(2)∗
+A
+∂f
+=
+dg(2)
+d∆Q(2)∗
+B
+∂∆Q(2)∗
+B
+∂f
+≤0, and
+∂∆Q(2)∗
+A
+∂α
+=
+dg(2)
+d∆Q(2)∗
+B
+∂∆Q(2)∗
+B
+∂α
+≥0. Because ∆Q(2)∗
+A
+> 0 , we deduce that |∆Q(2)∗
+A | decreases in f
+and increases in α.
+Note that the investor is not under any competition to trade and, therefore, submits a
+transaction with zero gas fees.
+Proof of Proposition 1. Suppose that there exists a stale price or reverse trade arbitrage
+opportunity. The profit from the optimal arbitrage, π(d(2)
+A , d(2)
+B , p(2)) > 0, is obtained by
+solving the arbitrageur’s optimization problem stated in (C.1). We then prove that in the
+subgame of period 3, there exists a unique Nash equilibrium where arbitrageurs submit
+an optimal order and bid a gas fee equal to their profit π(d(2)
+A , d(2)
+B , p(2)), and all liquidity
+providers bid zero gas fee together with their withdrawal orders.
+The arbitrageurs will never deviate from the unique optimal arbitrage order, (∆q(3)∗
+A
+, ∆q(3)∗
+B
+),
+because any other trade is sub-optimal and results in a strictly smaller profit than π(d(2)
+A , d(2)
+B , p(2)).
+We next show that the arbitrageurs have no incentive to bid a gas fee different from
+75
+
+π(d(2)
+A , d(2)
+B , p(2)). They have no incentive to bid above π(d(2)
+A , d(2)
+B , p(2)), as this results in a
+negative payoff even if their order is executed. Conversely, underbidding guarantees a zero
+payoff because the other arbitrageur’s higher bid prevents his order from being executed.
+Each liquidity provider i owns a share wi ≤1 of the pool, and incurs a loss of wiπ(d(2)
+A , d(2)
+B , p(2))
+if an arbitrage order precedes theirs. Bidding below π(d(2)
+A , d(2)
+B , p(2)) does not prevent this
+loss but adds gas fees. Bidding equal to or above it, while preventing loss, leads to gas fees
+outweighing the saved loss. Thus, they have no incentive to bid above zero.
+We exclude the existence of alternative Nash equilibria. Liquidity providers would not
+bid above wiπ(d(2)
+A , d(2)
+B , p(2)), as the cost would surpass the potential loss averted. Similarly,
+arbitrageurs would not bid above π(d(2)
+A , d(2)
+B , p(2)). If any arbitrageur were to bid higher than
+π(d(2)
+A , d(2)
+B , p(2)), then the arbitrageur who bids higher, or both of them if both bid equally,
+would achieve a negative expected payoff, which means that bidding zero fee is a profitable
+deviation. If they bid the same value x and below the profit π(d(2)
+A , d(2)
+B , p(2)), either of them
+can slightly increase their bid to x + ϵ where
+π(d(2)
+A ,d(2)
+B ,p(2))−x
+2
+> ϵ > 0 and capture a higher
+payoff. If the bids of arbitrageurs are not the same and one of them bids below the profit
+π(d(2)
+A , d(2)
+B , p(2)), then the arbitrageur with the higher bid can profitably deviate by bidding
+lower than his current bid by ϵ where ϵ > 0 is small enough to ensure that his bid is still
+higher than that of the other arbitrageur.
+Therefore, both arbitrageurs will bid exactly
+π(d(2)
+A , d(2)
+B , p(2)). Since arbitrageurs will always outbid liquidity providers, who in turn have
+no incentive to bid above zero, this creates the unique Nash equilibrium where arbitrage
+orders are prioritized, and liquidity providers invariably suffer losses.
+Lemma C.2. For any constant c > 0, the following relations hold:
+1. ∆q(3)∗
+B
+(cd(2)
+A , cd(2)
+B , p(2)) = c∆q(3)∗
+B
+(d(2)
+A , d(2)
+B , p(2))
+2. ∆q(3)∗
+A
+(cd(2)
+A , cd(2)
+B , p(2)) = c∆q(3)∗
+A
+(d(2)
+A , d(2)
+B , p(2)),
+3. π(cd(2)
+A , cd(2)
+B , p(2)) = cπ(d(2)
+A , d(2)
+B , p(2)).
+76
+
+Proof of Lemma C.2. Recall that the constraint of the arbitrageur’s optimization problem
+defined in (C.1) is:
+F(d(2)
+A , d(2)
+B ) = F(d(2)
+A −∆q(3)
+A , d(2)
+B −∆q(3)
+B ).
+Scaling deposits of A and B tokens by a factor c, i.e., (cd(2)
+A , cd(2)
+B ), the constraint may
+be rewritten as
+F(cd(2)
+A , cd(2)
+B ) = F(cd(2)
+A −∆q(3)
+A , cd(2)
+B −∆q(3)
+B )
+⇐⇒clF(d(2)
+A , d(2)
+B ) = clF(d(2)
+A −∆q(3)
+A
+c
+, d(2)
+B −∆q(3)
+B
+c
+)
+⇐⇒F(d(2)
+A , d(2)
+B ) = F(d(2)
+A −∆q(3)
+A
+c
+, d(2)
+B −∆q(3)
+B
+c
+),
+where the equivalence result above comes from the third property of the pricing function
+stated in Assumption 1. The arbitrageur’s optimization problem, given deposits cd(2)
+A , cd(2)
+B ,
+may be written as:
+max
+∆q(3)
+A ,∆q(3)
+B
+p(2)(1 + f)∆q(3)
+A + ∆q(3)
+B
+s.t.
+F(d(2)
+A , d(2)
+B ) = F(d(2)
+A −∆q(3)
+A
+c
+, d(2)
+B −∆q(3)
+B
+c
+)
+∆q(3)
+A ≤0, ∆q(3)
+B ≥0.
+(C.14)
+We use (∆q(3)∗
+A
+(cd(2)
+A , cd(2)
+B , p(2)), ∆q(3)∗
+B
+(cd(2)
+A , cd(2)
+B , p(2))) to denote the solution of (C.14).
+With the following change of variables, ∆q(3)′
+A
+= ∆q(3)
+A /c, ∆q(3)′
+B
+= ∆q(3)
+B /c, the arbitrageur’s optimization problem stated in (C.14) may be rewritten as
+max
+∆q(3)′
+A
+,∆q(3)′
+B
+cp(2)(1 + f)∆q(3)′
+A
++ c∆q(3)′
+B
+s.t.
+F(d(2)
+A , d(2)
+B ) = F(d(2)
+A −∆q(3)′
+A , d(2)
+B −∆q(3)′
+B )
+∆q(3)′
+A
+≤0, ∆q(3)′
+B
+≥0,
+(C.15)
+which corresponds to the optimization problem stated in (C.1) except that the objective func77
+
+tion is now multiplied by a constant c. Therefore, the maximized objective value of the problem in (C.15) is c times the maximized objective value of the problem stated in (C.1). Moreover, the optimization problem (C.15) admits the same solution as the optimization problem
+stated in (C.1), and given by (∆q(3)∗
+A
+(d(2)
+A , d(2)
+B , p(2)), ∆q(3)∗
+B
+(d(2)
+A , d(2)
+B , p(2))). Recall the change
+of variables to obtain (C.15). The solution of (C.15) is then obtained by the solution of (C.14)
+divided by c, (
+∆q(3)∗
+A
+(cd(2)
+A ,cd(2)
+B ,p(2))
+c
+,
+∆q(3)∗
+B
+(cd(2)
+A ,cd(2)
+B ,p(2))
+c
+). To recover ∆q(3)∗
+A
+(cd(2)
+A , cd(2)
+B , p(2)) and
+∆q(3)∗
+B
+(cd(2)
+A , cd(2)
+B , p(2)), we multiply (∆q(3)∗
+A
+(d(2)
+A , d(2)
+B , p(2)), ∆q(3)∗
+B
+(d(2)
+A , d(2)
+B , p(2))) by c, and we
+obtain
+∆q(3)∗
+A
+(cd(2)
+A , cd(2)
+B , p(2)) = c∆q(3)∗
+A
+(d(2)
+A , d(2)
+B , p(2)),
+∆q(3)∗
+B
+(cd(2)
+A , cd(2)
+B , p(2)) = c∆q(3)∗
+B
+(d(2)
+A , d(2)
+B , p(2)).
+Lemma C.3. For any constant c > 0, the following relations hold:
+1. ∆Q(2)∗
+B (cd(1)
+A , cd(1)
+B , p(1)) = c∆Q(2)∗
+B (d(1)
+A , d(1)
+B , p(1)),
+2. ∆Q(2)∗
+A (cd(1)
+A , cd(1)
+B , p(1)) = c∆Q(2)∗
+A (d(1)
+A , d(1)
+B , p(1)),
+3. SA(cd(1)
+A , cd(1)
+B , p(1)) = cSA(d(1)
+A , d(1)
+B , p(1)),
+4. SB(cd(1)
+A , cd(1)
+B , p(1)) = cSB(d(1)
+A , d(1)
+B , p(1)).
+Proof of Lemma C.3. The proof is analogous to that of Lemma C.2, except that we now
+solve the investor’s optimization problem (C.8) instead of the arbitrageur’s optimization
+problem (C.1). If the amount of deposits are multiplied by c in (C.1), we can apply the
+same change of variable as in proof of Lemma C.3 by introducing a new variable which is
+1
+c multiplied by the original variables. The investor’s optimization problem when deposits
+are multiplied by c can then be rewritten as in (C.8). We then multiply the solution by c to
+recover ∆Q(2)∗
+A (cd(1)
+A , cd(1)
+B , p(1)) and ∆Q(2)∗
+B (cd(1)
+A , cd(1)
+B , p(1)). We omit the proof details.
+78
+
+Lemma C.4. For any p, dA, dB > 0, there exists a unique solution (a∗, b∗) of the optimization
+problem
+min
+a,b
+pa + b
+s.t.
+F(dA, dB) = F(dA + a, dB + b).
+(C.16)
+This solution satisfies the condition
+Fx
+Fy
+
+(x,y)=(dA+a∗,dB+b∗)
+= p, i.e., for any point on the
+pricing curve, the value of deposits is the lowest when the spot exchange rate is equal to the
+fundamental exchange rate.
+Proof of Lemma C.4. Recall that F is twice continuously differentiable, and Fx > 0, Fy > 0
+by the first property of Assumption 1. By the Implicit Function Theorem, we can rewrite
+the constraint of the optimization problem (C.16) as
+b = m(a), a ∈R,
+(C.17)
+where m(a) is a twice differentiable function, whose first order derivative is
+m′(a) = −Fx
+Fy
+
+(x,y)=(dA+a,dB+b)
+< 0.
+By Assumption 1, m(a) is convex, that is, m′′(a) > 0. We then plug b = m(a) into the
+optimization problem (C.16), and obtain an equivalent single variable unconstrained optimization problem
+min
+a
+pa + m(a),
+(C.18)
+where the objective function is strictly convex. Hence, the optimization problem admits a
+unique solution a∗which satisfies the first-order condition:
+p + m′(a∗) = 0.
+79
+
+We then have:
+−m′(a∗) = Fx
+Fy
+
+(x,y)=(dA+a∗,dB+b∗)
+= p.
+Proof of Theorem 2. We follow the proof strategy of Zermelo’s theorem. To establish existence and uniquenss of a subgame perfect equilibrium, we identify a unique strategy profile
+through backward induction.
+We start from the last period t = 3. If the liquidity providers do not deposit in period
+1, then nothing happens. We then consider the case where liquidity providers deposit. The
+arguments used in the proof of Proposition 1 show that the optimal gas fees that liquidity
+providers bid with their exit orders are zero. If there exists an arbitrage opportunity at
+period 3, then by Lemma 1, the optimal trading order is unique. Both arbitrageurs bid a
+gas fee equal to the profit from the optimal order, and both arbitrageurs must choose the
+optimal trade order which solves the arbitrageur’s optimization problem stated in (C.1).
+In period 2, by Lemma C.1, if an investor arrives then she chooses the unique optimal
+trading order which solves the optimization problem (C.8). It is incentive compatible for the
+investor to bid the lowest gas fee, i.e., zero.
+In period 1, each liquidity provider maximizes its payoff. Since the AMM requires tokens
+to be deposited at the current fundamental exchange rate Fx
+Fy
+
+(x,y)=(d(1)
+A ,d(1)
+B )
+= p(1), the ratio
+of tokens A and B deposited,
+d(1)
+B
+d(1)
+A , is already pinned down by the fundamental exchange
+rate p(1) in period 1. Hence, the liquidity provider only chooses the amount of tokens A to
+deposit. Suppose liquidity provider i deposits an amount d(1)
+Ai > 0 and d(1)
+Bi > 0, respectively,
+of tokens A and B . Liquidity provider i owns a share wi =
+d(1)
+Ai
+d(1)
+A
+of the pool. The expected
+payoff of liquidity provider i is then:
+wiE
+h
+p(3)d(3)
+A + d(3)
+B
+i
++ E
+h
+p(3)(eAi −d(1)
+Ai ) + (eBi −d(1)
+Bi )
+i
+.
+(C.19)
+80
+
+In the above expression, the first term is the expected payoff from the tokens deposited
+in the AMM, and the second term is the expected payoff from non-deposited tokens. We
+may rewrite (C.19) as follows:
+wi(p(1)d(1)
+A + d(1)
+B )E
+
+1 + RD
+
++ E
+
+1 + R
+
+p(1)(eAi −wid(1)
+A ) + (eBi −wid(1)
+B ),
+where the expected return from deposits made in period 1 is:
+E
+
+RD
+
+:=
+d(1)
+A
+(p(1)d(1)
+A + d(1)
+B )
+E
+
+p(3)d(3)
+A
+d(1)
+A
++ d(3)
+B
+d(1)
+A
+
+−1,
+and the expected returns from non-deposited A tokens are:
+E
+
+R
+
+:=E
+p(3)
+p(1)
+
+−1
+To ascertain whether liquidity providers would deposit or a liquidity freeze occurs, we
+need to identify the conditions under which E
+
+RD
+
+−E
+
+RND
+
+> 0 (depositing) and E
+
+RD
+
+−
+E
+
+RND
+
+< 0 (liquidity freeze).
+The return from deposits conditional on the occurrence of a shock. If the
+fundamental exchange rate is unchanged and the investor does not trade, the returns from
+depositing and not depositing are identical. If the fundamental exchange rate increases, i.e.,
+p(2) = (1+β)p(1), there may exist a stale price arbitrage opportunity. In this case, the return
+from depositing is
+RarbA := RND −π(d(1)
+A , d(1)
+B , p(2))
+p(1)d(1)
+A + d(1)
+B
+,
+(C.20)
+where the first term is the return from not depositing, and the second term is the arbitrage
+ratio, i.e., the token value loss divided by the initial value of deposits. Alternatively, if the
+81
+
+fundamental exchange rate decreases, i.e., p(2) =
+1
+1+βp(1),
+RarbB := RND −π(d(1)
+A , d(1)
+B , p(2))
+p(1)d(1)
+A + d(1)
+B
+.
+(C.21)
+Consider the case where the fundamental exchange rate increases due to the exogenous
+shock.
+We know from the proof of Lemma 1 that when the fundamental exchange rate
+increases, ∂π
+∂β = p(1)∆q(3)∗
+A
+> 0, and
+∂∆q(3)∗
+A
+∂β
+> 0. This implies that
+π(d(1)
+A ,d(1)
+B ,p(2))
+p(1)d(1)
+A +d(1)
+B
+is increasing
+in β. Thus, for any M such that β > M > f, we have the following inequality:
+∂π(d(1)
+A , d(1)
+B , p(1)(1 + β))
+∂β
+= p(1)∆q(3)∗
+A
+(d(1)
+A , d(1)
+B , p(1)(1 + β))
+≥p(1)∆q(3)∗
+A
+(d(1)
+A , d(1)
+B , p(1)(1 + M))
+(C.22)
+where we have used that
+∆q(3)∗
+A
+∂β
+> 0. Applying the inequality above, we obtain
+π(d(1)
+A , d(1)
+B , (1 + β)p(1)) =
+Z β
+f
+∂π(d(1)
+A , d(1)
+B , (1 + x)p(1))
+∂x
+dx
+≥
+Z β
+M
+∂π(d(1)
+A , d(1)
+B , (1 + x)p(1))
+∂x
+dx
+≥(β −M)p(1)∆q(3)∗
+B
+(d(1)
+A , d(1)
+B , (1 + M)p(1)).
+Recall from the proof of Lemma 1 that the optimal exchange amount ∆q(3)∗
+B
+(d(1)
+A , d(1)
+B , (1 +
+M)p(1)) is positive if the shock size M > f. This means that
+π
+
+d(1)
+A ,d(1)
+B ,(1+β)p(1)
+p(1)
+A d(1)
+A +d(1)
+B
+converges
+to ∞as β →∞. It can also be easily shown that
+π(d(1)
+A ,d(1)
+B , p(1)
+1+β )
+p(1)
+A d(1)
+A +d(1)
+B
+is increasing in β, if the
+fundamental exchange rate decreases due to the exogenous shock. This follows from an the
+fact that
+∂π(d(1)
+A , d(1)
+B , p(1)
+1+β)
+β
+= −
+p(1)
+(1 + β)2(1 + f)∆Q(3)∗
+A
+> 0,
+where we have applied the envelope theorem, and used the fact that ∆QA(3)∗< 0 because
+the fundamental exchange rate decreased and thus the investor trades in tokens A for tokens
+82
+
+B.
+The return from deposits conditional on the investor’s arrival. We only consider
+the case of a trading “type A” investor. The case of a “type B” investor can be obtained
+following the same procedure. By Lemma C.1, the investor chooses her optimal trading quantities, ∆Q(2)∗
+A , ∆Q(2)∗
+B . If the trading quantities are nonzero, then after the investor trades
+the spot rate at which tokens A are exchanged for tokens B is higher than the fundamental
+exchange rate:
+Fx
+Fy
+
+(x,y)=(d(2)
+A ,d(2)
+B )
+> p(1) = p(2).
+If
+1
+1+f
+Fx
+Fy
+
+(x,y)=(d(2)
+A ,d(2)
+B )
+< p(1), then there is no reverse trade arbitrage opportunity after
+the investor trades. This is because for arbitrageurs, the marginal benefit of trading is lower
+than the marginal cost. The return from the deposit in this case is
+p(3)d(3)
+A + d(3)
+B
+p(1)
+A d(1)
+A + d(1)
+B
+−1 = p(1)(d(1)
+A −∆Q(2)∗
+A ) + (d(1)
+B −(1 + f)∆Q(2)∗
+B )
+p(1)d(1)
+A + d(1)
+B
+−1
+= −p(1)∆Q(2)∗
+A
++ (1 + f)∆Q(2)∗
+B
+p(1)d(1)
+A + d(1)
+B
+=
+R 0
+∆Q(2)∗
+B
+p(1)(g(2)(x))′ + (1 + f)dx
+p(1)d(1)
+A + d(1)
+B
+,
+(C.23)
+where we have used the relationship ∆Q(2)∗
+A
+= g(2)(∆Q(2)∗
+B ) for ∆Q(2)∗
+B
+≤0, which has
+been derived in (C.9). Because g(2) is concave, the marginal exchange rate −(g(2)(x))′ <
+−(g(2)(0))′ =
+1
+p(1) for any x < 0. We next show that the expression in (C.23) is increasing in
+α. The integrand p(1)(g(2)(x))′+(1+f) > 0 for any x < 0, so the expression in (C.23) increases
+in the limit of integration |∆Q(2)∗
+B |. The integrand is invariant to α, and |∆Q(2)∗
+B | increases
+in α by Lemma C.1. Therefore, the return from deposits given in (C.23) is increasing in α.
+If
+1
+1+f
+Fx
+Fy
+
+(x,y)=(d(2)
+A ,d(2)
+B )
+> p(1), then there exists a reverse trade arbitrage opportunity
+because the marginal benefit of trading is larger than the marginal cost. The arbitrageur
+chooses the trading quantities ∆q(3)∗
+A
+, ∆q(3)∗
+B
+such that the marginal benefit breaks even with
+83
+
+the marginal cost:
+1
+1 + f
+Fx
+Fy
+
+(x,y)=(d(2)
+A −∆q(3)∗
+A
+,d(2)
+B −∆q(3)∗
+B
+)
+= p(1),
+(C.24)
+where ∆q(3)∗
+A
+and ∆q(3)∗
+B
+satisfy the constraint F(d(2)
+A −∆q(3)∗
+A
+, d(2)
+B −∆q(3)∗
+B
+) = F(d(2)
+A , d(2)
+B ),
+and (C.24) pins down the ratio of tokens A to tokens B,
+d(2)
+A −∆q(3)∗
+A
+d(2)
+B −∆q(3)∗
+B
+.
+Before calculating the return from deposits, we analyze the sensitivity of F(d(2)
+A −∆q(3)∗
+A
+, d(2)
+B −
+∆q(3)∗
+B
+) to α. This is given by
+dF(d(2)
+A −∆q(3)∗
+A
+, d(2)
+B −∆q(3)∗
+B
+)
+dα
+= dF(d(2)
+A , d(2)
+B )
+dα
+= dF(d(1)
+A −∆Q(2)∗
+A , d(1)
+B −(1 + f)∆Q(2)∗
+B )
+dα
+= −Fx
+d∆Q(2)∗
+A
+dα
+−(1 + f)Fy
+d∆Q(2)∗
+B
+dα
+= −fFy
+d∆Q(2)∗
+B
+dα
+> 0,
+where the first equality follows the invariance property of the pricing function, and to deduce
+the third equality we have used the condition −Fx
+d∆Q(2)∗
+A
+dα
+−Fy
+d∆Q(2)∗
+B
+dα
+= 0, which is obtained
+by differentiating the equation F(d(1)
+A −∆Q(2)∗
+A , d(1)
+B −∆Q(2)∗
+B ) = F(d(1)
+A , d(1)
+B ) on both sides
+with respect to α, and the inequality follows from Lemma C.1. Hence, we have shown that
+F(d(2)
+A −∆q(3)∗
+A
+, d(2)
+B −∆q(3)∗
+B
+) is increasing in α. Thus, by the third property of the pricing
+function F stated in Assumption 1, and the fact that the ratio of tokens A and B,
+d(2)
+A −∆q(3)∗
+A
+d(2)
+B −∆q(3)∗
+B
+is already determined by (C.24), we conclude that both d(2)
+A −∆q(3)∗
+A
+and d(2)
+B −∆q(3)∗
+B
+are
+increasing in α.
+We next show that the reverse trade amount −∆q(3)∗
+A
+increases in α. The intuition behind
+this monotonicity result is that the larger α, the higher the price impact of an investor’s
+trade, and the larger the size of the reverse trade by the arbitrageur. The quantity −∆q(3)∗
+A
+is pinned down by (C.24) and the constraint F(d(2)
+A −∆q(3)∗
+A
+, d(2)
+B −∆q(3)∗
+B
+) = F(d(2)
+A , d(2)
+B ).
+84
+
+Differentiating (C.24) with respect to α, we have:
+1
+1 + f Fxx
+ 
+d
+dαd(2)
+A + d(−∆q(3)∗)
+A
+dα
+!
++
+1
+1 + f Fxy
+ 
+d
+dαd(2)
+B + d(−∆q(3)∗)
+B
+dα
+!
+−p(1)
+ 
+Fyy
+ 
+d
+dαd(2)
+B + d(−∆q(3)∗)
+B
+dα
+!
+−Fxy
+ 
+d
+dαd(2)
+A + d(−∆q(3)∗)
+A
+dα
+!!
+= 0.
+Recall that d(2)
+A
+= (d(1)
+A −∆Q(2)∗
+A ), d(2)
+B
+= d(1)
+B −(1 + f)∆Q(2)∗
+B . We can then rewrite the
+equation above as
+
+1
+1 + f Fxx −p(1)Fxy
+ d(d(1)
+A −∆Q(2)∗
+A )
+dα
++
+
+1
+1 + f Fxy −p(1)Fyy
+ d(d(1)
+B −(1 + f)∆Q(2)∗
+B )
+dα
++
+
+1
+1 + f Fxx −p(1)Fxy
+ d(−∆q(3)∗
+A
+)
+dα
++
+
+1
+1 + f Fxy −p(1)Fyy
+ d(−∆q(3)∗
+B
+)
+d(−∆q(3)∗
+A
+)
+d(−∆q(3)∗
+A
+)
+dα
+= 0.
+By Assumption 1, Fxx < 0, Fxy > 0, Fyy < 0; by Lemma C.1, we have
+d(d(1)
+A −∆Q(2)∗
+A
+)
+dα
+> 0, and
+d(d(1)
+B −(1+f)∆Q(2)∗
+B
+)
+dα
+< 0. By the constraint F(d(2)
+A −∆q(3)∗
+A
+, d(2)
+B −∆q(3)∗
+B
+) = F(d(2)
+A , d(2)
+B ), we
+have
+d(−∆q(3)∗
+B
+)
+d(−∆q(3)∗
+A
+) < 0. Combining those conditions, we conclude that
+d(−∆q(3)∗
+A
+)
+dα
+> 0.
+We are now ready to compute the return from deposits. If a reverse trade arbitrage
+occurs after a “type A” investor trades, the return from deposits, denoted by RA
+inv, is:
+RA
+inv = p(3)d(3)
+A + d(3)
+B
+p(1)d(1)
+A + d(1)
+B
+−1
+=p(1)(d(1)
+A −∆Q(2)∗
+A
+−(1 + f)∆q(3)∗
+A
+) + (d(1)
+B −(1 + f)∆Q(2)∗
+B
+−∆q(3)∗
+B
+)
+p(1)d(1)
+A + d(1)
+B
+−1
+=p(1)(d(1)
+A −∆Q(2)∗
+A
+−∆q(3)∗
+A
+) + (d(1)
+B −(1 + f)∆Q(2)∗
+B
+−∆q(3)∗
+B
+)
+p(1)d(1)
+A + d(1)
+B
++p(1)(−f∆q(3)∗
+A
+)
+p(1)d(1)
+A + d(1)
+B
+−1
+=p(1)(d(2)
+A −∆q(3)∗
+A
+) + (d(2)
+B −∆q(3)∗
+B
+)
+p(1)d(1)
+A + d(1)
+B
++ p(1)(−f∆q(3)∗
+A
+)
+p(1)d(1)
+A + d(1)
+B
+−1,
+(C.25)
+where the first equality follows from the conditions d(3)
+A = d(1)
+A −∆Q(2)∗
+A
+−(1 + f)∆q(3)∗
+A
+and
+85
+
+d(3)
+B = d(1)
+B −∆Q(2)∗
+B
+−(1+f)∆q(3)∗
+B
+. Those two conditions reflect the fact that the deposit in
+the pool is only altered by the investor’s trade and the arbitrageur’s trade. Recall we have
+shown that both the first and the second term of (C.25) is increasing in α, and thus the
+return from deposits after an investor’s trade is increasing in α.
+We next show that the first term in (C.25), given by
+p(1)(d(2)
+A −∆q(3)∗
+A
+)+(d(2)
+B −∆q(3)∗
+B
+)
+p(1)d(1)
+A +d(1)
+B
+, is greater
+than 1. Since the AMM requires the liquidity providers to deposit at the fundamental exchange rate, the condition Fx
+Fy
+
+(x,y)=(d(1)
+A ,d(1)
+B )
+= p(1) must hold. We also have Fx
+Fy
+
+(x,y)=(d(2)
+A −∆q(3)∗
+A
+,d(2)
+B −∆q(3)∗
+B
+)̸
+=
+p(1) by (C.24). Moreover, we have the following inequality:
+F(d(2)
+A −∆q(3)∗
+A
+, d(2)
+B −∆q(3)∗
+B
+) = F(d(2)
+A , d(2)
+B ) = F(d(1)
+A −∆Q(2)∗
+A , d(1)
+B −(1 + f)∆Q(2)∗
+B )
+> F(d(1)
+A −∆Q(2)∗
+A , d(1)
+B −∆Q(2)∗
+B )
+= F(d(1)
+A , d(1)
+B ),
+where the inequality follows from the fact that Fy > 0 and ∆Q(2)∗
+B
+< 0. The equalities follows
+from the fact that the value of the pricing function, without accounting for fees, must stay
+unchanged after each transaction. Hence, the value of pricing function increases after the
+investor trades.
+By Assumption 1, we can write F(d(2)
+A −∆q(3)∗
+A
+, d(2)
+B −∆q(3)∗
+B
+) as clF(
+d(2)
+A −∆q(3)∗
+A
+c
+,
+d(2)
+B −∆q(3)∗
+B
+c
+)
+where c > 1, l > 0, and F(
+d(2)
+A −∆q(3)∗
+A
+c
+,
+d(2)
+B −∆q(3)∗
+B
+c
+) = F(d(1)
+A , d(1)
+B ). It follows from Lemma C.4
+that
+p(1)d(1)
+A + d(1)
+B ≤p(1)
+ 
+d(2)
+A −∆q(3)∗
+A
+c
+!
++
+ 
+d(2)
+B −∆q(3)∗
+B
+c
+!
+< p(1)(d(2)
+A −∆q(3)∗
+A
+) + (d(2)
+B −∆q(3)∗
+B
+),
+which means that the first term in (C.25) is greater than 1. Moreover, since ∆q(3)∗
+A
+< 0
+we know that the second term
+p(1)(−f∆q(3)∗
+A
+)
+p(1)d(1)
+A +d(1)
+B
+is positive. It then follows that the return from
+deposits in (C.25) is positive.
+86
+
+We denote the return from deposit after a trade of a “type A” and “type B” investor
+as RinvA and RinvB, respectively. Using similar arguments as above, we can conclude that
+these returns are both increasing in α. By Lemma C.3, they are independent of the amount
+of deposits and only depend of the token price ratio p(1).
+Note that in period 2, with probability κI, either a type A or type B investor arrives,
+and conditioning on this event yields E
+
+RD
+
+−E
+
+RND
+
+= κI
+2 RinvA + κI
+2 RinvB where E
+
+RND
+
+remains unchanged because no price shock has occurred. With probability κ, a price shock
+occurs. If token A appreciates in value, then it follows from (C.20) that RarbA −RND =
+−
+π(d(1)
+A ,d(1)
+B ,p(1)(1+β)
+p(1)d(1)
+A +d(1)
+B
+. Similarly, if token B appreciates, it follows from (C.21) that RarbB −
+RND = −
+π(d(1)
+A ,d(1)
+B , p(1)
+1+β )
+p(1)d(1)
+A +d(1)
+B
+. Thus, by applying the law of total expectation, we establish the
+following equality:
+E
+
+RD
+
+−E
+
+RND
+
+=κI
+2 RinvA + κI
+2 RinvB −κ
+
+κu
+π(d(1)
+A , d(1)
+B , p(1)(1 + β))
+p(1)d(1)
+A + d(1)
+B
++ κd
+π(d(1)
+A , d(1)
+B , p(1)
+1+β)
+p(1)d(1)
+A + d(1)
+B
+
+(C.26)
+where, in the last expression, we have used the expressions of RarbA and RarbB given, respectively in equations (C.20) and (C.21). The first two terms in the last equality of Eq. (C.26)
+are the expected returns from type A investor’s trading fees (given by (C.25)) and type B
+investor’s trading fees. The third term is the expected token value loss due to arbitrage.
+The first two terms are non-negative, and so is the term in parenthesis multiplying κ.
+Lemma C.5. E
+
+RD
+
+−E
+
+RND
+
+given in (C.26) is constant with respect to a proportional
+change c × (d(1)
+A , d(1)
+B ) of deposited tokens.
+Proof. Suppose the deposited amount is (cd(1)
+A , cd(1)
+B ). We analyze each individual term of the
+expression (C.26). We begin by analyzing the term multiplying κ, which captures the (negative) return from stale price arbitrage suffered by the liquidity provider. Observe that the
+87
+
+denominator of such term is given by p(1)cd(1)
+A + cd(1)
+B = c(p(1)d(1)
+A + d(1)
+B ). Moreover, observe
+that the token inventory of the pool at period 2 is the same as at period 1 if an investor does
+not arrive in period 2. Hence, it follows from part 3 of Lemma C.2 that π(cd(1)
+A , cd(1)
+B , p(1)(1+
+β)) = π(cd(2)
+A , cd(2)
+B , p(1)(1 + β)) = cπ(d(2)
+A , d(2)
+B , p(1)(1 + β))cπ(d(1)
+A , d(1)
+B , p(1)(1 + β)), and
+π(cd(1)
+A , cd(1)
+B , p(1)
+1+β) = π(cd(2)
+A , cd(2)
+B , p(1)
+1+β) = cπ(d(2)
+A , d(2)
+B , p(1)
+1+β) = cπ(d(1)
+A , d(1)
+B , p(1)
+1+β). Hence, the
+term multiplying κ is invariant with respect to a scaling c of the deposited tokens.
+Next, let us analyze the (positive) return term from a type “A” investor trade followed by a reverse trade arbitrage and denoted by RA
+inv.
+The corresponding expression
+is given in C.25. It follows from part 1 and 2 of Lemma C.2 that ∆q(3)∗
+B
+(cd(1)
+A , cd(1)
+B , p(1)) =
+c∆q(3)∗
+B
+(d(1)
+A , d(1)
+B , p(1)), and ∆q(3)∗
+A
+(cd(1)
+A , cd(1)
+B , p(1)) = c∆q(3)∗
+A
+(d(1)
+A , d(1)
+B , p(1)). Hence RA
+inv remains unchanged if the amount of deposited tokens is scaled by a constant c.
+Deposits and Liquidity freeze threshold.
+From Lemma C.5, we have that E
+
+RD
+
+−
+E
+
+RND
+
+is invariant with respect to the amount of deposited tokens. Hence, if E
+
+RD
+
+−
+E
+
+RND
+
+> 0, then it is optimal for liquidity providers to deposit their entire endowment,
+and (d(1)
+Ai , d(1)
+Bi ) = (eAi, eBi).
+If E
+
+RD
+
+−E
+
+RND
+
+= 0, then the liquidity providers are
+indifferent between depositing in the pool or holding tokens. By our tie-breaking rule given
+in Assumption 2, the unique optimal action of each liquidity provider is then to deposit their
+entire endowment.
+Next, we show the existence of a threshold on β beyond which E
+
+RD
+
+−E
+
+RND
+
+< 0,
+and a liquidity freeze occurs where liquidity providers choose not to deposit at all. First,
+consider the case when κI
+2 RinvA + κI
+2 RinvB = 0, then (C.26) is non-positive, and thus there
+exists a liquidity freeze for any β > 0. Hence, the liquidity freeze threshold is βfrz = 0.
+Next, consider the case κI
+2 RinvA+ κI
+2 RinvB > 0. Recall that κu+κd = 1, κu(1+β)+κd
+1
+1+β =
+1. We solve the system of equations and have κu =
+1
+2+β, κd = 1+β
+2+β. By the product rule, we
+88
+
+then have:
+∂
+κuπ(d(1)
+A ,d(1)
+B ,p(1)(1+β))
+p(1)d(1)
+A +d(1)
+B
+∂β
+=
+(2 + β)p(1)∆q(3)∗
+A
+−π
+(p(1)d(1)
+A + d(1)
+B )(2 + β)2
+= p(1)∆q(3)∗
+A
+−∆q(3)∗
+B
+(1 + f)
+(p(1)d(1)
+A + d(1)
+B )(2 + β)2
+>
+p(1)∆q(3)∗
+A
+(p(1)d(1)
+A + d(1)
+B )(2 + β)2 > 0
+where π(d(1)
+A , d(1)
+B , (1 + β)p(1)) = (1 + β)p(1)∆q(3)∗
+A
++ ∆q(3)∗
+B
+(1 + f), ∆q(3)∗
+A
+> 0, ∆q(3)∗
+B
+< 0.
+We also have that κd
+π(d(1)
+A ,d(1)
+B , p(1)
+1+β )
+p(1)d(1)
+A +d(1)
+B
+increases in β as both κd > 0 and
+π(d(1)
+A ,d(1)
+B , p(1)
+1+β )
+p(1)d(1)
+A +d(1)
+B
+is
+increasing in β. Also, recall that
+π(d(1)
+A ,d(1)
+B ,(1+β)p(1))
+p(1)d(1)
+A +d(1)
+B
+converges to infinity as β →∞. Thus,
+(C.26) is positive when β →0 (observe that π(d(1)
+A , d(1)
+B , p(1)) = 0), and negative when
+β →∞. Since the first two terms are independent of β, while the last term is decreasing
+in β, the expression in (C.26) is monotonically decreasing in β. It is also continuous in β
+because all terms are differentiable with respect to β. Therefore, there exists a threshold
+βfrz such that (C.26) is negative if and only if β > βfrz.
+Hence, we can conclude that there exists a critical threshold βfrz ∈R such that a “liquidity freeze” occurs if and only if β > βfrz.
+We conclude by noting that either (i) a liquidity freeze occurs, thus no gas fee bid is
+submitted, or (ii) a deposit order is submitted and the gas fee bid is zero, because liquidity
+providers face no competition from each other, nor from investors or arbitrageurs, whose
+trades depend on liquidity providers depositing tokens in the pool.
+Comparative Statics.
+We show that βfrz is increasing in α, κI and decreasing in κ.
+For the case κI
+2 RinvA + κI
+2 RinvB = 0, we have that βfrz = f.
+We next consider the case κI
+2 RinvA + κI
+2 RinvB > 0 . The threshold βfrz is defined by the
+equation: E
+
+RD −RND
+
+= 0. Using the relation (C.26), we take the partial derivative of
+89
+
+E
+
+RD −RND
+
+with respect to α, κI, κ, and obtain
+∂E
+
+RD −RND
+
+∂α
+= κI
+2
+∂RinvA
+∂α
++ ∂RinvB
+∂α
+
+> 0,
+(C.27)
+∂E
+
+RD −RND
+
+∂κI
+= 1
+2RinvA + 1
+2RinvB > 0,
+(C.28)
+∂E
+
+RD −RND
+
+∂κ
+= −
+
+κu
+π(d(1)
+A , d(1)
+B , p(1)(1 + β))
+p(1)d(1)
+A + d(1)
+B
++ κd
+π(d(1)
+A , d(1)
+B , p(1)
+1+β)
+p(1)d(1)
+A + d(1)
+B
+
+< 0
+(C.29)
+An application of the Implicit Function Theorem to the curve E
+
+RD −RND
+
+= 0 yields
+∂βfrz
+∂α
+> 0, ∂βfrz
+∂κ
+< 0, and ∂βfrz
+∂κI > 0.
+Proof of Proposition 3. Let c∗= E
+
+π(d(2)
+A , d(2)
+B , p(2))
+
+denote the total expected infrastructure rents without speed technology when all liquidity providers deposit all their inventories.
+We prove each statement of the proposition separately:
+1. First, consider the case where cspeed > νc∗. We show that in any subgame perfect
+equilibrium, no agent adopts the speed technology, and thus the equilibrium coincides
+with that characterized in Theorem 2.
+Suppose, by way of contradiction, that there exists a subgame perfect equilibrium
+where an arbitrageur adopts the speed technology in period 0. Consider this arbitrageur’s expected payoff in any subgame after an arbitrage opportunity arises: With
+probability ν, the arbitrageur participates in the period 2 bidding process, earning up
+to c∗—an upper bound achieved when there is no competition in period 2 and all liquidity providers deposit their tokens. Conversely, with probability 1 −ν, the arbitrageur
+only engages in period 3 bidding, where, as established in Lemma 1, competition drives
+their profit down to zero.
+90
+
+Therefore, the arbitrageur’s expected payoff from adopting the technology is at most
+νc∗−cspeed. Since cspeed > νc∗, this payoff is strictly negative. The arbitrageur can
+profitably deviate by choosing not to adopt the technology and bidding zero in all
+subsequent rounds, resulting in a payoff of zero. This contradicts the assumption of a
+subgame perfect equilibrium.
+By an analogous argument, no liquidity provider will adopt the technology either, as
+they face the same cost-benefit tradeoff but derive strictly lower benefits due to their
+partial pool ownership. Thus, in any subgame perfect equilibrium, no agent adopts the
+speed technology in period 0. Consequently, the equilibrium strategies and outcomes
+in all subsequent periods must coincide with those established in Theorem 2, including
+the liquidity freeze threshold ¯βfrz. Given our assumption that β < ¯βfrz, liquidity freeze
+does not occur in equilibrium.
+2. For the case where cspeed ≤νc∗, we demonstrate that this situation represents an
+anti-coordination game similar to the classic “chicken game”.
+If cspeed < νc∗, the
+payoff structure is such that each arbitrageur prefers to be the sole adopter of speed
+technology, but mutual adoption leads to losses for both players. We characterize all
+possible equilibria by means of following steps:
+• We demonstrate that it cannot be an equilibrium for both arbitrageurs to adopt the
+technology.
+• We show that a subgame perfect equilibrium occurs when exactly one arbitrageur
+adopts the technology.
+• We prove that an equilibrium where no agent adopts the technology cannot exist.
+We now prove each step separately:
+First, we demonstrate that it is impossible to sustain both arbitrageurs adopting the
+technology in any subgame perfect equilibrium. Suppose, by way of contradiction,
+91
+
+that two arbitrageurs have adopted the technology in period 0. Consider two possible
+cases: If a liquidity freeze occurs, arbitrageurs’ payoffs would be −cspeed, strictly less
+than the payoff of zero from not adopting. If liquidity freeze does not occur, in any
+subgame beginning in period 1 where an arbitrage opportunity arises, with probability
+1 −ν, both arbitrageurs bid in period 3. By Lemma 1, the unique Nash equilibrium
+in this subgame requires them to bid their true valuation of the arbitrage opportunity,
+resulting in zero profit. With probability ν, both arbitrageurs act in period 2, where
+the same logic of Lemma 1 applies: they bid their true valuations and earn zero profit.
+Therefore, their expected payoff would be −cspeed. Either arbitrageur has a profitable
+deviation by not adopting the technology and bidding zero in all auctions, which yields
+a payoff of zero.
+Second, we establish the existence of a subgame perfect equilibrium where exactly one
+arbitrageur adopts the technology. We construct this equilibrium through backward
+induction and verify that no profitable deviations exist. In period 3, by Lemma 1,
+all arbitrageurs bid their true valuation of the arbitrage opportunity π(d(3)
+A , d(3)
+B , p(3)),
+earning zero profit. In period 2, only the arbitrageur with speed technology can participate and optimally bids zero, earning the full arbitrage profit π(d(2)
+A , d(2)
+B , p(2)) when an
+opportunity arises. In period 1, given β < ¯βfrz and by Theorem 2, liquidity providers
+deposit all tokens as their expected payoffs exceed the costs of being adversely selected
+by the arbitragers.
+Moving back to period 0, we verify that no profitable deviations exist. For the adopting
+arbitrageur, the expected payoff is νc∗−cspeed, which comprises the probability ν of
+acting in period 2 multiplied by the expected arbitrage profit c∗, minus the technology
+cost.
+Since cspeed ≤νc∗, this payoff is non-negative and strictly exceeds the zero
+payoff from not adopting.
+For the non-adopting arbitrageur, the current payoff is
+zero, while deviating to adopt would yield −cspeed as demonstrated in the proof of
+the first statement. For any liquidity provider who considers depositing to the pool,
+92
+
+let w be their share of the pool. In period 2, the arbitrageur would optimally bid
+wπ(d(2)
+A , d(2)
+B , p(2))+ϵ for any minimal increment ϵ. This bid ensures winning the auction
+while minimizing gas costs, as any lower bid risks losing the opportunity, and any higher
+bid unnecessarily increases costs. The liquidity provider cannot profitably outbid this
+amount as the gas cost would exceed their saved losses of wπ(d(2)
+A , d(2)
+B , p(2)). Thus,
+adopting technology only incurs an additional cost of cspeed without providing any
+additional benefit.
+Third, we prove that no equilibrium exists where no agent adopts the technology. If no
+agent adopts, the equilibrium strategies and outcomes in all subsequent periods must
+coincide with those established in Theorem 2. Given that β < ¯βfrz, liquidity providers
+deposit all their inventories. Given that no arbitrageur adopts the speed technology, all
+arbitrage opportunities are contested only in period 3, yielding zero profit by Lemma
+1. Any arbitrageur could profitably deviate by adopting the technology, gaining the
+ability to execute with probability ν in period 2 without competition. This deviation
+yields an expected payoff of νc∗−cspeed, which is strictly positive when cspeed < νc∗.
+3. We now demonstrate that if the share w of the largest liquidity provider exceeds half
+of the total pool (w ≡
+maxi dAi
+dA
+> 1
+2) and the cost of speed technology lies within certain
+bounds (cspeed < wνc∗and cspeed > (1 −w)νc∗), another subgame perfect equilibrium
+emerges where the largest liquidity provider adopts the speed technology.
+We construct this equilibrium through backward induction and verify no profitable
+deviations exist for any agent. Recall that w denotes the share of the largest liquidity
+provider.
+In the subgame starting from period 3, arbitrageurs bid their true valuations as specified in Lemma 1, extracting the maximal rent from any remaining liquidity providers
+who has not withdrawn. In period 2, with probability ν, if an arbitrage opportunity
+exists, the largest liquidity provider with speed technology becomes the sole bidder.
+93
+
+This liquidity provider optimally bids zero fees and withdraw his position.
+In period 1, we must verify that liquidity provision remains optimal for all providers.
+For liquidity providers without speed technology, their payoffs remain unchanged from
+the baseline case, and because β < ¯βfrz it follows from Theorem 2 that it is optimal
+for them to deposit. For the largest liquidity provider with speed technology, their
+expected payoff from depositing increases by νwc∗due to their ability to avoid arbitrage
+with probability ν. This strictly increases their liquidity provision threshold above ¯βfrz,
+making depositing optimal under our assumption that β < ¯βfrz.
+In period 0, we verify that no agent has a profitable deviation:
+For the dominant liquidity provider with speed technology, their expected payoff is
+E
+
+RD
+
+V + wνc∗−cspeed, where V is their pool inventory value in period 1.
+This
+exceeds their payoff without technology E
+
+RD
+
+V by wνc∗−cspeed > 0, given the
+assumption that cspeed < wνc∗. Thus, abandoning the technology is not profitable.
+For arbitrageurs, their current payoff is zero. If an arbitrageur were to adopt the speed
+technology, they would need to outbid the dominant liquidity provider in period 2 by
+bidding at least wπ(d(2)
+A , d(2)
+B , p(2)) + ϵ. This yields an expected payoff of ν(c∗−wc∗−
+ϵ) −cspeed, which is negative given that cspeed > (1 −w)νc∗. Thus, adopting technology
+is not profitable for arbitrageurs.
+For any other liquidity provider i, whose share wi is at most (1 −w), adopting speed
+technology yields a payoff of E
+
+RD
+
+Vi +wiνc∗−cspeed, where Vi is their pool inventory
+value. Since wi ≤(1 −w) and cspeed > (1 −w)νc∗, we have wiνc∗−cspeed < 0, making
+technology adoption unprofitable.
+Thus, we have constructed a subgame perfect equilibrium where only the dominant
+liquidity provider adopts the speed technology and verified no profitable deviations
+exist.
+94
+
+Proof of Proposition 4. To establish that fee-based sequencing is the dominant strategy for
+validators, we analyze the subgames starting from period 1 under each alternative sequencing
+rule and compare the resulting infrastructure rents to those under fee-based sequencing.
+Random Sequencing: Under random sequencing, transactions within a block are executed in a random order, independent of the gas fees bid by agents. Under this rule, in period
+3, following the emergence of an arbitrage opportunity, agents refrain from bidding any gas
+fee. Since execution priority is random and not influenced by gas fees, agents have no incentive to bid positive gas fees. Any positive bid increases their cost without improving their
+chances of early execution. Therefore, all agents—liquidity providers and arbitrageurs—bid
+zero gas fees.
+With random sequencing, the probability that a liquidity provider successfully withdraws
+her liquidity before arbitrageurs execute their trades is 1
+3 (assuming two arbitrageurs) Consequently, by the linearity of expectation, the total arbitrage rents extracted from liquidity
+providers are decreased, amounting to only a third of π(d(2)
+A , d(2)
+B , p(2)).
+Validators earn zero infrastructure rents because all agents bid zero gas fees. Arbitrageurs
+capture the entire arbitrage rent that remains after accounting for the liquidity provider’s
+potential withdrawal.
+In period 2, there is no change in the optimal trading actions. In period 1, the reduced
+cost of liquidity provision due to lower arbitrage rents leads to an increase in the liquidity
+freeze threshold. However, a validator’s payoff in becomes zero, as agents lack the incentive
+to bid higher gas fees.
+Liquidity Provider Prioritized Sequencing: In this sequencing rule, transactions
+submitted by liquidity providers—particularly withdrawal orders—are prioritized over all
+other transactions, regardless of gas fees. Similar to the random sequencing case, agents
+have no incentive to bid positive gas fees. Arbitrageurs understand that liquidity providers’
+withdrawal transactions will always be executed before their arbitrage trades. Since liquidity
+providers can withdraw their liquidity before arbitrageurs can act on price discrepancies,
+95
+
+arbitrage opportunities are effectively eliminated. Arbitrageurs cannot profit because the
+pool’s reserves adjust before they can trade.
+The strategic decisions for period 2 remain the same. In period 1, the lack of arbitrage
+costs encourages all liquidity providers to make deposits, as they don’t face arbitrage risks.
+However, validators earn zero infrastructure rents because agents bid zero gas fees, and
+there are no arbitrage trades generating transaction fees. Neither arbitrageurs nor validators
+extract rents. Liquidity providers are fully protected from arbitrage losses.
+Comparison with Fee-Based Sequencing
+Validators prefer fee-based sequencing because it maximizes their infrastructure rents. Both alternative sequencing rules—random
+sequencing and priority for liquidity providers—result in zero infrastructure rents for validators. Therefore, adhering to the fee-based sequencing rule is the dominant strategy for
+validators, as it allows them to maximize their revenues at the expense of liquidity providers
+and, to some extent, arbitrageurs.
+Proof of Lemma 2. We analyze the impact of a convexity parameter k on investor trade size
+and resulting fees, as well as on arbitrage rents extracted from liquidity providers. Our
+approach builds upon the method used in Lemma 1, now applied to the explicit pricing
+function Fki.
+Investor Trade Size Calculation: Consider a “type B” investor, who swaps tokens A for tokens B.
+We derive the optimal trade size {(∆Q(2)
+Ai , ∆Q(2)
+Bi )}i∈N splitted for
+each liquidity provider’s curve. We will then verify that the aggregate optimal trade size
+(P
+i ∆Q(2)
+Ai , P
+i ∆Q(2)
+Bi ), satisfies both (9) and (10).
+Optimization Problem: Plugging Fki(x, y) = (1 −ki) A (p(1)x + y) + ki xy into the
+equivalent of (C.8) for “type B” investors, and utilizing p(1) =
+d(1)
+Bi
+d(1)
+Ai
+, we derive ∆Q(2)
+Bi =
+∆Q(2)
+Ai d(1)
+Bi
+ki∆Q(2)
+Ai −d(1)
+Ai
+. The investor’s problem simplifies to:
+96
+
+max
+d(1)
+Ai
+−1+k ≤∆Q(2)
+Ai ≤0
+p(1)(1 + f)∆Q(2)
+Ai + (1 + α)
+∆Q(2)
+Ai d(1)
+Bi
+k∆Q(2)
+Ai −d(1)
+Ai
+(C.30)
+Optimal Trade Size: For the optimal trading amounts, we distinguish two cases based
+on the relation between the price impact parameter α and the trading fee f. The derivation
+follows the methodology outlined in the proof of Lemma 1, with specific attention to the
+convexity parameter ki.
+• Scenario 1 (α ≤f): If the price impact is smaller than or equal to the trading fee, the
+optimal trade size is zero, ∆Q(2)∗
+Ai
+= 0. This implies no trading activity occurs because
+the cost outweighs the benefit.
+• Scenario 2 (α > f): If the price impact exceeds the trading fee, two sub-cases arise:
+1. If
+1+f
+(1−ki)2 −1 > α, the investor’s optimal trade size is such that marginal benefit
+equals marginal cost. The marginal exchange rate is set to 1+f
+1+αp(1), yielding the
+optimal trade size:
+∆Q(2)∗
+Ai
+= d(1)
+Ai
+ki
+
+1 −
+r1 + α
+1 + f
+
+.
+(C.31)
+2. If 1 + α >
+1+f
+(1−ki)2, the inventory constraint of the liquidity pool is binding, and
+the investor buys all B tokens offered by liquidity provider i, resulting in:
+∆Q(2)∗
+Ai
+=
+d(1)
+Ai
+−1 + ki
+.
+(C.32)
+With these optimal trade sizes ∆Q(2)∗
+Ai , both constraints (9) and (10) are satisfied. The
+constraint (9) is inherently satisfied by the initial setup of the optimization problem (C.30).
+Since the trade size ∆Q(2)∗
+Ai
+either ensures that the marginal exchange ratio for liquidity
+provider i’s selected curve is constant or ensures that all B tokens deposited by liquidity provider i are exhausted, equation (10) is also satisfied.
+Therefore, the aggregated
+trade quantities (P
+i ∆Q(2)
+Ai , P
+i ∆Q(2)
+Bi ) effectively represent the optimal trade size against
+97
+
+the AMM, with each (∆Q(2)
+Ai , ∆Q(2)
+Bi ), i ∈N, being the optimal trade size for each individual
+liquidity provider’s curve.
+Impact of Convexity on Infrastructure Rents: We investigate how infrastructure
+rents from stale price arbitrage vary with the convexity parameter ki for each liquidity
+provider i. Our analysis assumes that the exogenous shocks reduces the fundamental exchange rate at which token B is exchanged for token A. The opposite case can be handled
+similarly.
+Optimal Trade Size for Arbitrage: We determine the optimal arbitrage trade quantities
+{(∆q(3)
+Ai , ∆q(3)
+Bi )}i∈N against each liquidity provider i’s curve. We then ensure these trade sizes
+satisfy constraints (9) and (10), such that the aggregated traded amounts (P
+i ∆q(3)
+Ai , P
+i ∆q(3)
+Bi )
+become the optimal size to trade in the pool.
+Using the pricing function Fki(x, y) = (1 −ki) A (p(1)x + y) + ki xy and the condition
+p(1) =
+d(1)
+Bi
+d(1)
+Ai
+=
+d(2)
+Bi
+d(2)
+Ai
+, the arbitrageur’s optimization problem in period 3 becomes:
+max
+∆q(3)
+Ai ,∆q(3)
+Bi
+p(2)(1 + f)∆q(3)
+Ai + ∆q(3)
+Bi
+s.t.
+∆q(3)
+Bi =
+q(3)
+Ai d(2)
+Bi
+kiq(3)
+Ai −d(2)
+Ai
+,
+∆q(3)
+Ai ≤0, d(2)
+Bi ≥∆q(3)
+Bi ≥0.
+(C.33)
+Using the specified constraints and the relation p(2) = p(1)
+1+β, we can rewrite the objective
+function as:
+max
+d(2)
+Ai
+−1+ki ≤∆q(3)
+Ai ≤0
+p(1)
+1 + β (1 + f)∆q(3)
+Ai +
+∆q(3)
+Ai d(2)
+Bi
+ki∆q(3)
+Ai −d(2)
+Ai
+(C.34)
+The optimal trading amount ∆q(3)
+Ai = 0 if β ≤f. If β > f, we distinguish two cases:
+98
+
+1. If
+1+f
+(1−ki)2 −1 > β, marginal benefit equals marginal cost, leading to:
+∆q(3)∗
+Ai
+= d(2)
+Ai
+ki
+ 
+1 −
+s
+1 + β
+1 + f
+!
+.
+(C.35)
+2. If 1 + β >
+1+f
+(1−ki)2, the arbitrageur acquiring all B tokens in the pool:
+∆q(3)∗
+Ai
+=
+d(2)
+Ai
+−1 + ki
+.
+(C.36)
+The optimal trade size ∆q(3)∗
+Ai
+in (C.35) and (C.36) satisfy constraints (9) and (10).
+Specifically, (9) is inherently met by the initial setup, and the trade size ensures either a
+constant marginal exchange ratio or total exhaustion of all B tokens for liquidity provider
+i. Consequently, the aggregated trade quantities represent the optimal trade size for stale
+price arbitrage against the pricing curves of all liquidity providers.
+The fees earned by liquidity provider i from the investor’s trade are f|∆q(3)∗
+Ai | which is
+also decreasing in ki.
+Arbitrage Loss Calculation: To determine the arbitrage losses faced by liquidity
+provider i under stale price arbitrage, we insert the calculated optimal trade sizes into Equation (C.34).
+Case 1: β ≤f: In this case, there is no arbitrage opportunity, and thus no loss for
+liquidity provider i:
+πi(d(2)
+Ai , d(2)
+Bi , p(2)) = 0.
+Case 2:
+1+f
+(1−ki)2 −1 > β > f: Substituting (C.35) into (C.34), we derive the arbitrage loss
+as:
+πi(d(2)
+Ai , d(2)
+Bi , p(2)) = (√1 + β −√1 + f)2p(2)d(1)
+Ai
+ki
+,
+(C.37)
+utilizing p(1) =
+d(1)
+Bi
+d(1)
+Ai
+and the fact that d(2)
+Ai = d(1)
+Ai , d(2)
+Bi = d(1)
+Bi following a price shock in period
+2. This loss is decreasing in ki.
+99
+
+Case 3: β ≥
+1+f
+(1−ki)2 −1: Inserting (C.36) into (C.34), we find:
+πi(d(2)
+Ai , d(2)
+Bi , p(2)) = d(2)
+Bi −(1 + f) p(1)
+1 + β
+d(2)
+Ai
+1 −ki
+= d(1)
+Bi −(1 + f) p(1)
+1 + β
+d(1)
+Ai
+1 −ki
+,
+(C.38)
+accounting for the fact that d(2)
+Ai = d(1)
+Ai , d(2)
+Bi = d(1)
+Bi after the shock. The loss is also decreasing
+with respect to ki.
+In view of the above analysis, the infrastructure rents extracted from liquidity providers
+through stale price arbitrage diminish as the convexity parameter ki increases.
+Analysis of Reverse Trade Arbitrage : We examine the effect of the convexity
+parameter ki on liquidity providers’ losses from reverse trade arbitrage, assuming that the
+arbitrage opportunity arises after a “type B” investor trades (symmetric arguments apply
+for a “type A” investor).
+Optimal Arbitrage Trade Sizes: We first derive optimal arbitrage trade sizes {(∆q(3)
+Ai , ∆q(3)
+Bi )}i∈N
+for each liquidity provider i against their curve. We ensure these sizes adhere to constraints
+(9) and (10), so that the aggregated trade (P
+i ∆q(3)
+Ai , P
+i ∆q(3)
+Bi ) is the optimal size to trade
+in the pool.
+Arbitrageur’s Optimization Problem: The pricing curve Fki(x, y) = (1 −ki) A (p(1)x +
+y) + ki xy is used in the arbitrageur’s optimization problem (C.1).
+Using the relations
+d(2)
+Bi = d(1)
+Bi −∆Q(2)∗
+Bi , d(2)
+Ai = d(1)
+Ai −∆Q(2)∗
+Ai , and others, we can reformulate the arbitrage
+optimization problem (where the arbitrage is to swap tokens B for tokens A) as:
+max
+∆q(3)
+Bi ≤0
+(1 + f)∆q(3)
+Bi + p(1)∆q(3)
+Bi
+d(2)
+Ai (1 + α −f
+√1+α
+√1+f )
+−d(2)
+Bi + ki
+√1+α
+√1+f ∆q(3)
+Bi
+.
+(C.39)
+Arbitrage Loss Calculation: As in the more general case considered in the proof of Lemma
+1, the optimal trading amount ∆q(3)∗
+Bi
+exists, is unique, and decreasing with respect to ki.
+Utilizing the Envelope theorem, we obtain:
+100
+
+∂πi
+∂ki
+= −p(1)(∆q(3∗)
+Bi )2(1 + α)
+p
+(1 + f)(1 + a) −f
+(1 −f)
+
+−d(2)
+Bi + ki
+√1+α
+√1+f ∆q(3∗)
+Bi
+2 < 0,
+where
+p
+(1 + f)(1 + a) −f is negative because α > f. In the absence of investor trades in
+period 2 (α ≤f), reverse trade arbitrage does not occur, leading to zero losses for liquidity
+providers.
+We conclude that liquidity provider i’s losses from both stale price and reverse trade
+arbitrage decrease with an increase in the convexity parameter ki. The likelihood of these
+arbitrage events occurring is independent of ki. Therefore, the expected total arbitrage loss
+for a liquidity provider diminishes as ki increases, suggesting that a higher convexity reduces
+arbitrage losses.
+Proof of Proposition 5. Our proof strategy is to extend the approach used in Theorem 2.
+We define two key parameters, κ1 and κ2, as functions of f, α, and β:
+κ1 := 1 −
+r
+1 + f
+1 + α, leading to α =
+1 + f
+(1 −κ1)2 −1,
+κ2 := 1 −
+s
+1 + f
+1 + β , leading to β =
+1 + f
+(1 −κ2)2 −1.
+We consider two situations:
+1. No reverse trade arbitrage opportunity exists post-investor trade in period 2.
+2. A reverse trade arbitrage opportunity emerges post-investor trade.
+We primarily focus on case (1) as case (2) can be tackled using analogous reasoning with
+slight modifications in the return expressions. Case (1) is characterized by the condition:
+α −f
+
+1 +
+√1+α
+√1+f
+
+≤0.
+Expected Returns: As in Theorem 2, a liquidity provider’s decision to deposit hinges
+on whether E
+
+RD
+
+exceeds E
+
+RND
+
+. The expected return from not depositing, denoted as
+101
+
+E
+
+RND
+
+, is calculated as:
+E
+
+RND
+
+:= E
+
+1 + RA
+
+p(1)d(1)
+Ai
+(p(1)d(1)
+Ai + d(1)
+Bi )
++ E
+
+1 + RB
+
+d(1)
+Bi
+(p(1)d(1)
+Ai + d(1)
+Bi )
+−1.
+Next, we calculate the expected return from depositing, E
+
+RD
+
+, for each liquidity provider
+i, and determine the optimal convexity parameter ki. Our objective is to show the existence
+of an optimal convexity level k∗that is universally applicable to all liquidity providers. We
+will show that k∗is increasing with β.
+We analyze the case where a “type B” investor trades, and compute liquidity provider i’s
+return from depositing. The profit of the arbitrageur is given by the symmetric counterpart
+of expression (C.23), where the arbitrageur now swap tokens B for tokens A, which leads to:
+R(2)
+invB = (1 + f)p(1)(−∆Q(2)∗
+Ai ) −∆Q(2)∗
+Bi
+p(1)d(1)
+Ai + d(1)
+Bi
+.
+(C.40)
+1. ki > κ1: Inserting ∆Q(2)∗
+Ai
+=
+d(1)
+Ai
+ki
+
+1 −
+q
+1+α
+1+f
+
+from (C.31) into (C.40), and using
+Q(2)∗
+Bi
+=
+∆Q(2)∗
+Ai d(1)
+Bi
+ki∆Q(2)∗
+Ai −d(1)
+Ai
+, we derive:
+R(2)
+invB =
+(1 + f −
+q
+1+f
+1+α)(
+q
+1+α
+1+f −1)
+2ki
+.
+(C.41)
+2. ki < κ1: Using ∆Q(2)∗
+Ai
+=
+d(1)
+Ai
+−1+ki from (C.32), we obtain:
+R(2)
+invB = 1
+2
+ 1 + f
+1 −ki
+−1
+
+.
+(C.42)
+Consider the case where the fundamental exchange rate decreases due to a price shock,
+102
+
+leading to arbitrage opportunities. The return from depositing is then:
+R(2)
+arbB = RND −π(d(1)
+Ai , d(1)
+Bi , p(2))
+p(1)d(1)
+Ai + d(1)
+Bi
+.
+Let rA represent the ratio of the exchange rate in period 2 to its value in period 1, p(2)
+p(1), under
+the condition that a price shock leads to a decrease in the fundamental exchange rate.
+1. ki > κ2: Utilizing (C.37) and the relation p(1) =
+d(1)
+Bi
+d(1)
+Ai
+, we get:
+R(2)
+arbB = RND −(√1 + β −√1 + f)2
+2ki
+rA.
+(C.43)
+2. ki < κ2: Applying (C.38), we derive:
+R(2)
+arbB = RND −
+(1 + β −1+f
+1−ki)
+2
+rA.
+(C.44)
+Comparing Expected Returns: We evaluate the expected return from depositing,
+E
+
+RD
+
+, against the expected return from not depositing, E
+
+RND
+
+. Using (C.26), we obtain:
+E
+
+RD
+
+−E
+
+RND
+
+=κI
+2 R(2)
+invA + κI
+2 R(2)
+invB
+−κ
+ 
+κu
+π(d(1)
+Ai , d(1)
+Bi , p(1)(1 + β))
+p(1)d(1)
+Ai + d(1)
+Bi
++κd
+π(d(1)
+Ai , d(1)
+Bi , p(1)
+1+β)
+p(1)d(1)
+Ai + d(1)
+Bi
+!
+.
+(C.45)
+We distinguish between different cases:
+1. ki ≥max{κ1, κ2}: Inserting (C.41) and (C.43) into (C.45), and observing that R(2)
+arbB =
+103
+
+R(2)
+arbA and R(2)
+invA = R(2)
+invB, we get:
+E
+
+RD
+
+−E
+
+RND
+
+= 1
+ki
+τ1,
+(C.46)
+where
+τ1 =
+
+
+κI
+(1 + f −
+q
+1+f
+1+α)(
+q
+1+α
+1+f −1)
+2
+−(√1 + β −√1 + f)2
+2
+κ(κurB + κdrA)
+
+
+.
+2. min{κ1, κ2} ≥ki ≥0: Plugging (C.42) and (C.44) into (C.45), and noting that R(2)
+arbB =
+R(2)
+arbA and R(2)
+invA = R(2)
+invB, we have:
+E
+
+RD
+
+−E
+
+RND
+
+= τ3,
+(C.47)
+where
+τ3 =
+ 
+κI
+2
+ 1 + f
+1 −ki
+−1
+
+−
+(1 + β −1+f
+1−ki)
+2
+κ(κurB + κdrA)
+!
+,
+which is increasing in ki.
+We argue that the optimal k∗must lie between κ1 and κ2. The reason is as follows.
+Suppose first ki ≥max{κ1, κ2}. Then, if τ1 < 0, then E
+
+RD
+
+< E
+
+RND
+
+, indicating a
+liquidity freeze. In such case, the expected return is independent of ki. If instead τ1 > 0, then
+E
+
+RD
+
+−E
+
+RND
+
+decreases with ki. Since E
+
+RND
+
+is constant, E
+
+RD
+
+also decreases with
+ki. Therefore, the liquidity providers’ expected return, max{E
+
+RD
+
+, E
+
+RND
+
+}, decreases
+with ki. Next, suppose that min{κ1, κ2} ≥ki ≥0. Then the expected return E
+
+RD
+
+−
+E
+
+RND
+
+increases with ki.
+We next solve for the optimal convexity between κ1, κ2.
+1. Case κ1 ≥k ≥κ2: Inserting (C.42) and (C.43) into (C.45), and using R(2)
+arbB = R(2)
+arbA
+104
+
+and R(2)
+invA = R(2)
+invB, we derive:
+E
+
+RD
+
+−E
+
+RND
+
+= τ2,
+(C.48)
+where
+τ2 = κI
+2
+ 1 + f
+1 −ki
+−1
+
+−1
+ki
+(√1 + β −√1 + f)2
+2
+κ(κurB + κdrA).
+It is easily seen from the above expression that τ2 is increasing in ki, as all its terms
+increase with ki. The optimal convexity is then κ1.
+2. Case κ2 ≥k ≥κ1: Using (C.41) and (C.44) in (C.45), and observing that R(2)
+arbB =
+R(2)
+arbA and R(2)
+invA = R(2)
+invB, we obtain:
+E
+
+RD
+
+−E
+
+RND
+
+= τ4,
+(C.49)
+where
+τ4 = κI
+(1 + f −
+q
+1+f
+1+α)(
+q
+1+α
+1+f −1)
+2ki
+−
+(1 + β −1+f
+1−ki)
+2
+κ(κurB + κdrA).
+The derivative of τ4 with respect to ki is:
+∂τ4
+∂ki
+=
+(1 + f)
+2(1 −ki)2κ(κurB + κdrA) −κI
+(1 + f −
+q
+1+f
+1+α)(
+q
+1+α
+1+f −1)
+2k2
+i
+.
+This derivative is monotonically increasing in ki. Denoting its unique root as κr, we
+have:
+• If κr < κ1, then ∂τ4
+∂ki > 0 for κ2 ≥ki ≥κ1. Hence, the optimal convexity is κ2,
+which increases with β.
+• If κr > κ2, then ∂τ4
+∂ki < 0 for κ2 ≥ki ≥κ1, making the optimal convexity κ1, which
+is independent of β.
+105
+
+• If κ1 < κr < κ2, the expected return increases in [κ1, κr] and decreases in [κr, κ2].
+Thus, the optimal choice is κr, independent of β.
+In summary, there exists a unique optimal convexity level k∗for all liquidity providers,
+and k∗weakly increases with β.
+106
