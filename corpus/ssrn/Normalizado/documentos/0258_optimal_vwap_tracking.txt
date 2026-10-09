@@ -1,0 +1,5745 @@
+ Electronic copy available at: http://ssrn.com/abstract=2333916 
+Optimal VWAP Tracking
+Daniel Mitchell1, J¸edrzej Bia lkowski2, and Stathis Tompaidis3
+1McCombs School of Business, University of Texas at Austin,
+Austin, TX, USA
+dan.mitchell@utexas.edu
+2Department of Economics and Finance, University of Canterbury,
+Christchurch, New Zealand
+jedrzej.bialkowski@canterbury.ac.nz
+3McCombs School of Business, University of Texas at Austin,
+Austin, TX, USA
+stathis.tompaidis@mccombs.utexas.edu
+September 30, 2013
+We thank Glenn Boyle, and seminar participants at Northwestern University, the University of Chicago,
+the University of Texas at Austin, the INFORMS 2012 meetings in Phoenix, and the High-frequency data
+and high-frequency trading conference at the University of Chicago for helpful comments and suggestions.
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+ Electronic copy available at: http://ssrn.com/abstract=2333916 
+Abstract
+We consider the problem of ﬁnding a strategy that tracks the volume weighted
+average price (VWAP) of a stock, a key measure of execution quality for large orders
+used by institutional investors.
+We obtain the optimal, dynamic, VWAP tracking
+strategy in closed form in a model with general price and volume dynamics and show
+that it can be extended to incorporate proportional transaction costs. We build a model
+of intraday volume using the Trade and Quote dataset to empirically test the strategy,
+both without trading costs and when trading has temporary eﬀects that include the
+bid-ask spread and depth of the order book, and permanent eﬀects that reﬂect the
+potential information content of trades. We ﬁnd that the implementation cost of the
+strategy we propose is lower than the cost charged by brokerage houses.
+JEL classiﬁcation: G12, G29, C61
+Keywords: Volume Weighted Average Price, Algorithmic Trading, Trading Volume, Trading
+Costs, Dynamic Programming
+1
+Introduction
+Algorithmic trading is an area of increasing importance in ﬁnancial exchanges.
+Trading
+algorithms range from high-frequency algorithms that submit and cancel orders thousands
+of times per second, to algorithms that trade less frequently, whose objective varies from
+minimizing trading costs to tracking the performance of a benchmark. One of the most common benchmarks for judging the execution quality of individual stocks, used by institutional
+investors such as pension funds and mutual funds, is the daily volume-weighted average
+price (VWAP), originally suggested by Berkowitz, Logue, and Noser Jr. (1988). Madhavan
+(2002) discusses various types of VWAP strategies, their advantages and disadvantages, and
+challenges encountered when implementing a strategy to track VWAP. In the United States,
+1
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+survey data in a report by Bank of America (2007) indicate that VWAP orders represent
+close to 50% of all trading by institutional investors, while Almgren, Thum, Hauptmann,
+and Li (2005) report that VWAP orders for individual stocks represent 16% of all trades.
+Domowitz and Yegerman (2011) report that when trying to place an order that ranges from
+0.5% to 5% of daily market volume between 23% and 27% of all algorithmic trades follow VWAP strategies, while Australian Securities Exchange (2010) estimate that 32.3% of
+buy-side algorithmic trades are VWAP orders. End-of-day VWAP for individual stocks is
+reported by exchanges, and guaranteed VWAP orders are available through most brokerage
+houses. For example, Interactive Brokers oﬀer a guarranteed VWAP order for a cost of 10
+basis points, while Bia lkowski, Darolles, and Le Fol (2008) report that in Europe the cost of
+VWAP orders ranges between 10 and 20 basis points. Beyond its popularity with institutional investors, VWAP has been used by regulators for assessing taxes in cases of issuance of
+shares to existing shareholders.1 While alternatives such as implementation shortfall, exist,
+VWAP remains a widely used measure of the quality of trade execution.2 3
+The relatively small literature on VWAP tracking algorithms has developed along two
+directions. The ﬁrst direction derives static, predetermined, optimal execution strategies
+before trading opens for the day, and the strategies are not updated during the day. The
+second direction employs trading strategies that try to match a dynamic volume proﬁle
+without regard to changes to the price of the stock. In this paper we extend the literature
+1An Australian company, Woolworth’s Group, established a real estate investment trust, owning 69
+Woolworths Group anchored shopping centres and freestanding stores, by distributing newly issued shares
+to its shareholders on November 26th, 2012. The tax basis of these shares was set to the daily VWAP of the
+Woolworth’s stock on the day of issuance by the Australian taxing authorities.
+2In May 2012, NASDAQ OMX sought the approval of the Securities and Exchange Commission (SEC)
+to oﬀer “Benchmark Orders” that track individual stock VWAP on the NASDAQ exchange, see NASDAQ
+(2012b). While the request was disapproved by the SEC in January 2013, it indicates the increasing interest
+in VWAP orders. We note that the issues raised by an exchange oﬀering a VWAP contract are beyond how
+to determine a strategy that tracks VWAP; e.g., the issue of unfair competition between the exchange and
+the brokerage houses was one of the objections raised, see the comments at NASDAQ (2012a), and the SEC
+decision at SEC (2013). These issues are outside the scope of our paper.
+3Despite its popularity, the eﬀectiveness of VWAP as a tool for trade evaluation has been questioned, see
+Johnsey (2006).
+2
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+by presenting a closed-form, dynamic, solution to the problem of optimally tracking VWAP.
+The closed-form solution is obtained in a model that allows co-dependence between stock
+price and volume dynamics under three assumptions: market orders are used; personal
+orders do not impact the market price but may incur transaction costs proportional to the
+volume traded; and the intraday stock price is a martingale conditional on the realized stock
+volume. Given any model for the volume and price dynamics that satisﬁes these conditions,
+the closed-form solution provides the optimal trading strategy.
+Under the three assumptions of our model, our ﬁrst result is that the diﬀerence between
+the VWAP achieved by an arbitrary, personal, trading strategy; i.e, the VWAP calculated
+based on personal trades and execution prices, and the market VWAP; i.e., the VWAP
+calculated based on market volume and prices, does not depend on the choice of strategy.
+This result implies that no VWAP tracking algorithm can, on average, outperform or underperform the market VWAP. Since the ﬁrst moment of the diﬀerence between market and
+personal VWAP does not depend on the trading strategy chosen, consistent with an objective
+of mean-variance optimization, we instead try to minimize the variance of the diﬀerence of
+the market VWAP and the VWAP of a personal strategy.
+Our closed-form solution for the optimal trading strategy illustrates that the strategy is
+independent of the stock’s running VWAP, the stock’s price, and the running VWAP of the
+trading strategy, but depends on the correlation between the stock returns and the trading
+volume; the expected volume; and, the variance of returns in diﬀerent time intervals. The
+advantage of having a closed form solution for the optimal strategy is that once a model
+for volume and price is speciﬁed the strategy for minimizing deviation from the market
+VWAP can be eﬃciently computed.
+One result obtained from the closed form solution
+for the optimal trading strategy is that the optimal trading strategy may deviate from the
+expected relative volume of a time interval. The deviation is most pronounced when the
+correlation between stock return variance and trading volume is positive.
+The intuition
+3
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+behind this result lies in the disproportionate impact that time intervals with large volumes
+have on the calculation of the VWAP. When stock return variance covaries positively with
+trading volume, a larger-than-expected trading volume has a larger impact on the market
+VWAP than a smaller-than-expected volume. The diﬀerence is largest for intervals with high
+expected volumes. Both results have direct implications on the implementation of VWAP
+tracking algorithms by institutional investors.
+Additionally we propose a cross-sectional model of trading volume and stock returns,
+which we calibrate to intraday trading data for the 30 stocks that form the Dow Jones Industrial Average. Common features identiﬁed in the literature include a “U-shaped” pattern
+of volume for US stocks, with higher volume during the morning and afternoon and lower
+volume during the middle of the day; a positive correlation between volume and variance of
+stock returns; and volume autocorrelation. We incorporate all these features in a model of
+trading volume and stock returns. Dividing the day into intervals, we allow for an arbitrary
+shape in average intraday volume, and capture autocorrelation using an autoregressive model
+of volume. The correlation between volume and stock return variance is captured by assuming that the logarithm of the stock return variance varies linearly with the logarithm of the
+realized trading volume. We calibrate the model using 60-day rolling windows and ﬁnd that
+the out-of-sample performance of the theoretically optimal VWAP strategy improves when
+the variance of daily logarithmic returns is lower.4 Performance also improves, in the absence
+of trading costs, as the number of shares traded increases relative to the market volume for
+the stock — a result due to the increased inﬂuence of personal trades to the market VWAP
+as the number of shares traded increases. Finally, we ﬁnd that the theoretically optimal
+strategy exhibits larger variability early in the day. The performance of the VWAP achieved
+by the theoretical, personal, trading strategy can be measured by the standard deviation
+4In line with our results, Domowitz and Yegerman (2011) ﬁnd that the execution cost of a VWAP order
+increases in periods characterized by high market volatility.
+4
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+between the personal and the market VWAPs: in our empirical study for the 30 stocks in
+the Dow Jones Industrial Average this standard deviation ranges between 6 and 27 basis
+points.
+While we do not derive the optimal VWAP tracking strategy in a model where personal
+trades impact market prices, we do ﬁnd the optimal trading strategy in closed form in a
+model with bid-ask spreads which are proportional to the price of the stock. We also extend
+our empirical study of the strategy’s performance to account for various other trading costs.
+We calibrate a model for trading costs that is commonly used in the literature and in practice,
+which separates trading costs into market impact, meaning the change to the market price of
+a stock due to personal trades, and execution slippage, which captures the diﬀerence between
+the market price of a stock and the execution price of the personal trade.5 Our study shows
+that the standard deviation of the diﬀerence between personal and market VWAPs is similar
+to the case without trading costs, while the cost of executing the trading strategy, expressed
+as the diﬀerence between personal and market VWAPs, increases with the variance of the
+returns of the stock and the size of the personal volume. Demonstrating the usefulness of the
+theoretically optimal VWAP tracking strategy, the average diﬀerence between personal and
+market VWAPs remains in all cases below the typical 10 basis points charged by brokerage
+houses. To account for both return and variance, we consider the annualized Sharpe ratio
+achieved by the trading strategy we propose, when the implementation of a VWAP trade
+costs 10 basis points.
+We ﬁnd that, when we trade up to 5% of expected daily market
+volume, the annualized Sharpe ratios range from 2.4 — for volatile stocks — to over 22, for
+the 30 stocks in the Dow Jones Industrial Average.
+5Market impact is permanent and aﬀects the market price of the stock following the trade. Execution
+slippage only aﬀects the price received for a particular trade and includes, for example, the bid-ask spread
+and eﬀects related to the depth of the limit order book.
+5
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+1.1
+Literature review
+Literature on optimal VWAP tracking strategies is relatively recent. Konishi (2002) derives
+a static optimal execution strategy for tracking VWAP, where the trading strategy is determined at the beginning of the day and no revision is allowed in the middle of the day. McCulloch and Kazakov (2012) extends the model of Konishi (2002) to the case where the stock
+price is not a martingale and show that the mean-variance optimal VWAP trading strategy
+is the sum of a minimum variance strategy and a directional pricing strategy, but do not
+derive these strategies. Fuh, Teng, and Wang (2010) investigate the performance of heuristic
+trading strategies to track VWAP both in a simulation study and in an empirical study for 20
+stocks in the Taiwan Stock Exchange. Bia lkowski et al. (2008) and Humphery-Jenner (2011)
+suggest using an adaptive, ﬁxed-schedule, trading strategy, with trades adjusted to match
+the expected market volume over the remaining time intervals in two models of volume that
+allow for auto-regression and jumps, but do not allow for correlation between price return
+variance and volume and do not optimize the trading strategy. Kakade, Kearns, Mansour,
+and Ortiz (2004) provide results on the existence of dynamic algorithms for tracking VWAP
+and discuss the performance of static algorithms relative to dynamic algorithms, but do not
+oﬀer a way to construct such algorithms. Frei and Westray (2012) consider a continuous
+time model and oﬀer an algorithm to construct the optimal trading strategy that minimizes
+a weighted sum of the diﬀerence between personal and market VWAP and the variance of
+the diﬀerence, in a model where interval volume as a percentage of daily volume is assumed
+to be known and where the trader faces execution slippage costs. Compared to the rest of
+the literature, we employ a model that allows general dynamics for the trading volume and
+the price of the stock, and derive a closed-form solution for a dynamic trading strategy that
+minimizes the standard deviation between the personal and market VWAPs.
+There is a large literature on modeling market volume and its link with the dynamics of stock price. Papers in the literature include Clark (1973), Epps and Epps (1976),
+6
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+Tauchen and Pitts (1983), Karpoﬀand Boyd (1987), Easley and O’Hara (1987), Admati and
+Pﬂeiderer (1988), Jain and Joh (1988), Foster and Viswanathan (1990), Gallant, Rossi, and
+Tauchen (1992), Chan, Christie, and Schultz (1995), Kaastra and Boyd (1995), Andersen
+(1996), Gouri´eroux, Jasiak, and Fol (1999), Chan and Fong (2000), Lo and Wang (2000),
+Manganelli (2005), Darat, Rahman, and Zhong (2003), Giot, Laurent, and Petitjean (2010),
+Manchaldore, Palit, and Soloviev (2010), and Brownlees, Cipollini, and Gallo (2011). Our
+model of volume incorporates the common features identiﬁed in the literature and is calibrated based on the Trade and Quote dataset over 18 months of trading for the 30 stocks of
+the Dow Jones Industrial Average.
+The quality of equity trade execution is economically important. Hasbrouck (1991), Hausman, Lo, and MacKinlay (1992), and Keim and Madhavan (1996), using diﬀerent datasets
+and methodologies, ﬁnd that, empirically, the impact of a trade on stock price is a concave
+function of trade size Estimating market impact from trades empirically is also discussed
+in the papers by Bouchaud, Gefen, Potters, and Wyart (2004), Almgren et al. (2005), Engle, Furstenberg, and Russell (2008), Obizhaeva and Wang (2006), Gatheral, Schied, and
+Slynko (2012), and reviewed in Gatheral and Schied (2013). A theoretical foundation for
+the permanent impact from a trade is provided in the paper by Kyle (1985), who derives
+a linear equilibrium from fundamental principles. Consistent with the theoretical model of
+Kyle (1985), our model of permanent impact is linear to the number of shares traded. Our
+model for temporary impact follows the model in Almgren et al. (2005), and, consistent with
+the empirical literature, assumes a nonlinear, concave, impact function.
+2
+Model
+To develop a trading strategy that tracks VWAP in a realistic setup, we build a model of
+stock returns and volume dynamics that is ﬂexible enough to accommodate the observed
+7
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+regularities in trading volume and stock returns. The one assumption that underlies the
+model is that the intraday stock price is a martingale, conditional on the realized stock
+volume.
+We formulate the model in discrete time: the trader wants to trade a ﬁxed number of
+shares of stock, which we normalize to one, over the course of a day and is evaluated at
+the end of the day based on how well the VWAP of the trading strategy approximates the
+market VWAP. Trading occurs at equally spaced discrete times during the day, called time
+buckets. At time bucket t the trader makes a decision about what fraction of his position
+to trade based on his information up to, and including, time bucket t. At time bucket t + 1
+his order is executed at the market price at time bucket t + 1. The timeline of our model is
+illustrated in Fig. 1.6
+Uncertainty is described by (Ω, F, P), where Ωis the set of possible outcomes, F is a
+σ-algebra describing the set of all possible events and P describes the probability measure of
+each set in F. Time is indexed by t = −1, 0, 1, ..., T, and the state of information available to
+the trader is described by a ﬁltration, F = (F−1, F0, F1, ..., FT), which is a set of increasing
+σ-algebras. Time t = −1, corresponds to the end of trading during the previous trading day,
+while t = 0 is a time after the end of trading on the previous day and before the beginning
+of trading, and t = 1 is the ﬁrst trading bucket of the day.
+At time bucket t the state variables are denoted by Xt. Based on this information the
+trader makes a decision to trade a fraction, c(t, Xt), of his position, a trade which is executed
+at bucket t + 1, t = 0, . . . , T −1; i.e., the personal amount to be traded at time t = 1 is
+decided at time t = 0, the amount to be traded at time t = 2 is decided at time t = 1, etc.
+In order to enforce non-anticipativity we require that c(t, Xt) is measurable with respect to
+Ft. At the terminal time bucket, T, all uncertainty is resolved.
+6An alternative framework would be to consider trading at time intervals that are random, for example
+determined by the realized volume during the day. While there may be beneﬁts to such an approach, it is
+unclear how to guarantee executing a certain amount of shares during a ﬁxed time interval like one day.
+8
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+The relevant information to the trader is Xt =
+ κt, {νi}t
+i=1 , Vt, St, Mt, Pt
+
+, where κt is
+the trader’s cumulative traded volume up to and including time bucket t; νt is the volume
+traded in the market at time bucket t; Vt is the cumulative volume traded in the market up
+to and including time bucket t; St is the price of the stock at time bucket t; Mt is the running
+VWAP of the market; and Pt is the trader’s running VWAP. Given the values of all these
+variables the trader makes a decision to trade a fraction c(t, Xt) shares, which we abbreviate
+by ct. Before trading begins, we initialize the values of cumulative personal volume and
+cumulative market volume to zero; κ0 = V0 = 0.
+2.1
+Volume dynamics
+The volume at time bucket t, exclusive of personal trades, νt, is given by an auto-regressive
+process
+νt+1 = f(t + 1, {Xi}t
+i=1, V−1, Rt+1),
+t = 0, . . . , B −1
+(2.1)
+where f is a general function that depends on the previous periods’ information, {Xi}t
+i=1,
+the cumulative volume of the previous day, V−1, and an Ft+1 measurable random variable,
+Rt+1. The function f is designed to reﬂect the “U” shape of volume that is observed during
+the day in the United States.7 Fig. 2 illustrates both the U-shaped average daily volume
+and the deviations that may occur from the average on a single day for McDonalds stock.
+The cumulative volume, up to and including bucket t, and personal trades, is given by Vt
+V0 = 0
+Vt =
+t
+X
+i=1
+(νi + ci−1)
+Vt+1 = Vt + νt+1 + ct,
+(2.2)
+7The shape of the traded volume is diﬀerent, for example, in European stock markets, where trading
+during the middle of the day may be higher than trading in the morning, due to the opening of the United
+States exchanges.
+9
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+where ct is the volume of personal trades decided at time bucket t and executed during time
+bucket t + 1.
+The cumulative personal volume of the trader is simply the sum of all previous trades,
+so that
+κ0 = 0
+κt =
+t−1
+X
+i=0
+ci
+κt+1 = κt + ct.
+(2.3)
+2.2
+Stock return dynamics
+We assume that the market stock price is a martingale, conditional on realized volume, over
+the time the VWAP is calculated. Without loss of generality, we express the dynamics of
+the stock price in a geometric form. We assume that the bucket return variance is a function
+of the realized bucket trading volume, while the mean is chosen to guarantee that the stock
+price is a martingale,
+St+1 = St · εt+1,
+E
+
+εt+1
+νt+1
+
+= 1,
+E
+
+ε2
+t+1
+νt+1
+
+= exp
+ σ2(νt+1)
+
+.
+The function σ2(νt+1) is a general, positive, function of volume and will be abbreviated as
+σ2
+t+1. In Section 4 we will adopt a functional form that implies that the logarithm of the
+stock return variance varies linearly with the logarithm of the realized trading volume.
+10
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+2.3
+VWAP deﬁnition
+The running market VWAP, Mt, is deﬁned as the market-volume-weighted average price,
+including personal trades,
+Mt =
+t
+X
+i=1
+νi + ci−1
+Vt
+Si,
+t = 1, . . . , T.
+(2.4)
+The running personal VWAP, Pt, is deﬁned as the personal, volume-weighted, average
+price
+Pt =
+t
+X
+i=1
+ci−1
+κt
+Si,
+t = 1, . . . , T,
+where
+κt =
+t
+X
+i=1
+ci−1,
+t = 1, . . . , T −1,
+κT = 1,
+and where ci−1 is the personal volume traded in time bucket i, and κi is the cumulative
+personal volume. Volume is normalized so that the total personal volume traded during the
+day equals 1.
+The market and personal running VWAP evolution equations are given by
+Mt+1 = MtVt + St+1(νt+1 + ct)
+Vt+1
+,
+Pt+1 = Ptκt + St+1ct
+κt+1
+.
+The terminal values of the market and personal VWAP are then random variables given
+11
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+by
+MT = Mt
+Vt
+VT
++ St
+T−t
+X
+i=1
+(νt+i + ct+i−1)
+VT
+iY
+j=1
+εt+j,
+PT = Ptκt + St
+T−t
+X
+i=1
+ct+i−1
+iY
+j=1
+εt+j.
+(2.5)
+3
+Optimization Problem and Optimal Trading Strategy
+The goal of the trader is to match his personal VWAP at the end of the day to the market
+VWAP. We ﬁrst show that, when personal trades do not impact the market price and there
+are no trading costs, the expected diﬀerence between personal and market VWAPs, E[PT −
+MT], is independent of the trading strategy c.8
+Lemma 3.1. If the stock price process, conditional on realized trading volume, is a martingale, and the amount of shares that has to be traded by the end of the day is known in
+advance, then, the expected diﬀerence between personal and market VWAPs, E[PT −MT], is
+independent of the trading strategy c.
+The proof is provided in the Appendix. Lemma 3.1 holds under minimal assumptions on
+the price and volume evolution and implies that, under the assumptions stated, no trading
+strategy can either outperform or under-perform the market VWAP.
+3.1
+Objective
+We choose an objective consistent with mean-variance optimization. Speciﬁcally, given that
+the expected diﬀerence between personal and market VWAPs is independent of the trading
+8The assumption that personal trades do not inﬂuence the market price is consistent with much of the
+literature on VWAP tracking, e.g., Konishi (2002), Kakade et al. (2004), Bia lkowski et al. (2008), Fuh et al.
+(2010), Humphery-Jenner (2011), and McCulloch and Kazakov (2012).
+12
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+strategy, we seek to minimize the expectation of the second moment of the diﬀerence of the
+personal and market VWAPs at the terminal time bucket T, E[(PT −MT)2]. We deﬁne
+the set of all measurable functions, with respect to Ft, as the action set At. We deﬁne the
+trader’s optimization problem at time bucket t in terms of a value function Gt where
+GT = (PT −MT)2 ,
+Gt = min
+ct∈At E
+
+Gt+1
+Ft
+
+,
+t < T.
+To enforce the constraint that the trader trades exactly one share over the course of the day
+we set
+cT−1 = 1 −κT−1.
+(3.1)
+3.2
+Optimal Trading Strategy
+Theorem 3.1 describes, in closed-form, the strategy that minimizes the expected variance of
+the diﬀerence between the personal and market VWAPs at bucket T.
+Theorem 3.1. Under the assumption that the stock price is a martingale conditional on
+realized volume, the optimal trading strategy for the trader at time bucket t is given by
+ct = 1 −κt + E
+
+
+1−VT
+VT
+
+eσ2
+t+1+σ2
+t+2 −eσ2
+t+1
+
+E
+
+1−VT
+VT
+2 
+eσ2
+t+1+σ2
+t+2 −eσ2
+t+1
+ Ft
+
+T−t
+X
+i=2
+νt+i
+VT
+Ft
+
+.
+(3.2)
+The proof, based on dynamic programming and induction, is provided in the Appendix.
+An attractive feature of the optimal trading strategy is that it applies for general models
+of price and volume: given a model that satisﬁes the requirement that the stock price is
+a martingale conditional on realized volume, Equation 3.2 provides a way to calculate the
+optimal trading strategy.
+13
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+Eq. 3.2 is complicated due to two factors: the inﬂuence of the personal trades on the
+determination of the market VWAP, giving rise to the expression (1 −VT)/VT; and the
+correlation between the variance of stock returns and the realized bucket trading volume,
+giving rise to the expression
+
+eσ2
+t+1+σ2
+t+2 −eσ2
+t+1
+
+. The economic intuition behind the optimal
+strategy is signiﬁcantly simpler in the case when there is no dependence between the variance of stock returns and trading volume, and when the personal volume is an insigniﬁcant
+percentage of market volume, VT ≫1. In that case the optimal trading strategy simpliﬁes,
+and is described in the following Lemma:
+Lemma 3.2. When the stock price is a martingale conditional on realized volume, the variance of stock returns is independent of bucket trading volume, in the limit when the personal
+trading volume is an insigniﬁcant percentage of market trading volume, the optimal trading
+strategy is given by
+ct = E
+Vt+1
+VT
+Ft
+
+−κt.
+(3.3)
+The proof of this lemma is provided in the Appendix. The optimal trade, ct, is such
+that the cumulative personal volume traded at bucket t + 1, equals the expected cumulative
+market volume, relative to the total volume in the day, κt+1 = κt + ct = E[Vt+1/Vt].
+An advantage of obtaining the optimal trading strategy in closed-form is that we can
+easily derive properties of the optimal trading strategy. From Eq. 3.3, we note that it is
+possible to optimally trade against the overall direction of trade. For example, if at time
+bucket t, we have already traded 60% of the total amount we have committed to trade by
+the end of the day, and the expected cumulative market volume by the end of the next time
+bucket is smaller than 60% of the daily volume; e.g., 57%, then we would optimally trade
+in the opposite direction during time bucket t + 1, to reduce our personal traded amount;
+e.g., trade 3% in the opposite direction to reduce our position to 57% of the total amount
+we have committed to trade.
+14
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+Returning to the general case described by Equation 3.2 in Theorem 3.1, when the bucket
+volume and the stock return variance are correlated it is possible for the optimal strategy to
+deviate from the expected bucket volume. While it is diﬃcult to derive a general result from
+Eq. 3.2, we have found that positive correlation between bucket volume and stock return
+variance leads to a trading strategy that overweights periods with high expected trading
+volume and underweights periods with low expected trading volume. The intuition behind
+this result is striking: since positive correlation implies that expected trading volume is, on
+average, positively linked with stock return variance, larger than expected trading volume in
+buckets with high expected trading volume is likely to have a disproportionately higher eﬀect
+on the determination of VWAP than lower than expected trading volume. To anticipate this
+inﬂuence, the optimal trading strategy trades more during these periods.
+We note that the optimal solution does not depend on the values of the running market
+VWAP, Mt, the running personal VWAP, Pt, and the current stock price, St, since these
+quantities are absent from the optimal solutions. This simpliﬁcation is due to the assumption
+that the price process is a martingale conditional on realized volume. However, we note that,
+the value function does depend on the values of Pt, Mt, St. In addition, in the case where we
+consider trading costs, the price process will not be a martingale and the optimal solution
+will depend on both the market running VWAP and the personal running VWAP.
+4
+Empirical Analysis
+To illustrate the performance of the trading strategy we propose we choose a speciﬁc model
+for the bucket volumes, Eq. 2.1, and calibrate it to market data. Early literature on models
+of trading volume focuses on a daily frequency, e.g., Clark (1973) describes a model for
+daily volume of cotton futures. More recent work describes intraday models of volume that
+account for time-of-day eﬀects and autocorrelation; e.g., Bia lkowski et al. (2008). Compared
+15
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+to the recent literature we oﬀer a model of the shape of the intraday trading volume that
+allows for correlation between realized trading volume and stock return variance.
+4.1
+Trading volume and stock return model
+We describe a model of normalized intraday trading volume, i.e., the intraday shape of volume, that includes common components across stocks, such as shape factors, day-of-the-week
+eﬀects, intraday and overnight autoregressive terms and stock-speciﬁc residual uncertainty.
+The normalization of realized bucket trading volume is chosen such that all stocks have
+the same expected normalized volume, by modeling νd
+b,s × Ks, where νd
+b,s is the realized
+trading volume on day d, bucket b, for stock s; Ks is given by
+1
+Ks
+=
+1
+|W|
+X
+d∈W
+B
+X
+b=1
+νd
+b,s =
+1
+|W|
+X
+d∈W
+V d
+s
+where V d
+s is the realized daily volume for stock s on day d; W is the window of days over
+which we calibrate the model and which includes day d; and |W| is the length of the window
+W in days.9 This normalization allows us to use cross-sectional data to calibrate the shape
+of the volume curve. The model we use is:
+log
+ νd
+b,s × Ks
+
+= fb + fdow +
+NAR
+X
+AR=1
+ΨAR log
+ νd
+b−AR,s × Ks
+
+I(b > AR)
++ Ψon log
+ V d−1
+B,s × Ks
+
+I(overnight)I(b = 1)
++ Ψmd log
+ V d−1
+B,s × Ks
+
+I(multiple days)I(b = 1)
++ ϵd
+b,s
+ϵd
+b,s ∼N(0, ω2
+s)
+(4.1)
+9Bia lkowski et al. (2008) employed a similar normalization in a factor analysis of the shape of the volume
+curve.
+16
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+The dependent variable, log
+ νd
+b,s × Ks
+
+, is the logarithm of the normalized volume for stock
+s, on day d, at time bucket b. The explanatory variables include a stock-independent timeof-day shape factor fb, and a stock-independent day-of-week adjustment factor fdow. The
+assumption that these explanatory variables do not depend on speciﬁc stock characteristics
+leads to a parsimonious model of volume, and is reasonable for stocks for which the arrival
+of information is similar across the time of day and day of the week.
+The additional explanatory variables capture autoregressive behavior in volume, both
+intraday and between market close and market open. The coeﬃcients ΨAR, of the variables
+log
+ νd
+b−AR,s × Ks
+
+I(b > AR) capture intraday, order AR, autocorrelation between bucket
+volumes in a fashion that is stock independent, as well as independent of time-of-day and
+day-of-week.10
+The coeﬃcients Ψon, Ψmd, of the variables log
+ V d−1
+B,s × Ks
+
+I(overnight)I(b = 1), and
+log
+ V d−1
+B,s × Ks
+
+I(multiple days)I(b = 1), capture dependence of the opening volume of the
+day with respect to the cumulative volume, V d−1
+B
+, of the previous trading day, separately
+for the case of consecutive trading days (overnight – on), and trading days that are multiple
+days apart (multiple days – md). The residuals, ϵd
+b,s, are i.i.d., normally distributed, variables
+with stock-dependent variance.11
+This model is chosen based on its parsimony, as well as the examination of several other
+models; e.g., models that included stock-dependent autoregressive coeﬃcients, as well as
+separate terms for the case where trading days are separated by weekends, holidays, or
+consecutive weekends and holidays. The chosen model was found to perform at least as well,
+in terms of tracking VWAP, as any of the other models.
+The relationship between the variance of stock returns and realized trading volume has
+10I(b > AR) is an indicator function that guarantees that only intraday buckets are taken into account.
+I(b = 1) is an indicator function that guarantees that the trading volume from the previous day only aﬀects
+the opening trading volume — at least directly.
+11Given the cross-sectional heteroskedasticity of the residuals, we employ an iterative method of weighted
+least squares to estimate the model coeﬃcients and standard errors.
+17
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+been examined in the literature; e.g., see Andersen (1996), Manganelli (2005), and Malinova
+and Park (2010). The models in the literature postulate a relationship between the logarithm
+of the return variance and the logarithm of trading volume. We specify the dynamics of the
+stock price to be log-normal, where the variance of logarithmic returns in each time bucket
+is determined by the bucket volume excluding personal trades, and the mean is chosen to
+maintain the stock price as a martingale,12
+St+1 = St · εt+1,
+εt+1 ∼LN
+
+−1
+2σ2(νt+1), σ2(νt+1)
+
+where εt+1 is a log-normal random variable with mean and variance parameters determined
+by σ2 (νt+1), which is a non-negative function of the market’s volume at time bucket t+1 and
+is abbreviated by σ2
+t+1. In line with the literature, we assume that the relationship between
+the logarithm of the market trading volume, exclusive of personal trades, and logarithmic
+stock return variance is given by a linear function
+log(σ2) = αs + βs log(ν)
+(4.2)
+The stock-dependent parameters αs, βs for the relationship between bucket volume and
+bucket variance of logarithmic stock returns are estimated by maximizing the likelihood
+function for logarithmic stock returns. The details are provided in the Appendix.
+12To test the assumption that the stock price, conditional on realized volume, is a martingale we calculated
+for each of the 30 stocks in the Dow Jones Industrial Average the correlation between daily traded volume
+and daily returns over the 18 months in the data. The null hypothesis that the correlation is equal to zero
+could not be rejected, at the 95% level of conﬁdence, for 20 out of the 30 stocks. For the remaining stocks, the
+correlation was found to be signiﬁcantly negative, with values between -11% and -30%. The negative values
+of the correlation indicate that negative returns are linked to higher market volume compared to positive
+returns. However, in our empirical results, we did not ﬁnd a signiﬁcant deterioration in the performance of
+the VWAP strategy we propose for the stocks for which the assumption that the stock price is a martingale,
+conditional on realized volume, is violated.
+18
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+4.2
+Model Calibration
+We apply our calibration procedure to data from the Trade and Quote (TAQ) database.
+Restricting to the 30 stocks in the Dow Jones Industrial Average, listed in Table 1, and
+given all the trades for these stocks reported in TAQ during the 18 months between July
+1, 2010 and December 30, 2011, we construct 26 time buckets per day of 15 minutes each.
+For each time bucket we calculate the volume-weighted average price and the bucket volume,
+normalized according to the procedure in the previous subsection. The procedure is repeated
+for each day in the data using a rolling 60-day window.
+The results of the calibration of the volume model are presented in Table 2 and Fig. 3. The
+number of autoregressive terms used in Eq. 4.1 is set to one so that NAR = 1, following the
+results in Bia lkowski et al. (2008). Fig. 3 presents the average shape of the daily normalized
+volume over all the 60-day rolling windows in the data for each day of the week, as well as
+the 10% and 90% deciles, while Table 2 presents the corresponding average values and 10%
+and 90% deciles for each of the mean reversion coeﬃcients. We note that the coeﬃcients for
+the overnight and multiple day variables take similar values, indicating that the shape of the
+volume is not inﬂuenced heavily, on average, by the length of the time between market close
+and market open.
+Table 3 presents the results for the calibrated values of the coeﬃcient β in Eq. 4.2, which
+determines the relationship between realized volume and stock return variance. From the
+table we notice that the values range between 1 and 1.8 for most stocks, where a value of 1
+indicates that if bucket volume doubles then the standard deviation of returns is expected
+to increase by a factor of 41%.
+19
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+4.3
+VWAP tracking: Empirical results
+To evaluate the empirical performance of the optimal strategy given in Eq. 3.2, we ﬁrst
+calibrate our volume model each day using a weighted-least-squares regression and then
+maximize the likelihood function for the logarithmic return model, using the previous 60
+days of data. Then the trading strategy in Eq. 3.2 is estimated, at each time bucket, by
+sampling 100,000 paths from the volume-return model and performance is evaluated against
+the actual volume path on that day.
+As an example, the top panel of Fig. 4 illustrates the bucket volume and the trading
+strategy for McDonalds stock on September 28, 2010. From the ﬁgure we note that the
+trading strategy lags deviations in volume by one time bucket. While the ﬂuctuations in
+the trading strategy are more pronounced during the beginning of the day, once much of
+the daily volume has been realized, the trading strategy becomes smoother towards the end
+of the day even though bucket volume deviations may be equally large during the end as
+during the beginning of the day.
+The bottom panel of Fig. 4 illustrates the distribution of the bucket volume and of the
+trading strategy for McDonalds stock over all the 18 months in the data. From the ﬁgure we
+note that, in line with our theoretical results, the optimal trading strategy changes direction
+in a small percentage of cases. This reversal is evident, for example, in the second bucket
+in the ﬁgure. Another striking feature is the large width of the 95% interval for the optimal
+trading strategy during the second time bucket, due to the large variability of volume during
+the ﬁrst time bucket.
+Figure 5 summarizes the performance of the optimal strategy across all thirty stocks
+included in the Dow Jones Industrial Average when the personal volume is 1% (top panel)
+and 5% (bottom panel) of the expected market volume.
+The ﬁgure plots the standard
+deviation of the diﬀerence between personal and market VWAP for each stock over the
+18 month period in the data against the standard deviation of the stock’s daily logarithmic
+20
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+returns. The ﬁgure illustrates that as the variance of stock returns increases the performance
+of the optimal trading strategy deteriorates. Beyond the increased variance of returns, this
+deterioration is due to increased ﬂuctuations in the shape of the daily volume as the returns
+become more volatile.
+Comparing the top and bottom panels of Figure 5 suggests that without trading costs
+the optimal strategy performs better as the percentage of personal volume increases. This
+result is due to the fact that as the personal volume increases it inﬂuences market VWAP
+more.
+Table 4 displays the ﬁrst four moments of the distribution of (MT −PT) in the cases of
+trading 1% and 5% of expected market volume, respectively, as well as the daily standard
+deviation of returns and the Sharpe ratio that the VWAP strategy would have achieved
+assuming the industry practice cost of 10 basis points for implementing the strategy.13 The
+table illustrates that the distribution has heavy tails for all stocks.14 In addition, the diﬀerence in performance between trading 1% and 5% is relatively minor. While it is surprising
+that the mean for 28 out of 30 stocks is negative, the values are relatively small, with the
+largest deviation being less than 3 basis points. Standard deviations of the VWAP diﬀerence
+vary little as the volume of personal trades changes, and range from less than 6 basis points,
+for stocks that with low daily standard deviation of logarithmic returns such as Waste Management and Procter & Gamble, to 27 basis points for Bank of America, which also has the
+highest daily standard deviation of logarithmic returns.
+13The Sharpe ratio is deﬁned as the annualized ratio of the diﬀerence between the industry practice of 10
+basis points and the average cost of the VWAP strategy, and the standard deviation of the VWAP strategy.
+Given the very low level of risk-free interest rates over short maturities during the period of the study we do
+not include the risk-free rate in the calculation of the Sharpe ratio.
+14We report the histogram of the distribution for each stock in the Appendix. The histograms illustrate
+the existence of large outliers.
+21
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+4.4
+Robustness
+To test the robustness of our results we consider two tests. In the ﬁrst test, we increase
+the number of daily time buckets from 26 time buckets of 15 minutes to 78 time buckets of
+5 minutes each. To maintain consistency with the autoregressive model of volume between
+the original and the new time discretization, we expand the model of market volume from
+an autoregressive model of order 1, to an autoregressive model of order 3. The ﬁrst four
+moments of the distribution of (MT −PT) are displayed in the left panel of Table 5 in the case
+of 5 minute trading buckets. The results are very similar to the case of the 26, 15 minute,
+daily time buckets, with slight improvements for most stocks, and a slight deterioration of
+the performance of the strategy for a few stocks, such as Bank of America.
+The second robustness test of the model is to consider a volume model that is stockspeciﬁc. The volume for each stock is modeled by an autoregressive Inverse Gaussian distribution. Speciﬁcally we model
+νd
+1,s ∼IG(f1,s + ψ0,sV d−1
+B,s , λs)
+νd
+b+1,s ∼IG(fb+1,s + ψsνd
+b,s, λs), b = 1, . . . , B −1
+where IG is the inverse Gaussian/Wald distribution, fb,s are stock speciﬁc parameters that
+capture changes in the expected volume for diﬀerent time buckets during the day, ψs is a
+stock speciﬁc autoregressive coeﬃcient, and λs is the shape parameter of the IG distribution.
+The volume during the ﬁrst bucket of the day, νd
+1,s is modeled with separate parameters f1,s
+and ψ0,s, based on the cumulative volume in the stock during the previous trading day, V d−1
+B,s .
+The remaining intraday bucket volumes, for buckets two to B, depend on the immediately
+earlier bucket volume. The calibration procedure of this model can be found in the Appendix.
+In the right panel of Table 5 we display the ﬁrst four moments and the Sharpe ratio of
+the distribution of (MT −PT) under this model when we trade 1% of expected volume of
+22
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+a day making trades every 15 minutes. The IG model performs worse in all cases than the
+regression model in Section 4.1, in terms of VWAP tracking. The IG model is also much
+less parsimonious since it has stock-speciﬁc intraday volume parameters, and there is much
+more time variability in the calibrated parameters.
+5
+Market Impact and Slippage
+While the optimal strategy was derived in the context where trades do not impact market
+prices and there is no execution slippage between market prices and the price at which we
+are able to execute personal trades, in reality trades are known to both move market prices,
+and to execute at worse prices than the posted market price. In this section we ﬁnd the
+optimal trading strategy in the presence of bid-ask spreads represented by a transaction cost
+proportional to the stock price. In this setting the expected diﬀerence between the market
+and personal VWAP is still independent of the trading schedule and thus we minimize the
+variance of this diﬀerence here.
+To demonstrate the relevance of the algorithm we propose in this paper, in this section
+we also consider a more general framework when the act of trading has an impact on the
+price of the stock and when personal trades may execute at a price diﬀerent than the market
+price. The ﬁrst eﬀect is permanent and aﬀects all market participants: personal trades are
+considered by market participants to reveal fundamental information about the stock price
+and are incorporated in the price of the stock. The second eﬀect is transitory and only aﬀects
+personal trades. The slippage between the price achieved for a personal trade vs. the market
+price accounts for the bid-ask spread and can also be due to the dynamics and depth of the
+limit order book. For example, since we are assuming that personal trades are executed
+through market orders, an order with a large size may exhaust the liquidity at more than
+23
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+one tick levels of the limit order book.15 Since no closed form optimal solution is available
+for the general framework we study the performance of the strategy derived in the absence
+of transaction costs in the new general setting.
+5.1
+Proportional Transaction Costs
+We model the bid-ask spread to be proportional to the stock price, as in Liu (2004). Assuming
+that the market price of a stock at a time bucket t, is described by the variable St, we
+introduce the notation ˆSt for the price at which the personal volume of ct−1 shares is executed
+during time bucket t. We note that both the market and personal VWAPs are inﬂuenced by
+the transaction cost because when calculating the market VWAP we must account for the
+personal trades which occur at a diﬀerent price than the rest of the market. The dynamics
+of the state variables slightly change so that
+ˆSt = ρSt,
+St+1 = Stεt+1,
+Mt+1 = MtVt + St+1νt+1 + ˆSt+1ct
+Vt+1
+,
+Pt+1 = Ptκt + ˆSt+1ct
+κt+1
+,
+(5.1)
+where ρ represents the proportional trading cost and we have ρ < 1 when the trader is selling
+the stock and ρ > 1 when the trader is buying the stock.
+Theorem 5.1 shows that in the presence of proportional transaction costs the expected
+diﬀerence between the market and personal VWAP is still independent of the trading schedule
+and thus the second part of Theorem 5.1 ﬁnds the trading schedule that minimizes the
+variance between the market and personal VWAPs.
+15We do not consider costs paid to the exchange for removing market liquidity by submitting market
+orders, or beneﬁts obtained if we were to increase liquidity by submitting limit orders.
+24
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+Theorem 5.1.
+(i) If the stock price process, conditional on realized trading volume, is a martingale, the
+personal trades incur a proportional transaction cost, and the amount of shares that
+has to be traded by the end of the day is known in advance, then, the expected diﬀerence between personal and market VWAPs, E[PT −MT], is independent of the trading
+strategy c.
+(ii) Under the assumption that the stock price is a martingale conditional on realized volume
+and personal trades incur a proportional transaction cost, the optimal trading strategy,
+that minimizes the variance between the personal and market VWAPs, for the trader
+at time bucket t is given by
+ct = 1 −κt + E
+
+
+1−VT
+VT
+
+eσ2
+t+1+σ2
+t+2 −eσ2
+t+1
+
+ρE
+
+1−VT
+VT
+2 
+eσ2
+t+1+σ2
+t+2 −eσ2
+t+1
+ Ft
+
+T−t
+X
+i=2
+νt+i
+VT
+Ft
+
+.
+(5.2)
+Theorem 5.1 shows that even in the presence of certain transaction costs we can still
+ﬁnd an optimal trading strategy which is similar to the optimal strategy without transaction
+costs.
+5.2
+General Model
+While we have been able to obtain an optimal strategy with proportional bid-ask spreads, in
+general a trader faces more complicated frictions, such as permanent impact and non-linear
+slippage. We model permanent impact and slippage in a general framework based on the
+model described by Almgren et al. (2005), which is popular both in the literature and in
+practice. While the model in Almgren et al. (2005) considers an arithmetic Brownian motion
+25
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+to drive the price, our model is based on geometric Brownian motion and we modify the
+impact and slippage functions in Almgren et al. (2005) accordingly.
+Assuming that the market price of a stock at a time bucket t, is described by a variable
+St, we use similar notation as in Section 5.1 so that ˆSt is the price at which a order of ct−1
+shares is executed during time bucket t. In this general framework we note that both the
+market price St and the execution price ˆSt are inﬂuenced by the trader: the market price of
+the stock is aﬀected only by the permanent impact of the trade, while the execution price
+that the trader gets, is aﬀected by both the permanent and temporary impact.
+For the permanent impact of a trade, following Almgren et al. (2005), we assume that
+permanent impact is captured by a function ξ1
+St+1 = Stξ1(ct)εt+1,
+ξ1(ct) = exp(γct).
+(5.3)
+This formulation has the beneﬁt that the permanent impact of trades to the logarithm of the
+stock price is linear in the number of shares transacted. Linearity implies that the overall
+permanent impact of trading a given amount of shares over a time interval, is independent
+of the way the total number of shares are split into separate trades. This property is in line
+with the intuition that the information imputed from a trade only depends on the total size
+of the trade, rather than the way the trade is divided before submitting it to the market.
+In addition when the permanent impact function is linear, investors cannot manipulate the
+market by, for example, buying small quantities at one time and then liquidating at a future
+time.
+Execution slippage between the market price and the execution price received for an order
+26
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+is captured by a second function, ξ2
+ˆSt+1 = St+1ξ2(ct, νt+1),
+ξ2(ct, νt+1) = 1 + η · sign(ct)
+
+ct
+νt+1
+
+3/5
+(5.4)
+The functional form of the slippage, expressed in terms of the size of the personal trade as
+a percentage of the market volume, is common in the literature and is referred to at the
+three-ﬁfths’ rule, see Almgren et al. (2005) and references therein.
+Given the price dynamics for the market price and the execution price, the dynamics of
+the state variables are given by
+Vt+1 = Vt + νt+1 + ct,
+St+1 = Steγctεt+1,
+ˆSt+1 = St+1
+ 
+1 + η · sign(ct)
+
+ct
+νt+1
+
+3/5!
+,
+Mt+1 = MtVt + St+1νt+1 + ˆSt+1ct
+Vt+1
+,
+Pt+1 = Ptκt + ˆSt+1ct
+κt+1
+,
+(5.5)
+where νt is the bucket volume exclusive of personal trades, while Vt is the total volume
+including personal trades. The market VWAP, Mt, accounts for all transactions, including
+market transaction that occur at the market price, St, and personal transactions that occur
+at the execution price ˆSt.
+Given the evolution of the state variables, neither the market price nor the execution
+price are martingales and we are not able to reduce the optimization problem to a problem
+without the market and personal VWAP state variables.
+27
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+5.3
+Numerical Results
+While it is impossible to establish performance of the strategy described in Eq. 3.2 or 5.2
+empirically, when trades have both a permanent and a transitory impact, unless we were to
+actually implement the strategy in the marketplace, we have tried to use as much empirical
+information as possible. We implement the trading strategy from Eq. 3.2 because in the more
+general model ρ does not ﬁt in with the temporary price impact that follows the “three-ﬁfths”
+trading law. First, we estimate the trading strategy in Eq. 3.2 similarly to the case without
+market impact and slippage, by calibrating the parameters for the model for volume and
+stock price using a 60-day rolling window. We also estimate the parameters that determine
+permanent market impact and execution slippage; i.e., η and γ in Eqs. 5.3, 5.4, according
+to the model described in Almgren et al. (2005). We then use the actual bucket volume
+and value-weighted bucket prices calculated for the TAQ data and modify the market price
+according to Eq. 5.3, and the execution price according to Eq. 5.4. We calculate market and
+personal VWAPs using the modiﬁed market and execution prices according to Eq. 5.5 from
+the 61st day to evaluate the out-of-sample performance of the trading strategy.
+Table 6 reports the ﬁrst four moments and Sharpe ratios of the distribution of (MT −PT)
+when market impact and slippage are incorporated into the price model. The table shows
+that the standard deviation of the diﬀerence (MT −PT) is similar to the case without trading
+costs, while the average diﬀerence deteriorates as the size of the personal trades increases
+relative to market volume.
+Rather than plotting the standard deviation of the diﬀerence between the market and personal VWAPs as a function of the variance of daily logarithmic returns, Figure 6 plots the average diﬀerence between market and personal VWAPs for personal volume of 1% (top panel)
+and 5% (bottom panel). The ﬁgure illustrates that, as expected, the under-performance of
+the personal VWAP relative to the market VWAP deteriorates as the standard deviation of
+logarithmic returns increases. However, we note that following the strategy given in Eq. 3.2
+28
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+results in an average diﬀerence between the market and personal VWAPs that is below the
+10 basis points cost charged by brokerage houses to guarantee VWAP execution. Even when
+trading up to 5% of expected market volume, the strategy achieves annualized Sharpe ratios
+between 2.4 and 22.3, indicating that the strategy is viable and competitive compared to the
+costs imposed by brokerage houses.
+6
+Conclusion
+We have presented a model for intraday trading volume for individual stocks and an optimal
+trading strategy that minimizes the squared diﬀerence between the daily VWAP of the stock
+and the VWAP achieved by the strategy, and an empirical study of the performance of the
+trading strategy over an 18-month period for the stocks in the Dow Jones Industrial Average.
+Our contribution is to derive an optimal strategy for tracking VWAP in closed form, and
+to empirically determine the performance of the strategy, both with and without trading
+costs. Our results show that institutional investors, who frequently employ VWAP tracking
+strategies, can achieve VWAP tracking at costs lower than those asked by brokerage houses.
+While we are able to compute the optimal trading strategy in closed-form in a general
+setting using dynamic programming, allowing us to provide intuition regarding the characteristics of the strategy, challenges remain. We have shown that the trading strategy is
+optimal only in the presence of proportional transaction costs: it would be interesting to determine the optimal strategy when other market impact costs and slippage are included and
+to study the diﬀerence between the strategies. However, due to the diﬃculty of solving the
+problem when market impact costs and slippage are included, it is likely that such a study
+would be numerical and limited in nature to a few representative cases. Another extension
+that would be of considerable practical interest would be to allow for both limit and market
+orders and incorporate the limit order book dynamics in the determination of the optimal
+29
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+trading strategy. We leave these extensions for future work.
+30
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+A
+Proof of Lemma 3.1, Theorem 3.1 and Theorem 5.1
+A.1
+Proof of Lemma 3.1 and part (i) of Theorem 5.1
+The diﬀerence between Lemma 3.1 and Theorem 5.1 is the presence of proportional transaction costs. We prove this ﬁrst in the case with proportional transaction costs, as in Theorem
+5.1, and then Lemma 3.1 can be proved as a special case by setting ρ = 1.
+We have that
+PT −MT = Ptκt −Mt
+Vt
+VT
++ St
+T−t
+X
+i=1
+
+ρct+i−1 −νt+i + ρct+i−1
+VT
+
+iY
+j=1
+εt+j
+By iterated expectations and the martingale property of the stock price S
+E
+"
+ρSt
+T−t
+X
+i=1
+ct+i−1
+
+1 −1
+VT
+
+iY
+j=1
+εt+j
+Ft
+#
+= ρE
+"T−t
+X
+i=1
+ct+i−1
+
+1 −1
+VT
+
+E
+"
+St
+iY
+j=1
+εt+j
+ct+i−1, VT
+# Ft
+#
+= ρE
+"
+St
+T−t
+X
+i=1
+ct+i−1
+
+1 −1
+VT
+ Ft
+#
+= ρSt(1 −κt) −StE
+"
+PT−t
+i=1 ct+i−1
+Vt + PT−t
+i=1 (νt+i + ct+i−1)
+Ft
+#
+= ρSt(1 −κt) −St(1 −κt)E
+"
+1
+Vt + PT−t
+i=1 νt+i + (1 −κt)
+Ft
+#
+= ρSt(1 −κt)
+ 
+1 −E
+"
+1
+Vt + PT−t
+i=1 νt+i + (1 −κt)
+Ft
+#!
+= ρSt(1 −κt)
+
+1 −E
+ 1
+VT
+Ft
+
+where the last equation follows from
+VT = Vt +
+T−t
+X
+i=1
+νt+i + (1 −κt)
+This calculation shows that the diﬀerence between the personal and market VWAP is inde31
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+pendent of the values of the personal trades.
+If we start at time bucket zero, then the expectation becomes
+E[PT −MT|F0] = ρS0E
+
+1 −1
+VT
+F0
+
+−S0E
+" T
+X
+i=1
+νi
+VT
+F0
+#
+= S0
+ 
+ρ −E
+"
+1
+VT
+ 
+ρ +
+T
+X
+i=1
+νi
+! F0
+#!
+= S0
+
+ρ −E
+ρ + VT −1
+VT
+F0
+
+= S0(ρ −1)E
+
+1 −1
+VT
+F0
+
+which we can see is equal to zero in the absence of proportional transaction costs; when
+ρ = 1.
+A.2
+Proof of Theorem 3.1 and part (ii) of Theorem 5.1
+The diﬀerence between Theorem 3.1 and Theorem 5.1 is the presence of proportional transaction costs. We prove this ﬁrst in the case with proportional transaction costs, as in Theorem
+5.1, and then Theorem 3.1 can be proved as a special case by setting ρ = 1.
+The ﬁrst step is to examine VT and see that
+VT = Vt +
+T−t
+X
+i=1
+(νt+i + ct+i−1)
+= Vt + 1 −κt +
+T−t
+X
+i=1
+νt+i.
+This means that VT does not depend on any individual trade, rather it only depends on the
+number of shares the trader has left, which is a known quantity and thus the trades do not
+contribute to the randomness of VT.
+With this result we can next expand GT using Eq. 2.5 and single out the terms that
+32
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+depend on the trades. We ﬁnd that
+(PT −MT)2
+=
+ 
+Ptκt −Mt
+Vt
+VT
+−St
+T−t
+X
+i=1
+νt+i + ρct+i−1
+VT
+iY
+j=1
+εt+j + ρSt
+T−t
+X
+i=1
+ct+i−1
+iY
+j=1
+εt+j
+!2
+(A.1)
+=
+ 
+ρSt
+
+1 −1
+VT
+ T−t
+X
+i=1
+ct+i−1
+iY
+j=1
+εt+j
+!2
++
+2
+ 
+ρSt
+
+1 −1
+VT
+ T−t
+X
+i=1
+ct+i−1
+iY
+j=1
+εt+j
+!
+·
+ 
+Ptκt −Mt
+Vt
+VT
+−St
+T−t
+X
+i=1
+νt+i
+VT
+iY
+j=1
+εt+j
+!
++
+ 
+Ptκt −Mt
+Vt
+VT
+−St
+T−t
+X
+i=1
+νt+i
+VT
+iY
+j=1
+εt+j
+!2
+.
+It is important to remember that ct+i−1 is a random variable with respect to Ft if i > 1,
+because it is a function of state variables that are not yet observed. We can immediately
+disregard the third summand in the above equation because it has no dependence on the c’s.
+Next we take expectations and consider part of the second term, and ﬁnd
+E
+"
+ρ
+ 
+St
+
+1 −1
+VT
+ T−t
+X
+i=1
+ct+i−1
+iY
+j=1
+εt+j
+!
+·
+
+Ptκt −Mt
+Vt
+VT
+ Ft
+#
+=
+E
+"
+ρ
+ 
+St
+
+1 −1
+VT
+ T−t
+X
+i=1
+ct+i−1
+!
+·
+
+Ptκt −Mt
+Vt
+VT
+ Ft
+#
+because
+E
+"
+1 −1
+VT
+ ct+i−1
+VT
+iY
+j=1
+εt+j
+Ft
+#
+= E
+"
+1 −1
+VT
+ ct+i−1
+VT
+E
+" iY
+j=1
+εt+j
+VT, ct+i−1
+# Ft
+#
+= E
+
+1 −1
+VT
+ ct+i−1
+VT
+· 1
+Ft
+
+since St is a martingale. Now considering the constraint that the c’s must sum to 1, we ﬁnd
+33
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+that
+E
+" 
+ρSt
+
+1 −1
+VT
+ T−t
+X
+i=1
+ct+i−1
+iY
+j=1
+εt+j
+!
+·
+
+Ptκt −Mt
+Vt
+VT
+ Ft
+#
+=
+E
+
+ρSt ·
+
+1 −1
+VT
+
+· (1 −κt) ·
+
+Ptκt −Mt
+Vt
+VT
+ Ft
+
+(A.2)
+which does not involve the c’s so this term can be ignored for the optimization, meaning the
+only part of the value function left is
+E
+" 
+ρSt
+
+1 −1
+VT
+ T−t
+X
+i=1
+ct+i−1
+iY
+j=1
+εt+j
+!2
+−
+2
+ 
+ρSt
+
+1 −1
+VT
+ T−t
+X
+i=1
+ct+i−1
+iY
+j=1
+εt+j
+!
+·
+ 
+St
+T−t
+X
+i=1
+νt+i
+VT
+iY
+j=1
+εt+j
+! Ft
+#
+.
+Here each term is multiplied by S2
+t , which is a constant with respect to Ft, so we can eliminate
+this also and ﬁnally we ﬁnd that we want to minimize
+E
+" 
+ρ
+
+1 −1
+VT
+ T−t
+X
+i=1
+ct+i−1
+iY
+j=1
+εt+j
+!2
+−2
+ 
+ρ
+
+1 −1
+VT
+ T−t
+X
+i=1
+ct+i−1
+iY
+j=1
+εt+j
+!
+·
+ T−t
+X
+i=1
+νt+i
+VT
+iY
+j=1
+εt+j
+! Ft
+#
+.
+If we deﬁne
+ˆct ≡{ci}T−1
+i=t ,
+ˆAt ≡{Ai}T−1
+i=t ,
+φ ≡ρ
+
+1 −1
+VT
+
+then we can rephrase the optimization problem by reducing the expected values of the ε’s
+34
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+to functions of the ν’s using the law of iterated expectations to ﬁnd that
+ˆGt = min
+ˆct∈ˆ
+At
+E
+"
+φ2
+T−t
+X
+i=1
+T−t
+X
+j=1
+ct+i−1ct+j−1exp
+
+
+min(i,j)
+X
+ℓ=1
+σ2
+t+ℓ
+
+
+−2φ
+T−t
+X
+i=1
+T−t
+X
+j=1
+ct+i−1
+νt+j
+VT
+exp
+
+
+min(i,j)
+X
+ℓ=1
+σ2
+t+ℓ
+
+
+Ft
+#
+which simpliﬁes to
+ˆGt = min
+ˆct∈ˆ
+At
+E
+
+φ
+T−t
+X
+i=1
+T−t
+X
+j=1
+ct+i−1
+
+φct+j−1 −2νt+j
+VT
+
+exp
+
+
+min(i,j)
+X
+ℓ=1
+σ2
+t+ℓ
+
+
+Ft
+
+.
+(A.3)
+Next, we proceed by induction. First we will ﬁnd the base case, at T −2, and then we
+will prove the induction step. From Eq. A.3, the objective function at T −2 is
+ˆGT−2 =
+min
+cT −2∈AT −2E
+
+φcT−2
+
+φcT−2 −2νT−1
+VT
+
+eσ2
+T −1 + φcT−2
+
+φcT−1 −2νT
+VT
+
+eσ2
+T −1
++ φcT−1
+
+φcT−2 −2νT−1
+VT
+
+eσ2
+T −1 + φcT−1
+
+φcT−1 −2νT
+VT
+
+eσ2
+T −1+σ2
+T
+FT−2
+
+.
+We substitute cT−1 = 1 −κT−1 = 1 −κT−2 −cT−2, set the derivative with respect to cT−2
+equal to zero, and solve for cT−2 and we ﬁnd that
+cT−2 = 1 −κT−2 −
+E
+
+φ
+
+eσ2
+T −1 −eσ2
+T −1+σ2
+T
+
+νT
+VT
+FT−2
+
+E
+
+φ2
+
+eσ2
+T −1 −eσ2
+T −1+σ2
+T
+ FT−2
+ .
+(A.4)
+For the induction step we assume that cj takes the form of Eq. 5.2 for j = t + 1, t +
+2, ..., T −2, and cT−1 = 1 −κT−1, we now search for ct. For notational convenience we will
+35
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+call
+et ≡
+φ
+
+eσ2
+t+1 −eσ2
+t+1+σ2
+t+2
+
+E
+
+φ2
+
+eσ2
+t+1 −eσ2
+t+1+σ2
+t+2
+ Ft
+,
+γt ≡νt
+VT
+,
+ct = 1 −κt −E
+"
+et
+T−t
+X
+i=2
+γt+i
+Ft
+#
+.
+We next consider what happens to the progression of the c’s.
+cT−1 = 1 −κT−1 = 1 −κT−2 −cT−2 =
+E
+
+φ
+
+eσ2
+T −1 −eσ2
+T −1+σ2
+T
+
+νT
+VT
+FT−2
+
+E
+
+φ2
+
+eσ2
+T −1 −eσ2
+T −1+σ2
+T
+ FT−2
+ = E
+
+eT−2γT
+FT−2
+
+cT−2 = 1 −κT−2 −
+E
+
+φ
+
+eσ2
+T −1 −eσ2
+T −1+σ2
+T
+
+νT
+VT
+FT−2
+
+E
+
+φ2
+
+eσ2
+T −1 −eσ2
+T −1+σ2
+T
+ FT−2
+
+= E
+
+eT−3 (γT + γT−1)
+FT−3
+
+−E
+
+eT−2γT
+FT−2
+
+...
+ct+j−1 = E
+"
+et+j−2
+T−t
+X
+i=j
+γt+i
+Ft+j−2
+#
+−E
+"
+et+j−1
+T−t
+X
+i=j+1
+γt+i
+Ft+j−1
+#
+...
+ct+1 = 1 −κt −ct −E
+"
+et+1
+T−t
+X
+j=3
+γt+j
+Ft+1
+#
+The last equality on each line is achieved by plugging in the ﬁrst equality from the line below.
+We now plug these equations into Eq. A.3 and look at the terms that involve ct. Eq. A.3
+36
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+becomes
+ˆGt =E
+
+φct (φct −2γt+1) eσ2
+t+1 + φct (φct+1 −2γt+2) eσ2
+t+1 + φct
+T−t
+X
+j=3
+(φct+j−1 −2γt+j) eσ2
+t+1
++ φct+1 (φct −2γt+1) eσ2
+t+1 + φct+1 (φct+1 −2γt+2) eσ2
+t+1+σ2
+t+2 + φct+1
+T−t
+X
+j=3
+(φct+j−1 −2γt+j) eσ2
+t+1+σ2
+t+2
++
+T−t
+X
+j=3
+φct+j−1 (φct −2γt+j) eσ2
+t+1 +
+T−t
+X
+j=3
+φct+j−1 (φct+1 −2γt+j) eσ2
+t+1+σ2
+t+2 + ∆9
+Ft
+
+.
+(A.5)
+Here ∆9 is a catch-all variable that is constant with respect to ct. We re-label each term in
+the sum from Eq. A.5 as a ∆i, so that
+∆1 = φct (φct −2γt+1) eσ2
+t+1
+...
+∆8 =
+T−t
+X
+j=3
+φct+j−1 (φct+1 −2γt+j) eσ2
+t+1+σ2
+t+2
+and ˆGt = E[∆1 + ... + ∆8 + ∆9|Ft]. We next take the derivative of each term with respect
+37
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+to ct and ﬁnd
+∂
+∂ctE
+
+∆1
+Ft
+
+= 2ctE
+h
+φ2eσ2
+t+1Ft
+i
+−2E
+
+φγt+1eσ2
+t+1
+Ft
+
+∂
+∂ctE
+
+∆2
+Ft
+
+=
+∂
+∂ctctE
+"
+φ
+ 
+φ
+ 
+1 −κt −ct −E
+"
+et+1
+T−t
+X
+j=3
+γt+j
+Ft+1
+#!
+−2γt+2
+!
+eσ2
+t+1
+Ft
+#
+= E
+"
+φ
+ 
+φ
+ 
+1 −κt −2ct −et+1
+T−t
+X
+j=3
+γt+j
+!
+−2γt+2
+!
+eσ2
+t+1
+Ft
+#
+∂
+∂ctE
+
+∆4
+Ft
+
+=
+∂
+∂ctE
+"
+φ
+ 
+1 −κt −ct −E
+"
+et+1
+T−t
+X
+j=3
+γt+j
+Ft+1
+#!
+×
+ φct −2γt+1
+
+eσ2
+t+1
+Ft
+#
+= E
+"
+φ
+ 
+φ
+ 
+1 −κt −2ct −et+1
+T−t
+X
+j=3
+γt+j
+!
++ 2γt+1
+!
+eσ2
+t+1
+Ft
+#
+∂
+∂ctE
+
+∆5
+Ft
+
+=
+∂
+∂ctE
+"
+φ
+ 
+1 −κt −ct −E
+"
+et+1
+T−t
+X
+j=3
+γt+j
+Ft+1
+#!
+×
+ 
+φ
+ 
+1 −κt −ct −E
+"
+et+1
+T−t
+X
+j=3
+γt+j
+Ft+1
+#!
+−2γt+2
+!
+eσ2
+t+2+σ2
+t+2
+Ft
+#
+= E
+"
+2φ
+ 
+φ
+ 
+κt −1 + ct + E
+"
+et+1
+T−t
+X
+j=3
+γt+j
+Ft+1
+#!
++ γt+2
+!
+eσ2
+t+1+σ2
+t+2
+Ft
+#
+Now ∆3, ∆6, ∆7 and ∆8 in Eq. A.5 require a bit more analysis; for this we examine
+T−t
+X
+j=3
+ct+j−1 =
+T−t
+X
+j=3
+ 
+E
+"
+et+j−2
+T−t
+X
+i=j
+γt+i
+Ft+j−2
+#
+−E
+"
+et+j−1
+T−t
+X
+i=j+1
+γt+i
+Ft+j−1
+#!
+= E
+"
+et+1
+T−t
+X
+i=3
+γt+i
+Ft+1
+#
+−E
+"
+et+2
+T−t
+X
+i=4
+γt+i
+Ft+2
+#
++ E
+"
+et+2
+T−t
+X
+i=4
+γt+i
+Ft+2
+#
+−E
+"
+et+3
+T−t
+X
+i=5
+γt+i
+Ft+3
+#
++ . . .
+38
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+This is a telescoping sum that converges to
+T−t
+X
+j=3
+ct+j−1 = E
+"
+et+1
+T−t
+X
+j=3
+γt+j
+Ft+1
+#
+,
+because cT−1 = E
+
+eT−2γT
+FT−2
+
+. Using iterated expectations the rest of the derivatives in
+Eq. A.5 now become
+∂
+∂ctE
+
+∆3
+Ft
+
+= E
+"
+φ2et+1
+T−t
+X
+j=3
+γt+jeσ2
+t+1
+Ft
+#
+−2E
+"
+φ
+T−t
+X
+j=3
+γt+jeσ2
+t+1
+Ft
+#
+∂
+∂ctE
+
+∆6
+Ft
+
+=
+∂
+∂ctE
+"
+φ
+ 
+1 −κt −ct −E
+"
+et+1
+T−t
+X
+j=3
+γt+j
+Ft+1
+#!
+×
+T−t
+X
+j=3
+
+φE
+
+et+1γt+j
+Ft+1
+
+−2γt+j
+
+eσ2
+t+1+σ2
+t+2
+Ft
+#
+= −E
+"
+φ
+ 
+φE
+"
+et+1
+T−t
+X
+j=3
+γt+j
+Ft+1
+#
+−2
+T−t
+X
+j=3
+γt+j
+!
+eσ2
+t+1+σ2
+t+2
+Ft
+#
+∂
+∂ctE
+
+∆7
+Ft
+
+= E
+"
+φ2et+1
+T−t
+X
+j=3
+γt+jeσ2
+t+1
+Ft
+#
+∂
+∂ctE
+
+∆8
+Ft
+
+= −E
+"
+φ2E
+"
+et+1
+T−t
+X
+j=3
+γt+j
+Ft+1
+#
+eσ2
+t+1+σ2
+t+2
+Ft
+#
+After combining all of these derivatives we ﬁnd that
+∂
+∂ct ˆGt = E
+"
+2φ
+
+eσ2
+t+1 −eσ2
+t+1+σ2
+t+2
+
+·
+ 
+φ(1 −κt −ct) −γt+2 −
+T−t
+X
+j=3
+γt+j
+! Ft
+#
+= E
+"
+2φ
+
+eσ2
+t+1 −eσ2
+t+1+σ2
+t+2
+
+·
+ 
+φ(1 −κt −ct) −
+T−t
+X
+j=2
+γt+j
+! Ft
+#
+.
+39
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+Now we set this derivative equal to zero to ﬁnd the minimum, so that
+E
+"
+2φ
+
+eσ2
+t+1 −eσ2
+t+1+σ2
+t+2
+
+·
+ 
+φ(1 −κt −ct) −
+T−t
+X
+j=2
+γt+j
+! Ft
+#
+= 0
+(1 −κt −ct)E
+
+φ2 
+eσ2
+t+1 −eσ2
+t+1+σ2
+t+2
+ Ft
+
+−E
+"
+φ
+
+eσ2
+t+1 −eσ2
+t+1+σ2
+t+2
+ T−t
+X
+j=2
+γt+j
+Ft
+#
+= 0
+and therefore Eq. 5.2 is indeed the optimal choice for ct. We can see that this is indeed
+minimization because
+∂2 ˆG
+∂c2
+t
+= E
+
+2φ2 
+eσ2
+t+1+σ2
+t+2 −eσ2
+t+1
+ Ft
+
+> 0
+(A.6)
+and thus ˆG is a convex function.
+A.3
+Proof of Lemma 3.2
+If the variance of stock returns is not dependent on volume, then stock returns and volume
+are independent. In that case the term
+
+eσ2
+t+1+σ2
+t+2 −eσ2
+t+1
+
+can come out of the expectation
+in both the numerator and denominator of Equation 3.2 and then the terms cancel each
+other out. The absence of transaction costs simply implies that ρ = 1.
+Next, we consider the case when our trade size is insigniﬁcant, as compared to the total
+market volume. In this situation we have that Equation 2.2 changes to Vt = Pt
+i=1 νi where
+our personal volume has not aﬀected the market volume. This also means that Equation 2.4
+changes to
+Mt =
+t
+X
+i=1
+νi
+Vt
+Si,
+meaning our personal trades have also not aﬀected the market VWAP. Here, this can be
+40
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+taken further into Equation A.1 so that
+(PT −MT)2 =
+ 
+Ptκt −Mt
+Vt
+VT
+−St
+T−t
+X
+i=1
+νt+i
+VT
+iY
+j=1
+εt+j + St
+T−t
+X
+i=1
+ct+i−1
+iY
+j=1
+εt+j
+!2
+,
+which in turn means that φ = 1. Taking this all the way through the proof of Theorem 3.1
+we ﬁnd that
+ct
+=
+1 −κt −E
+"T−t
+X
+i=2
+νt+i
+VT
+Ft
+#
+=
+1 −κt −E
+"
+VT −Vt+1
+VT
+Ft
+#
+=
+E
+"
+Vt+1
+VT
+Ft
+#
+−κt.
+B
+Calibration of the Price Model
+To ﬁt the relationship between the volume and price we must calibrate the α and β parameters from Eq. 4.2.
+Figure 7 presents plots of the logarithm of the daily volume vs. the logarithm of the daily
+standard deviation of stock returns for each of the stocks in the Dow Jones Industrial average.
+The plots indicate that the relationship between volume and returns can be reasonably
+approximated from the model in Eq. 4.2. Rather than using the plots to determine the
+values of the parameters α and β, we instead compute their values by maximizing the log
+likelihood function.
+We have assumed that we have D days of data split into B buckets and we are trying
+to calibrate the parameters of the price model St+1 = St · εt+1. This means that our data
+is the set of points St+1/St. The data we have from TAQ counts each trade in each bucket
+and calculates the VWAP over that bucket. We use this calculated VWAP as the price at
+41
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+the end of the bucket. This however does not allow us to calculate the return on the ﬁrst
+bucket on each day since we do not consider overnight returns because of splits, dividends
+and buy backs. Therefore in order to calculate the return over the ﬁrst bucket we rely on
+the opening price reported by the exchange on each day. We write the ratio of stock prices
+on each day and in each bucket as εd
+b and then the log likelihood function becomes
+B
+X
+b=1
+D
+X
+d=1
+
+−log(εd
+b) −1
+2 log
+ 2πα(νd
+b )β
+−
+1
+2α(νd
+b )β
+ log(εd
+b) + 1
+2α(νd
+b )β2
+which we can maximize, over α and β, using standard numerical packages for each stock.
+C
+Calibration of Inverse Gaussian Volume Model
+The density of an IG-distributed random variable, X ∼IG(µ, λ), is given by
+p(x|µ, λ) =
+r
+λ
+2πx3 exp
+
+−λ(x −µ)2
+2µ2x
+
+and it’s expectation and variance are
+E[X] = µ,
+Var[X] = µ3/λ.
+The parameters {fb}, ψ, ψ0, λ can be found by maximizing the log-likelihood function for
+each stock. Given B buckets, and D days, the log-likelihood function is given by
+L({fb}, λ, ψ, ψ0)
+=
+D
+X
+d=1
+ 
+1
+2 log
+ λ
+2π
+
+−3
+2 log(νd
+1) −λ
+D
+X
+d=1
+(νd
+1 −f1 −ψ0V d−1
+B
+)2
+2νd
+1(f1 + ψ0V d−1
+B
+)2
+!
++
+B
+X
+b=2
+D
+X
+d=1
+ 
+1
+2 log
+ λ
+2π
+
+−3
+2 log(νd
+b ) −λ
+D
+X
+d=1
+(νd
+b −fb −ψνd
+b−1)2
+2νd
+b (fb + ψνd
+b−1)2
+!
+.
+42
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+In order to maximize this log-likelihood function we ﬁrst ﬁnd the ﬁrst order conditions for
+the fb’s and ψ’s by diﬀerentiating the log-likelihood function with respect to these variables
+and setting the derivatives equal to zero. The ﬁrst order conditions for the f’s are given by
+f1
+=
+ D
+X
+d=1
+νd
+1 −ψ0V d−1
+B
+(f1 + ψ0V d−1
+B
+)3
+! , D
+X
+d=1
+1
+(f1 + ψ0V d−1
+B
+)3
+!
+(C.1)
+fb
+=
+ D
+X
+d=1
+νd
+b −ψνd
+b−1
+(fb + ψνd
+b−1)3
+! , D
+X
+d=1
+1
+(fb + ψνd
+b−1)3
+!
+, b = 2, ..., B.
+(C.2)
+We can see here that the ﬁrst order condition for each fb only depends of that fb and the
+ψ’s; they do not depend on λ, and thus for any values of ψ and ψ0 we can solve the ﬁrst
+order conditions using any numerical root ﬁnder.
+Once we have each f we ﬁnd that the ﬁrst order condition for λ is
+1
+λ =
+1
+B · D
+ D
+X
+d=1
+(νd
+1 −f1 −ψ0V d−1
+B
+)2
+νd
+1(f1 + ψ0V d−1
+B
+)2
++
+B
+X
+b=2
+D
+X
+d=1
+(νd
+b −fb −ψνd
+b−1)2
+νd
+b (fb + ψνd
+b−1)2
+!
+which is a closed form, given ψ, ψ0 and all the fb’s. Therefore given any values of ψ and ψ0
+we can calculate the optimal fb’s and λ, so all that is left is to ﬁnd the optimal ψ and ψ0.
+To do this we must use numerical optimization over these two variables to ﬁnd the maximal
+value of the log-likelihood function given the values of the fb’s and λ calculated above. We
+can do this numerical optimization with any standard non-linear optimization routine.
+D
+Calibration of Market Impact Parameters
+The permanent price impact and execution slippage functions were chosen to correspond
+with the ones in Almgren et al. (2005) and here we go through the steps to estimate γ and η.
+Almgren et al. (2005) ﬁnds that the parameters, γ and η, are functions of a few characteristics
+of the stock and volume data, namely the volatility of daily returns, the expected number
+43
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+of shares traded by the market and the number of shares outstanding.
+We call ¯σ the volatility of daily returns and Almgren et al. (2005) ﬁnds that
+η = 0.142 · ¯σ.
+We can easily estimate ¯σ from the logarithmic returns data. We note however that ¯σ is not
+the annualized volatility, but rather the daily volatility. In order to calculate γ we also need
+to incorporate the expected number of shares traded by the market and the number of shares
+outstanding. For this we call Θ our expectation of the daily turnover. Here turnover means
+number of shares traded in a day divided by shares outstanding. Additionally we call eV our
+expectation of market volume in a day. With these Almgren et al. (2005) ﬁnds that
+γ = 0.314 ·
+¯σ
+eV Θ1/4.
+Both Θ and eV can be calculated given our volume data and with this we have found all we
+need to incorporate market impact into our pricing model.
+E
+Additional Statistics
+Figures 8, 9 provide time-series plots of the traded volume and the market VWAPs for
+each of the stocks in the data over the period of our study. Figure 10 provides additional
+information on the empirical distribution of the diﬀerence between the market and personal
+VWAP achieved following the optimal strategy, for the case without trading costs, when the
+personal volume traded equals 1% of the expected market volume. The ﬁgure illustrates the
+existence of signiﬁcant outliers in the distribution.
+44
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+References
+Admati, A. R., Pﬂeiderer, P., 1988. A theory of intraday patterns: volume and price variability. Review of Financial Studies 1, 3–40.
+Almgren, R., Thum, C., Hauptmann, E., Li, H., 2005. Direct estimation of equity market
+impact. Risk 62, 18–57.
+Andersen, T., 1996. Return volatility and trading volume: An information ﬂow interpretation
+of stochastic volatility. Journal of Finance 51, 169–204.
+Australian Securities Exchange, 2010. Algorithmic trading and market access arrangements.
+ASX Review .
+Bank of America, 2007. Marching up the learning curve: The second buy-side algorithmic
+trading survey.
+Berkowitz, S. A., Logue, D. E., Noser Jr., E. A., 1988. The total cost of transactions on the
+NYSE. The Journal of Finance 43, 97–112.
+Bia lkowski, J., Darolles, S., Le Fol, G., 2008. Improving VWAP strategies: A dynamic
+volume approach. Journal of Banking and Finance 32, 1709–1722.
+Bouchaud, J.-P., Gefen, Y., Potters, M., Wyart, M., 2004. Fluctuations and response in
+ﬁnancial markets: the subtle nature of random price changes. Quantitative Finance 4,
+176–190.
+Brownlees, C. T., Cipollini, F., Gallo, G. M., 2011. Intra-daily volume modeling and prediction for algorithmic trading. Journal of Financial Econometrics 9, 489–518.
+Chan, K., Christie, W. G., Schultz, P. H., 1995. Market structure and the intraday pattern
+of bid-ask spreads for NASDAQ securities. Journal of Business 68, 35–60.
+45
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+Chan, K., Fong, W., 2000. Trade size, order imbalance, and the volatilityvolume relation.
+Journal of Financial Economics 57, 247–273.
+Clark, P., 1973. A subordinated stochastic process model with ﬁnite variance for speculative
+prices. Econometrica 41, 135–155.
+Darat, A., Rahman, S., Zhong, M., 2003. Intraday trading volume and return volatility of
+the DJIA stocks: A note. Journal of Banking and Finance 27, 20352043.
+Domowitz, I., Yegerman, H., 2011. Algorithmic trading usage patterns and their costs. Journal of Trading pp. 9–21.
+Easley, D., O’Hara, M., 1987. Price, trade size, and information in securities markets. Journal
+of Financial Economics 19, 6990.
+Engle, R. F., Furstenberg, R., Russell, J., 2008. Measuring and modeling execution cost and
+risk, technical report, University of Chicago Graduate School of Business.
+Epps, T., Epps, M., 1976. The stochastic dependence of security price changes and transaction volumes: implications for the mixture-of-distributions hypothesis. Econometrica 44,
+305–321.
+Foster, D., Viswanathan, S., 1990. A theory of the interday variations in volume, variance,
+and trading costs in securities markets. Review of Financial Studies 3, 593–624.
+Frei, C., Westray, N., 2012. Optimal execution of a VWAP order: a stochastic control
+approach, working paper.
+Fuh, C.-D., Teng, H.-W., Wang, R.-H., 2010. On-line VWAP trading strategies. Sequential
+Analysis 29, 292–310.
+46
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+Gallant, A. R., Rossi, P. E., Tauchen, G., 1992. Stock prices and volume. Review of Financial
+Studies 5, 199–242.
+Gatheral, J., Schied, A., 2013. Dynamical models of market impact and algorithms for order
+execution. In: Fouque, J.-P., Langsam, J. (eds.), Handbook on Systemic Risk, Cambridge
+University Press, to appear.
+Gatheral, J., Schied, A., Slynko, A., 2012. Transient linear price impact and Fredholm
+integral equations. Mathematical Finance 22, 445–474.
+Giot, P., Laurent, S., Petitjean, M., 2010. Trading activity, realized volatility and jumps.
+Journal of Empirical Finance 17, 168–175.
+Gouri´eroux, C., Jasiak, J., Fol, G. L., 1999. Intra-day market activity. Journal of Financial
+Markets 2, 193–226.
+Hasbrouck, J., 1991. Measuring the information content of stock trades. The Journal of
+Finance 46, 179–207.
+Hausman, J. A., Lo, A. W., MacKinlay, A. C., 1992. An ordered probit analysis of transaction
+stock prices. Journal of Financial Economics 31, 319–379.
+Humphery-Jenner, M. L., 2011. Optimal VWAP trading under noisy conditions. Journal of
+Banking and Finance 35, 2319–2329.
+Jain, P., Joh, G., 1988. The dependence between hourly prices and trading volume. Journal
+of Financial and Quantitative Analysis 23, 269–283.
+Johnsey, G., 2006. Insights on volume weighted average price. Report available at
+http://www-ac.northerntrust.com/content/media/attachment/data/white paper/0603
+/document/ntgil whitepaper transmgmt.pdf.
+47
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+Kaastra, I., Boyd, M., 1995. Forecasting futures trading volume using neural networks.
+Journal of Futures Markets 15, 953–970.
+Kakade, S., Kearns, M. J., Mansour, Y., Ortiz, L. E., 2004. Competitive algorithms for
+VWAP and limit order trading. ACM Conference on Electronic Commerce pp. 189–198.
+Karpoﬀ, J., Boyd, M., 1987. The relation between price changes and trading volume: a
+survey. Journal of Financial and Quantitative Analysis 22, 109–126.
+Keim, D. B., Madhavan, A., 1996. The upstairs market for large-block transactions: Analysis
+and measurement of price eﬀects. Review of Financial Studies 9, 1–36.
+Konishi, H., 2002. Optimal slice of a VWAP trade. Journal of Financial Markets 5, 197–221.
+Kyle, A., 1985. Continuous auctions and insider trading. Econometrica 53, 1315–1335.
+Liu, H., 2004. Optimal consumption and investment with transaction costs and multiple
+risky assets. The Journal of Finance 59, 289–338.
+Lo, A., Wang, J., 2000. Trading volume: Deﬁnition, data analysis, and implications for
+portfolio theory. Review of Financial Studies 13, 257–300.
+Madhavan, A. N., 2002. VWAP Strategies Transaction Performance: The Changing Face of
+Trading, Institutional Investor Inc., pp. 32–38.
+Malinova, K., Park, A., 2010. Trading volume in dealer markets. Journal of Financial and
+Quantitative Analysis 45, 1447–1484.
+Manchaldore, J., Palit, I., Soloviev, O., 2010. Wavelet decomposition for intra-day volume
+dynamics. Quantitative Finance 10, 917–930.
+Manganelli, S., 2005. Duration, volume, and volatility impact of trades. Journal of Financial
+Markets 8, 377–399.
+48
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+McCulloch, J., Kazakov, V., 2012. Optimal VWAP trading strategy and optimal volume,
+working paper.
+NASDAQ,
+2012a.
+Comments
+on
+NASDAQ
+rulemaking:
+Order
+instituting
+proceedings
+to
+determine
+whether
+to
+approve
+or
+disapprove
+proposed
+rule
+change
+to
+establish
+“Benchmark
+Orders”
+under
+NASDAQ
+rule
+4751(f),
+(release
+no.
+34-67655;
+ﬁle
+no.
+sr-nasdaq-2012-059).
+Available
+at
+http://www.sec.gov/comments/sr-nasdaq-2012-059/nasdaq2012059.shtml.
+NASDAQ,
+2012b.
+Notice
+of
+ﬁling
+of
+proposed
+rule
+change
+to
+establish
+“Benchmark
+Orders”
+under
+NASDAQ
+rule
+4751(f).
+Available
+at
+http://www.sec.gov/rules/sro/nasdaq/2012/34-66972.pdf.
+Obizhaeva, A., Wang, J., 2006. Optimal trading strategy and supply/demand dynamics,
+technical report, MIT Sloan School of Management.
+SEC,
+2013.
+Order
+disapproving
+proposed
+rule
+change
+to
+establish
+“Benchmark
+Orders”
+under
+NASDAQ
+rule
+4751(f).
+Available
+at
+http://www.sec.gov/rules/sro/nasdaq/2013/34-68629.pdf.
+Tauchen, G., Pitts, M., 1983. The price variability-volume relationship on speculative markets. Econometrica 51, 485–505.
+49
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+Table 1: Dow Jones Industrial Average
+This table speciﬁes the stocks included in the Dow Jones Industrial Average during the
+period of our study, July 1, 2010 to December 30, 2011.
+Ticker
+Company Name
+AA
+Alcoa Inc.
+AXP
+American Express Company
+BA
+The Boeing Company
+BAC
+Bank of America Corporation
+CAT
+Caterpillar Inc.
+CSCO
+Cisco Systems, Inc.
+CVX
+Chevron Corporation
+DD
+E.I. Du Pont de Nemours and Company
+DIS
+Walt Disney Co.
+GE
+General Electric Company
+HD
+The Home Depot, Inc.
+HPQ
+Hewlett-Packard Company
+IBM
+International Business Machines Corporation
+INTC
+Intel Corporation
+JNJ
+Johnson & Johnson
+JPM
+JPMorgan and Chase & Co.
+KFT
+Kraft Foods Group Inc.
+KO
+The Coca-Cola Company
+MCD
+McDonalds Corporation
+MMM
+3M Co.
+MRK
+Merck and Co., Inc.
+MSFT
+Microsoft Corporation
+PFE
+Pﬁzer Inc.
+PG
+The Procter & Gamble Company
+T
+AT&T Inc.
+TRV
+The Travelers Companies, Inc.
+UTX
+United Technologies Corporation
+VZ
+Verizon Communications Inc.
+WMT
+Wal-Mart Stores, Inc.
+XOM
+Exxon Mobil Corporation
+50
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+Table 2: Volume model coeﬃcients.
+This table reports the mean value as well as the 10% and 90% deciles of the coeﬃcients for
+the model of volume. Ψ1 is the coeﬃcient of the previous bucket volume, Ψon the coeﬃcient
+of the volume of the previous trading day when there the previous day was a trading day, and
+Ψmd is the coeﬃcient of the volume of the previous trading day, when the previous day was
+not a trading day either due to a weekend, a holiday, or both. The values are calculated for
+the 30 stocks in the Dow Jones Industrial Average over consecutive 60-day rolling windows
+during the period July 1, 2010 to December 30, 2011.
+10%
+Average
+90%
+Ψ1
+0.56
+0.62
+0.71
+Ψon
+0.45
+0.59
+0.73
+Ψmd
+0.42
+0.57
+0.71
+51
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+Table 3: Coeﬃcients βs
+This table reports the mean value, along with the values of the 10% and 90% deciles, of
+the coeﬃcient βs in the relationship between the variance of stocks returns and market
+volume, for each stock of the Dow Jones Industrial Average. The values are calculated over
+consecutive 60-day rolling windows during the period July 1, 2010 to December 30, 2011.
+Ticker
+10%
+mean
+90%
+AA
+1.20
+1.32
+1.53
+AXP
+0.95
+1.13
+1.36
+BA
+1.02
+1.21
+1.39
+BAC
+1.29
+1.53
+1.81
+CAT
+1.25
+1.42
+1.70
+CSCO
+0.89
+1.11
+1.36
+CVX
+1.26
+1.42
+1.67
+DD
+1.06
+1.16
+1.38
+DIS
+0.95
+1.08
+1.24
+GE
+1.27
+1.37
+1.48
+HD
+1.07
+1.18
+1.32
+HPQ
+1.18
+1.32
+1.57
+IBM
+1.22
+1.33
+1.48
+INTC
+1.09
+1.29
+1.47
+JNJ
+1.21
+1.33
+1.54
+JPM
+1.32
+1.46
+1.61
+KFT
+0.71
+0.96
+1.26
+KO
+1.03
+1.27
+1.50
+MCD
+1.03
+1.19
+1.38
+MMM
+1.07
+1.19
+1.39
+MRK
+0.95
+1.11
+1.46
+MSFT
+1.11
+1.29
+1.58
+PFE
+1.00
+1.14
+1.42
+PG
+1.11
+1.23
+1.50
+T
+1.11
+1.23
+1.44
+TRV
+0.91
+1.07
+1.33
+UTX
+1.07
+1.16
+1.38
+VZ
+1.16
+1.33
+1.45
+WMT
+1.29
+1.41
+1.52
+XOM
+1.24
+1.36
+1.58
+52
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+Table 4: No trading costs
+This table displays characteristics of the empirical distribution of the diﬀerence between the
+market VWAP and the VWAP achieved following the strategy described in this paper for
+each of the stocks of the Dow Jones Industrial Average. The distribution was determined by
+implementing the VWAP strategy on 15 minute intervals on data from the TAQ database,
+where the volume model was calibrated in 60-day rolling windows. The table reports the
+ticker for the stock (Ticker), the daily empirical standard deviation (Vol) of returns for each
+stock the mean (Mean), standard deviation (Std), skewness (Skew), and kurtosis (Kurt) of
+the diﬀerence of VWAPs, as well as the annualized Sharpe ratio (Sh) that would be achieved
+by the strategy assuming compensation of 10 basis points for implementing the strategy.
+The amount traded is equal to 1% and 5% of the expected daily volume of each stock, and
+there are no trading costs. The mean and standard deviation are reported in basis points.
+1% of expected volume
+5% of expected volume
+Ticker
+Vol
+Mean
+Std
+Skew
+Kurt
+Sh
+Mean
+Std
+Skew
+Kurt
+Sh
+AA
+1.9%
+-2.6
+15.6
+-2.9
+29.2
+7.6
+-2.5
+15.2
+-3.0
+30.1
+7.9
+AXP
+1.5%
+-2.1
+18.6
+-8.2
+97.9
+6.7
+-2.1
+18.3
+-8.4
+101.1
+6.9
+BA
+1.4%
+-0.9
+11.3
+-1.6
+17.2
+12.8
+-0.9
+11.0
+-1.6
+17.6
+13.2
+BAC
+2.4%
+-2.2
+27.1
+-5.9
+60.9
+4.6
+-2.2
+26.6
+-6.0
+62.5
+4.7
+CAT
+1.6%
+-1.8
+10.1
+-2.1
+14.8
+12.8
+-1.8
+9.9
+-2.2
+15.2
+13.2
+CSCO
+1.3%
+-1.2
+11.1
+-1.1
+16.7
+12.6
+-1.1
+10.9
+-1.2
+17.4
+13.0
+CVX
+1.1%
+-1.5
+11.7
+-3.2
+29.5
+11.5
+-1.5
+11.4
+-3.3
+30.3
+11.9
+DD
+1.3%
+-1.6
+11.2
+-1.9
+24.9
+11.9
+-1.6
+10.9
+-2.0
+25.8
+12.3
+DIS
+1.2%
+-1.3
+15.5
+-2.9
+79.4
+8.9
+-1.3
+15.2
+-2.9
+81.5
+9.1
+GE
+1.4%
+-0.7
+11.5
+-0.2
+16.3
+12.8
+-0.7
+11.2
+-0.3
+16.7
+13.2
+HD
+1.4%
+-0.7
+10.6
+0.1
+20.9
+13.9
+-0.7
+10.3
+0.1
+21.4
+14.3
+HPQ
+1.5%
+0.6
+18.7
+8.6
+98.8
+8.0
+0.6
+18.4
+8.7
+100.5
+8.1
+IBM
+0.9%
+-1.1
+7.7
+-1.7
+18.0
+18.5
+-1.0
+7.5
+-1.8
+18.5
+19.1
+INTC
+1.2%
+-0.6
+8.7
+0.7
+19.6
+17.2
+-0.6
+8.4
+0.7
+20.5
+17.8
+JNJ
+0.8%
+-0.3
+7.1
+4.1
+56.9
+21.6
+-0.3
+6.9
+4.2
+58.4
+22.2
+JPM
+1.8%
+-1.4
+15.9
+-1.2
+41.1
+8.7
+-1.3
+15.5
+-1.3
+42.4
+8.9
+KFT
+0.9%
+-0.7
+9.1
+-5.7
+78.8
+16.1
+-0.7
+9.0
+-5.9
+82.0
+16.4
+KO
+0.8%
+-0.3
+7.1
+0.3
+26.4
+21.7
+-0.3
+7.0
+0.2
+26.9
+22.2
+MCD
+0.8%
+-0.7
+6.5
+-2.8
+31.2
+22.6
+-0.7
+6.4
+-3.0
+32.9
+23.2
+MMM
+1.2%
+-1.6
+9.2
+-2.1
+21.9
+14.4
+-1.6
+9.0
+-2.2
+23.1
+14.9
+MRK
+0.9%
+-1.0
+8.6
+-1.9
+32.7
+16.7
+-0.9
+8.4
+-1.9
+33.5
+17.2
+MSFT
+1.1%
+-0.4
+7.7
+-0.5
+16.7
+19.8
+-0.4
+7.4
+-0.6
+17.3
+20.5
+PFE
+1.1%
+-1.1
+10.6
+-3.7
+50.2
+13.3
+-1.1
+10.4
+-3.8
+51.3
+13.6
+PG
+0.7%
+-0.6
+5.9
+-0.5
+18.5
+25.3
+-0.6
+5.7
+-0.5
+19.1
+26.1
+T
+0.8%
+-0.9
+6.9
+-3.4
+27.7
+20.9
+-0.9
+6.7
+-3.5
+28.5
+21.5
+TRV
+1.1%
+-0.7
+10.6
+-2.7
+52.0
+14.0
+-0.6
+10.3
+-2.8
+53.8
+14.4
+UTX
+1.1%
+-0.7
+8.2
+-1.7
+20.8
+18.0
+-0.6
+8.0
+-1.7
+21.4
+18.5
+VZ
+0.9%
+-0.6
+6.7
+-3.4
+36.1
+22.3
+-0.6
+6.5
+-3.5
+37.6
+22.9
+WMT
+0.8%
+-0.7
+5.7
+-2.1
+26.1
+26.2
+-0.7
+5.5
+-2.2
+27.1
+26.9
+XOM
+0.9%
+0.1
+9.7
+-0.7
+23.4
+16.1
+0.1
+9.5
+-0.8
+24.0
+16.5
+53
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+Table 5: Comparative statics
+This table displays characteristics of the empirical distribution of the diﬀerence between the
+market VWAP and the VWAP achieved following the strategy described in this paper for
+each of the stocks of the Dow Jones Industrial Average. The distribution was determined by
+implementing the VWAP strategy on 5 minute intervals on data from the TAQ database,
+where the volume model was calibrated in 60-day rolling windows (left panel); and on 15
+minute intervals where the volume model is described in Section 4.4.4 (right panel). The
+table reports the ticker for the stock (Ticker), the daily empirical standard deviation (Vol)
+of returns for each stock, the mean (Mean), standard deviation (Std), skewness (Skew),
+and kurtosis (Kurt) of the diﬀerence of VWAPs, as well as the annualized Sharpe ratio
+(Sh) that would be achieved by the strategy assuming compensation of 10 basis points for
+implementing the strategy. The amount traded is equal to 1% of the expected daily volume
+of each stock, and there are no trading costs. The mean and standard deviation are reported
+in basis points.
+5 minute intervals
+IG Volume Model
+Ticker
+Vol
+Mean
+Std
+Skew
+Kurt
+Sh
+Mean
+Std
+Skew
+Kurt
+Sh
+AA
+1.9%
+-2.3
+15.4
+-2.7
+28.3
+7.9
+-2.7
+18.6
+-2.1
+24.0
+6.2
+AXP
+1.5%
+-2.2
+18.6
+-8.2
+97.8
+6.7
+-2.0
+18.3
+-7.1
+81.1
+6.9
+BA
+1.4%
+-0.8
+11.3
+-1.5
+16.3
+13.0
+-0.8
+11.9
+-1.4
+17.1
+12.2
+BAC
+2.4%
+-2.3
+28.6
+-6.0
+59.3
+4.3
+-3.1
+30.5
+-4.5
+44.8
+3.6
+CAT
+1.6%
+-1.8
+10.5
+-1.9
+13.4
+12.5
+-2.0
+11.9
+-2.1
+14.4
+10.7
+CSCO
+1.3%
+-1.0
+11.7
+-0.9
+18.3
+12.3
+-1.3
+11.8
+-1.2
+16.1
+11.7
+CVX
+1.1%
+-1.5
+11.7
+-3.1
+29.0
+11.4
+-1.4
+12.3
+-2.8
+28.2
+11.1
+DD
+1.3%
+-1.4
+11.5
+-1.6
+23.1
+11.9
+-1.6
+11.9
+-1.3
+23.3
+11.3
+DIS
+1.2%
+-1.1
+15.7
+-1.8
+78.3
+9.0
+-1.4
+15.4
+-5.2
+80.9
+8.9
+GE
+1.4%
+-0.9
+11.6
+-0.3
+16.1
+12.4
+-0.6
+12.6
+0.2
+15.6
+11.8
+HD
+1.4%
+-0.5
+10.4
+0.4
+22.1
+14.4
+-0.7
+11.1
+0.5
+21.2
+13.4
+HPQ
+1.5%
+-0.2
+15.9
+10.9
+167.9
+9.9
+0.5
+21.8
+11.2
+164.4
+7.0
+IBM
+0.9%
+-1.2
+8.2
+-1.7
+18.9
+17.1
+-0.9
+7.9
+-1.6
+16.9
+18.5
+INTC
+1.2%
+-0.6
+8.9
+0.8
+23.4
+16.8
+-0.3
+9.7
+0.3
+15.7
+15.9
+JNJ
+0.8%
+-0.4
+7.3
+4.3
+60.5
+20.9
+-0.2
+7.3
+4.7
+62.3
+21.4
+JPM
+1.8%
+-1.4
+16.4
+-1.8
+39.8
+8.4
+-1.5
+17.6
+-0.3
+33.1
+7.7
+KFT
+0.9%
+-0.8
+9.7
+-7.5
+106.1
+15.1
+-0.6
+9.6
+-4.9
+74.4
+15.5
+KO
+0.8%
+-0.3
+7.3
+0.4
+26.6
+21.0
+-0.2
+7.5
+0.5
+29.9
+20.7
+MCD
+0.8%
+-0.8
+6.7
+-3.0
+32.4
+22.0
+-0.7
+6.8
+-2.7
+29.3
+21.8
+MMM
+1.2%
+-1.6
+9.8
+-3.2
+34.2
+13.6
+-1.6
+9.8
+-1.4
+18.2
+13.7
+MRK
+0.9%
+-1.1
+8.9
+-2.1
+30.3
+15.8
+-0.9
+8.8
+-1.0
+30.9
+16.4
+MSFT
+1.1%
+-0.5
+8.1
+0.0
+20.6
+18.6
+-0.2
+8.0
+-0.2
+14.8
+19.4
+PFE
+1.1%
+-1.2
+10.2
+-3.7
+51.9
+13.7
+-1.0
+11.2
+-3.2
+47.3
+12.7
+PG
+0.7%
+-0.6
+5.9
+-0.3
+20.2
+25.4
+-0.6
+5.7
+0.2
+17.4
+26.0
+T
+0.8%
+-1.2
+7.8
+-4.9
+48.1
+17.9
+-0.9
+7.1
+-3.0
+25.7
+20.5
+TRV
+1.1%
+-0.6
+10.6
+-2.1
+47.1
+14.1
+-0.6
+10.0
+-1.9
+49.2
+14.8
+UTX
+1.1%
+-0.8
+8.6
+-1.7
+19.8
+17.0
+-0.6
+8.6
+-1.8
+21.9
+17.4
+VZ
+0.9%
+-0.8
+6.8
+-3.6
+38.5
+21.5
+-0.5
+6.8
+-2.7
+30.2
+22.1
+WMT
+0.8%
+-0.7
+5.7
+-2.3
+26.7
+25.7
+-0.6
+5.8
+-1.9
+26.5
+25.9
+XOM
+0.9%
+0.1
+9.6
+-0.4
+23.4
+16.3
+0.0
+9.2
+-0.5
+25.5
+17.3
+54
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+Table 6: Trading costs
+This table displays characteristics of the empirical distribution of the diﬀerence between the
+market VWAP and the VWAP achieved following the strategy described in this paper for
+each of the stocks of the Dow Jones Industrial Average. The distribution was determined by
+implementing the VWAP strategy on 15 minute intervals on data from the TAQ database,
+where the volume model was calibrated in 60-day rolling windows. The table reports the
+ticker for the stock (Ticker), the daily empirical standard deviation (Vol) of returns for each
+stock the mean (Mean), standard deviation (Std), skewness (Skew), and kurtosis (Kurt) of
+the diﬀerence of VWAPs, as well as the annualized Sharpe ratio (Sh) that would be achieved
+by the strategy assuming compensation of 10 basis points for implementing the strategy.
+The amount traded is equal to 1% and 5% of the expected daily volume of each stock. Each
+trade has a permanent eﬀect on market price and is subject to execution slippage, according
+to the model in Section 5. The mean and standard deviation are reported in basis points.
+1% of expected volume
+5% of expected volume
+Ticker
+Vol
+Mean
+Std
+Skew
+Kurt
+Sh
+Mean
+Std
+Skew
+Kurt
+Sh
+AA
+1.9%
+-4.0
+15.6
+-2.9
+29.3
+6.1
+-6.1
+15.2
+-2.9
+29.8
+4.0
+AXP
+1.5%
+-3.3
+18.6
+-8.2
+97.7
+5.7
+-4.9
+18.2
+-8.3
+99.7
+4.4
+BA
+1.4%
+-2.0
+11.3
+-1.6
+17.2
+11.3
+-3.5
+11.0
+-1.5
+17.2
+9.4
+BAC
+2.4%
+-3.7
+27.1
+-5.9
+61.8
+3.7
+-6.0
+26.7
+-6.1
+63.9
+2.4
+CAT
+1.6%
+-3.1
+10.2
+-2.2
+15.0
+10.8
+-5.0
+9.9
+-2.2
+15.2
+8.1
+CSCO
+1.3%
+-2.3
+11.1
+-1.1
+16.5
+11.0
+-3.9
+10.9
+-1.1
+16.6
+8.9
+CVX
+1.1%
+-2.5
+11.7
+-3.3
+29.5
+10.2
+-3.9
+11.4
+-3.3
+29.6
+8.6
+DD
+1.3%
+-2.7
+11.2
+-2.0
+24.8
+10.4
+-4.2
+10.8
+-2.0
+25.1
+8.5
+DIS
+1.2%
+-2.4
+15.5
+-2.9
+79.6
+7.8
+-3.8
+15.2
+-2.8
+80.6
+6.4
+GE
+1.4%
+-1.8
+11.5
+-0.2
+16.3
+11.3
+-3.4
+11.2
+-0.1
+16.7
+9.3
+HD
+1.4%
+-1.7
+10.6
+0.1
+20.7
+12.4
+-3.2
+10.4
+0.2
+20.8
+10.4
+HPQ
+1.5%
+-0.6
+18.5
+8.5
+98.1
+8.1
+-2.4
+18.2
+8.6
+100.2
+6.6
+IBM
+0.9%
+-1.8
+7.7
+-1.7
+17.8
+16.9
+-2.9
+7.5
+-1.7
+17.4
+14.9
+INTC
+1.2%
+-1.6
+8.7
+0.7
+19.4
+15.3
+-3.2
+8.5
+0.8
+20.2
+12.7
+JNJ
+0.8%
+-1.0
+7.1
+4.1
+56.7
+20.2
+-1.9
+7.0
+4.2
+58.9
+18.5
+JPM
+1.8%
+-2.6
+15.9
+-1.3
+41.6
+7.4
+-4.4
+15.5
+-1.3
+42.9
+5.7
+KFT
+0.9%
+-1.5
+9.1
+-5.7
+78.4
+14.8
+-2.5
+9.0
+-5.8
+80.3
+13.3
+KO
+0.8%
+-0.9
+7.2
+0.2
+25.9
+20.2
+-1.8
+7.0
+0.3
+25.7
+18.5
+MCD
+0.8%
+-1.4
+6.5
+-2.8
+30.9
+21.0
+-2.4
+6.3
+-2.8
+31.2
+19.1
+MMM
+1.2%
+-2.5
+9.2
+-2.1
+21.5
+12.9
+-3.8
+9.0
+-2.1
+21.8
+10.9
+MRK
+0.9%
+-1.7
+8.6
+-1.9
+32.7
+15.3
+-2.9
+8.3
+-1.9
+33.4
+13.6
+MSFT
+1.1%
+-1.4
+7.7
+-0.6
+16.8
+17.7
+-2.8
+7.6
+-0.5
+17.0
+15.0
+PFE
+1.1%
+-2.1
+10.6
+-3.7
+50.3
+11.8
+-3.4
+10.4
+-3.7
+50.9
+10.0
+PG
+0.7%
+-1.2
+5.9
+-0.5
+18.4
+23.6
+-2.1
+5.7
+-0.5
+18.4
+21.9
+T
+0.8%
+-1.7
+6.9
+-3.4
+28.0
+19.2
+-2.7
+6.7
+-3.4
+28.4
+17.2
+TRV
+1.1%
+-1.5
+10.6
+-2.8
+52.6
+12.7
+-2.7
+10.3
+-2.9
+54.2
+11.2
+UTX
+1.1%
+-1.6
+8.2
+-1.7
+20.5
+16.3
+-2.9
+8.0
+-1.6
+20.2
+14.1
+VZ
+0.9%
+-1.4
+6.7
+-3.4
+35.5
+20.4
+-2.5
+6.6
+-3.3
+34.6
+18.0
+WMT
+0.8%
+-1.3
+5.6
+-2.1
+26.1
+24.3
+-2.3
+5.5
+-2.1
+25.8
+22.3
+XOM
+0.9%
+-0.7
+9.7
+-0.7
+23.2
+15.2
+-1.8
+9.5
+-0.7
+23.3
+13.6
+55
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+t
+t + 1
+Observe: νt, St
+Trade: ct−1
+Choose: ct
+Observe: νt+1, St+1
+Trade: ct
+Choose: ct+1
+Figure 1: This ﬁgure provides a timeline for the events in our model. At time t, the market
+price St, and the market trading volume νt, are observed, and the personal trade of volume
+ct−1, is executed at the market price, St. The market and personal VWAPs, Mt, Pt, and the
+running market and personal volumes Vt, κt, are updated, and the personal volume to be
+traded at time t + 1, ct, is chosen. The same events occur at time t + 1, until the terminal
+time t = T.
+56
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+5
+10
+15
+20
+25
+0
+0.02
+0.04
+0.06
+0.08
+0.1
+0.12
+0.14
+MCD
+Bucket
+Volume Turnover
+ 
+ 
+Average Volume
+Volume on 7/1/2010
+Figure 2: McDonald’s volume.
+The solid line presents the average volume in each time
+bucket, averaged over all the 18 months in the data, July 1, 2010, to December 30, 2011,
+as a percentage of total daily volume.
+The dotted line presents the bucket volume for
+McDonald’s on the day of July 1st, 2010.
+57
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+5
+10
+15
+20
+25
+0%
+5%
+10%
+15%
+Monday
+Bucket
+E [ν × K ]
+5
+10
+15
+20
+25
+0%
+5%
+10%
+15%
+Tuesday
+Bucket
+E [ν × K ]
+5
+10
+15
+20
+25
+0%
+5%
+10%
+15%
+Wednesday
+Bucket
+E [ν × K ]
+5
+10
+15
+20
+25
+0%
+5%
+10%
+15%
+Thursday
+Bucket
+E [ν × K ]
+5
+10
+15
+20
+25
+0%
+5%
+10%
+15%
+Friday
+Bucket
+E [ν × K ]
+Figure 3: Model calculated, average value of the expected normalized volume per time bucket on each day of the week,
+along with 10% and 90% deciles of the distribution of trading volume during the 18 months in the data, July 1, 2010, to
+December 30, 2011.
+58
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+5
+10
+15
+20
+25
+0
+0.02
+0.04
+0.06
+0.08
+0.1
+0.12
+0.14
+MCD
+Bucket
+ 
+ 
+Trades on 9/28/2010
+Volume on 9/28/2010
+5
+10
+15
+20
+25
+0
+0.05
+0.1
+0.15
+0.2
+0.25
+0.3
+0.35
+Bucket
+MCD
+ 
+ 
+Average ct
+95% of ct
+Average Volume
+Figure 4: Bucket volume and optimal trading strategy for McDonalds.
+The top panel
+presents the market bucket volume (dotted line) and the personal traded volume according to the optimal VWAP tracking strategy (solid line) for McDonalds stock on September
+28, 2010. The bottom panel presents the average bucket volume, and the average bucket
+optimal personal volume and 95% interval, averaged over the 18 months in the data. The
+total personal traded volume is equal to 1% of the expected market volume for the day.
+59
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+ 5
+ 10
+ 15
+ 20
+ 25
+ 30
+ 0.6
+ 0.8
+ 1
+ 1.2
+ 1.4
+ 1.6
+ 1.8
+ 2
+ 2.2
+ 2.4
+VWAP diff. std.dev. (bp)
+Daily Volatility
+AA
+AXP
+BA
+BAC
+CAT
+CSCO
+CVX
+DD
+DIS
+GE
+HD
+HPQ
+IBM
+INTC
+JNJ
+JPM
+KFT
+KO
+MCD
+MMM
+MRK
+MSFT
+PFE
+PG
+T
+TRV
+UTX
+VZ
+WMT
+XOM
+ 5
+ 10
+ 15
+ 20
+ 25
+ 30
+ 0.6
+ 0.8
+ 1
+ 1.2
+ 1.4
+ 1.6
+ 1.8
+ 2
+ 2.2
+ 2.4
+VWAP diff. std.dev. (bp)
+Daily Volatility
+AA
+AXP
+BA
+BAC
+CAT
+CSCO
+CVX
+DD
+DIS
+GE
+HD
+HPQ
+IBM
+INTC
+JNJ
+JPM
+KFT
+KO
+MCD
+MMM
+MRK
+MSFT
+PFE
+PG
+T
+TRV
+UTX
+VZ
+WMT
+XOM
+Figure 5: Standard deviation of the diﬀerence between market and personal VWAP vs. daily
+standard deviation (volatility) of logarithmic returns for the thirty stocks of the Dow Jones
+Industrial Average. The daily personal volume is equal to 1% of the expected daily market
+volume for each stock in the top panel, and 5% of the expected daily market volume in the
+bottom panel.
+60
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+-4
+-3.5
+-3
+-2.5
+-2
+-1.5
+-1
+-0.5
+ 0.6
+ 0.8
+ 1
+ 1.2
+ 1.4
+ 1.6
+ 1.8
+ 2
+ 2.2
+ 2.4
+VWAP diff. (bp)
+Daily Volatility
+AA
+AXP
+BA
+BAC
+CAT
+CSCO
+CVX
+DD
+DIS
+GE
+HD
+HPQ
+IBM
+INTC
+JNJ
+JPM
+KFT
+KO
+MCD
+MMM
+MRK
+MSFT
+PFE
+PG
+T
+TRV
+UTX
+VZ
+WMT
+XOM
+-6.5
+-6
+-5.5
+-5
+-4.5
+-4
+-3.5
+-3
+-2.5
+-2
+-1.5
+ 0.6
+ 0.8
+ 1
+ 1.2
+ 1.4
+ 1.6
+ 1.8
+ 2
+ 2.2
+ 2.4
+VWAP diff. (bp)
+Daily Volatility
+AA
+AXP
+BA
+BAC
+CAT
+CSCO
+CVX
+DD
+DIS
+GE
+HD
+HPQ
+IBM
+INTC
+JNJ
+JPM
+KFT
+KO
+MCD
+MMM
+MRK
+MSFT
+PFE
+PG
+T
+TRV
+UTX
+VZ
+WMT
+XOM
+Figure 6: Average diﬀerence between market and personal VWAP vs. daily standard deviation (volatility) of logarithmic returns for the thirty stocks of the Dow Jones Industrial
+Average when both permanent market impact and slippage are included. The daily personal
+volume is equal to 1% of the expected daily market volume for each stock in the top panel,
+and 5% of the expected daily market volume in the bottom panel.
+61
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+−5
+−4
+−3
+−2
+−8
+−7
+−6
+−5
+−4
+AA
+log volume
+log volatility
+−8
+−6
+−4
+−2
+−8
+−7
+−6
+−5
+−4
+AXP
+log volume
+log volatility
+−6
+−5
+−4
+−3
+−8
+−7
+−6
+−5
+BA
+log volume
+log volatility
+−6
+−5
+−4
+−3
+−2
+−8
+−7
+−6
+−5
+−4
+BAC
+log volume
+log volatility
+−6
+−5
+−4
+−3
+−8
+−7
+−6
+−5
+−4
+CAT
+log volume
+log volatility
+−6
+−5
+−4
+−3
+−2
+−8
+−7
+−6
+−5
+−4
+CSCO
+log volume
+log volatility
+−7
+−6
+−5
+−4
+−8
+−7
+−6
+−5
+−4
+CVX
+log volume
+log volatility
+−8
+−6
+−4
+−2
+−8
+−7
+−6
+−5
+DD
+log volume
+log volatility
+−8
+−6
+−4
+−2
+−8
+−7
+−6
+−5
+−4
+DIS
+log volume
+log volatility
+−8
+−6
+−4
+−2
+−8
+−7
+−6
+−5
+−4
+GE
+log volume
+log volatility
+−8
+−6
+−4
+−2
+−8
+−7
+−6
+−5
+HD
+log volume
+log volatility
+−6
+−5
+−4
+−3
+−2
+−8
+−6
+−4
+−2
+HPQ
+log volume
+log volatility
+−7
+−6
+−5
+−4
+−8
+−7
+−6
+−5
+IBM
+log volume
+log volatility
+−6
+−5
+−4
+−3
+−8
+−7
+−6
+−5
+INTC
+log volume
+log volatility
+−7
+−6
+−5
+−4
+−8
+−7
+−6
+−5
+JNJ
+log volume
+log volatility
+−6
+−5
+−4
+−3
+−8
+−7
+−6
+−5
+−4
+JPM
+log volume
+log volatility
+−8
+−6
+−4
+−2
+−8
+−7
+−6
+−5
+KFT
+log volume
+log volatility
+−7
+−6
+−5
+−4
+−8
+−7
+−6
+−5
+KO
+log volume
+log volatility
+−8
+−6
+−4
+−2
+−9
+−8
+−7
+−6
+−5
+MCD
+log volume
+log volatility
+−8
+−6
+−4
+−2
+−8
+−7
+−6
+−5
+MMM
+log volume
+log volatility
+−8
+−6
+−4
+−2
+−8
+−7
+−6
+−5
+MRK
+log volume
+log volatility
+−8
+−6
+−4
+−2
+−8
+−7
+−6
+−5
+MSFT
+log volume
+log volatility
+−8
+−6
+−4
+−2
+−8
+−7
+−6
+−5
+PFE
+log volume
+log volatility
+−7
+−6
+−5
+−4
+−8
+−7
+−6
+−5
+PG
+log volume
+log volatility
+−7
+−6
+−5
+−4
+−8
+−7
+−6
+−5
+−4
+T
+log volume
+log volatility
+−6
+−5
+−4
+−3
+−8
+−7
+−6
+−5
+TRV
+log volume
+log volatility
+−7
+−6
+−5
+−4
+−8
+−7
+−6
+−5
+UTX
+log volume
+log volatility
+−7
+−6
+−5
+−4
+−8
+−7
+−6
+−5
+VZ
+log volume
+log volatility
+−7
+−6
+−5
+−4
+−8
+−7
+−6
+−5
+WMT
+log volume
+log volatility
+−7
+−6
+−5
+−4
+−8
+−7
+−6
+−5
+−4
+XOM
+log volume
+log volatility
+Figure 7: Logarithm of trading volume vs. logarithm of daily standard deviation of stock price.
+62
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+JUL2010
+APR2011
+DEC2011
+0
+0.05
+0.1
+AA, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.02
+0.04
+0.06
+AXP, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.01
+0.02
+0.03
+BA, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.02
+0.04
+0.06
+0.08
+BAC, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.01
+0.02
+0.03
+0.04
+CAT, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.05
+0.1
+CSCO, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.005
+0.01
+0.015
+CVX, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.01
+0.02
+0.03
+DD, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.02
+0.04
+0.06
+DIS, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.005
+0.01
+0.015
+0.02
+GE, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.01
+0.02
+0.03
+HD, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.02
+0.04
+0.06
+0.08
+HPQ, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.005
+0.01
+0.015
+IBM, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.01
+0.02
+0.03
+0.04
+INTC, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.005
+0.01
+0.015
+JNJ, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.01
+0.02
+0.03
+0.04
+JPM, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.01
+0.02
+0.03
+0.04
+KFT, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.005
+0.01
+0.015
+KO, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.01
+0.02
+0.03
+MCD, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.01
+0.02
+0.03
+MMM, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.01
+0.02
+0.03
+MRK, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.01
+0.02
+0.03
+0.04
+MSFT, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.005
+0.01
+0.015
+0.02
+PFE, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.005
+0.01
+0.015
+PG, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.005
+0.01
+0.015
+0.02
+T, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.01
+0.02
+0.03
+TRV, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.005
+0.01
+0.015
+UTX, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.005
+0.01
+0.015
+0.02
+VZ, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.005
+0.01
+WMT, Turnover
+JUL2010
+APR2011
+DEC2011
+0
+0.005
+0.01
+0.015
+XOM, Turnover
+Figure 8: Turnover time-series.
+63
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+JUL2010
+APR2011
+DEC2011
+5
+10
+15
+20
+AA, VWAP
+JUL2010
+APR2011
+DEC2011
+35
+40
+45
+50
+55
+AXP, VWAP
+JUL2010
+APR2011
+DEC2011
+50
+60
+70
+80
+90
+BA, VWAP
+JUL2010
+APR2011
+DEC2011
+5
+10
+15
+20
+BAC, VWAP
+JUL2010
+APR2011
+DEC2011
+40
+60
+80
+100
+120
+CAT, VWAP
+JUL2010
+APR2011
+DEC2011
+10
+15
+20
+25
+CSCO, VWAP
+JUL2010
+APR2011
+DEC2011
+60
+80
+100
+120
+CVX, VWAP
+JUL2010
+APR2011
+DEC2011
+30
+40
+50
+60
+DD, VWAP
+JUL2010
+APR2011
+DEC2011
+25
+30
+35
+40
+45
+DIS, VWAP
+JUL2010
+APR2011
+DEC2011
+10
+15
+20
+25
+GE, VWAP
+JUL2010
+APR2011
+DEC2011
+25
+30
+35
+40
+45
+HD, VWAP
+JUL2010
+APR2011
+DEC2011
+20
+30
+40
+50
+HPQ, VWAP
+JUL2010
+APR2011
+DEC2011
+120
+140
+160
+180
+200
+IBM, VWAP
+JUL2010
+APR2011
+DEC2011
+15
+20
+25
+30
+INTC, VWAP
+JUL2010
+APR2011
+DEC2011
+55
+60
+65
+70
+JNJ, VWAP
+JUL2010
+APR2011
+DEC2011
+20
+30
+40
+50
+JPM, VWAP
+JUL2010
+APR2011
+DEC2011
+25
+30
+35
+40
+KFT, VWAP
+JUL2010
+APR2011
+DEC2011
+40
+50
+60
+70
+80
+KO, VWAP
+JUL2010
+APR2011
+DEC2011
+60
+80
+100
+120
+MCD, VWAP
+JUL2010
+APR2011
+DEC2011
+70
+80
+90
+100
+MMM, VWAP
+JUL2010
+APR2011
+DEC2011
+30
+32
+34
+36
+38
+MRK, VWAP
+JUL2010
+APR2011
+DEC2011
+22
+24
+26
+28
+30
+MSFT, VWAP
+JUL2010
+APR2011
+DEC2011
+14
+16
+18
+20
+22
+PFE, VWAP
+JUL2010
+APR2011
+DEC2011
+55
+60
+65
+70
+PG, VWAP
+JUL2010
+APR2011
+DEC2011
+24
+26
+28
+30
+32
+T, VWAP
+JUL2010
+APR2011
+DEC2011
+45
+50
+55
+60
+65
+TRV, VWAP
+JUL2010
+APR2011
+DEC2011
+60
+70
+80
+90
+100
+UTX, VWAP
+JUL2010
+APR2011
+DEC2011
+25
+30
+35
+40
+45
+VZ, VWAP
+JUL2010
+APR2011
+DEC2011
+45
+50
+55
+60
+WMT, VWAP
+JUL2010
+APR2011
+DEC2011
+50
+60
+70
+80
+90
+XOM, VWAP
+Figure 9: Daily VWAP time-series.
+64
+Electronic copy available at: https://ssrn.com/abstract=2333916
+
+−100
+−50
+0
+50
+0%
+20%
+40%
+60%
+AA, MT −PT
+−200
+−100
+0
+0%
+30%
+60%
+90%
+AXP, MT −PT
+−50
+0
+50
+0%
+20%
+40%
+60%
+BA, MT −PT
+−300
+−200
+−100
+0
+0%
+30%
+60%
+90%
+BAC, MT −PT
+−60
+−40
+−20
+0
+20
+0%
+15%
+30%
+45%
+CAT, MT −PT
+−50
+0
+50
+0%
+15%
+30%
+45%
+CSCO, MT −PT
+−50
+0
+50
+0%
+20%
+40%
+60%
+CVX, MT −PT
+−50
+0
+50
+0%
+20%
+40%
+60%
+DD, MT −PT
+−100
+0
+100
+0%
+30%
+60%
+90%
+DIS, MT −PT
+−50
+0
+50
+0%
+20%
+40%
+60%
+GE, MT −PT
+−50
+0
+50
+0%
+20%
+40%
+60%
+HD, MT −PT
+0
+100
+200
+0%
+30%
+60%
+90%
+HPQ, MT −PT
+−40
+−20
+0
+20
+0%
+15%
+30%
+45%
+IBM, MT −PT
+−40 −20
+0
+20
+40
+60
+0%
+20%
+40%
+60%
+INTC, MT −PT
+−40 −20
+0
+20
+40
+60
+0%
+20%
+40%
+60%
+JNJ, MT −PT
+−100
+0
+100
+0%
+30%
+60%
+90%
+JPM, MT −PT
+−100
+−50
+0
+50
+0%
+30%
+60%
+90%
+KFT, MT −PT
+−40 −20
+0
+20
+40
+0%
+20%
+40%
+60%
+KO, MT −PT
+−60
+−40
+−20
+0
+20
+0%
+20%
+40%
+60%
+MCD, MT −PT
+−60 −40 −20
+0
+20
+40
+0%
+20%
+40%
+60%
+MMM, MT −PT
+−50
+0
+50
+0%
+20%
+40%
+60%
+MRK, MT −PT
+−40
+−20
+0
+20
+40
+0%
+15%
+30%
+45%
+MSFT, MT −PT
+−100
+−50
+0
+50
+0%
+30%
+60%
+90%
+PFE, MT −PT
+−40
+−20
+0
+20
+0%
+20%
+40%
+60%
+PG, MT −PT
+−40
+−20
+0
+20
+0%
+20%
+40%
+60%
+T, MT −PT
+−100
+−50
+0
+50
+0%
+20%
+40%
+60%
+TRV, MT −PT
+−60
+−40
+−20
+0
+20
+0%
+20%
+40%
+60%
+UTX, MT −PT
+−60
+−40
+−20
+0
+20
+0%
+20%
+40%
+60%
+VZ, MT −PT
+−40
+−20
+0
+20
+0%
+20%
+40%
+60%
+WMT, MT −PT
+−50
+0
+50
+0%
+20%
+40%
+60%
+XOM, MT −PT
+Figure 10: Histogram of diﬀerence between market and personal VWAPs, MT −PT.
+65
+Electronic copy available at: https://ssrn.com/abstract=2333916
