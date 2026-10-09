@@ -1,0 +1,248 @@
+{
+  "doc_id": 42,
+  "titulo": "Algorithmic Trading and Liquidity Commonality",
+  "resumen_operativo": "El paper usa la introducción del mercado híbrido en NYSE (2006-2007) como experimento natural para mostrar que el aumento del algorithmic trading incrementa la comovilidad de la liquidez (spreads) entre acciones, tanto intradía como a nivel diario. Descompone el efecto en un aumento de la volatilidad del factor sistemático de liquidez y una disminución de la volatilidad idiosincrática. Es relevante para entender por qué el liquidity risk cross-sectional puede subir estructuralmente con más participación algorítmica, algo trasladable conceptualmente al análisis de comovimiento de liquidez en futuros.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "liquidity commonality",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Comovimiento de la liquidez (spreads, depth) entre distintas acciones; el paper muestra que ha crecido en la última década y que el algorithmic trading explica parte de ese crecimiento.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "liquidity risk"},
+        {"tipo": "CAUSA", "objeto": "liquidity risk"},
+        {"tipo": "USA", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "Although previous research has documented a low intraday liquidity commonality across stocks, it has grown over the past decade."
+    },
+    {
+      "nombre": "algorithmic trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Uso de algoritmos para ejecutar estrategias (desde market making hasta statistical arbitrage) a través de muchas acciones simultáneamente; el paper argumenta que su crecimiento induce mayor comovimiento de liquidez.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "liquidity commonality"},
+        {"tipo": "USA", "objeto": "market making"},
+        {"tipo": "USA", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "algorithmic trading may induce a higher liquidity comovement"
+    },
+    {
+      "nombre": "NYSE hybrid market introduction",
+      "tipo": "dato",
+      "definicion_en_contexto": "Natural experiment: entre octubre 2006 y enero 2007 NYSE eliminó restricciones a la ejecución automática (phase III), lo que facilitó el algorithmic trading y sirve de instrumento exógeno para identificar su efecto causal sobre la comovilidad de liquidez.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "algorithmic trading"},
+        {"tipo": "REQUIERE", "objeto": "difference-in-differences"}
+      ],
+      "cita_textual": "Using the introduction of hybrid market in the New York Stock Exchange, I show that at least a part of this growth can be attributed to an increase in algorithmic trading"
+    },
+    {
+      "nombre": "difference-in-differences",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Regresión con efectos fijos de stock y fecha sobre la variable hybrid (dummy de tratamiento escalonado) para identificar el efecto causal de la hibridización sobre correlaciones de spreads, controlando tendencias temporales comunes.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"},
+        {"tipo": "USA", "objeto": "liquidity commonality"}
+      ],
+      "cita_textual": "Regression with stock and date ﬁxed eﬀects is essentially a diﬀerence-in-diﬀerence test."
+    },
+    {
+      "nombre": "quoted spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre el mejor bid y el mejor ask (dólar o proporcional); usada como proxy de liquidez en frecuencia intradía porque medidas como Amihud o Kyle's lambda generan demasiado ruido a 5 minutos.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "liquidity commonality"},
+        {"tipo": "MEJORA_A", "objeto": "Amihud illiquidity"}
+      ],
+      "cita_textual": "Many of the often used liquidity proxies are unfortunately not suitable to use in intraday analysis... Therefore, I use spreads and depth"
+    },
+    {
+      "nombre": "Amihud illiquidity",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de iliquidez basada en dividir retorno por volumen; el paper la descarta para su análisis intradía por generar demasiado ruido y outliers a alta frecuencia.",
+      "relaciones": [],
+      "cita_textual": "Amihud measure involves dividing return by volume, and this will generate too much noise and huge outliers in high frequency."
+    },
+    {
+      "nombre": "Kyle lambda",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de price impact que debe estimarse vía regresiones, lo que dificulta su cálculo en ventanas de 5 minutos según el paper.",
+      "relaciones": [],
+      "cita_textual": "Price impact measure based on Kyle's λ or liquidity measure based on reversal... have to be estimated via regressions, and is therefore diﬃcult to calculate in 5 minute intervals."
+    },
+    {
+      "nombre": "intraday seasonality",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Patrón reverse J-shape del bid-ask spread intradía (mayor volatilidad al inicio y cierre de la rueda); el paper normaliza los spreads por media y desvío específicos de cada hora del día para controlarlo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "bid-ask spread generally exhibits a steep reverse J-shape, it may be the case that the ﬁrst 30 minutes of the trading day unduly drives most of the results"
+    },
+    {
+      "nombre": "look-ahead bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de usar información futura al construir la variable estandarizada del spread; el paper lo evita usando ventanas móviles de 20 días que no incluyen el día actual.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "rolling window standardization"}
+      ],
+      "cita_textual": "I use ∆s2 instead of ∆s to eliminate the potential look-ahead bias in case the distribution of spreads change with hybridization."
+    },
+    {
+      "nombre": "rolling window standardization",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Normalización del cambio en spread usando la media y desvío estándar móviles de 20 días previos (sin incluir el día actual), para evitar sesgo look-ahead y hacer comparables spreads entre acciones de distinta liquidez.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "look-ahead bias"}
+      ],
+      "cita_textual": "A slightly diﬀerent version calculated using 20 day rolling mean and standard deviation (without including day τ's data) is notated as ∆s2i,τ,t."
+    },
+    {
+      "nombre": "principal components analysis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica usada sobre los spreads estandarizados de las 30 acciones del Dow Jones para estimar qué fracción de la variación total es explicada por factores comunes de liquidez, mostrando su crecimiento en el tiempo.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "liquidity commonality"}
+      ],
+      "cita_textual": "For each month, I do a principal components analysis on the 5 minute standardized spreads si,τ,t and calculate the fraction of the variance that the ﬁrst two principal components explain."
+    },
+    {
+      "nombre": "systematic liquidity volatility",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Volatilidad del factor común (sistemático) de liquidez de un portfolio de acciones; su incremento implica mayor riesgo de liquidez de mercado, a diferencia de un cambio en la volatilidad idiosincrática.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "liquidity risk"},
+        {"tipo": "SE_OPONE_A", "objeto": "idiosyncratic liquidity volatility"}
+      ],
+      "cita_textual": "If the systematic liquidity factor becomes more volatile, it means that liquidity risk increases."
+    },
+    {
+      "nombre": "idiosyncratic liquidity volatility",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Componente de la volatilidad de liquidez específico de cada acción; su disminución, manteniendo fijo el componente sistemático, aumenta la comovilidad de liquidez sin necesariamente implicar mayor riesgo de liquidez.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "systematic liquidity volatility"},
+        {"tipo": "CAUSA", "objeto": "liquidity commonality"}
+      ],
+      "cita_textual": "Decrease of idiosyncratic volatility can mean that markets are becoming more eﬃcient while the level of liquidity risk remains the same."
+    },
+    {
+      "nombre": "liquidity risk",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Riesgo derivado de la alta comovilidad de liquidez entre activos; implica que en malos momentos más acciones se vuelven ilíquidas simultáneamente, generando mayores pérdidas para quienes deben liquidar posiciones.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "liquidity commonality"}
+      ],
+      "cita_textual": "Liquidity commonality is important because high liquidity commonality implies a high liquidity risk, which in turn has pricing implications."
+    },
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Familia de estrategias que operan simultáneamente múltiples legs/acciones y deben transaccionar todas las piernas rápidamente antes de que los precios se muevan en contra; ejemplo del canal de demanda de liquidez que genera comovimiento.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "liquidity commonality"},
+        {"tipo": "APLICA_A", "objeto": "algorithmic trading"}
+      ],
+      "cita_textual": "Statistical arbitrage algorithms must transact all legs of the strategy before prices move against them."
+    },
+    {
+      "nombre": "market making",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Canal de oferta de liquidez a través del cual HFTs que operan en múltiples acciones inducen comovimiento de liquidez vía preocupaciones de inventario y restricciones de financiamiento, con horizontes de tenencia mucho más cortos que los market makers tradicionales.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "liquidity commonality"},
+        {"tipo": "USA", "objeto": "inventory risk"}
+      ],
+      "cita_textual": "Market-making high frequency traders (HFTs) can induce a higher liquidity comovement over short horizons through a liquidity supply channel."
+    },
+    {
+      "nombre": "inventory risk",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Preocupación de los proveedores de liquidez por acumular posiciones en múltiples acciones, mencionada como mecanismo por el cual la liquidez comueve entre valores cuando los mismos agentes hacen mercado en varios títulos.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "liquidity commonality"}
+      ],
+      "cita_textual": "inventory concerns and funding constraints make liquidity comove across stocks"
+    },
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Subconjunto del algorithmic trading con horizontes de tenencia de milisegundos a horas; ha reemplazado a los market makers y specialists tradicionales, acelerando el efecto de comovimiento de liquidez de corto plazo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "algorithmic trading"},
+        {"tipo": "CAUSA", "objeto": "liquidity commonality"}
+      ],
+      "cita_textual": "HFTs, which have now eﬀectively replaced traditional market makers and specialists, have a much shorter holding period of couple milliseconds to couple hours at most"
+    },
+    {
+      "nombre": "adverse selection",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costo asociado a operar contra traders informados; el paper cita evidencia de que los costos de selección adversa aumentaron permanentemente con la hibridización de NYSE.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "Hendershott and Moulton (2011) ﬁnds that adverse selection costs increased permanently with hybridization, and realized spreads increased initially but decreased back by 4 months after hybridization."
+    },
+    {
+      "nombre": "order flow correlation",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Correlación en los flujos de órdenes entre distintas acciones causada por la combinación de traders algorítmicos tomadores y proveedores de liquidez actuando en simultáneo en varios títulos.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "liquidity commonality"},
+        {"tipo": "PARTE_DE", "objeto": "order flow imbalance"}
+      ],
+      "cita_textual": "This leads to order ﬂow correlations across stocks, as documented by Domowitz et al. (2005), and increases liquidity comovement through both of the mechanisms"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Cuando una acción de NYSE pasa a mercado híbrido (mayor ejecución automática/algorítmica), la correlación intradía (5 minutos) de sus spreads con el mercado NASDAQ aumenta entre 30% y 50%.",
+      "mercado": "US equities (NYSE, componentes S&P 500 vs NASDAQ-100)",
+      "periodo": "junio 2006 - mayo 2007 (hibridización oct 2006 - ene 2007)",
+      "magnitud": "aumento de correlación 30-50% (con proportional spread: 85% sin date fixed effects, 45% con date fixed effects; correlación pre-hybrid ~0.025)",
+      "condiciones": "regresión con efectos fijos de stock y fecha (diff-in-diff), usando ∆s2 (spread estandarizado con ventana móvil de 20 días, sin look-ahead); robusto a usar dollar spread o proportional spread",
+      "robustez": "media",
+      "cita_textual": "I ﬁnd that when a stock goes hybrid, the correlation in the 5-minute spreads with the broad NASDAQ market spreads (as measured by the average of NASDAQ) increases by 30–50%."
+    },
+    {
+      "afirmacion": "El efecto de la hibridización sobre la comovilidad de liquidez es aún mayor en frecuencia diaria que intradía: la correlación diaria entre el spread de una acción promedio de NYSE (S&P 500) y el spread promedio del NASDAQ-100 aumenta más de 90%.",
+      "mercado": "US equities (NYSE S&P 500 vs NASDAQ-100)",
+      "periodo": "junio 2006 - mayo 2007",
+      "magnitud": "correlación pre-hybrid de 0.16 en quoted % spreads, incremento de 0.14 (más de 90% relativo); sin date dummies el efecto es algo mayor",
+      "condiciones": "regresión con stock y date fixed effects; se excluyen observaciones de los 20 días posteriores al hybrid date para evitar sesgo por salto transitorio en spreads; robusto a dollar spreads y median vs mean",
+      "robustez": "media",
+      "cita_textual": "Before hybridization, correlation in quoted % spreads between a NYSE stock and the NASDAQ market is 0.16 on average, and it increases by 0.14 when the stock goes hybrid. This is an increase of more than 90%."
+    },
+    {
+      "afirmacion": "La volatilidad del factor sistemático de liquidez (portfolio-level) aumenta con la hibridización, mientras que la volatilidad idiosincrática de liquidez de cada acción individual disminuye, indicando que ambos mecanismos contribuyen al mayor comovimiento.",
+      "mercado": "US equities (NYSE S&P 500, portafolios agrupados por fecha de hibridización)",
+      "periodo": "junio 2006 - mayo 2007",
+      "magnitud": "volatilidad del factor sistemático de liquidez +0.2 desvíos estándar (+5.5% con proportional spread y mediana); volatilidad idiosincrática individual -0.2 desvíos estándar (-5 a -7%); ~10% del incremento en correlación se atribuye al aumento de volatilidad sistemática (R² stock-por-stock entre 10-20%)",
+      "condiciones": "regresión con portfolio y date fixed effects sobre volatilidad diaria de spreads a 5 minutos; cálculo back-of-the-envelope para descomponer la contribución relativa",
+      "robustez": "baja",
+      "cita_textual": "portfolio liquidity volatility increases 0.2 standard deviation, or by 5.5% (0.20÷3.66 = 0.055) when the portfolio goes hybrid."
+    },
+    {
+      "afirmacion": "Tras la hibridización, el tamaño promedio de las operaciones cae y el número de operaciones sube abruptamente, consistente con mayor participación de algorithmic trading.",
+      "mercado": "US equities (NYSE S&P 500 y NASDAQ-100)",
+      "periodo": "junio 2006 - mayo 2007",
+      "magnitud": "número de operaciones +30% en la fecha de hibridización; tamaño medio y mediano de operación -30%",
+      "condiciones": "medido relativo a junio 2006 como base, con corrección por efectos de tiempo restando la media de acciones NASDAQ; confirmado con regresión de efectos fijos (Table 2), significativo estadística y económicamente",
+      "robustez": "media",
+      "cita_textual": "The number of trade jumps up by 30% on the hybridization date and has a slight drift upwards, and the mean and median trade size jumps down by 30% and has a slight drift down."
+    },
+    {
+      "afirmacion": "El efecto de la hibridización sobre la comovilidad intradía es algo mayor en acciones pequeñas que en grandes, aunque positivo y significativo en todos los cuartiles de capitalización de mercado.",
+      "mercado": "US equities (S&P 500 dividido en cuartiles de market cap)",
+      "periodo": "agosto 2006 (clasificación) / junio 2006 - mayo 2007",
+      "magnitud": "coeficiente E positivo y significativo para todos los cuartiles; cuartiles de mayor tamaño muestran incremento de correlación intradía menor que el cuartil más pequeño",
+      "condiciones": "regresión con interacción entre hybrid dummy y dummies de cuartil de tamaño, efectos fijos de stock y fecha",
+      "robustez": "media",
+      "cita_textual": "Across all speciﬁcations, larger stocks see a smaller increase in correlation."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper es sobre equities (NYSE) y usa un experimento natural regulatorio no replicable en ES futures, pero el marco conceptual de comovilidad de liquidez sistemática vs idiosincrática y su medición vía spreads normalizados podría inspirar un análisis de comovimiento de liquidez entre productos correlacionados (ES, NQ, YM) en ventanas intradía."
+  }
+}

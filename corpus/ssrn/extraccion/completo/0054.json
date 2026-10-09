@@ -1,0 +1,202 @@
+{
+  "doc_id": 54,
+  "titulo": "Anatomy of a Market Crash: A Market Microstructure Analysis of the Turkish Overnight Liquidity Crisis",
+  "resumen_operativo": "Analiza la crisis de liquidez overnight de Turquía en 2000 usando un dataset único con identidad codificada de contrapartes en cada transacción del mercado de repos. Muestra que el order flow a nivel institución individual explica mucho más las variaciones de tasas que el order flow agregado, y que esa ventaja se amplifica durante la crisis. Para un trader-quant el aporte es metodológico: ilustra el valor de desagregar order flow por participante/institución en vez de usar solo flujo neto agregado, y cómo la informatividad de las señales cambia en regímenes de estrés.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "order flow imbalance",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Flujo neto de órdenes agresivas (borrow/lend, equivalente a buy/sell) que el paper usa como variable explicativa de los cambios de tasa de interés overnight.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "interest rate changes"},
+        {"tipo": "USA", "objeto": "limit order book"}
+      ],
+      "cita_textual": "Order ﬂow aﬀects asset prices because it conveys information"
+    },
+    {
+      "nombre": "institution level order flow",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Order flow desagregado por identidad codificada de cada institución participante (en vez de sumado en un flujo agregado), construido a partir de volumen de mercado y de límite ejecutado por institución.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "order flow imbalance"},
+        {"tipo": "PREDICE", "objeto": "interest rate changes"},
+        {"tipo": "REQUIERE", "objeto": "coded counterparty identity data"}
+      ],
+      "cita_textual": "Institution level order ﬂow is much more informative than cross sectionally aggregated order ﬂow"
+    },
+    {
+      "nombre": "informed trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Idea de que ciertas instituciones poseen información superior que se refleja en la mayor capacidad predictiva de su order flow, especialmente en crisis.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "institution level order flow"}
+      ],
+      "cita_textual": "In accordance with theories of informed trading, we expect the largest institutions to be best informed, and hence to favor market orders"
+    },
+    {
+      "nombre": "resting limit order",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Orden límite firme que la institución que la coloca está comprometida a honrar hasta que la retire o sea ejecutada por otra institución vía orden de mercado; su impacto en el rendimiento se mide por separado del de las órdenes de mercado ejecutadas.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "market order"},
+        {"tipo": "PARTE_DE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "traders either enter lend or borrow quotes where these quotes are ﬁrm in the sense that the quoting institution is committed to lend/borrow until it either withdraws the quote or another institution hits the limit order with a market order"
+    },
+    {
+      "nombre": "market impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Impacto en el rendimiento (yield) que genera el order flow de cada institución; el paper documenta que el impacto de las órdenes límite ejecutadas suele ser más del doble que el de las órdenes de mercado para los mayores prestatarios.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "institution level order flow"}
+      ],
+      "cita_textual": "the price impact of limit orders is more than double that of market orders"
+    },
+    {
+      "nombre": "liquidity crisis",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Episodio de estrés extremo de mercado en el que la demanda de liquidez overnight se vuelve altamente inelástica y las tasas se disparan; en Turquía las tasas anuales overnight llegaron a 2000%.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "regime switching"}
+      ],
+      "cita_textual": "A liquidity crisis hit Turkey in November 2000. At its peak, annual interest rates reached 2000% overnight"
+    },
+    {
+      "nombre": "regime switching",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El paper detecta una ruptura estructural en la muestra y separa los datos en periodo estable y periodo de crisis, estimando el modelo por separado en cada régimen.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "liquidity crisis"}
+      ],
+      "cita_textual": "We observe a structural break about ten days prior to the main crisis day, on day 225 (Nov 20), and therefore split the sample into two subsamples"
+    },
+    {
+      "nombre": "adverse selection",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Riesgo de que la contraparte tenga información superior; los autores lo vinculan a la mayor heterogeneidad e informatividad del order flow institucional durante la crisis, cuando el mercado se vuelve más informado.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "institution level order flow"}
+      ],
+      "cita_textual": "The stronger impact of institution level order ﬂow during the crisis indicates that banks became more informed in the crisis period"
+    },
+    {
+      "nombre": "intraday seasonality",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Patrón de actividad de trading a lo largo del día: el volumen aumenta lentamente en la mañana y se mantiene más constante en la tarde.",
+      "relaciones": [],
+      "cita_textual": "trading volume picks up slowly in the morning trading session, but is more constant in the afternoon"
+    },
+    {
+      "nombre": "market microstructure noise",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "El paper descarta el cambio de tasa overnight (close-to-open) porque tiene una desviación estándar ~25 veces mayor que los cambios intradía de 5 minutos, sesgando potencialmente hacia abajo la contribución del order flow si se incluyera.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "overnight interest rate changes (close to open)...have a standard error of about 25 times the ﬁve–minute intraday interest rate changes"
+    },
+    {
+      "nombre": "autocorrelation",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Coeficiente autorregresivo de primer orden (AR1) usado para medir la predictibilidad del order flow de cada institución; los prestatarios más grandes muestran mayor AR1 que los prestamistas.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "institution level order flow"}
+      ],
+      "cita_textual": "the largest borrowing institutions have the highest AR1 coeﬃcients implying higher predictability of the borrowing institutions order ﬂow"
+    },
+    {
+      "nombre": "R-squared",
+      "tipo": "metrica",
+      "definicion_en_contexto": "R2 centrado usado como medida principal del poder explicativo de cada especificación del modelo (lags propios, order flow agregado, order flow institucional).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "institution level order flow"},
+        {"tipo": "MEJORA_A", "objeto": "order flow imbalance"}
+      ],
+      "cita_textual": "we follow standard practice and use centered R2 to provide a direct measure of the explanatory power of each model"
+    },
+    {
+      "nombre": "heterogeneity across institutions",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Diferencias sustanciales entre instituciones en el impacto de su order flow sobre el rendimiento; algunas son 'yield takers' con poco impacto y otras mueven fuertemente las tasas.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "institution level order flow"}
+      ],
+      "cita_textual": "There is considerable heterogeneity in the yield impact of institution level order ﬂow, both between diﬀerent institutions and market and limit orders"
+    },
+    {
+      "nombre": "look-ahead bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "El paper reconoce que las variables comúnmente incluyen tanto valores contemporáneos como rezagados; discuten la asimetría entre coeficientes contemporáneos y rezagados como parte del análisis, evitando confundir causalidad con simple correlación contemporánea.",
+      "relaciones": [],
+      "cita_textual": "The same asymmetry between contemporaneous and lagged coeﬃcients is present in the institution level results"
+    },
+    {
+      "nombre": "market concentration",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Concentración de la actividad de trading en pocas instituciones dominantes: una institución concentra casi 30% del volumen de préstamo (borrow) y la segunda más del 20%.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "institution level order flow"}
+      ],
+      "cita_textual": "On the borrowing side we note that one institution has almost 30% of trading volume and the second–largest more than 20%"
+    },
+    {
+      "nombre": "collusion",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Posibilidad, sugerida por rumores de prensa y por el comportamiento coordinado de los tres mayores prestamistas, de que instituciones grandes coludieran para manipular el rendimiento durante la crisis; el paper la señala como interpretación posible pero no la prueba formalmente.",
+      "relaciones": [],
+      "cita_textual": "perhaps this signals some form of collusion by the lenders. After all, rumors of collusion in yield manipulation were strong during and after the crisis"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El order flow agregado (borrow/lend sumado) explica muy poco de los cambios de tasa de interés a frecuencia diaria, mucho menos que un modelo autorregresivo simple.",
+      "mercado": "Turkish overnight repo market (ISE)",
+      "periodo": "2000 (día 1-240, muestra completa)",
+      "magnitud": "R2 = 5.3% (agregado) vs 15.7% (solo lags propios) a frecuencia diaria",
+      "condiciones": "In-sample, sin costos de transacción explícitos en el resultado, frecuencia diaria, muestra completa año 2000",
+      "robustez": "media",
+      "cita_textual": "By using aggregate order ﬂow instead, the explanatory power drops to 6%"
+    },
+    {
+      "afirmacion": "El order flow desagregado por institución explica sustancialmente más los cambios de tasa que el order flow agregado, tanto a frecuencia diaria como de 5 minutos.",
+      "mercado": "Turkish overnight repo market (ISE)",
+      "periodo": "2000 (día 1-240)",
+      "magnitud": "R2 = 52.2% (institucional, diario) vs 5.3% (agregado, diario); R2 = 23% (institucional, estable, 5min) vs 12% (agregado, estable, 5min)",
+      "condiciones": "In-sample, solo 4 instituciones mayores por lado más residual, sin OOS ni otros mercados",
+      "robustez": "media",
+      "cita_textual": "institution level order ﬂow, its coeﬃcients are generally of the expected sign, and demonstrate considerable heterogeneity"
+    },
+    {
+      "afirmacion": "Durante el periodo de crisis, la informatividad del order flow institucional aumenta notablemente respecto al periodo estable, mientras que la del order flow agregado cae.",
+      "mercado": "Turkish overnight repo market (ISE)",
+      "periodo": "Periodo estable: día 1-224 (4 ene-17 nov 2000); periodo de crisis: día 225-240 (20 nov-11 dic 2000)",
+      "magnitud": "R2 institucional sube de 23% (estable) a 55% (crisis), +32 puntos porcentuales; R2 agregado cae de 12% (estable) a 6% (crisis); coeficientes de prestamistas suben 190% y de prestatarios 150% en promedio durante la crisis",
+      "condiciones": "In-sample, muestra de crisis muy corta (16-24 observaciones diarias, 378 obs a 5min), sin costos ni validación OOS",
+      "robustez": "baja",
+      "cita_textual": "the informativeness of institution level order ﬂow increases during the crisis, when it explains 52% of interest rate changes"
+    },
+    {
+      "afirmacion": "El impacto en rendimiento de las órdenes límite ejecutadas es sustancialmente mayor que el de las órdenes de mercado para los mayores prestatarios, mostrando que ambos tipos de orden no son equivalentes en información.",
+      "mercado": "Turkish overnight repo market (ISE)",
+      "periodo": "2000, frecuencia diaria y 5 minutos",
+      "magnitud": "El impacto de precio de las órdenes límite es más del doble que el de las órdenes de mercado para los 2 mayores prestatarios (ej. bl(2) coeficiente 12.69 vs bm(2) 5.47 contemporáneo, tabla 5)",
+      "condiciones": "In-sample, resultado descriptivo de coeficientes de regresión, sin costos ni OOS",
+      "robustez": "baja",
+      "cita_textual": "there is a big diﬀerence between market order ﬂow and traded limit order ﬂow for the two largest borrowing institutions where the price impact of limit orders is more than double that of market orders"
+    },
+    {
+      "afirmacion": "El capital total que salió del sistema durante la crisis fue considerable y erosionó una parte relevante de las reservas del banco central.",
+      "mercado": "Turkish overnight repo market / FX reserves",
+      "periodo": "Noviembre-diciembre 2000",
+      "magnitud": "Salida de capital estimada en USD 6 mil millones, ~25% de las reservas de divisas del Banco Central",
+      "condiciones": "Dato descriptivo/contextual, no resultado de un modelo estadístico",
+      "robustez": "baja",
+      "cita_textual": "Total capital outﬂow during this period reached an estimated USD 6 billion, eroding approximately 25% of the foreign exchange reserves of the Central Bank"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper trata un mercado de repo overnight illiquid-crisis muy idiosincrático (identidad de contraparte, tasas no martingala) sin relación directa a futuros ES, pero la idea metodológica de desagregar order flow por actor/tipo de orden (market vs limit) y evaluar cambios de informatividad en régimen de estrés podría inspirar análisis de heterogeneidad de flujo en datos de order flow HFT si se dispusiera de identidad de participantes, algo que no existe en datos públicos de ES."
+  }
+}

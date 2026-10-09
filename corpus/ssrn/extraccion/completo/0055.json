@@ -1,0 +1,257 @@
+{
+  "doc_id": 55,
+  "titulo": "Apex Quant: A Multi-Agent Debate Framework for Quantitative Trading",
+  "resumen_operativo": "Describe un framework de trading con tres agentes LLM de personas fijas (bull, bear, moderador) que debaten antes de emitir una decisión BUY/SELL/HOLD. El aporte central no es performance cuantitativa sino hallazgos arquitectónicos: la estructura de debate de tres partes estabiliza decisiones frente a debates binarios, el sesgo de persona sistemático puede dominar por retórica antes que evidencia, y destilar reglas de behavioral finance en el prompt mejora el razonamiento. Es más relevante como diseño de sistema de decisión discrecional asistido por LLM que como estrategia sistemática backtesteada.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "multi-agent debate",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Arquitectura en la que varios agentes LLM con mandatos opuestos construyen casos independientes y luego deliberan antes de llegar a una decisión de trading, en lugar de que un solo agente decida.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "persona bias"},
+        {"tipo": "USA", "objeto": "Bayesian update protocol"},
+        {"tipo": "APLICA_A", "objeto": "quantitative trading"}
+      ],
+      "cita_textual": "Our solution is a structured three-agent debate framework in which agents with fixed, opposing investment philosophies are required to build independent cases before deliberating toward a consensus position."
+    },
+    {
+      "nombre": "persona bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Fenómeno donde un agente del debate domina sistemáticamente las decisiones a través de estructura retórica más que por calidad de evidencia, sesgando el resultado final.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "debate constitution"},
+        {"tipo": "CAUSA", "objeto": "consensus illusion"}
+      ],
+      "cita_textual": "systematic persona bias can emerge wherein one agent consistently dominates through rhetorical structure rather than evidence quality"
+    },
+    {
+      "nombre": "wisdom distillation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de compresión de principios de behavioral finance en instrucciones imperativas y constitucionales dentro del system prompt de cada agente, para que no sean sobreescritas por la narrativa del contexto de mercado.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "base model priors"},
+        {"tipo": "MITIGA", "objeto": "momentum chasing"}
+      ],
+      "cita_textual": "We term this approach wisdom distillation: the compression of domain expertise into concise, imperative principles that operate at the constitutional level of the agent prompt."
+    },
+    {
+      "nombre": "cognitive incompatibility principle",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Observación de que un solo agente LLM no puede mantener simultáneamente dos posturas de inversión contradictorias con igual convicción; un set de priors termina dominando, lo que motiva separar agentes bull y bear.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "multi-agent debate"}
+      ],
+      "cita_textual": "a single agent cannot simultaneously maintain two contradictory investment stances with equal conviction"
+    },
+    {
+      "nombre": "debate constitution",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Conjunto de cinco reglas explícitas (carga de la prueba, humildad epistémica, actualización bayesiana, incremento de información, resolución de disputas) que gobiernan cómo argumentan los agentes para evitar loops de aserción o consenso hueco.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Bayesian update protocol"},
+        {"tipo": "MITIGA", "objeto": "persona bias"}
+      ],
+      "cita_textual": "Five explicit rules governing burden of proof, updates, and information increment"
+    },
+    {
+      "nombre": "Bayesian update protocol",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Regla que obliga a un agente a ajustar sus parámetros de acción cuando el oponente presenta un argumento válido (basado en datos, internamente consistente, no falsificable), distinguiendo lógica central (defendible) de parámetros numéricos (que deben reflejar la evidencia entrante).",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "debate constitution"}
+      ],
+      "cita_textual": "the receiving agent is required to adjust its action and operation parameters accordingly. This adjustment is mandatory and cannot be substituted by rhetorical resistance."
+    },
+    {
+      "nombre": "information increment requirement",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Regla de la constitución del debate que exige que cada ronda de deliberación aporte al menos un dato o ángulo nuevo; repetir un argumento con lenguaje más fuerte no cuenta como evidencia nueva y pierde peso persuasivo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "debate constitution"}
+      ],
+      "cita_textual": "Restating an existing argument with stronger language does not constitute new information."
+    },
+    {
+      "nombre": "limited data principle",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Restricción de diseño por la cual cada ciclo de decisión es inferencia stateless: los agentes reciben solo datos del período actual, sin acceso a transcripciones previas, para evitar drift inercial por retroalimentación de sus propias salidas pasadas.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "Deliberately feeding agents their own previous outputs introduces inertial drift analogous to dead reckoning in navigation: each cycle's errors compound into the next"
+    },
+    {
+      "nombre": "complexity convergence",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Restricción de que aunque el debate explore estrategias complejas y condicionales, la salida final debe resolverse en una instrucción ejecutable simple, para reducir error operativo, aunque esto pierde información en casos donde el debate soporta una estrategia matizada.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "debate transparency as interpretability"}
+      ],
+      "cita_textual": "the final action and operation fields in Fulcrum's output must resolve to simple, executable instructions"
+    },
+    {
+      "nombre": "catfish effect",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "En ensembles homogéneos de modelos muy 'compliant', los tres agentes subestiman la intensidad de debate requerida y convergen prematuramente sin presión adversarial genuina; un solo agente menos complaciente basta para elevar el piso de intensidad y forzar debate real en los demás.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "consensus illusion"},
+        {"tipo": "CAUSA", "objeto": "persona bias"}
+      ],
+      "cita_textual": "one disruptive element is enough to prevent the group from settling into cooperative underperformance"
+    },
+    {
+      "nombre": "model independence",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Propiedad observada de que el sistema produce comportamiento convergente y calidad de decisión similar al sustituir el LLM subyacente por otro de capacidad comparable, sugiriendo que la arquitectura de prompts domina sobre la identidad del modelo.",
+      "relaciones": [
+        {"tipo": "CONTRADICE_A", "objeto": "catfish effect"}
+      ],
+      "cita_textual": "swapping the underlying model for another of comparable capability produced less change in output quality than a substantive revision to the prompt architecture"
+    },
+    {
+      "nombre": "consensus illusion",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Falla en la que agentes con disposición de compliance compartida realizan un debate que parece válido en la salida pero carece de presión adversarial genuina, produciendo una recomendación plausible pero sin escrutinio real de sus supuestos débiles.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "persona bias"},
+        {"tipo": "MITIGA", "objeto": "catfish effect"}
+      ],
+      "cita_textual": "three Qwen-Plus agents produced a debate that converged not because the evidence warranted convergence but because none of the agents was constitutionally disposed to resist it"
+    },
+    {
+      "nombre": "structural role-design blind spot",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "En la arquitectura de dos agentes (Analyst/Auditor), el agente único con mandato de acción no puede generar una señal de venta una vez que su tesis alcista es refutada, dejando al sistema sin mecanismo para llamar a la salida.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "cognitive incompatibility principle"}
+      ],
+      "cita_textual": "the agent responsible for attack is also the only agent capable of calling retreat — represents a structural blind spot that scales with volatility"
+    },
+    {
+      "nombre": "debate transparency as interpretability",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Ventaja práctica del debate multiagente: la transcripción completa (evaluaciones independientes, intercambios de deliberación, firmas disidentes) constituye un log de auditoría estructurado que explica por qué se llegó a una decisión.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "single-agent LLM trading"}
+      ],
+      "cita_textual": "The debate transcript therefore serves a dual purpose: it is the decision mechanism and the explanation simultaneously."
+    },
+    {
+      "nombre": "refutation-based debate",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Diseño de debate en el que los agentes principalmente responden y atacan las posiciones de los otros; el paper reporta que produce efectos de dominancia retórica en vez de consenso basado en evidencia.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "constructive debate"},
+        {"tipo": "CAUSA", "objeto": "persona bias"}
+      ],
+      "cita_textual": "In refutation-based designs, agents primarily respond to and attack each other's positions. We find this leads to rhetorical dominance effects rather than evidence-based consensus."
+    },
+    {
+      "nombre": "constructive debate",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Diseño en que cada agente construye un caso independiente antes de comenzar la deliberación, evitando que la habilidad retórica domine sobre la calidad de la evidencia.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "refutation-based debate"},
+        {"tipo": "MITIGA", "objeto": "persona bias"}
+      ],
+      "cita_textual": "Our constructive design requires each agent to build an independent case before deliberation begins"
+    },
+    {
+      "nombre": "implied volatility signal",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Señal usada por el agente bajista (Reaper) donde volatilidad implícita anómalamente comprimida antes de un evento binario en un activo de beta alto se interpreta como consenso frágil en vez de confianza del mercado.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "post-earnings price move"}
+      ],
+      "cita_textual": "options markets were pricing NVDA's post-earnings move at ±5.6%—the lowest implied volatility in at least three years for a stock with a beta of 2.31"
+    },
+    {
+      "nombre": "cross-timeframe momentum score",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Indicador técnico compuesto (Bullish/Bearish/Mixed) usado como input cuantitativo a los agentes para evaluar la alineación de momentum a través de distintos horizontes temporales.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "technical feature block"}
+      ],
+      "cita_textual": "technical momentum exhaustion (cross_timeframe_momentum_score: Bearish)"
+    },
+    {
+      "nombre": "sector drag",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Dimensión introducida en el debate donde la correlación y beta de un activo respecto a un índice (NDX) con momentum bajista amplifican la presión de venta sectorial, aunque la tendencia propia del activo esté intacta.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "downside risk"}
+      ],
+      "cita_textual": "AAPL exhibiting a 0.877 correlation to NDX and a Beta of 1.133 against it"
+    },
+    {
+      "nombre": "risk/reward ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Relación entre pérdida potencial y ganancia potencial usada explícitamente por los agentes para justificar decisiones de entrada, calculada como distancia a soporte/resistencia relevante.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "trade decision quality"}
+      ],
+      "cita_textual": "a potential loss of approximately 0.6% against a conservative upside of 4.7% to the 50-day moving average, yielding a ratio of 1:7.8 or better"
+    },
+    {
+      "nombre": "semantic position sizing",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Esquema de sizing categórico (Strong/Moderate/Light/None) en lugar de un tamaño numérico continuo, usado como campo de salida del reporte final del sistema.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "output format"}
+      ],
+      "cita_textual": "semantic position size (Strong / Moderate / Light / None)"
+    },
+    {
+      "nombre": "stateless inference",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modo de ejecución en que cada ciclo de decisión recibe únicamente datos del período actual, sin transcripciones ni decisiones previas, tratando dos puntos temporales consecutivos como inputs estadísticamente independientes.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limited data principle"}
+      ],
+      "cita_textual": "Two consecutive time points are treated as independent inputs."
+    },
+    {
+      "nombre": "momentum chasing",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Error recurrente observado en las primeras versiones del sistema, donde el agente sobrerreacciona a movimientos de precio recientes y persigue tendencias en lugar de aplicar principios de behavioral finance sólidos.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "wisdom distillation"}
+      ],
+      "cita_textual": "Momentum-chasing, overreaction to recent price moves, and failure to respect risk/reward asymmetry were recurring patterns"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "En un caso de trading en vivo sobre NVDA, la arquitectura de tres agentes usó una señal de volatilidad implícita anómalamente baja para recortar una posición alcista antes de earnings, y la acción cayó tras el reporte, validando el recorte anticipado y la posterior reafirmación bajista al día siguiente.",
+      "mercado": "US equities (NVDA)",
+      "periodo": "25-27 febrero 2026",
+      "magnitud": "opciones descontaban movimiento post-earnings de ±5.6% (mínimo en 3 años, beta 2.31); tras earnings NVDA cayó -3.41% en volumen 2.27x-5.0x promedio; precio bajó de ~$195 a ~$178 en 2 días",
+      "condiciones": "caso único de trading en vivo (no backtest sistemático), sin costos de transacción reportados, sin comparación con benchmark ni distribución de resultados; N=1",
+      "robustez": "baja",
+      "cita_textual": "NVIDIA reported Q4 revenue of $68.1B, substantially above consensus expectations, with strong forward guidance. The stock fell 3.41% on volume 2.27 times the daily average"
+    },
+    {
+      "afirmacion": "En un episodio de shock geopolítico (NDX, marzo 2026), el debate de tres agentes con configuración heterogénea de modelos produjo una entrada táctica con orden límite en el nivel de soporte identificado por el agente bajista, que resultó no ejecutada porque el mercado se recuperó, evitando así una mala entrada tardía.",
+      "mercado": "US equity index (NDX/Nasdaq-100)",
+      "periodo": "3 marzo 2026",
+      "magnitud": "orden límite en 24,150 (MA200), stop en 24,000, ratio riesgo/beneficio de 1:7.8; NDX recuperó y nunca llenó la orden",
+      "condiciones": "caso único, sin métricas agregadas de performance, sin backtest sistemático, resultado anecdótico",
+      "robustez": "baja",
+      "cita_textual": "NDX recovered sharply in the sessions following the debate, never filling the limit order at 24,150 and rendering the position moot—but confirming that the panic pricing had indeed been transient"
+    },
+    {
+      "afirmacion": "Cuando los tres agentes se instancian sobre el mismo modelo con alta disposición a la conformidad (compliance), el debate converge prematuramente sin generar presión adversarial genuina, a diferencia de una configuración heterogénea de modelos que sostiene desacuerdo sustantivo durante varias rondas.",
+      "mercado": "US equities (CEG vs NDX, comparación de casos)",
+      "periodo": "marzo 2026",
+      "magnitud": "caso CEG (3 agentes Qwen3.5-Plus homogéneos): Reaper recomendó TRIM_POSITION con Action score 65 (contradictorio), trayectoria 65→55→35→55, corregida solo tras intervención de Fulcrum; caso NDX (2 agentes DeepSeek + 1 Qwen-Max heterogéneo): Reaper sostuvo Action 15 durante 5 rondas de intensidad HIGH sostenida",
+      "condiciones": "comparación cualitativa entre dos casos anecdóticos de trading en vivo, sin muestra estadística, sin métrica objetiva de 'calidad de debate' más allá de inspección cualitativa de transcripciones",
+      "robustez": "baja",
+      "cita_textual": "three Qwen-Plus agents produced a debate that converged not because the evidence warranted convergence but because none of the agents was constitutionally disposed to resist it"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El sistema es discrecional, de baja frecuencia y basado en razonamiento cualitativo LLM sobre equities/índices en horizontes de días a semanas, sin backtest sistemático ni métricas de riesgo-ajustado; no aporta señales, reglas ni validación aplicables directamente a un pipeline de excursiones intradía sobre ES basado en order flow y minería cuantitativa."
+  }
+}

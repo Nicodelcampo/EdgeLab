@@ -1,0 +1,309 @@
+{
+  "doc_id": 69,
+  "titulo": "Backtesting of Algorithmic Cryptocurrency Trading Strategies",
+  "resumen_operativo": "Tesis de máster que presenta quantbacktest, un framework Python open-source de backtesting event-driven (trade a trade, secuencial) para criptomonedas, con simulación de costos de transacción (comisiones, spread, slippage), constraints de cash/exposición, batch processing de escenarios y heatmaps de robustez temporal y de parámetros. El aporte es de ingeniería de backtesting más que empírico: los tres backtests mostrados (ruido blanco, cruce de media móvil de 14 días, sentiment) son ilustrativos y sirven como sanity checks del motor. Útil como referencia de diseño para un pipeline propio: journal de trades, conversión a retornos de frecuencia fija, métricas estándar y validación con estrategias dummy.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "event-driven backtesting",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Simulación realista de ejecución de órdenes trade a trade, estrictamente secuencial, que replica un sistema de order routing real con constraints de cash y exposición; el paper la contrapone al backtesting tensorial (vectorizado).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "trading journal"},
+        {"tipo": "SE_OPONE_A", "objeto": "tensor-based backtesting"},
+        {"tipo": "USA", "objeto": "transaction costs"},
+        {"tipo": "APLICA_A", "objeto": "cryptocurrency trading"}
+      ],
+      "cita_textual": "The extensive logic within the order execution simulation aims to resemble real-world order execution systems as closely as possible"
+    },
+    {
+      "nombre": "tensor-based backtesting",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Backtesting vectorizado con operaciones matriciales (NumPy/pandas), computacionalmente superior y dominante en investigación académica, pero menos realista para modelar balances de cash, fills parciales y constraints; adecuado sobre todo para estrategias cash-neutral.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "event-driven backtesting"},
+        {"tipo": "APLICA_A", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "Simple tensor (matrix) operations are suﬃcient to simulate cash-neutral strategies."
+    },
+    {
+      "nombre": "trading journal",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Tabla (df_trading_journal) que registra cada transacción junto con el estado de la cuenta (cash, exposición, fees, valor de portfolio) y crea un feedback loop hacia la estrategia, que puede decidir en función del estado actual del portfolio.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "event-driven backtesting"}
+      ],
+      "cita_textual": "Trades change the account balance and exposure states in df_trading_journal, and the trades create a feedback loop to the strategy."
+    },
+    {
+      "nombre": "slippage",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Diferencia entre el precio observado al generar la señal y el precio real de ejecución, inducida por tiempo y volumen; en la herramienta se especifica como porcentaje fijo y engloba también el bid-ask spread.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "transaction costs"},
+        {"tipo": "EQUIVALE_A", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "Slippage25 is the time- and the volume-induced diﬀerence between the initially\nobserved price and the real execution price"
+    },
+    {
+      "nombre": "market impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El autor lo define como el subconjunto del slippage inducido por volumen; la herramienta aún no tiene un modelo de slippage dependiente del volumen.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "slippage"}
+      ],
+      "cita_textual": "I deﬁne market impact to be one subset of\nslippage (volume-induced slippage)."
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Comisiones (fijas o relativas), spread y slippage; el paper enfatiza que determinan el umbral mínimo de retorno bruto esperado que una estrategia debe superar, y que solo un backtest realista puede fijar ese umbral con precisión.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "strategy underperformance"},
+        {"tipo": "MIDE", "objeto": "rebalancing frequency trade-off"}
+      ],
+      "cita_textual": "Transaction costs are a major concern in algorithmic\ntrading, and they have a signiﬁcant impact on the required certainty that a trader\nneeds to have about the magnitude of market mispricing"
+    },
+    {
+      "nombre": "order size relative to daily volume",
+      "tipo": "dato",
+      "definicion_en_contexto": "Regla práctica (citando a Chan) de mantener las órdenes por debajo del 1% del volumen diario total del activo para limitar el impacto de mercado.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "market impact"}
+      ],
+      "cita_textual": "one usually aims to keep orders smaller than 1%"
+    },
+    {
+      "nombre": "batch processing of scenarios",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Ejecución de múltiples backtests (escenarios) con distintos hiperparámetros, ventanas temporales y constraints en una sola corrida, con resultados agregados en una tabla única y heatmaps automáticos de robustez.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "parameter sensitivity heatmap"},
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "the user tests multiple backtests with diﬀerent scenarios in a single execution of the program"
+    },
+    {
+      "nombre": "parameter sensitivity heatmap",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Visualización de la rentabilidad para grillas de hiperparámetros y para distintos intervalos temporales; sirve como test de robustez visual contra cherry-picking de parámetros y de períodos.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "robustness"},
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "the user gets a heatmap\nthat shows the strategy’s robustness to variations in hyperparameters"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de ajustar la estrategia a los datos al iterar muchos escenarios o al elegir thresholds de señales black-box a posteriori; el paper lo advierte explícitamente para su estrategia de sentiment y en el loop de re-testeo.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "inflated backtest results"}
+      ],
+      "cita_textual": "The user should be\naware of the risk of overﬁtting when running many scenarios and repeating this process."
+    },
+    {
+      "nombre": "survivorship bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Las bases de precios cripto actuales tienden a sobre-representar criptomonedas exitosas y omitir las desaparecidas, inflando los resultados de backtests; el paper lo ilustra con un ejemplo donde los sobrevivientes rinden +10% pero el universo completo -34%.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "inflated backtest results"}
+      ],
+      "cita_textual": "The\ndata may show a tendency toward containing too many successful cryptocurrencies."
+    },
+    {
+      "nombre": "white noise strategy",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Estrategia dummy con señales aleatorias de compra/venta equiprobables usada como sanity check del motor de backtesting: se espera beta bajo por cash-heaviness y drift negativo por costos de transacción.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "backtesting engine correctness"},
+        {"tipo": "USA", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "This\nsimple strategy tests if the backtesting works as expected."
+    },
+    {
+      "nombre": "moving average crossover",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia trend-following: compra 34% del cash restante cada día que el precio de Bitcoin está sobre su media móvil de 14 días y liquida toda la posición cuando cae debajo; el paper advierte sensibilidad al lookback y al holding period.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "momentum"},
+        {"tipo": "USA", "objeto": "technical analysis"},
+        {"tipo": "APLICA_A", "objeto": "cryptocurrency trading"}
+      ],
+      "cita_textual": "This portfolio is based on one of the most straightforward trend-following strategies: simple moving average price crossover."
+    },
+    {
+      "nombre": "momentum",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Anomalía de continuación de precios; el paper la motiva con la explicación de difusión lenta de información (Hong et al.) y cita evidencia previa de que funciona en Bitcoin (Grobys y Sapkota).",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "cryptocurrency trading"}
+      ],
+      "cita_textual": "Hong et al., 2000 provide an intuitive explanation for the\nexistence of momentum anomalies by pointing out that information needs time to"
+    },
+    {
+      "nombre": "sentiment-based strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia que consume una tabla de señales black-box precalculadas (sentiment) vía CSV, entrando cuando la señal supera un threshold de compra y liquidando bajo un threshold de venta; el valor está en salir del mercado antes de fases bajistas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "black-box signal table"},
+        {"tipo": "MITIGA", "objeto": "maximum drawdown"}
+      ],
+      "cita_textual": "The sentiment strategy presented here is used as an example of the usage of\na black-box signal table."
+    },
+    {
+      "nombre": "black-box signal table",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Desacople entre generación de señales y motor de backtesting: las señales se generan fuera (cualquier modelo) y se entregan como CSV con signal_strength por activo y fecha, permitiendo testear modelos propietarios sin exponer su lógica.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "event-driven backtesting"}
+      ],
+      "cita_textual": "the signals that underlie this sentiment strategy\nwere generated beforehand"
+    },
+    {
+      "nombre": "maximum drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Peor caída relativa del valor de portfolio asumiendo la peor entrada y salida posibles; se reporta junto con su duración, fecha de pico y de valle. Advierte que las pérdidas futuras pueden superar el drawdown backtesteado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "downside risk"}
+      ],
+      "cita_textual": "The maximum drawdown is the worst-case scenario that an investor would\nhave experienced when investing in the portfolio."
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Retorno anualizado menos tasa libre de riesgo sobre volatilidad anualizada; el paper discute la controversia sobre restar la risk-free rate y recomienda restarla porque ningún exchange cripto paga interés libre de riesgo sobre fondos ociosos.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"},
+        {"tipo": "USA", "objeto": "volatility time scaling"}
+      ],
+      "cita_textual": "The risk-free rate should be deducted to make the numerator and the denominator\nﬁt, as originally intended by William Sharpe, 1966."
+    },
+    {
+      "nombre": "volatility time scaling",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Ajuste de volatilidad a distintos horizontes vía raíz cuadrada del tiempo, que asume retornos serialmente no correlacionados; el paper advierte que extrapolar de horizontes cortos a largos puede ser muy inexacto porque la volatilidad cambia en el tiempo.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "serially uncorrelated returns"}
+      ],
+      "cita_textual": "The assumption behind this formula is that returns are serially uncorrelated. This\napproach can be highly problematic as volatility may change signiﬁcantly over time."
+    },
+    {
+      "nombre": "annualized return interpolation bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Anualizar retornos de ventanas menores a un año introduce sesgo sustancial por la alta varianza de los retornos de corto plazo; escalar hacia abajo desde ventanas largas no es problemático.",
+      "relaciones": [],
+      "cita_textual": "Interpolating short time intervals to one year in this way can lead to substantial bias\nbecause shorter time intervals usually exhibit signiﬁcant return variance."
+    },
+    {
+      "nombre": "Jensen's alpha",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de performance ajustada por riesgo de mercado: retorno del portfolio menos el retorno esperado por CAPM dado su beta contra el benchmark.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"},
+        {"tipo": "USA", "objeto": "equity beta"}
+      ],
+      "cita_textual": "Jensen, 1968 introduced alpha (α) as a risk-adjusted performance measure."
+    },
+    {
+      "nombre": "equity beta",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Sensibilidad del portfolio al riesgo sistemático del benchmark (covarianza sobre varianza); en el paper se usa contra Bitcoin como benchmark y sirve para detectar cash-heaviness de una estrategia.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market risk exposure"}
+      ],
+      "cita_textual": "β (beta) reﬂects the sensitivity of a portfolio to the systematic risk of the market."
+    },
+    {
+      "nombre": "NVT ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Network Value to Transactions: capitalización de mercado sobre valor de transacciones on-chain (suavizable con media móvil); análogo cripto del P/E, usado como factor de valor/crecimiento específico de criptomonedas.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "cryptocurrency valuation"},
+        {"tipo": "APLICA_A", "objeto": "factor investing"}
+      ],
+      "cita_textual": "The NVT is the fraction of market capitalization over on-chain transactions."
+    },
+    {
+      "nombre": "stock-to-flow ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Inventario existente sobre producción anual; métrica de valuación de commodities store-of-value (oro) trasladada a Bitcoin; no sirve para activos con demanda industrial dominante.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "cryptocurrency valuation"},
+        {"tipo": "APLICA_A", "objeto": "store of value assets"}
+      ],
+      "cita_textual": "the stock-to-ﬂow ratio should be used for assets whose primary\neconomic function is a store of value, such as gold"
+    },
+    {
+      "nombre": "alpha decay after publication",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Las ineficiencias de mercado tienden a desaparecer a medida que mejora la cobertura académica del asset pricing (McLean & Pontiff); el paper cita evidencia de que ya ocurre en cripto (Brauneis & Mestel; Khuntia & Pattanayak).",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "strategy performance decay"},
+        {"tipo": "APLICA_A", "objeto": "cryptocurrency trading"}
+      ],
+      "cita_textual": "It is considered a fact that as the academic coverage for asset\npricing improves, observed market ineﬃciencies vanish"
+    },
+    {
+      "nombre": "data frequency trade-off",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Frecuencias altas implican más storage, memoria, cómputo y datos más difíciles de conseguir; frecuencias bajas exigen horizontes más largos para resultados fiables. El autor elige datos diarios y nota que rebalanceos diarios suelen ser el máximo sensato por costos.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "event-driven backtesting"}
+      ],
+      "cita_textual": "Higher frequencies are associated with more storage requirements, higher memory usage, more computational load, and are often harder to acquire."
+    },
+    {
+      "nombre": "sequential simulation constraint",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Un backtest realista con path-dependence (el cash tras el trade 1 condiciona el trade 2) no puede paralelizarse dentro de un escenario; solo se paraleliza entre escenarios. Es el costo computacional de la fidelidad frente al enfoque tensorial.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "event-driven backtesting"},
+        {"tipo": "SE_OPONE_A", "objeto": "tensor-based backtesting"}
+      ],
+      "cita_textual": "As the simulation\nneeds to take into account trades in strictly sequential order, parallel processing is\nnot possible for a single scenario run."
+    },
+    {
+      "nombre": "arbitrage backtesting dimensionality",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El backtesting de arbitraje entre exchanges requiere una dimensión de identificación adicional (el exchange) además de activo y tiempo; además, muchas 'oportunidades' de arbitraje cripto reflejan riesgo real de exchange, no mispricing.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "exchange-level price data"}
+      ],
+      "cita_textual": "Two-dimensional price data is not enough for arbitrage trading,\nwhich would require an additional identiﬁcation dimension, i.e., the exchange."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Una estrategia de ruido blanco (señales aleatorias diarias, ~2000 trades) sobre Bitcoin produce beta de 0.46 y deriva negativa del portfolio por costos de transacción acumulados de 726,361 USD sobre un presupuesto de 1M USD, consistente con lo esperado y validando el motor de backtesting.",
+      "mercado": "BTC (spot, datos diarios ITSA TOKENBASE)",
+      "periodo": "2014-01-01 a 2019-05-30",
+      "magnitud": "beta 0.46; costos totales 726,361.07 USD; ~2000 trades; slippage+spread 0.5%",
+      "condiciones": "costos incluidos (0.5% por lado, sin fees fijos); in-sample; estrategia dummy de validación, no económica",
+      "robustez": "baja",
+      "cita_textual": "In\nthis run, the beta is 0.46, indicating that the market returns only moderately inﬂuence the portfolio returns."
+    },
+    {
+      "afirmacion": "La estrategia de cruce de media móvil de 14 días sobre Bitcoin subperformó al buy-and-hold en -9.08% anualizado pese a 930 rebalanceos y 1,929,875 USD de costos, con beta de 0.39 y drawdown máximo de 49.68% frente a 83.64% de Bitcoin.",
+      "mercado": "BTC",
+      "periodo": "2014-01-01 a 2019-05-30",
+      "magnitud": "retorno anualizado relativo -9.08%; 930 trades; costos 1,929,875 USD; beta 0.39; max drawdown 49.68% vs 83.64% benchmark",
+      "condiciones": "costos incluidos (0.5% por lado); in-sample; long-only, un solo activo, sin optimización de lookback/holding period",
+      "robustez": "baja",
+      "cita_textual": "This momentum strategy underperforms the market by −9.08% (annualized\nreturn)."
+    },
+    {
+      "afirmacion": "La estrategia basada en señales de sentiment sobre Bitcoin subperformó al buy-and-hold en solo -5.52% anualizado pero redujo el drawdown máximo de 83.64% (Bitcoin) a 66.23%, al salir del mercado antes del fondo del crash de 2018; el propio autor advierte posible overfitting en la construcción de las señales y pocos trades.",
+      "mercado": "BTC",
+      "periodo": "2014-01-01 a 2019-05-30 (drawdown: pico 2017-12-16, valle 2018-04-07)",
+      "magnitud": "underperformance anualizada -5.52%; max drawdown 66.23% vs 83.64%; pocos trades",
+      "condiciones": "costos incluidos; señales black-box precalculadas con riesgo de overfitting en thresholds; in-sample, sin OOS",
+      "robustez": "baja",
+      "cita_textual": "The maximum drawdown was mitigated from 83.64% (Bitcoin, peak at 2017-12-16,\ntrough at 2018-12-15) to 66.23%"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "No aporta señales ni evidencia trasladable al ES, pero su arquitectura (journal de trades con feedback loop, señales black-box vía tabla, sanity check con estrategia de ruido blanco, heatmaps de robustez temporal/paramétrica) es directamente adaptable como checklist de auditoría del pipeline quantlab/VectorBT."
+  }
+}

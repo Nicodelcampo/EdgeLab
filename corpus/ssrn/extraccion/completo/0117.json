@@ -1,0 +1,68 @@
+{
+  "doc_id": 117,
+  "titulo": "On the Market-Neutrality of Optimal Pairs-Trading Strategies",
+  "resumen_operativo": "El documento investiga el problema de inversión óptima para un agente con utilidad CRRA en un mercado con dos activos cointegrados. Resuelve analíticamente el problema de control estocástico y demuestra que, bajo ciertos parámetros, el problema está mal condicionado (alcanza utilidad infinita en tiempo finito para agentes buscando riesgo). Su mayor aporte teórico es probar que la condición necesaria y suficiente para que este problema parcial de equilibrio esté bien condicionado es idéntica a la condición que fuerza a que la estrategia de inversión óptima sea 'market-neutral'. Esto proporciona la justificación teórica rigurosa que faltaba para esta práctica generalizada en pairs trading.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "market-neutral strategy",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estrategia de trading admisible donde los pesos del portafolio y la riqueza del inversor dependen únicamente de la señal estacionaria del spread, lográndose mediante posiciones largas y cortas compensadas para neutralizar la no-estacionariedad del mercado.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "An admissible strategy π is market-neutral (M-N) if both π and X^π are (F_t^Z)-adapted."
+    },
+    {
+      "nombre": "continuous-time error correction model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de precios para sistemas de procesos cointegrados formulado con ecuaciones diferenciales estocásticas, utilizado para representar activos cuyos precios están ligados por un equilibrio a largo plazo.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "cointegration"}
+      ],
+      "cita_textual": "two stocks whose price processes, S = (S1_t, S2_t) satisfy the “continuous-time error correction model”"
+    },
+    {
+      "nombre": "nirvana strategies",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Estrategias de inversión en modelos teóricos que resultan en utilidad esperada infinita en un horizonte temporal finito, una anomalía que empujaría al mercado fuera del equilibrio si los agentes existieran.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "ill-posed optimal investment problem"}
+      ],
+      "cita_textual": "[KO96] and [KK04] has observed this phenomenon and coined the terms “nirvana strategies” and “I-unstable” for investment strategies that yield infinite expected utility in finite investment horizon."
+    },
+    {
+      "nombre": "critical relative risk aversion",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Umbral del parámetro de aversión relativa al riesgo (γ0) por debajo del cual los agentes más propensos al riesgo consiguen utilidad infinita, indicando que el modelo de inversión está mal formulado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "well-posedness"}
+      ],
+      "cita_textual": "We introduce the “critical relative risk aversion”, γ0"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Para valores de aversión al riesgo menores al crítico (0 < γ < γ0), el problema de inversión de Merton con activos cointegrados está mal condicionado y la utilidad esperada máxima del agente tiende a infinito en un horizonte temporal finito.",
+      "mercado": "Teórico (dos activos cointegrados)",
+      "periodo": "N/A",
+      "magnitud": "Utilidad infinita en tiempo finito T_N(γ)",
+      "condiciones": "Inversores con utilidad CRRA más propensos al riesgo que el inversor de utilidad logarítmica (0 < γ < 1)",
+      "robustez": "alta",
+      "cita_textual": "If 0 < γ < γ0, then, the Merton problem is ill-posed. In particular, the agent’s maximal expected utility of wealth increases rapidly with the investment horizon T and approaches infinity at a finite critical horizon T_N(γ) > 0"
+    },
+    {
+      "afirmacion": "Exigir que los parámetros del mercado impidan la existencia de 'nirvana strategies' (es decir, asegurar que γ0 = 0) es matemáticamente equivalente a requerir que la estrategia óptima de pairs trading sea market-neutral.",
+      "mercado": "Teórico",
+      "periodo": "N/A",
+      "magnitud": "γ0 = 0 es equivalente a optimal strategy is M-N",
+      "condiciones": "Modelo de equilibrio parcial (partial equilibrium model)",
+      "robustez": "alta",
+      "cita_textual": "Condition 5.1 is equivalent to either of the following statements. (i) For all γ ∈ (0, 1), the optimal investment problem (4.1) is well-posed, i.e. the maximal expected utility is finite for all investment horizon T > 0. (ii) The optimal strategy π* is M-N"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El documento es de naturaleza puramente teórica/matemática (finanzas cuantitativas estocásticas). Aunque provee una excelente justificación rigurosa de por qué tiene sentido operar market-neutral en pairs trading, no ofrece señales operativas empíricas directas aplicables a backtesting o trading intradía."
+  }
+}

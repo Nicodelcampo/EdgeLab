@@ -1,0 +1,129 @@
+{
+  "doc_id": 57,
+  "titulo": "Applications of Time Series Analysis in Quantitative Finance",
+  "resumen_operativo": "El paper es un compendio introductorio sobre el uso de series de tiempo en finanzas cuantitativas. Repasa teóricamente modelos tradicionales (ARIMA, GARCH) y algoritmos de machine learning (Random Forests, LSTM) sin proponer estrategias nuevas ni experimentos, siendo útil principalmente como repaso bibliográfico general.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "ARIMA",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo estadístico lineal que combina componentes autorregresivos y de media móvil, aplicando diferenciación para transformar series financieras no estacionarias en estacionarias.",
+      "relaciones": [],
+      "cita_textual": "ARIMA models aim to describe the relationship between a time series and its lagged values and errors, making them particularly suitable for non-seasonal time series with a trend."
+    },
+    {
+      "nombre": "GARCH",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo econométrico utilizado para predecir la varianza condicional a lo largo del tiempo, asumiendo que la volatilidad depende de sus valores pasados y shocks previos.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "volatility clustering"
+        }
+      ],
+      "cita_textual": "GARCH models are designed to model the variance or volatility of a time series. In financial markets, volatility often exhibits clustering"
+    },
+    {
+      "nombre": "volatility clustering",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Patrón empírico de los mercados donde los regímenes de alta o baja volatilidad tienden a persistir y agruparse temporalmente.",
+      "relaciones": [],
+      "cita_textual": "volatility often exhibits clustering, meaning periods of high volatility are followed by other periods of high volatility, and similarly for low volatility."
+    },
+    {
+      "nombre": "random forest",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo de machine learning tipo ensemble que promedia múltiples árboles de decisión, utilizado para modelar relaciones complejas no lineales.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "backtest overfitting"
+        }
+      ],
+      "cita_textual": "Random forests work by aggregating many decision trees, which makes them resistant to overfitting."
+    },
+    {
+      "nombre": "LSTM",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Arquitectura de red neuronal recurrente diseñada para modelar dependencias temporales largas resolviendo el problema de gradientes descendientes en series financieras.",
+      "relaciones": [],
+      "cita_textual": "LSTMs, a type of RNN, address the problem of vanishing gradients, allowing them to remember information over long sequences."
+    },
+    {
+      "nombre": "Value at Risk",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de riesgo de mercado que cuantifica la pérdida máxima esperada de un portafolio bajo un nivel de confianza y un horizonte de tiempo determinados.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "GARCH"
+        }
+      ],
+      "cita_textual": "Value at Risk (VaR) model, which estimates the potential loss in value of a portfolio over a specified time horizon at a given confidence level."
+    },
+    {
+      "nombre": "mean-variance optimization",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Marco de optimización de carteras de Markowitz que selecciona pesos de activos para maximizar retornos esperados o minimizar la varianza de la cartera.",
+      "relaciones": [],
+      "cita_textual": "The Markowitz mean-variance optimization framework seeks to find the optimal portfolio by maximizing the expected return for a given level of risk (or minimizing the risk for a given expected return)."
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia algorítmica de trading que asume que el precio de los activos tiende a regresar a su promedio histórico a largo plazo.",
+      "relaciones": [
+        {
+          "tipo": "SE_OPONE_A",
+          "objeto": "momentum"
+        }
+      ],
+      "cita_textual": "Mean reversion strategies assume that asset prices tend to revert to their long-term average over time."
+    },
+    {
+      "nombre": "momentum",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de inversión que opera asumiendo que los activos con rendimiento positivo en el pasado continuarán con su tendencia de apreciación.",
+      "relaciones": [
+        {
+          "tipo": "SE_OPONE_A",
+          "objeto": "mean reversion"
+        }
+      ],
+      "cita_textual": "momentum strategies rely on the idea that assets that have performed well in the past will continue to perform well in the future."
+    },
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modalidad operativa institucional caracterizada por la ejecución automatizada de gran cantidad de transacciones en milisegundos aprovechando ineficiencias cortas.",
+      "relaciones": [],
+      "cita_textual": "High-frequency trading (HFT) involves executing large numbers of trades in a very short time frame, often milliseconds."
+    },
+    {
+      "nombre": "non-stationarity",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Propiedad de los datos financieros en la cual estadísticos clave como la media y varianza cambian con el tiempo, invalidando supuestos de modelado.",
+      "relaciones": [],
+      "cita_textual": "Nonstationarity refers to the property of a time series where its statistical properties, such as mean, variance, and autocorrelation, change over time."
+    },
+    {
+      "nombre": "multicollinearity",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Problema presente cuando las variables predictoras están altamente correlacionadas, reduciendo la fiabilidad estadística al estimar los coeficientes del modelo.",
+      "relaciones": [],
+      "cita_textual": "multicollinearity, where the independent variables are highly correlated with each other. This can make it difficult to accurately estimate model parameters"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo de ajuste donde un modelo demasiado complejo es forzado a memorizar el ruido específico de la muestra, fracasando con datos nuevos.",
+      "relaciones": [],
+      "cita_textual": "Overfitting occurs when a model is too complex and learns not only the underlying data patterns but also the noise in the data."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "nula",
+    "nota": "Al tratarse de un relevamiento conceptual sin implementaciones empíricas, no provee lógicas de trading testeables en el ecosistema ES."
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "doc_id": 58,
+  "titulo": "Applications of Time Series Analysis in Quantitative Finance",
+  "resumen_operativo": "Este paper teórico introduce el framework RAHF (Regime-Aware Hybrid Forecasting), proponiendo combinar un modelo lineal base (como ARIMA o GARCH) con un aprendiz no lineal sobre sus residuos, condicionado a estados de régimen de mercado. Aporta la demostración matemática (vía sesgo-varianza) de las condiciones necesarias para que este modelo híbrido reduzca el error de pronóstico, brindando una arquitectura conceptual transferible para sistemas de trading, aunque carece de validación empírica real.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "Regime-Aware Hybrid Forecasting",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Framework predictivo que suma el pronóstico de un modelo de series de tiempo lineal con una corrección residual no lineal, condicionada por probabilidades estimadas de regímenes latentes.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "latent regime"
+        },
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "ARIMA"
+        }
+      ],
+      "cita_textual": "We introduce a simple hybrid framework that combines linear time series models with nonlinear residual learners under a latent-regime view of the market."
+    },
+    {
+      "nombre": "ARIMA",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Familia de modelos lineales clásicos utilizados para describir y pronosticar la media condicional de series de retornos financieros estacionarizadas mediante diferenciación.",
+      "relaciones": [],
+      "cita_textual": "ARIMA models primarily capture the conditional mean of returns."
+    },
+    {
+      "nombre": "GARCH",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo estadístico diseñado empíricamente para capturar la varianza condicional variante en el tiempo y la agrupación de volatilidad en los mercados.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "volatility clustering"
+        }
+      ],
+      "cita_textual": "GARCH models are designed to capture such time-varying conditional variances."
+    },
+    {
+      "nombre": "volatility clustering",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno del mercado por el cual los grandes movimientos de precios tienden a agruparse temporalmente, generando varianzas condicionales dependientes del tiempo.",
+      "relaciones": [],
+      "cita_textual": "Empirically, financial returns exhibit volatility clustering: large moves tend to cluster in time."
+    },
+    {
+      "nombre": "vector autoregression",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo autorregresivo extendido a múltiples variables que captura interacciones y dependencias cruzadas entre los retornos medios de varios activos.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "lead-lag effect"
+        }
+      ],
+      "cita_textual": "VAR models capture lead–lag interactions and cross-asset dependencies in the mean."
+    },
+    {
+      "nombre": "lead-lag effect",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Dinámica cruzada donde los retornos de ciertos activos anticipan o van a la zaga de otros, modelable a través de enfoques multivariados como VAR.",
+      "relaciones": [],
+      "cita_textual": "VAR models capture lead–lag interactions and cross-asset dependencies in the mean."
+    },
+    {
+      "nombre": "latent regime",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estados ocultos o inobservables del mercado (ej. entornos de alta o baja volatilidad) que alternan en el tiempo y dictan cambios cualitativos en la dinámica de precios.",
+      "relaciones": [],
+      "cita_textual": "State-space models introduce latent variables to represent hidden economic factors or regimes."
+    },
+    {
+      "nombre": "hidden Markov model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo estocástico empleado para inferir las probabilidades de estar en distintos regímenes ocultos de mercado ajustando sobre características observables.",
+      "relaciones": [
+        {
+          "tipo": "PREDICE",
+          "objeto": "latent regime"
+        }
+      ],
+      "cita_textual": "Estimate regime probabilities ˆpt using, for example, a hidden Markov model (HMM) fitted to volatility or other features."
+    },
+    {
+      "nombre": "LSTM",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Red neuronal capaz de capturar dependencias temporales de largo alcance, propuesta aquí como módulo para aprender las correcciones no lineales de los residuos.",
+      "relaciones": [],
+      "cita_textual": "Recurrent neural networks (RNNs) and LSTMs model long-range temporal dependencies via hidden states."
+    },
+    {
+      "nombre": "microstructure noise",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Distorsión que contamina los datos de precios intradía debido a fricciones de mercado, representando un desafío para la calidad del modelado de series de tiempo financieras.",
+      "relaciones": [],
+      "cita_textual": "High-frequency data introduce microstructure noise, while daily data may hide intraday dynamics."
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Fricciones de ejecución que deben deducirse de las predicciones; el paper advierte que la mayor precisión de un modelo puede quedar anulada por costos si eleva demasiado el turnover.",
+      "relaciones": [],
+      "cita_textual": "A strategy with slightly higher forecast accuracy but much higher turnover may perform worse after costs."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Aunque carece de empírica, la estructura híbrida (ARIMA/GARCH base + LSTM para residuos condicionado a regímenes) es directamente aplicable para predecir dinámicas intradía del ES."
+  }
+}

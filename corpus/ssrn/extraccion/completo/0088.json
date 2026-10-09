@@ -1,0 +1,85 @@
+{
+  "doc_id": 88,
+  "titulo": "Detecting statistical arbitrage opportunities using a combined neural network - GARCH model",
+  "resumen_operativo": "El paper propone un sistema inteligente híbrido para la detección de oportunidades de arbitraje estadístico en pares de activos (Infosys y Wipro en el mercado de la India). Combina modelos autorregresivos de redes neuronales (NN) no lineales con parametrizaciones GARCH de volatilidad para modelar la dinámica de corrección de precios (mispricings). Usa predicciones de densidad condicional para definir umbrales de entrada/salida (bandas de confianza dinámicas). Muestra que el modelo microscópico (1 minuto) sufre de altos costos por sobreoperar, mientras que el modelo de 1 hora reduce operaciones y mejora rentabilidad promedio, pero no incluye costos de transacción explícitos en los resultados.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Intento de beneficiarse de discrepancias de precios que aparecen en un grupo de activos mediante la identificación de una combinación lineal de activos (activo sintético) que revierte a la media.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "synthetic asset"
+        }
+      ],
+      "cita_textual": "Statistical arbitrage is an attempt to profit from pricing discrepancies that appear in a group of assets. The detection of mispricings is based upon the identification of a linear combination of assets, or else a “synthetic” asset, whose time series is mean-reverting and has finite variability."
+    },
+    {
+      "nombre": "synthetic asset",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Combinación lineal de un grupo de activos cuyos coeficientes representan cantidades de cada activo en el portfolio, construido para exhibir reversión a la media con volatilidad finita.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "statistical arbitrage"
+        }
+      ],
+      "cita_textual": "The detection of mispricings is based upon the identification of a linear combination of assets, or else a “synthetic” asset, whose time series is mean-reverting and has finite variability."
+    },
+    {
+      "nombre": "NN-GARCH model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo conjunto de red neuronal (Feedforward) y GARCH que captura tanto las no linealidades en la dinámica de la media de la corrección de errores (mispricings) como los efectos de agrupamiento de volatilidad (ARCH).",
+      "relaciones": [
+        {
+          "tipo": "PREDICE",
+          "objeto": "conditional density forecasts"
+        }
+      ],
+      "cita_textual": "In our approach, we attempt to model both nonlinearities in the correction of mispricings as well as volatility clustering effects. For this purpose, we use a recently proposed class of joint neural networkGARCH models[15] that is intended to capture both effects."
+    },
+    {
+      "nombre": "conditional density forecasts",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Predicciones a múltiples pasos simulando escenarios de error mediante muestreo (bootstrap) de los residuos estandarizados, usadas para generar bandas de confianza dinámicas para señales de trading.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "NN-GARCH model"
+        }
+      ],
+      "cita_textual": "Forecasts are given in the form of a conditional probability density from which confidence bounds on the future value of the mispricing are derived. The estimation of an h-step-ahead conditional density is based on the simulation of 800 error scenarios."
+    },
+    {
+      "nombre": "adaptive estimation scheme",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Esquema donde los coeficientes de la combinación lineal (betas) se recalculan periódicamente basados en una ventana móvil, para forzar la reversión a la media frente a la no estacionariedad del spread clásico.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "synthetic asset"
+        }
+      ],
+      "cita_textual": "In order to control the non-stationarity of the synthetic asset, we adopt an adaptive estimation scheme in which the coefficients of the linear combination are periodically re-calculated."
+    },
+    {
+      "nombre": "volatility clustering",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Efecto donde los choques grandes de volatilidad (positivos o negativos) son seguidos por choques grandes de cualquier signo, modelado vía GARCH, que ajusta las bandas de confianza para evitar operar en periodos de alto riesgo.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "GARCH"
+        }
+      ],
+      "cita_textual": "large (positive or negative) shocks to Zt are on average followed up by large shocks of either sign. This “clustering” of volatility, typical in most financial time series, is termed in the literature as Autoregressive Conditional Heteroskedasticity (ARCH [7]."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Aporta una idea interesante para el trading intradía de pares (ES vs NQ, por ejemplo): combinar bandas GARCH dinámicas que se ensanchan en alta volatilidad para evitar entradas prematuras, con estimación adaptativa de los coeficientes de cobertura en ventanas muy cortas (ej. 10 barras). Sin embargo, el paper en sí se aplica a acciones indias, sin incluir explícitamente costos de transacción reales, y sus hallazgos intradía (1-min) sugirieron que la estrategia sobre-opera demasiado sin ese control."
+  }
+}
