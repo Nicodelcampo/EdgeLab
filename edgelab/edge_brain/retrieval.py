@@ -25,7 +25,9 @@ _STOPWORDS = frozenset({
 
 
 def _tokenize(text: str) -> list[str]:
-    return [t for t in (tok.lower() for tok in _TOKEN_RE.findall(text))
+    """minusculas + sin tildes: 'ejecución' y 'ejecucion' son el mismo termino."""
+    from .trading_glossary import fold
+    return [t for t in (tok for tok in _TOKEN_RE.findall(fold(text)))
             if t not in _STOPWORDS and len(t) > 1]
 
 
@@ -116,8 +118,12 @@ class LedgerIndex:
                 "titles": " ".join(str(it.get("title", "")) for it in row.get("items", []))}))
         return cls(records, **kwargs)
 
-    def query(self, text: str, *, k: int = 5) -> list[ScoredRecord]:
-        q_tokens = _tokenize(text)
+    def query(self, text: str, *, k: int = 5, expand: bool = False) -> list[ScoredRecord]:
+        """``expand=True`` agrega las traducciones es<->en del glosario de trading a la consulta."""
+        if expand:
+            from .trading_glossary import expand_query
+            text = " ".join([text] + expand_query(text))
+        q_tokens = list(dict.fromkeys(_tokenize(text)))
         if not q_tokens or not self._n:
             return []
         scored: list[ScoredRecord] = []

@@ -139,6 +139,11 @@ def main() -> int:
     if errors:
         print("FAIL\n  " + "\n  ".join(errors[:20]))
         return 1
+    fts = SSRNBibliographicCortex(root)
+    if args.force or fts.fts_status() != "READY":
+        info = fts.build_fts_index()
+        print(f"built search index: {info['passages_indexed']} passages | {info['findings_indexed']} findings | "
+              f"{info['papers_indexed']} paper cards")
     print(f"OK  {audit.usable_papers} papers | {audit.chunks} chunks | {audit.passages} passages | "
           f"{audit.findings} findings | graph {audit.graph_nodes}/{audit.graph_edges} | {audit.status}")
     return 0

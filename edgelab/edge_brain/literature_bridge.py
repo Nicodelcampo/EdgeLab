@@ -16,8 +16,9 @@ Este modulo las une sin debilitar ninguna regla:
 
 Nada de esto promueve: la literatura entra siempre como ``LITERATURE_CLAIM_UNVERIFIED`` /
 ``AUTHOR_REPORTED_RESULT`` y ``claims_are_evidence=False``. Busqueda lexica (BM25 + LIKE), determinista y sin
-modelos: los hallazgos estan en castellano y los pasajes en ingles, asi que conviene consultar con terminos
-en ambos idiomas (p. ej. "order flow imbalance desbalance").
+modelos. El cambio de idioma lo resuelve el indice derivado del cortex (FTS5): glosario es<->en de trading
+(``trading_glossary``), tildes plegadas y una ficha en castellano por paper (resumen operativo + hallazgos) que
+hace de puente hacia pasajes en ingles. Se puede consultar en cualquiera de los dos idiomas.
 """
 from __future__ import annotations
 
@@ -41,7 +42,7 @@ def _sha(text: str) -> str:
 
 @dataclass(frozen=True)
 class MemoryHit:
-    origin: str            # OWN | FINDING | PASSAGE
+    origin: str            # OWN | PAPER | FINDING | PASSAGE
     record_id: str
     record_type: str
     score: float
@@ -58,23 +59,25 @@ class MemoryHit:
 class Recall:
     query: str
     own: list[MemoryHit] = field(default_factory=list)
+    papers: list[MemoryHit] = field(default_factory=list)
     findings: list[MemoryHit] = field(default_factory=list)
     passages: list[MemoryHit] = field(default_factory=list)
 
     @property
     def literature(self) -> list[MemoryHit]:
-        return self.findings + self.passages
+        return self.papers + self.findings + self.passages
 
     def to_dict(self) -> dict[str, Any]:
         return {"query": self.query, "claims_are_evidence": False,
                 "own": [h.to_dict() for h in self.own],
+                "papers": [h.to_dict() for h in self.papers],
                 "findings": [h.to_dict() for h in self.findings],
                 "passages": [h.to_dict() for h in self.passages]}
 
     def context_items(self) -> list[ContextItem]:
         """Items para ``build_deterministic_context_pack`` (presupuesto ~4 caracteres por token)."""
         out = []
-        for h in self.own + self.findings + self.passages:
+        for h in self.own + self.papers + self.findings + self.passages:
             out.append(ContextItem(record_id=h.record_id, item_type=f"{h.origin}:{h.record_type}",
                                    reason_for_inclusion=f"recall({self.query!r}) score={h.score:.3f} "
                                                         f"authority={h.authority_status}",
@@ -118,20 +121,35 @@ class EdgeBrainMemory:
 
     # -- lectura -----------------------------------------------------------------
 
-    def recall(self, query: str, *, k_own: int = 5, k_findings: int = 5, k_passages: int = 4,
-               passage_chars: int = 1500) -> Recall:
+    def recall(self, query: str, *, k_own: int = 5, k_papers: int = 5, k_findings: int = 5, k_passages: int = 4,
+               passage_chars: int = 1500, prefer_useful: bool = True) -> Recall:
+        """Una consulta (castellano o ingles) -> memoria propia + papers a leer + hallazgos + pasajes."""
         out = Recall(query=query)
-        for r in LedgerIndex.from_store(self.store).query(query, k=k_own):
+        for r in LedgerIndex.from_store(self.store).query(query, k=k_own, expand=True):
             out.own.append(MemoryHit("OWN", r.record_id, r.record_type, round(r.score, 6), r.text,
                                      authority_status="OWN_LEDGER_RECORD"))
-        for r in self._findings_index.query(query, k=k_findings):
-            doc_id = self._finding_doc[r.record_id]
-            out.findings.append(MemoryHit("FINDING", r.record_id, "finding", round(r.score, 6), r.text,
-                                          authority_status=FINDING_AUTHORITY, source_id=f"SRC-SSRN-{doc_id:04d}",
-                                          title=self._titles.get(doc_id, "")))
+        ranked = self.cortex.ensure_fts_index()
+        if ranked and k_papers > 0:
+            for p in self.cortex.find_papers(query, limit=k_papers, prefer_useful=prefer_useful):
+                text = (f"{p['summary']} [calidad={p['quality'] or '?'} "
+                        f"aplicabilidad_intradia_ES={p['applicability_intraday_es'] or '?'}]")
+                out.papers.append(MemoryHit("PAPER", p["source_id"], "paper", p["score"], text,
+                                            authority_status=LITERATURE_AUTHORITY, source_id=p["source_id"],
+                                            title=p["title"]))
+        if ranked:
+            for f in self.cortex.search_findings_ranked(query, limit=k_findings):
+                out.findings.append(MemoryHit("FINDING", f["claim_id"], "finding", f["score"], f["text"],
+                                              authority_status=FINDING_AUTHORITY,
+                                              source_id=f"SRC-SSRN-{f['doc_id']:04d}", title=f["title"]))
+        else:
+            for r in self._findings_index.query(query, k=k_findings, expand=True):
+                doc_id = self._finding_doc[r.record_id]
+                out.findings.append(MemoryHit("FINDING", r.record_id, "finding", round(r.score, 6), r.text,
+                                              authority_status=FINDING_AUTHORITY, source_id=f"SRC-SSRN-{doc_id:04d}",
+                                              title=self._titles.get(doc_id, "")))
         if k_passages > 0:
             try:
-                hits = self.cortex.search_passages(query, limit=k_passages)
+                hits = self.cortex.search_passages_ranked(query, limit=k_passages)
             except BibliographicCortexError:
                 hits = []
             for i, h in enumerate(hits, start=1):

@@ -26,6 +26,11 @@ def main() -> int:
     search.add_argument("query")
     search.add_argument("-k", "--limit", type=int, default=6)
     search.add_argument("--max-chars", type=int, default=12000)
+    papers = subs.add_parser("papers", help="que papers leer (castellano o ingles), con calidad y aplicabilidad")
+    papers.add_argument("corpus_root")
+    papers.add_argument("query")
+    papers.add_argument("-k", "--limit", type=int, default=8)
+    papers.add_argument("--relevance-only", action="store_true", help="sin empuje por calidad/aplicabilidad")
     ingest = subs.add_parser("ingest")
     ingest.add_argument("corpus_root")
     ingest.add_argument("ledger_path")
@@ -55,6 +60,11 @@ def main() -> int:
         return 0 if result["status"] == "VERIFIED_COMPLETE" else 1
     if args.command == "search":
         print(json.dumps(cortex.context_pack(args.query, args.limit, args.max_chars), indent=2, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.command == "papers":
+        hits = cortex.find_papers(args.query, limit=args.limit, prefer_useful=not args.relevance_only)
+        print(json.dumps({"query": args.query, "claims_are_evidence": False, "papers": hits},
+                         indent=2, ensure_ascii=False, sort_keys=True))
         return 0
     if args.command == "recall":
         import tempfile

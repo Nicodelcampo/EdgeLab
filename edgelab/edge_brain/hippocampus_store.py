@@ -62,7 +62,7 @@ PARTITION_ROLES = frozenset({"EXPLORATION", "CONFIRMATION_RESERVED", "FUTURE"})
 OBSERVATION_KINDS = frozenset({"TARGET_FREE", "RESPONSE_PROFILE"})
 # Literatura consultada (puente brain <-> hipocampo bibliografico SSRN, 2026-10-09): techo de autoridad fijo.
 LITERATURE_AUTHORITY = "LITERATURE_CLAIM_UNVERIFIED"
-LITERATURE_ITEM_KINDS = frozenset({"PASSAGE", "FINDING"})
+LITERATURE_ITEM_KINDS = frozenset({"PAPER", "PASSAGE", "FINDING"})
 
 
 class CampaignBudgetError(ValueError):
