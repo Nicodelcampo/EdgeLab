@@ -1,0 +1,1932 @@
+Bimodal Dynamics of the Artificial Limit Order
+Book Stock Exchange with Autonomous Traders
+Matej Steinbacher∗1, Mitja Steinbacher†2, and Matjaˇz
+Steinbacher‡3
+1Independent Researcher
+2Faculty of Law and Business Studies, Catholic Institute,
+Ljubljana, Slovenia
+3Fund for Financing the Decommissioning of the Krˇsko Nuclear
+Power Plant and Disposal of Radioactive Waste, Krˇsko, Slovenia
+April 13, 2025
+Abstract
+This paper explores the bifurcative dynamics of an artificial stock
+market exchange (ASME) with endogenous, myopic traders interacting
+through a limit order book (LOB). We showed that agent-based price
+dynamics possess intrinsic bistability, which is not a result of randomness but an emergent property of micro-level trading rules, where even
+identical initial conditions lead to qualitatively different long-run price
+equilibria: a deterministic zero-price state and a persistent positive-price
+equilibrium. The study also identifies a metastable region with elevated
+volatility between the basins of attraction and reveals distinct transient
+behaviors for trajectories converging to these equilibria.
+Furthermore,
+we observe that the system is neither entirely regular nor fully chaotic.
+By highlighting the emergence of divergent market outcomes from uniform
+beginnings, this work contributes a novel perspective on the inherent path
+dependence and complex dynamics of artificial stock markets.
+Keywords: Artificial Stock Market, Trading, Agent-Based Model, Myopic
+Agents, Limit Order Book, Bifurcation
+1
+Introduction
+It was shown in Matej Steinbacher, Mitja Steinbacher, and Matjaˇz Steinbacher (2025)
+that the directionality and magnitude of price dynamics of an artificial stock
+market exchange (ASME) with endogenous, myopic traders, fixed total money
+supply and the fixed total number of stocks that are equally spread among
+∗matej.steinbacher@gmail.com
+†mitja.steinbacher@kat-inst.si
+‡corresponding author
+1
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+traders is determined by the aggregate money supply, which defines the direction of the equilibrium price, and by market imbalances between buyers and
+sellers that affects a shape of price trajectories. Moreover, the paper showed
+that such system can converge to two qualitatively different states, one with a
+zero (and fixed) terminal state and the other with a strictly positive (though
+volatile) terminal state.
+While the foundational work laid crucial groundwork by linking aggregate
+money supply and market imbalances to the direction and shape of price trajectories, it did not explicitly model the dynamic shifts between the qualitatively
+distinct regimes culminating in either a zero or a strictly positive terminal price.
+This limitation motivates the current paper, which seeks to unravel the hidden
+dynamics driving these transitions.
+Both papers share the ASME framework ot the artificial, order-driven stock
+market. Autonomous agents or traders who continuously observe market dynamics, interact through a limit order book and respond by submitting ask
+and bid orders according to their preferences, resource endowments, personal
+beliefs, trading objectives and market conditions with a prime objective to accummulate wealth. The conceptualization of the stock market as a multi-agent
+system has deep roots in both economic theory and computational modeling.
+Early contributions to this field include seminal works such as G.-r. Kim and
+Markowitz (1989), who explored portfolio optimization under uncertainty, laying
+the groundwork for understanding how agents allocate resources based on riskreturn trade-offs. Similarly, Moshe Levy, Haim Levy, and Sorin Solomon (1994)
+introduced a microscopic simulation framework to study wealth distribution
+dynamics among traders, highlighting the role of heterogeneity in shaping market outcomes. Building on these foundations, Palmer et al. (1999) developed
+artificial stock market models to simulate the behavior of interacting agents,
+demonstrating how aggregate market properties emerge from localized interactions. Other notable contributions include LeBaron (2002), who advanced
+agent-based modeling techniques to incorporate learning and adaptation, and
+Lux and Marchesi (1999), whose work elucidated the scaling properties of financial markets through the lens of herding behavior and speculative dynamics.
+However, unlike its conceptual ancestor, this paper explicitly studies the bifurcative nature of the ASME trading framework. Nonlinear systems can exhibit
+sensitive dependence on initial conditions or stable/unstable regions depending
+on external conditions or system parameters. Simulations have shown that the
+system exhibits bistability, with trajectories converging to two distinct types
+of end states: (1) a single, deterministic equilibrium where prices converge to
+zero and remain there and (2) a stochastic equilibrium where prices converge
+to a normal distribution around a positive mean. The paper shows that there
+exist conditions that induce bistability even under the same initial conditions.
+Trajectories eventually settle near one of two distinct price levels with noise
+causing small deviations that push different trajectories into different basins of
+attraction. This is the hallmark of stochastic bistability arising from a bifurcation (e.g. saddle-node or supercritical pitchfork) in the underlying deterministic
+dynamics.
+The system resembles a supercritical pitchfork bifurcation, which occurs at
+a critical money threshold that is proportional to the number of shares. It is
+the aim of the paper to study bifurcation properties of the model and their stability. The key goal is to understand the dynamics of transitions in the market
+2
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+that is studied with the Hidden Markov Model (HMM). The choice of an HMM
+framework is predicated on its inherent ability to model systems characterized
+by unobserved, underlying states that govern the observed sequence of market
+activities, specifically price changes and bid-ask imbalance. By assuming that
+the artificial stock market operates within a finite set of such hidden states, each
+with its own probabilistic characteristics for generating the observed data, we
+aim to identify and characterize the distinct dynamical regimes that the market
+traverses. This approach allows us to move beyond simply observing the bistable
+outcomes and delve into the temporal dependencies and the probabilistic nature of the market’s evolution, particularly in the vicinity of the bifurcation
+point identified through the lens of bifurcation theory. HMM has been used
+for an identification of patterns in financial markets, for instance, Aydınhan
+et al. (2024).
+The contributions of this paper are manifold. The core finding of intrinsic
+bistability in an artificial stock market with homogeneous agents is significant.
+It challenges the notion that complex market behaviors necessarily arise from
+heterogeneous agent characteristics or external shocks. The paper effectively argues that the micro-level trading rules themselves can generate divergent market
+outcomes. It, namely, shows that even identical initial conditions can lead the
+system to qualitatively different long-run price equilibria: a deterministic zeroprice state and a persistent positive-price equilibrium which underscores the
+nonlinear and path-dependent nature of price evolution in the model. The attractor’s topological structure, as visualized through the clustering and separation, confirms that the agent-based price dynamics possess intrinsic bistability,
+which is not a result of randomness but an emergent property of micro-level
+trading rules.
+Secondly, attractors are separated with a metastable region, functioning as
+a transient phase space, where trajectories exhibit heightened sensitivity to
+stochastic perturbations. The trajectories converging toward P ∗= 0 exhibit
+protracted transitions and greater variance, suggesting that the path to the
+terminal, absorbing state is dynamically extended. The possibility of the price
+system to converge to the P ∗= 0 pose implications that are beyond the paper,
+see, for instance, Battiston et al. (2016).
+Thirdly, by explicitly modeling the transitions between these regimes, the
+paper aims to enhance our understanding of the complex dynamics underlying
+the market’s behavior near the bifurcation point. The fractal dimension values
+observed indicate that the dynamics of the artificial market are nonlinear but
+not fully chaotic. The system appears to exhibit intermittent chaotic behavior
+or low-dimensional chaos.
+Fourthly, it offers a data-driven characterization of the market’s hidden dynamical regimes, linking these regimes to the previously identified zero and
+positive price equilibria. Finally, the inclusion of bid-ask imbalance as an observed variable provides a richer perspective on the market’s microstructure and
+its role in influencing the transitions between different dynamical states.
+The paper is organized as follows. Section 2 summarizes literature on the
+topic with a special focus on modeling the LOB. Mathematical model is developed in Section 3. Trader’s decision-making, despite being myopic, random,
+stems from solving Bellman equation, whose closed form solution defines traders’
+optimal strategy. If his expectation of price change is positive, he submits a buy
+order, and a sell order in case of a drop. Section 4 presents a summary of the
+3
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+simulation results. This section also includes various empirical tests designed to
+analyze the bifurcative and chaotic characteristics of the system. The simulation
+results indicate a bimodal state, often preceded by a transient phase. Section 5
+then analyzes the probability of price trajectories reaching the zero-price state.
+Section 6 frames the system within the context of a multivariate Hidden Markov
+Model with two hidden states. Finally, Section 7 provides concluding remarks.
+2
+Related Works
+Our conceptualization of the artificial stock market exchange (ASME) is rooted
+in the fundamental functionality of a limit order book (LOB) market, a market microstructure that has evolved significantly with technological advancements Garman (1976); Madhavan (2000); O’Hara (2002); O’Hara (2015); Hasbrouck (2007). Early works on LOBs explored the role of market makers and
+the bid-ask spread as a cost of immediacy Demsetz (1968); Amihud and Mendelson (1986), as well as informational disadvantages for early traders Copeland
+and Galai (1983).
+Early theoretical models often employed continuous-time double auction
+frameworks to analyze price formation, with Kyle’s model Kyle (1985) being
+foundational for understanding information incorporation through market orders. The role of asymmetric information and adverse selection in spread determination was emphasized by Glosten and Paul R Milgrom (1985); Glosten (1994),
+further developed by studies on optimal order timing Admati and Pfleiderer (1988)
+and stealth trading Barclay and Warner (1993); Chakravarty (2001). Auction
+theory also provided insights into the emergence of bid-ask spreads through
+the analysis of bidding behavior Wilson (1979); Back and Zender (1993); P. R.
+Milgrom and R. J. Weber (1982).
+More formal modeling of limit orders often involves solving an investor’s utility maximization problem in continuous time Christine A Parlour and Seppi (2008).
+Static equilibrium LOB models Rock (1996); Glosten (1994); Chakravarty and
+Holden (1995); Handa and Schwartz (1996); Seppi (1997); Thierry Foucault
+and Menkveld (2008) provided initial analytical frameworks. Recent research
+increasingly models limit order markets as sequential games, focusing on the
+strategic interaction of agents submitting orders T. Foucault (1999); C. A. Parlour (1998); Thierry Foucault, Kadan, and Kandel (2005); Goettler, Christine A
+Parlour, and Rajan (2005); Goettler, Christine A Parlour, and Rajan (2009);
+Ro¸su (2009).
+Another significant approach involves modeling the arrival and cancellation
+of orders using stochastic processes, with Poisson processes Cont and Tankov (2003);
+Cont, Stoikov, and Talreja (2010); Cont and De Larrard (2013) and Hawkes
+processes Hawkes (1971); Lu and Abergel (2018); Bacry, Mastromatteo, and
+Muzy (2015) being prominent examples. More recently, machine learning techniques like deep neural networks and GANs have been applied to LOB modeling
+Sirignano (2019); Z. Zhang, Zohren, and Roberts (2019); Prenzel et al. (2022).
+Queuing theory offers a natural framework for analyzing order flow dynamics, focusing on waiting times and queue lengths Gross et al. (2008); P. Weber
+and Rosenow (2005); W. Huang, Lehalle, and Rosenbaum (2015); Daniels et
+al. (2003); Cont and De Larrard (2013). These stochastic models and queuing
+theory approaches often aim to capture aggregate trader behavior for analytical
+4
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+tractability Gu´eant (2016). Comprehensive surveys of LOB modeling can be
+found in Christine A Parlour and Seppi (2008), Abergel et al. (2016), Gould
+et al. (2013).
+In parallel, agent-based models (ABMs) offer a bottom-up perspective by
+simulating the interactions of heterogeneous agents with predefined strategies
+Tesfatsion and Judd (2006). Early influential ABMs Bak, Paczuski, and Shubik (1997), Palmer et al. (1999), Donangelo and Sneppen (1998), Donangelo and
+Sneppen (1997), T.-H. Kim and Markowitz (1993), Moshe Levy, Haim Levy,
+and Sorin Solomon (1994), Moshe Levy, Sorin Solomon, and Haim Levy (1995),
+Levy, Solomon, and Levy (1995), Moshe Levy, Sorin Solomon, and Haim Levy (1996),
+Levy, Solomon, and Levy (2000), Haim Levy, Moshe Levy, and Sorin Solomon (2000),
+Levy, Solomon, and Levy (1997), Z.-F. Huang and Sorin Solomon (2001), C. H.
+Hommes (2006), C. Hommes et al. (2017), Sorin Solomon and Weisbuch (1999),
+Lux and Marchesi (1999), Lux and Marchesi (2000), Boswijk, Cars H Hommes,
+and Manzan (2007), LeBaron (2021), Fievet and Sornette (2018) demonstrated
+the emergence of complex market phenomena from local interactions.
+Specifically relevant to LOB modeling is the work by Cont and Bouchaud (2000)
+and subsequent models Bouchaud, M´ezard, and Potters (2002), Chiarella and
+Iori (2002), Preis et al. (2006), Farmer, Patelli, and Zovko (2005), Thurner,
+Farmer, and Geanakoplos (2012), Wang et al. (2021), Coletta et al. (2022) that
+simulate order book dynamics and the interplay of market and limit orders.
+These models highlight the importance of agent interaction and feedback loops
+in shaping LOB behavior Challet, Marsili, and Y.-C. Zhang (2004); Nevmyvaka,
+Feng, and Kearns (2006); LeBaron (2006). Surveys of agent-based computational finance include Samanidou et al. (2007), Mitja Steinbacher et al. (2021),
+Axtell and Farmer (2025).
+Complexity of financial systems as a bifurcative and chaotic system has
+been studied, for instance by Gao and Ma (2009), Yu, Cai, and Li (2012),
+Hsieh (1991), Anufriev, Gardini, and Radi (2020), Gardini et al. (2023), Panchuk,
+Sushko, and Westerhoff (2018). However, this kind of research that would focus
+on the microstructure of the LOB, as is the case in this paper, is scant if existent
+at all.
+3
+The Model
+The model is the same as in Matej Steinbacher, Mitja Steinbacher, and Matjaˇz
+Steinbacher (2025).
+It is a discrete-time, discrete-state model of interacting
+agents who trade a single asset S and whose wealth in time t ∈{0, 1, ..., T},
+W i
+t = M i
+t + Si
+tPt,
+i ∈{1, 2, ..., N}, is composed of monetary holdings M i
+t and
+holdings of the asset Si
+t with Pt ∈R+ being the market price of the asset at
+time t.1 Since short selling through negative money holdings is not allowed and
+Si
+t ∈Z+ which means that only non-negative integer position in the asset is
+allowed.
+1Our earlier paper on the topic Matej Steinbacher, Mitja Steinbacher, and Matjaˇz Steinbacher (2025) provides a comprehensive derivation and analysis of the model.
+5
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+3.1
+Agents
+Agents in the model trade the stock by maximizing their expected wealth of the
+form
+max
+{πi
+t}T −1
+t=0
+E0
+" T
+X
+t=1
+βt−1u(W i
+t )
+#
+,
+(1)
+where πi
+t represents the trading strategy of agent i at time t; β ∈(0, 1) is the
+discount factor, reflecting the time preference of the agent; u : R →R is a
+utility function, CRRA in our case, which is strictly increasing, concave, and
+twice continuously differentiable of the form: u(W) =
+W 1−γ
+1−γ
+for γ̸ = 1 and
+u(W) = ln(W) for γ = 1, where γ > 0 is the coefficient of relative risk aversion;
+E0[·] denotes the expectation operator conditional on the information available
+at time t = 0 and t = 1, 2, ..., T is time domain.
+Solving the utility function for the price P makes an optimal strategy for a
+trader that gets the form.
+At+1 =
+
+
+
+
+
+Bid
+P ∗
+t < E[Pt+1] −γ
+2
+Var(Pt+1)
+W ∗
+,
+Ask
+P ∗
+t > E[Pt+1] + γ
+2
+Var(Pt+1)
+W ∗
+,
+Nothing
+else,
+(2)
+Equation 2 states that a trader should follow his risk-adjusted pricing. Given
+that a myopic, random trader does not incorporate risk consideration into the
+trading decision,2 this can be simplified to
+At+1 =
+
+
+
+
+
+Bid
+P ∗
+t < E[Pt+1],
+Ask
+P ∗
+t > E[Pt+1],
+Nothing
+else,
+(3)
+This means that the trader submits an ask order if his private expectation
+of the price-change is a drop and a bid order if the price is expected to rise. A
+trader i predicts the future price as
+Ei
+t[Pt+1|Pt] = Pt · (1 + ∆i),
+(4)
+where ∆i ∼U(−σ, σ) is independently and identically distributed (i.i.d.) from
+a uniform distribution U(−σ, σ).
+3.2
+Limit Order Book
+Agents submit their limit ask and bid orders to the order book. Conceptually,
+our definition of the limit order is consistent with the Christine A Parlour and
+Seppi (2008) where it is defined as an ex ante pre-commitment made on date t
+to trade up to a given amount x of a security j at a pre-specified limit price p
+that is in force until filled or cancelled. An orderbook is a collection of bids and
+asks. At any given time t a set of bids and asks can respectively be defined as
+Definition 1 (Order Book). The order book is a collection of all bids Bt and
+asks At in time t, where:
+2Effectively sets γ = 0.
+6
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+• Bt = {(P i
+b, qi
+b) : Pb ∈R+, qb ∈N, i ∈{1, 2, ..., N}}: The set of all bid
+orders at time t. Each bid b ∈Bt is a tuple bi = (pb, qb, tb), where pb ∈R+
+is the bid price, qb ∈N is the bid quantity, and tb is the timestamp of the
+bid order.
+• At = {(P i
+a, qi
+a) : Pa ∈R+, qa ∈N, i ∈{1, 2, ..., N}}: The set of all ask
+orders at time t. Each ask a ∈At is a tuple ai = (pa, qa, ta), where pa ∈
+R+ is the ask price, qa ∈N is the ask quantity, and ta is the timestamp of
+the ask order.
+The market clearing process determines which orders are matched and executed, establishing the transaction price and quantities. We assume a price
+priority matching rule. This means that all bids are ranked in descending order
+of price and asks are ranked in ascending order of price.
+A trade is a pair of the best bid and the best ask prices. The best bid price
+(P b
+t ) is the highest bid price available in the market at time t. The best ask
+price (P a
+t ) is the lowest ask price available at time t. We define them as:
+P b
+t = sup{Pb : (P i
+b, qi
+b) ∈Bt}
+P a
+t = inf{Pa : (P i
+a, qi
+a) ∈At}
+Where sup denotes the supremum or least upper bound and inf denotes the
+infimum that is greatest lower bound. A trade is defined as a matched pair of
+a bid and an ask order and can be formally writen as:
+Definition 2. A trade T is a tuple T = (b, a, p, q, t), where:
+• b is a bid order.
+• a is an ask order.
+• p ∈R+ is the transaction price, ie. the price at which the trade is executed.
+• q ∈N is the traded quantity, ie. the number of shares or contracts exchanged.
+• t is the transaction timestamp, ie. the time at which the trade is executed.
+A trade T occurs when a bid b ∈Bt and an ask a ∈At iff pb ≥pa and
+q = min(qb, qa). The former can be defined as a matching condition that states
+that the bid price must be greater than or equal to the ask price. The later is
+a quantity condition saying that the traded quantity is the minimum of the bid
+and ask quantities.
+The resulting price of the trade lies between the bid and ask prices or pa ≤
+p ≤pb. In general, it is common to opt for the mid-price or p = pb+pa
+2
+which is
+the stance taken in the paper as well.
+3.3
+Solving for Price Change
+It was shown in the Matej Steinbacher, Mitja Steinbacher, and Matjaˇz Steinbacher (2025) that the approximate expected price change equals
+E[∆P (approx)
+t+1
+|Pt = p] ≈σ
+2 Pt
+
+1
+NA + 1 −
+1
+NB + 1
+
+,
+(5)
+7
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+with NA number of sellers, NB number of buyers, Pt current price and σ
+parameter of the trader’s expected price change from Equation 4. Equation 5,
+basically, states that the direction of the price change is defined by the market
+imbalance between buyers and sellers, pushing the price downwards if the ratio
+is in favor of the former or upwards in the case of the latter.
+4
+Simulations
+Matej Steinbacher, Mitja Steinbacher, and Matjaˇz Steinbacher (2025) demonstrated that variation in the control parameter M, ceteris paribus, can lead
+to the emergence of two qualitatively distinct attractors: a trivial fixed point
+P ∗= 0 and a nontrivial state P ∗> 0. This observation suggests that the system undergoes a bifurcation, wherein a marginal change in initial conditions,
+like M, results in a qualitative shift in long-term dynamics. Such behavior is
+indicative of bistability, where the system admits two coexisting stable equilibria, and small perturbations or differences in initial conditions may determine
+which attractor the system converges to.
+Numerical simulations further reveal that this kind of bistability, manifesting
+as convergence to either P ∗= 0 or P ∗> 0, can occur even for identical initial
+conditions. In particular, there exists a continuous region in parameter space,
+M ∈(M1, M2), ceteris paribus, across which bistability persists. This region
+forms a transition band separating domains of monostability at either P ∗(M <
+M1) = 0 or P ∗(M > M2) > 0.
+While the current paper does not explore
+the entire domain of this bistable regime, it focuses on one such representative
+example that illustrates the existence and nature of this phenomenon.
+4.1
+Simulation Parameters
+To validate and explore the theoretical model and the emergent price trajectory,
+we conduct a series of simulation batches.
+The general simulation setup is
+configured as follows.
+The agent population is set to N = 10, 000 traders,
+each initialized with a wealth endowment W i
+0(M i, Si) comprising of monetary
+holdings M i and stock holdings Si. Initial holdings of wealth are equal for all
+traders, that is M i
+0 = M0∀i and Si
+0 = S0∀i in every simulation run. Stocks
+are traded in units and cannot be shorted and traders are under a hard-budget
+constraint, forbidding them to trade on a margin. Money does not earn any
+interest.
+The trading horizon spans for t = 1, ..., 5, 000 discrete time periods. In each
+iteration t, a myopic, random (zero intelligent)3 trader makes a trading decision
+based on Equation 3 where E(Pt+1|It, Pt) = Pt·(1+∆∼U(−0.15, 0.15)) with ∆
+a uniform random variable on the interval. If the price is expected to increase
+by the trader i, a bid (buy) order is submitted. Alternativelly, if the trader
+expects a fall of the price, he submits an ask (sell) order. Both bid and ask
+orders are submitted to the orderbook for 1 unit stock S at the beginning of the
+time interval t. Once submitted orders can not be modified. The orderbook, as
+3Traders following zero intelligence (ZI) strategy by placing random order submissions
+have been widely used for the study of LOB, for instance, Gode and Sunder (1993) or Farmer,
+Patelli, and Zovko (2005).
+8
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+a match-maker, iteratively matches best bids with best asks, that is the highestpriced bid and the lowest-priced ask, until such pairs can be formed and settles
+them at the middle of the bid’s and the ask’s price. Any unmatched order at the
+end of the time interval t is cancelled and discarded. Trading does not involve
+any costs. Settlements are promptly done. A settled price of the last trade of an
+iteration is recorded as the closed price of the iteration Pt that becomes public
+knowledge available to all traders.
+The initial stock price is set at P0 = 10.0 and each trader is initially endowed
+with S0 = 20 stocks. Initial stock endowment and initial stock price are held
+constant during all repetitions of all batches. The initial monetary holdings
+M0 = 174.4
+4.2
+Simulation Results
+Simulation results of 50 independent repetitions all starting from the same initial
+conditions are shown in Figure 1.
+Figure 1: Simulation Results
+Despite the same initial conditions, the trajectories fan out into different
+terminal states, with 22 of them settling at higher values PT > 0 and remaining
+28 trajectories dropping towards PT = 0. Such state strongly indicates that
+(1) small stochastic variations (noise) in the system’s evolution are pushing
+trajectories onto different basins of attraction and (2) if the boundary separating
+the two attractors is close to the initial condition (or is ”thin”), even tiny random
+perturbations can send a trajectory to one attractor or the other, that is noisesensitive basin boundaries.
+First impression is that trajectories settle (or nearly settle) into a stable
+level rather than exploding or oscillating indefinitely making a case for the a
+4The source code of the artificial stock-market environment was written in C++ and was
+compiled for the Xcode. In the context of an object-oriented framework of the C++, a trader
+is modeled as an object with a lifetime and a scope that encapsulates both its state (private
+and public data) and its behavior (actions).
+In essence, the C++ trader object acts as a
+software representation of an autonomous agent operating within the simulated stock market,
+with its own internal characteristics and a defined set of actions it can take to interact with
+the market and other agents.
+9
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+Table 1: ADF Test: P ∗> 0
+ADF
+p-value
+AVG
+-5.1665
+0.0006
+MIN
+-7.6685
+0.0000
+MAX
+-3.5092
+0.0078
+STD
+1.1022
+0.0017
+N
+22
+22
+bistability under some stochastic influence rather than a typical chaos which
+would show sensitive dependence with ongoing, non-convergent fluctuations.
+4.2.1
+Basic Analysis
+Test of Stationarity
+Stationarity of trajectories was assessed using the Augmented Dickey-Fuller (ADF) unit root test, see, for instance, Hamilton (2020).
+The ADF test is based on fitting a model of the form:
+∆yt = α + βt + γyt−1 +
+p−1
+X
+i=1
+δi∆yt−i + ϵt,
+(6)
+where ∆yt = yt −yt−1, and the test examines the null hypothesis H0 : γ = 0
+(presence of a unit root, i.e., non-stationarity) against the alternative hypothesis
+H1 : γ < 0 (stationarity).
+The results of the ADF test for trajectories with P ∗> 0 are presented
+in Table 1. The table shows the ADF test statistic and the corresponding pvalue. For all statistical measures of the trajectories, the low p-values (p < 0.05)
+lead to the rejection of the null hypothesis, providing strong evidence that the
+trajectories of the P ∗> 0 group exhibit stationarity in the weak sense, meaning
+their first two moments are time-invariant (E[yt] = µ, Cov(yt, yt−k) = γ(k)).
+This reinforces the interpretation that these trajectories converge to a stable
+stochastic equilibrium.
+First and Second Moments
+Let xi,t represent the price of the trajectory at
+time t ∈{1, 2, ..., T} in the i-th repetition, where i ∈{1, 2, ..., R}. The average
+price trajectory as a function of time, conditioned on the terminal price P ∗,
+is denoted by X(¯xt|P ∗), where the temporal average at each time point t is
+given by ¯xt =
+1
+R
+PR
+i=1 xi,t. Similarly, the temporal standard deviation of the
+price trajectory, conditioned on P ∗, is denoted by σ(σt|P ∗), where the standard
+deviation at each time point t is calculated as σt =
+q
+1
+R−1
+PR
+i=1(xi,t −¯xt)2.
+Figure 2 depicts the temporal evolution of the average price trajectories,
+X(¯xt|P ∗), categorized into two distinct groups based on their terminal price
+P ∗= 0 and P ∗> 0. The shaded areas surrounding each average trajectory
+represent one standard deviation, σ(σt|P ∗), at each time point, illustrating the
+volatility or dispersion of individual trajectories within each respective group.
+The figure provides a clear visual representation of the bistable nature of the
+artificial stock market model, demonstrating how initially similar trajectories
+10
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+Figure 2: Mean Price Trajectories with Standard Deviation
+generated under the same initial conditions diverge over time to converge towards either a zero or a positive price equilibrium, each characterized by varying
+degrees of volatility.
+Periods in the neighborhood of the divergence point, say for t ∈[td −δ1, td +
+δ2] where δ1, δ2 > 0, exhibit higher volatility, i.e., larger values of σt for both
+groups. This suggests that during this sensitive phase, the market’s response
+to stochastic noise is amplified, playing a crucial role in determining the final
+equilibrium state. The group of trajectories converging to P ∗= 0 shows relatively larger volatility during the transient phase (t < tc, where tc denotes the
+approximate convergence time), such that σt|P ∗=0 > σt|P ∗>0 for t < tc. This
+indicates a greater dispersion among individual trajectories as they approach
+the zero equilibrium.
+Convergence for the zero price trajectories is considered complete when, for
+all repetitions i, xi,t →0 as t →T, and consequently, the standard deviation
+σt|P ∗=0 →0 as t →T. However, for the positive-priced group, the volatility
+around the positive mean persists until the end of the observation period, with
+σT |P ∗>0 > ϵ, with ϵ > 0. This non-zero terminal volatility suggests that the
+equilibrium at P ∗> 0 is stochastic, characterized by ongoing price fluctuations
+and inherent randomness.
+The diverging ensemble averages of price trajectories closely mirrors the
+structure of a supercritical pitchfork bifurcation in a stochastic dynamical system Zwillinger and Dobrushkin (2021); Kuznetsov (1998). Initially symmetric
+decay gives way to a regime split—where some trajectories collapse to zero while
+others converge to a metastable, fluctuating high-price state. This pattern suggests an underlying symmetry-breaking transition, likely triggered by nonlinear
+interactions among agents modulated by stochasticity.
+4.2.2
+Analysis of Bifurcative Characteristics
+To understand the bifurcating behavior of the simulated price trajectories,
+this section, first, estimates the separatrix point, second, calculates time to
+zero for the P ∗= 0 trajectories and, third, studies Poincar´e maps.
+These
+11
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+methods provide complementary insights into the system’s dynamical behavior. Kuznetsov (1998) or Zwillinger and Dobrushkin (2021) are comprehensive
+sources that cover material on dynamical systems used within the section.
+Separatrix
+Estimations suggest that the separation between both groups,
+the separatrix price Pc,5 appeared on the range between 3.54 (entropy-based
+method) to 3.733 (SVM), with the classification-based method yielding a value
+of 3.665.6
+Additionally, time-dependent tests, performed between the highprice and low-price groups show that the statistically significant divergence
+of trajectories of both groups started within t = (650, ..., 700), when resulting p-values of a T-test for the means of two independent samples of scores
+and a Mann-Whitney U test performed over an Pt,avg =
+Pt
+t−10 Pt
+
+/10 for
+t = 10, ..., T between the high-price and low-price groups start rejecting the
+null hypotheses of distribution equallity (the Mann-Whitney U test) and equality of means (the T-test).
+For instance, U(t=650) = 202.5000(0.0401) and
+T-Test(t=650) = −2.2845(0.0268) with p-values in the brackets.
+The price dispersion of the low-priced trajectories at the equilibrium price
+PT = 0 is zero, which implies that the escape rate of the equilibrium is zero.
+Terminal prices of the high-priced state do not converge to a single price but
+show a certain level of oscillation, given summary statistics, like P 5000 = 5.9577,
+Med(P5000) = 5.91, σP5000 = 0.2887, min(P5000) = 5.37, max(P5000) = 6.62. A
+failure to reject the Anderson-Darling test for normality AD = 0.24275 indicates
+that the distribution of terminal prices of the group is consistent with the normal
+distribution. As a corollary, the equilibrium is not a single, fixed price point.
+Instead, it is a stable state where prices oscillate randomly around a mean value.
+Time to Zero
+As shown in Table 2, the distribution of the time to zero for
+these trajectories when P ∗= 0 is centered around t = 3053.5, with a median of
+t = 2868.5. Time to zero is set to the earliest time step at which the trajectory
+reached zero. There is a moderate level of variability in the time to zero, as
+indicated by the standard deviation and coefficient of variation. The positive
+skewness suggests that while most trajectories reach zero relatively quickly,
+some take considerably longer. The negative excess kurtosis indicates a flatter
+distribution with less pronounced tails compared to a normal distribution. The
+range of times to zero is quite broad, from t = 2117 to t = 4607. The IQR further
+clarifies that the middle 50% of the data falls within a range of t = 1130.8.
+Table 2: P ∗= 0: Time to Zero
+Mean
+3053.5
+Skew
+0.76736
+Median
+2868.5
+Ex. kurt
+-0.42302
+Minimum
+2117.0
+5%
+2163.8
+Maximum
+4607.0
+95%
+4595.8
+STD
+702.58
+IQR
+1130.8
+C.V.
+0.2301
+N
+28
+5A separatrix is a boundary in the phase space of a dynamical system that separates regions
+of qualitatively different asymptotic behavior.
+6The detailed procedures for each algorithm are provided in the Appendix.
+12
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+Poincar´e Maps
+This section studies the stochasticity of the system using
+Poincar´e maps. The Poincar´e map is a technique employed in the analysis of
+dynamical systems, focusing on the intersections of the system’s trajectory in
+the phase space with a lower-dimensional subspace, referred to as the Poincar´e
+section.
+This method effectively reduces the continuous-time dynamics to a
+discrete-time map, enabling the examination of the system’s long-term behavior
+and stability.
+The phase space is a multidimensional space where each point yt represents
+the state of the system at a particular time t. For a scalar time series {xt}N
+t=1,
+the method of time delays allows for the reconstruction of the phase space. An
+embedded vector in this reconstructed phase space at time t′ can be defined as:
+yt′ = (xt′, xt′−τ, ..., xt′−(m−1)τ) ∈Rm
+where m is the embedding dimension, which determines the number of past
+values of the time series used to define each point in this reconstructed phase
+space, and τ is the time delay, representing the lag between the components of
+the embedded vectors. The embedding dimension m dictates the dimensionality
+of the reconstructed phase space, while the time delay τ governs the temporal
+separation between the components of the state vector.
+Figure 3: Column-Wise Poincar´e Maps from Price Series
+Figure 3 shows a set of Poincar´e maps for a fixed embedding dimension
+13
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+m = 4 arranged column-wise for three different time delays τ = 50, 250, 1000
+that let us perform a more granular, high-dimensional phase space analysis.
+To construct these maps, a suitable Poincar´e section (a subspace of dimension
+m −1) is chosen, and the points where the reconstructed trajectory intersects
+this section (typically with a specific direction of crossing) are plotted. The
+patterns observed in these Poincar´e maps can provide insights into the nature
+of the system’s dynamics; for instance, densely scattered points might suggest
+stochastic behavior, while more structured patterns could indicate deterministic
+or chaotic dynamics.
+For τ = 50 (first column), the points in the Poincar´e section exhibit a strong
+linear correlation along the diagonal in all projections, indicating a high degree
+of autocorrelation between xt and xt−50. The minimal spread around this linear
+trend suggests low variance. The dominant attractor corresponds to the highprice regime (P ≈5.5), evidenced by the high density of points in that region,
+while the low-price attractor (P ≈0) is sparsely represented. The reconstructed
+phase space appears to be a near one-dimensional projection, implying that the
+chosen embedding parameters do not adequately unfold the system’s dynamics.
+The short time delay τ = 50 is insufficient to effectively distinguish independent
+states of the system.
+Setting τ = 250 (second column) provides a more intricate and potentially
+more informative representation of the system’s dynamics, revealing patterns
+consistent with chaotic behavior. The non-uniform distribution of points across
+the projections indicates deterministic dynamics. The clustering of points in
+specific regions signifies the presence of attractors, which are regions in the
+phase space towards which trajectories asymptotically evolve. Two primary regions of high point density are discernible, suggesting the existence of at least
+two attractors.
+These clusters are separated by regions with a lower point
+density, implying less frequent or rapid transitions between the associated dynamical regimes.
+The smooth variation of point density within each cluster
+and along the transitional areas suggests a continuous evolution of the system’s
+state. The observation of multiple distinct regions of attraction, separated by
+less frequently visited areas, is a hallmark of multistability. The potential for the
+system to reside for extended periods near each of these clusters before transitioning suggests a metastable regime. This setting seems optimal for embedding
+since time delays are sufficiently decorrelated to unfold the manifold, but not
+too long to be overwhelmed by stochasticity. The attractor appears nonlinear
+but structured, suggesting a low- to moderate-dimensional chaotic system.
+For τ = 1000 (third column), the price values in the embedded vectors are
+separated by a relatively long interval that has exceeded the system’s decorrelation time. This choice of τ effectively isolates the basins of attraction but may
+obscure finer dynamical details. The Poincar´e map clearly reveals two dense
+and stable basins of attraction corresponding to the equilibria at P ∗= 0 and
+P ∗> 0. These basins are separated by sparse or transient regions that are
+visited infrequently and non-periodically, which is indicative of a metastable
+regime, particularly around Pt ≈3.8, a value close to the calculated separatrix.
+The distinct clustering of intersection points for τ = 1000 highlights the specific
+regions in the phase space that the system preferentially visits. The sparser distribution and the clearer separation of clusters compared to smaller time delays
+suggest that this longer time delay captures longer-term behaviors and a less
+frequent crossing of the Poincar´e section.
+14
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+The results clearly show that only with sufficiently long delay (τ = 1000)
+does the embedding reveal the true bifurcative nature of the system. The attractor’s topological structure, as visualized through the clustering and separation,
+confirms that the agent-based price dynamics possess intrinsic bistability, which
+is not a result of randomness but an emergent property of micro-level trading
+rules.
+The evolution of the system with two diverging average price trajectories
+over time strongly resembles a supercritical pitchfork bifurcation in a stochastic
+setting.
+In classical dynamical systems, a supercritical pitchfork bifurcation
+occurs when a system transitions from a single stable fixed point to two new
+stable fixed points and one unstable middle point as a control parameter crosses
+a critical value.
+4.2.3
+Chaotic Characteristics of the System
+We study chaotic characteristics of the simulated price trajectories through three
+complementary measures: fractal dimension, entropy-based complexity, and the
+largest Lyapunov exponent. Each offers a different lens on the system’s dynamical behavior.
+Fractal Dimension
+The fractal (correlation) dimension quantifies the complexity of a time series by describing how the system fills its phase space. Using
+the Grassberger-Procaccia method (see Appendix), we compute the correlation
+sum for various time delays τ. Results are summarized in Table 3.
+τ
+50
+250
+500
+750
+950
+AVG
+0.578
+0.779
+0.867
+0.793
+0.796
+STD
+0.139
+0.168
+0.049
+0.029
+0.012
+MIN
+0.318
+0.445
+0.713
+0.731
+0.772
+MAX
+0.811
+1.047
+0.973
+0.839
+0.829
+Table 3: Fractal dimension statistics across varying time delay τ
+The calculated fractal dimension for each trajectory consistently fell within
+the range of 0.8 to 0.9, regardless of the variations in embedding dimension
+and time delay parameters. This result indicates that the system exhibits a
+low-dimensional chaotic or quasi-periodic behavior, where the underlying dynamics are complex yet constrained within a relatively low-dimensional space.
+The fractal dimension values observed indicate that the dynamics of the artificial market are nonlinear but not fully chaotic. Rather, the system appears to
+exhibit intermittent chaotic behavior or low-dimensional chaos, where the market dynamics are influenced by a limited set of driving forces, yet still present
+significant irregularities and unpredictability.
+The observed fractal dimension values are lower than those typically seen
+in fully chaotic systems (which approach dimensions closer to 1.5 −2.0), supporting the hypothesis that the system is not fully chaotic. This could indicate
+that the artificial market model incorporates elements of quasi-periodic behavior or bounded chaotic dynamics, possibly reflecting real-world financial market
+15
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+behavior, which is often driven by both deterministic rules and random fluctuations.
+Beyond τ = 500, the average dimension stabilizes near 0.79–0.80, indicating
+a saturation point where further delay no longer uncovers new dynamical structure. Then τ = 500 appears to be an optimal embedding delay, balancing high
+fractal dimension with low variability, making it a strong candidate for optimal
+phase space reconstruction.
+Entropy-Based Complexity Analysis
+Entropy measures were computed
+for 50 trajectories from the artificial limit order book stock exchange model using
+Approximate Entropy (ApEn), Sample Entropy (SampEn), and an estimate
+of the Kolmogorov-Sinai (K-S) entropy based on SampEn.
+The results are
+summarized in Table 4.
+Statistic
+ApEn
+SampEn
+KS Est.
+Mean
+0.0075
+0.0063
+0.0063
+Median
+0.0045
+0.0040
+0.0040
+Std Dev
+0.0051
+0.0050
+0.0050
+Min
+0.0023
+0.0009
+0.0009
+Max
+0.0168
+0.0156
+0.0156
+25%
+0.0030
+0.0016
+0.0016
+75%
+0.0123
+0.0116
+0.0116
+Table 4: Entropy statistics across 50 trajectories
+Results are consistent with the those for the fractal dimension. The entropy
+values are uniformly low, indicating that the majority of trajectories are highly
+regular and predictable in most cases, which is consistent with quasi-periodic or
+low-dimensional deterministic dynamics. However, moderate variability in entropy values across trajectories (std ≈0.005) suggests that while most behaviors
+are stable, some paths exhibit higher dynamical richness which is also implied
+by the right-skewed distribution with a maximum SampEn of 0.0156 which implies that a subset of trajectories undergoes more irregular or transiently chaotic
+phases. This suggests intermittent complexity—periods of stable evolution interspersed with transient irregularities. These findings complement the fractal
+analysis in reinforcing the presence of low-complexity, weakly chaotic dynamics.
+Largest Lyapunov Exponent
+Finally, the largest Lyapunov exponent (LLE),
+denoted by λ, was estimated. It measures sensitivity to initial conditions and
+was computed for each trajectory using the Rosenstein algorithm (see Appendix). Summary statistics are presented in Table 5.
+The Table 5 summarizes the Lyapunov exponents calculated for different
+groups of trajectories using various time delay (τ) values. Values of λ are consistently positive, which is a characteristic signature of chaotic systems, but
+very small, indicating mild sensitivity to initial conditions. This suggests the
+system resides near the edge of chaos—exhibiting diverging trajectories over
+time, but at a slow and predictable rate. The results align with the fractal and
+entropy-based findings, reinforcing a picture of structured yet dynamically rich
+behavior.
+16
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+ACF
+τ = 50
+τ = 250
+τ = 500
+τ = 1000
+τ = 2000
+τ = 4500
+Total
+λ
+9.25E-05
+9.81E-04
+2.20E-04
+1.10E-04
+6.00E-05
+9.53E-06
+4.23E-06
+σ(λ)
+3.44E-05
+2.71E-04
+4.99E-05
+2.78E-05
+2.02E-05
+1.86E-05
+8.28E-06
+min(λ)
+3.02E-05
+4.33E-04
+1.30E-04
+5.40E-05
+1.81E-05
+-3.48E-05
+-1.54E-05
+max(λ)
+1.71E-04
+1.49E-03
+4.05E-04
+2.02E-04
+1.15E-04
+4.63E-05
+2.06E-05
+N
+50
+50
+50
+50
+50
+50
+50
+P ∗> 0
+λ
+1.20E-04
+1.15E-03
+2.31E-04
+1.15E-04
+5.22E-05
+1.52E-05
+6.77E-06
+σ(λ)
+2.39E-05
+1.60E-04
+3.21E-05
+1.60E-05
+1.56E-05
+1.68E-05
+7.45E-06
+min(λ)
+8.14E-05
+8.85E-04
+1.77E-04
+8.85E-05
+1.81E-05
+-2.11E-05
+-9.36E-06
+max(λ)
+1.71E-04
+1.49E-03
+2.98E-04
+1.49E-04
+9.26E-05
+4.63E-05
+2.06E-05
+N
+22
+22
+22
+22
+22
+22
+22
+P ∗= 0
+λ
+7.08E-05
+8.46E-04
+2.11E-04
+1.05E-04
+6.61E-05
+5.05E-06
+2.25E-06
+σ(λ)
+2.43E-05
+2.64E-04
+5.94E-05
+3.40E-05
+2.15E-05
+1.91E-05
+8.48E-06
+min(λ)
+3.02E-05
+4.33E-04
+1.30E-04
+5.40E-05
+2.83E-05
+-3.48E-05
+-1.54E-05
+max(λ)
+1.17E-04
+1.34E-03
+4.05E-04
+2.02E-04
+1.15E-04
+4.35E-05
+1.93E-05
+N
+28
+28
+28
+28
+28
+28
+28
+Table 5: Lyapunov Exponent: Summary Statistics
+Synthesis
+Taken together, the fractal dimension, entropy measures, and LLE
+results paint a coherent picture of the system’s dynamics. The system is neither entirely regular nor fully chaotic. The low-dimensional structure, limited
+entropy, and small positive LLE all point to a regime of very bounded chaos,
+where the system exhibits deterministic, largely predictable behavior with occasional irregularities. The observed complexity is neither trivial nor overwhelming. That is, the system is structured, yet adaptable; predictable, yet capable
+of surprise. These properties are characteristic of quasi-periodic attractors or
+bounded chaos, suggesting that the underlying mechanism, driven by the M/S
+ratio and bid-ask imbalance, creates a deterministic dynamics while preserving
+nonlinearity and feedback.
+5
+Probability of Reaching P ∗= 0
+We know that the system has two equilibrium prices, P ∗= 0 and P ∗> 0.
+The key idea of the section is to train a model to predict the probability of the
+trajectory eventually reaching zero based on the current state, using the labels
+derived from the observed trajectories.
+5.1
+Logistic Function
+Let {Pi(t)}N
+i=1 be a set of N observed trajectories of a process P(t). For each
+trajectory i, we define a binary label yi ∈{0, 1} based on whether the trajectory
+17
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+reached a state considered as zero (i.e., P(t) ≤ϵ for some small ϵ > 0) within
+the observation window:
+• yi = 0 if trajectory i reached zero.
+• yi = 1 if trajectory i did not reach zero within the observation period.
+For each time point tj in each trajectory i (j = 1, . . . , Ti, where Ti is the
+length of trajectory i), we create a feature vector xi,j representing the state at
+that time:
+xi,j =
+Pi(tj)
+tj
+
+The feature vector can include the price Pi(tj) at time tj, the time tj (or a normalized version), and potentially other relevant features. Our dataset consists
+of pairs {(xi,j, yi)}.
+We model the probability of reaching zero (y = 0) given the feature vector
+x and parameters θ = (w, b) using logistic regression:
+P(y = 0|x; θ) =
+1
+1 + exp(−(wT x + b))
+where:
+• x is the feature vector.
+• w is the weight vector associated with the features.
+• b is the bias (intercept) term.
+• wT x is the dot product of the weight vector and the feature vector.
+The parameters θ = (w, b) are estimated by minimizing the binary crossentropy loss function over the training data:
+L(θ) = −1
+M
+N
+X
+i=1
+Ti
+X
+j=1
+[yi log(P(y = 1|xi,j; θ)) + (1 −yi) log(P(y = 0|xi,j; θ))]
+where M = PN
+i=1 Ti is the total number of data points, and P(y = 1|xi,j; θ) =
+1 −P(y = 0|xi,j; θ) =
+exp(−(wT xi,j+b))
+1+exp(−(wT xi,j+b)). The optimal parameters ˆθ are found
+using an optimization algorithm.
+For a new state xnew at time tnew, the estimated probability of eventually
+reaching zero is:
+ˆP(eventually reach zero|xnew; ˆθ) =
+1
+1 + exp(−( ˆwT xnew + ˆb))
+5.2
+Gradient Boosting
+Gradient Boosting Machines (GBM) for classification are an ensemble learning
+method that builds a strong classifier by combining the predictions of multiple
+weak learners, typically decision trees. The trees are built sequentially, with
+each new tree trying to correct the errors made by the previous ones.
+The
+18
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+”gradient” in the name refers to the fact that each new weak learner is trained
+on the negative gradient of the loss function with respect to the predictions of
+the ensemble so far.
+Let the training data be denoted as {(xi, yi)}N
+i=1, where xi is the feature
+vector for the i-th sample, and yi ∈{0, 1} is the binary label.
+The goal is to learn a classification model F(x) that predicts the probability
+of y = 1 (or y = 0).
+For binary classification, a common loss function used in GBM is the negative
+log-likelihood of the Bernoulli distribution, which is equivalent to the logistic
+loss:
+L(y, F(x)) = −[y log(p) + (1 −y) log(1 −p)]
+where p = P(y = 1|x) = σ(F(x)) =
+1
+1+e−F (x) is the probability of y = 1
+predicted by the model, and σ is the sigmoid function. F(x) represents the raw
+output of the ensemble model (often called the log-odds).
+The GBM builds an additive model by sequentially adding weak learners
+(decision trees):
+FM(x) = F0(x) +
+M
+X
+m=1
+ηhm(x)
+where:
+• F0(x) is an initial guess for the model (e.g., a constant).
+• M is the total number of trees in the ensemble.
+• hm(x) is the m-th decision tree (the weak learner).
+• η is the learning rate (0 < η ≤1).
+Initialize the model with a constant value:
+F0(x) = log
+
+P(y = 1)
+1 −P(y = 1)
+
+Iteration (for m = 1 to M):
+• Compute Pseudo-Residuals (Negative Gradient): For each sample i, calculate the negative gradient of the loss function with respect to the current
+model Fm−1(xi):
+gm,i = −
+∂L(yi, Fm−1(xi))
+∂Fm−1(xi)
+
+For the logistic loss, this simplifies to:
+gm,i = yi −pm−1(xi) = yi −
+1
+1 + e−Fm−1(xi)
+• Fit a Weak Learner: Train a decision tree hm(x) to predict the pseudoresiduals gm,i.
+19
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+• Determine Leaf Values: For each leaf j in the tree hm(x), determine the
+optimal constant value γm,j that minimizes the loss function for the samples falling into that leaf.
+• Update the Model: Add the new tree to the ensemble, scaled by the
+learning rate:
+Fm(x) = Fm−1(x) + ηhm(x)
+If x falls into leaf j of tree hm, then hm(x) = γm,j.
+Final Prediction: After M boosting rounds, the final model FM(x) is obtained. The probability of not reaching zero (y = 1) is:
+P(y = 1|x) = σ(FM(x)) =
+1
+1 + e−FM(x)
+Then, the probability of reaching zero (y = 0) is:
+P(y = 0|x) = 1 −P(y = 1|x) = 1 −
+1
+1 + e−FM(x) =
+e−FM(x)
+1 + e−FM(x)
+5.3
+Calibration and Results
+Metric
+Logistic Regression
+GBM
+Accuracy
+0.79
+0.89
+Confusion Matrix
+
+
+0
+1
+0
+12502
+1697
+1
+3579
+7222
+
+
+
+
+0
+1
+0
+25872
+2427
+1
+3243
+18458
+
+
+Precision (RZ: Class 0)
+0.8805
+0.9142
+Recall (RZ: Class 0)
+0.7775
+0.8886
+Precision (NRZ: Class 1)
+0.8097
+0.8838
+Recall (NRZ: Class 1)
+0.6686
+0.8506
+Logistic Model’s Parameters:
+b0 = −7.2757, b1 = 1.1029, b2 = 5.6285
+Table 6: Comparison of Logistic Regression and Gradient Boosting Machines
+for Predicting Trajectory Reaching Zero
+Estimation results of both algorithms are shown in Table 6. RZ and NRZ
+in the table stand for ”Reaching Zero” and ”Not Reaching Zero”. The results
+indicate a clear superiority of the Gradient Boosting Machines (GBM) model
+over Logistic Regression for predicting whether a trajectory reaches zero. The
+GBM achieved a significantly higher overall accuracy (0.89) compared to Logistic Regression (0.79), suggesting a more effective classification of the outcomes.
+An examination of precision and recall metrics reveals that the GBM model
+demonstrates better performance across both classes.
+For the prediction of
+reaching zero (Class 0), GBM exhibits higher precision (0.9142 vs.
+0.8805)
+and notably improved recall (0.8886 vs.
+0.7775), indicating a better ability
+20
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+to correctly identify trajectories that eventually reach zero while minimizing
+false positives.
+Similarly, for the prediction of not reaching zero (Class 1),
+GBM shows substantial gains in both precision (0.8838 vs. 0.8097) and recall
+(0.8506 vs. 0.6686), highlighting its effectiveness in correctly identifying these
+trajectories as well.
+However, unlike the GBM the parameter estimates of the Logistic Regression model offer a degree of interpretability, providing insights into the linear
+relationships discerned by the model between the initial feature set and the predictive output. The significantly negative intercept (-7.28) suggests a very low
+baseline probability of a trajectory not reaching zero under such hypothetical
+conditions which is likely attributable to an initial tendency for the price to
+decline across all observed trajectories. The positive coefficient associated with
+the ”price” feature (1.10) indicates a direct relationship wherein an increase in
+the initial price correlates with an increased log-odds of the trajectory not reaching zero. Similarly, the positive coefficient for ”normalized time” (5.63) implies
+that as the trajectory evolves within the observation window, the log-odds of
+avoiding the zero threshold also increase.
+The comparatively larger magnitude of the ”normalized time” coefficient
+suggests that the progression of time has a more substantial positive impact
+on the likelihood of avoiding the zero threshold within the observed duration,
+compared to an equivalent unit increase in price. To illustrate with an example,
+based on the estimated parameter values of the Logistic Regression model, at
+time t = 700 (which corresponds to a normalized time of 0.14), a price around
+Pt=700 = 5.88 would result in a roughly 50% probability of the trajectory reaching zero.7
+6
+A Multivariate Hidden Markov Model with 2
+Hidden States
+A Hidden Markov Model (HMM) is a statistical model that describes a system
+assumed to be a Markov process with unobserved (hidden) states. In this case,
+we consider a multivariate HMM with 2 hidden states and two observed variables: Price (P) and Bid-Ask Imbalance (BA) that is defined as BAt = Bt −At.
+Let the number of hidden states be N = 2. Let the number of observations
+in a sequence be T. The observed sequence is O = (o1, o2, ..., oT ), where each
+observation ot is a 2-dimensional vector:
+ot =
+ Pt
+BAt
+
+∈R2
+Let the sequence of hidden states be Q = (q1, q2, ..., qT ), where each qt ∈{1, 2}.
+The HMM is defined by the following components:
+The set of hidden states is S = {1, 2}.
+This is a 2 × 2 matrix where each element aij represents the probability of
+7The normalized time for t = 700 on a timeline from 1 to 5000 would be approximately
+700/5000 = 0.14.
+Requiring the price at which the model predicts a 50% probability of
+reaching zero, then −6.4877 + 1.1029 × P = 0 => P ≈5.88.
+21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+transitioning from hidden state i at time t to hidden state j at time t + 1:
+A =
+a11
+a12
+a21
+a22
+
+where aij = P(qt+1 = j|qt = i), and for each row i ∈{1, 2}:
+• 0 ≤aij ≤1 for all j ∈{1, 2}
+• P2
+j=1 aij = 1
+For a multivariate HMM with Gaussian emissions, for each state j ∈{1, 2},
+we have a multivariate Gaussian distribution with a mean vector µj and a
+covariance matrix Σj. For our two observed variables, the mean vector for state
+j is:
+µj =
+ µP,j
+µBA,j
+
+and the covariance matrix for state j is a 2 × 2 matrix. Given the provided
+results, the covariance matrices are diagonal, indicating that Price and Bid-Ask
+Imbalance are assumed to be uncorrelated within each state:
+Σj =
+σ2
+P,j
+0
+0
+σ2
+BA,j
+
+The probability density function (PDF) of observing ot =
+ Pt
+BAt
+
+given that
+the hidden state is j is:
+bj(ot) = P(ot|qt = j) =
+1
+(2π)2/2|Σj|1/2 exp
+
+−1
+2(ot −µj)T Σ−1
+j (ot −µj)
+
+For a diagonal covariance matrix, this simplifies to the product of two univariate
+Gaussian PDFs:
+bj(ot) =
+
+
+1
+q
+2πσ2
+P,j
+exp
+ 
+−(Pt −µP,j)2
+2σ2
+P,j
+!
+×
+
+
+1
+q
+2πσ2
+BA,j
+exp
+ 
+−(BAt −µBA,j)2
+2σ2
+BA,j
+!
+
+The set of emission parameters is B = {(µ1, Σ1), (µ2, Σ2)}.
+This is a 1 × 2 vector that defines the probability of being in each hidden
+state at the beginning of the sequence (time t = 1):
+π = (π1, π2)
+where πi = P(q1 = i), and:
+• 0 ≤πi ≤1 for all i ∈{1, 2}
+• P2
+i=1 πi = 1
+The multivariate HMM with 2 hidden states and observations of Price (P)
+and Bid-Ask Imbalance (BA) is defined by the parameter set λ = (A, B, π).
+22
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+Parameter
+State
+Transition
+Value
+Transition Probabilities (A)
+From State 1
+To State 1
+0.99720110
+To State 2
+0.00279890
+From State 2
+To State 1
+0.00092425
+To State 2
+0.99907575
+Means (B)
+State 1
+Price (P)
+-9.59565388e-123
+Bid - Ask
+0.00000000e+0
+State 2
+Price (P)
+-0.00188545
+Bid - Ask
+120.139187
+Variances (B)
+State 1
+Price (P)
+1.83339622e-7
+Bid - Ask
+1.83339622e-7
+State 2
+Price (P)
+0.00006810
+Bid - Ask
+13046.9587
+Initial Probabilities (π)
+State 1
+0.0
+State 2
+1.0
+Table 7: Estimated HMM Parameters
+6.1
+Estimation Results and Comments
+Results of the multivariate Hidden Markov Model with two hidden states are
+shown in Table 7. Considering both price change and bid-ask imbalance, identifies two highly persistent regimes.
+State 1: Characterized by a mean price change very close to zero and a
+mean bid-ask imbalance of zero, this state exhibits very low variances for both
+variables (0.000000183). The transition probabilities show extremely high persistence (0.997) with a very low probability of transitioning to State 2 (0.00279).
+This state strongly suggests the equilibrium at P ∗= 0, indicating a stable condition where both price changes and the forces reflected in bid-ask imbalance
+are minimal.
+State 2: This state displays a small negative mean price change (−0.001885)
+and a high positive mean bid-ask imbalance (120.14). The variances are higher
+compared to State 1, with 0.0000681 for price change and 13000 for bid-ask
+imbalance. Similar to State 1, this state also shows very high persistence (0.999)
+with a very low probability of transitioning to State 1 (0.000924). This state
+likely represents a regime where the price is above zero (P ∗> 0), experiencing
+a slight downward drift while there is a significant buying pressure indicated by
+the positive bid-ask imbalance. The high persistence suggests that the system
+can remain in this state for extended periods.
+The model indicates that all trajectories start in State 2 (1.0), the state
+associated with a positive price level and buying imbalance.
+State 1 strongly corresponds to the equilibrium at P ∗= 0 due to its nearzero means and very low variances for both price change and bid-ask imbalance,
+along with its high persistence. This suggests a stable and absorbing-like state
+at the zero price level.
+State 2 appears to represent a persistent state associated with the P ∗> 0
+23
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+regime. The negative mean price change suggests a tendency towards the zero
+equilibrium, while the high positive bid-ask imbalance indicates ongoing buying
+pressure. The very high persistence of this state implies that the system can remain in this positive-price regime for a long time before potentially transitioning
+to the zero-price equilibrium.
+The extremely low transition probabilities between the two states suggest
+that the system tends to stay within one of these regimes for extended durations.
+This might imply that the transition from a positive price level with buying
+imbalance to the zero-price equilibrium is a rare event within the observed time
+frame or under the modeled dynamics.
+The initial condition of starting solely in State 2 indicates that the observed
+trajectories begin in the positive-price regime, which is consistent with the simulation procedure, given that all started from the same initial conditions.
+Overall, this two-state model provides a simplified but clear distinction between a stable zero-price equilibrium and a persistent state characterized by a
+positive price level with buying imbalance and a gradual downward drift. The
+high persistence within each state and the low transition probabilities suggest
+that the system tends to reside in one of these conditions for considerable periods.
+7
+Conclusion
+Paper studies a bifurcative nature of price trajectories that are a result of trading
+activities of endogenous and autonomous agents who trade by placing bid and
+ask orders to the limit order book (LOB) within an artificial stock market
+exchange (ASME). Modeling trading activities at a microstructure level within
+an agent-based framework is not novel approach and the current paper is an
+extension of our prior work. Therein it was shown that trading activities of
+myopic, random agents, like those within the current paper, push the price of
+an asset into the direction of the money-to-stock ratio that works as a drift,
+with a market bid-ask imbalance affecting the ”noise”.
+The current study extends this theoretical foundation by systematically exploring the bifurcation structure inherent to the system. Specifically, we show
+that the ASME exhibits bistability, whereby qualitatively distinct long-run equilibria, a degenerate state at P ∗= 0 and a persistent positive price equilibrium
+P ∗> 0, can emerge from identical initial conditions. This divergence of trajectories into distinct basins of attraction underscores the nonlinear and pathdependent nature of price evolution in the model. Between the two attractor
+basins lies a metastable region, functioning as a transient phase space, where
+trajectories exhibit heightened sensitivity to stochastic perturbations.
+The period around the bifurcation point is characterized by elevated volatility, suggesting that the market is more sensitive to endogenous fluctuations.
+The trajectories converging toward P ∗= 0 exhibit protracted transitions and
+greater variance, suggesting that the path to the terminal, absorbing state is dynamically extended. In contrast, trajectories associated with the P ∗> 0 regime
+display ongoing oscillatory behavior around a stochastic price level, lacking convergence to a fixed price. This behavior is in line with our previous findings,
+where price trajectories of the high-price regime were shown to fluctuate within
+a narrow band.
+24
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+Values of Lyapunov exponent are consistently positive, which is a characteristic signature of chaotic systems, but very small which does not make a
+conclusive proof for the chaos. The system appears to exhibit an intermittent
+chaotic behavior or low-dimensional chaos, where the market exhibits complexity and irregularity, before eventually settling into a non-chaotic state.
+The
+view aligns with the fractal and entropy-based findings, reinforcing a picture of
+structured yet dynamically rich behavior.
+The consistent fractal dimension also points to potential predictability of
+certain aspects of the system, as the dynamics appear to be governed by a set
+of low-dimensional attractors. However, the nonlinearity and apparent irregularity suggest that complete prediction remains challenging, with the system
+exhibiting deterministic, largely predictable behavior with occasional irregularities.
+In sum, the study contributes a novel perspective on the inherent path dependence and complex dynamics of artificial stock markets. It highlights the
+importance of micro-level interactions in shaping macro-level market outcomes.
+The results of the paper provide compelling evidence that the ASME dynamics,
+governed by minimalistic, zero-intelligent agent rules and microstructural constraints, naturally give rise to nonlinear bifurcations, multistability, and path
+dependence.
+References
+Abergel, Fr´ed´eric et al. (2016). Limit order books. Cambridge University Press.
+Admati, Anat R and Paul Pfleiderer (1988). “A theory of intraday patterns:
+Volume and price variability”. In: The review of financial studies 1(1), pp. 3–
+40.
+Amihud, Yakov and Haim Mendelson (1986). “Asset pricing and the bid-ask
+spread”. In: Journal of financial Economics 17(2), pp. 223–249.
+Anufriev, Mikhail, Laura Gardini, and Davide Radi (2020). “Chaos, border collisions and stylized empirical facts in an asset pricing model with heterogeneous agents”. In: Nonlinear Dynamics 102(2), pp. 993–1017.
+Axtell, Robert L and J Doyne Farmer (2025). “Agent-based modeling in economics and finance: Past, present, and future”. In: Journal of Economic
+Literature 63(1), pp. 197–287.
+Aydınhan, Af¸sar Onat et al. (2024). “Identifying patterns in financial markets:
+extending the statistical jump model for regime identification”. In: Annals
+of Operations Research, pp. 1–37.
+Back, Kerry and Jaime F Zender (1993). “Auctions of divisible goods: On the
+rationale for the treasury experiment”. In: The Review of Financial Studies
+6(4), pp. 733–764.
+Bacry, Emmanuel, Iacopo Mastromatteo, and Jean-Fran¸cois Muzy (2015). “Hawkes
+Processes in Finance”. In: Market Microstructure and Liquidity 01(01), p. 1550005.
+Bak, Per, Maya Paczuski, and Martin Shubik (1997). “Price variations in a
+stock market with many agents”. In: Physica A: Statistical Mechanics and
+its Applications 246(3-4), pp. 430–453.
+Barclay, Michael J and Jerold B Warner (1993). “Stealth trading and volatility: Which trades move prices?” In: Journal of financial Economics 34(3),
+pp. 281–305.
+25
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+Battiston, Stefano et al. (2016). “Complexity theory and financial regulation”.
+In: Science 351(6275), pp. 818–819.
+Boswijk, H Peter, Cars H Hommes, and Sebastiano Manzan (2007). “Behavioral
+heterogeneity in stock prices”. In: Journal of Economic dynamics and control
+31(6), pp. 1938–1970.
+Bouchaud, Jean-Philippe, Marc M´ezard, and Marc Potters (2002). “Statistical
+properties of stock order books: empirical results and models”. In: Quantitative finance 2(4), p. 251.
+Chakravarty, Sugato (2001). “Stealth-trading: Which traders’ trades move stock
+prices?” In: Journal of Financial Economics 61(2), pp. 289–307.
+Chakravarty, Sugato and Craig W Holden (1995). “An integrated model of market and limit orders”. In: Journal of Financial Intermediation 4(3), pp. 213–
+241.
+Challet, Damien, Matteo Marsili, and Yi-Cheng Zhang (2004). Minority games:
+interacting agents in financial markets. OUP Oxford.
+Chiarella, Carl and Giulia Iori (2002). “A simulation analysis of the microstructure ofdouble auction markets”. In: Quantitative finance 2(5), p. 346.
+Coletta, Andrea et al. (2022). “Learning to simulate realistic limit order book
+markets from data as a world agent”. In: Proceedings of the third acm international conference on ai in finance, pp. 428–436.
+Cont, Rama and Jean-Philippe Bouchaud (2000). “Scaling in equity markets”.
+In: Physical review letters 85(16), p. 3416.
+Cont, Rama and Adrien De Larrard (2013). “Price dynamics in a Markovian
+limit order market”. In: SIAM Journal on Financial Mathematics 4(1),
+pp. 1–25.
+Cont, Rama, Sasha Stoikov, and Rishi Talreja (2010). “A stochastic model for
+order book dynamics”. In: Operations research 58(3), pp. 549–563.
+Cont, Rama and Peter Tankov (2003). Financial modelling with jump processes.
+Chapman and Hall/CRC.
+Copeland, Thomas E and Dan Galai (1983). “Information effects on the bid-ask
+spread”. In: the Journal of Finance 38(5), pp. 1457–1469.
+Daniels, Marcus G et al. (2003). “Quantitative model of price diffusion and market friction based on trading as a mechanistic random process”. In: Physical
+review letters 90(10), p. 108102.
+Demsetz, Harold (1968). “The cost of transacting”. In: The quarterly journal of
+economics 82(1), pp. 33–53.
+Donangelo, Rodolfo and Kim Sneppen (1997). “Statistical model for the emergence of money”. In: Physical Review E 55(3), p. 2563.
+Donangelo, Rodolfo and Kim Sneppen (1998). “Money from chaos”. In: Physica
+A: Statistical Mechanics and its Applications 256(3-4), pp. 449–460.
+Farmer, J Doyne, Paolo Patelli, and Ilija I Zovko (2005). “Predictive power
+of zero-intelligence in financial markets”. In: Proceedings of the National
+Academy of Sciences 102(6), pp. 2254–2259.
+Fievet, Lucas and Didier Sornette (2018). “Calibrating emergent phenomena in
+stock markets with agent based models”. In: PloS one 13(3), e0193290.
+Foucault, T. (1999). “Order flow composition and trading costs in a dynamic
+limit order market”. In: Journal of Financial Markets 2(2), pp. 99–134.
+Foucault, Thierry, Ohad Kadan, and Eugene Kandel (2005). “Limit order book
+as a market for liquidity”. In: The review of financial studies 18(4), pp. 1171–
+1217.
+26
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+Foucault, Thierry and Albert J Menkveld (2008). “Competition for order flow
+and smart order routing systems”. In: The Journal of Finance 63(1), pp. 119–
+158.
+Gao, Qin and Junhai Ma (2009). “Chaos and Hopf bifurcation of a finance
+system”. In: Nonlinear Dynamics 58, pp. 209–216.
+Gardini, Laura et al. (2023). “A 2D piecewise-linear discontinuous map arising in stock market modeling: Two overlapping period-adding bifurcation
+structures”. In: Chaos, Solitons & Fractals 176, p. 114143.
+Garman, Mark B. (1976). “Market microstructure”. In: Journal of financial
+Economics 3(3), pp. 257–275.
+Glosten, Lawrence R (1994). “Is the electronic open limit order book inevitable?”
+In: The Journal of Finance 49(4), pp. 1127–1161.
+Glosten, Lawrence R and Paul R Milgrom (1985). “Bid, ask and transaction
+prices in a specialist market with heterogeneously informed traders”. In:
+Journal of financial economics 14(1), pp. 71–100.
+Gode, Dhananjay K and Shyam Sunder (1993). “Allocative efficiency of markets
+with zero-intelligence traders: Market as a partial substitute for individual
+rationality”. In: Journal of political economy 101(1), pp. 119–137.
+Goettler, Ronald L, Christine A Parlour, and Uday Rajan (2005). “Equilibrium in a dynamic limit order market”. In: The Journal of Finance 60(5),
+pp. 2149–2192.
+Goettler, Ronald L, Christine A Parlour, and Uday Rajan (2009). “Informed
+traders and limit order markets”. In: Journal of Financial Economics 93(1),
+pp. 67–87.
+Gould, Martin D et al. (2013). “Limit order books”. In: Quantitative Finance
+13(11), pp. 1709–1742.
+Gross, Donald et al. (2008). Fundamentals of queueing theory. John Wiley &
+Sons.
+Gu´eant, Olivier (2016). The Financial Mathematics of Market Liquidity: From
+optimal execution to market making. CRC Press.
+Hamilton, James D (2020). Time series analysis. Princeton university press.
+Handa, Puneet and Robert A Schwartz (1996). “Limit order trading”. In: The
+Journal of Finance 51(5), pp. 1835–1861.
+Hasbrouck, Joel (2007). “Empirical market microstructure: The institutions,
+infrastructure, and econometrics of securities trading”. In: Handbook of financial econometrics, pp. 721–792.
+Hawkes, Alan G. (1971). “Spectra of some self-exciting and mutually exciting
+point processes”. In: Biometrika 58(1), pp. 83–90.
+Hommes, C. H. (2006). “Heterogeneous agent models in economics and finance”.
+In: Handbook of Computational Economics 2, pp. 1109–1186.
+Hommes, Cars et al. (2017). “Booms, busts and behavioural heterogeneity in
+stock prices”. In: Journal of Economic Dynamics and Control 80, pp. 101–
+124.
+Hsieh, David A (1991). “Chaos and nonlinear dynamics: application to financial
+markets”. In: The journal of finance 46(5), pp. 1839–1877.
+Huang, Weibing, Charles-Albert Lehalle, and Mathieu Rosenbaum (2015). “Simulating and analyzing order book data: The queue-reactive model”. In: Journal of the American Statistical Association 110(509), pp. 107–122.
+Huang, Zhi-Feng and Sorin Solomon (2001). “Power, L´evy, exponential and
+Gaussian-like regimes in autocatalytic financial systems”. In: The European
+27
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+Physical Journal B-Condensed Matter and Complex Systems 20(4), pp. 601–
+607.
+Kim, Gew-rae and Harry M Markowitz (1989). “Investment rules, margin, and
+market volatility”. In: Journal of portfolio management 16(1), p. 45.
+Kim, Tae-Hwan and Harry M Markowitz (1993). “Stock price bubbles and
+crashes”. In: Journal of Banking & Finance 17(5-6), pp. 1053–1073.
+Kuznetsov, Yuri A (1998). Elements of applied bifurcation theory, Second Edition. Vol. 112. Springer.
+Kyle, Albert S (1985). “Continuous auctions and insider trading”. In: Econometrica: Journal of the Econometric Society, pp. 1315–1335.
+LeBaron, Blake (2002). “Building the Santa Fe artificial stock market”. In: Physica A 1, p. 20.
+LeBaron, Blake (2006). “Agent-based computational finance”. In: Handbook of
+computational economics 2, pp. 1187–1233.
+LeBaron, Blake (2021). “Microconsistency in simple empirical agent-based financial models”. In: Computational economics 58(1), pp. 83–101.
+Levy, Haim, Moshe Levy, and Sorin Solomon (2000). Microscopic simulation of
+financial markets: From investor behavior to market phenomena. Academic
+press.
+Levy, M, S Solomon, and H Levy (1995). “Dynamical micro-economic model of
+a financial market”. In: Economics Letters 47(1), pp. 101–106.
+Levy, M, S Solomon, and H Levy (1997). “Towards a unified microscopic theory
+of financial markets”. In: International Journal of Modern Physics C 8(06),
+pp. 1047–1070.
+Levy, M, S Solomon, and H Levy (2000). “A new microscopic model of the
+stock market: complex agents interacting through the limit order book”. In:
+Quantitative Finance 1(2), pp. 229–242.
+Levy, Moshe, Haim Levy, and Sorin Solomon (1994). “A microscopic model of
+the stock market: cycles, booms, and crashes”. In: Economics Letters 45(1),
+pp. 103–111.
+Levy, Moshe, Sorin Solomon, and Haim Levy (1995). “Phase transitions in a
+microscopic market model”. In: International Journal of Modern Physics C
+6(01), pp. 65–72.
+Levy, Moshe, Sorin Solomon, and Haim Levy (1996). “Market fluctuations and
+off-equilibrium dynamics”. In: Physica A: Statistical Mechanics and its Applications 232(3-4), pp. 709–717.
+Lu, Xiaofei and Fr´ed´eric Abergel (2018). “High-dimensional Hawkes processes
+for limit order books: modelling, empirical analysis and numerical calibration”. In: Quantitative Finance 18(2), pp. 249–264.
+Lux, Thomas and Michele Marchesi (1999). “Scaling and criticality in a stochastic multi-agent model of a financial market”. In: Nature 397(6719), pp. 498–
+500.
+Lux, Thomas and Michele Marchesi (2000). “Volatility clustering in financial
+markets: a microsimulation of interacting agents”. In: International journal
+of theoretical and applied finance 3(04), pp. 675–702.
+Madhavan, Ananth (2000). “Market microstructure: A survey”. In: Journal of
+financial markets 3(3), pp. 205–258.
+Milgrom, P. R. and R. J. Weber (1982). “A theory of auctions and competitive
+bidding”. In: Econometrica 50(5), pp. 1089–1122.
+28
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+Nevmyvaka, Yuriy, Yi Feng, and Michael Kearns (2006). “Reinforcement learning for optimized trade execution”. In: Proceedings of the 23rd International
+Conference on Machine Learning, pp. 673–680.
+O’Hara, Maureen (2002). “Market microstructure research: theory, empirics,
+and implementation”. In: Market microstructure: theory, empirics and implementation.
+O’Hara, Maureen (2015). “High frequency market microstructure”. In: Journal
+of Financial Economics 116(2), pp. 257–270.
+Palmer, Richard G et al. (1999). “An artificial stock market”. In: Artificial Life
+and Robotics 3, pp. 27–31.
+Panchuk, Anastasiia, Iryna Sushko, and Frank Westerhoff (2018). “A financial market model with two discontinuities: Bifurcation structures in the
+chaotic domain”. In: Chaos: An Interdisciplinary Journal of Nonlinear Science 28(5).
+Parlour, C. A. (1998). “Price dynamics in limit order markets”. In: Review of
+Financial Studies 11(4), pp. 789–816.
+Parlour, Christine A and Duane J Seppi (2008). “Limit order markets: A survey”. In: Handbook of financial intermediation and banking 5, pp. 63–95.
+Preis, Tobias et al. (2006). “Multi-agent-based order book model of financial
+markets”. In: Europhysics Letters 75(3), p. 510.
+Prenzel, Felix et al. (2022). “Dynamic calibration of order flow models with generative adversarial networks”. In: Proceedings of the third ACM international
+conference on AI in finance, pp. 446–453.
+Rock, Kevin (1996). “The Specialist’s Order Book and Price Anomalies”. In:
+Review of Financial Studies 9, pp. 1–20.
+Ro¸su, Ioanid (2009). “A dynamic model of the limit order book”. In: The Review
+of Financial Studies 22(11), pp. 4601–4641.
+Samanidou, Egle et al. (2007). “Agent-based models of financial markets”. In:
+Reports on Progress in Physics 70(3), p. 409.
+Seppi, Duane J (1997). “Liquidity provision with limit orders and a strategic
+specialist”. In: The Review of Financial Studies 10(1), pp. 103–150.
+Sirignano, Justin A (2019). “Deep learning for limit order books”. In: Quantitative Finance 19(4), pp. 549–570.
+Solomon, Sorin and Gerard Weisbuch (1999). “Money, information and business
+fluctuations in an agent based model”. In: The European Physical Journal
+B-Condensed Matter and Complex Systems 7(4), pp. 643–649.
+Steinbacher, Matej, Mitja Steinbacher, and Matjaˇz Steinbacher (2025). “The
+Mathematical Aspect and Agent-Based Simulation of an Artificial Limit
+Order Book Stock Exchange with Autonomous Traders”. Under revision.
+Steinbacher, Mitja et al. (2021). “Advances in the agent-based modeling of economic and social behavior”. In: SN Business & Economics 1(7), p. 99.
+Tesfatsion, Leigh and Kenneth L Judd (2006). “Agent-based computational economics: A constructive approach to economic theory”. In: Handbook of computational economics 2, pp. 831–880.
+Thurner, Stefan, J Doyne Farmer, and John Geanakoplos (2012). “Leverage
+causes fat tails and clustered volatility”. In: Quantitative Finance 12(5),
+pp. 695–707.
+Wang, Xintong et al. (2021). “Spoofing the Limit Order Book: A Strategic
+Agent-Based Analysis”. In: Games 12(2).
+29
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+Weber, Philipp and Bernd Rosenow (2005). “Order book approach to price
+impact”. In: Quantitative Finance 5(4), pp. 357–364.
+Wilson, R. (1979). “Auctions of shares”. In: Quarterly Journal of Economics
+93(4), pp. 675–689.
+Yu, Haojie, Guoliang Cai, and Yuxiu Li (2012). “Dynamic analysis and control
+of a new hyperchaotic finance system”. In: Nonlinear Dynamics 67, pp. 2171–
+2182.
+Zhang, Zihao, Stefan Zohren, and Stephen Roberts (2019). “Deeplob: Deep convolutional neural networks for limit order books”. In: IEEE Transactions on
+Signal Processing 67(11), pp. 3001–3012.
+Zwillinger, Daniel and Vladimir Dobrushkin (2021). Handbook of differential
+equations. Chapman and Hall/CRC.
+Appendix
+A
+The Separatrix Estimation Algorithm: Classification Error Minimization
+Let X = {xi(t)} be a set of one-dimensional trajectories, where each trajectory
+xi(t) evolves over time t according to an underlying dynamical system.
+For each trajectory xi(t), we define its final state as:
+Si = lim
+t→T xi(t),
+where T is the final observation time. In practice, we approximate this limit by
+computing the mean over the last L time steps:
+¯xi = 1
+L
+T
+X
+k=T −L
+xi(k).
+We classify each trajectory into three categories:
+• Si = 0 if |¯xi| < ϵ0 (converging to zero threshold)
+• Si = 1 if ¯xi > ϵ1 (large positive threshold)
+• Si = −1 otherwise (undetermined)
+where ϵ0 and ϵ1 are predefined thresholds.
+Define sets:
+Z = {i : Si = 0},
+P = {i : Si = 1}.
+If either Z or P is empty, no separatrix is found.
+We define a time index tc that is approximately halfway through the trajectories:
+tc = 1
+2median{Ti : i ∈Z ∪P}.
+where Ti is the length of trajectory xi(t).
+For each i ∈Z ∪P, we record xi(tc), forming two groups:
+XZ = {xi(tc) : i ∈Z},
+XP = {xi(tc) : i ∈P}.
+30
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+Define the sorted set of unique values from XZ ∪XP :
+Xs = {x(1), x(2), . . . , x(m)},
+x(1) < x(2) < · · · < x(m).
+We consider candidate separatrix points as midpoints between consecutive
+values:
+sj = x(j) + x(j+1)
+2
+,
+j = 1, . . . , m −1.
+For each candidate sj, we define groups:
+G1 = {xi ≤sj},
+G2 = {xi > sj}.
+Define classification errors:
+Ej = |{i ∈G1 : i ∈P}| + |{i ∈G2 : i ∈Z}|
+|Z| + |P|
+.
+The optimal separatrix s∗minimizes Ej:
+s∗= arg min
+j
+Ej.
+The method estimates a separatrix by identifying a threshold that best separates trajectories based on their final states, minimizing classification errors.
+B
+The Separatrix Estimation Algorithm: EntropyBased Estimation
+Let X = {Pi(t)}N
+i=1 be a set of one-dimensional trajectories, where each Pi(t)
+evolves over discrete time t ∈{0, 1, . . . , T −1} according to an underlying dynamical system.
+Given a total number of time points T, we select an evaluation time index
+tc based on a fraction f ∈[0, 1] of the total duration:
+tc = ⌊f(T −1)⌋.
+If tc ≥T, we set tc = T −1.
+The state values at this time are given by the set:
+Pc = {Pi(tc) | i = 1, . . . , N},
+where N is the number of trajectories. We consider only the finite and non-NaN
+values in this set.
+We define the minimum and maximum state values at tc among the non-NaN
+values:
+Pmin = min{p ∈Pc},
+Pmax = max{p ∈Pc}.
+We partition the interval [Pmin, Pmax] into B = num bins bins of equal width
+∆P = Pmax−Pmin
+B
+. The boundaries of the bins are given by:
+bk = Pmin + k∆P,
+k = 0, 1, . . . , B.
+The k-th bin is the interval [bk, bk+1), for k = 0, 1, . . . , B −1, with the last bin
+being [bB−1, bB].
+31
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+Define the histogram Hk as the number of trajectories whose state value at
+time tc falls into the k-th bin:
+Hk =
+N
+X
+i=1
+I(bk ≤Pi(tc) < bk+1),
+for
+k = 0, 1, . . . , B −1,
+where I(A) is the indicator function, equal to 1 if the condition A is true, and
+0 otherwise. For the last bin k = B −1, the condition is bB−1 ≤Pi(tc) ≤bB.
+The empirical probability mass function pk for each bin is estimated by
+normalizing the histogram by the total number of trajectories Nvalid that have
+a non-NaN value at time tc:
+pk =
+Hk
+Nvalid
+,
+for
+k = 0, 1, . . . , B −1,
+where Nvalid is the number of elements in Pc.
+The Shannon entropy S of the discrete probability distribution {pk}B−1
+k=0 is
+calculated using the base-2 logarithm:
+S = −
+B−1
+X
+k=0
+pk log2 pk.
+By convention, we define 0 log2 0 = 0 to handle cases where a bin has zero probability. The entropy S quantifies the uncertainty or spread of the distribution
+of trajectory states at the evaluation time tc.
+The code estimates the separatrix s∗as the median of the state values of the
+trajectories at the evaluation time tc:
+s∗= median(Pc).
+The rationale behind using the median is that at a time when the trajectories
+are most spread out due to the influence of the separatrix, the median provides
+a measure of the central tendency of this distribution, which is heuristically
+assumed to be related to the location of the separatrix.
+This method estimates the separatrix by analyzing the spatial distribution of
+an ensemble of trajectories at a specific time tc. The Shannon entropy is used
+to quantify the spread of this distribution, and the median of the trajectory
+values at that time serves as a point estimate for the separatrix. The choice of
+the evaluation time tc and the number of bins B can influence the result. The
+method relies on the assumption that the separatrix is located in a region of the
+state space where the trajectories exhibit maximum spread at some intermediate
+time.
+C
+The Separatrix Estimation Algorithm: SVMBased Estimation
+Let
+{xi(t)}N
+i=1
+(xi(t) ∈R)
+be a collection of trajectories observed over time t. We assume that for each trajectory xi(t), there exists a time interval near the end of the observation period
+32
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+(last L time points) where the trajectory converges. That is, for a trajectory
+xi(t) with t ∈[0, T], define the converged value as
+¯xi = 1
+L
+T
+X
+k=T −L+1
+xi(tk).
+We label trajectories according to their converged values:
+1. If
+|¯xi| < ϵ0,
+then assign label li = −1 (i.e., the trajectory converges to near zero).
+2. If
+¯xi > ϵ1,
+then assign label li = 1 (i.e., the trajectory converges to a large state).
+3. Otherwise, the trajectory is considered undetermined and is excluded from
+further analysis.
+Let the set of indices for the labeled trajectories be denoted by
+I = {i | li ∈{−1, 1}}.
+At a designated comparison time tc (or index tc), we record the state of each
+labeled trajectory:
+pi = xi(tc),
+i ∈I.
+These values {pi} are used to determine the separatrix.
+We seek a separatrix value s ∈R that ideally divides the state space such
+that:
+• For trajectories with li = −1, we desire pi < s.
+• For trajectories with li = 1, we desire pi > s.
+To enforce a margin δ > 0, we define the individual cost for each trajectory as
+follows:
+Ci(s) = max{0, pi −s + δ}
+if li = −1,
+Ci(s) = max{0, s −pi + δ}
+if li = 1.
+The total cost function is then given by
+C(s) =
+X
+i∈I
+Ci(s) =
+X
+i∈I
+li=−1
+max{0, pi −s + δ} +
+X
+i∈I
+li=1
+max{0, s −pi + δ}.
+The goal is to find the separatrix s∗that minimizes the cost function:
+s∗= arg
+min
+s∈[smin,smax] C(s),
+where the search bounds smin and smax are chosen based on the observed range
+of {pi} (typically with some extension to ensure the optimum is captured).
+33
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
+
+D
+Fractal Dimension:
+Mathematical Description
+The fractal dimension provides a quantitative measure of the complexity of a
+set or time series, reflecting how it fills the space it occupies. For time series
+data, the correlation dimension is commonly used, which is defined through the
+correlation sum.
+Given a time series X(t) and a corresponding m-dimensional embedding, the
+steps to calculate the correlation dimension are as follows:
+The time series X(t) is embedded into an m-dimensional space using a time
+delay τ. Each vector in this phase space is given by:
+xi = (X(iτ), X((i + 1)τ), . . . , X((i + m −1)τ))
+where i = 0, 1, . . . , N −m, and N is the total number of data points in the
+series.
+The distance between any two vectors in the phase space is calculated, typically using the Euclidean distance:
+d(xi, xj) =
+v
+u
+u
+t
+m−1
+X
+k=0
+(X(i + kτ) −X(j + kτ))2
+for i̸ = j.
+The correlation sum C(r) is computed as the proportion of pairs of points
+whose distance is less than a threshold r:
+C(r) =
+1
+N(N −1)
+X
+i̸=j
+Θ(r −d(xi, xj))
+where Θ is the Heaviside step function, which equals 1 if the distance is smaller
+than r, and 0 otherwise.
+The correlation dimension is determined by the scaling behavior of the correlation sum C(r) as r approaches 0:
+C(r) ∼rα
+where α is the correlation dimension. The fractal dimension is given by:
+D2 = lim
+r→0
+ln C(r)
+ln r
+This value D2 describes how the number of points in the phase space scales with
+the distance threshold r, providing insight into the underlying fractality of the
+system.
+34
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6145329
+Preprint not peer reviewed
