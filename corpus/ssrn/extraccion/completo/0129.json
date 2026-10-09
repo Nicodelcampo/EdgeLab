@@ -1,0 +1,108 @@
+{
+  "doc_id": 129,
+  "titulo": "Forecasting Limit Order Book Liquidity Supply-Demand Curves with Functional AutoRegressive Dynamics",
+  "resumen_operativo": "Este paper desarrolla un modelo vectorial funcional autorregresivo (VFAR) para predecir dinámicamente la forma completa de las curvas de oferta y demanda en el limit order book. Aplicado empíricamente a 12 acciones de NASDAQ, demuestra que prever la liquidez futura permite optimizar las decisiones de ejecución de órdenes grandes, reduciendo los costos de fricción frente a estrategias ingenuas de volumen distribuido en el tiempo.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "limit order book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Mercado electrónico estructurado por órdenes en espera a diferentes precios. En el paper, se modela su liquidez de forma continua usando curvas de demanda y oferta.",
+      "relaciones": [],
+      "cita_textual": "LOB records investors’ orders on both the bid and ask sides with price and volume constraints."
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Medida de rigidez de la liquidez en el mejor precio, representada gráficamente por la separación en el centro de las curvas de liquidez.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "The gap at the center represents the bid-ask spread, i.e. the market tightness at the best price level."
+    },
+    {
+      "nombre": "order book depth",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Capacidad de un mercado de absorber volumen sin sufrir impacto en precio. El paper la cuantifica mediante la pendiente o gradiente de las curvas de liquidez.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "MITIGA", "objeto": "market impact"}
+      ],
+      "cita_textual": "the market depth is reﬂected by the gradients of the liquidity curves. More precisely, the steeper the curves are, the less price impact there is"
+    },
+    {
+      "nombre": "market impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Efecto adverso sobre el precio generado por ejecutar una orden grande. Ocurre marcadamente cuando se barren niveles donde las curvas de liquidez son planas.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "A buy or sell of large volumes at the extreme prices will trigger a drastic change in the price and thus increase trading cost."
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costos de ejecución totales que incluyen el impacto en el precio. El paper muestra cómo un pronóstico certero de la liquidez ayuda a minimizarlos.",
+      "relaciones": [],
+      "cita_textual": "The predictive power stably reduces trading cost in the order splitting strategies and achieves excess gains of 31 basis points on average."
+    },
+    {
+      "nombre": "optimal execution",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategias de fraccionamiento de órdenes institucionales con el objetivo de encontrar la trayectoria de ejecución que minimice el costo agregado.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "transaction costs"},
+        {"tipo": "USA", "objeto": "limit order book"}
+      ],
+      "cita_textual": "Predictions of future liquidity supply and demand in the limit order book (LOB) helps in analyzing optimal splitting strategies for large orders to reduce cost."
+    },
+    {
+      "nombre": "market microstructure noise",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Fricciones y ruido a micro-nivel en los datos tick-by-tick. El estudio lo mitiga sub-muestreando las capturas a frecuencias regulares de 5 minutos.",
+      "relaciones": [],
+      "cita_textual": "to remove the impact of microstructure noise, the sampling frequency is set to be 5 minutes for a good strike between bias and variance"
+    },
+    {
+      "nombre": "walk-forward validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de validación progresiva fuera de muestra. El paper la usa re-estimando iterativamente las predicciones cada 5 minutos avanzando la ventana de datos.",
+      "relaciones": [],
+      "cita_textual": "Each time, he moves forward one period, i.e. 5 minutes and perform re-estimation and forecast until reaching the end of the sample"
+    },
+    {
+      "nombre": "functional autoregression",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo estadístico usado para capturar la dependencia temporal de variables funcionales continuas. El paper propone una versión vectorial unificada (VFAR).",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "limit order book"},
+        {"tipo": "PREDICE", "objeto": "order book depth"}
+      ],
+      "cita_textual": "We develop a Vector Functional AutoRegressive (VFAR) model to describe the joint dynamics of the bivariate series – liquidity demand and supply curves"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El modelo VFAR pronostica la forma conjunta de las curvas de liquidez bid y ask fuera de muestra, conservando alta precisión a lo largo de horizontes temporales intradiarios.",
+      "mercado": "US equities (12 NASDAQ stocks)",
+      "periodo": "2 Jan 2015 to 6 Mar 2015",
+      "magnitud": "R2 values up to 98.2%; MAPE between 0.3% and 4.5%",
+      "condiciones": "Muestreo regular del LOB a intervalos de 5 minutos; predicciones generadas de 1 a 10 pasos hacia adelante basadas en una ventana de 30 días pasados.",
+      "robustez": "alta",
+      "cita_textual": "In out-of-sample forecast experiments, it produces accurate 5−, 25−and 50−minutes forecasts, with MAPE as low as 0.3 to 4.5 percent."
+    },
+    {
+      "afirmacion": "Planificar temporalmente las ejecuciones institucionales aprovechando los momentos en los que el VFAR predice mayor liquidez reduce sistemáticamente los costos comparado con ejecuciones simples equitativas.",
+      "mercado": "US equities (12 NASDAQ stocks)",
+      "periodo": "17 Feb 2015 to 6 Mar 2015",
+      "magnitud": "Excess gains of 31 basis points on average",
+      "condiciones": "Simulación con volúmenes de 5x a 10x la profundidad del primer nivel de precios, distribuyendo dinámicamente las órdenes sobre periodos seleccionados del día.",
+      "robustez": "alta",
+      "cita_textual": "strategic placement of orders according to VFAR predictions achieve excess gains of 31 basis points on average."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "El enfoque de vector funcional para proyectar toda la curva de liquidez podría aplicarse sobre datos del ES para localizar pasivamente órdenes y reducir el slippage al mínimo."
+  }
+}

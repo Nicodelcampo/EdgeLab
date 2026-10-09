@@ -1,0 +1,150 @@
+{
+  "doc_id": 155,
+  "titulo": "High Frequency Trading and Stock Herding",
+  "resumen_operativo": "El paper investiga empíricamente si el trading de alta frecuencia (HFT) induce comportamiento de manada (herding) en los mercados de valores, utilizando datos TAQ para constituyentes del S&P 100 y datos de eventos de HFT/colocation en 10 exchanges internacionales. Demuestra que una mayor actividad de HFT conduce a un incremento significativo en el herding, especialmente en acciones de gran capitalización, periodos de alta liquidez y días volátiles. Descompone el herding en fundamental y no fundamental, concluyendo que la actividad de HFT está fuertemente asociada con el herding no fundamental (basado en ruido o estrategias correlacionadas). El estudio sugiere que el HFT fomenta cascadas de información que reducen la eficiencia de precios.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "herding",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Tendencia de los participantes del mercado a suprimir sus propias creencias e imitar las acciones de otros o seguir el consenso del mercado, resultando en retornos agrupados y menor dispersión de lo justificado racionalmente.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "anti-herding"}
+      ],
+      "cita_textual": "Herding refers to the tendency of market participants to suppress their own beliefs and imitate the actions of others."
+    },
+    {
+      "nombre": "informational cascades",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Situación en la que los individuos ignoran su propio conjunto de creencias al tomar una decisión y simplemente imitan a otros.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "non-fundamental herding"}
+      ],
+      "cita_textual": "Informational cascades imply that individuals ignore their own set of beliefs when making a decision, simply imitating others"
+    },
+    {
+      "nombre": "non-fundamental herding",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Herding intencional guiado por el ruido y el sentimiento, en el cual los inversores (o algoritmos) imitan las acciones de otros sin depender de nueva información fundamental clara.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "informational cascades"},
+        {"tipo": "USA", "objeto": "High Frequency Trading"}
+      ],
+      "cita_textual": "In this situation, “intentional” or non-fundamental herding may arise, indicating that investors mimic each others’ actions with intent. Non-fundamental herding is noise-driven and affected by sentiment"
+    },
+    {
+      "nombre": "fundamental herding",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Herding espurio que ocurre cuando un grupo de inversores observa e interpreta el mismo conjunto de información pública de la misma manera, operando en la misma dirección sin la intención de imitarse.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "non-fundamental herding"}
+      ],
+      "cita_textual": "This will give rise to “spurious” or fundamental herding in the sense that investors did not suppress their own beliefs with the intention to follow others."
+    },
+    {
+      "nombre": "High Frequency Trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Técnica de trading algorítmico caracterizada por infraestructuras de baja latencia (colocation), determinación y ejecución automática de órdenes y altas tasas de mensajes intradiarios.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "herding"}
+      ],
+      "cita_textual": "infrastructure intended to minimise network and other types of latencies, including at least one of the following facilities for algorithmic order entry: co-location, proximity hosting or highspeed direct electronic access"
+    },
+    {
+      "nombre": "anti-herding",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Comportamiento en el cual los participantes del mercado ignoran la información del mercado en general y operan en contra del consenso, exhibiendo una dispersión de retornos anormalmente alta.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "herding"}
+      ],
+      "cita_textual": "Anti-herding implies that market participants largely ignore market-wide information and trade against the market consensus"
+    },
+    {
+      "nombre": "QuoteUpdates",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Número promedio de cambios de cotización (precio y cantidad) en los mejores precios por minuto, utilizado como proxy principal de la actividad de HFT.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "High Frequency Trading"}
+      ],
+      "cita_textual": "we estimate QuoteUpdates as the average number of quote (price and quantity) changes at best prices per minute"
+    },
+    {
+      "nombre": "HFT_trades",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida proxy alternativa para las transacciones HFT, calculada como el volumen de operaciones negativo (en 100s de USD) dividido por el número total de mensajes de trade y quote por minuto.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "High Frequency Trading"}
+      ],
+      "cita_textual": "and HFT_trades as the average negative trading volume (in USD 100) divided by the total number of messages per minute"
+    },
+    {
+      "nombre": "colocation date",
+      "tipo": "dato",
+      "definicion_en_contexto": "Fecha en la que cada exchange comenzó a alojar oficialmente los servidores informáticos de las empresas HFT dentro de su centro de datos, empleada como experimento natural.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "High Frequency Trading"}
+      ],
+      "cita_textual": "the date each exchange started housing the trading firms’ computer servers within the exchange’s data centre, as the HFT start date."
+    },
+    {
+      "nombre": "Cross-Sectional Absolute Deviation",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Desviación absoluta transversal de los retornos accionarios (CSAD), una métrica estadística estándar utilizada en la literatura para detectar el grado de agrupación y dispersión que evidencia el herding.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "herding"}
+      ],
+      "cita_textual": "CSAD denoting the Cross-Sectional Absolute Deviation of returns"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La mayor actividad HFT induce un aumento significativo del herding de acciones bajo condiciones de mercado extremas.",
+      "mercado": "US equities (S&P 100)",
+      "periodo": "2015-2017",
+      "magnitud": "El coeficiente asociado a la interacción de HFT (HFT_trades) y retornos de mercado cuadrados es -6.595, estadísticamente significativo al 1%.",
+      "condiciones": "Regresiones empleando CSAD con proxies de HFT_trades y QuoteUpdates controlando por retornos de mercado absolutos y al cuadrado.",
+      "robustez": "alta",
+      "cita_textual": "we find that increases in HFT activity lead to a significant increase in stock herding."
+    },
+    {
+      "afirmacion": "El efecto del HFT sobre el herding es notablemente más pronunciado en acciones de gran capitalización (large-cap stocks).",
+      "mercado": "US equities (S&P 100 top 30%)",
+      "periodo": "2015-2017",
+      "magnitud": "El coeficiente de herding inducido por HFT es entre 3.3 (HFT_trades) y 5 veces (QuoteUpdates) mayor para las acciones de gran capitalización en comparación con la muestra total.",
+      "condiciones": "Análisis replicado únicamente sobre el decil/top 30% superior de acciones por capitalización de mercado.",
+      "robustez": "alta",
+      "cita_textual": "The effect of HFT on herding is more pronounced for large-cap stocks"
+    },
+    {
+      "afirmacion": "El herding inducido por HFT es más fuerte y prevalente durante días de alta volatilidad del mercado.",
+      "mercado": "US equities (S&P 100)",
+      "periodo": "2015-2017",
+      "magnitud": "Se observa evidencia de herding significativa solo en días del cuartil superior de volatilidad. En días de baja volatilidad, no hay herding inducido e incluso se observa cierto anti-herding con actividad baja de HFT.",
+      "condiciones": "La muestra total se divide entre el 25% de días con mayor y menor volatilidad según el índice VIX.",
+      "robustez": "alta",
+      "cita_textual": "HFT-related herding is more pronounced during more volatile periods and periods of higher liquidity."
+    },
+    {
+      "afirmacion": "El HFT está fuertemente asociado con el herding no fundamental (imitación/ruido), y no muestra relación significativa con el herding fundamental.",
+      "mercado": "US equities (S&P 100)",
+      "periodo": "2015-2017",
+      "magnitud": "Coeficientes de interacción significativamente negativos (-6.18 a -6.74) para CSAD no fundamental; pero estadísticamente insignificantes para el CSAD fundamental.",
+      "condiciones": "Descomposición de la métrica CSAD total en componentes fundamentales (vía factores de Fama-French) y no fundamentales (residuales).",
+      "robustez": "alta",
+      "cita_textual": "We show that HFT-related herding is strongly associated with nonfundamental herding."
+    },
+    {
+      "afirmacion": "La introducción de servicios de 'colocation' y las fechas efectivas de inicio de HFT a nivel internacional generaron un aumento significativo en el herding del mercado.",
+      "mercado": "10 international exchanges",
+      "periodo": "3 años antes y después del evento por exchange (2000-2013)",
+      "magnitud": "Coeficiente significativo de herding de -8.084 (t=-7.14) tras el HFT start date, y -1.32 (t=-3.15) tras la colocation start date.",
+      "condiciones": "Regresión en panel internacional con dummies de fechas de evento y efectos fijos de año y de exchange.",
+      "robustez": "alta",
+      "cita_textual": "we show that HFT effective start dates, and colocation dates are associated with stock herding."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Aunque el paper no especifica una estrategia de trading per se, ofrece información valiosa sobre la microestructura de los mercados. Demuestra cuantitativamente que la alta penetración de HFT (midiendo ratios de cuotas/trades) genera distorsiones de 'herding' no fundamentales (ruido y desviaciones temporales de precio por cascadas). Para el trading de futuros intradía como ES, sugiere que un aumento extremo de actividad de cotización HFT, especialmente en periodos de volatilidad y liquidez, puede presentar oportunidades de 'mean-reversion', operando en la dirección opuesta al momentum de corto plazo provocado por el herding de estos algoritmos."
+  }
+}

@@ -1,0 +1,133 @@
+{
+  "doc_id": 211,
+  "titulo": "Liquidity Shocks and Order Book Dynamics",
+  "resumen_operativo": "Modelo teórico de equilibrio dinámico competitivo para un mercado de órdenes límite donde los inversores no monitorean el mercado continuamente. Caracteriza cómo el order book absorbe un shock de liquidez transitorio (todos los inversores pasan a baja valoración en t=0 y revierten aleatoriamente a alta valoración). El equilibrio genera dos fases: un buyers' market inicial con sucesivas órdenes de venta que golpean el bid y se undercut entre sí, seguido de un sellers' market donde las compras golpean el ask. Predice patrones de volumen hump-shaped, recuperación gradual de precios, y aumento de mensajes/cancelaciones con la computarización.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "limit order book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Mecanismo de trading donde los inversores dejan órdenes límite de compra/venta que permanecen en el libro hasta ser ejecutadas o canceladas. En el modelo, es el canal por el cual los inversores ausentes participan en el mercado sin monitorearlo continuamente.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "limit order"},
+        {"tipo": "PARTE_DE", "objeto": "market microstructure"}
+      ],
+      "cita_textual": "Limit orders represent absent traders [enabling them] to participate in the markets while they attend to business elsewhere."
+    },
+    {
+      "nombre": "liquidity shock",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Evento que reduce transitoriamente la utilidad de mantener el activo para todos los inversores (de alta a baja valoración). Los inversores revierten a alta valoración a tasa Poisson gamma. La severidad del shock delta determina la caída inicial de precio y el tiempo de recuperación T_s.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "bid-ask spread"},
+        {"tipo": "APLICA_A", "objeto": "limit order book"}
+      ],
+      "cita_textual": "At time 0, the market is hit by an aggregate liquidity shock, reducing the utility flow to 1-delta for all investors. But the liquidity shock is transient."
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Diferencia entre el mejor precio de compra (bid) y venta (ask). El modelo predice que tras el shock de liquidez el spread es inicialmente grande, y luego disminuye progresivamente a medida que las órdenes de venta límite se acumulan bajando el ask y las compras suben el bid.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "CAUSA", "objeto": "liquidity shock"}
+      ],
+      "cita_textual": "Just after liquidity shock, the spread is large. Then, limit orders to sell accumulate in the order book, driving down the ask quote, and limit buy orders are placed at higher and higher levels. This results in a decrease in the bid-ask spread."
+    },
+    {
+      "nombre": "market order",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Orden ejecutada inmediatamente al mejor precio disponible. En la primera fase (buyers' market), las market orders de venta golpean repetidamente el bid; en la segunda fase (sellers' market), las market orders de compra golpean el ask.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "limit order"},
+        {"tipo": "PARTE_DE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "before Ts, there is a buyers' market, in which market orders to sell repeatedly hit the bid quote, while after Ts there is a sellers' market, in which market orders to buy repeatedly hit the ask quote."
+    },
+    {
+      "nombre": "limit order",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Orden no ejecutada inmediatamente que permanece en el libro a un precio específico. En el modelo, los inversores de baja valoración que llegan temprano colocan limit sell orders a precios altos (ejecución tardía); los que llegan más tarde van undercutting con precios progresivamente menores.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "market order"},
+        {"tipo": "PARTE_DE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "as time passes, sellers place limit orders at lower and lower prices. This is similar to undercutting except that it is not driven by strategic considerations."
+    },
+    {
+      "nombre": "market microstructure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estudio de los mecanismos de formación de precios y trading en mercados financieros. El paper modela explícitamente cómo la presencia discontinua de inversores en el mercado afecta la dinámica de precios, spreads, y el order book.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "limit order book"},
+        {"tipo": "APLICA_A", "objeto": "liquidity shock"}
+      ],
+      "cita_textual": "We propose a dynamic competitive equilibrium model of limit order trading, based on the premise that investors cannot monitor markets continuously."
+    },
+    {
+      "nombre": "trading volume",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Volumen de transacciones. El modelo predice que tras el shock, el volumen es inicialmente muy bajo, luego aumenta gradualmente hasta un máximo y después muere progresivamente (patrón hump-shaped). Con monitoreo imperfecto, el volumen es menor que en el equilibrio Walrasiano.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "limit order book"},
+        {"tipo": "PREDICE", "objeto": "liquidity shock"}
+      ],
+      "cita_textual": "Trading volume with imperfect monitoring is lower than its Walrasian counterpart."
+    },
+    {
+      "nombre": "algorithmic trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Trading automatizado por computadora. En el lenguaje del modelo, corresponde a un aumento en la tasa rho a la que los inversores contactan el mercado. El paper predice que a mayor rho, mayor ratio de mensajes (órdenes + cancelaciones + modificaciones) a volumen, en línea con la evidencia empírica de Hendershott, Jones y Menkveld (2007).",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "limit order book"},
+        {"tipo": "CAUSA", "objeto": "trading volume"}
+      ],
+      "cita_textual": "as the rate at which investors make contact with the market grows larger, so too does the ratio of the number of messages to trading volume."
+    },
+    {
+      "nombre": "cancelation",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Eliminación de una orden límite previamente colocada. El modelo muestra que a medida que rho tiende a infinito, el flujo de cancelaciones también tiende a infinito, porque los inversores cancelan y modifican órdenes frecuentemente al reconectar con el mercado.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "PREDICE", "objeto": "algorithmic trading"}
+      ],
+      "cita_textual": "For each t in (0, Ts), as rho goes to infinity, the flow of cancelations goes to infinity."
+    },
+    {
+      "nombre": "price discovery",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Proceso mediante el cual el precio de mercado converge a su valor fundamental (1/r). En el modelo, el precio cae abruptamente al momento del shock, luego se recupera gradualmente hasta alcanzar 1/r en T_f, reflejando el ajuste lento por presencia discontinua en el mercado.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market microstructure"},
+        {"tipo": "APLICA_A", "objeto": "liquidity shock"}
+      ],
+      "cita_textual": "the equilibrium transaction price drops sharply at the time of the liquidity shock, then gradually recovers until it reverts to its long term equilibrium level."
+    },
+    {
+      "nombre": "undercutting",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno por el cual los vendedores que llegan más tarde al mercado colocan órdenes límite a precios más bajos (más agresivos) que los que llegaron antes. A diferencia de modelos de game theory, aquí surge de la evolución de preferencias por liquidez, no de comportamiento estratégico.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "CAUSA", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "low valuation investors find it optimal to undercut each others so long as there is some (possibly arbitrarily small) synchronization problem."
+    },
+    {
+      "nombre": "order book depth",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Cantidad de órdenes acumuladas en el libro. El modelo predice que tras el shock la profundidad es muy baja, luego crece progresivamente porque los vendedores colocan órdenes límite, y eventualmente disminuye por cancelaciones y ejecuciones. Este buildup en el lado ask ocurre primero a precios altos y luego a precios progresivamente menores.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "APLICA_A", "objeto": "liquidity shock"}
+      ],
+      "cita_textual": "the number of orders in the book is very low just after the shock. But, as new limit orders to sell are placed in the book, depth progressively builds up. Yet, at some point, cancelations and executions of market buy orders lead to a decrease in the stock of limit orders in the book."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "El modelo proporciona un marco teórico directamente aplicable a ES futures: la dinámica de dos fases tras shocks de liquidez, la relación entre intensidad de contacto con el mercado (rho) y ratio mensajes/volumen, y el undercutting progresivo de órdenes límite son todos fenómenos observables en el mercado de futuros del ES."
+  }
+}

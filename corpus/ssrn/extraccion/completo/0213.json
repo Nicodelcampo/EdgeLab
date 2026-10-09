@@ -1,0 +1,160 @@
+{
+  "doc_id": 213,
+  "titulo": "Liquidity and Algorithmic Trading in Brazil",
+  "resumen_operativo": "Primer estudio del efecto del algorithmic trading (AT) sobre la liquidez en el mercado accionario brasileño usando datos intradiarios de 47 acciones entre 2017-2018. Mediante VAR con 20 lags y regresiones de panel con 2SLS, encuentra que en el corto plazo (1 minuto) mayor actividad de AT reduce spreads e impacto de precio, pero en un horizonte más amplio (20 minutos) el efecto acumulado del AT deteriora la calidad del mercado (aumenta realized spreads y Amihud). Evidencia un efecto dual y horizonte-dependiente del AT sobre la liquidez.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "algorithmic trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Actividad de trading automatizada medida como el negativo del volumen negociado (en cientos de R$) dividido por el número de mensajes (órdenes nuevas, cancelaciones y trades). Valores más altos (más cercanos a cero) indican mayor AT. Se calcula en intervalos de 1 minuto.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "liquidity"},
+        {"tipo": "USA", "objeto": "limit order book"}
+      ],
+      "cita_textual": "The proxy for AT activity will be calculated as in Hendershott et al. (2011). AT_itd = -R$100.00 of trading volume_itd / number of messages_itd."
+    },
+    {
+      "nombre": "realized spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de liquidez que captura el costo de transacción implícito como la diferencia de precio entre una transacción en t y el precio 5 minutos después, duplicada y con signo según dirección del trade. Usada como variable dependiente en el VAR.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "liquidity"},
+        {"tipo": "EQUIVALE_A", "objeto": "effective spread"}
+      ],
+      "cita_textual": "Realized Spread_it = 2(ln(P_itd) - ln(P_it+jd)) if the trade at t is a buy."
+    },
+    {
+      "nombre": "Amihud illiquidity",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Proxy de impacto de precio de alta frecuencia: valor absoluto del retorno logarítmico dividido por el volumen negociado en el intervalo t de 1 minuto. Mide cuánto mueve el precio cada unidad de volumen.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market impact"},
+        {"tipo": "MIDE", "objeto": "liquidity"}
+      ],
+      "cita_textual": "For the depth proxy, we use the high-frequency Amihud (2002) price impact proxy: Amihud_itd = |R_itd| / Volume_itd."
+    },
+    {
+      "nombre": "liquidity",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Capacidad de negociar activos con bajo costo de transacción. Medida a través del realized spread (dimensión spread) y el Amihud de alta frecuencia (dimensión profundidad/impacto de precio). La liquidez es persistente (suma de 20 coeficientes autorregresivos ~0.73 en VAR).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "realized spread"},
+        {"tipo": "USA", "objeto": "Amihud illiquidity"}
+      ],
+      "cita_textual": "Liquidity is a fundamental variable because the entire notion of a financial market is that it is a place (physical or virtual) where agents can easily trade financial assets."
+    },
+    {
+      "nombre": "Granger causality",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Test estadístico para determinar si los valores pasados de una variable ayudan a predecir otra. Se aplica en un VAR(20) bivariado para cada acción, testeando si el AT rezagado causa (en sentido Granger) cambios en las medidas de liquidez y viceversa. Encuentra causalidad bidireccional significativa al 1%.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "VAR model"},
+        {"tipo": "MIDE", "objeto": "liquidity"}
+      ],
+      "cita_textual": "Mean Granger causality tests shows that lagged AT contains information on the prediction of RealizedSpreads."
+    },
+    {
+      "nombre": "VAR model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Vector Autoregression con 20 rezagos estimado para cada una de las 47 acciones, donde las variables endógenas son la medida de liquidez (RealizedSpread o Amihud) y el proxy de AT. Los datos se poolan a través de la muestra y se estandarizan.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Granger causality"},
+        {"tipo": "APLICA_A", "objeto": "algorithmic trading"}
+      ],
+      "cita_textual": "Equations 4 and 5 describe the restricted VAR model. Where LIQ_it refers to each one of k liquidity measures (RealizedSpread and Amihud), AT_it refers to the AT activity proxy for asset i at time t. The number of p lags is set to 20."
+    },
+    {
+      "nombre": "endogeneity",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Problema de causalidad bidireccional entre AT y liquidez: AT puede afectar spreads, pero spreads altos pueden repeler AT. Se aborda con un enfoque 2SLS usando como instrumento el AT promedio de todas las demás acciones (excluyendo la acción i), siguiendo a Hasbrouck y Saar (2013).",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "algorithmic trading"},
+        {"tipo": "MITIGA", "objeto": "2SLS"}
+      ],
+      "cita_textual": "As Mestel et al. (2018) notes, AT can be considered an endogenous variable, as the level of AT is somehow dependent on market conditions in general."
+    },
+    {
+      "nombre": "2SLS",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Two-Stage Least Squares para abordar endogeneidad. Primera etapa: AT_it regresado sobre el promedio de AT de todas las demás acciones (instrumento). Segunda etapa: la medida de liquidez regresada sobre el AT predicho. El coeficiente beta del instrumento es positivo y significativo para las 47 acciones.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "endogeneity"},
+        {"tipo": "USA", "objeto": "fixed effects panel regression"}
+      ],
+      "cita_textual": "We use a 2SLS approach following Hasbrouck and Saar (2013) and Mestel et al. (2018). First, we consider AT_bar_it as the equally-weighted mean AT_it excluding stock i."
+    },
+    {
+      "nombre": "co-location",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Servicio ofrecido por la bolsa B3 (BM&FBovespa antes de la fusión) desde 2010 que permite a los traders colocar sus servidores en el mismo data center del exchange para reducir latencia. Se espera que la reducción de latencia atraiga el uso de AT/HFT en Brasil.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "algorithmic trading"},
+        {"tipo": "PARTE_DE", "objeto": "high-frequency trading"}
+      ],
+      "cita_textual": "In 2010 the equities segment of BM&FBovespa started to rent co-location spaces within the exchange data center. Although the use of HFT/algorithmic trading is not documented in Brazil, it is expected that the reduced latency time provided by co-location attract the use of fast traders."
+    },
+    {
+      "nombre": "market fragmentation",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Existencia de múltiples venues de trading para un mismo activo. El mercado brasileño es interesante porque tiene un único venue para equities, eliminando las estrategias de arbitraje de latencia entre venues que la literatura asocia con la rentabilidad de HFT en mercados desarrollados.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "high-frequency trading"},
+        {"tipo": "APLICA_A", "objeto": "liquidity"}
+      ],
+      "cita_textual": "many of the studies presented before allege that the profitability of HFT comes from market fragmentation, since HFT should engage in low-latency arbitrage strategies by taking advantage of spread differences between trading venues. This is not present in the Brazilian market."
+    },
+    {
+      "nombre": "fixed effects panel regression",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Regresión de panel con efectos fijos estimada por 2SLS para evaluar el efecto cross-sectional contemporáneo del AT sobre la liquidez, controlando por retorno de 1 minuto y volatilidad (retorno al cuadrado). Encuentra que AT reduce spreads contemporáneamente (coef -0.057) pero aumenta el Amihud contemporáneo (coef +0.026).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "2SLS"},
+        {"tipo": "APLICA_A", "objeto": "algorithmic trading"}
+      ],
+      "cita_textual": "The effect of AT at time t on RealizedSpread is negative and statistically significant (-0.057) thus higher AT activity reduces spreads on contemporaneous periods."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El efecto rezagado de 20 minutos de AT sobre el Realized Spread es positivo (suma de coeficientes 0.053, significativo al 1%) y significativo en sentido Granger (p<0.01), indicando que mayor AT en los últimos 20 minutos aumenta los spreads realizados. Sin embargo, el efecto del primer rezago es negativo (coef -0.027, significativo al 1%), sugiriendo que el AT reduce spreads solo en el muy corto plazo.",
+      "mercado": "Brazilian equities (B3)",
+      "periodo": "2017-07-24 a 2018-07-30 (250 sesiones)",
+      "magnitud": "Suma coef. AT sobre Spread: 0.053*** (t=16.317); 1er lag: -0.027*** (t=-18.978); Suma coef. autoregresivos spread: 0.730***; Media p-valor Granger <0.01",
+      "condiciones": "VAR(20) bivariado por acción; 47 acciones seleccionadas con precio>R$5, volumen>mediana; datos intradiarios de 1 minuto; variables estandarizadas; outliers top/bottom 1% removidos",
+      "robustez": "media",
+      "cita_textual": "The effect of lagged AT on RealizedSpread is positive for 20 lags (sum of coefficients 0.053) and significant at the 1% level. Therefore, an increase in AT activity raise RealizedSpreads up to 20 minutes."
+    },
+    {
+      "afirmacion": "El efecto rezagado de 20 minutos de AT sobre el Amihud de alta frecuencia es positivo (suma de coeficientes 0.037) con p-valor de causalidad Granger <0.01, indicando que más AT aumenta el impacto de precio en el horizonte de 20 minutos. El efecto del primer rezago es negativo, coherente con el patrón dual encontrado para spreads.",
+      "mercado": "Brazilian equities (B3)",
+      "periodo": "2017-07-24 a 2018-07-30",
+      "magnitud": "Suma coef. AT sobre Amihud: 0.037; 1er lag negativo; Media p-valor Granger <0.01; Suma coef. autoregresivos Amihud: 0.841",
+      "condiciones": "VAR(20) bivariado por acción; proxy Amihud de alta frecuencia como variable de liquidez; 47 acciones; frecuencia 1-minuto",
+      "robustez": "media",
+      "cita_textual": "The mean sum of coefficients on the effect of lagged AT on Amihud is positive (0.037), presenting a mean Granger-causality p-value lower than the usual 0.01 cutoff. This provides evidence that algorithmic trading increases price impact over the period of 20 minutes."
+    },
+    {
+      "afirmacion": "En el panel con efectos fijos estimado por 2SLS, el AT contemporáneo reduce significativamente el RealizedSpread (coeficiente -0.057) pero aumenta significativamente el Amihud (coeficiente +0.026). La volatilidad tiene efecto positivo y significativo sobre ambas medidas de iliquidez.",
+      "mercado": "Brazilian equities (B3)",
+      "periodo": "2017-07-24 a 2018-07-30",
+      "magnitud": "Coef AT sobre Spread: -0.057 (significativo); Coef AT sobre Amihud: +0.026 (significativo); Coef Volat sobre Spread: 0.377; R2 ajustado: 0.119 (spread), 0.03 (Amihud)",
+      "condiciones": "Panel con efectos fijos y 2SLS; instrumento: AT promedio de otras acciones; controles: retorno 1-min y volatilidad",
+      "robustez": "media",
+      "cita_textual": "The effect of AT at time t on RealizedSpread is negative and statistically significant (-0.057) thus higher AT activity reduces spreads on contemporaneous periods."
+    },
+    {
+      "afirmacion": "Existe causalidad bidireccional entre AT y liquidez: los rezagos de RealizedSpread afectan positivamente al AT (suma coeficientes 0.030, p<0.01) y los rezagos de Amihud también (suma 0.022, p<0.01). El primer rezago es negativo (-0.069 para spread), sugiriendo que spreads bajos en t-1 predicen mayor AT en t.",
+      "mercado": "Brazilian equities (B3)",
+      "periodo": "2017-07-24 a 2018-07-30",
+      "magnitud": "Suma coef. Spread->AT: 0.030*** (t=7.892); 1er lag Spread->AT: -0.069*** (t=-7.234); Suma coef. Amihud->AT: 0.022; Media p-valor Granger <0.01",
+      "condiciones": "VAR(20) con AT como variable dependiente; 47 acciones; confirmación de endogeneidad en el mercado brasileño",
+      "robustez": "media",
+      "cita_textual": "The mean sum of coefficients of RealizedSpread is positive (0.030), with mean Granger causality p-value smaller than the usual 0.01 value. As many studies concerns about the endogeneity between these variables, we confirm this in the Brazilian market."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "La metodología VAR con proxy de AT basado en mensajes/volumen es directamente aplicable a datos de ES futures. El hallazgo de que el AT tiene efectos opuestos en el corto (1 min) vs mediano (20 min) plazo es relevante para decidir la frecuencia óptima de una estrategia en presencia de AT."
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "doc_id": 158,
+  "titulo": "High Frequency Trading, Information, and Takeovers",
+  "resumen_operativo": "Este paper propone un conjunto de variables intradía (como el parámetro de forma de Weibull, el turnover anormal y el desbalance de órdenes) para identificar el HFT asociado a traders informados. Demuestra empíricamente que estas métricas tienen poder predictivo para anticipar objetivos de takeovers y sus retornos, ofreciendo a los quants señales tempranas de acumulación institucional.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Actividad operativa a muy altas frecuencias que puede representar un mayor interés de liquidez o reflejar especulación informada previa a eventos corporativos.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "informed trading"}
+      ],
+      "cita_textual": "representing greater market interest in the stock, suggesting a more liquid market and a potentially greater reaction to news; and (b) indicating pre-announcement informed trade and speculation"
+    },
+    {
+      "nombre": "Weibull shape parameter",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica basada en la distribución Weibull para modelar la duración temporal de la inactividad de trading; valores altos indican intervalos cortos entre trades.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "high-frequency trading"}
+      ],
+      "cita_textual": "I use the shape parameter for the Weibull distribution. In this sample, a higher shape parameter indicates a lower time between trades."
+    },
+    {
+      "nombre": "abnormal turnover",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Porcentaje de desviación del volumen negociado intradía respecto de un perfil histórico esperado de 30 días para un intervalo específico.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "informed trading"}
+      ],
+      "cita_textual": "the intraday abnormal turnover represents the deviation of intraday trade from that of an ordinary volume profile."
+    },
+    {
+      "nombre": "order imbalance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia normalizada entre la cantidad de órdenes de compra y venta en un intervalo, utilizada para detectar presión direccional en el mercado.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "order flow imbalance"}
+      ],
+      "cita_textual": "The order imbalance is the number of buy orders less the number of sell orders divided by the total number of buy and sell orders."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El parámetro de forma de Weibull (indicador de alta frecuencia) y el volumen anormal intradía predicen significativamente si una firma recibirá una oferta de takeover en horizontes de 5 a 20 días.",
+      "mercado": "ASX equities",
+      "periodo": "1998-2008",
+      "magnitud": "Coeficiente logit positivo (p < 0.01) para la probabilidad de takeover, por ej. 7.412 para la predicción a 20 días con ventana de 30 días.",
+      "condiciones": "Modelos logit con controles anuales y clustering por sector (GICS), ajustando por tamaño, volatilidad, ratio book-to-market y ROA.",
+      "robustez": "media",
+      "cita_textual": "The key result is that the Weibull shape parameter significantly predicts takeover events. Further, the intraday abnormal trunover is positive and significant at 1% in most models."
+    },
+    {
+      "afirmacion": "El pre-anuncio de trading informado, representado por la combinación de una oferta inminente y un alto parámetro Weibull intradía, aumenta significativamente el retorno de la acción objetivo.",
+      "mercado": "ASX equities",
+      "periodo": "1998-2008",
+      "magnitud": "Término de interacción de Weibull por indicador de Bid es 0.182 (significativo al 1%).",
+      "condiciones": "Regresión de efectos fijos de panel para todo el mercado, controlando por factores específicos de la firma.",
+      "robustez": "media",
+      "cita_textual": "Here, the interaction term is positive and significant at 1% in all models. This implies that stock returns increase especially with a combination of (a) a bid and (b) pre-takeover informed trade."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El uso del modelo Weibull para medir la frecuencia de arribos puede integrarse en sistemas de microestructura para detectar acumulación no convencional en futuros ES."
+  }
+}

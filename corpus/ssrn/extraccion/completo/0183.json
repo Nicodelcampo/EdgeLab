@@ -1,0 +1,129 @@
+{
+  "doc_id": 183,
+  "titulo": "Improving VWAP Strategies: A Dynamical Volume Approach",
+  "resumen_operativo": "El paper presenta una metodología para modelar el volumen intradía que permite reducir el execution risk en órdenes VWAP. El volumen se descompone mediante PCA en un componente común (estacional, compartido entre acciones del CAC40) y un componente específico (dinámico, modelado con ARMA y SETAR). La implementación de estrategias VWAP con predicciones dinámicas del volumen específico reduce el tracking error (MAPE) respecto al enfoque clásico para la mayoría de las acciones del índice.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Volume Weighted Average Price",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Benchmark de ejecución definido como el precio promedio pagado por acción durante un período, ponderado por volumen. Representa aproximadamente el 50% del trading de inversores institucionales.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "intraday volume"},
+        {"tipo": "USA", "objeto": "execution benchmark"}
+      ],
+      "cita_textual": "The VWAP of a stock over a period of time is just the average price paid per share during that period. The VWAP benchmark is then the sum of every transaction price paid, weighted by its volume."
+    },
+    {
+      "nombre": "VWAP Strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de ejecución que busca comprar o vender un número fijo de acciones a un precio promedio que siga el VWAP. Solo requiere predecir el volumen intradía, no el precio.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "VWAP"},
+        {"tipo": "REQUIERE", "objeto": "intraday volume forecasting"}
+      ],
+      "cita_textual": "VWAP strategies are defined as buying and selling a fixed number of shares at an average price that tracks the VWAP."
+    },
+    {
+      "nombre": "Intraday Volume",
+      "tipo": "dato",
+      "definicion_en_contexto": "Volumen de negociación dentro del día, que exhibe un patrón estacional en forma de U. Se decompone en componente común (cross-stock, no estacionario, extraído por PCA) y componente específico (stock-by-stock, estacionario).",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "VWAP strategy"},
+        {"tipo": "USA", "objeto": "principal component analysis"}
+      ],
+      "cita_textual": "Intraday volume moves around a U-shape seasonal pattern."
+    },
+    {
+      "nombre": "Principal Component Analysis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de descomposición aplicada al volumen intradía para separar el componente común (estacional, compartido entre todas las acciones del CAC40) del componente específico (stock-by-stock).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "volume decomposition"},
+        {"tipo": "APLICA_A", "objeto": "intraday volume"}
+      ],
+      "cita_textual": "We propose another method to extract the seasonal, or normal, volume based on principal component analysis."
+    },
+    {
+      "nombre": "SETAR Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo Self-Exciting Threshold Autoregressive usado para capturar dinámicas no lineales en el componente específico del volumen. Permite diferentes regímenes de comportamiento del volumen intradía.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "ARMA model"},
+        {"tipo": "APLICA_A", "objeto": "specific volume component"}
+      ],
+      "cita_textual": "The dynamics of the specific part of volume is depicted by ARMA, and SETAR models."
+    },
+    {
+      "nombre": "Volume Decomposition",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Separación del volumen observado en dos partes: una que refleja cambios por evoluciones del mercado (componente común) y otra que describe el patrón específico de cada acción (componente específico).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "principal component analysis"},
+        {"tipo": "APLICA_A", "objeto": "intraday volume"}
+      ],
+      "cita_textual": "The idea of considered models is based on the decomposition of traded volume into two parts: one reflects volume changes due to market evolutions, the second describes the stock specific volume pattern."
+    },
+    {
+      "nombre": "Execution Risk",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de que el precio de ejecución se desvíe del benchmark VWAP. Se mide mediante el MAPE (Mean Absolute Percentage Error) entre el precio de ejecución y el VWAP.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "VWAP strategy"},
+        {"tipo": "MIDE", "objeto": "MAPE"}
+      ],
+      "cita_textual": "We present a new methodology for modeling intraday volume which allows for a reduction of the execution risk in VWAP orders."
+    },
+    {
+      "nombre": "Common Volume Component",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Parte del volumen intradía que es común a todas las acciones del índice, capturando la estacionalidad intraday (patrón U-shape). Es no estacionario y se extrae mediante PCA del panel de acciones del CAC40.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "volume decomposition"},
+        {"tipo": "EQUIVALE_A", "objeto": "seasonal volume"}
+      ],
+      "cita_textual": "The identification of such components of volume comes from the observation that seasonal fluctuation is common across stocks whereas dynamics is a stock by stock feature."
+    },
+    {
+      "nombre": "Specific Volume Component",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Parte del volumen intradía específica de cada acción, estacionaria, que mide cambios anormales o inesperados. Se modela con ARMA y SETAR para capturar su dinámica y mejorar las predicciones VWAP.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "volume decomposition"},
+        {"tipo": "USA", "objeto": "SETAR model"}
+      ],
+      "cita_textual": "The second component measures the abnormal or unexpected changes of volume."
+    },
+    {
+      "nombre": "Market Impact",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Efecto de las operaciones sobre el precio, medido comparando el precio de ejecución con un benchmark. Reducir el market impact es el objetivo de las estrategias VWAP.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "execution risk"},
+        {"tipo": "MITIGA", "objeto": "VWAP strategy"}
+      ],
+      "cita_textual": "This impact can be measured by comparing the execution price of an order to a benchmark. The larger this price difference, the higher the market impact."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La implementación teórica del modelo PCA-SETAR supera al enfoque clásico de VWAP, reduciendo el execution risk medido por MAPE. Para la acción TOTAL, el MAPE del enfoque clásico es 0.0528 frente a 0.0496 del PCA-SETAR teórico, una reducción de 0.0032.",
+      "mercado": "CAC40 (40 acciones, Euronext Paris)",
+      "periodo": "Septiembre 2004 (inicio), con backtesting out-of-sample",
+      "magnitud": "TOTAL: MAPE clásico 0.0528, PCA-SETAR teórico 0.0496, dinámico 0.0508; reducción de execution risk de 0.0032 (teórico) y 0.0020 (dinámico)",
+      "condiciones": "Descomposición PCA del volumen intradía en 5-minutos; modelos ARMA/SETAR para el componente específico",
+      "robustez": "media",
+      "cita_textual": "The first column, named Difference, is the difference between the theoretical implementation PCA-SETAR model and the classical approach. A negative value means that the theoretical implementation PCA-SETAR model out-performs the classical approach."
+    },
+    {
+      "afirmacion": "Para la mayoría de las acciones del CAC40, tanto la implementación teórica como la dinámica del PCA-SETAR reducen el execution risk, con diferencias negativas de MAPE respecto al enfoque clásico en la mayoría de los casos.",
+      "mercado": "CAC40 (40 acciones individuales listadas)",
+      "periodo": "Backtesting con datos de septiembre 2004",
+      "magnitud": "Ejemplos: THOMSON (MAPE clásico 0.1460, teórico 0.0784, diferencia -0.0676); VEOLIA (0.1300 vs 0.0899, diferencia -0.0401); VINCI (0.0774 vs 0.0559, diferencia -0.0215)",
+      "condiciones": "Modelos estimados in-sample, evaluados out-of-sample con MAPE como métrica",
+      "robustez": "media",
+      "cita_textual": "Means of MAPE and drops in the execution risk measured by the difference of means of MAPE."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Trabaja directamente con datos intradía en intervalos de 5 minutos del CAC40; producción de predicciones dinámicas de volumen intraday para ejecución VWAP."}
+}

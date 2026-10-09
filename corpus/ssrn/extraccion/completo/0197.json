@@ -1,0 +1,90 @@
+{
+  "doc_id": 197,
+  "titulo": "LLM-Augmented Quantitative Finance: A Rigorous Structural Framework for Market State Inference and Forecasting",
+  "resumen_operativo": "El paper propone un marco teórico riguroso donde los Modelos de Lenguaje Grande (LLMs) se utilizan no como predictores end-to-end, sino como motores de inferencia para extraer un estado semántico (narrativo) latente a partir de texto. Este estado semántico se integra condicionando las probabilidades de transición en modelos estocásticos de cambio de régimen (regime-switching) para modelar retornos y volatilidad. El enfoque preserva la estructura probabilística clásica, permitiendo un filtrado bayesiano exacto, estabilidad garantizada (Lipschitz) frente a perturbaciones semánticas, e identificabilidad del modelo, ofreciendo una alternativa disciplinada a la predicción directa con LLMs.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "LLM-augmented framework",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Marco de trabajo estructural en el cual un LLM infiere un estado semántico a partir de texto, el cual se utiliza para modular la dinámica de un modelo clásico de probabilidad, sin reemplazar el modelo de observación subyacente.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Semantic state"
+        },
+        {
+          "tipo": "USA",
+          "objeto": "Regime-switching model"
+        }
+      ],
+      "cita_textual": "This paper proposes a rigorous LLM-augmented framework in which LLMs operate as latent state inference engines rather than direct predictors."
+    },
+    {
+      "nombre": "Semantic state",
+      "tipo": "dato",
+      "definicion_en_contexto": "Vector de baja dimensión generado por un LLM a partir de un corpus de texto disponible en el tiempo t (sin información futura), interpretado como un estado narrativo latente del mercado.",
+      "relaciones": [
+        {
+          "tipo": "MODULA",
+          "objeto": "Text-conditioned transition probabilities"
+        }
+      ],
+      "cita_textual": "An LLM produces a semantic embedding St = Lθ(Tt) ∈ Rd, interpreted as a latent narrative state."
+    },
+    {
+      "nombre": "Text-conditioned transition probabilities",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Probabilidades de que el mercado cambie de un régimen a otro, parametrizadas a través de una función multinomial (softmax) donde los log-odds son afines al estado semántico.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "LLM-augmented framework"
+        }
+      ],
+      "cita_textual": "The regime transition probabilities are conditioned on the semantic state St: Pij(St) := P(Mt+1 = j | Mt = i, St)"
+    },
+    {
+      "nombre": "Exact Bayesian Filtering",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Recursión analítica exacta para actualizar la probabilidad de los regímenes latentes condicionados a las observaciones históricas del mercado y a la evolución del estado semántico del texto.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "Regime-switching model"
+        }
+      ],
+      "cita_textual": "The resulting model admits exact Bayesian filtering and yields explicit sensitivity bounds that directly motivate regularization and evaluation design."
+    },
+    {
+      "nombre": "Lipschitz stability",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Garantía matemática de que las variaciones en las probabilidades de transición están acotadas linealmente respecto a las perturbaciones en el vector semántico, controlando la sensibilidad al ruido en el procesamiento de lenguaje natural.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "Text-conditioned transition probabilities"
+        }
+      ],
+      "cita_textual": "Proposition 3 (Lipschitz stability of softmax transitions) ... |Pij(S) - Pij(S')| ≤ 2L||S - S'||2"
+    }
+  ],
+  "hallazgos": [
+    {
+      "hallazgo": "Se demuestra formalmente que las probabilidades de transición condicionadas por el texto generan una matriz de Markov válida, con entradas estrictamente positivas y filas que suman uno."
+    },
+    {
+      "hallazgo": "Se establece que el marco permite recursiones de filtrado bayesiano exacto en tiempo discreto, integrando la inferencia del estado latente del régimen con las observaciones del mercado y los estados semánticos del LLM."
+    },
+    {
+      "hallazgo": "Se demuestra que la sensibilidad de las transiciones de régimen frente a alteraciones en los embeddings de los LLMs está matemáticamente acotada (Lipschitz stability), lo cual aporta gran robustez ante variaciones en la extracción de texto o pequeños cambios de preprocesamiento."
+    },
+    {
+      "hallazgo": "Se prueba que los parámetros de transición que incorporan el texto son plenamente identificables si se aplica una normalización respecto a un régimen de referencia."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper presenta un framework teórico-matemático de inferencia para series de tiempo que integran LLMs. Si bien la técnica de Hidden Markov Models (HMM) o régimen cambiante es aplicable a la volatilidad intradía, el estudio no incluye backtests sobre el ES, no ofrece señales direccionales concretas operables y se enfoca en establecer propiedades estadísticas fundamentales."
+  }
+}

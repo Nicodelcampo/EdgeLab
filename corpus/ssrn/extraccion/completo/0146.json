@@ -1,0 +1,107 @@
+{
+  "doc_id": 146,
+  "titulo": "Pairs Trading with Wavelet Transform",
+  "resumen_operativo": "El paper demuestra que aplicar la transformada wavelet (específicamente MODWT con el filtro sym22) a las series de precios de los constituyentes del S&P 500 antes de ejecutar estrategias de pairs trading (cointegración y distancia mínima) aumenta sustancialmente la rentabilidad. Al filtrar el ruido común del mercado, la estimación de parámetros (pesos del spread) en el período de formación es mucho más precisa. Esto genera un spread más conservador y estacionario out-of-sample, lo que se traduce en una mayor tasa de reversión a la media, más operaciones cerradas con éxito y menores pérdidas en operaciones forzadas a cerrar. Tras costos de transacción, la estrategia filtrada obtiene rendimientos anormales robustos (~8.5-11.7% anual) mientras que los métodos estándar sufren pérdidas en el mismo período (2010-2018).",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de arbitraje estadístico que consiste en tomar posiciones largas y cortas opuestas en dos activos relacionados cuando sus precios divergen, esperando obtener ganancias cuando reviertan a su nivel de equilibrio.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "cointegration method"},
+        {"tipo": "USA", "objeto": "minimum distance method"}
+      ],
+      "cita_textual": "Pairs trading involves taking opposing positions in two risky securities which are found to be related, usually based on statistical assessments."
+    },
+    {
+      "nombre": "wavelet transform",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de filtrado en el dominio tiempo-frecuencia que descompone una serie temporal en componentes de corto plazo (ruido) y largo plazo (tendencia) mediante funciones oscilantes (wavelets), usada aquí para eliminar el ruido común de las series de precios.",
+      "relaciones": [
+        {"tipo": "ELIMINA", "objeto": "common noise"},
+        {"tipo": "APLICA_A", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "wavelet transform is a time-frequency domain filtering method that decomposes time series into low-frequency (long-run) and high-frequency (short-run) components by using filters called wavelets."
+    },
+    {
+      "nombre": "MODWT (Maximum Overlap Discrete Wavelet Transform)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Una versión de la transformada wavelet discreta que evita el problema del down-sampling (pérdida de tamaño muestral) en cada nivel de filtrado, lo que la hace ideal para procesar señales financieras sin perder resolución temporal.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "wavelet transform"}
+      ],
+      "cita_textual": "In order to avoid the sample size loss, we utilize the MODWT, which shares many properties of the DWT, but is free from the down-sampling problem."
+    },
+    {
+      "nombre": "common noise",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Fluctuaciones compartidas en los precios de los activos a corto plazo que pueden confundirse erróneamente con verdadero co-movimiento. Su presencia deteriora la estimación de los parámetros de los pares.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "parameter estimation bias"}
+      ],
+      "cita_textual": "if there is shared noise in the asset prices, the comovement, on which one base the trades, might be caused by this common noise."
+    },
+    {
+      "nombre": "conservative spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El diferencial construido usando parámetros estimados sobre datos sin ruido, caracterizado por una media y varianza menores, lo que genera umbrales de trading más ajustados y reduce las desviaciones grandes en el período out-of-sample.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "drawdown"},
+        {"tipo": "CAUSA", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "more precise parameter estimation is reflected on a more stationary and conservative spread, meaning more mean reversion in opened pairs trades."
+    },
+    {
+      "nombre": "minimum distance method",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de selección de pares que empareja activos basándose en la distancia cuadrática media mínima entre sus precios normalizados a lo largo de un período de formación histórico.",
+      "relaciones": [
+        {"tipo": "ES_UN", "objeto": "pairs selection method"}
+      ],
+      "cita_textual": "The underlying intuition behind this method, as its name suggests, is to select pairs based on the distance between two risky securities."
+    },
+    {
+      "nombre": "cointegration method",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica econométrica de selección de pares que busca identificar relaciones de equilibrio a largo plazo en las que una combinación lineal de dos series de precios no estacionarias resulta en un spread estacionario (I(0)).",
+      "relaciones": [
+        {"tipo": "ES_UN", "objeto": "pairs selection method"}
+      ],
+      "cita_textual": "If cointegration exists, an investor can take long-short positions in a diverged pair accordingly to generate profits once pairs converge at the long-run equilibrium."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Aplicar la transformada wavelet (MODWT, sym22) a las series de precios mejora de forma considerable los retornos del pairs trading, revirtiendo la tendencia de retornos negativos de los métodos estándar y obteniendo entre un 9.66% y un 11.82% anual antes de costos.",
+      "mercado": "US equities (S&P 500 constituents)",
+      "periodo": "2010 - 2018",
+      "magnitud": "Mejora de retornos promedio de -1.81% a 9.66% (cointegración) y de -0.55% a 11.82% (distancia mínima). Tras costos, los retornos anormales van de 8.5% a 11.7% anual.",
+      "condiciones": "Período de formación 1 año, período de trading 1 año out-of-sample, umbrales fijos a 2 desviaciones estándar.",
+      "robustez": "alta",
+      "cita_textual": "we observe a substantial increase in the returns of the pairs-trading strategy... even after the transaction costs, abnormal returns remain persistent."
+    },
+    {
+      "afirmacion": "El filtrado del ruido reduce drásticamente las métricas de riesgo a la baja (downside risk), minimizando tanto el Maximum Drawdown como el CVaR, y aumentando el Ratio de Sharpe en las estrategias de pares.",
+      "mercado": "US equities (S&P 500 constituents)",
+      "periodo": "2010 - 2018",
+      "magnitud": "Sharpe Ratio medio mejora de -0.40 a 2.81 (cointegración). Max Drawdown cae a menos de la mitad (ej. 5.59% a 2.30%). Porcentaje de trades positivos sube de ~49% a ~66%.",
+      "condiciones": "Medición diaria de retornos out-of-sample.",
+      "robustez": "alta",
+      "cita_textual": "wavelet filtering the prices reduces the downside risk of the trades considerably."
+    },
+    {
+      "afirmacion": "La principal fuente de mejora se debe a que el filtrado de ruido permite una estimación de parámetros (pesos) mucho más precisa y robusta para el spread, logrando que mantengan su validez y propiedades de reversión a la media durante el año out-of-sample.",
+      "mercado": "US equities (S&P 500 constituents)",
+      "periodo": "2010 - 2018",
+      "magnitud": "Duplica la proporción de trades totalmente convergentes y hace que el remanente de trades no-convergentes (forzados a cerrar al final del período) promedie leves ganancias en lugar de pérdidas fuertes (-16.7% sin filtrar).",
+      "condiciones": "Descomposición de beneficios por tipo de cierre de trade (Full Convergent, Partial, Non-Convergent).",
+      "robustez": "alta",
+      "cita_textual": "Without filtering, the parameters estimated in the training period lose relevance in the trading period. However, when prices are filtered from common noise, the parameters maintain relevance much longer"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El enfoque de usar transformadas wavelet MODWT para filtrar ruido de alta frecuencia es altamente transferible al modelado estadístico de spreads (ej. ES vs NQ) intradiarios. Al de-noisar la señal subyacente, los cálculos dinámicos de parámetros (como el hedge ratio o los umbrales z-score de entrada/salida) sufrirán menos de sobreajuste al ruido instantáneo del microestructura (bid-ask bounce), mejorando potencialmente el win rate en la reversión a la media intradiaria de micro-spreads."
+  }
+}
