@@ -1,0 +1,1522 @@
+1
+Observation Frequency as a Trading-Environment Design 
+Variable in Cointegration-Based Deep Reinforcement 
+Learning for Cryptocurrency Statistical Arbitrage
+Abstract
+This study examines observation frequency as a methodological design variable in cointegrationbased deep reinforcement learning (DRL) cryptocurrency statistical arbitrage. Financial DRL 
+studies often treat the intraday sampling interval as a fixed preprocessing choice, although it 
+determines the number of market states, reward transitions, exposure-adjustment opportunities, 
+turnover events, and formation observations available to the agent. To test whether temporal 
+discretization affects trading performance, the same economic scenario is reconstructed across five 
+observation frequencies: 15 minutes, 30 minutes, 1 hour, 2 hours, and 4 hours. Each scenario 
+preserves a six-day formation window and a one-day trading horizon, while the number of 
+observations varies with the sampling interval. The empirical design evaluates DQN, PPO, and 
+A2C agents across four fixed cryptocurrency asset panels, two action-space specifications, and 
+three random seeds, producing 360 matched DRL runs. Results show that observation frequency 
+significantly affects total return, Sharpe ratio, maximum drawdown, annualized volatility, and 
+turnover. Friedman repeated-measures tests indicate significant frequency effects for total return, 
+χ² (4) = 99.43, p < .001, and Sharpe ratio, χ² (4) = 77.07, p < .001. The strongest effect appears in 
+turnover, χ² (4) = 270.88, p < .001, indicating that sampling frequency changes trading behavior 
+as well as measured performance. The 15-minute setting produces the largest average losses and 
+highest turnover, whereas the 2-hour and 4-hour settings reduce losses and trading intensity. 
+However, mean returns remain negative across all five frequencies. The findings show that 
+observation frequency is not a neutral data-formatting decision; it is part of the DRL tradingenvironment design. 
+Keywords
+Deep reinforcement learning; cryptocurrency statistical arbitrage; observation frequency; 
+temporal discretization; cointegration; trading-environment design; turnover; intraday trading; 
+DQN; PPO; A2C.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+2
+1. Introduction
+Deep reinforcement learning (DRL) trading systems are often evaluated as if performance is 
+mainly an algorithmic outcome. In practice, however, the agent does not interact with the market 
+directly. It interacts with an engineered trading environment defined by empirical design choices 
+such as observation frequency, state construction, reward timing, transaction costs, action 
+constraints, and evaluation horizon. These choices determine what the agent observes, how often 
+it can act, and how rewards are accumulated. As a result, DRL trading performance should not be 
+interpreted only as a property of the learning algorithm; it is also shaped by the structure of the 
+environment in which learning occurs (Sutton & Barto, 2018; Henderson et al., 2018; Liu et al., 
+2022; Hambly et al., 2023).
+Observation frequency is one of the most fundamental but least explicitly tested of these design 
+choices. In intraday cryptocurrency trading, the same market can be represented using 15-minute, 
+30-minute, 1-hour, 2-hour, or 4-hour observations. Each representation creates a different 
+sequence of states, reward transitions, trading opportunities, and exposure-adjustment points. A 
+shorter interval gives the agent more observations and more decision opportunities, but it may also 
+increase short-horizon noise, turnover, and transaction-cost exposure. A longer interval may 
+reduce noise and trading intensity, but it also provides fewer decision points and fewer realized 
+reward intervals. Therefore, observation frequency is not a neutral preprocessing decision. It 
+changes the temporal discretization of the trading problem.
+This issue is especially important in cointegration-based statistical arbitrage. Classical statisticalarbitrage designs separate the empirical process into a formation period, where historical 
+observations are used to estimate a tradable relationship, and a trading period, where that 
+relationship is tested out of sample (Engle & Granger, 1987; Johansen, 1988; Gatev et al., 2006). 
+In a cointegration-based DRL framework, the formation window is used to estimate the relativeprice relationship and construct synthetic arbitrage portfolios, while the trading horizon is used by 
+the agent to make sequential trading decisions. Observation frequency affects both stages. It 
+determines how many observations are available for estimating cointegration and how many state 
+transitions are available for trading and reward realization.
+Existing financial DRL research has shown that trading performance is sensitive to environment 
+design, reward specification, transaction-cost treatment, action-space construction, and stochastic 
+training variation (Henderson et al., 2018; Zhang et al., 2020; Liu et al., 2022; Hambly et al., 2023). 
+Recent high-frequency reinforcement-learning studies also emphasize the difficulty of learning 
+from long, noisy, and rapidly changing market trajectories (Qin et al., 2024; Zong et al., 2024). In 
+cryptocurrency statistical arbitrage, Vergara and Kristjanpoller (2024) demonstrate that DRL can 
+be combined with cointegration-based portfolio construction. Yet much of the literature evaluates 
+trading systems at a fixed sampling interval. This leaves open an important methodological 
+question: do reported DRL trading results reflect the trading framework itself, or are they partly 
+driven by the observation frequency used to construct the environment?
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+3
+This paper addresses that gap by treating observation frequency as the primary methodological 
+treatment in cointegration-based DRL cryptocurrency statistical arbitrage. The study evaluates 
+whether performance differs across 15-minute, 30-minute, 1-hour, 2-hour, and 4-hour observation 
+frequencies while holding the economic scenario length constant. Each scenario contains a six-day 
+formation window and a one-day trading horizon. Thus, all frequencies represent the same sevenday economic structure, but the number of observations, reward intervals, and trading 
+opportunities changes with the sampling interval.
+The central hypothesis is that observation frequency materially affects the performance of 
+cointegration-based DRL statistical arbitrage. More formally, the study tests whether performance 
+differs significantly across the five observation frequencies. The empirical design evaluates DQN, 
+PPO, and A2C agents across four fixed cryptocurrency control panels, two action-space 
+specifications, and three random seeds, producing 360 DRL experiment runs. The matched design 
+allows each frequency to be compared under the same asset-panel, algorithm, action-space, and 
+seed configuration. Friedman repeated-measures tests are used to evaluate whether performance 
+differences across frequencies are statistically significant.
+The results show that observation frequency significantly affects the DRL trading environment. 
+Total return, Sharpe ratio, maximum drawdown, annualized volatility, and turnover differ 
+significantly across frequencies. The 15-minute setting produces the largest average losses and the 
+highest turnover, while the 2-hour and 4-hour settings reduce losses and trading intensity. 
+However, the findings do not imply consistent profitability. Mean returns remain negative across 
+all five frequencies. The main result is therefore methodological: observation frequency changes 
+the performance, risk, and trading behavior of the DRL system, but it does not by itself generate 
+profitable arbitrage.
+This paper makes three contributions. First, it formalizes observation frequency as a core design 
+variable in DRL trading research. Rather than treating the sampling interval as a fixed 
+preprocessing choice, the study shows that temporal discretization changes the number of states, 
+reward transitions, turnover opportunities, and formation observations available to the agent. 
+Second, it introduces a frequency-sensitive scenario design that holds the economic horizon 
+constant while allowing the number of observations to vary across frequencies. This makes it 
+possible to compare trading environments that cover the same calendar period but differ in 
+temporal resolution. Third, it identifies turnover as a key mechanism linking observation frequency 
+to performance. Shorter intervals create more opportunities to revise exposure, which can increase 
+transaction-cost sensitivity and weaken net returns.
+The study contributes to the broader methodological literature on financial DRL by showing that 
+performance is jointly determined by the learning algorithm and the trading environment. A DQN, 
+PPO, or A2C agent trained at 15-minute frequency is not solving the same decision problem as the 
+same agent trained at 2-hour or 4-hour frequency. The state sequence, reward density, action 
+opportunities, and transaction-cost exposure all differ. Therefore, empirical DRL trading studies 
+should report, justify, and test the selected observation frequency rather than assuming that results 
+obtained at one temporal resolution generalize across others.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+4
+The remainder of the paper is organized as follows. Section 2 reviews the literature and develops 
+the methodological motivation for treating observation frequency as a trading-environment design 
+variable. Section 3 describes the data and frequency-based scenario construction. Section 4 
+presents the cointegration-DRL methodology, experimental design, reward structure, and 
+statistical testing procedure. Section 5 reports the empirical results. Section 6 discusses the 
+mechanisms through which observation frequency affects performance. Section 7 concludes with 
+contributions, limitations, and directions for future research.
+2. Literature Review and Methodological Motivation
+2.1 DRL Trading as an Engineered Environment
+Deep reinforcement learning (DRL) models trading as a sequential decision-making problem in 
+which an agent observes a market state, selects an action, receives a reward, and updates its policy 
+through repeated interaction with the environment. In financial applications, however, the trading 
+environment is not naturally given. It is constructed through empirical design choices such as 
+observation frequency, state representation, reward timing, transaction-cost treatment, actionspace specification, and evaluation horizon. These choices determine what the agent observes, how 
+often it can trade, and how rewards are accumulated. This distinction is important because DRL 
+trading performance cannot be interpreted as an algorithm-only outcome. The learned policy 
+depends on the structure of the environment in which the agent is trained and evaluated. Prior 
+studies show that DRL performance is sensitive to reward specification, action constraints, 
+transaction costs, state design, and stochastic training variation (Henderson et al., 2018; Zhang et 
+al., 2020; Liu et al., 2022; Hambly et al., 2023). Recent financial reinforcement-learning studies 
+also emphasize that market noise, long trajectories, non-stationarity, and rapidly changing trading 
+conditions complicate policy learning in high-frequency and cryptocurrency markets (Hambly et 
+al., 2023; Qin et al., 2024; Zong et al., 2024).
+The present study focuses on one environment-design variable that is often fixed before empirical 
+analysis: observation frequency. In intraday trading, the same market can be represented using 15minute, 30-minute, 1-hour, 2-hour, or 4-hour observations. Each representation creates a different 
+sequence of states, reward transitions, and trading opportunities. Observation frequency is 
+therefore treated in this paper as a core component of the DRL trading environment, rather than as 
+a neutral data-preprocessing choice.
+2.2 Observation Frequency as Temporal Discretization
+Observation frequency determines how continuous market activity is converted into discrete 
+decision states. In reinforcement learning, the state sequence, action timing, transition process, and 
+reward feedback define the agent–environment interaction (Sutton & Barto, 2018). In financial 
+trading, the sampling interval therefore determines not only how prices are observed, but also how 
+often the agent can revise exposure and receive reward feedback. Shorter intervals provide more 
+observations, more decision states, and more opportunities for position adjustment. This may 
+increase the feedback available for learning, but it can also increase exposure to short-horizon 
+noise, weak signal persistence, bid–ask effects, turnover, and transaction costs. Marketmicrostructure research shows that high-frequency financial data are affected by an information–
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+5
+noise trade-off: finer sampling may capture more market information, but it may also amplify 
+measurement noise and execution frictions (O’Hara, 1995; Dacorogna et al., 2001; Hansen & 
+Lunde, 2006; Bandi & Russell, 2008).
+Longer intervals create the opposite trade-off. They may smooth transitory price movements and 
+reduce trading intensity, but they also provide fewer decision points and fewer realized reward 
+transitions. Thus, two agents using the same algorithm, reward function, and asset universe may 
+still face materially different learning problems if they operate at different observation frequencies. 
+Recent high-frequency and cryptocurrency RL studies reinforce this concern by showing that 
+agents must learn under long trajectories, volatile regimes, noisy states, and rapidly changing 
+trading contexts (Qin et al., 2024; Zong et al., 2024). Evidence from cryptocurrency trading across 
+multiple timeframes further supports the view that temporal resolution can affect trading 
+performance (Chun & Lee, 2025). Accordingly, observation frequency is not merely a dataformatting decision. It defines the temporal resolution of the DRL trading environment by shaping 
+the number of states, reward transitions, position-revision opportunities, and transaction-cost 
+events available to the agent. 
+2.3 Frequency Choice in Cointegration-Based Statistical Arbitrage
+Cointegration-based statistical arbitrage requires a formation period to estimate a stable relativeprice relationship and a later trading period to evaluate deviations from that relationship out of 
+sample. This formation–trading separation is consistent with classical cointegration and pairstrading frameworks (Engle & Granger, 1987; Johansen, 1988; Gatev et al., 2006). Observation 
+frequency affects this structure because it changes the number of observations available for both 
+estimation and trading. In the fixed six-day formation window used in this study, the 15-minute 
+setting provides 576 formation observations, whereas the 4-hour setting provides only 36. Both 
+settings cover the same calendar period, but they provide very different statistical samples for 
+estimating cointegration. This distinction is important because sampling frequency affects the 
+information–noise trade-off in financial data: shorter intervals provide more observations but may 
+contain more microstructure noise, while longer intervals may smooth noise but reduce estimation 
+information (O’Hara, 1995; Dacorogna et al., 2001; Hansen & Lunde, 2006; Bandi & Russell, 
+2008). The exact observation counts follow from the fixed-horizon scenario design reported in 
+Table 1.
+The same logic applies to the trading horizon. A one-day trading window contains 96 observations 
+at 15-minute frequency but only 6 observations at 4-hour frequency. Since DRL rewards are earned 
+over transitions between consecutive observations, each frequency creates a different number of 
+decision states, reward intervals, and possible position revisions. Therefore, observation frequency 
+affects both the econometric layer, where cointegration is estimated, and the reinforcementlearning layer, where deviations are traded. Recent DRL and reinforcement-learning statisticalarbitrage studies support the relevance of this combined econometric–learning structure, but they 
+generally do not isolate observation frequency while holding the economic scenario length 
+constant (Vergara & Kristjanpoller, 2024; Yang & Malik, 2024; Guijarro-Ordonez et al., 2025).
+2.4 Methodological Gap, Hypothesis, and Contribution
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+6
+Existing financial DRL research recognizes that trading performance depends on environment 
+design, including state construction, reward shaping, action constraints, transaction costs, and 
+stochastic training variation. However, observation frequency is commonly fixed before empirical 
+analysis and is rarely tested as a formal design variable. This creates a methodological gap: if a 
+DRL trading strategy is evaluated at only one sampling interval, it remains unclear whether the 
+observed performance reflects the trading framework itself or the temporal discretization used to 
+construct the environment. This study addresses that gap by treating observation frequency as the 
+main experimental variable in a cointegration-based DRL statistical-arbitrage framework. The 
+design holds the economic scenario length constant across frequencies by preserving a six-day 
+formation window and a one-day trading horizon. The number of observations, decision states, 
+reward transitions, and possible position revisions is then allowed to vary with the sampling 
+interval. This structure isolates the effect of temporal discretization from the effect of calendar 
+horizon.
+The study tests the following hypothesis:
+H1: The performance of cointegration-based DRL statistical arbitrage differs significantly across 
+15-minute, 30-minute, 1-hour, 2-hour, and 4-hour observation frequencies.
+Support for H1 would imply that observation frequency is not a neutral implementation detail. 
+Instead, it would show that temporal discretization materially affects profitability, risk, turnover, 
+transaction-cost exposure, and the learning environment faced by DRL statistical-arbitrage agents.
+The methodological contribution of this paper is therefore to reposition observation frequency as 
+a core design variable in financial DRL research. Rather than asking only which DRL algorithm 
+performs best in a fixed environment, the study asks whether the same cointegration-based DRL 
+framework remains stable when the temporal structure of the environment changes. This 
+contributes to soft-computing research by providing a frequency-sensitive evaluation framework 
+that links trading performance to interpretable mechanisms such as noise exposure, reward density, 
+turnover, transaction-cost accumulation, and cointegration-estimation stability.
+3. Data and Frequency-Based Scenario Design
+3.1 Data Source and Sample Construction
+This study uses USDT-denominated Binance spot-market data to examine whether observation 
+frequency affects the performance of cointegration-based deep reinforcement learning statistical 
+arbitrage. The use of USDT-quoted pairs keeps the price panel internally consistent by avoiding 
+mixed quote currencies. Each observation contains open, high, low, close, and volume 
+information. These OHLCV fields provide the raw inputs for portfolio-price construction, return 
+calculation, spread measurement, volatility estimation, technical indicators, and liquidity-related 
+variables. The empirical period is divided into training, separation, and out-of-sample testing 
+segments. The training sample covers 1 January 2023 to 10 December 2024. A separation window 
+from 11 December 2024 to 17 December 2024 is imposed before the out-of-sample testing period, 
+which runs from 18 December 2024 to 17 May 2025. This separation window reduces immediate 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+7
+temporal carry-over between training and evaluation. The same market period is reconstructed at 
+five intraday observation frequencies: 15 minutes, 30 minutes, 1 hour, 2 hours, and 4 hours. The 
+30-minute setting is retained as the benchmark frequency, while the other frequencies provide 
+higher- and lower-resolution versions of the same trading problem.
+3.2 Asset Universes as Control Environments
+Four cryptocurrency asset universes are retained as control environments: the Baseline 14-Asset 
+Universe, Broad 20-Asset Universe, Payment-Coin 6-Asset Universe, and Layer-1 Platform 9Asset Universe. These universes are not the main treatment variable. They are used to assess 
+whether the observation-frequency effect remains consistent across different asset-grouping 
+structures. The Baseline universe serves as the reference control panel. The Broad universe 
+evaluates whether the frequency effect persists in a larger and more heterogeneous asset set. The 
+Payment-Coin and Layer-1 universes provide economically focused control panels, allowing the 
+analysis to test whether frequency sensitivity is robust across narrower cryptocurrency segments. 
+By holding the asset universes fixed across all observation frequencies, the study isolates the effect 
+of temporal discretization from asset-selection effects. Table 1 reports the four control asset panels 
+used in the frequency-sensitivity design. The table identifies the number of assets in each panel, 
+the included USDT-denominated Binance spot pairs, the economic structure of the panel, and the 
+role of each panel in evaluating the robustness of the observation-frequency effect.
+Table 1
+Control Asset Panels Used in the Frequency-Sensitivity Design
+Control 
+panel
+Asset 
+count
+Assets included
+Panel structure
+Role in the frequency-sensitivity 
+analysis
+Baseline 
+panel
+14
+BTC, ETH, BNB, XRP, ADA, SOL, DOT, 
+BCH, LTC, AVAX, ALGO, AAVE, UNI, 
+CAKE
+Large-cap and commonly 
+traded crypto assets
+Serves as the reference control panel 
+for comparing frequency effects.
+Expanded 
+market panel
+20
+BTC, ETH, BNB, XRP, ADA, SOL, DOT, 
+BCH, LTC, AVAX, ALGO, AAVE, UNI, 
+CAKE, DOGE, LINK, TRX, XLM, ATOM, 
+FIL
+Broader cross-section of 
+liquid crypto assets
+Tests whether the frequency effect 
+persists when the tradable universe is 
+larger and potentially noisier.
+Payment-coin 
+panel
+6
+BTC, BCH, LTC, DOGE, XRP, XLM
+Payment-oriented and 
+Bitcoin-like assets
+Tests whether the frequency effect 
+remains visible in a smaller, 
+economically related asset group.
+Layer-1 
+platform 
+panel
+9
+ETH, BNB, ADA, SOL, DOT, AVAX, 
+ALGO, TRX, ATOM
+Blockchain infrastructure 
+and smart-contract 
+platform assets
+Tests whether the frequency effect 
+generalizes to a sector-oriented crypto 
+panel.
+Note. The panels are used as control environments rather than as the main treatment variable. Each panel is evaluated across five observation 
+frequencies: 15 minutes, 30 minutes, 1 hour, 2 hours, and 4 hours. Asset tickers refer to USDT-denominated Binance spot pairs. The asset-panel 
+definitions follow pre-specified panels archived in a companion Zenodo data and software record for the antecedent asset-universe framework 
+(Author, 2026). In the present study, these panels are retained only to test whether the observation-frequency effect is robust across different assetgrouping structures.
+4. Methodology
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+8
+4.1 Frequency-Sensitive Evaluation Framework
+This study develops a frequency-sensitive evaluation framework for cointegration-based deep 
+reinforcement learning (DRL) cryptocurrency statistical arbitrage. The framework treats 
+observation frequency as the primary methodological treatment rather than as a fixed 
+preprocessing choice. This design is consistent with the reinforcement-learning view that an 
+agent’s behavior depends on the environment in which states, actions, rewards, and transitions are 
+generated (Sutton & Barto, 2018). In financial DRL, this issue is especially important because the 
+trading environment is engineered through choices about sampling frequency, state construction, 
+reward timing, transaction costs, and action constraints (Henderson et al., 2018; Liu et al., 2022; 
+Zhang et al., 2020; Hambly et al., 2023).
+The empirical unit is a fixed economic scenario consisting of a six-day formation window followed 
+by a one-day trading horizon. The formation window is used to estimate the cointegration 
+relationship and construct the synthetic arbitrage portfolios, while the trading horizon is used to 
+evaluate out-of-sample DRL decisions. This preserves the formation–trading separation used in 
+statistical-arbitrage evaluation, where historical observations identify the trading relationship and 
+later observations test its tradability (Gatev et al., 2006; Vergara & Kristjanpoller, 2024). The key 
+design principle is that calendar time is held constant, while the number of observations varies 
+with the sampling interval.
+Let f denote the observation frequency and let Δf denote the length of one observation interval in 
+minutes. Because cryptocurrency markets trade continuously, one day contains 1,440 minutes. The 
+number of observations per day at frequency f is therefore defined as:
+𝑁𝑓= 1440
+𝛥𝑓
+The frequency-specific scenario components are then defined as follows:
+𝑇formation
+𝑓
+= 6𝑁𝑓
+𝑇trade
+𝑓
+= 𝑁𝑓
+𝑇total
+𝑓
+= 𝑇formation
+𝑓
++ 𝑇trade
+𝑓
+𝑇reward
+𝑓
+= 𝑇trade
+𝑓
+― 1
+Where Nf is the number of observations per day, Tformation
+f
+  is the number of formation-window 
+observations, Ttrade
+f
+ is the number of trading-horizon observations, Ttotal
+f
+ is the total number of 
+observations in one scenario, and Treward
+f
+  is the number of realized reward intervals. The reward 
+adjustment is necessary because returns are earned between consecutive trading observations 
+rather than at isolated timestamps. Thus, a trading horizon with 48 observations generates 47 
+realized reward intervals.
+Table 2 operationalizes this framework for the five observation-frequency treatments. It shows 
+how the same seven-day economic scenario is reconstructed as trading environments with different 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+9
+temporal resolutions. The 15-minute treatment contains 672 total observations and 95 realized 
+reward intervals, whereas the 4-hour treatment contains only 42 total observations and 5 realized 
+reward intervals. The 30-minute setting is retained as the baseline case, with 288 formation 
+observations, 48 trading observations, 336 total observations, and 47 realized reward intervals.
+Table 2
+Frequency-Based Scenario Construction and Observation Counts
+Observation
+frequency
+Observation
+interval (min)
+Δf
+Observations
+per day
+Nf = 1440
+Δf
+Formation
+window
+Tform
+f
+ = 6Nf
+Trading
+horizon
+Ttrade
+f
+ = Nf
+Total
+observations
+Ttotal
+f
+Reward
+intervals
+Treward
+f
+ = Ttrade
+f
+ - 1
+15 minutes
+15
+96
+576
+96
+672
+95
+30 minutes
+30
+48
+288
+48
+336
+47
+1 hour
+60
+24
+144
+24
+168
+23
+2 hours
+120
+12
+72
+12
+84
+11
+4 hours
+240
+6
+36
+6
+42
+5
+Note. All frequencies preserve the same economic window: six days for formation and one day for trading. The number of observations changes 
+because the observation interval changes. Reward intervals equal trading observations minus one because realized returns are earned between 
+consecutive observations.
+Table 2 establishes the paper’s frequency-sensitive design. The comparison is not between 
+scenarios of different calendar length; it is between trading environments that cover the same 
+economic period but differ in state density, reward density, and trading opportunities. This allows 
+the study to test whether DRL statistical-arbitrage performance is sensitive to temporal 
+discretization itself.
+4.2 Experimental Design
+The experiment evaluates five observation frequencies across four fixed cryptocurrency control 
+panels, three DRL agents, two action-space specifications, and three random seeds. Observation 
+frequency is the main treatment variable. The remaining dimensions are retained as matched 
+controls to ensure that the observed frequency effect is not specific to one asset panel, one learning 
+algorithm, one exposure structure, or one stochastic training realization.
+The full DRL design is:
+𝟓 × 𝟒 × 𝟑 × 𝟐 × 𝟑= 𝟑𝟔𝟎
+Table 3 summarizes the full matched experimental design, clarifies the factorial structure used 
+throughout the empirical analysis and shows how the frequency treatment is separated from the 
+control dimensions.
+Table 3
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+10
+Experimental Design for the Frequency-Sensitivity Study
+Design dimension
+Number of levels
+Role in the study
+Observation frequency
+5
+Main experimental variable: 15m, 30m, 1h, 2h, and 4h
+Asset universe
+4
+Control environment retained across all frequencies
+DRL algorithm
+3
+DQN, PPO, and A2C
+Action space
+2
+Binary and granular exposure specifications
+Random seed
+3
+Seeds 42, 101, and 202
+Total DRL runs
+360
+Full matched frequency-sensitivity design
+Note. The five observation frequencies are 15 minutes, 30 minutes, 1 hour, 2 hours, and 4 hours. The three DRL agents are DQN, PPO, and A2C. 
+The two action spaces are binary and granular. The three random seeds are used to control for stochastic variation in DRL training.
+This design supports a repeated-measures comparison because each matched configuration is 
+evaluated across all five frequencies. The matched unit is later defined by asset panel, DRL 
+algorithm, action-space specification, and random seed.
+4.3 Scenario Generation and Data Alignment
+For each observation frequency, asset prices are synchronized by timestamp within each control 
+panel. Scenario blocks are then generated from contiguous observations so that the formation 
+window immediately precedes the trading horizon. This structure prevents look-ahead bias 
+because the cointegration relationship is estimated only from observations that occur before the 
+trading period. The same scenario-generation rule is applied across all frequencies. The only 
+element that changes is the number of observations implied by the sampling interval. Therefore, 
+the comparison is driven by temporal discretization rather than by changes in calendar length, asset 
+composition, or evaluation period.
+Training scenarios are generated from the training sample, while final performance is evaluated 
+on the out-of-sample testing period. A separation window between training and testing is retained 
+to reduce immediate temporal carry-over between the final training observations and the first 
+testing scenarios. This structure follows standard out-of-sample evaluation logic in statisticalarbitrage and financial machine-learning research, where model construction and model evaluation 
+are temporally separated (Gatev et al., 2006; López de Prado, 2018).
+4.4 Cointegration Portfolio Construction
+For each scenario, the formation window is used to estimate the cointegration relationship among 
+the assets in the selected control panel. Let Pt denote the vector of log prices at observation t during 
+the formation period. Cointegration estimation identifies a vector β such that the linear 
+combination
+𝑧𝑡= 𝛽′𝑃𝑡
+is relatively stable over the formation window. This estimated relationship defines the statisticalarbitrage spread. The use of cointegration is consistent with the classical statistical-arbitrage 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+11
+literature, where non-stationary asset prices may form stationary linear combinations when they 
+share a stable long-run relationship (Engle & Granger, 1987; Johansen, 1988; Gatev et al., 2006).
+The cointegration vector is then converted into two synthetic portfolios. Positive elements of β 
+form one side of the trade, while negative elements form the opposite side:
+𝛽positive = max(𝛽,0)
+𝛽negative = max( ―𝛽,0)
+The corresponding portfolio weights are normalized as:
+𝑤𝐴=
+𝛽positive
+∑𝑖𝛽positive
+𝑖
+𝑤𝐵=
+𝛽negative
+∑𝑖𝛽negative
+𝑖
+Portfolio AAA and portfolio BBB therefore represent opposite sides of the estimated long-run 
+relationship. Once the formation window ends, the portfolio weights are fixed during the trading 
+horizon. The DRL agent does not choose individual cryptocurrency weights. It only decides the 
+direction and exposure of the synthetic arbitrage trade.
+This separation between portfolio construction and trading evaluation is central to the empirical 
+design. The formation period constructs the arbitrage relation, while the trading horizon tests 
+whether the DRL agent can exploit deviations from that relation out of formation. This avoids 
+estimating and evaluating the trading relationship on the same observations.
+4.5 Frequency-Sensitive DRL Trading Environment
+The trading problem is formulated as a finite-horizon Markov decision process. For each 
+observation frequency 𝑓, the environment is represented as:
+ℳ𝑓= (𝒮𝑓,𝒜,𝒫𝑓,ℛ𝑓,𝐻𝑓)
+where 𝒮𝑓 is the state space, 𝒜 is the action space, 𝒫𝑓 is the transition process, ℛ𝑓 is the reward 
+function, and 𝐻𝑓 is the finite trading horizon. This formulation follows the standard reinforcementlearning representation of sequential decision problems (Sutton & Barto, 2018).
+The important methodological point is that Mf changes with the observation frequency. A 15minute setting contains more states, reward transitions, and potential exposure changes than a 2hour or 4-hour setting. Therefore, agents trained at different frequencies are not solving identical 
+decision problems, even if the same assets, features, reward function, and algorithms are used.
+At each trading observation, the agent observes state 𝑠𝑡, selects action 𝑎𝑡, receives a reward after 
+the next price transition, and moves to state 𝑠𝑡+1. The state vector contains the same categories of 
+information across all frequencies, including portfolio-price information, spread features, return 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+12
+variables, volatility measures, technical indicators, and market-condition proxies. Holding the state 
+definition constant ensures that the experiment isolates the effect of observation frequency rather 
+than changes in the information set.
+Figure 1 clarifies how the econometric and reinforcement-learning components interact within the 
+frequency-sensitive design. The figure separates the framework into three layers. First, the 
+formation layer uses historical observations to estimate the cointegration relationship and construct 
+the synthetic arbitrage portfolios. Second, the DRL trading layer uses the fixed portfolios to 
+generate sequential states, actions, rewards, and transitions during the trading horizon. Third, the 
+evaluation layer converts the realized trading path into performance, risk, and turnover metrics. 
+The key feature of the figure is that the sampling interval affects both the econometric layer and 
+the DRL layer: it changes the number of formation observations, decision states, reward intervals, 
+and opportunities for exposure adjustment.
+Figure 1
+Frequency-Sensitive Cointegration-DRL Trading Pipeline
+Note. The figure summarizes the fixed-horizon frequency-sensitive design. Each scenario preserves a six-day formation window 
+and one-day out-of-sample trading horizon, while the observation interval changes the number of observations, reward intervals, 
+and possible exposure revisions. The matched structure evaluates five frequencies across fixed asset-panel, algorithm, actionspace, and random-seed controls.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+13
+Following Figure 1, the frequency-sensitive environment can be interpreted as a controlled 
+reconstruction of the same trading problem at different temporal resolutions. The assets, portfolioconstruction logic, state categories, reward definition, and evaluation metrics are held constant. 
+What changes is the density of observations through which the agent experiences the market. This 
+is the basis for testing whether observation frequency is a methodological design variable rather 
+than a neutral preprocessing choice.
+4.6 Action-Space Specifications
+Two action-space specifications are evaluated. The binary action space allows the agent to choose 
+between the two full directional arbitrage positions:
+𝒜binary = { ― 1, + 1}
+When 𝑎𝑡= + 1, the agent is long portfolio A and short portfolio B. When 𝑎𝑡= ― 1, the agent is 
+short portfolio A and long portfolio B. 
+The granular action space allows full, half, and flat exposure:
+𝒜granular = { ― 1, ― 0.5, 0, 0.5, + 1}
+The granular specification allows the agent to reduce exposure when the signal is weak or when 
+transaction costs make position changes less attractive. This design is consistent with the broader 
+financial DRL literature, which shows that action-space construction can materially affect trading 
+behavior and risk exposure (Zhang et al., 2020; Liu et al., 2022). In this paper, action-space design 
+is not the main treatment variable. It is retained as a control dimension to test whether the frequency 
+effect persists under different exposure structures.
+4.7 Reward Function and Transaction Costs
+The reward is based on the relative return between portfolios A and B. Let 𝑟𝐴,𝑡+1 and 𝑟𝐵,𝑡+1 denote 
+portfolio returns from observation 𝑡 to observation 𝑡+ 1. The relative return is:
+𝛥𝑟𝑡+1 = 𝑟𝐴,𝑡+1 ― 𝑟𝐵,𝑡+1
+If the agent selects action 𝑎𝑡 at observation 𝑡, the gross reward earned over the next interval is:
+𝑅gross
+𝑡+1 = 𝑎𝑡𝛥𝑟𝑡+1
+Transaction costs are imposed when the agent changes exposure. Let 𝑐 denote the transaction-cost 
+coefficient. The cost of changing from 𝑎𝑡―1 to 𝑎𝑡 is:
+𝐶𝑡= 𝑐|𝑎𝑡― 𝑎𝑡―1|
+The net reward is therefore:
+𝑅net
+𝑡+1 = 𝑎𝑡𝛥𝑟𝑡+1 ― 𝑐|𝑎𝑡― 𝑎𝑡―1|
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+14
+This specification links rewards to both trading direction and exposure adjustment. It also makes 
+turnover frequency-dependent. Shorter observation intervals create more opportunities to change 
+exposure, which can increase transaction-cost accumulation. Longer intervals reduce the number 
+of possible exposure changes, but also reduce the number of reward transitions available to the 
+agent. This reward structure is consistent with financial DRL studies that emphasize the 
+importance of incorporating transaction costs and realistic trading frictions into the learning 
+environment (Zhang et al., 2020; Liu et al., 2022; Hambly et al., 2023).
+4.8 DRL Agents and Training Protocol
+Three DRL agents are evaluated: Deep Q-Network (DQN), Proximal Policy Optimization (PPO), 
+and Advantage Actor–Critic (A2C). DQN represents a value-based method for discrete action 
+spaces (Mnih et al., 2015). PPO and A2C represent actor–critic approaches that combine policy 
+learning with value estimation (Mnih et al., 2016; Schulman et al., 2017). These agents are widely 
+used in financial DRL applications and allow comparison between value-based and policy-gradient 
+learning approaches (Liu et al., 2022; Hambly et al., 2023).
+For each frequency, asset panel, algorithm, action space, and seed, the agent is trained using 
+scenarios from the training sample and evaluated on the out-of-sample testing sample. The same 
+feature set, reward function, transaction-cost rule, and evaluation metrics are used across all 
+frequencies. This consistency is necessary because the objective is to isolate the effect of 
+observation frequency.
+Random seeds are included because DRL training is stochastic. Model initialization, scenario 
+sampling, and exploration behavior can affect the learned policy. Using multiple seeds reduces 
+dependence on a single successful or unsuccessful training run and allows frequency effects to be 
+tested using matched experimental units. This is important because prior DRL reproducibility 
+research shows that single-run results can be unstable and that seed variation should be reported 
+when evaluating reinforcement-learning algorithms (Henderson et al., 2018).
+4.9 Evaluation Metrics
+Out-of-sample performance is evaluated using profitability, risk, risk-adjusted performance, 
+drawdown, and trading-intensity metrics. The main metrics are total return, Sharpe ratio, Calmar 
+ratio, maximum drawdown, annualized volatility, and total turnover. These metrics jointly capture 
+whether the strategy generates returns, how much risk it takes, how severe its losses are, and how 
+actively it changes exposure.
+Because observation frequency changes the number of intervals per year, annualized metrics use 
+frequency-specific scaling. For a frequency with interval length 𝛥𝑓 ,the number of annual 
+observations is:
+𝑁year
+𝑓
+= 365 × 1440
+𝛥𝑓
+Annualized volatility and Sharpe ratio are calculated as:
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+15
+𝜎annual
+𝑓
+= 𝜎𝑓𝑁year
+𝑓
+where 𝜎𝑓 is the standard deviation of interval returns at frequency f. The Sharpe ratio is calculated 
+as:
+Sharpe𝑓=
+𝑟𝑓
+𝜎𝑓𝑁year
+𝑓
+Total turnover is calculated as:
+Turnover =
+𝑡
+|𝑎𝑡― 𝑎𝑡―1|
+Including turnover is essential because one of the main methodological arguments of the paper is 
+that observation frequency changes the number of trading opportunities and therefore the potential 
+cost of exposure adjustment. This makes turnover a direct behavioral measure of how temporal 
+discretization affects the agent’s interaction with the market. The use of return, volatility, Sharpe 
+ratio, drawdown, and turnover metrics follows standard practice in empirical trading evaluation, 
+where profitability must be assessed jointly with risk and trading intensity (Sharpe, 1994; Lo, 
+2002; Magdon-Ismail & Atiya, 2004).
+4.10 Statistical Testing Procedure
+The main hypothesis is tested using a Friedman repeated-measures test. This test is appropriate 
+because the same experimental configurations are evaluated across all five observation frequencies 
+(Friedman, 1937). The matched unit is defined as:
+Matched unit = asset panel × DRL algorithm × action space × random seed
+There are:
+4 × 3 × 2 × 3 = 72
+matched units. Each matched unit has one result for each of the five observation frequencies: 
+15mins, 30mins, 1 hour, 2 hours, 4 hours.
+The null and alternative hypotheses are:
+𝐻0:Performance does not differ across observation frequencies
+𝐻1:Performance differs across observation frequencies
+The Friedman test is applied separately to each performance metric. Kendall’s W is reported as an 
+effect-size measure:
+𝑊=
+𝜒2
+𝑁(𝑘― 1)
+where 𝑁 is the number of matched units and 𝑘 is the number of frequencies. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+16
+When the Friedman test is significant, pairwise Wilcoxon signed-rank tests are used to identify 
+which frequency pairs differ (Wilcoxon, 1945). Holm correction is applied to control the 
+familywise error rate across multiple comparisons (Holm, 1979). This testing structure allows the 
+paper to determine whether observation frequency materially affects DRL statistical-arbitrage 
+performance while controlling for asset panel, algorithm, action-space specification, and stochastic 
+training variation.
+4.11 Robustness and Sensitivity Checks
+Several robustness checks are used to strengthen the methodological interpretation. First, the 
+frequency test is repeated after excluding the 15-minute setting. This checks whether the result is 
+driven only by the highest-frequency and potentially noisiest environment. Second, the test is 
+repeated after excluding the 4-hour setting. This checks whether the result is driven by the lowestfrequency environment, where the formation window contains relatively few observations. Third, 
+the Friedman test is repeated separately by algorithm. This evaluates whether frequency sensitivity 
+is present for DQN, PPO, and A2C individually. Fourth, the test is repeated separately by actionspace specification. This evaluates whether the frequency effect holds under both binary and 
+granular exposure rules.
+These checks are important because the methodological claim is not simply that one frequency 
+performs better than another. The stronger claim is that observation frequency changes the 
+structure of the DRL trading environment in a way that affects performance, risk, and trading 
+behavior across model configurations. The robustness results are reported in the empirical section 
+after the main Friedman and pairwise tests. This placement allows the robustness analysis to 
+function as a validation step rather than as a replacement for the primary hypothesis test.
+5. Empirical Results
+This section evaluates whether observation frequency affects the out-of-sample performance of 
+the cointegration-based DRL statistical-arbitrage framework. The analysis uses a matched design 
+of 360 DRL runs across five observation frequencies, four asset panels, three DRL agents, two 
+action-space specifications, and three random seeds. Because each matched configuration is 
+evaluated at all five frequencies, the results isolate the effect of temporal discretization from 
+asset-panel, algorithm, action-space, and seed variation.
+5.1 Performance Across Observation Frequencies
+Table 4 reports mean out-of-sample performance by observation frequency. The results show a 
+clear frequency gradient. The 15-minute setting performs worst, with a mean total return of -9.42% 
+and a mean Sharpe ratio of -13.74. Performance improves as the sampling interval lengthens, with 
+the smallest average loss observed at the 2-hour frequency (-0.44%), followed by the 4-hour 
+frequency (-0.95%). Maximum drawdown also declines from -11.35% at 15 minutes to 
+approximately -4% at the 2-hour and 4-hour frequencies.
+Table 4
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+17
+Mean DRL Performance by Observation Frequency
+Frequency
+Mean total 
+return
+Median total 
+return
+Mean Sharpe
+Mean max 
+drawdown
+Mean annualized 
+volatility
+Mean 
+turnover
+15 minutes
+-9.42%
+-9.26%
+-13.74
+-11.35%
+33.31%
+516.48
+30 minutes
+-4.74%
+-4.66%
+-6.83
+-7.81%
+31.88%
+240.69
+1 hour
+-2.88%
+-3.17%
+-4.26
+-6.52%
+31.32%
+123.79
+2 hours
+-0.44%
+-0.67%
+-1.31
+-4.26%
+25.59%
+58.97
+4 hours
+-0.95%
+-0.98%
+-1.98
+-4.15%
+27.41%
+28.97
+Note. Values are averaged across four asset universes, three DRL agents, two action-space specifications, and three 
+random seeds. Total return, maximum drawdown, and annualized volatility are reported in percentage terms.
+The pattern in Table 4 suggests that additional intraday observations do not necessarily improve 
+learning quality. Instead, the highest-frequency environment produces the largest losses and the 
+highest turnover. This is consistent with the view that DRL performance depends not only on the 
+algorithm but also on how the trading environment is constructed, including state density, reward 
+timing, transaction costs, and action opportunities (Henderson et al., 2018; Liu et al., 2022; 
+Hambly et al., 2023).
+5.2 Statistical Evidence of Frequency Effects
+Table 5 reports Friedman repeated-measures tests for the main performance, risk, and tradingintensity metrics. The Friedman test is appropriate because the same matched configurations are 
+compared across all five observation frequencies (Friedman, 1937). The results strongly support 
+H1. Total return differs significantly across frequencies, χ2(4) =99.43, p<.001p < .001, Kendall’s 
+W=.345. Sharpe ratio also differs significantly, χ2(4) =77.07, p<.001, W=.268.
+Table 5
+Friedman Tests for Observation-Frequency Effects
+Performance metric
+χ² (4)
+p
+Kendall's W
+Decision
+Matched units
+Total return
+99.43
+< .001
+0.345
+Significant
+72
+Sharpe ratio
+77.07
+< .001
+0.268
+Significant
+72
+Calmar ratio
+1.19
+.880
+0.004
+Not significant
+72
+Maximum drawdown
+142.48
+< .001
+0.495
+Significant
+72
+Annualized volatility
+131.18
+< .001
+0.455
+Significant
+72
+Total turnover
+270.88
+< .001
+0.941
+Significant
+72
+Note. The Friedman repeated-measures test compares matched DRL configurations across five observation 
+frequencies: 15 minutes, 30 minutes, 1 hour, 2 hours, and 4 hours. The matched unit is defined by asset universe, 
+algorithm, action-space specification, and random seed.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+18
+The frequency effect is not limited to return and Sharpe ratio. Maximum drawdown, annualized 
+volatility, and turnover also differ significantly across frequencies. The largest effect appears in 
+turnover, χ2(4) =270.88, p<.001, W=.941, indicating that observation frequency changes the 
+trading behavior of the agents, not only their measured profitability. The Calmar ratio is the only 
+metric that does not differ significantly, suggesting that return-to-drawdown performance is less 
+systematically ordered across frequencies than the other metrics. These results support the paper’s 
+central methodological claim: observation frequency is not a neutral preprocessing parameter. It 
+changes the decision environment faced by the DRL agent by altering the number of states, reward 
+intervals, and exposure-adjustment opportunities.
+5.3 Pairwise Frequency Comparisons
+Table 6 reports pairwise Wilcoxon signed-rank tests with Holm correction after the significant 
+Friedman results (Wilcoxon, 1945; Holm, 1979). The total-return comparisons show that the 15minute frequency performs significantly worse than every longer frequency. The 30-minute 
+frequency also performs significantly worse than the 2-hour and 4-hour settings, although the 
+difference between 30 minutes and 1 hour is not significant after correction. The 2-hour and 4hour settings do not differ significantly from each other.
+Table 6
+Pairwise Frequency Comparisons for Total Return and Sharpe Ratio
+Metric
+Frequency comparison
+Wilcoxon W
+Raw p
+Holm-adjusted 
+p
+Decision
+Total return
+15 minutes vs. 30 minutes
+456.00
+< .001
+< .001
+Significant
+Total return
+15 minutes vs. 1 hour
+228.00
+< .001
+< .001
+Significant
+Total return
+15 minutes vs. 2 hours
+60.00
+< .001
+< .001
+Significant
+Total return
+15 minutes vs. 4 hours
+90.00
+< .001
+< .001
+Significant
+Total return
+30 minutes vs. 1 hour
+924.00
+.029
+.057
+Not significant
+Total return
+30 minutes vs. 2 hours
+397.00
+< .001
+< .001
+Significant
+Total return
+30 minutes vs. 4 hours
+609.00
+< .001
+< .001
+Significant
+Total return
+1 hour vs. 2 hours
+782.00
+.003
+.011
+Significant
+Total return
+1 hour vs. 4 hours
+822.00
+.006
+.017
+Significant
+Total return
+2 hours vs. 4 hours
+1140.00
+.329
+.329
+Not significant
+Sharpe ratio
+15 minutes vs. 30 minutes
+478.00
+< .001
+< .001
+Significant
+Sharpe ratio
+15 minutes vs. 1 hour
+280.00
+< .001
+< .001
+Significant
+Sharpe ratio
+15 minutes vs. 2 hours
+146.00
+< .001
+< .001
+Significant
+Sharpe ratio
+15 minutes vs. 4 hours
+164.00
+< .001
+< .001
+Significant
+Sharpe ratio
+30 minutes vs. 1 hour
+965.00
+.050
+.139
+Not significant
+Sharpe ratio
+30 minutes vs. 2 hours
+600.00
+< .001
+< .001
+Significant
+Sharpe ratio
+30 minutes vs. 4 hours
+739.00
+.001
+.006
+Significant
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+19
+Metric
+Frequency comparison
+Wilcoxon W
+Raw p
+Holm-adjusted 
+p
+Decision
+Sharpe ratio
+1 hour vs. 2 hours
+887.00
+.017
+.066
+Not significant
+Sharpe ratio
+1 hour vs. 4 hours
+959.00
+.046
+.139
+Not significant
+Sharpe ratio
+2 hours vs. 4 hours
+1203.00
+.533
+.533
+Not significant
+Note. Pairwise Wilcoxon signed-rank tests compare matched configurations across frequencies. Holm-adjusted pvalues control the familywise error rate within each metric.
+The Sharpe-ratio comparisons show a similar pattern. The 15-minute setting is significantly worse 
+than all longer frequencies, while the differences among the lower-frequency settings are weaker. 
+This reinforces the interpretation that the main empirical separation is between high-frequency and 
+lower-frequency environments. The evidence does not simply show random variation across 
+intervals; it shows that the 15-minute environment is systematically less favorable in this 
+framework.
+5.4 Algorithm-Specific Frequency Effects
+Table 7 reports whether the observation-frequency effect is consistent across the three DRL agents. 
+The results show that all agents perform poorly at the 15-minute frequency and improve as the 
+observation interval lengthens. However, the best-performing lower-frequency setting differs by 
+algorithm. DQN records its strongest mean return at the 4-hour frequency, while A2C records its 
+strongest mean return at the 2-hour frequency. PPO also improves when moving from 15-minute 
+observations to lower-frequency environments, although its mean returns remain negative across 
+all frequencies.
+Table 7
+Algorithm-Specific Mean Performance by Observation Frequency
+Frequency
+Algorithm
+Mean total return
+Mean Sharpe
+Mean max drawdown
+Mean turnover
+15 minutes
+A2C
+-8.96%
+-12.94
+-10.70%
+517.06
+15 minutes
+DQN
+-9.05%
+-13.28
+-11.08%
+519.23
+15 minutes
+PPO
+-10.24%
+-15.00
+-12.28%
+513.15
+30 minutes
+A2C
+-5.21%
+-7.92
+-8.27%
+237.42
+30 minutes
+DQN
+-5.00%
+-6.80
+-7.86%
+267.27
+30 minutes
+PPO
+-4.02%
+-5.75
+-7.29%
+217.40
+1 hour
+A2C
+-3.83%
+-5.34
+-7.25%
+126.94
+1 hour
+DQN
+-2.50%
+-3.79
+-6.00%
+128.35
+1 hour
+PPO
+-2.31%
+-3.65
+-6.32%
+116.08
+2 hours
+A2C
+1.43%
+2.12
+-3.49%
+56.56
+2 hours
+DQN
+-1.68%
+-2.93
+-4.55%
+63.69
+2 hours
+PPO
+-1.06%
+-3.13
+-4.75%
+56.65
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+20
+Frequency
+Algorithm
+Mean total return
+Mean Sharpe
+Mean max drawdown
+Mean turnover
+4 hours
+A2C
+-1.81%
+-3.99
+-4.18%
+27.79
+4 hours
+DQN
+0.65%
+1.21
+-3.44%
+30.33
+4 hours
+PPO
+-1.70%
+-3.17
+-4.81%
+28.77
+Note. Values are averaged across four asset universes, two action-space specifications, and three random seeds for 
+each algorithm-frequency combination. Total return and maximum drawdown are reported in percentage terms.
+To make the algorithm-specific return pattern clearer, Figure 7 plots mean total return by 
+observation frequency separately for DQN, PPO, and A2C. The figure is useful because Table 7 
+reports several metrics, whereas Figure 2 isolates the main return pattern. This visual comparison 
+shows that the frequency effect is not driven by a single DRL agent. Instead, all three agents exhibit 
+weaker performance at higher frequency and less negative performance at lower frequency.
+Figure 2
+Algorithm-Specific Mean Total Return by Observation Frequency
+Note. Values are averaged across four asset panels, two action-space specifications, and three random seeds for each algorithmfrequency combination.
+The figure should be interpreted cautiously. The positive mean return for A2C at the 2-hour 
+frequency and DQN at the 4-hour frequency does not imply robust profitability across the full 
+design. Rather, it shows that the loss profile becomes less severe when the trading environment 
+is reconstructed at lower temporal density. This supports the central finding that observation 
+frequency changes the learning environment faced by the DRL agents.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+21
+5.5 Turnover and the Trading-Intensity Channel
+The turnover results provide the clearest mechanism behind the frequency effect. Mean turnover 
+falls sharply as the observation interval lengthens: from 516.48 at 15 minutes to 28.97 at 4 hours. 
+This pattern is expected because shorter frequencies create more decision points and more 
+opportunities for the agent to revise exposure. To make this turnover channel clearer, Figure 3 
+plots mean total turnover by observation frequency across the matched DRL configurations.
+Figure 3
+Mean Total Turnover by Observation Frequency
+Note. Mean total turnover is averaged across the 72 matched DRL configurations. Shorter observation intervals provide more 
+possible exposure adjustments.
+The turnover channel is central to the interpretation of the results. A shorter sampling interval does 
+not only increase the amount of data; it also increases the number of possible trades. When 
+transaction costs penalize exposure changes, a high-frequency environment can reduce net 
+performance through overtrading. This explains why the 15-minute environment, despite 
+providing the most observations, produces the weakest average return and Sharpe ratio. The result 
+is consistent with financial DRL research showing that reward design, transaction-cost treatment, 
+and environment construction can materially affect learned trading behavior (Zhang et al., 2020; 
+Liu et al., 2022; Hambly et al., 2023).
+5.6 Robustness and Sensitivity Checks
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+22
+Table 8 reports robustness checks for the frequency effect. The Friedman test remains significant 
+after excluding the 4-hour frequency and after excluding the 15-minute frequency. The frequency 
+effect also remains significant when the analysis is restricted to the middle frequencies only. These 
+results show that the main finding is not driven solely by an extreme high-frequency or lowfrequency setting.
+Table 8
+Robustness Checks for Frequency Effects
+Frequency set
+Metric
+No. of 
+frequencies
+χ²
+p
+Kendall's W
+Decision
+All frequencies
+Total return
+5
+99.43
+< .001
+0.345
+Significant
+All frequencies
+Sharpe ratio
+5
+77.07
+< .001
+0.268
+Significant
+All frequencies
+Total turnover
+5
+270.88
+< .001
+0.941
+Significant
+Excluding 4-hour frequency
+Total return
+4
+78.55
+< .001
+0.364
+Significant
+Excluding 4-hour frequency
+Sharpe ratio
+4
+60.72
+< .001
+0.281
+Significant
+Excluding 4-hour frequency
+Total turnover
+4
+197.47
+< .001
+0.914
+Significant
+Excluding 15-minute frequency
+Total return
+4
+25.97
+< .001
+0.120
+Significant
+Excluding 15-minute frequency
+Sharpe ratio
+4
+18.32
+< .001
+0.085
+Significant
+Excluding 15-minute frequency
+Total turnover
+4
+198.79
+< .001
+0.920
+Significant
+Middle frequencies only
+Total return
+3
+21.58
+< .001
+0.150
+Significant
+Middle frequencies only
+Sharpe ratio
+3
+16.03
+< .001
+0.111
+Significant
+Middle frequencies only
+Total turnover
+3
+127.08
+< .001
+0.883
+Significant
+Note. Robustness checks repeat the Friedman test after removing extreme observation frequencies. The middlefrequency check uses 30-minute, 1-hour, and 2-hour observations only.
+The robustness results strengthen the methodological interpretation. Observation frequency affects 
+performance even when the most extreme sampling intervals are removed. The effect is also 
+evident for total return, Sharpe ratio, and turnover, which means that frequency changes both 
+performance and trading behavior. The strongest and most persistent effect remains turnover, 
+confirming that temporal discretization changes how intensively DRL agents interact with the 
+market.
+5.7 Summary of Findings
+The empirical evidence supports H1. Cointegration-based DRL statistical-arbitrage performance 
+differs significantly across observation frequencies. The 15-minute setting produces the largest 
+losses, weakest Sharpe ratios, and highest turnover. Lower-frequency settings, especially 2 hours 
+and 4 hours, reduce losses and trading intensity. However, the findings should not be interpreted 
+as evidence of consistently profitable arbitrage. Mean returns remain negative across all five 
+frequencies.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+23
+The main result is methodological: observation frequency changes the DRL trading environment. 
+It alters the number of market states, reward intervals, exposure-adjustment opportunities, and 
+transaction-cost events available to the agent. Therefore, a DRL trading result obtained at one 
+intraday frequency should not be assumed to generalize to other temporal discretization’s. In 
+cointegration-based DRL statistical arbitrage, the sampling frequency is part of the model design, 
+not a neutral data-formatting choice.
+6. Discussion
+6.1 Observation Frequency and the Structure of the Learning Problem
+The results show that observation frequency changes the decision environment faced by the DRL 
+agents. A shorter sampling interval increases the number of states, reward transitions, and 
+opportunities for exposure adjustment, while a longer interval compresses the same economic 
+period into fewer decision points. This means that agents trained at different frequencies are not 
+solving the same reinforcement-learning problem, even when the asset panels, algorithms, state 
+variables, reward function, and transaction-cost rule are held constant. This finding supports the 
+broader view that DRL trading performance is conditional on the environment in which learning 
+occurs. In financial applications, the environment is engineered through design choices such as 
+state representation, action constraints, reward timing, transaction costs, and sampling frequency 
+(Sutton & Barto, 2018; Henderson et al., 2018; Liu et al., 2022; Hambly et al., 2023). The present 
+evidence extends this argument by showing that temporal discretization is itself a first-order 
+environment-design variable.
+6.2 Why Higher Frequency Does Not Necessarily Improve Performance
+The 15-minute setting provides the largest number of observations and reward intervals, but it 
+produces the weakest performance. This suggests that more frequent observations do not 
+automatically provide more useful learning information. Shorter intervals may increase exposure 
+to transient price movements, unstable spread deviations, and short-horizon noise. The agent 
+receives more state transitions, but those transitions may contain weaker or less tradable signals.
+By contrast, the 2-hour and 4-hour settings reduce the number of decision points and appear to 
+limit the severity of losses. This does not imply that lower frequency is universally superior. 
+Rather, it indicates a trade-off between information density and signal quality. Higher-frequency 
+environments may improve responsiveness, but they can also increase noise and overtrading. 
+Lower-frequency environments may reduce noise and turnover, but they also reduce the number 
+of opportunities for the agent to adapt. This trade-off is consistent with recent high-frequency RL 
+research, which emphasizes the difficulty of learning under noisy, fast-changing market states (Qin 
+et al., 2024; Zong et al., 2024).
+6.3 Turnover as the Main Transmission Channel
+The clearest mechanism linking frequency to performance is turnover. Shorter observation 
+intervals create more opportunities for the agent to revise exposure. When transaction costs 
+penalize exposure changes, more decision points can translate into higher cost accumulation. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+24
+Therefore, the weaker performance of the 15-minute setting is not only a return effect; it reflects a 
+trading-intensity effect. This interpretation is important because it connects the statistical result to 
+an economic mechanism. A high-frequency DRL environment does not simply offer more data. It 
+also offers more chances to trade, switch exposure, and incur costs. In noisy settings, that flexibility 
+may become harmful if the agent reacts too frequently to weak or unstable signals. The turnover 
+result therefore supports the methodological argument that observation frequency changes how the 
+agent interacts with the market, not only how performance is measured.
+6.4 Cointegration-Estimation Trade-Off
+Observation frequency also affects the econometric layer of the framework. Because the formation 
+window is fixed at six days, the number of observations available for estimating cointegration 
+differs sharply across frequencies. The 15-minute setting provides many formation observations, 
+while the 4-hour setting provides relatively few. This creates a second trade-off: higher frequencies 
+may provide more data for estimation but with greater short-horizon noise, whereas lower 
+frequencies may reduce noise but weaken the statistical basis for estimating a stable cointegration 
+relationship. The 4-hour results should therefore be interpreted cautiously. The lower turnover and 
+smaller average losses are informative for frequency sensitivity, but the short formation sample 
+may increase estimation uncertainty. In cointegration-based statistical arbitrage, trading quality 
+depends on the reliability of the relationship estimated during the formation period (Engle & 
+Granger, 1987; Johansen, 1988; Gatev et al., 2006). The results therefore do not identify a 
+universally optimal frequency; they show that frequency choice changes both the learning problem 
+and the estimation problem.
+6.5 Implications for DRL Trading Research
+The findings have direct implications for empirical DRL trading studies. A strategy evaluated at a 
+single sampling interval may produce conclusions that are specific to that temporal discretization. 
+If frequency is not tested, it is difficult to know whether the result reflects the algorithm, the reward 
+function, the asset structure, or the sampling design. This matters for model comparison. A DQN, 
+PPO, or A2C agent trained at 15-minute frequency is not directly comparable to the same agent 
+trained at 2-hour frequency unless the change in environment structure is explicitly recognized. 
+The state sequence, reward density, turnover opportunities, and transaction-cost exposure all 
+change. Therefore, observation frequency should be reported, justified, and tested as part of DRL 
+trading-environment design.
+6.6 Practical Interpretation
+For practitioners, the results caution against assuming that higher-frequency trading environments 
+are automatically preferable. More frequent observations can increase responsiveness, but they can 
+also raise turnover and transaction-cost exposure. Lower-frequency settings can reduce trading 
+intensity, but they may also provide fewer observations for cointegration estimation and fewer 
+opportunities for adaptation. The practical implication is therefore not to choose the 2-hour or 4hour setting mechanically. Instead, frequency should be selected jointly with signal stability, 
+transaction costs, liquidity, execution assumptions, and risk controls. The central lesson is that 
+sampling frequency is part of the trading-system design, not a neutral data-formatting decision.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+25
+7. Conclusion
+This study examined observation frequency as a methodological design variable in cointegrationbased DRL cryptocurrency statistical arbitrage. By reconstructing the same six-day formation 
+window and one-day trading horizon across 15-minute, 30-minute, 1-hour, 2-hour, and 4-hour 
+observations, the analysis isolates the effect of temporal discretization on the DRL trading 
+environment. The evidence shows that performance differs significantly across observation 
+frequencies. The 15-minute environment produces the largest losses and highest turnover, while 
+the 2-hour and 4-hour environments reduce losses and trading intensity. However, the results do 
+not show consistent profitability across frequencies. Mean returns remain negative overall, so the 
+contribution is methodological rather than performance-promotional.
+The main contribution is to show that observation frequency changes the structure of the learning 
+environment. It affects the number of states, reward intervals, exposure-adjustment opportunities, 
+turnover events, and formation observations available to the agent. As a result, DRL trading 
+performance should not be interpreted as an algorithm-only outcome. It is jointly determined by 
+the learning algorithm and the environment in which that algorithm is trained and evaluated.
+The study has several limitations. The analysis uses Binance USDT-denominated spot data and 
+OHLCV observations, so it does not fully capture order-book depth, realized slippage, market 
+impact, or exchange-specific execution frictions. The results are based on one recent 
+cryptocurrency sample period and may differ across bull, bear, crisis, or low-volatility regimes. 
+The 4-hour setting also contains relatively few formation and trading observations, which may 
+affect cointegration-estimation stability.
+Future research should test frequency sensitivity across additional exchanges, market regimes, 
+transaction-cost assumptions, and asset classes. A useful extension would be to develop adaptive 
+or multi-frequency DRL environments in which the agent can combine short-horizon information 
+with lower-frequency mean-reversion signals. Overall, the findings suggest that DRL trading 
+studies should report, justify, and test their selected observation frequency rather than assuming 
+that results obtained at one temporal resolution generalize to others.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+26
+References
+Binance. (n.d.). Binance public data. Retrieved June 13, 2026, from https://data.binance.vision/
+Binance Developers. (n.d.). Market data endpoints: Kline/candlestick data. Retrieved June 13, 
+2026, 
+from 
+https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-dataendpoints
+Chun, J. H., & Lee, S. J. (2025). Cryptocurrency futures portfolio trading system using 
+reinforcement 
+learning. 
+Applied 
+Sciences, 
+15(17), 
+Article 
+9400. 
+https://doi.org/10.3390/app15179400
+Engle, R. F., & Granger, C. W. J. (1987). Co-integration and error correction: Representation, 
+estimation, and testing. Econometrica, 55(2), 251–276. https://doi.org/10.2307/1913236
+Friedman, M. (1937). The use of ranks to avoid the assumption of normality implicit in the analysis 
+of variance. 
+Journal of 
+the 
+American 
+Statistical 
+Association, 
+32(200), 
+675–701. 
+https://doi.org/10.2307/2279372
+Gatev, E., Goetzmann, W. N., & Rouwenhorst, K. G. (2006). Pairs trading: Performance of a 
+relative-value 
+arbitrage 
+rule. 
+The 
+Review 
+of 
+Financial 
+Studies, 
+19(3), 
+797–827. 
+https://doi.org/10.1093/rfs/hhj020
+Guijarro-Ordonez, J., Pelger, M., & Zanotti, G. (2022). Deep learning statistical arbitrage. arXiv. 
+https://doi.org/10.48550/arXiv.2106.04028
+Hambly, B., Xu, R., & Yang, H. (2023). Recent advances in reinforcement learning in finance. 
+Mathematical Finance, 33(3), 437–503. https://doi.org/10.1111/mafi.12382
+Henderson, P., Islam, R., Bachman, P., Pineau, J., Precup, D., & Meger, D. (2018). Deep 
+reinforcement learning that matters. Proceedings of the AAAI Conference on Artificial Intelligence, 
+32(1), 3207–3214. https://doi.org/10.1609/aaai.v32i1.11694
+Holm, S. (1979). A simple sequentially rejective multiple test procedure. Scandinavian Journal of 
+Statistics, 6(2), 65–70.
+Johansen, S. (1988). Statistical analysis of cointegration vectors. Journal of Economic Dynamics 
+and Control, 12(2–3), 231–254. https://doi.org/10.1016/0165-1889(88)90041-3
+Liu, X.-Y., Xia, Z., Rui, J., Gao, J., Yang, H., Zhu, M., Wang, C. D., Wang, Z., & Guo, J. (2022). 
+FinRL-Meta: Market environments and benchmarks for data-driven financial reinforcement 
+learning. Advances in Neural Information Processing Systems, 35, 1835–1849.
+Lo, A. W. (2002). The statistics of Sharpe ratios. Financial Analysts Journal, 58(4), 36–52. 
+https://doi.org/10.2469/faj.v58.n4.2453
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+27
+Magdon-Ismail, M., Atiya, A. F., Pratap, A., & Abu-Mostafa, Y. S. (2004). On the maximum 
+drawdown of a Brownian motion. Journal of Applied Probability, 41(1), 147–161. 
+https://doi.org/10.1239/jap/1077134674
+Mnih, V., Badia, A. P., Mirza, M., Graves, A., Lillicrap, T., Harley, T., Silver, D., & Kavukcuoglu, 
+K. (2016). Asynchronous methods for deep reinforcement learning. In M. F. Balcan & K. Q. 
+Weinberger (Eds.), Proceedings of Machine Learning Research: Vol. 48. Proceedings of the 33rd 
+International Conference on Machine Learning (pp. 1928–1937). PMLR.
+Mnih, V., Kavukcuoglu, K., Silver, D., Rusu, A. A., Veness, J., Bellemare, M. G., Graves, A., 
+Riedmiller, M., Fidjeland, A. K., Ostrovski, G., Petersen, S., Beattie, C., Sadik, A., Antonoglou, 
+I., King, H., Kumaran, D., Wierstra, D., Legg, S., & Hassabis, D. (2015). Human-level control 
+through 
+deep 
+reinforcement 
+learning. 
+Nature, 
+518(7540), 
+529–533. 
+https://doi.org/10.1038/nature14236
+Qin, M., Sun, S., Zhang, W., Xia, H., Wang, X., & An, B. (2024). EarnHFT: Efficient hierarchical 
+reinforcement learning for high frequency trading. Proceedings of the AAAI Conference on 
+Artificial Intelligence, 38(13), 14669–14676. https://doi.org/10.1609/aaai.v38i13.29384
+Schulman, J., Wolski, F., Dhariwal, P., Radford, A., & Klimov, O. (2017). Proximal policy 
+optimization algorithms. arXiv. https://arxiv.org/abs/1707.06347
+Sharpe, W. F. (1994). The Sharpe ratio. The Journal of Portfolio Management, 21(1), 49–58. 
+https://doi.org/10.3905/jpm.1994.409501
+Sutton, R. S., & Barto, A. G. (2018). Reinforcement learning: An introduction (2nd ed.). MIT 
+Press.
+Tsoku, J. T., & Makatjane, K. (2026). Deep learning-based pairs trading: Real-time forecasting of 
+co-integrated cryptocurrency pairs. Frontiers in Applied Mathematics and Statistics, 12, Article 
+1749337. https://doi.org/10.3389/fams.2026.1749337
+Vergara, G., & Kristjanpoller, W. (2024). Deep reinforcement learning applied to statistical 
+arbitrage investment strategy on cryptomarket. Applied Soft Computing, 153, Article 111255. 
+https://doi.org/10.1016/j.asoc.2024.111255
+Wilcoxon, F. (1945). Individual comparisons by ranking methods. Biometrics Bulletin, 1(6), 80–
+83. https://doi.org/10.2307/3001968
+Yang, H., & Malik, A. (2024). Reinforcement learning pair trading: A dynamic scaling approach. 
+Journal 
+of 
+Risk 
+and 
+Financial 
+Management, 
+17(12), 
+Article 
+555. 
+https://doi.org/10.3390/jrfm17120555
+Zhang, Z., Zohren, S., & Roberts, S. (2020). Deep reinforcement learning for trading. The Journal 
+of Financial Data Science, 2(2), 25–40. https://doi.org/10.3905/jfds.2020.1.030
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
+
+28
+Zong, C., Wang, C., Qin, M., Feng, L., Wang, X., & An, B. (2024). MacroHFT: Memory 
+augmented context-aware reinforcement learning on high frequency trading. In Proceedings of the 
+30th ACM SIGKDD Conference on Knowledge Discovery and Data Mining (pp. 4712–4721). 
+Association for Computing Machinery. https://doi.org/10.1145/3637528.3672064
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=7052115
+Preprint not peer reviewed
