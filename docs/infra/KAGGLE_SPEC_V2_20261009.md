@@ -45,7 +45,9 @@ La spec exige referencias `owner/slug/version`. El manifest declara explícitame
 | k01 | ES_03-26 | edgelab-nt8-historical-missing-20261001 v1 | ES_03-26_ticks_ext.parquet |
 | k02 | NQ_03-26 | edgelab-nt8-historical-missing-20261001 v1 | NQ_03-26_ticks_ext.parquet |
 
-No se ejecutaron estos dos kernels sobre ticks reales. Primero tiene que pasar la prueba de mounts.
+**Actualización tras acceso autorizado al navegador:** los dos kernels v2 se ejecutaron con datos reales y terminaron COMPLETE / `PASS_INTEGRITY_NOT_EDGE`. ES: 832.580 trades, volumen 1.195.973; NQ: 421.020 trades, volumen 453.961. Es conservación de datos, no resultado económico.
+
+Outputs descargados vía custom MCP; hashes de ambos zips verificados contra los sidecars. Merge de k01+k02 PASS y lectura de los seis archivos con `load_bars` PASS. Ejecuciones: ES 356881769, NQ 356881572. Esta evidencia cubre **una sola sesión por instrumento**, no la cobertura histórica completa ni un benchmark de aceleración.
 
 ```bash
 python tools/kaggle_spec_v2.py generate \
@@ -74,18 +76,20 @@ Kernel de prueba privada, offline, exclusivamente sintética:
 
 **Kaggle v2: COMPLETE, 25 pruebas PASS en 4,24 s, sin lectura de datos de mercado reales.** Ver `KAGGLE_SPEC_V2_EVIDENCE_20261009.json` para evidencia comprobada.
 
-## Bloqueo de adjuntos: observación, no causa raíz inventada
+## Adjuntos: workaround verificado, MCP aún sin resolver
 
 Prueba privada `https://www.kaggle.com/code/nicolasbuttaro/edgelab-mount-verified-20261009`.
 
 El MCP devolvió un kernel/version guardado, pero el reporte v1 mostró `catalog_mounts=[]` e `inputs=[]` al enviar `datasetDataSources` y su setter con la referencia del catálogo. La variante de ID numérico v2 tampoco montó nada; ese formato no debe recomendarse porque el cliente oficial documenta refs, no IDs. Se probó después la referencia oficial **con versión**. La v3 también terminó en ERROR con `catalog_mounts=[]` e `inputs=[]`; el reporte se descargó y leyó (ejecución 356878011). El estado final figura en el JSON de evidencia.
 
-No hay pruebas suficientes para atribuir el fallo a permisos, a Kaggle, a un serializador o a un campo concreto del conector. Guardar un kernel no demuestra que los inputs estén adjuntos. No se usa una URL firmada como input permanente ni una descarga de internet como sustituto de ejecución congelada.
+**Workaround comprobado:** en la interfaz se agregó el dataset con Add Input → búsqueda por URL → Add Dataset → Save & Run All. La prueba v4 terminó COMPLETE y leyó `/kaggle/input/datasets/nicolasbuttaro/edgelab-data-catalog/edgelab_data.py` con el hash esperado. El mismo procedimiento agregó catálogo v15 y fuente histórica v1 a ambos kernels ES/NQ. El custom MCP se mantuvo como vía para crear kernels, consultar estado y obtener URLs de descarga de los outputs. Esperar la confirmación del commit antes de navegar fuera del editor.
+
+No hay pruebas suficientes para atribuir el fallo de adjuntos por MCP a permisos, a Kaggle, a un serializador o a un campo concreto del conector. Guardar un kernel no demuestra que los inputs estén adjuntos. No se usa una URL firmada como input permanente ni una descarga de internet como sustituto de ejecución congelada.
 
 ## Pendiente, sin afirmar completado
 
-1. Resolver el mount real (navegador, con aprobación del usuario, o CLI oficial con autenticación propia) y correr el smoke ES/NQ.
-2. Medir tiempo/memoria y paridad con el loader sobre datos reales; todavía no hay medición de aceleración.
+1. **Smoke ES/NQ y workaround de mounts: cerrados.** Resolver todavía los adjuntos directamente por MCP o CLI oficial para no depender del navegador en cada kernel.
+2. Ampliar la paridad contra el loader, medir tiempo/memoria y cobertura sobre datos reales; conservación por sesión y consumidor ya pasaron, todavía no hay medición de aceleración.
 3. Materializar la cobertura completa y publicar un **dataset privado de agregados**. No se publicó ninguno en esta tanda; el MCP expuesto no tiene creación/versionado integral de datasets.
 4. Añadir adaptadores de hipótesis/métricas/reglas económicas, con aprobación humana y autorización independiente de outcomes.
 5. Integrar el formato de evidencia con el contrato vigente del Hipocampo/Brain; no escribir asientos automáticos antes de cerrar dicho contrato.
@@ -93,4 +97,4 @@ No hay pruebas suficientes para atribuir el fallo a permisos, a Kaggle, a un ser
 
 ## Aporte al referente
 
-Reduce duplicación de infraestructura y hace verificables inputs/sesiones, agregados y evidencia sin convertir un PASS técnico en un edge ni gastar holdout. El límite operativo (mounts) queda visible y reproducible.
+Reduce duplicación de infraestructura y hace verificables inputs/sesiones, agregados y evidencia sin convertir un PASS técnico en un edge ni gastar holdout. El mount real y el smoke de una sesión ES/NQ quedaron verificados sin internet; los adjuntos vía MCP y la materialización histórica completa siguen pendientes.
