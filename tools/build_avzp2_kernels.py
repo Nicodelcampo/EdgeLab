@@ -14,6 +14,7 @@ Kaggle falla a veces al arrancar (log vacío o "[]"): relanzar el mismo kernel s
 import argparse
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
@@ -29,10 +30,13 @@ def build(stage1, prefix, out, inst="MNQ", push=False):
     mod = (REPO / "edgelab/bridge/indicators/avolzonepoi2.py").read_text(encoding="utf-8").split("from __future__ import annotations", 1)[1]
     imports = [l for l in s0.splitlines() if l.startswith("from edgelab.bridge.indicators.avolzonepoi2 import")]
     assert len(imports) == 1, "el script tiene que importar avolzonepoi2 en una sola línea"
+    git = lambda *a: subprocess.run(["git", "-C", str(REPO), *a], capture_output=True, text=True).stdout.strip()
+    commit, tree = git("rev-parse", "HEAD"), ("dirty" if git("status", "--porcelain") else "clean")   # procedencia dirty-aware
     for k, contracts in SPLIT.items():
         s = s0
         i = s.index("from __future__ import annotations") + len("from __future__ import annotations")
-        s = s[:i] + '\nimport os\nos.environ["AVCL_INST"]="%s"\nos.environ["AVCL_CONTRACTS"]="%s"\n' % (inst, contracts) + s[i:]
+        s = s[:i] + ('\nimport os\nos.environ["AVCL_INST"]="%s"\nos.environ["AVCL_CONTRACTS"]="%s"\n'
+                     'os.environ["EDGELAB_CODE_COMMIT"]="%s"\nos.environ["EDGELAB_TREE"]="%s"\n') % (inst, contracts, commit, tree) + s[i:]
         s = s.replace(imports[0], "from collections import defaultdict\n" + mod + "\nzp2_run = run\n")
         d = Path(out) / ("%s_%s" % (prefix, k))
         d.mkdir(parents=True, exist_ok=True)
@@ -43,7 +47,7 @@ def build(stage1, prefix, out, inst="MNQ", push=False):
             enable_gpu=False, enable_internet=False, dataset_sources=DATASETS, competition_sources=[], kernel_sources=[])), encoding="utf-8")
         print("armado", d)
         if push:
-            subprocess.run(["kaggle", "kernels", "push", "-p", str(d)], check=False)
+            subprocess.run([sys.executable, "-m", "kaggle", "kernels", "push", "-p", str(d)], check=False)
 
 
 if __name__ == "__main__":

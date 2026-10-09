@@ -208,6 +208,11 @@ def run_contract(c, sess):
     end = np.asarray(bars.end_ns, dtype=np.int64)
     n = len(cl)
     send = session_end_vec(end)
+    # Enmienda 2: actividad previa (sólo pasado). Volumen y tiempo acumulados; los saltos entre sesiones no cuentan.
+    cvol = np.concatenate([[0.0], np.cumsum(np.asarray(bars.volume, dtype=np.float64))])
+    dbar = np.diff(end, prepend=end[0]).astype(np.float64)
+    dbar[1:][send[1:] != send[:-1]] = 0.0
+    cdur = np.concatenate([[0.0], np.cumsum(dbar)])
     r = zp2_run(bars, fps, send, ZP2_PARAMS)
     del fps, bars
     gc.collect()
@@ -224,7 +229,14 @@ def run_contract(c, sess):
         x = cl[a_:t0 + 1]
         return float(((x >= L) & (x <= H)).mean())
 
+    def act(t0, w):
+        a_ = t0 - w + 1
+        if a_ < 0:
+            return np.nan, np.nan
+        return float(np.log(max(cvol[t0 + 1] - cvol[a_], 1.0))), float(np.log(max(cdur[t0 + 1] - cdur[a_], 1.0)))
+
     def row(kind, t0, L, H, start0):
+        (v5, d5), (v1, d1) = act(t0, OCC), act(t0, 100)
         te, d, o2, o3a, o3b, mx = outcomes(hi, lo, cl, send, t0, L, H, n)
         tr = np.sign(cl[t0] - cl[max(0, t0 - TREND)])
         pre_end = start0 - 1
@@ -235,7 +247,8 @@ def run_contract(c, sess):
         return (c, kind, int(t0), int(L), int(H), int(H - L + 1), int(sdate[t0]), int(clock[t0]), occ(t0, L, H),
                 float(rng200[t0]) if t0 >= HPOST else np.nan, int(tr), pos, int(te), int(d), int(o2), int(o3a), int(o3b),
                 float(mx), float(np.log(te - t0)) if te > 0 else np.nan, exp,
-                float(cl[t0] - cl[max(0, t0 - TREND)]) / (H - L + 1), float(cl[t0] - cl[max(0, t0 - 100)]) / (H - L + 1))
+                float(cl[t0] - cl[max(0, t0 - TREND)]) / (H - L + 1), float(cl[t0] - cl[max(0, t0 - 100)]) / (H - L + 1),
+                v5, v1, d5, d1)
 
     rows = []
     for (cm, cw, ca) in CELLS:
@@ -266,13 +279,18 @@ def run_contract(c, sess):
                 if got >= NPSEUDO:
                     break
     t = pd.DataFrame(rows, columns=["cell", "contract", "kind", "t0", "L", "H", "h", "session", "clock", "occ", "amp", "trend", "pos",
-                                    "te", "dir", "o2", "o3a", "o3b", "mx_h", "o4", "o5", "trend_h", "mom100_h"])
+                                    "te", "dir", "o2", "o3a", "o3b", "mx_h", "o4", "o5", "trend_h", "mom100_h",
+                                    "vol_occ", "vol_100", "dur_occ", "dur_100"])
     t.to_parquet(OUT / ("%s_avzp2racgrid.parquet" % c))
     print(c, ds, "velas", n, "zonas", len(r["zones"]), "filas", len(t),
           "%.0f s" % (time.time() - t0_), flush=True)
 
 
 def main():
+    prov = dict(code_commit=os.environ.get("EDGELAB_CODE_COMMIT", "desconocido"), tree=os.environ.get("EDGELAB_TREE", "desconocido"),
+                contracts=os.environ["AVCL_CONTRACTS"], inst=INST, spec=SPEC, started_utc=pd.Timestamp.now(tz="UTC").isoformat())
+    print("PROCEDENCIA", json.dumps(prov), flush=True)
+    (OUT / "procedencia.json").write_text(json.dumps(prov), encoding="utf-8")
     sess = ed.sessions(INST, DESDE, HASTA)
     for c in [x.strip() for x in os.environ["AVCL_CONTRACTS"].split(",") if x.strip()]:
         run_contract(c, sess)

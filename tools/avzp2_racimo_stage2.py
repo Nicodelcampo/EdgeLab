@@ -52,6 +52,9 @@ def prep(t):
     if "trend_h" in t:                       # auditoría de O1: magnitud de la tendencia (signo ya está en O1)
         t["trD"] = pd.qcut(t.trend_h.abs().rank(method="first"), 10, labels=False)
         t["moD"] = pd.qcut((t.mom100_h * np.sign(t.trend_h).replace(0, 1)).rank(method="first"), 10, labels=False)
+    if "vol_occ" in t:                       # enmienda 2 de la grilla: actividad previa (volumen e intensidad)
+        for c, k in (("vol_occ", "voD"), ("vol_100", "v1D"), ("dur_occ", "duD"), ("dur_100", "d1D")):
+            t[k] = pd.qcut(t[c].fillna(t[c].median()).rank(method="first"), 10, labels=False)
     return t
 
 
