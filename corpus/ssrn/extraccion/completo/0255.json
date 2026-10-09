@@ -1,0 +1,59 @@
+{
+  "doc_id": 255,
+  "titulo": "Optimal Trading Strategies within the Hamilton-Jacobi-Bellman Equation - An Application to Statistical Arbitrage",
+  "resumen_operativo": "Propone estrategias óptimas de trading basadas en la ecuación HJB cuando sólo se permiten market orders. Modela las órdenes de mercado como procesos deterministas (función escalón de Heaviside) cuyo generador infinitesimal produce deltas de Dirac. Con utilidad lineal integral con penalización de inventario y descuento, obtiene solución analítica para la cantidad óptima de market orders. Demuestra que no se puede generar PnL positivo con activos correlacionados pero sin drift; sin embargo, si los activos están cointegrados, se puede crear un portfolio mean-reverting explotable. Simulaciones Monte Carlo confirman PnL positivo con control de riesgo.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Market Orders as Deterministic Processes",
+      "tipo": "concepto",
+      "definicion_en_contexto": "A diferencia de las limit orders (modeladas como procesos puntuales estocásticos), las market orders se ejecutan con 100% de probabilidad y se modelan como función Heaviside cuyo generador infinitesimal es una delta de Dirac: q̇_t = (M₁-M₂)δ(t-t_+).",
+      "relaciones": [{"tipo": "SE_OPONE_A", "objeto": "Limit Order Stochastic Modeling"}, {"tipo": "PARTE_DE", "objeto": "HJB Formulation"}],
+      "cita_textual": "Market orders are deterministic process in contrast to limit orders that are often modeled as stochastic point processes"
+    },
+    {
+      "nombre": "Inventory Penalty (Risk Aversion η)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Término cuadrático -η·q²_t en la función de utilidad que penaliza al trader por mantener inventario, evitando la solución trivial (comprar/vender cantidad infinita). η es el parámetro de aversión al riesgo.",
+      "relaciones": [{"tipo": "MITIGA", "objeto": "Infinite Order Problem"}, {"tipo": "CONTROLA", "objeto": "Inventory Risk"}],
+      "cita_textual": "η is a risk aversion parameter and takes positive value"
+    },
+    {
+      "nombre": "Cointegration Requirement for Profitability",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Demostración formal de que la mera correlación entre activos con drift cero no es suficiente para generar beneficio con market orders; se requiere cointegración para crear un portfolio con reversión a la media.",
+      "relaciones": [{"tipo": "CONTRADICE_A", "objeto": "Common Statistical Arbitrage Claim"}, {"tipo": "REQUIERE", "objeto": "Cointegration"}],
+      "cita_textual": "we cannot generate a positive PnL by trading multiple set of assets whose noises are correlated but their drifts are zero which contradicts the common statement"
+    },
+    {
+      "nombre": "Optimal Market Order Quantity (Analytical Form)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Fórmula cerrada para la cantidad óptima de market orders que maximiza las partes controlables de la ecuación HJB, dada como función del estado actual del mercado y de las preferencias del trader, intuitiva y directamente implementable.",
+      "relaciones": [{"tipo": "USA", "objeto": "HJB Equation"}, {"tipo": "PRODUCE", "objeto": "Positive PnL with Risk Control"}],
+      "cita_textual": "an optimal number of market order which takes current status of market as well as a trader's preference into account is given in a simple but intuitive and reasonable form"
+    },
+    {
+      "nombre": "Anzats: Utility Decomposition",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Suposición de forma funcional u(t,s_t,q_t,x_t) = e^{-ω(T-t)}x_t + θ₀(t,s_t) + q_t·θ₁(t,s_t) + q²_t·θ₂(t,s_t) que separa la utilidad en riqueza terminal descontada más términos lineales y cuadráticos en inventario.",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "HJB Solution Method"}],
+      "cita_textual": "We solve the HJB equation by assuming the following ansatz u(t,s_t,q_t,x_t) = e^{-ω(T-t)}x_t + θ₀(t,s_t) + q_tθ₁(t,s_t) + q²_tθ₂(t,s_t)"
+    },
+    {
+      "nombre": "Feynman-Kac Theorem (in HJB Context)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Teorema que vincula EDPs parabólicas con esperanzas de procesos estocásticos, usado para resolver θ₁(t,s_t) = E[s_T|Π_t], el precio esperado terminal condicionado a la información actual.",
+      "relaciones": [{"tipo": "USA", "objeto": "Terminal Price Expectation"}, {"tipo": "PARTE_DE", "objeto": "HJB Solution"}],
+      "cita_textual": "The Feynman-Kac theorem gives θ₁(t,s_t) = E[s_T|Π_t]"
+    },
+    {
+      "nombre": "Mean-Reverting Portfolio Construction",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Construcción de una combinación lineal de activos cointegrados que revierte a la media, permitiendo al trader explotar las desviaciones del equilibrio mediante market orders óptimas según la solución HJB.",
+      "relaciones": [{"tipo": "REQUIERE", "objeto": "Cointegration"}, {"tipo": "USA", "objeto": "Optimal Market Order Quantity"}],
+      "cita_textual": "if multiple assets are cointegrated, we can create a mean-reverting portfolio and exploit them"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "Marco teórico en tiempo continuo; la fórmula analítica para market orders óptimas es computacionalmente inmediata y podría implementarse en sistemas de ejecución intradía; simulaciones Monte Carlo sugieren viabilidad práctica."}
+}

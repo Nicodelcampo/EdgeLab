@@ -1,0 +1,38 @@
+{
+  "doc_id": 316,
+  "titulo": "Multivariate Cointegration in Statistical Arbitrage",
+  "resumen_operativo": "Investiga estrategias de arbitraje financiero superando limitaciones del pairs trading mediante cointegración multivariada en el sentido de Johansen. Construye un portafolio long-short identificando relaciones de equilibrio entre múltiples activos con parámetros estimados por máxima verosimilitud. Usa datos de 203 acciones del índice Bovespa (1997-2023) con división in-sample de 1 año y out-of-sample de 6 meses. Los resultados superan benchmarks con menores drawdowns, confirmando efectividad en generar retornos sin aumentar riesgo significativamente en un mercado emergente.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Multivariate Cointegration (Johansen)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Test de cointegración multivariado de Johansen (1988) que permite identificar relaciones de equilibrio entre múltiples activos simultáneamente, a diferencia del enfoque bivariado de pares. Los parámetros se estiman por máxima verosimilitud y el spread se modela para trades de mean-reversion.",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Pairs Trading"}, {"tipo": "USA", "objeto": "Vector Error Correction Model"}],
+      "cita_textual": "We built a cointegrated portfolio using Johansen test which allows for exploring cointegration in a multivariate case. Unlike traditional methods focusing solely on pairs, this methodology conducts cointegration tests across multiple assets concurrently."
+    },
+    {
+      "nombre": "Spread Modeling for Mean-Reversion",
+      "tipo": "metodo",
+      "definicion_en_contexto": "El spread (combinación lineal estacionaria de precios) se modela para identificar divergencias del equilibrio y generar señales contrarian. Permite determinar pesos óptimos de cada activo en el portafolio, consistente con teoría económica.",
+      "relaciones": [{"tipo": "USA", "objeto": "Cointegration Residual"}, {"tipo": "APLICA_A", "objeto": "Contrarian Trading"}],
+      "cita_textual": "Arbitrage opportunities were discovered by modeling the spread, targeting mean-reversion trades. This approach is consistent with economic theory and allows for determining portfolio asset weights."
+    },
+    {
+      "nombre": "Hurst Exponent for Mean-Reversion Quality",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Exponente de Hurst usado para evaluar la calidad de difusión random walk del spread y verificar que sea genuinamente mean-reverting. Complementa el half-life del proceso Ornstein-Uhlenbeck como criterio de selección de pares/portafolios.",
+      "relaciones": [{"tipo": "USA", "objeto": "Ornstein-Uhlenbeck Half-Life"}, {"tipo": "MIDE", "objeto": "Mean-Reversion Quality"}],
+      "cita_textual": "Ramos-Requena et al. (2017) introduced the use of the Hurst exponent to assess the quality of random walk diffusion, observing whether the spread is truly mean-reverting."
+    },
+    {
+      "nombre": "Emerging Market Arbitrage (Bovespa)",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Mercado brasileño (Bovespa) como emerging market con potencial de identificar más oportunidades de arbitraje que mercados desarrollados, pero con menos investigación previa en pairs trading. Período 1997-2023 cubre múltiples crisis económicas.",
+      "relaciones": [{"tipo": "APLICA_A", "objeto": "Multivariate Cointegration (Johansen)"}, {"tipo": "SE_OPONE_A", "objeto": "Developed Markets Arbitrage"}],
+      "cita_textual": "The study was conducted on the Brazilian market, an emerging market with the potential for identifying arbitrage opportunities compared to more established markets. This market also lacks sufficient research."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "baja", "nota": "Usa datos diarios de Bovespa 1997-2023; cointegración multivariada de Johansen aplicable a cualquier frecuencia pero el estudio es diario."}
+}

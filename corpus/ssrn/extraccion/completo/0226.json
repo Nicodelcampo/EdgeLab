@@ -1,0 +1,136 @@
+{
+  "doc_id": 226,
+  "titulo": "Market Order Flows, Limit Order Flows and Exchange Rate Dynamics",
+  "resumen_operativo": "Desarrolla un modelo teórico donde market makers con aversión al riesgo y selección adversa reciben información a través de trades con clientes y la explotan usando una combinación óptima de market y limit orders. Demuestra empíricamente con datos de FX (Reuters D3000) y equities UK que el limit order flow tiene impacto positivo y significativo en precios, aunque menor que el market order flow. La omisión de limit order flows causa un sesgo negativo económicamente grande (~25%) en la estimación del impacto de market orders.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Limit Order Flow",
+      "tipo": "dato",
+      "definicion_en_contexto": "Flujo neto de nuevas órdenes límite (compras menos ventas) menos cancelaciones netas al mejor precio. No es el imbalance del libro, sino un componente de su primera diferencia relacionado con envíos y cancelaciones.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "net new limit order flow"},
+        {"tipo": "CAUSA", "objeto": "price impact"}
+      ],
+      "cita_textual": "Net new limit order flow is defined as the total quantity of limit buy orders posted by dealers less the total quantity of limit sell orders."
+    },
+    {
+      "nombre": "Market Order Flow",
+      "tipo": "dato",
+      "definicion_en_contexto": "Diferencia agregada entre cantidades de trades iniciados por compradores y vendedores en un intervalo. Proxy estándar de presión direccional de trading agresivo.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "price impact"},
+        {"tipo": "EQUIVALE_A", "objeto": "signed trading activity"}
+      ],
+      "cita_textual": "Market order flow, defined as net, signed trading activity in a security or currency, has been shown to have a strong positive correlation with returns."
+    },
+    {
+      "nombre": "Price Impact of Limit Orders",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Coeficiente δ en la ecuación de pricing p2 = α + β·DM + δ·DL que captura cuánto afecta al precio el flujo de órdenes límite del dealer informado. Es positivo pero menor que β, acotado superiormente por la probabilidad de ejecución q.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "informativeness of limit orders"},
+        {"tipo": "EQUIVALE_A", "objeto": "δ coefficient"}
+      ],
+      "cita_textual": "The price impact of limit orders is positive and smaller than that of market orders."
+    },
+    {
+      "nombre": "Omitted Variable Bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo en regresiones de retornos sobre market order flow cuando se omite limit order flow como variable explicativa correlacionada. El modelo predice y los datos confirman un sesgo negativo de ~25% en equities.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "downward bias in β"},
+        {"tipo": "MITIGA", "objeto": "including limit order flows in regressions"}
+      ],
+      "cita_textual": "Regressions of returns on market order flows alone are mis-specified and the estimated price impact of market order flows from such regressions will be biased."
+    },
+    {
+      "nombre": "Execution Probability of Limit Orders",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Probabilidad q de que una orden límite sea ejecutada. Determina el ratio δ/β de impactos y es un parámetro crítico para la elección óptima entre market y limit orders por el dealer informado.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Price Impact of Limit Orders"},
+        {"tipo": "REQUIERE", "objeto": "Limit Order Flow"}
+      ],
+      "cita_textual": "The ratio of the price impact of limit order flow to that of market order flow is bounded above by q and approaches this limit as K → ∞."
+    },
+    {
+      "nombre": "Inventory Risk",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo que enfrenta el market maker por mantener inventario no deseado tras ejecutar órdenes de clientes. Se modela como aversión al riesgo media-varianza con coeficiente θ, y genera un premium adicional en el impacto de market orders.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Price Impact of Market Orders"},
+        {"tipo": "MITIGA", "objeto": "limit order usage"}
+      ],
+      "cita_textual": "Market-makers face inventory risk and adverse selection and show how prices depend on market and limit order flows."
+    },
+    {
+      "nombre": "Adverse Selection",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Problema de información asimétrica donde el dealer informado (MM0) recibe señal x sobre el valor fundamental w a través del trade del cliente, y los dealers no informados intentan inferir esta información de los flujos observados.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "positive price impact"},
+        {"tipo": "REQUIERE", "objeto": "informed dealer signal φx"}
+      ],
+      "cita_textual": "MM0 receives information through trade with customers and optimally split their subsequent trading between market and limit orders so as to exploit this information while controlling risk."
+    },
+    {
+      "nombre": "Dealer Risk Aversion",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Parámetro θ que captura la aversión al riesgo media-varianza de los market makers. A mayor θ, menor el ratio δ/β porque los dealers no informados exigen mayor premium por absorber market orders.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "lower δ/β ratio"}
+      ],
+      "cita_textual": "The ratio of the price impact of limit order flow to that of market order flow declines as dealer risk-aversion increases."
+    },
+    {
+      "nombre": "Signal-to-Noise Ratio in Order Flow",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Condición φσx/(θσ²I) < σy que debe cumplirse para existencia de equilibrio. Si la señal informativa es demasiado precisa relativa al ruido, el mercado colapsa porque los dealers no informados no pueden sostenerse.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market viability"},
+        {"tipo": "REQUIERE", "objeto": "equilibrium existence"}
+      ],
+      "cita_textual": "Inequality states that the market breaks down if the signal-to-noise ratio in the first stage of trading is too high."
+    },
+    {
+      "nombre": "Inter-Dealer Market",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Segunda ronda de trading donde los market makers comercian entre sí después de recibir órdenes de clientes. El dealer informado usa tanto market como limit orders, y los K dealers competitivos fijan el precio p2.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "two-tier dealership market"}
+      ],
+      "cita_textual": "In round two, MM0 trades with the other market makers in an inter-dealer market. He can use market and limit orders to do so."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Agregar limit order flows a regresiones de retornos sobre market order flows mejora fuertemente el poder explicativo: en la muestra de equities UK pasa de menos del 10% a más del 50% en promedio. Los coeficientes de limit order flow son positivos y significativos en la mayoría de casos.",
+      "mercado": "FX (GBP/USD, GBP/EUR, 14 pares más) y equities UK",
+      "periodo": "FX: enero 2003 - febrero 2014; Equities UK: 3 meses intradiarios",
+      "magnitud": "R² de <10% a >50% en equities; coeficientes de limit order flow significativamente positivos",
+      "condiciones": "Frecuencias diaria, horaria y 30-min; datos Reuters Dealing 3000 y Thomson Reuters",
+      "robustez": "alta",
+      "cita_textual": "Limit order flows usually greatly improve the explanatory power of regressions of returns on market order flows (e.g. in the equities sample from less than 10% to over 50% on average)."
+    },
+    {
+      "afirmacion": "El sesgo por omisión de limit order flows en regresiones de retornos sobre market order flows es negativo y económicamente grande: en equities UK el coeficiente verdadero de market order flow está sesgado hacia abajo aproximadamente un 25% en promedio.",
+      "mercado": "Equities UK (Thomson Reuters)",
+      "periodo": "3 meses de datos intradiarios",
+      "magnitud": "Sesgo negativo de ~25% en el coeficiente de market order flow",
+      "condiciones": "Regresiones diarias y horarias; comparación de regresiones univariadas vs bivariadas",
+      "robustez": "alta",
+      "cita_textual": "In the equities data, for example, the true coefficient is biased downwards by around 25% on average."
+    },
+    {
+      "afirmacion": "El impacto en precio de las limit orders (δ) es consistentemente menor que el de market orders (β), con el ratio δ/β acotado por la probabilidad de ejecución q y decreciente con la aversión al riesgo de los dealers, confirmado en las tres muestras de datos (dos FX, una equities).",
+      "mercado": "FX (Reuters D3000) y equities UK",
+      "periodo": "2003-2014 (FX), 3 meses (equities)",
+      "magnitud": "δ < β en todas las muestras; δ/β ≤ q; ratio decreciente con θ",
+      "condiciones": "Estimación en frecuencias diaria, horaria y 30-min; tres conjuntos de datos independientes",
+      "robustez": "alta",
+      "cita_textual": "As the model predicts, the coefficients on limit order flows are significantly positive and in most cases significantly smaller than those on corresponding market order flows."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "Validado empíricamente a frecuencias diaria, horaria y 30-min; el modelo teórico aplica a trading intradiario pero la estimación no baja de 30 minutos."}
+}

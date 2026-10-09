@@ -1,0 +1,90 @@
+{
+  "doc_id": 306,
+  "titulo": "Securities Trading Under Asymmetric Information and Trading Constraints",
+  "resumen_operativo": "Desarrolla una solución no lineal de Rational Expectations Equilibrium (REE) para economías con información asimétrica y restricciones de trading (borrowing y shortsale constraints). Propone un método de función implícita de precios en lugar de conjeturar una forma explícita, simplificando el problema de punto fijo a ecuaciones algebraicas. Encuentra que con restricciones, la informatividad de precios varía con el nivel de precio (a diferencia del REE lineal), y que la asimetría en movimientos de precios es más pronunciada con ambas restricciones: los crashes se forman más rápido que los bubbles por el efecto multiplicador de la información asimétrica sobre restricciones de borrowing.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Non-Linear Rational Expectations Equilibrium (REE)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método de solución de REE usando función implícita de precios P = P(s, D_ui) donde el precio es función de variables de estado y la demanda del uninformed. Evita conjeturar forma explícita de la función de precio y separa el efecto información del efecto sustitución.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Linear REE (Grossman-Stiglitz)"},
+        {"tipo": "REQUIERE", "objeto": "CARA-Normal Preferences"}
+      ],
+      "cita_textual": "Instead of conjecturing an explicit form of equilibrium price function, we conjecture an implicit one where the price is a function of the state variables and the uninformed investor demand."
+    },
+    {
+      "nombre": "Borrowing Constraints",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Restricción que limita la demanda del inversor en función de su wealth y el precio del activo. Cuando los precios son bajos, los inversores informados quedan borrowing-constrained, reduciendo la informatividad de los precios y generando una prima por desventaja informativa para los no informados.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Reduced Price Informativeness"},
+        {"tipo": "CAUSA", "objeto": "Asymmetric Price Movements"}
+      ],
+      "cita_textual": "When asset prices are low, informed investors are borrowing constrained and prices are uninformative about the fundamental value of the assets."
+    },
+    {
+      "nombre": "Shortsale Constraints",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Restricción que impide o limita ventas en corto. Cuando los precios son altos, los informed quedan shortsale-constrained, volviendo los precios no informativos. Contraintuitivamente, añadir shortsale constraints aumenta la asimetría de movimientos en lugar de compensarla.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Dampening of Upward Price Movements"},
+        {"tipo": "INTERACTUA_CON", "objeto": "Borrowing Constraints"}
+      ],
+      "cita_textual": "When informed investors are shortsale constrained due to high prices, prices again become uninformative. Information asymmetry has a dampening effect on the upward price movement."
+    },
+    {
+      "nombre": "Asymmetric Price Movements (Crashes vs Bubbles)",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Movimientos grandes hacia abajo (crashes) son más probables y se forman más rápido que movimientos grandes hacia arriba (bubbles). Esto NO es por efecto asimétrico de borrowing constraints sino por la interacción entre información asimétrica y restricciones de trading.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Information Asymmetry Multiplier Effect"},
+        {"tipo": "CONTRADICE_A", "objeto": "Symmetric Constraints Hypothesis"}
+      ],
+      "cita_textual": "Crashes (large downward price movements) are formed much faster than bubbles (large upward price movements)."
+    },
+    {
+      "nombre": "Price Informativeness Variation",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "A diferencia del REE lineal donde los precios revelan la misma cantidad de información independientemente del nivel, con restricciones de trading la informatividad varía con el nivel de precio. Precios extremos (altos o bajos) son menos informativos.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Linear REE Constant Informativeness"},
+        {"tipo": "CAUSA", "objeto": "Adverse Selection Premium"}
+      ],
+      "cita_textual": "In a linear REE, equilibrium prices reveal the same amount of information regardless of levels. However, with trading constraints, price informativeness varies with the price level."
+    },
+    {
+      "nombre": "Implicit Price Function Approach",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de solución que explota dos hechos: (1) la demanda del inversor informado no depende de la distribución de precios de equilibrio; (2) la demanda del uninformed está en su set de información. Reduce el equilibrio a soluciones de ecuaciones algebraicas en setups CARA-normal.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Numerical REE Methods"},
+        {"tipo": "APLICA_A", "objeto": "Multi-Asset Settings"}
+      ],
+      "cita_textual": "This characterization utilizes two facts: First, the informed investor demand does not depend on the distribution of equilibrium prices; second, the uninformed investor demand is included in their information set."
+    },
+    {
+      "nombre": "Information-Disadvantaged Premium",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Prima exigida por inversores no informados para mantener el activo riesgoso cuando los precios son poco informativos. Surge cuando los informed están constrained y los precios revelan poca información, haciendo que los uninformed reduzcan su demanda por adverse selection.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Larger Downward Price Movements"},
+        {"tipo": "REQUIERE", "objeto": "Borrowing Constraints"}
+      ],
+      "cita_textual": "Uninformed investors may decrease their demand for the risky asset and require a large information-disadvantaged premium to hold it when prices are low."
+    },
+    {
+      "nombre": "Multiplier Effect of Information Asymmetry",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Efecto amplificador: la información asimétrica multiplica el impacto de las restricciones de borrowing sobre movimientos de precio hacia abajo. Mayor incertidumbre sobre informatividad de precios genera un efecto mucho más fuerte en dirección bajista que en dirección alcista.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Asymmetric Price Movements (Crashes vs Bubbles)"},
+        {"tipo": "REQUIERE", "objeto": "Borrowing Constraints"}
+      ],
+      "cita_textual": "Information asymmetry has a multiplier effect on downward price movements and may further exacerbate informed investors' borrowing constraints."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "Modelo teórico con implicaciones sobre formación asimétrica de crashes vs bubbles; relevante para entender dinámica intradiaria de price discovery bajo restricciones."}
+}

@@ -1,0 +1,105 @@
+{
+  "doc_id": 237,
+  "titulo": "Modelling Order Book Imbalance with Hawkes Processes",
+  "resumen_operativo": "Modela el order flow imbalance en criptomonedas (BTCUSD en Coinbase) usando procesos de Hawkes multivariados que capturan efectos de auto-excitación (llegada de bids causando más bids) y cross-excitación (bids causando asks). Compara contra modelos existentes basados en procesos de Poisson como Avellaneda-Stoikov, hipotetizando que Hawkes es superior para capturar la dinámica de imbalance en cripto.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Multivariate Hawkes Process",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso puntual estocástico multivariado con función de intensidad condicional λi(t) = µi + Σ∫φij(t−s)dNj(s) que captura auto-excitación (i=j) y cross-excitación (i≠j) entre múltiples flujos de eventos.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Order Flow Imbalance"},
+        {"tipo": "MEJORA_A", "objeto": "Poisson process models"}
+      ],
+      "cita_textual": "Multivariate Hawkes processes take this further and allow for mutual excitements of a number of point processes."
+    },
+    {
+      "nombre": "Order Flow Imbalance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Señal de microestructura que captura si la presión compradora (cambios en bids) o vendedora (cambios en asks) domina el libro de órdenes al siguiente paso temporal dt, con decaimiento muy rápido (~20-30 microsegundos).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "directional order book pressure"},
+        {"tipo": "REQUIERE", "objeto": "low-latency execution"}
+      ],
+      "cita_textual": "It captures whether buying pressure (changes in bids) or selling pressure (changes in asks) dominate the order book at its top level with respect to the next time step usually defined as dt."
+    },
+    {
+      "nombre": "Exponential Decay Kernel",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Función kernel φij(t) = αij exp(−βij·t) usada en procesos Hawkes para modelar cómo el impacto de un evento decae exponencialmente con el tiempo, con αij como excitación y βij como tasa de decaimiento.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Multivariate Hawkes Process"}
+      ],
+      "cita_textual": "One common choice for φij(.) is the exponential decay function ... φij(t) = αij exp(−βij·t) with αij being the scaling excitation hyperparameter and βij the decay hyperparameter."
+    },
+    {
+      "nombre": "Conditional Intensity Function",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Función λ(t|Ht) que caracteriza un proceso puntual como la tasa instantánea de ocurrencia de eventos condicional en la historia Ht de todos los eventos pasados.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Multivariate Hawkes Process"}
+      ],
+      "cita_textual": "Conditional intensity function is used to characterise a point process, also referred to as 'event arrival'. It is explained as the small rate of expectations of event occurrences."
+    },
+    {
+      "nombre": "Avellaneda-Stoikov Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo estándar de market making basado en procesos de Poisson para llegadas de órdenes, usado como benchmark contra el cual se compara el modelo Hawkes propuesto.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Multivariate Hawkes Process"},
+        {"tipo": "APLICA_A", "objeto": "market making"}
+      ],
+      "cita_textual": "We model the dynamics of order book using Hawkes processes and benchmark it against the existing models such as Avellaneda-Stoikov that utilise Poisson processes."
+    },
+    {
+      "nombre": "Volume-Synchronized Probability of Informed Trading (VPIN)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica de toxicidad que mide el imbalance bid-ask sobre buckets de volumen fijo para detectar presencia de traders informados y posibles episodios de momentum ignition o manipulación en cripto.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "trade toxicity"},
+        {"tipo": "USA", "objeto": "market making risk management"}
+      ],
+      "cita_textual": "If this value is high, it indicates a potential one-sided trading. This may suggest presence of toxic trading such as momentum ignition, market manipulation."
+    },
+    {
+      "nombre": "Micro-Price",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Precio ponderado por volumen al mejor bid y ask: (Vbid·Pask + Vask·Pbid)/(Vbid+Vask). Señal de muy baja latencia (30-50 µs) que indica dirección cuando el mid-price cruza el micro-price más un umbral.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "short-term fair value"}
+      ],
+      "cita_textual": "Micro-price looks at the volume weighted prices and checks if the current mid price exceeds micro price plus a threshold, indicating a signal to short."
+    },
+    {
+      "nombre": "Order Book Imbalance (OBI)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia normalizada entre cantidades bid y ask al mejor nivel del libro. Señal de microestructura que indica presión compradora (OBI > threshold) o vendedora (OBI < −threshold) con decaimiento rápido.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "instantaneous directional pressure"}
+      ],
+      "cita_textual": "Orderbook Imbalance looks at the snapshot of the orderbook at its top level and checks if bids or asks dominate. It is simply defined as the difference of bids and asks quantities normalised by their sums."
+    },
+    {
+      "nombre": "Quote Intensity",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Microestructura que cuenta actualizaciones de bid y ask en los top N niveles del libro, normaliza la diferencia y la z-scorea. Señal de presión de compra/venta con decaimiento en cientos de microsegundos.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "quote update pressure"}
+      ],
+      "cita_textual": "This microstructure looks at the top N levels of the order book and counts the number of updates for bids and asks respectively."
+    },
+    {
+      "nombre": "FPGA and Low-Latency Infrastructure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Hardware especializado (FPGA) y servidores colocalizados necesarios para capturar señales de microestructura que decaen en 20-100 microsegundos, con pipelines end-to-end de 30-50 µs.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Order Flow Imbalance"},
+        {"tipo": "REQUIERE", "objeto": "Micro-Price"}
+      ],
+      "cita_textual": "This often requires specialised hardware such as FPGA where the core logic runs, collocated servers and highly optimized C++ or Rust code."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Enfocado en modelado de microestructura de cripto para market making de alta frecuencia con señales que decaen en microsegundos; datos L2 de Coinbase vía WebSocket API."}
+}

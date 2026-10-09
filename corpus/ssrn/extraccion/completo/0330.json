@@ -1,0 +1,120 @@
+{
+  "doc_id": 330,
+  "titulo": "The Effect of Algorithmic Trading on Voluntary Disclosure",
+  "resumen_operativo": "Investiga si el algorithmic trading (AT) afecta la provisión de management guidance. Encuentra que mayor AT pre-earnings announcement se asocia positivamente con mayor cantidad y calidad de guidance emitida en los anuncios de resultados (2012-2021). El canal principal es la reducción de información acquisition por inversores: los managers compensan la menor información adquirida por el mercado emitiendo más guidance. Usa el Tick Size Pilot como experimento natural y un upgrade tecnológico de Nasdaq en 2010 como shocks exógenos de AT.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Algorithmic Trading (AT)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Uso de programas informáticos para automatizar la sumisión y cancelación de órdenes en mercados financieros. Medido como el primer componente principal de: cancellation-to-trade ratio, trade-to-order ratio, odd-lot-volume ratio y trade size. Comprende más del 50% del volumen de trading.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Reduced information acquisition"},
+        {"tipo": "CAUSA", "objeto": "Increased management guidance"}
+      ],
+      "cita_textual": "Algorithmic trading (AT) uses computer programs to automate the submission and cancellation of orders in financial markets... Already comprising more than 50% of trading volume."
+    },
+    {
+      "nombre": "Management guidance",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Revelación voluntaria de proyecciones financieras (EPS, revenue, capex y otras) emitida por managers junto con earnings announcements. Es una de las revelaciones más informativas de las empresas, representando el 55.2% de la información contable incorporada en precios de acciones según Beyer et al. (2010).",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Voluntary disclosure"},
+        {"tipo": "MITIGA", "objeto": "Information asymmetry"}
+      ],
+      "cita_textual": "Management guidance accounts for 55.2% of accounting-related information incorporated into stock prices."
+    },
+    {
+      "nombre": "Information acquisition channel",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Canal principal por el cual AT afecta el guidance: AT reduce la adquisición de información por parte de inversores antes de earnings announcements al competir por liquidez con informed traders. Los managers, al observar un mercado menos informado, emiten más guidance para sustituir la información perdida.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Increased management guidance"},
+        {"tipo": "REQUIERE", "objeto": "Algorithmic Trading (AT)"}
+      ],
+      "cita_textual": "Evidence suggests that AT reduces investor information acquisition by competing for liquidity with informed traders... If managers observe a less informed market, they may issue more guidance to substitute for information lost from other sources."
+    },
+    {
+      "nombre": "Tick Size Pilot (TSP) program",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Programa regulatorio usado como experimento natural que generó una disminución exógena de AT para firms tratadas. Permite identificar causalmente el efecto de AT sobre guidance: las firms tratadas redujeron guidance más que las de control post-tratamiento.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Difference-in-differences"},
+        {"tipo": "APLICA_A", "objeto": "Causal identification of AT effects"}
+      ],
+      "cita_textual": "I utilize the Tick Size Pilot (TSP) program as a plausibly exogenous decrease in AT, finding treated firms decrease guidance more than control firms post-treatment."
+    },
+    {
+      "nombre": "Nasdaq technological upgrade (2010)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Upgrade tecnológico de la bolsa Nasdaq en 2010 que aumentó exógenamente la velocidad de procesamiento de órdenes y el AT. Usado como segundo experimento natural: firms listadas en Nasdaq emitieron relativamente más guidance que firms NYSE después del upgrade.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Exogenous increase in AT"},
+        {"tipo": "USA", "objeto": "Difference-in-differences"}
+      ],
+      "cita_textual": "I utilize a technological upgrade at the Nasdaq Stock Exchange in 2010 that increased order processing and trade speed... Nasdaq firms, which experience a plausibly exogenous increase in AT, issue relatively more guidance than NYSE-listed firms after the upgrade."
+    },
+    {
+      "nombre": "Cancellation-to-trade ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Uno de los cuatro componentes del primer principal component usado para medir AT. Un ratio alto de cancelaciones respecto a trades ejecutados es característico de AT, donde los algoritmos cancelan y reenvían órdenes frecuentemente para ajustar posiciones.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Algorithmic Trading (AT)"},
+        {"tipo": "PARTE_DE", "objeto": "AT principal component measure"}
+      ],
+      "cita_textual": "AT is calculated as the first principal component of the cancellation-to-trade ratio, the trade-to-order ratio, the odd-lot-volume ratio, and trade size."
+    },
+    {
+      "nombre": "Path analysis approach",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Metodología para descomponer los tres canales (information acquisition, liquidity, market response) a través de los cuales AT puede afectar el guidance. La evidencia más fuerte es para el canal de information acquisition: AT -> menor adquisición de información -> más disclosure.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Information acquisition channel"},
+        {"tipo": "USA", "objeto": "Liquidity channel"},
+        {"tipo": "USA", "objeto": "Market response channel"}
+      ],
+      "cita_textual": "I use a path analysis with proxies for the information acquisition, liquidity, and market response channels. The evidence is strongest for a path from AT to decreased information acquisition, followed by more disclosure."
+    },
+    {
+      "nombre": "Pre-announcement window",
+      "tipo": "dato",
+      "definicion_en_contexto": "Ventana de medición de AT que va desde 5 días después del earnings announcement anterior hasta 2 días antes del anuncio actual. Este período captura la actividad de AT que podría influir en las decisiones de disclosure del manager para el anuncio corriente.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Algorithmic Trading (AT)"},
+        {"tipo": "APLICA_A", "objeto": "Earnings announcement cycle"}
+      ],
+      "cita_textual": "AT is calculated... over the period beginning five days following the prior earnings announcement to two days before the current earnings announcement."
+    },
+    {
+      "nombre": "Conference call disclosure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Canal de disclosure voluntario complementario al guidance. El estudio encuentra que AT pre-announcement se asocia positivamente con la probabilidad de realizar conference calls, pero no con 8-Ks voluntarios ni non-GAAP metrics, sugiriendo que los managers añaden canales ricos de disclosure en lugar de canales lean.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Management guidance ecosystem"},
+        {"tipo": "MEJORA_A", "objeto": "Information richness of disclosure"}
+      ],
+      "cita_textual": "Pre-announcement AT is positively associated with the likelihood of holding a conference call but not associated with voluntary 8-Ks or non-GAAP metrics."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El AT pre-earnings announcement está positivamente asociado con la probabilidad de emitir guidance y la cantidad de guidance emitida en la ventana de 3 días centrada en el earnings announcement, en una muestra de 2012-2021.",
+      "mercado": "US equities (NYSE, Nasdaq)",
+      "periodo": "2012-2021",
+      "magnitud": "Asociación positiva y significativa (magnitud exacta requiere lectura de tablas); robusta a firm fixed effects, controles de liquidez, y medidas alternativas de AT.",
+      "condiciones": "AT medido como primer PC de 4 métricas; ventana pre-announcement desde 5 días post-anuncio anterior hasta 2 días pre-anuncio actual",
+      "robustez": "alta",
+      "cita_textual": "Pre-announcement AT is positively associated with the likelihood of issuing guidance and the quantity of guidance issued in the three-day window centered on the earnings announcement."
+    },
+    {
+      "afirmacion": "Cuando los managers emiten guidance, el AT pre-announcement está asociado con guidance más preciso y exacto (more accurate and precise guidance), indicando que los managers no solo aumentan cantidad sino calidad del disclosure.",
+      "mercado": "US equities",
+      "periodo": "2012-2021",
+      "magnitud": "Asociación positiva significativa en accuracy y precision del guidance (magnitudes específicas requieren lectura de tablas completas)",
+      "condiciones": "Submuestra de firms que emiten guidance; controls por características de la firma y entorno informacional",
+      "robustez": "alta",
+      "cita_textual": "When managers issue guidance, pre-announcement AT is associated with more accurate and precise guidance."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "baja", "nota": "Estudio de disclosure corporativo con frecuencia trimestral/anual de earnings announcements; el AT se mide en ventanas de varios meses, no es aplicable a estrategias de trading intradiarias."}
+}

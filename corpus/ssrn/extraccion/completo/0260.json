@@ -1,0 +1,69 @@
+{
+  "doc_id": 260,
+  "titulo": "Order Book Dynamics - Two-Dimensional Exit Problems on a Cryptocurrency Exchange",
+  "resumen_operativo": "Tesis de maestría que aplica y compara modelos de difusión y drift-difusión para estimar la dirección futura del precio a partir de datos Level-1 del LOB del mercado Bitcoin-USD en BitMEX (78M de actualizaciones, 1 mes). Los modelos de difusión pura superan a los de drift-difusión. El mejor clasificador obtiene precisión del 93.83-99.64% en puntos de evaluación seleccionados. Una estrategia simple de trading genera retorno medio de 0.062% por trade con win rate de 69.12% sobre 38K trades. Sin embargo, los costes de transacción para market orders eliminan los beneficios; asumiendo salidas con limit orders, el trader puede obtener beneficios netos de ~1.06 USD por entrada/salida.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Two-Dimensional Exit Problem",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Problema de probabilidad de que un proceso bidimensional (A_t, B_t = cumulative order flows en bid y ask) alcance una frontera antes que otra, usado para calcular la probabilidad de subida vs bajada del mid-price.",
+      "relaciones": [{"tipo": "USA", "objeto": "Correlated Brownian Motion"}, {"tipo": "CALCULA", "objeto": "Price Direction Probability"}],
+      "cita_textual": "we investigate whether the analytical predictions of the price process... can be improved by allowing the Poisson process intensities to vary between arrival events"
+    },
+    {
+      "nombre": "Correlated vs Independent Diffusion Models",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Comparación de cuatro modelos: (1) difusiones independientes, (2) difusiones correlacionadas con correlación ρ entre procesos de order flow en bid y ask, (3) drift-difusiones independientes, (4) drift-difusiones correlacionadas.",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "Price Direction Prediction Framework"}],
+      "cita_textual": "Model 1 - Independent diffusions; Model 2 - Correlated diffusions; Model 3 - Independent drift-diffusions; Model 4 - Correlated drift-diffusions"
+    },
+    {
+      "nombre": "Exponential Filtering of Order Flow Parameters",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Estimación de tasas de llegada de órdenes mediante filtrado exponencial de procesos acumulados de order flow (A_t, B_t), asumiendo parámetros constantes entre cambios de precio consecutivos.",
+      "relaciones": [{"tipo": "USA", "objeto": "Rolling Window Estimation"}, {"tipo": "REQUIERE", "objeto": "Level-1 LOB Data"}],
+      "cita_textual": "we estimate the order flow parameters on the bid and ask sides of the LOB using exponentially filtered cumulative order flow processes"
+    },
+    {
+      "nombre": "Binary Threshold Classifier (Price Direction)",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Clasificador que predice dirección del precio (up/down/no-prediction) basado en la probabilidad de subida calculada por los modelos de difusión, con umbrales R*, φ_min, φ_max calibrados sobre datos de evaluación.",
+      "relaciones": [{"tipo": "USA", "objeto": "Price Direction Probability"}, {"tipo": "GENERA", "objeto": "Trading Signals"}],
+      "cita_textual": "classifier precision on the evaluation points ranges between 87.69-99.00%. If we exclude certain order volume combinations for prediction, classifier precision of the best-performing model can be increased to 93.83-99.64%"
+    },
+    {
+      "nombre": "Cryptocurrency LOB (BitMEX XBT-USD)",
+      "tipo": "dato",
+      "definicion_en_contexto": "Dataset de 78 millones de actualizaciones del LOB del mercado Bitcoin-USD en BitMEX durante 1 mes. El volumen del LOB muestra un máximo global en el primer nivel, indicando alto contenido informativo en Level-1.",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "Cryptocurrency Market Microstructure"}],
+      "cita_textual": "a data set of 78M order book updates (1 month) of the Bitcoin-U.S. Dollar market on BitMEX, a large cryptocurrency exchange"
+    },
+    {
+      "nombre": "Heavy-Traffic Approximation (Convection-Diffusion)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Aproximación basada en resultados de López y Sinusía (2004) donde procesos de llegada de órdenes desbalanceados (con drift) convergen a procesos de convección-difusión en el límite de alta frecuencia de órdenes.",
+      "relaciones": [{"tipo": "USA", "objeto": "Central Limit Theorem"}, {"tipo": "APLICA_A", "objeto": "Imbalanced Order Flow"}],
+      "cita_textual": "heavy-traffic approximations of more general imbalanced (drifting) arrival processes with and without correlation"
+    },
+    {
+      "nombre": "Limit vs Market Order Execution Trade-Off",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Bajo market orders, las comisiones de BitMEX (0.075% taker fee) eliminan los beneficios del clasificador. Usando limit orders para salir (maker rebate de -0.025%), el trader obtiene beneficio neto, pero enfrenta riesgo de ejecución.",
+      "relaciones": [{"tipo": "REQUIERE", "objeto": "Execution Risk Management"}],
+      "cita_textual": "If we include transaction costs for market orders, the paid commission unfortunately more than offsets the obtained profits. When we assume the exit trades can be carried out using limit orders, a trader can earn commission rebates and still make profits"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La estrategia de trading basada en el clasificador de dirección de precio genera retorno medio de 0.062% por trade con win rate del 69.12% sobre ~38,000 trades; retorno bruto de 5.547 USD por entrada/salida (tamaño fijo 1 XBT).",
+      "mercado": "Bitcoin-USD (XBT-USD) en BitMEX",
+      "periodo": "1 mes de datos (78M actualizaciones del LOB)",
+      "magnitud": "~38K-40K trades; retorno medio 0.062%/trade; win rate 69.12%; retorno bruto 5.547 USD/entrada-salida; precisión clasificador 93.83-99.64%",
+      "condiciones": "Tamaño fijo ±1 XBT; sin costes de transacción en simulación base; modelos de difusión con parámetros time-averaged; evaluación en puntos seleccionados previos a cambios de precio",
+      "robustez": "media",
+      "cita_textual": "a simulated trading system generated approximately 40000 trades... we obtain an average return of 5.547 USD per market entry and exit... win rate of 69.12% over 38K trades"
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Diseñado para trading de alta frecuencia en criptomonedas con datos Level-1 en tiempo real; los clasificadores de dirección de precio operan intra-tick y son directamente implementables en sistemas HFT sobre LOB de exchanges cripto."}
+}
