@@ -1,3 +1,4 @@
+from tests.synthetic_selection_evidence import add_selection_review
 """Invented fixtures only: real Arrow and real causal gate, no market outcomes."""
 import copy,importlib.util,json
 from pathlib import Path
@@ -111,6 +112,7 @@ def research_args(store):
        'sessions':{
        'ES|ES_03-26|20260102':{'status':'PASS','complete_session':True,'trade_quantity':20,'spread_p99_ticks':1},
        'ES|ES_03-26|20260105':{'status':'PASS','complete_session':True}}}
+    add_selection_review(c, r, 'ES')
     return {'store':out,'resolver':resolver,'instrument':'ES',
         'expected_manifest_sha256':digest(out/'manifest.json'),'expected_resolver_sha256':digest(resolver),
         'certificate':c,'regime_manifest':r,'liquidity_limits':limits,

@@ -57,3 +57,8 @@ La [evidencia física MNQ](infra/AVZVOL_MNQ_RAW_QUALITY_20261010.md) se obtuvo c
 el auditor raw existente, sin modificar lectores ni gates. Lectura de price/quotes
 sólo estructural; cobertura adicional timestamps-only. No cierra R7/K8 ni autoriza
 outcomes económicos. Mantener discovery y candidatos AVZVOL separados.
+
+`research_data_gate.require_research_eligibility` exige ahora selection_review de
+competidores D-1; lo heredan read_research_session y research_access. Rechaza antes
+de fuentes, pero NO protege lectores legacy ni autentica revisión externa.
+[Contrato reforzado](infra/AVZVOL_CAUSAL_SELECTION_REVIEW_20261010.md).

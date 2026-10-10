@@ -33,6 +33,11 @@ reconcilian bajo el filtro de pausa candidato; no son automáticamente huecos.
 **no buscar outcomes económicos: P4 bloqueada hasta nueva autorización explícita**.
 R7/K8 siguen abiertos; ningún snapshot previo se reescribe.
 
+La [revisión causal D-1](infra/AVZVOL_CAUSAL_SELECTION_REVIEW_20261010.md)
+refuerza el gate compartido con evidencia de todos los competidores y disponibilidad
+antes del cutoff. Es rechazo fail-closed, no certificación. v15 permanece igual,
+R7/K8 abiertos y P4 prohibida; no se ejecutaron outcomes económicos.
+
 ## 1. Respuesta operativa
 
 - **Ya integrado:** los lotes #69–#78 enumerados abajo. No queda pendiente pushear

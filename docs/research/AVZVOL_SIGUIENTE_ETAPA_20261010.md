@@ -185,3 +185,10 @@ El JSON mantiene `null` en pins, política/calipers, aceptación de soporte/bala
 horizontes, censura, presupuesto y autoridad. Son bloqueos, no defaults implícitos.
 Se debe aprobar y fijar una spec ejecutable nueva con evidencia independiente.
 Este diseño NO implementa un runner ni garantiza bloqueo de scripts legacy.
+
+## Refuerzo técnico de selección; no cierre de P1
+
+[Revisión D-1 de competidores](../infra/AVZVOL_CAUSAL_SELECTION_REVIEW_20261010.md):
+el gate exige matriz completa, disponibilidad as-of y comparación causal del
+líder. No certifica datos, warmup ni consumo histórico. P2/P3 conservan sus bloqueos;
+P4 continúa prohibida. Las referencias candidatas no rellenan reviewed_input_pins.

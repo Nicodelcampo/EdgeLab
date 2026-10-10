@@ -120,3 +120,10 @@ a un certificado PASS. No se cambia la fuente ni se recorta la hora automáticam
 retornos o control O5 nuevo. `edgelab.kaggle.avzvol_audit` aporta comparación
 estricta del baseline y bins futuros invariantes a empates/orden.
 Son controles opt-in, no certificación ni protección automática del runner legacy.
+
+## Competidores D-1 y timestamps de disponibilidad
+
+El gate compartido exige `certificate.selection_review` antes de fuentes: todos
+los challengers cubiertos, disponibilidad previa y comparación causal del líder.
+[Requisito y alcance](infra/AVZVOL_CAUSAL_SELECTION_REVIEW_20261010.md). Catálogo v15
+y QA estructural siguen sin certificar este requisito. No hay outcomes económicos.
