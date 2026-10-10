@@ -21,7 +21,7 @@ No instalar dependencias ni ejecutar todos los scripts para «ver si funciona».
 | Screening CPU/GPU | `funnel`; [contrato CPU](COMPONENT_FUNNEL.md), split original y aprobación; GPU end-to-end bloqueado |
 | Consultar/persistir evidencia | `memory`; especificar ledger, anchors y permiso |
 | Papers SSRN | `bibliography`; PR 67 fuera de esta base |
-| Ejecutar en Kaggle/agregados | `kaggle-execution`; PR 68 fuera de esta base |
+| Ejecutar en Kaggle/agregados | `kaggle-execution`; [contrato local](COMPONENT_KAGGLE.md), QA y guard; dataset actual bloqueado para research causal |
 | Ver indicadores | `bridge` + `viewer`; paridad específica y bundle aprobado |
 | Ordenar investigación histórica | `campaigns` + `history`; conservar negativos |
 

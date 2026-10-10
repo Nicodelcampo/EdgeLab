@@ -4,7 +4,7 @@ import importlib.util
 import json
 
 MODULES = (
-    "edgelab.data.research_data_gate", "edgelab.data.research_session", "edgelab.engine", "edgelab.config", "edgelab.data.nt8_contract",
+    "edgelab.data.research_data_gate", "edgelab.data.research_session", "edgelab.kaggle.aggregate_audit", "edgelab.kaggle.research_access", "edgelab.engine", "edgelab.config", "edgelab.data.nt8_contract",
     "edgelab.data.nt8_reader", "edgelab.data.nt8_timezone",
     "edgelab.data.event_identity", "edgelab.edge_brain.hippocampus_store",
     "edgelab.edge_brain.retrieval", "edgelab.edge_brain.typed_registry",

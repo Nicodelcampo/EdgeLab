@@ -27,7 +27,7 @@ Estos comandos usan sólo el registro y rutas del repo. No importan el motor, le
 La base de organización/núcleo ya se integró mediante [PR 69](https://github.com/Nicodelcampo/EdgeLab/pull/69). Para screening, consultar el [contrato CPU del funnel](docs/COMPONENT_FUNNEL.md); no tratarlo como una plataforma confirmatoria completa.
 
 
-Esta base contiene motor, bridge, contratos de datos, validación, memoria y funnel. Otras capacidades viven en ramas/PR separados. `foundation/f0b-compatibility-probe` y `main` divergen: no son intercambiables y no se propone un merge masivo. Consulte el registro, no asuma disponibilidad por una descripción histórica.
+Esta base contiene motor, bridge, contratos de datos, validación, memoria, funnel e [infraestructura técnica Kaggle](docs/COMPONENT_KAGGLE.md). El dataset agregado actual sigue bloqueado para research causal hasta resolver calidad/liquidez. Otras capacidades viven en ramas/PR separados. `foundation/f0b-compatibility-probe` y `main` divergen: no son intercambiables y no se propone un merge masivo. Consulte el registro, no asuma disponibilidad por una descripción histórica.
 
 ## Flujo y límites
 

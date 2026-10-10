@@ -10,7 +10,9 @@ Esta matriz describe wiring de código, no certificación de datos ni permisos d
 | `continuous_contract.build_continuous_series` | No | Ruta legacy: lee contratos enteros antes del filtro; NO usar como firewall de reservas |
 | `tools/run_funnel_arrays.py` | No | Split validado antes de precios, sólo kernels CPU D0/D1 aislados; no gate de custodia/liquidez upstream |
 | `databuild` / scripts MGC | No | Builders históricos; no aprobar por presencia o por tests del lector nuevo |
-| `edgelab/kaggle` y PR 68 | No integración nueva en este lote | Reconciliar spec/resolver/política antes de activar en main |
+| `tools/kaggle_spec_v2.py` | No gate de research | Infra técnica local; agregados/conservación no certifican calidad ni liquidez |
+| `kaggle.aggregate_audit` | Pins/footer antes de filas | QA sobre archivos preholdout aprobados; no saneamiento de ticks ni outcomes |
+| `kaggle.research_access` | Sí, opt-in | Política causal + evidencia/liq externa; v15 bloqueado; todas las sesiones del archivo autorizadas antes de precios |
 
 ## Responsabilidades
 

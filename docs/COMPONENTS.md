@@ -15,7 +15,7 @@ Fuente de esta tabla: [registro JSON](../config/component_registry.json). Para c
 | `brain-controls` | Aplicar elegibilidad, políticas y trazabilidad a episodios. | experimental | local | [edgelab/edge_brain](../edgelab/edge_brain), [typed registry](../edgelab/edge_brain/typed_registry.py), [schemas](../edgelab/edge_brain/schemas) · [PR 43](https://github.com/Nicodelcampo/EdgeLab/pull/43), [PR 46](https://github.com/Nicodelcampo/EdgeLab/pull/46), [PR 58](https://github.com/Nicodelcampo/EdgeLab/pull/58) |
 | `campaigns` | Conservar hipótesis, preregistros, negativos y artefactos por familia. | campaign | local | [docs/research](../docs/research), [strategies](../strategies), [edgelab/research](../edgelab/research) |
 | `builders` | Construir productos de datos con trazabilidad contractual. | experimental | local | [databuild](../databuild) · [PR 65](https://github.com/Nicodelcampo/EdgeLab/pull/65) |
-| `kaggle-execution` | Resolver spec, datasets y shards por contrato; verificar evidencia. | integration_pending | other_branch | `edgelab/kaggle` · [PR 68](https://github.com/Nicodelcampo/EdgeLab/pull/68), [PR 24](https://github.com/Nicodelcampo/EdgeLab/pull/24) · [foundation](https://github.com/Nicodelcampo/EdgeLab/tree/foundation/f0b-compatibility-probe) |
+| `kaggle-execution` | Agregados técnicos offline, QA y acceso de research bloqueado sin evidencia causal/liquidez. | experimental | local | [contrato](COMPONENT_KAGGLE.md), [runner](../tools/kaggle_spec_v2.py), [QA](../tools/audit_kaggle_aggregates.py), [guard](../edgelab/kaggle/research_access.py) · [PR 68](https://github.com/Nicodelcampo/EdgeLab/pull/68) |
 | `bibliography` | Buscar papers y claims bibliográficos con custodia. | integration_pending | other_branch | `corpus/ssrn`, `tools/ssrn_brain_cli.py`, `tools/ssrn_corpus_bootstrap.py` · [PR 67](https://github.com/Nicodelcampo/EdgeLab/pull/67), [PR 52](https://github.com/Nicodelcampo/EdgeLab/pull/52) · [foundation](https://github.com/Nicodelcampo/EdgeLab/tree/foundation/f0b-compatibility-probe) |
 | `factory` | Separar generación de candidatos de evaluación y adjudicación. | experimental | other_branch | `edgelab/edge_factory` · [PR 43](https://github.com/Nicodelcampo/EdgeLab/pull/43), [PR 46](https://github.com/Nicodelcampo/EdgeLab/pull/46), [PR 54](https://github.com/Nicodelcampo/EdgeLab/pull/54), [PR 58](https://github.com/Nicodelcampo/EdgeLab/pull/58) · [foundation](https://github.com/Nicodelcampo/EdgeLab/tree/foundation/f0b-compatibility-probe) |
 | `viewer` | Mostrar bundles y evidencia sin ocultar estado exploratorio. | integration_pending | other_branch | `viewer/nt8_bridge/index.html` · [PR 48](https://github.com/Nicodelcampo/EdgeLab/pull/48), [PR 41](https://github.com/Nicodelcampo/EdgeLab/pull/41) · [foundation](https://github.com/Nicodelcampo/EdgeLab/tree/foundation/f0b-compatibility-probe) |
@@ -30,6 +30,7 @@ Fuente de esta tabla: [registro JSON](../config/component_registry.json). Para c
 - [Memoria: persistencia, consulta y controles](COMPONENT_MEMORY.md).
 
 - [Funnel: aislamiento CPU, split y autoridad](COMPONENT_FUNNEL.md).
+- [Kaggle: agregado técnico, QA y restricciones](COMPONENT_KAGGLE.md).
 
 ## Fronteras que no deben mezclarse
 
