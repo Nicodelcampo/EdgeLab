@@ -919,3 +919,9 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   - NO MEDIDO: P&L; otros instrumentos; ventanas > 1.000.
   - Integridad: semilla `hash()` no determinista en scripts previos, corregida en la grilla.
   - Acta `AVZP2_RACIMO_GRILLA_RESULTADOS_20261008.md`.
+- AVZP2-RACIMO-GRILLA, enmienda 2 (09/10/2026): compresión con control de volumen e intensidad previos.
+  - MEDIDO: con FE por decil de volumen y tiempo de las 500 y 100 velas previas, **23/23 celdas sostienen la
+    compresión en descubrimiento y en confirmación**; β casi no cambia (razón 0,94–1,20). Reproduce los β del 08/10.
+    Los reales traían +1 a +3 % de volumen y, en ventanas de 1.000, menos intensidad: no es decaimiento de una ráfaga.
+  - NO MEDIDO: control apareado (no por deciles); otros instrumentos; P&L. La confirmación no era virgen para O5.
+  - Acta `AVZP2_RACIMO_GRILLA_VOL_RESULTADOS_20261009.md`.
