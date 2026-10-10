@@ -52,3 +52,8 @@ Los errores de fecha/sesión/calidad deben conservarse como exclusiones, no norm
 su dictamen NOT_CERTIFIED_FOR_NEW_STRATEGY. Este port no declara PR 65 totalmente resuelto.
 
 [Contrato/API de datos](COMPONENT_DATA.md) · [Plan](INTEGRATION_PLAN.md) · [Mapa](COMPONENTS.md).
+
+La [evidencia física MNQ](infra/AVZVOL_MNQ_RAW_QUALITY_20261010.md) se obtuvo con
+el auditor raw existente, sin modificar lectores ni gates. Lectura de price/quotes
+sólo estructural; cobertura adicional timestamps-only. No cierra R7/K8 ni autoriza
+outcomes económicos. Mantener discovery y candidatos AVZVOL separados.

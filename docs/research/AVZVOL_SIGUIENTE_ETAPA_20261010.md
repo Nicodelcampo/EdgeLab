@@ -5,6 +5,25 @@ El pedido «Dale con todo» autoriza avanzar con esta preparación. No subsana
 lineage/calidad ni convierte un diseño incompleto en autorización de datos.
 [Diseño legible por agentes](../../specs/research/avzvol_incremental_design_v1.json).
 
+## Las cuatro propuestas originales siguen vigentes
+
+[Estado legible por agentes](../../config/research/avzvol_followup_proposals_v1.json).
+La auditoría de datos prepara el estudio; no sustituye ninguna de estas propuestas.
+**Instrucción vigente del usuario: no buscar outcomes económicos.** P4 queda sólo
+documentada y bloqueada; no se ejecuta P&L ni se convierte QA en autorización.
+
+| Propuesta | Objetivo | Correspondencia en este protocolo |
+|---|---|---|
+| P1 | Procedencia y revisión metodológica: pares, pesos, reutilización, solapamientos, bins y soporte | A; calidad/consumo histórico siguen abiertos aunque pase QA técnica |
+| P2 | Emparejamiento real contra consolidaciones sin racimo y controles contra su propio censo | B; helper sintético no equivale a censo/match científico ejecutado |
+| P3 | Conservar O5 y separar recorrido en barras de respuesta en tiempo de reloj | C; endpoints, censura, potencia y presupuesto pendientes |
+| P4 | Si sobrevive, un único uso económico ya congelado con/sin contexto, neto de costos | E; no implementado ni autorizado |
+
+La fase D — réplica nueva con datos certificados y exposición declarada — es una
+**condición antes de P4**, no una quinta propuesta que borra las cuatro originales.
+Ninguna corrida técnica habilita la próxima fase ni permite elegir criterios por
+outcomes. Conservar las cuatro identidades, el orden y sus bloqueos explícitos.
+
 ## Pregunta y alcance
 
 ¿El racimo aporta información sobre compresión posterior respecto de una
@@ -36,6 +55,11 @@ Los artefactos recuperados son coherentes, pero no prueban el montaje histórico
 La [revisión documental de calidad MNQ](../infra/AVZVOL_MNQ_METADATA_QUALITY_20261010.md)
 no cierra calidad: detector previo a la máscara y reglas de selección sin as-of
 acreditado requieren revisión antes de contraste. Ningún parámetro se eligió por outcomes.
+
+La [QA física de seis fuentes MNQ](../infra/AVZVOL_MNQ_RAW_QUALITY_20261010.md)
+completó hashes/filas/estructura y reconcilió la definición de gaps; no cierra
+calendario, reloj, liquidez, warmup ni consumo histórico. `reviewed_input_pins`
+sigue vacío. P1 no se da por terminada; P4 continúa prohibida.
 
 Conservar el original. La revisión tiene identidad de método nueva y debe explicar
 cada diferencia: bins por cutpoints externos congelados (`assign_frozen_bins`),

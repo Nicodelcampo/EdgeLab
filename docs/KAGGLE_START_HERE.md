@@ -77,3 +77,8 @@ regímenes y límites de liquidez. [API y límites](COMPONENT_KAGGLE.md) ·
 `tools/audit_avzvol_mnq_metadata.py` revisa JSON fijados, no raw ni outcomes.
 Exit 0 no aprueba datos; devuelve `REQUIRES_SOURCE_QUALITY_REVIEW`.
 No sustituye `discovery.json` por estos candidatos ni certifica mounts históricos.
+
+La [QA física MNQ](infra/AVZVOL_MNQ_RAW_QUALITY_20261010.md) mide ahora seis
+archivos candidatos fijados: SHA/bytes/filas y estructura. No reemplaza discovery,
+no certifica consumo histórico ni liquidez/calendario. `PASS_RAW_STRUCTURE_ONLY`
+no autoriza research. P4 económica permanece bloqueada por pedido del usuario.
