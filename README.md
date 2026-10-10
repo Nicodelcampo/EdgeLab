@@ -2,6 +2,10 @@
 
 Herramientas para investigar edges y regímenes de mercado con contratos de datos, ejecución compartida y evidencia verificable. Un indicador, un backtest positivo o un PASS técnico **no** confirman un edge.
 
+## Estado y pendientes
+
+[Estado único del repo y Kaggle](docs/ESTADO_Y_PENDIENTES.md): integrado, PR abiertos, bloqueos y criterios de cierre. No confundir inventario con certificación de datos.
+
 ## Empezar aquí
 
 1. [Entrada para humanos y agentes](docs/START_HERE.md).

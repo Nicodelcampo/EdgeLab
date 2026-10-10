@@ -1,5 +1,7 @@
 # Cómo entrar y trabajar en EdgeLab
 
+**Trabajo integrado y backlog:** [estado único de repo/Kaggle](ESTADO_Y_PENDIENTES.md). Incluye todos los PR abiertos del corte, bloqueos y criterios de cierre.
+
 ## 1. Identificar el clon
 
 ```bash

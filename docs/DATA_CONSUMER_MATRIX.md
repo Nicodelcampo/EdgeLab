@@ -16,6 +16,17 @@ Esta matriz describe wiring de código, no certificación de datos ni permisos d
 | `kaggle.coverage_inventory` | QA, no research | Toda fecha solicitada y ausencia de observación declaradas; sólo payload identidad/timestamp; calendario no certificado |
 | `kaggle.raw_tick_audit` | QA, no research | Ticks canonical v1 con hash/footer y bitmap exacto de identidad; continuidad upstream/calendario/liquidez NO certificados |
 
+## Entradas de revisión incorporadas después del gate inicial
+
+| Entrada | Acceso / límite |
+|---|---|
+| `edgelab.kaggle.discovery` / `tools/kaggle_data_entrypoint.py` | Plan/pins sin datos por defecto; research STOP. Mount QA hashea bytes, no certifica calidad |
+| `python -m edgelab.edge_brain.result_lineage` | Envelope de metadatos; no autentica aprobación ni demuestra ausencia de sesgo |
+| `tools/audit_avzvol_outputs.py` | Seis exports fijados; todos los footers preholdout antes de covariables; no outcomes nuevos; requiere revisión |
+| `avzvol_audit.require_baseline_reproduction` / `assign_frozen_bins` | Controles opt-in; no cambian ni protegen automáticamente el runner histórico |
+
+[Estado único y wiring pendiente](ESTADO_Y_PENDIENTES.md).
+
 ## Responsabilidades
 
 - Auditor independiente: verifica fuente, bytes, calendario, completitud y liquidez; emite evidencia revisada.

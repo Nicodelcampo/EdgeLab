@@ -2,6 +2,10 @@
 
 Este archivo organiza el acceso al proyecto. No sustituye specs congeladas, contratos de ejecución ni permisos de campaña.
 
+## Estado vigente
+
+Leer [estado y pendientes de repo/Kaggle](docs/ESTADO_Y_PENDIENTES.md). Los snapshots son cortes congelados; comprobar HEAD/base antes de mergear. No duplicar ports ya publicados por ausencia de ancestry tras squash.
+
 ## Antes de trabajar
 
 1. Registrar rama, commit y estado del working tree. No resetear cambios ajenos.

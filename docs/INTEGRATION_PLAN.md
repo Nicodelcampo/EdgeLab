@@ -1,5 +1,7 @@
 # Plan de integración de producto
 
+**Este plan conserva el corte histórico inicial.** Para el estado posterior a #78, PR abiertos y pendientes operativos, usar [ESTADO_Y_PENDIENTES](ESTADO_Y_PENDIENTES.md). Los conteos de commits y tests de las fases iniciales no describen el main actual.
+
 ## Objetivo
 
 Una base explícita, módulos entendibles y un camino reproducible para humanos y agentes. Considerar futuros consumidores autónomos sin implementar ahora ccbus, servidor o su planeación local.
