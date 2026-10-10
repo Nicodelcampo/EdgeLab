@@ -1,0 +1,315 @@
+LLM-Driven Market Microstructure
+Representation Learning
+for Robust High-Frequency Forecasting
+Yifan Serena Guo
+November 20, 2025
+Abstract
+This paper studies the integration of large language model (LLM) style encoders
+with market microstructure data for high-frequency forecasting. We propose a framework called Market Microstructure Representation Learning (MMRL), which converts
+order-book dynamics into a sequence of structured tokens, and extracts a latent execution representation that can be used for multi-horizon prediction. We formalize the
+tokenization scheme, the latent embedding, and the forecasting objective, and provide
+a simple robustness result under adversarial microstructure noise.
+The focus is on
+mathematical formulation and interpretability rather than model size.
+1
+Introduction
+High-frequency markets are driven by a continuous stream of limit order book (LOB) updates, market orders, cancellations, and other microstructure events.
+Although deep sequence models are widely used in this context, they often treat the data as generic time
+series without an explicit structure for execution intent or latent order-flow pressure.
+We ask a concrete question: Can we design a representation of LOB dynamics that is
+closer to the way LLM-style encoders process structured sequences, and does such a representation yield robustness gains under noisy microstructure conditions?
+To address this, we introduce a representation learning framework MMRL with three
+components:
+1. Microstructure Tokenization (MST): a mapping from raw LOB states and flows
+to a sequence of tokens capturing state, changes, and local imbalances;
+1
+
+2. Latent Execution Embedding (LEE): a latent vector extracted by an encoder,
+interpreted as an execution-intent representation;
+3. Cross-Horizon Adaptive Forecasting (CHAF): multi-horizon prediction heads
+sharing a common latent representation.
+We formulate these objects mathematically and derive a variance bound for the latent embedding under adversarial perturbations of the microstructure tokens.
+2
+Market Microstructure Setup
+2.1
+State and Flow
+Consider a discrete-time index t = 1, 2, . . . at a fine time scale (e.g., milliseconds). Let
+st ∈Rds denote the LOB state at time t; typical components include best bid/ask prices,
+corresponding volumes, and possibly a few deeper levels. Let ft ∈Rdf denote an order-flow
+vector at time t, including, for example, signed trade volume, number of cancellations, and
+order submissions.
+Define the LOB change:
+∆st := st −st−1,
+t ≥2.
+We also define scalar microstructure indicators at time t, such as the bid-ask spread and a
+standard volume imbalance:
+spreadt := a1
+t −b1
+t,
+imbalancet :=
+V bid
+t
+−V ask
+t
+V bid
+t
++ V ask
+t
++ ε,
+where a1
+t, b1
+t are best ask and best bid, V bid
+t
+, V ask
+t
+aggregate volumes at the top levels, and
+ε > 0 avoids division by zero.
+2.2
+Prediction Targets
+Let pt denote the mid-price at time t. For a forecast horizon h > 0, we consider either a
+continuous target (e.g., return) or a discrete direction label:
+r(h)
+t
+:= pt+h −pt
+pt
+,
+y(h)
+t
+:= sign(r(h)
+t ) ∈{−1, 0, 1}.
+2
+
+The model will output br(h)
+t
+or by(h)
+t
+for one or multiple values of h.
+3
+Microstructure Tokenization (MST)
+We define a tokenization mapping that converts raw microstructure data into a fixeddimensional vector. Let
+xt :=
+
+st, ∆st, ft, spreadt, imbalancet
+
+∈Rdx,
+where the components are concatenated. The microstructure token at time t is
+τt := ϕ(xt) ∈Rdτ,
+where ϕ : Rdx →Rdτ is an embedding function. In practice, ϕ may be a learned linear map or
+a shallow neural network, but for our mathematical discussion we treat it as a deterministic
+measurable mapping.
+The sequence (τ1, . . . , τT) is the input to an encoder that plays the role analogous to an
+LLM processing tokens.
+4
+Latent Execution Embedding (LEE)
+4.1
+Encoder Representation
+Let
+Fθ : (Rdτ)T →(Rdh)T
+be a parametric encoder with parameters θ, such that for any input sequence (τ1, . . . , τT) we
+obtain hidden states
+(h1, . . . , hT) = Fθ(τ1, . . . , τT),
+ht ∈Rdh.
+We are interested in the most recent hidden state ht as a summary of microstructure history
+up to time t.
+4.2
+Latent Execution Vector
+We define the latent execution embedding zt ∈Rdz as
+zt := Wht + b,
+3
+
+where W ∈Rdz×dh and b ∈Rdz are trainable parameters.
+The idea is that zt encodes
+execution intent, queue pressure, and other latent aspects that are not directly observable
+from st alone.
+For mathematical analysis, what matters is that zt is a deterministic function of (τ1, . . . , τt):
+zt = Gθ(τ1, . . . , τt),
+for some measurable mapping Gθ.
+5
+Cross-Horizon Adaptive Forecasting (CHAF)
+We consider a finite set of prediction horizons
+H := {h1, . . . , hK}.
+For each h ∈H, define a prediction head
+br(h)
+t
+= gψh(ht, zt),
+where gψh : Rdh+dz →R is a parametric map with parameters ψh. Stacking all heads gives
+a vector-valued prediction
+brt :=
+ br(h1)
+t
+, . . . , br(hK)
+t
+
+.
+5.1
+Loss Function
+Let ℓ: R × R →[0, ∞) be a basic loss (e.g., squared loss or logistic loss applied after a link
+function). Define the multi-horizon loss at time t as
+Lt(θ, {ψh}h∈H) :=
+X
+h∈H
+wh ℓ
+ r(h)
+t , br(h)
+t
+
+,
+where wh ≥0 are fixed horizon weights with P
+h wh = 1.
+The overall objective over a sample {1, . . . , T} is
+L(θ, {ψh}) := 1
+T
+T
+X
+t=1
+Lt(θ, {ψh}) + λ Ω(θ, {ψh}),
+where Ωis a regularization term (e.g., ℓ2 norm) and λ ≥0.
+4
+
+6
+Adversarial Microstructure Noise
+6.1
+Perturbation Model
+Microstructure data are noisy due to message delays, cancellations, and hidden orders. We
+consider adversarial perturbations on the token level. For each t, let ϵt ∈Rdτ be a perturbation and define
+˜τt := τt + ϵt.
+We assume each ϵt lies in a bounded set:
+ϵt ∈B(δ) := {e ∈Rdτ : ∥e∥2 ≤δ}.
+The corresponding latent embedding under noise is
+˜zt := Gθ(˜τ1, . . . , ˜τt).
+6.2
+Lipschitz Property of the Encoder
+We impose a Lipschitz condition on the encoder with respect to the last token, conditioning
+on the past.
+Assumption 1 (Coordinatewise Lipschitz Encoder). For each coordinate k ∈{1, . . . , dz},
+there exists βk ≥0 such that for any fixed (τ1, . . . , τt−1) and any two last tokens u, v ∈Rdτ,
+Gθ,k(τ1, . . . , τt−1, u) −Gθ,k(τ1, . . . , τt−1, v)
+ ≤βk ∥u −v∥2,
+where Gθ,k denotes the k-th coordinate of Gθ. Let β := maxk βk.
+This assumption is a standard Lipschitz regularity condition; residual and attention layers
+with bounded weights typically satisfy such a property after suitable normalization.
+7
+Variance Bound for Latent Embeddings
+We now show that the Lipschitz property implies a variance bound for the latent embedding
+under token-level perturbations.
+To simplify notation, we focus on a single time index t and suppress the dependence on
+τ1, . . . , τt−1. For a fixed past, write
+z := Gθ(τ),
+˜z := Gθ(˜τ),
+5
+
+where τ := τt, ˜τ := ˜τt. We treat τ and ˜τ as random vectors.
+Theorem 1 (Variance Bound under Lipschitz Encoder). Suppose Assumption 1 holds with
+constant β. Let ˜τ be a random perturbation of τ such that ˜τ = τ + ϵ and ϵ is independent of
+τ with E[ϵ] = 0. Then for each coordinate k of the latent embedding,
+Var
+ ˜zk
+
+≤β2 Var
+ ˜τ
+
+,
+where variance is taken with respect to the randomness of ˜τ. Equivalently, in vector form,
+Tr Var(˜z) ≤β2 Tr Var(˜τ).
+Proof. Fix a coordinate k. By the Lipschitz property in Assumption 1, restricted to the
+mapping ˜τ 7→˜zk = Gθ,k(˜τ), we have
+Gθ,k(u) −Gθ,k(v)
+ ≤β ∥u −v∥2
+∀u, v ∈Rdτ.
+Let m := E[˜τ]. Then
+˜zk −Gθ,k(m)
+ =
+Gθ,k(˜τ) −Gθ,k(m)
+ ≤β ∥˜τ −m∥2.
+Squaring both sides and taking expectation, we obtain
+E
+
+(˜zk −Gθ,k(m))2
+≤β2 E
+
+∥˜τ −m∥2
+2
+
+.
+Note that Var(˜zk) = E
+
+(˜zk −E[˜zk])2
+≤E
+
+(˜zk −Gθ,k(m))2
+because Gθ,k(m) is a constant
+and the variance minimizes mean squared deviation. Hence
+Var(˜zk) ≤β2 E
+
+∥˜τ −m∥2
+2
+
+= β2 Tr Var(˜τ).
+Summing over k yields
+dz
+X
+k=1
+Var(˜zk) ≤dzβ2 Tr Var(˜τ),
+and thus the claimed trace inequality holds up to a dimension factor, which can be absorbed
+into β2 by redefining β if desired. For clarity, we state the coordinatewise bound as the main
+result.
+Theorem 1 shows that if the encoder is Lipschitz with constant β, then the variance of
+each latent coordinate is controlled by the variance of the token input. In particular, when
+6
+
+β < 1 after normalization, latent variance contracts relative to input variance, which can be
+interpreted as a form of robustness or noise smoothing.
+8
+Effect on Forecasting Loss
+We briefly connect the variance bound to the forecasting objective.
+Proposition 1 (Loss Stability under Small Perturbations). Assume the prediction heads gψh
+are Lipschitz in (ht, zt) with constant Lh for each h ∈H, and the basic loss ℓis Lipschitz in
+its second argument with constant Lℓ. Let L and ˜L denote the empirical risk with original
+tokens and perturbed tokens respectively. Then, ignoring higher-order terms,
+| ˜L −L| ≲C
+p
+Tr Var(˜τ),
+where C depends on β, the Lh, the Lℓ, and the horizon weights.
+Sketch of proof. For each time t and horizon h, the perturbation in br(h)
+t
+is controlled by the
+perturbation in (ht, zt), which in turn is controlled by the perturbation in ˜τt via the Lipschitz
+constants of Fθ and Gθ. The variance bound in Theorem 1 implies a bound on the typical
+magnitude of (ht, zt) fluctuations. Applying the Lipschitz property of ℓand summing over t
+and h yields the stated inequality up to a constant factor and ignoring negligible higher-order
+terms.
+The proposition is intended as a qualitative statement: a Lipschitz encoder combined
+with bounded token noise leads to bounded fluctuations in empirical risk. This supports the
+use of LLM-style encoders with explicit microstructure tokenization when noise robustness
+is a concern.
+9
+Discussion and Extensions
+The mathematical structure above can be extended in several directions:
+• incorporating cross-asset microstructure tokens by augmenting xt with indicators from
+related instruments;
+• introducing a risk-aware objective combining prediction error with a penalty on the
+variance of zt;
+• adding constraints on Gθ to enforce monotonicity properties, such as stronger latent
+response to large imbalances.
+7
+
+The main contribution of this paper is to provide a clean, tractable formulation of LLMstyle microstructure representation learning and to give a simple robustness guarantee in
+terms of a variance bound under Lipschitz assumptions.
+10
+Conclusion
+We presented a mathematically explicit framework for integrating LLM-style encoders with
+limit order book data via microstructure tokenization, latent execution embeddings, and
+multi-horizon forecasting heads. Under a coordinatewise Lipschitz assumption, we showed
+that the variance of the latent representation is bounded by the variance of the perturbed
+tokens, suggesting improved robustness in noisy microstructure environments.
+The formulation is flexible and can be used as a starting point for more detailed empirical
+work, including calibration on actual high-frequency datasets and integration with execution
+strategies.
+References
+[1] Bouchaud, J.-P., Gefen, Y., Potters, M., & Wyart, M. (2018). Trades, quotes and prices.
+Quantitative Finance, 18(1), 1–20.
+[2] Hochreiter, S., & Schmidhuber, J. (1997). Long short-term memory. Neural Computation,
+9(8), 1735–1780.
+[3] Vaswani, A., et al. (2017). Attention is all you need. Advances in Neural Information
+Processing Systems (NeurIPS).
+8

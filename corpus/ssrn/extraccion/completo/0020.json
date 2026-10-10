@@ -1,0 +1,149 @@
+{
+  "doc_id": 20,
+  "titulo": "A Presentation on Commodity Market Microstructure",
+  "resumen_operativo": "Presentación (slides) que describe cualitativamente la transición de floor trading a electronic/side-by-side trading en mercados de commodities, el concepto de 'nodal liquidity' (falta de flujo bidireccional natural en commodities) y un caso de estudio del spread calendario de Natural Gas durante la liquidación de MotherRock en agosto 2006, donde el movimiento intradía llegó a 4.5 desvíos estándar. Es material divulgativo sin backtest ni metodología propia, útil solo como contexto cualitativo de microestructura en commodities.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "electronic trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modalidad de negociación fuera del piso físico que permite a un market-maker operar en múltiples productos simultáneamente, a diferencia del open-outcry.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "open-outcry trading"},
+        {"tipo": "MEJORA_A", "objeto": "open-outcry trading"}
+      ],
+      "cita_textual": "whereas in electronic trading an off-the-floor market-maker can make markets in multiple products at the same time"
+    },
+    {
+      "nombre": "open-outcry trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Sistema de negociación en el que los traders se paran físicamente en un pit o ring, limitando la presencia de un market maker a un solo pit a la vez.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "floor trading"}
+      ],
+      "cita_textual": "In open-outcry trading, traders physically stand in a trading ring or trading pit."
+    },
+    {
+      "nombre": "side-by-side trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Coexistencia de trading electrónico y de piso para el mismo contrato, introducida por el CBOT en sus contratos de granos en agosto de 2006; el volumen electrónico creció rápidamente frente al de piso.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "electronic trading"},
+        {"tipo": "PARTE_DE", "objeto": "market microstructure noise"}
+      ],
+      "cita_textual": "On August 1, 2006 the CBOT introduced side-by-side trading in its grain contracts."
+    },
+    {
+      "nombre": "liquidity provision",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Capacidad de participantes de ofrecer cotizaciones en el mercado; el paper argumenta que el trading electrónico baja las barreras de entrada y nivela el terreno para proveer liquidez respecto al piso, que exigía membresía.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "open-outcry trading"},
+        {"tipo": "REQUIERE", "objeto": "electronic trading"}
+      ],
+      "cita_textual": "Lowers barriers to entry"
+    },
+    {
+      "nombre": "latency",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Tiempo de confirmación de una orden; el paper señala que el CME redujo su tiempo de confirmación a 20 milisegundos, ejemplificando la aceleración de la ejecución electrónica.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "electronic trading"}
+      ],
+      "cita_textual": "the CME has reduced its confirmation time down to 20 milliseconds"
+    },
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Trading algorítmico de corto plazo cuya velocidad de ejecución supera la percepción humana; el paper anticipa su crecimiento en mercados de commodities.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "electronic trading"},
+        {"tipo": "REQUIERE", "objeto": "latency"}
+      ],
+      "cita_textual": "Speeds have surpassed human perception."
+    },
+    {
+      "nombre": "nodal liquidity",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Característica propia de los mercados de commodities según la cual el flujo no es naturalmente bidireccional como en renta fija, equity o FX; el flujo comercial (hedging) aparece de forma esporádica y no a demanda.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "order flow imbalance"},
+        {"tipo": "CAUSA", "objeto": "liquidity sweep"}
+      ],
+      "cita_textual": "The commodity markets have “nodal liquidity.”"
+    },
+    {
+      "nombre": "hedging flow",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Flujo generado cuando un participante comercial necesita iniciar o levantar coberturas; no ocurre a demanda, y planear cómo salir de una estrategia dependiendo de este flujo es parte clave del desarrollo de estrategias en commodities.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "nodal liquidity"},
+        {"tipo": "REQUIERE", "objeto": "optimal execution"}
+      ],
+      "cita_textual": "If a commercial market participant needs to initiate or lift hedges, there will be flow, but such transactions do not occur on demand."
+    },
+    {
+      "nombre": "calendar spread",
+      "tipo": "dato",
+      "definicion_en_contexto": "Diferencial de precio entre dos vencimientos del mismo futuro (en el caso de estudio, Natural Gas septiembre-octubre), usado para ilustrar episodios de estrés de liquidez.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "futures roll"},
+        {"tipo": "MIDE", "objeto": "liquidity sweep"}
+      ],
+      "cita_textual": "the daily standard deviation of the Natural Gas September – October (NG U-V) spread had been 2.67c based on the previous three months of data"
+    },
+    {
+      "nombre": "liquidity sweep",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Movimiento extremo de precio causado por presión de liquidación forzada; el caso de estudio muestra el spread NG U-V moviéndose 4.5 desvíos estándar intradía por la liquidación del fondo MotherRock.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "calendar spread"},
+        {"tipo": "MIDE", "objeto": "realized volatility"}
+      ],
+      "cita_textual": "the spread’s intraday move, which is illustrated in the graph above, was 4.5 (12/2.67) standard deviations (based on very recent historical data)"
+    },
+    {
+      "nombre": "forced liquidation",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de que un fondo con posiciones concentradas (como MotherRock en Natural Gas) deba liquidar posiciones abruptamente, generando movimientos extremos de precio no explicables por volatilidad normal.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "liquidity sweep"},
+        {"tipo": "PARTE_DE", "objeto": "nodal liquidity"}
+      ],
+      "cita_textual": "The market had a preview of the intense liquidation pressure that could occur on the Natural Gas futures curve on 8/2/06, one day prior to the fund announcing its closure."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "En los primeros 30 días de side-by-side trading en granos del CBOT, el volumen electrónico en maíz llegó a representar entre 50% y 60% del volumen de piso.",
+      "mercado": "commodities (grains, CBOT)",
+      "periodo": "agosto 2006 (primeros 30 días)",
+      "magnitud": "50-60% del volumen de piso",
+      "condiciones": "dato observacional descriptivo, sin control estadístico ni comparación con otros períodos",
+      "robustez": "baja",
+      "cita_textual": "In the first 30 days of side-by-side trading, electronic volume in corn moved up to average between 50 and 60% of the floor volume."
+    },
+    {
+      "afirmacion": "El CME redujo su tiempo de confirmación de órdenes a 20 milisegundos.",
+      "mercado": "commodities (CME)",
+      "periodo": "no especificado (anterior a 2007)",
+      "magnitud": "20 ms",
+      "condiciones": "cifra puntual citada de fuente secundaria (Dowd 2007a), sin metodología de medición propia",
+      "robustez": "baja",
+      "cita_textual": "the CME has reduced its confirmation time down to 20 milliseconds"
+    },
+    {
+      "afirmacion": "El spread calendario de Natural Gas septiembre-octubre tuvo un movimiento intradía pico-a-valle de 12 centavos el 8/2/06, equivalente a 4.5 desvíos estándar de su volatilidad diaria reciente, en el marco de la liquidación del fondo MotherRock.",
+      "mercado": "Natural Gas futures calendar spread (NG U-V)",
+      "periodo": "5/2006-8/2006 (evento puntual 8/2/06)",
+      "magnitud": "12c de movimiento intradía = 4.5 desvíos estándar (std diario 2.67c basado en 3 meses previos)",
+      "condiciones": "evento único (caso de estudio, no backtest); volatilidad estimada con muestra corta de 3 meses",
+      "robustez": "baja",
+      "cita_textual": "the spread’s intraday move, which is illustrated in the graph above, was 4.5 (12/2.67) standard deviations (based on very recent historical data)"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El material es puramente descriptivo/histórico sobre commodities físicas; el único elemento reutilizable es la idea cualitativa de eventos de liquidación forzada generando excursiones de varios desvíos estándar, relevante como analogía conceptual para detectar liquidity sweeps en ES, pero sin metodología cuantificable transferible."
+  }
+}

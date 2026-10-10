@@ -1,0 +1,1145 @@
+LSTM-Augmented DQN for Quantitative Trading in 
+Partially Observable Markets
+Hanyue Yu 1, Jiyang Dong 2, *, and Yaqian Jiang 3, 
+1 School of Management Science and Engineering, Dongbei University of 
+Finance and Economics, Dalian 116025, Liaoning, China
+2 School of Data Science and Artificial Intelligence, Dongbei University of 
+Finance and Economics, Dalian 116025, Liaoning, China
+3 School of Data Science and Artificial Intelligence, Dongbei University of 
+Finance and Economics, Dalian 116025, Liaoning, China
+ABSTRACT
+Deep Reinforcement Learning (DRL) has demonstrated tremendous potential in 
+quantitative trading research in recent years. However, its performance still faces 
+significant challenges in financial market environments characterized by high noise, 
+low signal-to-noise ratios, and partial observability. Traditional approaches often rely 
+on single supervised learning or reinforcement learning architectures. Still, these 
+methods frequently struggle to adequately capture temporal dependencies and may 
+exhibit convergence instability or overfitting in complex trading scenarios. To address 
+these challenges, this paper proposes an LSTM–DQN-based quantitative trading 
+framework. This framework first employs LSTM to extract latent dynamic features 
+from stock price sequences, then constructs a discrete state space using dual moving 
+averages to achieve efficient encoding of market trends. Subsequently, it performs 
+policy optimization via DQN within the built environment, effectively mitigating 
+partial observability issues while achieving breakthroughs in learning efficiency and 
+policy stability. This paper comprehensively considers returns, transaction costs, 
+position constraints, and risk exposure in reward function design, ensuring the strategy's 
+robustness in high-volatility environments. We conducted experiments using three 
+representative stocks from China's A-share market and performed ablation analysis to 
+validate the contribution of key features to model performance. Empirical results 
+* Corresponding author;
+E-mail Address: dong_ji_yang@126.com
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+indicate that our proposed method outperforms the comparative strategy in terms of 
+cumulative return, annualized return, and Sharpe ratio, with the cumulative return and 
+annualized return increasing by a maximum of 16.41% and 14.87%, respectively. 
+KEYWORDS
+Long Short-term Memory, Deep reinforcement learning, Partially Observable Markov 
+Decision Process, Quantitative trading 
+1. Introduction
+In financial market research, constructing quantitative trading systems capable of 
+autonomous adaptation and effective decision-making represents a long-standing and 
+highly challenging frontier. The essence of this task lies in learning and executing 
+strategies that consistently generate excess returns within highly dynamic, nonstationary, and noisy financial time series. However, traditional models relying on 
+statistical analysis or supervised learning often perform poorly when confronting 
+rapidly changing market structures and extreme events due to their inherent limitations 
+in generalization and robustness, leading to fundamental doubts about their 
+effectiveness. For example, although the early factor model (Fama & French, 1993) 
+effectively captures the relationship between risk and return under steady-state 
+conditions, its performance is constrained when confronted with rapidly changing 
+market environments. In recent years, Deep Reinforcement Learning (DRL) has 
+emerged as a hot topic in financial trading research due to its unique decision 
+optimization approach. Unlike supervised learning, which relies on historical labels, 
+DRL directly optimizes long-term cumulative rewards through interactions with the 
+environment, demonstrating its potential to capture complex decision-making logic in 
+nonlinear dynamic settings. Early work in this field began with Moody et al. (1998), 
+who pioneered the application of reinforcement learning to asset allocation problems, 
+laying the foundation for subsequent research. With the advancement of deep learning, 
+DRL has achieved significant progress in financial modeling. Deng et al. (2016) 
+introduced the DRQN model, leveraging recurrent neural networks to capture partial 
+observability and achieving breakthroughs in high-dimensional noisy environments. 
+Subsequently, Zhang et al. (2020) proposed an Actor-Critic-based trading framework, 
+validating the cross-market effectiveness of DRL in both the U.S. and Hong Kong stock 
+markets. Meanwhile, Liang et al. (2018) introduced adversarial Deep Reinforcement 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+Learning methods, significantly enhancing the stability of asset allocation. 
+Although these studies demonstrate that DRL holds significant advantages in 
+optimizing dynamic trading strategies, it still faces several challenges in temporal 
+modeling, stability control, and cross-market adaptability, primarily manifested in the 
+following three aspects: (i) At the state representation level, financial market 
+environments often manifest as partially observable Markov decision processes 
+(POMDPs). Traditional DRL struggles to capture long-term dependencies in latent 
+information, while directly incorporating LSTM may introduce redundant features in 
+high-noise settings; (ii) Regarding state discretization and trading signal mapping, 
+relying solely on price or technical indicators causes the state space to grow 
+exponentially, severely slowing learning efficiency and hindering the agent's 
+convergence to optimal strategies; (iii) The reinforcement learning training process is 
+particularly sensitive to the high volatility and non-stationarity of financial markets. 
+Existing algorithms are highly prone to overfitting or over-exploration during training.
+To address these challenges, this paper proposes an LSTM–DQN–based 
+quantitative trading framework. The framework first utilizes LSTM to extract latent 
+information from stock price sequences and combines the predictions with a dual 
+moving average to construct a discrete state space, thereby effectively encoding market 
+trends. Subsequently, DQN performs policy optimization within the constructed trading 
+environment, effectively addressing challenges arising from partial observability. 
+Unlike existing approaches, our method emphasizes using LSTM to mitigate the 
+problem of incomplete market observability and designs a dual moving average 
+discretization mechanism to enhance agent stability and learning efficiency. 
+Furthermore, comprehensively considering transaction costs, position constraints, and 
+risk exposure in strategy optimization it demonstrates robust performance across 
+multiple stocks.
+Our main contributions can be summarized in three points: (i) To address the 
+challenges of strong partial observability and high noise in financial markets, we 
+adopted an LSTM-based state feature extraction method, bringing the POMDP closer 
+to an MDP representation and resolving the robustness issues faced by existing methods 
+when processing financial data; (ii) To address the challenges of an overly large state 
+space and ambiguous trend signals, we introduced a dual moving average discretization 
+mechanism. This effectively mitigates the “curse of dimensionality” inherent in highdimensional state spaces while significantly enhancing the model's learning 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+convergence speed and noise resilience; (iii) To address the challenge of balancing 
+returns and risk in highly volatile markets, we designed a composite reward 
+incorporating transaction costs, risk exposure, and position constraints, achieving 
+equilibrium between return enhancement and risk exposure control.
+The subsequent sections of the paper are structured as follows: The review of 
+related work is presented in Section 2. Section 3 gives a description of LSTM–DQN–
+based quantitative trading framework. Section 4 presents the experimental design and 
+Section 5 shows the experimental results and analysis. Section 6 includes the conclusion 
+of the paper. 
+2. Related work 
+2.1 Traditional Statistical Models in Quantitative Trading
+For a long time, quantitative trading has relied on statistical time series models to 
+capture the temporal dependence of asset prices. Classical methods such as the 
+Autoregressive Integrated Moving Average (ARIMA) model (Box & Jenkins, 1976) 
+and the Generalized Autoregressive Conditional Heteroskedasticity (GARCH) model 
+(Bollerslev, 1986; Engle, 1982) have been widely applied to modeling returns and 
+volatility (Engle, 1982; Tsay, 2005). Vector autoregression (VAR) (Sims, 1980) has 
+been extended to joint dynamic modeling of multiple assets (Lütkepohl, 2005).
+These statistical models exhibit strong interpretability and can generate parametric 
+forecasts under assumptions of stationarity and linearity. However, financial markets 
+often display nonlinearity, non-stationarity, and regime switching characteristics 
+(Hamilton, 1989; Diebold & Rudebusch, 1994), making it difficult for traditional 
+methods to capture such complex dynamics. Furthermore, these models inherently 
+possess limited feature learning capabilities, requiring manually designed exogenous 
+variables and lacking automated feature learning. This has driven a shift toward more 
+flexible data-driven approaches capable of capturing intricate temporal patterns without 
+stringent parametric assumptions.
+Although statistical models provide a foundation for modeling market dynamics, 
+their limitations in representing nonlinear dependencies and long-term time structures 
+have driven the adoption of machine learning approaches, particularly in predictive 
+modeling for trading signal generation.
+2.2 Forecast Modeling for Financial Time Series
+To overcome the limitations of traditional statistical methods, researchers began 
+exploring machine learning approaches. From Support Vector Regression (SVR) 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+(Drucker et al., 2001) to ensemble models such as Random Forests (Breiman, 2001) 
+and Gradient Boosting Trees (Chen & Guestrin, 2016), these approaches enable 
+nonlinear modeling of high-dimensional data under weak distribution assumptions and 
+demonstrate strong predictive performance in markets such as stocks and futures 
+(Atsalakis & Valavanis, 2009). With the rise of deep learning, time series forecasting 
+capabilities have significantly improved. In particular, Long Short-Term Memory 
+(LSTM) networks (Hochreiter & Schmidhuber, 1997) have been widely adopted in 
+financial forecasting (Fischer & Krauss, 2018) due to their ability to model long-term 
+dependencies and mitigate the vanishing gradient problem. Convolutional neural 
+networks (CNN) (Zhang et al., 2017) excel at capturing local temporal patterns, while 
+hybrid models combining attention mechanisms with LSTM (Qin et al., 2017) further 
+enhance the ability to characterize global dependencies.
+Some studies indicate that prediction signals from deep learning models can 
+enhance trading strategies. For instance, Nelson et al. (2017) employed LSTM-based 
+stock trend forecasts directly as trading signals, while Tsantekidis et al. (2017) explored 
+their application in high-frequency order prediction. Nevertheless, such “predictiondriven” approaches still face challenges: First, multi-step forecasting can lead to error 
+accumulation, undermining model stability (Goodfellow et al., 2016); Second, 
+improvements in prediction accuracy do not necessarily translate directly into 
+profitability (De Prado, 2018); Third, models may overfit to historical market 
+conditions (Makridakis et al., 2018).
+These limitations indicate that relying solely on predictive signals often falls short 
+of achieving optimal trading outcomes. In contrast, reinforcement learning directly 
+targets long-term cumulative returns through policy optimization, tightly integrating 
+predictive capabilities with the decision-making process. This approach naturally 
+generates trading strategies that are more adaptable to market dynamics.
+2.3 Reinforcement Learning in Quantitative Trading
+Reinforcement learning (RL), as a core method for handling sequential decisionmaking in uncertain environments, has increasingly become a significant research 
+direction in intelligent trading in recent years. Early work, such as Moody & Saffell 
+(2001), explored neural network-based RL trading frameworks; subsequently, Deng et 
+al. (2016) applied Deep Reinforcement Learning to stock trading, achieving end-to-end 
+strategy learning. With the introduction of Deep Q-Network (DQN) (Mnih et al., 2015) 
+and policy gradient methods (Silver et al., 2014), RL has demonstrated potential in 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+scenarios such as portfolio management (Jiang et al., 2017) and option hedging.
+However, due to the influence of latent factors and unobserved variables on asset 
+prices, financial markets are inherently partially observable Markov decision processes 
+(POMDP) (Kaelbling et al., 1998). This partial observability makes it challenging to 
+directly apply standard reinforcement learning algorithms to obtain optimal strategies 
+in financial transactions. In recent years, researchers have proposed utilizing recurrent 
+neural networks (RNN) to approximate belief states. For instance, the hidden state of 
+an LSTM can serve as a compressed representation of historical observations 
+(Hausknecht & Stone, 2015; Chen & Wei, 2021). This approach integrates RNN into 
+the DQN architecture, enabling the agent to construct a “belief state” based on past 
+observation sequences. This method effectively approximates the POMDP problem as 
+an observable MDP problem, thereby allowing the agent to make more informed 
+decisions.
+Our work draws inspiration from this concept. We employ an LSTM model as a 
+forward-looking feature extractor to predict future trends and convert them into discrete 
+trend labels, thereby constructing an “enhanced belief” about the market state. This 
+belief state is then incorporated into the observation space of the DQN to mitigate 
+information incompleteness caused by partial observability, thereby enhancing the 
+agent's trading decision-making capabilities in complex stock market environments.
+3. LSTM–DQN–based Quantitative Trading Framework
+3.1 Stock Market Environment
+3.1.1 State Space
+During the interaction between an agent and its environment, the environment 
+provides a series of information that constitutes the agent's state. Typically, the state is 
+represented as a vector or matrix, encompassing the key information required for 
+decision-making. At each discrete time step t, the agent observes a multidimensional 
+state vector 𝑠𝑡, which serves as the basis for policy optimization.
+Stock prices are influenced by various macroeconomic and microeconomic factors. 
+Technical analysis indicators, as commonly used analytical tools for investors, reflect 
+market trends and to some extent mitigate the noise and randomness inherent in 
+historical data. To measure stock price movements across short-term, medium-term, 
+and long-term time horizons, this paper selects three categories of stock trading 
+indicators: current trading conditions, technical indicators, and discrete forecasts of 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+closing price predictions.
+We define the state space 𝑠𝑡 as follows:
+𝑏𝑡∈ℝ+: Available cash balance at time t
+ℎ𝑡∈ℤ+: Number of shares held at time t
+VPT(𝑑𝑖𝑠𝑐)
+𝑡
+∈{0,1,2,3}: Discretized Volume-Price Trend
+𝑉𝐸𝑀𝐴(𝑑𝑖𝑠𝑐)
+𝑡
+∈{0,1,2,3}: Discretized volume index moving average
+𝐿𝑇𝑃𝑡∈{0,1,2}: Trend category derived from LSTM price prediction (0=bearish 
+trend, 1=sideways, 2=bullish trend).
+3.1.2 Action Space
+The action space refers to the set of actions an agent can perform when interacting 
+with its environment. The configuration of the action space directly influences the 
+agent's impact on the environment, thereby affecting the model's performance.
+This paper considers only single-stock trading, involving strategies for adding 
+positions, holding positions, and closing positions. To simulate trading behaviors of 
+varying intensity levels, we define a discrete and symmetric action space enabling the 
+agent to hold, purchase, or sell the target asset at a fixed proportion of its available 
+funds or holdings. Each action is encoded as an integer within the range A = {-2, -1, 0, 
+1, 2}.
+Therefore, the action vector at time step t is specifically defined as:
+Specifically, an agent may only perform one of the following actions within a 
+single trading day:
+
+Action -2: Sell 30% of holdings
+
+Action -1: Sell 15% of holdings
+
+Action 0: Holding (No Trading)
+
+Action +1: Allocate 15% of available funds to stock purchases.
+𝑠𝑡= [𝑏𝑡,ℎ𝑡,VPT(𝑑𝑖𝑠𝑐)
+𝑡
+,𝑉𝐸𝑀𝐴(𝑑𝑖𝑠𝑐)
+𝑡
+,LTP𝑡]
+(1.)
+𝑠𝑡∈ℝ+ × ℤ+ × {0,1,2,3}2 × {0,1,2}
+(2.)
+𝑎𝑡∈{−2,−1,0,1,2}⇒{
+ Sell 15% or 30%
+ if 𝑎𝑡< 0
+ Hold 
+ if 𝑎𝑡= 0
+ Buy 15% or 30%
+ if 𝑎𝑡> 0
+(3.)
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+
+Action +2: Allocate 30% of available funds to stock purchases.
+When the model determines that purchasing the stock at the current price will yield 
+positive long-term holding returns, the agent will execute a buy order. When it predicts 
+that the stock's long-term holding returns will decline, or that selling the stock will 
+generate higher long-term returns, the agent will execute a sell order. In all other 
+scenarios, the agent will refrain from any trading activity.
+3.1.3 Reward Function
+The reward is a core component of algorithmic trading systems. In reinforcement 
+learning, the objective of learning the value function is to estimate the reward values 
+corresponding to different actions and select behaviors that maximize rewards during 
+policy optimization, thereby achieving optimal cumulative returns. The reward 
+typically depends on the current state, the executed action, and the next state. Most 
+previous machine learning-based studies have employed instantaneous rewards. 
+However, such momentary rewards often exhibit high noise levels, failing to provide 
+reliable supervision for model training while also conflicting with maximizing longterm profits. After experimenting with multiple reward functions and their 
+corresponding fine-tuning approaches, this paper designs a composite reward function 
+to balance short-term profitability with long-term risk control.
+The total reward at each time step t is defined as:
+Here, CR denotes cumulative return, TP represents transaction penalty, DD 
+signifies drawdown, and δ is an adjustable hyperparameter. The specific calculations 
+for each component are as follows:
+(1) Cumulative Return
+This metric measures the gains or losses generated by the agent over a period of 
+time. We employ a composite indicator combining single-day directional returns and 
+cumulative returns over the past n days to characterize performance, defined as:
+Here, 𝑝𝑡 denotes the closing price at time step t, 𝑎𝑡 represents the action taken by 
+the agent at time step t, and n=5 signifies the cumulative return over the past five trading 
+𝑟𝑡= 𝐶𝑅𝑡−𝑇𝑃𝑡−𝛿⋅𝐷𝐷𝑡
+(4.)
+𝐶𝑅𝑡= (1 + 𝑠𝑖𝑔𝑛(𝑎𝑡) ⋅
+𝑝𝑡−𝑝𝑡−1
+𝑝𝑡−1
+) ⋅
+𝑝𝑡
+𝑝𝑡−𝑛
+(5.)
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+days.
+(2) Transaction Penalty
+To curb unnecessary losses caused by frequent trading, we have introduced a 
+penalty term related to trading behavior. This term is defined as:
+ 𝑐 represents the fixed cost per transaction. When the action changes (e.g., 
+switching from buying to selling), this penalty term is activated.
+(3) Drawdown Penalty
+To enhance the model's risk sensitivity and suppress extreme drawdowns in the 
+portfolio, we introduce a penalty mechanism based on net value drawdowns, whose 
+intensity is controlled by the hyperparameter δ. δ reflects the agent's aversion to 
+drawdowns, typically taking values between [0, 1]. In this study, we set δ=0.5 to 
+achieve a balance between returns and risk.
+(4) Reward Normalization
+To enhance training efficiency and algorithmic robustness, we dynamically 
+normalized the reward signal by tracking its mean and standard deviation for Z-score 
+normalization. The results were then clipped to the interval [-5, 5], thereby suppressing 
+the interference of transient noise and anomalous rewards on the learning process and 
+ensuring training stability.
+3.1.4 Other parameters
+
+Initial capital：10, 000 CNY 
+
+Minimum purchase quantity: 100 shares
+
+Leverage is not permitted.
+
+The environment resets at the end of the testing cycle or upon reaching the stoploss threshold.
+3.2 Stock Trading Agent
+We propose a DRL-based stock trading system whose core approach mitigates the 
+challenges posed by partial observability in financial markets through the synergistic 
+interaction between an LSTM feature extraction and a DQN decision network.
+3.2.1 Framework
+𝑇𝑃𝑡= 𝑐⋅∣𝑎𝑡−𝑎𝑡−1∣
+(6.)
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+Fig. 1. Flowchart of the proposed DRL-based trading framework
+As shown in Fig. 1, LSTM-extracted temporal features are discretized via Dual 
+Moving Averages and fed into a DQN to generate trading actions. The trading 
+environment provides the current observed state 𝑠𝑡 at time step t, which is input into the 
+feature extraction module 𝐿𝑆𝑇𝑀𝑓𝑒𝑎 of the LSTM. This module constructs a state 
+sequence by maintaining memory units that integrate market states from the previous 
+T−1 time steps. 
+Subsequently, 𝐿𝑆𝑇𝑀𝑓𝑒𝑎 analyzes the time series to extract latent temporal 
+dependencies and hidden market patterns, outputting a compact encoded feature vector 
+ℎ𝑡. This vector provides a more representative input representation for subsequent 
+decision networks, effectively capturing nonlinear dynamics and long-term temporal 
+information.
+During the decision phase, the encoded feature vector ℎ𝑡 is fed into the DQN 
+network. Its action-value function is defined as 𝑄(𝑠𝑡,𝑎𝑡;𝜃).
+Here, 𝜃 denotes the network parameters. The objective of DQN is to approximate 
+𝐹𝑡= [𝑆𝑡−𝑇+1,…,𝑆𝑡]
+(7.)
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+the optimal action-value function by minimizing the Bellman error:
+Here, 𝜃− denotes the target network parameters, 𝛾 represents the discount factor, 
+and 𝒟 refers to the experience replay buffer.
+At each time step, the agent selects an action 𝑎𝑡∈𝐴 according to a 𝜖-greedy policy, 
+executes this action in the environment, and receives a reward 𝑟𝑡, next state 𝑠𝑡+1, and 
+termination indicator 𝑑𝑡∈ {0,1} indicating whether the round has ended. Through this 
+process, the agent progressively forms interaction quintets:
+ And store it in the experience replay buffer for subsequent sampling training. 
+3.2.2 Problem Formulation under POMDP
+In the real world, financial markets are inherently partially observable, as the agent 
+cannot ascertain the true market state due to underlying factors such as noise, 
+macroeconomic shifts, or insider trading, coupled with complex time-dependent 
+properties. Therefore, modeling the stock trading environment as a partially observable 
+Markov decision process (POMDP) is more appropriate than using a fully observable 
+Markov decision process (MDP).
+A POMDP is typically defined by the tuple (𝒮,𝒜,𝒪,𝑇,𝑅,Ω,𝛾), where: 
+
+𝒮: Potential environmental states (e.g., true asset values, market 
+mechanisms)
+
+𝒜: Discrete or continuous actions (e.g., buy, sell, hold)
+
+𝒪: Observed signals (e.g., technical indicators, price snapshots)
+
+Ω(𝑜|𝑠): Observation model describing the distribution of 𝑜 given the 
+hidden state 𝑠
+
+𝑇(𝑠′|𝑠,𝑎): State transition function
+
+𝑅(𝑠,𝑎): reward
+
+𝛾: Discount factor
+Under these circumstances, relying solely on the current observation 𝑜𝑡 clearly 
+fails to satisfy the Markov assumption. Directly applying value-based standard 
+reinforcement learning algorithms (e.g., DQN) to 𝑜𝑡 often leads to unstable learning or 
+𝐿(𝜃) = 𝔼(𝑠𝑡,𝑎𝑡,𝑟𝑡,𝑠𝑡+1)∼𝐷[(𝑟𝑡+ 𝛾𝑚𝑎𝑥
+𝑎′  𝑄(𝑠𝑡+1,𝑎′;𝜃−)−𝑄(𝑠𝑡,𝑎𝑡;𝜃))2]
+(8.)
+𝐿(𝜃) = 𝔼(𝑠𝑡,𝑎𝑡,𝑟𝑡,𝑠𝑡+1)∼𝐷[(𝑟𝑡+ 𝛾𝑚𝑎𝑥
+𝑎′  𝑄(𝑠𝑡+1,𝑎′;𝜃−)−𝑄(𝑠𝑡,𝑎𝑡;𝜃))2]
+(9.)
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+convergence to suboptimal solutions.
+To mitigate this issue, existing research has demonstrated that recurrent neural 
+networks, particularly LSTM, can accumulate and filter historical observations through 
+memory units and gating mechanisms. This enables them to alleviate uncertainty 
+caused by missing information and noise across the temporal dimension (Lample and 
+Chaplot, 2017; Jia et al., 2019). This capability enables LSTM to approximate belief 
+states, capture long-term dependencies, and infer underlying market dynamics, making 
+it widely regarded as an effective approach for handling POMDP scenarios. Based on 
+this theoretical foundation, we introduce LSTM as state augmenters to capture temporal 
+dependencies and latent market dynamics.
+3.2.3 LSTM as Predictive Feature Extractor and State Enhancer
+We employ a multi-layer LSTM as the state encoder and utilize historical price 
+windows to predict the next stock price. Although this module functions as a regressor 
+during training via supervised learning, its core role within the RL pipeline is to serve 
+as both a temporal feature extractor and belief approximator within the POMDP.
+(1) Architecture & Training Objective
+The constructed LSTM network consists of three stacked layers, each containing 
+50 hidden nodes, followed by a fully connected layer. Its output is a single continuous 
+variable 𝑃𝑡+1 ∈ℝ, which characterizes the predicted closing price at the next time step:
+Where 𝑃𝑡 denotes the historical closing price. The model is trained by minimizing 
+the mean squared error (MSE):
+(2) From Prediction to Trend Abstraction
+During the input processing stage, instead of directly using the raw prediction 
+values obtained from the LSTM, we employ a double moving average crossover 
+strategy to transform 𝑃𝑡+1 into a discrete trend signal suitable for DQN learning. 
+Specifically, we compute the 5-day moving average MA5 and the 20-day moving 
+average MA20. Based on the positional relationship between the predicted price 𝑃𝑡+1 
+and these moving averages, we abstract the market trend into three discrete states:
+𝑃𝑡+1 = LSTM(𝑥𝑡),  𝑥𝑡= [𝑃𝑡−𝑇+1,...,𝑃𝑡]
+(10.)
+ℒLSTM = MSE(𝑃𝑡+1,𝑃𝑡+1)
+(11.)
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+Here, MA5(𝑡) and MA20(𝑡) represent the 5-day and 20-day moving averages at 
+time t, respectively. 𝐿𝑇𝑃𝑡= 2 indicates an upward trend for the asset; 𝐿𝑇𝑃𝑡= 1  
+indicates a downward trend; 𝐿𝑇𝑃𝑡= 0 indicates the asset is in a fluctuating or uncertain 
+trend. The results are fed as additional features into the DQN.
+To clearly illustrate the LSTM-based stock price trend discretization process, we 
+organize the module's execution flow into algorithmic pseudocode, as shown in 
+Algorithm 1.
+Algorithm 1: LSTM-Based Trend Discretization via Dual-MA
+Input:
+Historical closing prices 𝑃= [𝑝1,…,𝑝𝑇];
+pretrained LSTM predictor 𝑓LSTM;
+look-back length 𝑇𝐿;
+short and long MA windows: 𝑀𝐴5 = 5,𝑀𝐴20 = 20.
+Output: 
+Discrete trend label LTP𝑡∈{0:Neutral,1:Downtrend,2:Uptrend}.
+1: For 𝑡= 𝑇𝐿 to T:
+2:           Form input sequence 𝑥𝑡= [𝑝𝑡−𝑇𝐿+1,…,𝑝𝑡];
+3:           Predict next-step close: 𝑝𝑡+1←𝑓LSTM(𝑥𝑡);
+4:           Compute moving averages 𝑀𝐴5(𝑡),𝑀𝐴20(𝑡) on historical prices up to t;
+5:           If 𝑝𝑡+1 > 𝑀𝐴5(𝑡) and 𝑝𝑡+1 > 𝑀𝐴20(𝑡):
+6:                   LTP𝑡←2   // Uptrend
+7:           Else if 𝑝𝑡+1 < 𝑀𝐴5(𝑡) and 𝑝𝑡+1 < 𝑀𝐴20(𝑡):
+8:                   LTP𝑡←1   // Downtrend
+9:           Else:
+10:                 LTP𝑡←0   // Neutral
+11: End For
+In Algorithm 1, the input consists of the historical closing price sequence 𝑃= [𝑝1,
+𝑝2,...,𝑝𝑇]and the pre-trained LSTM model 𝐿𝑆𝑇𝑀𝑓𝑒𝑎𝑡. First, the algorithm performs Zscore normalization on the price sequence of length 𝑇𝐿 to eliminate scale differences 
+between data points. Subsequently, 𝐿𝑆𝑇𝑀𝑓𝑒𝑎𝑡 predicts the current time step price 𝑝𝑡 and 
+stores the prediction in a sliding buffer PredBuffer. Next, the algorithm calculates shortterm and long-term moving averages 𝑀𝐴5 and 𝑀𝐴20 based on the predicted prices in 
+PredBuffer. Finally, it generates discrete trend labels 𝐿𝑇𝑃𝑡∈{0,1,2} using a double 
+moving average crossover strategy, corresponding to decline, sideways movement, and 
+𝐿𝑇𝑃𝑡={
+2       if 𝑃𝑡+1 > MA5(𝑡) 𝑎𝑛𝑑 𝑃𝑡+1 > MA20(𝑡)
+1       if 𝑃𝑡+1 < MA5(𝑡) 𝑎𝑛𝑑 𝑃𝑡+1 < MA20(𝑡)
+0       otherwise
+(12.)
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+rise, respectively. This trend signal serves as one of the enhanced state features for the 
+reinforcement learning agent and is subsequently fed into the DQN network.
+(3) Enhancing Markovianity in POMDP
+Consistent with prior research (Lample & Chaplot, 2017; Jia et al., 2019), this 
+paper employs LSTM as a state augmenter to transform raw, noisy, and non-Markovian 
+price sequences into compact representations that reflect underlying temporal structures. 
+This mechanism not only captures long-term dependencies within price trajectories but 
+also effectively filters out high-frequency noise through sequence smoothing. It 
+simultaneously encodes latent market mechanisms not directly revealed by indicators 
+and provides forward-looking information to guide the agent's action.
+This design aligns with the function of belief state approximators in classical 
+POMDP theory (Cassandra, 1998; Pineau et al., 2003), whose core idea is to infer 
+hidden dynamics through memory-based models. Our approach resonates with recent 
+related research, such as Recurrent World Models (Ha & Schmidhuber, 2018), which 
+leverage recurrent structures to model environmental dynamics, thereby enhancing the 
+effectiveness of internal policy learning.
+To provide a more intuitive illustration of the training process for the agent based 
+on LSTM-enhanced states, we summarize the overall training workflow as Algorithm 
+2.
+Algorithm 2: Training Procedure of LSTM-Augmented DQN Trading Agent
+Input:
+Stock trading environment env;
+pretrained LSTM trend predictor 𝑓LSTM;
+Q-network 𝑄( ⋅;𝜃), target network 𝑄′( ⋅;𝜃−);
+experience replay buffer 𝒟;
+hyperparameters: exploration rate 𝜖, discount 𝛾, learning rate 𝛼, batch size B, 
+target update frequency C;
+episode count E, max steps per episode T;
+drawdown penalty weight 𝛿= 0.5;
+transaction cost constant 𝑐.
+Output: 
+Trained parameters 𝜃.
+1: Initialize network parameters 𝜃; set target 𝜃−←𝜃.
+2: Initialize replay buffer 𝒟.
+3: For episode 𝑒= 1,…,𝐸:
+4:           𝑟𝑎𝑤𝑜𝑏𝑠←𝑒𝑛𝑣.𝑟𝑒𝑠𝑒𝑡();
+5:           Augment initial state 𝑠0←GetAugmentedState(𝑟𝑎𝑤_𝑜𝑏𝑠,𝑓LSTM).
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+6:           For 𝑡= 1,…,𝑇:
+7:                 With prob. 𝜖: select 𝑎𝑡∼Uniform(𝒜); else 𝑎𝑡= arg 𝑚𝑎𝑥
+𝑎 𝑄(𝑠𝑡−1,𝑎;𝜃).
+8:                 Execute 𝑎𝑡 in env → observe 𝑟𝑎𝑤_𝑜𝑏𝑠_𝑛𝑒𝑥𝑡, price 𝑝𝑡, done flag.
+Reward calculation:
+9:                 Compute cumulative return: CR𝑡= (1 + sign(𝑎𝑡) ⋅
+𝑝𝑡−𝑝𝑡−1
+𝑝𝑡−1 ) ⋅
+𝑝𝑡
+𝑝𝑡−5 .
+10:               Compute trade penalty: TP𝑡= 𝑐⋅|𝑎𝑡−𝑎𝑡−1|.
+11:               Compute drawdown penalty: 𝐷𝐷𝑡= 𝑚𝑎𝑥
+𝜏≤𝑡 
+𝑝𝜏−𝑝𝑡
+𝑝𝜏 .
+12:               Total reward: 𝑟𝑡= CR𝑡−TP𝑡−𝛿⋅DD𝑡.
+Reward normalization:
+13:                Update running mean 𝜇𝑟, std 𝜎𝑟;
+14:                𝑟𝑡= clip((𝑟𝑡−𝜇𝑟)/(𝜎𝑟+ 𝜖𝑛𝑢𝑚),−5,5).
+15:                𝑠𝑡←GetAugmentedState(𝑟𝑎𝑤_𝑜𝑏𝑠_𝑛𝑒𝑥𝑡,𝑓LSTM).
+16:                Store transition (𝑠𝑡−1,𝑎𝑡,𝑟𝑡,𝑠𝑡,done) into 𝒟.
+Learning step:
+17:                If |𝒟| ≥𝐵:
+18:                        Sample minibatch from 𝒟.
+19:                        For each transition:
+20:                              If done: 𝑦= 𝑟.
+21:                              Else: 𝑦= 𝑟+𝛾𝑚𝑎𝑥
+𝑎′  𝑄′(𝑠′,𝑎′;𝜃−).
+22:                        Update 𝜃 by minimizing (𝑦−𝑄(𝑠,𝑎;𝜃))2.
+23:                Every C steps: 𝜃−←𝜃.
+24:                If done: break.
+25:         End For
+26:         Decay 𝜖 if applicable.
+27: End For
+28: Save trained 𝜃.
+Auxiliary: State Augmentation
+GetAugmentedState(𝑟𝑎𝑤𝑜𝑏𝑠,𝑓LSTM):
+1: Extract (𝑏𝑡,ℎ𝑡,𝑉𝑃𝑇(𝑑𝑖𝑠𝑐)
+𝑡
+,𝑉𝐸𝑀𝐴(𝑑𝑖𝑠𝑐)
+𝑡
+) from 𝑟𝑎𝑤−𝑜𝑏𝑠.
+2: Compute trend label 𝐿𝑇𝑃𝑡 using Algorithm 1.
+3: Return 𝑠𝑡= [𝑏𝑡,ℎ𝑡,𝑉𝑃𝑇(𝑑𝑖𝑠𝑐)
+𝑡
+,𝑉𝐸𝑀𝐴(𝑑𝑖𝑠𝑐)
+𝑡
+,𝐿𝑇𝑃𝑡].
+In Algorithm 2, the Q-network, target Q-network, and experience replay buffer 𝒟 
+are first initialized. At the start of each training round, the agent receives a raw 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+observation 𝑟𝑎𝑤−𝑜𝑏𝑠 from the trading environment. This observation is then 
+transformed into an augmented state vector 𝑠𝑡 via the GetAugmentedState function. 
+This state includes the cash balance 𝑏𝑡, position size ℎ𝑡, discretized technical indicators, 
+and the LSTM trend indicator 𝐿𝑇𝑃𝑡.
+During interactions, the agent selects an action 𝑎𝑡 using “𝜖 -greedy” strategy and 
+receives the next observation 𝑟𝑎𝑤_𝑜𝑏𝑠_𝑛𝑒𝑥𝑡 and reward 𝑟𝑡 from the environment. 
+When the sample size in the buffer reaches the preset batch size, the agent randomly 
+samples a batch from it. It then calculates the target value y using the Bellman equation 
+and updates the parameters θ of the main Q-network via mean squared error (MSE) 
+loss.
+Additionally, the reward incorporates three components: cumulative return, 
+Transaction Penalty, and drawdown penalty, normalized to enhance training stability. 
+Ultimately, through iterative interaction and updates, the agent learns a trading strategy 
+that balances returns and risks.
+4. Experimental Design
+In this section, we introduce the dataset used in the experiments and its partitioning 
+scheme, and provide the training parameter settings for LSTM and DQN. Next, we 
+describe each of the selected baseline models in turn. Finally, we present the evaluation 
+method for the experimental results.
+4.1 Description of Datasets
+This paper first obtained daily transaction data for 300 A-shares and constructed a 
+factor library encompassing over 200 dimensions, including financial and technical 
+aspects. Subsequently, three representative A-share market stocks were selected as 
+research subjects: China Merchants Securities (600999.SH), GF Securities 
+(000776.SZ), and Wuliangye (000858.SZ). This approach aims to validate the model's 
+universality across different industries and market characteristics within a single market. 
+The back-testing period for China Merchants Securities data spans from November 
+2023 to January 2025. For GF Securities data, the back-testing period covers September 
+2023 to January 2025. The back-testing period of Wuliangye data  runs from January 
+2024 to January 2025.
+Each trading day record contains standard OHLCV attributes (Open, High, Low, 
+Close, and Volume). Based on this raw data, we calculated additional technical 
+indicators, including: Discretized 6-day Volume Price Trend (VPT(𝑑𝑖𝑠𝑐)
+𝑡
+), and a 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+discretized 5-day volume-weighted moving average (𝑉𝐸𝑀𝐴(𝑑𝑖𝑠𝑐)
+𝑡
+), to enrich the input 
+features.
+To ensure the fairness of evaluation and the generalization capability of the model, 
+all data were strictly partitioned in chronological order. We adopted the industrystandard 9:1 ratio to split the dataset into training and back-testing sets. The first 90% 
+of the data were used for agent training and parameter optimization, while the 
+remaining 10% were employed to assess the trained model's performance on unseen 
+samples.
+During data processing, we did not apply any weighting to the data, meaning all 
+historical data points were assigned equal weight. This approach was primarily chosen 
+to explicitly evaluate the actual contribution of the LSTM module within the LSTMDQN model to policy performance. Maintaining consistent data weighting eliminates 
+the influence of other potential factors on experimental results, thereby enabling a more 
+accurate assessment of the model's inherent effectiveness. 
+4.2 Training Parameters of DQN
+The training parameter settings for DQN are shown in Table 1. To prevent random 
+noise in the environment from interfering with DQN training and subsequent parameter 
+tuning, we set a random seed to ensure consistent random perturbations in the 
+environment during each model run.
+Table 1 Training parameters of DQN.
+Parameter
+Value
+Discount Factor (γ)
+0.99
+Learning Rate (α)
+0.001
+Optimizer
+Adam
+Loss Function
+Mean Squared Error (MSE)
+Batch Size (B)
+64
+Replay Buffer Size (D)
+10
+Target Network Update Frequency (C)
+Every 1,000 steps
+Initial Exploration Rate (𝜀₀)
+1.0
+Final Exploration Rate (𝜀𝑚𝑖𝑛)
+0.01
+Random Seed
+42
+4.3 Compared Models
+Our model is compared with baseline models, including: 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+Buy-and-Hold Strategy: A typical passive investment benchmark involves 
+traders purchasing assets at the start of the evaluation period and holding them until the 
+end without further transactions. This benchmark reflects the performance of a pure 
+long position with no trading volume.
+Random Strategy: At each decision point, the agent uniformly randomly selects 
+an action from the discrete action set {-2, -1, 0, +1, +2}.
+DQN Model: Deep-Q network trading agents without LSTM feature prediction 
+training. The state space contains only raw technical indicators and portfolio 
+information.
+4.4 Evaluation measures
+Cumulative Return (CR): It is calculated by subtracting the portfolio's final value 
+from its initial value, then dividing by the initial value. This reflects the portfolio's total 
+return at the end of the trading period.
+Annualized Return (AR): This figure is derived by annualizing the cumulative 
+return over the back-testing period. Its purpose is to eliminate biases arising from 
+differences in investment horizons, thereby providing a unified benchmark for 
+comparing different strategies.
+Here, CR denotes the cumulative return rate, 𝑁period represents the total number of 
+trading periods during the back-testing period, and 𝑁annual indicates the number of 
+trading periods within a single year.
+Maximum Drawdown (MDD): The maximum drawdown experienced by a 
+portfolio during its operation—that is, the largest percentage loss from its peak to its 
+trough—reveals the downside risk of a trading strategy under the most adverse market 
+conditions.
+Among these, Val𝑡 denotes the portfolio value at time t, while Peak𝑡 represents the 
+𝐶𝑅=
+𝑃𝑒𝑛𝑑−𝑃0
+𝑃0
+(13.)
+𝐴𝑅=((1 + 𝐶𝑅)
+𝑁annual
+𝑁period−1) × 100%
+(14.)
+𝑀𝐷𝐷= 𝑚𝑎𝑥
+𝑡∈[0,𝑇] (
+Peak𝑡−Val𝑡
+Peak𝑡) × 100%
+(15.)
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+historical maximum portfolio value up to time t.
+Volatility: The core calculation method for stock volatility is historical volatility, 
+which is based on historical asset price data. It is obtained by calculating the standard 
+deviation 𝜎𝑃 of the return rate and multiplying it by an annualized coefficient (such as 
+252). It is widely used in risk quantification and investment decision-making.
+Sharpe Ratio (SR) ：The annualized return minus the annualized risk-free rate, 
+divided by the annualized volatility. This metric comprehensively considers both 
+returns and risk, reflecting the excess return per unit of systematic risk.
+5. Numerical Evaluation
+In this section, we first performed appropriate adjustments to the model parameters. 
+We then selected three Chinese A-share stocks to evaluate our model and conducted a 
+sensitivity analysis on China Merchants Securities to examine the impact of different 
+features on model performance.
+5.1 Performance on China Merchants Securities data 
+We conducted a systematic evaluation of the LSTM-DQN model's performance on 
+China Merchants Securities, comparing it against the DQN model, the Buy-and-Hold 
+strategy, and the Random strategy. Fig. 2 illustrates the cumulative return curves of our 
+model versus other benchmark strategies during the back-testing period. We can 
+conclude that the LSTM-DQN achieves higher cumulative returns (%) than the other 
+strategies.
+𝑣𝑜𝑙𝑃= 𝜎𝑃×
+252
+(16.)
+𝑆𝑅=
+𝐸(𝑅𝑃)−𝑅𝑓
+𝑣𝑜𝑙𝑃
+ 
+(17.)
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+Fig. 1. Performance of the LSTM-DQN model on China Merchants Securities Data.
+Table 2 details key trading metrics for each strategy on China Merchants Securities.
+Table 2 Details of the trading results on China Merchants Securities Data.
+Metrics
+LSTM-DQN
+Buy-and-Hold 
+DQN
+Random
+CR
+35.39%
+26.52%
+18.98%
+25.17%
+AR
+32.27%
+24.25%
+17.40%
+23.03%
+MDD
+15.84%
+9.85%
+7.79%
+9.59%
+SR
+1.25
+1.38
+1.27
+1.33
+Volatility
+25.35%
+15.11%
+11.68%
+14.95%
+The results show that the LSTM-DQN strategy achieved the highest cumulative 
+return throughout the back-testing period. LSTM-DQN model exhibited relatively 
+stable performance in the early stages, with its cumulative returns experiencing a 
+significant surge in the fourth quarter of 2024. The cumulative return of 35.39% and 
+the annualized return of 32.27% both outperformed the other strategies. This indicates 
+that the introduction of LSTM features played a positive role in capturing market 
+dynamics and guiding trading decisions. Buy-and-Hold strategy also achieved a good 
+cumulative return which reflected the sustained upward trend in China Merchants 
+Securities' stock price during specific phases. 
+In terms of risk control, our LSTM-DQN model demonstrates certain risks. As 
+shown in Table 2, the model's maximum drawdown is 15.84%, which is higher than 
+7.79% of DQN. Its volatility stands at 25.35%, exceeding the 11.68% of the DQN 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+model. This elevated volatility primarily stems from substantial short-term increases in 
+the model's net value during rapid uptrends, which amplify overall volatility levels—
+not solely due to heightened downside risk. Thus, while LSTM-DQN exhibits 
+statistically more aggressive behavior, its risk exposure largely parallels its enhanced 
+returns. Notably, the LSTM-DQN model achieves a Sharpe ratio of 1.25, closely 
+matching the 1.27 of the DQN strategy. This indicates that although the proposed 
+LSTM-DQN carries certain risks, its risk-adjusted performance is acceptable. The key 
+distinction lies in the Buy-and-Hold strategy's reliance on unidirectional market 
+uptrends, whereas our model generates returns through active trading across diverse 
+market conditions.
+To further analyze the model's adaptability, we divided the back-testing period 
+into two phases. The first phase was a stable volatility period (November 2023 to 
+August 2024), during which the return curves of all strategies fluctuated slightly around 
+the zero axis with insignificant differences, indicating a market lacking clear 
+directionality. The second phase was a rapid uptrend period (after September 2024), 
+marked by a sustained rise in China Merchants Securities' stock price. The LSTM-DQN 
+model swiftly captured the trend during this phase, with its cumulative return curve 
+rising sharply to generate substantial short-term profits. In contrast, the DQN model 
+underperformed during this period, failing to effectively capitalize on market 
+opportunities. Overall, the LSTM-DQN model demonstrated strong profit potential and 
+trend adaptation capabilities.
+5.2 Performance on GF Securities data
+Next, to further evaluate our model's performance in real-market conditions, we 
+selected GF Securities for trading simulations. Fig. 3 illustrates the trading performance 
+of our model and other benchmark models on GF Securities within the test dataset. The 
+results demonstrate that our model outperforms the DQN, Buy-and-Hold, and Random 
+strategies in terms of cumulative return (%) during the test phase.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+Fig. 2. Performance of the LSTM-DQN model in GF Securities Data.
+ 
+Table 3 Details of the trading results in GF Securities Data.
+Metrics
+LSTM-DQN
+Buy-and-Hold 
+DQN
+Random
+CR
+12.45%
+10.98%
+10.03%
+10.46%
+AR
+10.10%
+8.90%
+8.14%
+8.48%
+MDD
+17.66%
+14.33%
+16.90%
+9.80%
+SR
+0.49
+0.58
+0.42
+0.66
+Volatility
+19.33%
+12.69%
+17.85%
+10.19%
+As shown in Table 3, our model demonstrates a significant overall performance 
+advantage. The cumulative return of the LSTM-DQN strategy reached 12.45%, 
+significantly higher than the 10.98% achieved by the Buy-and-Hold strategy, 10.03% 
+of DQN strategy, and 10.46% of Random strategy. The annualized return of 10.10% is 
+also the highest among the strategies. It also carried substantially higher risk, with a 
+maximum drawdown of 17.66% and volatility of 19.33%. This indicates compared to 
+the benchmark strategies, the LSTM-DQN model demonstrates a clear advantage in 
+returns at the cost of considerable risk exposure. It achieved maximum drawdown of 
+17.66% and volatility of 19.33% among all strategies, indicating the risk cost of 
+obtaining high returns. In risk-adjusted performance evaluation, the LSTM-DQN 
+model achieved a Sharpe ratio of 0.49, which is acceptable among 0.58 of Buy-andThis preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+Hold strategy, 0.42 of DQN strategy, and 0.66 of Random strategy. This demonstrates 
+the model's ability to generate excess returns with greater efficiency in GF Securities' 
+testing.
+Further analysis of the cumulative return curve in Fig. 3 reveals that all strategies 
+experienced varying degrees of drawdown prior to September 2024. However, starting 
+from September 2024, the market staged a rapid rebound. The LSTM-DQN model not 
+only successfully captured the upward trend but also achieved a rate of return growth 
+comparable to the Buy-and-Hold strategy. This further indicates that the LSTM-DQN 
+model can effectively identify trading opportunities and manage downside risk in 
+volatile markets.
+5.3 Performance on Wuliangye data
+We applied the same model to back-test transactions for Wuliangye and compared 
+its performance against the benchmark DQN, Buy-and-Hold, and Random strategies, 
+presenting the cumulative returns at the end of the trading period as shown in Fig. 4. 
+Fig. 4. Performance of the LSTM-DQN model in Wuliangye Data.
+Table 4 Details of the trading results on Wuliangye Data.
+Metrics
+LSTM-DQN
+Buy-and-Hold 
+DQN
+Random
+CR
+14.37%
+3.13%
+2.47%
+-7.46%
+AR
+15.85%
+3.43%
+2.71%
+-8.14%
+MDD
+25.49%
+15.19%
+2.28%
+16.27%
+SR
+0.57
+0.17
+0.27
+-0.68
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+Volatility
+30.39%
+15.19%
+2.71%
+13.96%
+Table 4 compares the trading performance of our model and the benchmark 
+strategies on Wuliangye data, detailing key trading metrics including cumulative return 
+(CR), annualized return (AR), maximum drawdown (MDD), Sharpe ratio (SR), and 
+volatility.
+Overall, the cumulative return of LSTM-DQN reached 14.37%, with an 
+annualized return of 15.85%, both surpassing 2.47% and 2.71% of DQN and 3.13% 
+and 3.43% of Buy-and-Hold strategy. This indicates that after incorporating LSTM for 
+feature extraction, the model can capture price dynamics. LSTM-DQN's maximum 
+drawdown was 25.49%, bigger than 15.19% of Buy-and-Hold strategy, 16.27% of 
+Random strategy, and 2.28% of DQN. Volatility reached 30.39%, which was also the 
+biggest among the strategies. This also indicates that, similar to the conclusions 
+obtained in the first two stocks, the proposed algorithm has significant advantages in 
+terms of returns, but at the cost of bearing certain risks and fluctuations in returns.
+The dynamic performance of the cumulative return curve reveals that between 
+February and April 2024, while LSTM-DQN's return growth remained relatively stable, 
+its rate of return growth significantly lagged the Buy-and-Hold strategy due to the 
+market's short-term upward phase. Subsequently, from May to July 2024, the 
+cumulative returns of LSTM-DQN accelerated rapidly, surpassing the overall 
+performance of DQN within a short period and peaking in mid-June. From September 
+to October 2024, market volatility intensified significantly. The Buy-and-Hold strategy 
+experienced a substantial drawdown, while the LSTM-DQN curve maintained a 
+gradual upward trajectory, demonstrating robust risk resilience. During this phase, the 
+model effectively mitigated the systemic risks inherent in one-sided holding strategies. 
+Finally, as the market stabilized overall from December 2024 to January 2025, LSTMDQN maintained positive returns while the DQN strategy's performance curve largely 
+stagnated, further highlighting our model's advantages.
+5.4 Performance Summary
+In this section, we conduct a further analysis of the experimental performance of 
+the three stocks.
+First, the introduction of LSTM features significantly enhances the model's 
+profitability. In back-tests for China Merchants Securities, GF Securities, and 
+Wuliangye Securities, the LSTM-DQN model outperformed all of the other strategies 
+including pure DQN strategy, Buy-and-Hold strategy and Random strategy in terms of 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+cumulative and annualized returns. This result indicates that the LSTM module 
+effectively captures nonlinear dependencies and latent dynamic features within 
+financial time series, thereby strengthening the decision-making capabilities of the 
+trading agent (Fischer & Krauss, 2018).
+Secondly, the experimental results also reveal the limitations of our model under 
+extreme market conditions. In the back-test, the LSTM-DQN model's maximum 
+drawdown and volatility are the biggest among the strategies. This phenomenon reflects 
+reinforcement learning's inherent challenges in strongly trending bull markets. In such 
+environments, active trading often has a tendency towards aggressiveness. Although 
+our model excels at capturing trends, its potential trading risk may be magnified by the 
+market's overarching direction under extreme conditions.
+Comprehensive performance of benefits and risks exhibited more complex 
+characteristics. While LSTM-DQN demonstrated superior return performance 
+compared to all baseline strategies, it has the highest potential risk. LSTM-DQN has 
+the lowest Sharp ratios on China Merchants Securities data, the second lowest Sharp 
+ratios on GF Securities data, and the biggest Sharp ratios on Wuliangye data. This 
+indicates that the model's risk control ability is not fixed but closely tied to the specific 
+market volatility characteristics of individual stocks. Nevertheless, despite risks in 
+trading, LSTM-DQN consistently achieves Sharpe ratios comparable to or even 
+superior to other strategies across most stocks. This validates its robustness in 
+delivering risk-adjusted returns.
+5.5 Ablation Study
+To assess the marginal contribution of individual features to agent trading 
+performance, this paper conducted ablation experiments using China Merchants 
+Securities as the research subject. In the experimental design, we constructed two model 
+configurations by removing the technical indicators VPT(𝑑𝑖𝑠𝑐)
+𝑡
+ and 𝑉𝐸𝑀𝐴(𝑑𝑖𝑠𝑐)
+𝑡
+ from the 
+DQN model to examine their impact on model performance.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+Fig.5. Cumulative return (%) comparison of ablation models.
+Table 5 Results of Ablation Study
+Without_VPT(𝑑𝑖𝑠𝑐)
+𝑡
+Without_𝑉𝐸𝑀𝐴(𝑑𝑖𝑠𝑐)
+𝑡
+All Features
+CR
+15.55%
+12.51%
+18.98%
+AR
+14.27%
+11.49%
+17.40%
+MDD
+7.69%
+8.65%
+7.79%
+SR
+0.97
+0.75
+1.27
+Volatility
+12.48%
+13.02%
+11.68%
+As shown in Fig. 5 and Table 5, the features VPT(𝑑𝑖𝑠𝑐)
+𝑡
+ and 𝑉𝐸𝑀𝐴(𝑑𝑖𝑠𝑐)
+𝑡
+ play a 
+crucial role in model performance, with the full model significantly outperforming its 
+ablation versions across multiple core metrics. In terms of returns, the DQN model with 
+all features ultimately achieved a cumulative return rate of 18.98%, substantially higher 
+than models after removing either feature. Particularly after September 2024, the 
+complete model's return curve exhibited a distinct inflection point and steep upward 
+trajectory, whereas the ablation model's return growth remained more gradual. In terms 
+of annualized returns, the DQN model with all features achieved 17.40%, significantly 
+higher than the performance of models that removed either the VPT(𝑑𝑖𝑠𝑐)
+𝑡
+ or 𝑉𝐸𝑀𝐴(𝑑𝑖𝑠𝑐)
+𝑡
+ 
+features. This disparity fully demonstrates the effective supplementation of market 
+information provided by these two features.
+In terms of risk-adjusted performance, the model with all features also 
+demonstrates superiority, with a Sharpe ratio of 1.27, significantly outperforming the 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+0.97 and 0.75 ratios of the ablation versions. This indicates that at the same risk level, 
+the full model achieves higher excess returns while striking a better balance between 
+risk control and return generation. Although the model with all features has a  maximum 
+drawdown of 7.79%, which is not the lowest among the two ablation versions, this 
+increased risk is entirely justified as a reasonable trade-off for pursuing higher returns, 
+given its significantly higher return levels and superior Sharpe ratio. Additionally, the 
+model with all features has a volatility of 11.68%, which is the lowest among the 
+feature-excluded versions. This result further confirms that incorporating the two key 
+features enables the model to more aggressively capture market opportunities, thereby 
+driving the overall strategy's return levels.
+From a mechanism perspective, VPT(𝑑𝑖𝑠𝑐)
+𝑡
+ likely enhances the model's sensitivity 
+to short-term price fluctuations and volume changes, while 𝑉𝐸𝑀𝐴(𝑑𝑖𝑠𝑐)
+𝑡
+ plays a crucial 
+role in identifying short-term trends. The combined use of both provides richer input 
+information and enables the agent to gain more comprehensive market dynamics 
+support during policy optimization, thereby significantly improving the model's overall 
+performance.
+6. Conclusion
+This paper addresses the partial observability challenges in financial market 
+decision-making by proposing a stock trading strategy based on the LSTM-DQN Deep 
+Reinforcement Learning framework. This framework tackles challenges under POMDP 
+through two key innovations. First, we construct a state augmenter based on multi-layer 
+LSTM to effectively extract and encode latent temporal dependencies and market 
+dynamics from historical stock price and technical indicator sequences. Second, we 
+introduce an innovative trend discretization strategy that transforms continuous market 
+information into discrete states with strong Markov properties, significantly enhancing 
+the agent's policy learning efficiency and decision stability.
+In the empirical study, we systematically compared the proposed LSTM-DQN 
+model with multiple benchmark strategies using three typical stocks in the A-share 
+market as our research subject. Results demonstrate the superior performance of our 
+model across key metrics including cumulative return, annualized return and Sharpe 
+ratio. Compared to the baseline DQN model, our approach achieved at most a 16.41% 
+increase in cumulative return and a 14.87% increase in annualized return and 
+significantly improving the Sharpe ratio, indicating enhanced risk control alongside 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+higher returns. Furthermore, we conducted systematic ablation experiments to analyze 
+the marginal contributions of key technical features to model performance. Results 
+reveal that single-day volume-related indicators and technical moving average features 
+are crucial for model effectiveness. This further validates that feature extraction and 
+state augmentation are key to constructing robust trading strategies in partially 
+observable environments.
+7. Data Availability
+The datasets analysed during the current study are available from the 
+corresponding author on reasonable request. 
+References
+[1] Fama E F, French K R. Common risk factors in the returns on stocks and bonds[J]. Journal of 
+financial economics, 1993, 33(1): 3-56.
+[2] Moody J, Wu L, Liao Y, et al. Performance functions and reinforcement learning for trading 
+systems and portfolios[J]. Journal of forecasting, 1998, 17(5‐6): 441-470.
+[3] Deng Y, Bao F, Kong Y, et al. Deep direct reinforcement learning for financial signal representation 
+and trading[J]. IEEE transactions on neural networks and learning systems, 2016, 28(3): 653-664.
+[4] Zhang Z, Zohren S, Roberts S. Deep reinforcement learning for trading[J]. arXiv preprint 
+arXiv:1911.10107, 2019.
+[5] Liang Z, Chen H, Zhu J, et al. Adversarial deep reinforcement learning in portfolio management[J]. 
+arXiv preprint arXiv:1808.09940, 2018.
+[6] Box G E P, Jenkins G M, Reinsel G C, et al. Time series analysis: forecasting and control[M]. John 
+Wiley & Sons, 2015.
+[7] Bollerslev T. Generalized autoregressive conditional heteroskedasticity[J]. Journal of econometrics, 
+1986, 31(3): 307-327.
+[8] Engle R F. Autoregressive conditional heteroscedasticity with estimates of the variance of United 
+Kingdom inflation[J]. Econometrica: Journal of the econometric society, 1982: 987-1007.
+[9] Sims C A. Macroeconomics and reality[J]. Econometrica: journal of the Econometric Society, 1980: 
+1-48. 
+[10]Tsay R S. Analysis of financial time series[M]. John wiley & sons, 2005.
+[11]Kilian L. NEW INTRODUCTION TO MULTIPLE TIME SERIES ANALYSIS, by Helmut 
+Lütkepohl, Springer, 2005[J]. Econometric theory, 2006, 22(5): 961-967.
+[12]Hamilton J D. A new approach to the economic analysis of nonstationary time series and the 
+business cycle[J]. Econometrica: Journal of the econometric society, 1989: 357-384.
+[13]Diebold F X, Rudebusch G D. Measuring business cycles: A modern perspective[M]. Cambridge, 
+Mass., USA: National Bureau of Economic Research, 1994.
+[14]Drucker H, Burges C J, Kaufman L, et al. Support vector regression machines[J]. Advances in 
+neural information processing systems, 1996, 9.
+[15]Breiman L. Random forests[J]. Machine learning, 2001, 45(1): 5-32.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed
+
+[16]Atsalakis G S, Valavanis K P. Surveying stock market forecasting techniques–Part II: Soft 
+computing methods[J]. Expert Systems with applications, 2009, 36(3): 5932-5941.
+[17]Hochreiter S, Schmidhuber J. Long short-term memory[J]. Neural computation, 1997, 9(8): 17351780.
+[18]Qin Y, Song D, Chen H, et al. A dual-stage attention-based recurrent neural network for time series 
+prediction[J]. arXiv preprint arXiv:1704.02971, 2017.
+[19]Nelson D M Q, Pereira A C M, De Oliveira R A. Stock market's price movement prediction with 
+LSTM neural networks[C]//2017 International joint conference on neural networks (IJCNN). Ieee, 
+2017: 1419-1426.
+[20]Tsantekidis A, Passalis N, Tefas A, et al. Forecasting stock prices from the limit order book using 
+convolutional neural networks[C]//2017 IEEE 19th conference on business informatics (CBI). 
+IEEE, 2017, 1: 7-12.
+[21]LeCun Y, Bottou L, Bengio Y, et al. Gradient-based learning applied to document recognition[J]. 
+Proceedings of the IEEE, 2002, 86(11): 2278-2324.
+[22]Goodfellow I, Bengio Y, Courville A, et al. Deep learning[M]. Cambridge: MIT press, 2016.
+[23]De Prado M L. Advances in financial machine learning[M]. John Wiley & Sons, 2018.
+[24]Makridakis S, Spiliotis E, Assimakopoulos V. Statistical and Machine Learning forecasting 
+methods: Concerns and ways forward[J]. PloS one, 2018, 13(3): e0194889.
+[25]Moody J, Saffell M. Learning to trade via direct reinforcement[J]. IEEE transactions on neural 
+Networks, 2001, 12(4): 875-889.
+[26]Yang H, Liu X Y, Zhong S, et al. Deep reinforcement learning for automated stock trading: An 
+ensemble strategy[C]//Proceedings of the first ACM international conference on AI in finance. 
+2020: 1-8.
+[27]Mnih V, Kavukcuoglu K, Silver D, et al. Human-level control through deep reinforcement 
+learning[J]. nature, 2015, 518(7540): 529-533.
+[28]Jiang Z, Xu D, Liang J. A deep reinforcement learning framework for the financial portfolio 
+management problem[J]. arXiv preprint arXiv:1706.10059, 2017.
+[29]Silver D, Lever G, Heess N, et al. Deterministic policy gradient algorithms [C]//International 
+conference on machine learning. Pmlr, 2014: 387-395.
+[30]Kaelbling L P, Littman M L, Cassandra A R. Planning and acting in partially observable stochastic 
+domains[J]. Artificial intelligence, 1998, 101(1-2): 99-134.
+[31]Hausknecht M J, Stone P. Deep Recurrent Q-Learning for Partially Observable MDPs[C]//AAAI 
+fall symposia. 2015, 45: 141.
+[32]Lample G, Chaplot D S. Playing FPS games with deep reinforcement learning[C]//Proceedings of 
+the AAAI conference on artificial intelligence. 2017, 31(1).
+[33]Cassandra A R. A survey of POMDP applications[C]//Working notes of AAAI 1998 fall 
+symposium on planning with partially observable Markov decision processes. 1998, 1724.
+[34]Pineau J, Gordon G, Thrun S. Point-based value iteration: An anytime algorithm for 
+POMDPs[C]//Ijcai. 2003, 3: 1025-1032.
+[35]Fischer T, Krauss C. Deep learning with long short-term memory networks for financial market 
+predictions[J]. European journal of operational research, 2018, 270(2): 654-669.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5822221
+Preprint not peer reviewed

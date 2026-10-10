@@ -1,0 +1,507 @@
+ 
+ 
+ 
+VWAP-Based Regime Classification 
+Model for Intraday Price Dynamics 
+ 
+ 
+ 
+ 
+ 
+Lee Chong Yul 
+An Economic Research Paper 
+March 2026 
+ 
+ 
+
+VWAP-Based Regime Classification 
+Model for Intraday Price Dynamics 
+Abstract: 
+This paper introduces a quantitative framework for 
+classifying intraday market regimes using deviations from 
+the Volume Weighted Average Price (VWAP). By normalizing 
+price deviations relative to VWAP with a volatility-adjusted 
+metric, the model distinguishes between trend-dominated 
+and mean-reverting environments. A regime variable is 
+defined based on threshold conditions, allowing for 
+systematic identification of directional bias and market 
+structure. The proposed model provides a mathematically 
+grounded interpretation of widely used trading heuristics 
+and offers a bridge between technical analysis and market 
+microstructure theory. 
+ 
+ 
+ 
+ 
+ 
+ 
+
+1. Problem  
+ 
+Most intraday retail traders operate without a consistent and 
+objective framework for determining market bias. As a 
+result, trading decisions are often reactive, driven by shortterm price movements rather than a structured 
+understanding of underlying market conditions. This lack of 
+a formalized bias leads to inconsistent performance and 
+difficulty in distinguishing between trending and meanreverting environments. 
+ 
+2. Method 
+ 
+This paper proposes a VWAP-based regime classification 
+model that defines market bias through the standardized 
+deviation of price from the Volume Weighted Average Price 
+(VWAP). By normalizing this deviation using a volatility 
+measure, the model constructs a regime variable that 
+categorizes market conditions into bullish, bearish, or 
+neutral states. This framework can be utilized by retail 
+traders to establish systematic directional bias, while 
+institutional participants may interpret it as a proxy for order 
+
+flow imbalance relative to a volume-weighted equilibrium 
+price. 
+3. Contributions 
+ 
+The primary contribution of this paper is the formalization of 
+a widely used trading heuristic into a quantitative and 
+reproducible model. By translating VWAP-based intuition 
+into a mathematical regime classification system, the model 
+provides a bridge between discretionary technical analysis 
+and quantitative market microstructure theory, enabling 
+more consistent and theoretically grounded decisionmaking. It is encouraged to pair model with a more present 
+indicator, such as Volume profile, VWAP with 1 standard 
+deviation, Bookmap or Heatmap (Visualized Depth of Market 
+(DOM)).  
+ 
+ 
+
+Introduction 
+1. Market Context 
+Financial markets exhibit alternating periods of trend persistence and mean 
+reversion, reflecting shifts in liquidity conditions and order flow dynamics. In 
+trend-dominated environments, price movements are typically driven by 
+sustained imbalances between buyers and sellers, often associated with 
+institutional participation and directional positioning. Conversely, in meanreverting regimes, price fluctuates around a perceived equilibrium level, with 
+liquidity provision and short-term arbitrage dominating market behavior. 
+Understanding which regime the market is currently in is critical for decisionmaking, as strategies that perform well under trending conditions often fail in 
+range-bound environments, and vice versa. 
+ 
+2. Problem Statement 
+Despite the importance of regime identification, most intraday retail traders 
+lack a consistent and objective framework for determining market conditions. 
+Instead, bias is often formed through subjective interpretation of price action, 
+leading to inconsistent execution and exposure to unfavorable market 
+environments. 
+Furthermore, while institutional participants rely on quantitative benchmarks 
+and execution metrics, retail traders typically do not formalize these 
+concepts into systematic models. This creates a gap between intuitive trading 
+practices and rigorous analytical frameworks. 
+ 
+
+3. Role of VWAP in Market Structure 
+The Volume Weighted Average Price (VWAP) serves as a widely recognized 
+benchmark in financial markets, particularly among institutional participants. 
+It represents the average price at which an asset has traded, weighted by 
+volume, and is commonly used to evaluate execution quality. 
+From a microstructure perspective, VWAP can be interpreted as a dynamic 
+equilibrium price, reflecting the balance between buying and selling pressure 
+over a given time horizon. Deviations from VWAP therefore provide 
+information about temporary imbalances in order flow, which may indicate 
+either the emergence of a trend or the presence of short-term inefficiencies. 
+ 
+4. Objective of the Paper 
+This paper aims to develop a quantitative regime classification model based 
+on deviations from VWAP. By standardizing the difference between price and 
+VWAP using a volatility-adjusted measure, the model provides a systematic 
+method for identifying whether the market is in a trend-dominated or meanreverting state. 
+In doing so, the paper seeks to: 
+• Transform a commonly used heuristic into a formal mathematical 
+framework 
+• Provide a consistent method for defining market bias 
+• Bridge the gap between discretionary trading intuition and quantitative 
+analysis 
+ 
+ 
+
+Theoretical Foundation 
+1. Definition of VWAP 
+The Volume Weighted Average Price (VWAP) is defined as the cumulative 
+average price of an asset, weighted by traded volume over a specified time 
+horizon. Formally, VWAP at time t is given by: 
+where Pi  denotes the transaction price and Vi  denotes the corresponding 
+traded volume at time i. 
+VWAP serves as a benchmark for the average execution price in the market 
+and is widely used by institutional participants to evaluate trading 
+performance. As such, it provides a meaningful reference point for assessing 
+whether current prices reflect a premium or discount relative to aggregated 
+market activity. 
+ 
+2. VWAP as a Dynamic Equilibrium 
+From a market microstructure perspective, VWAP can be interpreted as a 
+dynamic equilibrium price. Unlike static benchmarks, VWAP evolves over 
+time as new trades occur, incorporating both price and volume information. 
+Under conditions of balanced order flow, price tends to oscillate around 
+VWAP, reflecting a state of temporary equilibrium between buyers and 
+sellers. However, when persistent order flow imbalance arises—such as 
+sustained buying or selling pressure—price may deviate significantly from 
+VWAP, indicating the emergence of directional movement. 
+Thus, deviations from VWAP provide insight into the state of market 
+equilibrium and the presence of underlying pressure in the order flow. 
+
+3. Standardized Price Deviation 
+To quantify deviations from VWAP in a scale-independent manner, this paper 
+introduces a standardized variable pt , defined as: 
+ 
+where: 
+• Pt  is the observed market price at time t 
+• VWAPt  is the volume-weighted average price 
+• σt  represents a measure of price dispersion or volatility 
+This formulation normalizes the deviation between price and VWAP, allowing 
+comparisons across different time periods and assets. By scaling the 
+deviation with respect to volatility, the model accounts for varying market 
+conditions and avoids distortions caused by absolute price differences. 
+4. Interpretation  
+The variable pt  captures the relative position of price with respect to VWAP, 
+adjusted for volatility: 
+• pt>0: price is trading above VWAP, indicating a premium and potential 
+buying pressure 
+• pt<0: price is trading below VWAP, indicating a discount and potential 
+selling pressure 
+• pt large: significant deviation, suggesting strong imbalance or 
+directional conviction 
+• pt small: proximity to VWAP, indicating equilibrium or low directional 
+bias 
+ 
+
+Model Definition 
+ 
+1. Regime Classification Framework 
+Building on the standardized deviation pt , this paper defines a discrete 
+regime variable Rt  to classify prevailing market conditions. The regime 
+variable partitions market states into three categories: bullish trend, bearish 
+trend, and neutral equilibrium. 
+Formally, the regime variable is defined as: 
+where k>0 is a threshold parameter that determines the sensitivity of regime 
+classification. 
+ 
+2. Interpretation of Regimes 
+The classification rule assigns each time period t to one of three regimes: 
+• Rt=+1 (Bullish Trend Regime) 
+ Occurs when price trades sufficiently above VWAP, indicating 
+sustained buying pressure and potential continuation of upward 
+movement. 
+• Rt=−1 (Bearish Trend Regime) 
+ Occurs when price trades sufficiently below VWAP, reflecting 
+persistent selling pressure and downward directional bias. 
+• Rt=0 0Rt =0 (Neutral / Mean-Reverting Regime) 
+ Occurs when price remains within a threshold band around VWAP, 
+suggesting equilibrium conditions where neither buyers nor sellers 
+dominate. 
+ 
+
+ 
+3. Role of the Threshold Parameter k 
+The parameter k controls the trade-off between sensitivity and robustness: 
+• Lower k 
+o More responsive to small deviations 
+o Higher sensitivity but increased noise 
+• Higher k 
+o Filters out minor fluctuations 
+o More stable classification but slower response 
+Thus, k acts as a tuning parameter that determines how strictly the model 
+defines trend conditions versus equilibrium states. 
+4. Regime Dynamics 
+The model implies that market behavior evolves through transitions between 
+regimes over time. In particular: 
+• Transitions from Rt=0 to Rt=±1 indicate the emergence of directional 
+order flow 
+• Persistence in Rt=±1 suggests sustained trend conditions 
+• Reversions from Rt=±1 to Rt=0 indicate a return to equilibrium 
+This discrete structure allows the model to capture changes in market state in 
+a systematic and interpretable manner. 
+
+ 
+ 
+ 
+5. Model Properties 
+The proposed framework has several desirable properties: 
+• Scale invariance: achieved through normalization by σt 
+• Simplicity: relies on observable market variables (price, volume) 
+• Interpretability: each regime has a clear economic meaning 
+• Extensibility: can be extended to probabilistic or multi-factor models 
+ 
+ 
+ 
+ 
+
+Economic Interpretation 
+1. VWAP as a Market Equilibrium Benchmark 
+Within this framework, VWAP can be interpreted as a dynamic equilibrium 
+price that reflects the aggregate outcome of market transactions over time. 
+Because it incorporates both price and volume, VWAP represents the level at 
+which the majority of trading activity has occurred. 
+In equilibrium conditions, where buying and selling pressure are relatively 
+balanced, price tends to fluctuate around VWAP. This corresponds to the 
+regime Rt=0, where deviations are small and no clear directional dominance 
+is present. 
+ 
+2. Order Flow Imbalance and Price Deviations 
+Deviations from VWAP arise when there is a persistent imbalance in order 
+flow. When market participants—particularly large institutional traders—
+execute significant buy or sell orders, they create pressure that moves price 
+away from the volume-weighted equilibrium. 
+Within the model: 
+• pt>0 reflects net buying pressure, as price is sustained above VWAP 
+• pt<0 reflects net selling pressure, as price is sustained below VWAP 
+Larger absolute values of pt  indicate stronger imbalances, suggesting that 
+price movements are not merely random fluctuations but are driven by 
+directional demand or supply. 
+ 
+
+3. Regime Interpretation in Market Terms 
+The regime classification can be interpreted in terms of underlying market 
+behavior: 
+• Trend Regimes (Rt=±1) 
+ These regimes correspond to periods where order flow is sufficiently 
+imbalanced to push price away from equilibrium. Such conditions are 
+often associated with: 
+o Institutional accumulation or distribution 
+o Momentum-driven trading 
+o Reduced effectiveness of mean-reversion strategies 
+• Neutral Regime (Rt=0) 
+ This regime reflects a state of relative balance, where liquidity 
+providers dominate and price reverts toward VWAP. Characteristics 
+include: 
+o Two-sided trading 
+o Lower directional conviction 
+o Increased effectiveness of short-term mean-reversion strategies 
+ 
+4. Magnitude of Deviation and Market Conviction 
+The magnitude of the standardized deviation ∣pt∣|p_t|∣pt ∣ provides additional 
+information beyond directional classification: 
+• Small ∣pt∣ 
+ Indicates proximity to equilibrium and low conviction among market 
+participants 
+• Moderate ∣pt∣ 
+ Suggests emerging imbalance, where directional pressure begins to 
+build 
+
+• Large ∣pt∣ 
+ Reflects strong conviction and sustained order flow, often associated 
+with trend continuation 
+This interpretation aligns with the intuition that stronger deviations from 
+equilibrium require greater participation and capital commitment. 
+ 
+5. Linking Microstructure to Trading Behavior 
+The proposed model provides a bridge between market microstructure theory 
+and observed trading behavior: 
+• Institutional traders seek to execute large orders relative to VWAP, 
+influencing price dynamics 
+• Retail traders often react to price movement without a formal 
+framework for identifying underlying conditions 
+• The regime variable Rt  offers a systematic way to interpret these 
+dynamics through observable data 
+By formalizing the relationship between VWAP deviations and market 
+regimes, the model translates qualitative intuition about “trend” and “chop” 
+into a quantitative and economically interpretable structure. 
+ 
+ 
+ 
+
+Model Intergration 
+1. Multi-Timeframe VWAP Integration 
+The baseline model considers VWAP over a single time horizon. However, 
+market participants operate across multiple timeframes, and price dynamics 
+are often influenced by higher-order benchmarks. 
+An extension of the model incorporates multiple VWAPs, such as intraday, 
+weekly, or monthly VWAP: 
+• Short-term VWAP reflects intraday liquidity and execution 
+• Higher-timeframe VWAP captures broader positioning and institutional 
+flows 
+The regime classification can be refined by considering the relative 
+positioning of price across these benchmarks, allowing for a more 
+comprehensive representation of market structure. 
+ 
+2. Alternative Volatility Measures 
+The model relies on σt  as a measure of dispersion to normalize price 
+deviations. While standard deviation provides a simple and tractable 
+approach, alternative volatility estimators may improve robustness. 
+Potential alternatives include: 
+• Rolling realized volatility 
+• Volume-weighted volatility 
+• Range-based estimators (e.g., high–low range) 
+
+Different volatility measures may capture distinct aspects of market 
+dynamics, particularly in environments with non-normal return distributions 
+or changing liquidity conditions. 
+ 
+3. Probabilistic Regime Classification 
+The current framework defines regimes using fixed thresholds, resulting in 
+discrete classifications. This can be extended to a probabilistic framework, 
+where the likelihood of being in a trend regime is modeled as a continuous 
+function of pt. 
+For example, a transformation such as a cumulative distribution function may 
+be used to define: 
+• Probability of bullish regime 
+• Probability of bearish regime 
+This approach allows for smoother transitions between regimes and captures 
+uncertainty in classification, which may better reflect real market behavior. 
+ 
+4. Incorporation of Additional Market Variables 
+The model can be further extended by integrating additional variables that 
+influence market dynamics, such as: 
+• Trading volume intensity 
+• Order book imbalance 
+• Time-of-day effects 
+
+These factors may enhance the explanatory power of the model by 
+accounting for structural features of market microstructure beyond price and 
+volume averages. 
+Limitations 
+1. Distributional Assumptions 
+The model relies on the standardization of price deviations using a volatility 
+measure σt , which implicitly assumes a relatively stable distribution of price 
+movements. However, financial returns are often characterized by fat tails, 
+skewness, and volatility clustering, which may limit the accuracy of 
+standardized measures. 
+As a result, extreme values of pt  may not always correspond proportionally to 
+true market imbalance, particularly during periods of market stress. 
+ 
+2. Sensitivity to Volatility Estimation 
+The accuracy of the model depends on the choice of volatility estimator used 
+in the normalization process. Different methods of estimating σt may produce 
+significantly different values of pt, leading to variation in regime classification. 
+In rapidly changing market conditions, lagging volatility measures may fail to 
+capture current dispersion, resulting in delayed or inaccurate identification of 
+regime shifts. 
+ 
+
+3. Fixed Threshold Specification 
+The use of a constant threshold parameter k introduces rigidity into the 
+model. Market conditions are not static, and the level of deviation required to 
+indicate a meaningful imbalance may vary across time, assets, and liquidity 
+environments. 
+A fixed threshold may therefore: 
+• Overclassify noise as trend in low-volatility periods 
+• Under-detect genuine trends in high-volatility periods 
+This limits the adaptability of the model across different market regimes. 
+ 
+4. Exclusion of Exogenous Factors 
+The model is constructed solely from price and volume data and does not 
+account for external information, such as: 
+• Macroeconomic announcements 
+• News events 
+• Geopolitical developments 
+Such factors can induce abrupt price movements that are not captured by 
+VWAP-based deviations, reducing the explanatory power of the model during 
+event-driven periods. 
+5. Simplification of Market Microstructure 
+While the model interprets VWAP as a proxy for market equilibrium, it does 
+not explicitly incorporate detailed microstructure elements such as: 
+• Order book depth 
+
+• Bid-ask spread dynamics 
+• Hidden liquidity 
+These factors play a significant role in price formation and may influence 
+regime behavior in ways not captured by the current framework. 
+ 
+ 
+
+Session-Depandant Liquidity Effects 
+1. Intraday Variation in Liquidity 
+Market liquidity is not constant throughout the trading day and varies 
+significantly across major trading sessions, particularly between the Asian, 
+London, and New York sessions. These variations influence the behavior of 
+price relative to VWAP and, consequently, the persistence of identified 
+regimes. 
+In general: 
+• The Asian session is characterized by relatively lower trading volume 
+and reduced institutional participation 
+• The London and New York sessions exhibit higher liquidity, increased 
+participation, and stronger price discovery 
+ 
+2. Regime Persistence Under Low Liquidity 
+In lower-liquidity environments, such as the Asian session, the ability of 
+opposing market participants to counteract existing order flow is limited. As 
+a result, once a directional regime is established (i.e., Rt=±1), there may be 
+insufficient volume to reverse the prevailing imbalance. 
+This implies that: 
+• Established regimes are more likely to persist 
+• Price may continue drifting in the direction of the existing deviation 
+• Mean-reversion forces are weaker due to limited liquidity provision 
+ 
+
+3. Regime Transition Under High Liquidity 
+In contrast, during higher-liquidity periods such as the London and New York 
+sessions, increased participation enables more efficient price discovery. 
+Larger volumes of opposing orders can absorb or counteract existing 
+imbalances, increasing the likelihood of regime transitions. 
+Consequently: 
+• Deviations from VWAP may be corrected more rapidly 
+• Regimes are more likely to shift between Rt=0 and Rt=±1 
+• Mean-reversion behavior becomes more pronounced 
+ 
+4. Implications for the Model 
+These observations suggest that the effectiveness and interpretation of the 
+regime classification model are conditional on the prevailing liquidity 
+environment. 
+In particular: 
+• The same value of pt may carry different implications depending on 
+session 
+• Threshold parameter k  may require adjustment across time periods 
+• Regime persistence is not solely a function of price deviation, but also 
+of available market liquidity 
+ 
+5. Extension to Time-Conditioned Regimes 
+An extension of the model may incorporate session-dependent adjustments, 
+where regime classification is conditioned on time-of-day variables. This 
+
+would allow the framework to account for structural differences in liquidity 
+and improve its descriptive accuracy. 
+ 
+ 
+
+Conclusion 
+1. Summary of the Model 
+This paper introduced a quantitative framework for classifying intraday 
+market regimes based on deviations from the Volume Weighted Average Price 
+(VWAP). By defining a standardized variable pt and a corresponding regime 
+classification Rt , the model provides a systematic method for distinguishing 
+between trend-dominated and mean-reverting market conditions. 
+The framework formalizes the relationship between price, volume, and 
+volatility into a unified structure that is both interpretable and mathematically 
+consistent. 
+ 
+2. Key Insights 
+Several key insights emerge from the model: 
+• VWAP can be interpreted as a dynamic equilibrium price reflecting 
+aggregated market activity 
+• Deviations from VWAP capture order flow imbalances and directional 
+pressure 
+• Market regimes can be classified in a consistent manner using volatilityadjusted thresholds 
+• The persistence and transition of regimes are influenced by liquidity 
+conditions, particularly across trading sessions 
+Together, these findings provide a structured explanation for commonly 
+observed market behaviors such as trend continuation and mean reversion. 
+ 
+
+3. Contribution 
+The primary contribution of this paper lies in transforming a widely used 
+trading heuristic into a formal quantitative model. By grounding VWAP-based 
+intuition in a mathematical framework, the paper bridges the gap between 
+discretionary technical analysis and economic interpretations of market 
+microstructure. 
+This contributes to a more systematic understanding of intraday price 
+dynamics and offers a foundation for further analytical development. 
+ 
+4. Directions for Future Research 
+Future research may extend the model in several directions: 
+• Developing probabilistic regime classification to capture uncertainty 
+• Incorporating order book and liquidity metrics for deeper 
+microstructure analysis 
+• Adapting threshold parameters dynamically across different market 
+environments 
+• Empirically testing the model across assets and time periods 
+Such extensions may enhance both the descriptive and predictive capabilities 
+of the framework. 
+ 
+ 

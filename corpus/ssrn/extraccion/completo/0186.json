@@ -1,0 +1,119 @@
+{
+  "doc_id": 186,
+  "titulo": "Price Formation in Markets with Trading Delays",
+  "resumen_operativo": "El paper desarrolla un modelo de formación de precios con trading delays, donde traders informados y no informados acceden al mercado en tiempos estocásticos. Se demuestra que cuando los delays aplican uniformemente, el nivel de delays no afecta la agregación de información (irrelevancia condicional), pero sí debilita los incentivos de adquisición de información, reduciendo la fracción de informed traders y la eficiencia informativa de los precios. La dispersión de precios y la prima de riesgo son funciones no-monotónicas (hump-shaped) de los delays. Se aporta evidencia empírica del mercado de bonos corporativos del Reino Unido (~3.8M transacciones, 2011-2017).",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Trading Delays",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Tiempo que transcurre entre la decisión de negociar y la ejecución efectiva de la orden. Varía ampliamente entre mercados: segundos/minutos en equities, 1-3 días en bonos corporativos, 5 días en bonos municipales.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "price informativeness"},
+        {"tipo": "APLICA_A", "objeto": "OTC markets"}
+      ],
+      "cita_textual": "More than half of the US equity orders take five seconds to ten minutes to fully execute. The same number was identified to be 1-3 days in the corporate bond market."
+    },
+    {
+      "nombre": "Revelatory Price Efficiency",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de la información única que contiene el precio de mercado que no está en la información pública. Es estacionaria y coincide con el equilibrio de Grossman-Stiglitz (1980) cuando la fracción de informed traders se toma como dada.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "price informativeness"},
+        {"tipo": "EQUIVALE_A", "objeto": "RPE"}
+      ],
+      "cita_textual": "We show that the measure of unique information the market price contains, which we term revelatory price efficiency, is stationary and coincides with what obtains in the equilibrium of Grossman and Stiglitz (1980) model."
+    },
+    {
+      "nombre": "Information Acquisition",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Decisión ex-ante de los traders de invertir en información privada. Trading delays más largos debilitan estos incentivos, reduciendo la fracción de equilibrio de informed traders.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "informed trading"},
+        {"tipo": "CAUSA", "objeto": "revelatory price efficiency"}
+      ],
+      "cita_textual": "Traders' information acquisition incentives are weaker if trading delays are longer. Therefore, the equilibrium fraction of informed traders is lower if trading delays are longer."
+    },
+    {
+      "nombre": "Price Dispersion",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Segundo momento de los precios de transacción durante la sesión de trading. Es una función hump-shaped (no-monotónica) de los trading delays: aumenta para delays moderados y disminuye para delays severos.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market liquidity costs"},
+        {"tipo": "PREDICE", "objeto": "trading delays"}
+      ],
+      "cita_textual": "Price dispersion is non-monotonic in trading delays."
+    },
+    {
+      "nombre": "Risk Premium",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Exceso de retorno requerido por los inversores. Es no-monotónico en los delays, alcanzando su máximo cuando los delays son lo suficientemente severos para eliminar toda adquisición de información pero aún moderados para permitir trading antes de revelación pública.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "trading delays"},
+        {"tipo": "USA", "objeto": "equilibrium pricing"}
+      ],
+      "cita_textual": "We find that price dispersion and average risk premium tend to reach their maximum when trading delays are just severe enough to preclude all information acquisition in equilibrium."
+    },
+    {
+      "nombre": "Corporate Bond Market",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Mercado OTC que es un ejemplo canónico de mercado con trading delays. Se usa como laboratorio empírico con datos de ~3.8 millones de transacciones en bonos corporativos del Reino Unido (2011-2017).",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "OTC markets"},
+        {"tipo": "APLICA_A", "objeto": "trading delays"}
+      ],
+      "cita_textual": "With its over-the-counter (OTC) structure, the corporate bond market is a textbook example of markets with trading delays."
+    },
+    {
+      "nombre": "Grossman-Stiglitz Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo canónico de adquisición de información en mercados competitivos que este paper anida como caso especial cuando los trading delays son cero o la información privada tiene vida infinita.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "rational expectations equilibrium"},
+        {"tipo": "EQUIVALE_A", "objeto": "benchmark model"}
+      ],
+      "cita_textual": "We develop a competitive asset trading model that nests Grossman and Stiglitz (1980) as a special case."
+    },
+    {
+      "nombre": "Trade Frequency",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Proxy del inverso del trading delay en el análisis empírico, medido como la frecuencia de transacciones de un bono en los datos del mercado de bonos corporativos del Reino Unido.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "trading delays"},
+        {"tipo": "USA", "objeto": "panel regression"}
+      ],
+      "cita_textual": "We proxy (the inverse of) a bond's trading delay with its trade frequency measured in the data."
+    },
+    {
+      "nombre": "Information Depreciation",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Tasa a la que la información privada se vuelve pública. Un aumento en la tasa de depreciación (ej. por tecnología big data que permite extraer información ajena) reduce la RPE a pesar de facilitar acceso a datos.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "revelatory price efficiency"},
+        {"tipo": "SE_OPONE_A", "objeto": "information acquisition cost"}
+      ],
+      "cita_textual": "We contrast two possible scenarios: a decline in the information acquisition cost vs. an increase in the rate of information depreciation."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La eficiencia de precios (price efficiency) disminuye con los trading delays en el mercado de bonos corporativos del Reino Unido. El coeficiente de past frequency (proxy inverso de delay) es 9.930*** (t=1.81), indicando que mayor frecuencia de trading se asocia significativamente con mayor eficiencia.",
+      "mercado": "UK corporate bond market (secondary market trades)",
+      "periodo": "Agosto 2011 - Diciembre 2017",
+      "magnitud": "175,460 observaciones; R2 hasta 0.307-0.328; coeficiente de trade frequency sobre price efficiency: 9.930*** (t=1.81)",
+      "condiciones": "Panel regressions con bond fixed effects y day fixed effects; two-way clustering a nivel bond y día",
+      "robustez": "alta",
+      "cita_textual": "Ceteris paribus, price efficiency is decreasing in trading delays."
+    },
+    {
+      "afirmacion": "La dispersión de precios de transacción es una función hump-shaped (no-monotónica) de los trading delays: el coeficiente lineal es positivo (17.464***) y el cuadrático negativo (-2.162***), confirmando la predicción teórica.",
+      "mercado": "UK corporate bond market (~3.8M transacciones, incluyendo client-dealer e inter-dealer)",
+      "periodo": "Agosto 2011 - Diciembre 2017",
+      "magnitud": "Coeficiente lambda: 17.464*** (t=1.19); lambda^2: -2.162*** (t=0.30); 175,460 obs; R2 hasta 0.328 con todos los fixed effects",
+      "condiciones": "Regresiones cuadráticas con bond FE y day FE; two-way clustering de errores estándar",
+      "robustez": "alta",
+      "cita_textual": "The dispersion of transaction prices is non-monotonic in trading delays."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Los trading delays son inherentemente intradía (segundos a horas en equities); el modelo conecta frecuencia de transacciones con eficiencia de precios, relevante para ejecución intradía."}
+}

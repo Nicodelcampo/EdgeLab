@@ -1,0 +1,96 @@
+{
+  "doc_id": 72,
+  "titulo": "Bitcoin Market Microstructure",
+  "resumen_operativo": "El artículo investiga la microestructura de ocho mercados de Bitcoin durante 2016-2017 (operando en USD, EUR, CNY) analizando su liquidez y el componente de selección adversa en el spread bid-ask. Se utilizan métricas de volumen, el ratio de liquidez de Cooper et al., y estimadores de spread de Roll y Corwin-Schultz. Asimismo, se aplican modelos de descomposición de spread (Huang & Stoll, Glosten & Harris, Madhavan et al.). Concluye que, aunque operan 24/7, la liquidez tiene picos correlacionados con los horarios bursátiles de cada región. Los spreads son notablemente superiores a los de mercados de acciones, impulsados por una alta proporción de costos por selección adversa (información privada sobre valoración prospectiva de la criptomoneda).",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "adverse selection",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Componente del spread bid-ask que compensa el riesgo de operar contra agentes informados. En Bitcoin, se atribuye a información privada sobre la valoración futura o demanda de la criptomoneda.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "The model implied spreads are to the largest extent attributed to adverse selection, and are substantially higher than on stock markets."
+    },
+    {
+      "nombre": "liquidity ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica propuesta por Cooper, Groth y Avera (1985) que mide el volumen de capital necesario para inducir un cambio del 1% en el precio, evaluando la profundidad y resiliencia del mercado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "liquidity"}
+      ],
+      "cita_textual": "I therefore calculate the liquidity ratio of Cooper et al. (1985) which measures the volume (denoted in the respective currency) that is necessary to induce a 1% price change."
+    },
+    {
+      "nombre": "Roll measure",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Estimador del spread efectivo porcentual basado en la covarianza serial negativa de los cambios de precio relativos diarios.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "The Roll (1984) measure for the percentage effective spread is SR = 200 sqrt(-Cov(∆pj/pj−1, ∆pj−1/pj−2))"
+    },
+    {
+      "nombre": "Corwin and Schultz measure",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Estimador del spread que utiliza los precios máximos y mínimos diarios, usado como alternativa al estimador de Roll.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "I also use the spread measure proposed by Corwin and Schultz (2012) which relies on daily high and low prices."
+    },
+    {
+      "nombre": "tick test",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Regla utilizada para inferir la dirección de las operaciones (comprador o vendedor iniciador) comparando el precio de transacción con el precio anterior.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "trade direction"}
+      ],
+      "cita_textual": "In order to infer the trade direction, I use the tick test according to Lee and Ready (1991). A transaction is considered to be buyer-initiated (seller-initiated) if the transaction price is higher (lower) than the previously recorded transaction price."
+    },
+    {
+      "nombre": "Huang and Stoll model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de descomposición del spread basado en indicadores de transacciones que separa los costos de selección adversa asumiendo que el valor fundamental sigue un random walk que incorpora información privada.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "adverse selection"}
+      ],
+      "cita_textual": "In the model by Huang and Stoll (1997), the evolution of the fundamental value is assumed to take private information into account."
+    },
+    {
+      "nombre": "Glosten and Harris model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de descomposición del spread que permite que la selección adversa y el componente de inventario dependan del tamaño de la orden (order size).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "adverse selection"}
+      ],
+      "cita_textual": "Glosten and Harris (1988) allow the adverse selection and the inventory holding component to depend on order size."
+    },
+    {
+      "nombre": "Madhavan et al. model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de microestructura que asume que únicamente la sorpresa o el componente inesperado del flujo de órdenes (order flow) afecta el valor fundamental del activo.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "adverse selection"}
+      ],
+      "cita_textual": "Madhavan et al. (1997) assume that only the surprise component of the order flow affects the fundamental value"
+    }
+  ],
+  "hallazgos": [
+    {
+      "hallazgo": "Altos costos de selección adversa en Bitcoin",
+      "explicacion": "A pesar de la ausencia de creadores de mercado oficiales y riesgo de inventario tradicional, los modelos revelan que gran parte del spread en las bolsas de Bitcoin es un costo por selección adversa, reflejando asimetrías en la información privada sobre la valoración prospectiva de la criptomoneda.",
+      "implicacion": "Muestra que los modelos estándar de microestructura aplicados a mercados de capitales también capturan fricciones de asimetría informativa en mercados de criptomonedas puros con libros de órdenes abiertos."
+    },
+    {
+      "hallazgo": "Ciclos de liquidez interconectados con horarios bursátiles tradicionales",
+      "explicacion": "A pesar de que los mercados de Bitcoin operan 24 horas al día de forma continua, el volumen de operaciones y la liquidez presentan patrones intradiarios que coinciden fuertemente con el horario de apertura de las bolsas de valores en la región de la moneda de cotización (EEUU, Europa, China).",
+      "implicacion": "Sostiene que los participantes activos en la liquidez de las criptomonedas son entidades institucionales o de retail cuyas rutinas están ligadas a los mercados financieros tradicionales."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El objeto de estudio (criptomonedas en 2016-2017) no concierne directamente al ES. Sin embargo, metodológicamente aporta un repaso excelente de herramientas clásicas para estimar el spread (Roll, Corwin-Schultz) y modelos de descomposición de selección adversa (Huang-Stoll, Glosten-Harris, Madhavan) que son plenamente aplicables al análisis de la microestructura del mercado de futuros ES utilizando datos tick-a-tick."
+  }
+}

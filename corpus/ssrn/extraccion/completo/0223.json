@@ -1,0 +1,247 @@
+{
+  "doc_id": 223,
+  "titulo": "Market Microstructure Invariants",
+  "resumen_operativo": "El paper propone el principio de 'invarianza de microestructura de mercado' según el cual la distribución de transferencias de riesgo ('bets'), los costos de transacción, la resiliencia de mercado y la precisión de precios son constantes entre activos cuando se miden en unidades de 'tiempo de negocio' (business time). Derivando un modelo estructural con traders informados y ruido, demuestran que las relaciones de invarianza emergen cuando el costo de generar señales informativas es constante entre mercados. Usando una base de 400,000+ órdenes de portfolio transitions (2001-2005), confirman que la distribución de tamaño de órdenes es log-normal con log-varianza 2.53, que los costos de transacción se descomponen en una medida de iliquidez proporcional a (σ²/P·V)^(1/3) multiplicada por una función invariante del tamaño de bet, y que un modelo de impacto de raíz cuadrada explica los costos mejor que uno lineal. Las predicciones de invarianza, basadas en exponentes 1/3 y 2/3 sobre la actividad de trading W = σ·P·V, muestran consistencia económica notable aunque son estadísticamente rechazadas por el gran tamaño muestral.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "market microstructure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Campo de estudio de los procesos mediante los cuales los mercados financieros transfieren riesgos, enfocándose en mecanismos de formación de precios, costos de transacción, flujo de órdenes y el rol de intermediarios. El paper lo modela como un juego de trading donde los 'bets' (transferencias de riesgo) llegan en tiempo de negocio y son ejecutados a través de market makers competitivos.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market microstructure invariants"},
+        {"tipo": "USA", "objeto": "bid-ask spread"},
+        {"tipo": "USA", "objeto": "market impact"}
+      ],
+      "cita_textual": "Market microstructure characteristics such as order size, order arrival rate, price impact, bid-ask spread, pricing accuracy, and market resiliency vary across assets and across time."
+    },
+    {
+      "nombre": "market microstructure invariants",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Principio de modelización que postula que las características microestructurales que varían en tiempo calendario se vuelven constantes ('invariantes') cuando se miden en tiempo de negocio. Implica que la distribución de transferencias de riesgo, costos de transacción, precisión de precios y resiliencia son las mismas por unidad de tiempo de negocio a través de todos los activos y períodos.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "market microstructure"},
+        {"tipo": "USA", "objeto": "business time"},
+        {"tipo": "USA", "objeto": "trading activity"},
+        {"tipo": "PREDICE", "objeto": "square-root law"}
+      ],
+      "cita_textual": "Market microstructure invariance hypothesizes that microstructure characteristics, which vary when measured in units of calendar time, become constants—'microstructure invariants'—when measured in units of business time."
+    },
+    {
+      "nombre": "business time",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Tiempo medido por la tasa de llegada de nuevos bets (γ) al mercado. Para activos muy negociados el tiempo de negocio pasa rápido; para activos poco negociados pasa lento. La velocidad del mercado (market velocity) es precisamente la tasa γ de llegada de bets.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market microstructure invariants"},
+        {"tipo": "MIDE", "objeto": "trading activity"},
+        {"tipo": "EQUIVALE_A", "objeto": "market velocity"}
+      ],
+      "cita_textual": "Market microstructure invariance begins with the intuition that these risk transfers, which we call 'bets,' take place in business time. The rate at which business time passes—market 'velocity'—is the rate at which new bets arrive into the market."
+    },
+    {
+      "nombre": "trading activity",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Producto del volumen esperado en dólares (P·V), la volatilidad de retornos (σ) y el precio de la acción, definido como W := σ · P · V. Mide el riesgo agregado en dólares transferido por todos los bets durante un día calendario. Es la variable macroscópica observable a partir de la cual se infieren todas las cantidades microscópicas mediante las leyes de invarianza.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "market microstructure invariants"},
+        {"tipo": "MIDE", "objeto": "business time"},
+        {"tipo": "PREDICE", "objeto": "betting volume"},
+        {"tipo": "PREDICE", "objeto": "order size distribution"}
+      ],
+      "cita_textual": "Trading activity measures the aggregate dollar risk transferred by all bets during one calendar day. [...] define 'trading activity' W as the product of expected dollar trading volume P · V and calendar returns volatility σ, i.e., W := σ · P · V."
+    },
+    {
+      "nombre": "trading volume",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Volumen esperado de negociación en acciones por día calendario, denotado V. Se relaciona con el betting volume mediante el multiplicador de volumen ζ: el volumen total observado incluye tanto los bets originales como el volumen de intermediación. V := ζ/2 · γ · E|Q̃|.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "trading activity"},
+        {"tipo": "USA", "objeto": "betting volume"},
+        {"tipo": "MIDE", "objeto": "liquidity"}
+      ],
+      "cita_textual": "On a given calendar day, expected trading volume (in shares) is given by V := ζ/2 · γ · E|Q̃|; dividing by two implies that a buy-bet matched to a sell-bet is counted as one unit of volume, not two."
+    },
+    {
+      "nombre": "betting volume",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Volumen esperado de bets, definido como V̄ := γ · E{|Q̃|} = (2/ζ) · V. Representa el volumen que resultaría si todo el trading fueran bets sin intermediación. Es una variable no observable que se infiere del volumen observado V mediante el multiplicador ζ.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "trading volume"},
+        {"tipo": "USA", "objeto": "business time"},
+        {"tipo": "PARTE_DE", "objeto": "order size distribution"}
+      ],
+      "cita_textual": "We define expected 'betting volume' V̄ by V̄ := γ · E{|Q̃|} = (2/ζ) · V."
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Componente fijo de los costos de transacción, modelado como parte de la función de costos invariante f(Ĩ). En el paper se encuentra que el spread cotizado mediano varía de 40.96 bps (grupo de menor volumen) a 4.83 bps (mayor volumen), un factor de 8.48. La invarianza predice que el spread debería ser proporcional a σ̄ · W̄^(-1/3).",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "transaction costs"},
+        {"tipo": "MIDE", "objeto": "liquidity"},
+        {"tipo": "USA", "objeto": "trading activity"}
+      ],
+      "cita_textual": "The median quoted bid-ask spread, obtained from the transition dataset, is 12.04 basis points; its mean is 25.42 basis points. From lowest volume group to highest volume group, the median spread declines monotonically from 40.96 to 4.83 basis points, by a factor of 8.48."
+    },
+    {
+      "nombre": "market impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Efecto que una orden de trading tiene sobre el precio del activo. En el modelo estructural, el price impact es lineal en el tamaño del bet (parámetro λ), pero empíricamente el paper encuentra que una función cóncava (raíz cuadrada, z ≈ 0.57) describe mejor los costos de transacción. La invarianza no impone una forma funcional específica para el market impact.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "transaction costs"},
+        {"tipo": "USA", "objeto": "Kyle lambda"},
+        {"tipo": "SE_OPONE_A", "objeto": "bid-ask spread"},
+        {"tipo": "APLICA_A", "objeto": "square-root law"}
+      ],
+      "cita_textual": "Invariance does not imply a specific functional form for function f(.). In our analysis, we focus on two specific functional forms: linear price impact costs and square root price impact costs."
+    },
+    {
+      "nombre": "Kyle lambda",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Parámetro de price impact lineal, denotado λ(t), que mide cuánto se mueve el precio por cada acción negociada. En el modelo estructural se define como λ(t) · Q̃(t) como el ajuste de precio que los market makers aplican para break-even ante selección adversa. El paper deriva λ(t) a partir de las tres ecuaciones fundamentales de volumen, costos y volatilidad.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market impact"},
+        {"tipo": "MIDE", "objeto": "liquidity"},
+        {"tipo": "USA", "objeto": "transaction costs"},
+        {"tipo": "REQUIERE", "objeto": "trading volume"}
+      ],
+      "cita_textual": "In order to break even in the presence of adverse selection, market makers take the other side of the bet at a price adjusted by λ(t) · Q̃(t), where λ(t) is a price impact parameter. The price impact is linear in the size of the bet."
+    },
+    {
+      "nombre": "price impact",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida del costo de ejecutar una orden debido al movimiento adverso del precio. El paper distingue entre el costo de price impact (transactions cost CB) y el parámetro de price impact (λ), que en el modelo de dealer market resultan ser conceptos relacionados pero distintos. Empíricamente, el impacto de mercado para una orden del 1% del volumen diario en el stock benchmark es de 2.50·10⁻⁴ (modelo lineal) o 12.08·10⁻⁴ (modelo raíz cuadrada).",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "market impact"},
+        {"tipo": "USA", "objeto": "Kyle lambda"},
+        {"tipo": "APLICA_A", "objeto": "square-root law"}
+      ],
+      "cita_textual": "Note that the concepts of 'price impact cost' and 'price impact,' which both depend on the linear price impact parameter λ(t) in the model, actually represent somewhat different concepts, which happen to be the same in a dealer market model in which markets are semi-strong efficient and dealers make zero profits based on linear signal processing."
+    },
+    {
+      "nombre": "square-root law",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Relación funcional según la cual el costo de transacción (impacto de mercado) es proporcional a la raíz cuadrada del tamaño de la orden como fracción del betting volume: C(Q̃) ∝ |Q̃/V̄|^(1/2). Bajo invarianza, con la raíz cuadrada como función de impacto, los costos dependen solo del tamaño de la orden como fracción de la actividad y no de otras características del stock. Es la única forma funcional para la cual el exponente de actividad W̄^(1/3) se cancela del término de impacto.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "market impact"},
+        {"tipo": "APLICA_A", "objeto": "transaction costs"},
+        {"tipo": "USA", "objeto": "market microstructure invariants"}
+      ],
+      "cita_textual": "The square root is the only function for which invariance leads to the empirical prediction that impact costs (measured in units of returns volatility) depend only on bet size as a fraction of betting activity Q̃/V̄ and not on any other stock characteristics."
+    },
+    {
+      "nombre": "order size distribution",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Distribución del tamaño de las órdenes (aproximadamente bets). El paper encuentra que la distribución de tamaños de órdenes de portfolio transition, ajustadas por actividad de trading, es log-normal con media logarítmica -5.71 y varianza logarítmica 2.53. Esto implica colas muy gruesas: el 5.39% de los bets más grandes genera el 50% del volumen de trading, y el 0.07% más grande genera el 50% de la varianza de retornos.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market microstructure invariants"},
+        {"tipo": "USA", "objeto": "betting volume"},
+        {"tipo": "PREDICE", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "The portfolio transition orders have a log-normal distribution with estimated log-variance of 2.53. [...] The pooled sample mean of ln[[Wi/W*]^(2/3) · Xi/Vi] is −5.71; the pooled sample variance is 2.53."
+    },
+    {
+      "nombre": "meta-order",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Orden de gran tamaño que un inversor institucional decide ejecutar, típicamente durante varios días y fragmentada en múltiples trades pequeños. En el contexto del paper, los portfolio transition orders funcionan como proxies de bets (que a su vez son meta-orders), ya que se conoce el tamaño total deseado desde el inicio de la transición, antes de que comience la ejecución, evitando el sesgo de selección que afecta a otras bases de datos de trades.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "transaction costs"},
+        {"tipo": "USA", "objeto": "order size distribution"},
+        {"tipo": "USA", "objeto": "market impact"}
+      ],
+      "cita_textual": "Consider an asset manager who places one bet by purchasing 100,000 shares of IBM stock. The bet might be implemented by placing orders over several days, and each of the orders might be 'shredded' into many small trades. Since bets represent independent increments in the intended order flow, the various trades which implement the bet must all be added together to recover the size of the original bet."
+    },
+    {
+      "nombre": "liquidity",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de iliquidez definida como 1/L := C̄B / E{|P·Q̃|} que representa el costo porcentual esperado de ejecutar un bet. La invarianza predice que L (liquidez) es proporcional a [P·V̄/σ̄²]^(1/3). Alternativamente, usando variables observables: 1/L ∝ (σ² / P·V)^(1/3). Esta medida no depende de las unidades de tiempo en que se midan las variables, a diferencia del ratio de Amihud.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Kyle lambda"},
+        {"tipo": "MIDE", "objeto": "transaction costs"},
+        {"tipo": "SE_OPONE_A", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "The idea that liquidity is related to dollar volume per unit of returns variance P·V/σ² is intuitive. Traders believe that transactions costs are low in markets with high dollar volume and high in markets with high volatility. If the volume multiplier ζ and the volatility multiplier ψ do not vary across stocks, then L ∝ [P·V/σ²]^(1/3) becomes a simple index of liquidity."
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Costos de ejecutar un bet, descompuestos en un componente de bid-ask spread (fijo) y un componente de market impact (variable con el tamaño). La función de costo porcentual C(Q̃) se escribe como el producto de una medida de iliquidez específica del activo 1/L y una función invariante f(Ĩ). Para el stock benchmark (P=$40, V=1M shares/día, σ=2%), el costo total de una orden del 1% del volumen diario es 10.71 bps (modelo lineal) o 14.16 bps (modelo raíz cuadrada).",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market microstructure invariants"},
+        {"tipo": "USA", "objeto": "liquidity"},
+        {"tipo": "USA", "objeto": "market impact"},
+        {"tipo": "USA", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "C(Q̃) = (1/L) · f(Ĩ). This is an important decomposition of transaction cost functions."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La distribución del tamaño de órdenes de portfolio transition, ajustada por actividad de trading [W_i/W*]^(2/3) · X_i/V_i, es log-normal con media -5.71 y varianza 2.53 en la muestra agrupada de 439,765 órdenes. La similitud visual de las distribuciones empíricas con la normal superpuesta se mantiene en 15 subgrupos volumen-volatilidad, con medias entre -6.03 y -5.41 y varianzas entre 2.23 y 2.90.",
+      "mercado": "U.S. equities (NYSE, Amex, NASDAQ common stocks)",
+      "periodo": "2001-2005",
+      "magnitud": "log-media = -5.71, log-varianza = 2.53, N = 439,765 órdenes; medias de subgrupos entre -6.03 y -5.41, varianzas entre 2.23 y 2.90",
+      "condiciones": "Órdenes de portfolio transitions como proxy de bets; ζ=2, ψ=1, δ=1 (implícitos); benchmark stock con P*=$40, V*=1M shares/día, σ*=2%",
+      "robustez": "alta",
+      "cita_textual": "The pooled sample mean of ln[[Wi/W*]^(2/3) · Xi/Vi] is −5.71; the pooled sample variance is 2.53. [...] For the 15 volume-volatility groups, the means range from −6.03 to −5.41, close to the mean of −5.71 for the pooled sample. The variances range from 2.23 to 2.90, also close to the variance of 2.53 for the pooled sample."
+    },
+    {
+      "afirmacion": "El coeficiente α₀ que relaciona el log del tamaño de orden como fracción de volumen con el log de actividad de trading es α̂₀ = -0.62 (error estándar 0.009), económicamente cercano al valor -2/3 predicho por invarianza, aunque estadísticamente rechazado (F=25.31, p<0.0001) debido al enorme tamaño muestral. Al imponer α₀=-2/3, el R² es 0.3149; al estimarlo libremente sube solo a 0.3167 (ΔR²=0.0018).",
+      "mercado": "U.S. equities",
+      "periodo": "2001-2005",
+      "magnitud": "α̂₀ = -0.62 (SE 0.009), F=25.31, p<0.0001; R² invariance = 0.3149, R² libre = 0.3167, ΔR²=0.0018",
+      "condiciones": "OLS log-lineal con clustering por semana (4,389 clusters) e industria (17 categorías); portfolio transition orders.",
+      "robustez": "alta",
+      "cita_textual": "For the entire sample, the estimate for α₀ is α̂₀ = −0.62 with standard error of 0.009. Economically, the point estimate for α₀ is close to the value −2/3 predicted by the invariance hypothesis, but the hypothesis α₀ = −2/3 is strongly rejected (F = 25.31, p < 0.0001) because the standard error is very small."
+    },
+    {
+      "afirmacion": "En la regresión no lineal de costos de transacción, el exponente α₂ que multiplica la actividad de trading en el término de market impact es α̂₂ = -0.32 (SE 0.015), muy cercano al valor -1/3 predicho por invarianza. La curvatura del impacto de mercado se estima en ẑ = 0.57 (SE 0.039), sugiriendo que la especificación de raíz cuadrada (z=1/2) describe mejor los costos que la lineal (z=1).",
+      "mercado": "U.S. equities",
+      "periodo": "2001-2005",
+      "magnitud": "α̂₂ = -0.32 (SE 0.015), ẑ = 0.57 (SE 0.039), α̂₁ (spread) = -0.49 (SE 0.050), κ̂_I = 10.69·10⁻⁴ (SE 1.376·10⁻⁴)",
+      "condiciones": "Regresión no lineal con implementation shortfall como variable dependiente; ajuste por market return y heterocedasticidad.",
+      "robustez": "alta",
+      "cita_textual": "The point estimate for α₂ is α̂₂ = −0.32 with standard error 0.015. Since invariance implies α₂ = −1/3, this result strongly supports invariance. [...] The estimate for the market impact curvature parameter z is ẑ = 0.57 with standard error 0.039. This suggests that a square root specification (z=1/2) may describe observed transactions costs better than a linear specification (z=1)."
+    },
+    {
+      "afirmacion": "El modelo de costos de transacción con restricciones de invarianza (α₁=α₂=-1/3) alcanza un R² de 0.0991 (lineal) y 0.1007 (raíz cuadrada), comparado con R²=0.0847 usando solo el retorno de mercado. Añadir tres parámetros adicionales solo incrementa el R² a 0.1010 (ΔR²=0.0003). Pasar de 4 a 11 parámetros libres aumenta el R² apenas a 0.1016 (ΔR²=0.0006), demostrando que la invarianza captura casi toda la variación explicable de los costos.",
+      "mercado": "U.S. equities",
+      "periodo": "2001-2005",
+      "magnitud": "R² benchmark (solo mercado) = 0.0847; R² lineal invariance = 0.0991; R² sqrt invariance = 0.1007; R² 6-parámetros libre = 0.1010; R² 11-parámetros libre = 0.1016; ΔR² máximo = 0.0009",
+      "condiciones": "Modelos calibrados imponiendo α₁=α₂=-1/3; estimación no lineal.",
+      "robustez": "alta",
+      "cita_textual": "Compared with the square root specification, adding the three additional parameters α₁, α₂ and z modestly increases the R² from 0.1007 to 0.1010. The modest increase strongly supports the economic importance of invariance."
+    },
+    {
+      "afirmacion": "El spread cotizado mediano varía de 40.96 bps (grupo de menor volumen) a 4.83 bps (grupo de mayor volumen), un factor de 8.48. La invarianza predice una disminución por factor 150^(1/3)≈5.31; la diferencia se explica parcialmente por diferencias en volatilidad. La regresión del spread escalado sobre actividad de trading arroja α̂₃=-0.35 (SE 0.003), cercano al valor predicho de -1/3.",
+      "mercado": "U.S. equities",
+      "periodo": "2001-2005",
+      "magnitud": "Factor de declive del spread: 8.48 observado vs 5.31 predicho; α̂₃ = -0.35 (SE 0.003); spread benchmark implícito ≈ 9·10⁻⁴ ≈ 9 bps",
+      "condiciones": "Quoted spreads del dataset de portfolio transitions; OLS log-lineal.",
+      "robustez": "alta",
+      "cita_textual": "From lowest volume group to highest volume group, the median spread declines monotonically from 40.96 to 4.83 basis points, by a factor of 8.48. A back-of-the-envelope calculation based on invariance suggests that spreads should decrease approximately by a factor of 150^(1/3) ≈ 5.31 from lowest to highest volume group."
+    },
+    {
+      "afirmacion": "Bajo los supuestos ζ/2=ψ=δ=1, el stock benchmark (P=$40, V=1M shares/día, σ=2%) tiene aproximadamente 85 bets por día (21,420 al año). Los 1,155 bets más grandes generan aproximadamente la mitad del volumen de trading anual, y los 15 bets más grandes generan aproximadamente la mitad de la varianza de retornos anual.",
+      "mercado": "U.S. equities (benchmark stock representativo del tercil inferior del S&P 500)",
+      "periodo": "2001-2005",
+      "magnitud": "85 bets/día en benchmark; 1,155 bets mayores generan 50% volumen; 15 bets mayores generan 50% varianza de retornos; log-varianza 2.53 implica que 5.39% de bets genera 50% del volumen",
+      "condiciones": "ζ/2=ψ=δ=1; distribución log-normal de tamaños de bet; price impact lineal para el cálculo de contribución a varianza.",
+      "robustez": "media",
+      "cita_textual": "Under the assumptions ζ/2 = ψ = δ = 1 [...] the benchmark stock has about 85 bets per day for each of the 252 trading days in a calendar year. These estimates then imply that the 1,155 largest bets out of 21,420 bets generate approximately half of the trading volume during one year, and the 15 largest bets generate approximately half of returns variance during one year."
+    },
+    {
+      "afirmacion": "El tamaño promedio de orden como fracción de volumen diario declina de 16.23% (grupo 1, menor volumen) a 0.49% (grupo 10, mayor volumen), un factor de 33.12. La invarianza predice un factor de declive de 150^(2/3)≈28.23, muy cercano al valor observado, confirmando la relación exponente 2/3 entre tamaño de orden y actividad de trading.",
+      "mercado": "U.S. equities",
+      "periodo": "2001-2005",
+      "magnitud": "Factor de declive observado: 33.12; predicho por invarianza: 150^(2/3)≈28.23; tamaño promedio general: 4.20% del volumen diario; mediana general: 0.57%",
+      "condiciones": "Tamaños de órdenes de portfolio transition como proxy de bets; agrupación por deciles de volumen.",
+      "robustez": "alta",
+      "cita_textual": "The average order size is 4.20% of average daily volume, declining monotonically across the ten volume groups from 16.23% in the smallest group to 0.49% in the largest group, by a factor of 33.12. [...] The invariance hypothesis implies that order sizes should decline by a factor of approximately 150^(2/3) ≈ 28.23, a value which matches the data closely."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "El marco de invarianza es inherentemente intradía: el tiempo de negocio γ mide la tasa de llegada de bets, que para el stock benchmark es ~85 bets/día (~1 bet cada 5-6 minutos). Los principios de escalado (exponentes 1/3 y 2/3) y la descomposición de costos de transacción son directamente aplicables a datos intradía de TAQ, spreads, y órdenes, ya que las relaciones de invarianza no dependen de la frecuencia de muestreo."
+  }
+}

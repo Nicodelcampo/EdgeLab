@@ -1,0 +1,146 @@
+{
+  "doc_id": 77,
+  "titulo": "Constructing Cointegrated Cryptocurrency Portfolios for Statistical Arbitrage",
+  "resumen_operativo": "El paper ilustra el proceso paso a paso para crear una cartera cointegrada de criptomonedas (BTC, ETH, LTC, BCH) usando técnicas como Johansen y Engle-Granger. Permite a un trader diseñar y validar sistemas de reversión a la media multiactivo, explorando la optimización empírica de umbrales y stops dinámicos.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "cointegration",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Propiedad estadística que refleja cómo los precios de distintos activos están ligados a largo plazo por una tendencia estocástica común, permitiendo modelar sus spreads.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "statistical arbitrage"
+        }
+      ],
+      "cita_textual": "Cointegration reﬂects how asset prices are tied together in long-term by a common stochastic trend even though they might drift apart in the short run."
+    },
+    {
+      "nombre": "Johansen test",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Test estadístico que evalúa el rango de cointegración operando directamente en series de precios I(1), ofreciendo múltiples vectores pero optimizando menos para el riesgo que OLS.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "cointegration"
+        }
+      ],
+      "cita_textual": "The main advantage of the Johansen test over the Engle-Granger approach is the ability to perform hypothesis testings directly on I(1) price series themselves and derive cointegrating vectors without having to constantly check for stationarity."
+    },
+    {
+      "nombre": "Engle-Granger approach",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método de regresión lineal para probar la cointegración, preferido por los autores porque minimiza la varianza del residual creando spreads más tratables para el riesgo.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "cointegration"
+        }
+      ],
+      "cita_textual": "The classical approach for cointegration testing developed by Engle and Granger (1987) has the ability to capture long-term co-movements. We ﬁrst perform a linear regression on some given I(1) time series data, then test for stationarity of the residuals."
+    },
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Enfoque de trading propietario basado en aprovechar las desviaciones temporales de portafolios cuyo comportamiento global tiende a revertir a la media.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "mean reversion"
+        }
+      ],
+      "cita_textual": "This characteristic of mean-reverting in price is extensively used by hedge fund managers and proprietary trading ﬁrms to construct pair-trading strategies, or so-called statistical arbitrage."
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Tendencia fundamental explotada en estos portafolios: la propensión del precio compuesto a regresar a un nivel de equilibrio modelado (como un AR(1)).",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "statistical arbitrage"
+        }
+      ],
+      "cita_textual": "Mean-reversion trading strategies have been extensively researched and studied by academic researchers and practitioners who seek to understand the long-term co-movements of diﬀerent asset prices and arbitrage from the mean-reverting property of the price spread."
+    },
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Término intercambiable en el documento para referirse a arbitraje estadístico de carteras cointegradas donde se operan spreads resultantes de desviaciones entre activos.",
+      "relaciones": [
+        {
+          "tipo": "EQUIVALE_A",
+          "objeto": "statistical arbitrage"
+        }
+      ],
+      "cita_textual": "This characteristic of mean-reverting in price is extensively used by hedge fund managers and proprietary trading ﬁrms to construct pair-trading strategies, or so-called statistical arbitrage."
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Fricciones operativas (comisiones) omitidas intencionalmente en el modelo del paper por considerarse bajas, pero que pueden degradar fuertemente el rendimiento en backtests reales.",
+      "relaciones": [],
+      "cita_textual": "As competitions in the cryptocurrency market continues to rise, many recent exchanges start charging very minimal fee per transaction (typically 0.1% or less); thus, we assume no transaction cost associated with trading the spread."
+    },
+    {
+      "nombre": "stop-loss",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Mecanismo exit para truncar pérdidas no esperadas, aunque paradójicamente corta el proceso natural de reversión bajando el rendimiento agregado de la estrategia.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "maximum drawdown"
+        }
+      ],
+      "cita_textual": "Lastly, we design and back test trading systems for the mean-reverting portfolio under ﬁve diﬀerent entry/exit threshold levels and incorporate a stop-loss exit and trailing stop exit."
+    },
+    {
+      "nombre": "maximum drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Peor retroceso del portafolio en una racha de capital, la cual se intenta aminorar implementando mecanismos como bandas amplias o trailing stops.",
+      "relaciones": [],
+      "cita_textual": "However, maximum drawdown from all 5 threshold levels systems are reduced."
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Estadístico central usado para contrastar la rentabilidad ajustada de reglas paramétricas como distancias al umbral (1.5 sigmas).",
+      "relaciones": [],
+      "cita_textual": "When setting lower/upper bound at ±1.5σ, our system seems to outperform the rest in terms of annual Sharpe ratio, maximum drawdown, max/min/end equities, and gross proﬁts."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Existe una relación de cointegración sólida entre Bitcoin, Ethereum, Litecoin y Bitcoin Cash con un R-cuadrado ajustado de 94.5% al crear un modelo estacionario I(1).",
+      "mercado": "Criptomonedas (BTC, ETH, LTC, BCH)",
+      "periodo": "Diciembre 20, 2017 a Junio 20, 2018",
+      "magnitud": "adjusted R-squared de 94.5% usando precios diarios",
+      "condiciones": "Coinbase historical data; regresión ordinaria ignorando fricciones intradía",
+      "robustez": "media",
+      "cita_textual": "Hence, prices of BTC, ETH, LTC and BCH are indeed cointegrated by our procedure. With this conﬁrmation, the spread can be constructed using the suggested linear coeﬃcients:"
+    },
+    {
+      "afirmacion": "En ausencia de costos, los umbrales de entrada y salida más amplios (±1.5 desviaciones estándar) producen las mejores métricas de beneficio y Sharpe ratio.",
+      "mercado": "Portafolio estadístico de Criptomonedas",
+      "periodo": "Diciembre 20, 2017 a Junio 20, 2018",
+      "magnitud": "Sharpe Ratio de 109.00 y drawdown de -$1536 en umbral 1.5σ",
+      "condiciones": "Sin stops, asumiendo cero costos de transacción y slippage",
+      "robustez": "baja",
+      "cita_textual": "When setting lower/upper bound at ±1.5σ, our system seems to outperform the rest in terms of annual Sharpe ratio, maximum drawdown, max/min/end equities, and gross proﬁts."
+    },
+    {
+      "afirmacion": "Forzar una orden stop-loss estándar del 5% recorta significativamente el retorno, ya que obliga a vender durante picos de volatilidad antes de que ocurra la reversión.",
+      "mercado": "Portafolio estadístico de Criptomonedas",
+      "periodo": "Diciembre 20, 2017 a Junio 20, 2018",
+      "magnitud": "Caída a 70%+ de trades perdedores y un Sharpe desplomado de 109 a 3.64",
+      "condiciones": "Backtest de portfolio con stops forzados en umbrales prefijados",
+      "robustez": "media",
+      "cita_textual": "In contrast to not having stop-loss, more than 70% of trades from all 5 systems resulted in losses. Both Sharpe ratios and end equities are signiﬁcantly reduced."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El framework (Engle-Granger/Johansen) es aplicable al mercado de futuros y OIS para fabricar cestas con rezagos cointegrados; sin embargo, no considera costos ni microestructura intradía."
+  }
+}

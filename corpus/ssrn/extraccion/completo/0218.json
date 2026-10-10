@@ -1,0 +1,217 @@
+{
+  "doc_id": 218,
+  "titulo": "Profitability of Pairs Trading Strategy in an Illiquid Market with Multiple Share Classes",
+  "resumen_operativo": "Se investiga la implementación práctica de la estrategia de pares (pairs trading) de Gatev et al. (2006) en el mercado bursátil finlandés entre 1987 y 2008. Se analizan diferentes esquemas de ponderación (equally weighted vs. value-weighted) y condiciones de iniciación de trades, incluyendo una regla de espera de un día tras la señal. Se encuentra que la estrategia es rentable incluso en un mercado ilíquido con múltiples clases de acciones, generando retornos anualizados de hasta 12.53% para el portafolio equally weighted committed capital, sin estar expuestos al riesgo de mercado sistemático.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de arbitraje estadístico en la que se toman posiciones largas y cortas simultáneas en dos acciones cuyos precios históricamente se mueven juntos, beneficiándose de la convergencia tras una divergencia de precios.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "sum of squared deviations"},
+        {"tipo": "USA", "objeto": "cointegration"},
+        {"tipo": "REQUIERE", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "An arbitrageur finds two stocks whose prices move together over an indicated historical time period. If the pair prices deviate wide enough, the strategy calls for shorting the increasing-price security, while simultaneously buying the declining-price security."
+    },
+    {
+      "nombre": "sum of squared deviations",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Medida de similitud entre series de precios normalizadas utilizada para seleccionar pares; los pares con la menor suma de desviaciones cuadradas entre sus precios normalizados son elegidos para trading.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"},
+        {"tipo": "USA", "objeto": "normalized price series"}
+      ],
+      "cita_textual": "The pairs that are selected for trading have the smallest distance measure, which is defined as the sum of squared deviations between the two normalized price series."
+    },
+    {
+      "nombre": "normalized price series",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Series de precios que se normalizan para comenzar desde uno y evolucionan usando la serie de retornos totales, evitando señales falsas por splits o dividendos.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "sum of squared deviations"}
+      ],
+      "cita_textual": "Normalized price series are defined to start from one, and then evolve using the return series. False trading signals due to splits or dividends are avoided by using total return series to construct the series."
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Propiedad estadística según la cual los precios de activos que divergen tienden a converger de vuelta a su relación histórica de largo plazo, fundamento teórico central del pairs trading.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "The idea behind the pair trade is to profit from convergence forces that eliminate short-term price deviations in favor of long-term historical pricing relationships."
+    },
+    {
+      "nombre": "cointegration",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Relación estadística de largo plazo entre series de tiempo donde al menos un factor común impulsa los precios a moverse juntos; se analiza como método alternativo de selección de pares frente al SSD.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "sum of squared deviations"},
+        {"tipo": "USA", "objeto": "half-life"}
+      ],
+      "cita_textual": "The idea behind using cointegration in pairs trading is that there is at least one common factor that drives asset prices to move together. When pair prices diverge, the common factor acts to eliminate the divergence."
+    },
+    {
+      "nombre": "half-life",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de la velocidad de reversión a la media de un proceso autorregresivo; en este contexto indica el número de días que tarda la divergencia de precios en reducirse a la mitad. Se encontró un promedio de dos días para pares cointegrados.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "mean reversion"},
+        {"tipo": "USA", "objeto": "cointegration"}
+      ],
+      "cita_textual": "Half-life measures the speed of mean reversion for an autoregressive process, which in this case refers to the convergence of the price series."
+    },
+    {
+      "nombre": "committed capital",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Esquema de ponderación conservador que asigna la misma cantidad de capital a cada par, independientemente de si el par está abierto o cerrado durante el período de trading, asumiendo retorno cero en pares no abiertos.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "fully invested"}
+      ],
+      "cita_textual": "The committed capital scheme essentially commits equal amounts of capital to each one of the pairs. If the pair is not opened, or it is closed during the trading period, the capital is still committed to the pair."
+    },
+    {
+      "nombre": "fully invested",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Esquema de ponderación menos conservador que divide el capital solo entre los pares que están abiertos, asumiendo que el dinero de pares cerrados se reinvierte en los pares abiertos restantes.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "committed capital"},
+        {"tipo": "USA", "objeto": "value-weighted approach"}
+      ],
+      "cita_textual": "The fully invested scheme is less conservative as it assumes capital is always divided between the pairs that are open."
+    },
+    {
+      "nombre": "value-weighted approach",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método de ponderación pasiva que calcula pesos relativos para cada par según su retorno acumulado (wpt = wpt-1(1+rpt-1)) comenzando con valor uno, evitando la necesidad de rebalanceo frecuente entre pares.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "equally weighted approach"},
+        {"tipo": "USA", "objeto": "fully invested"}
+      ],
+      "cita_textual": "Our second approach, labeled as the value-weighted approach, utilizes equation (2) to calculate relative weights for each pair where weights for each pair follows wpt=wpt-1(1+rpt-1) with a starting value of one."
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Diferencia entre el precio de compra y venta que en el mercado finlandés podía alcanzar hasta el diez por ciento durante ciertos períodos, afectando la ejecutabilidad de la estrategia y explicando parte de los retornos observados.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "transaction costs"},
+        {"tipo": "MITIGA", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "At times, the value-weighted spread across all stocks listed in the stock exchange was close to ten percent."
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Costos de trading del 0.2% por operación considerados en el análisis de robustez; se encuentra que incluso tras contabilizar costos, umbrales más bajos de iniciación generan mayores retornos promedio.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "Next we re-estimate the model under the assumption that trading costs are 0.2 percent per trade. The average returns are naturally lower, but somewhat surprisingly, the average return is still highest for the smallest criterion."
+    },
+    {
+      "nombre": "look-ahead bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo introducido al incluir en el análisis solo acciones que permanecen listadas durante todo el período de formación y trading de 18 meses, lo cual requiere información futura sobre la continuidad de listing.",
+      "relaciones": [
+        {"tipo": "CONTRADICE_A", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "This produces a small forward looking bias as we only analyze stocks that are listed throughout the formation and trading periods."
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio de rendimiento ajustado por riesgo; las estrategias de pairs trading en Finlandia muestran Sharpe ratios superiores a los del portafolio de mercado (0.16 vs 0.07 para el full sample equally weighted fully invested).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "the average excess return on pairs trading has been at par or slightly above that of the market portfolio. Similar to Gatev et al., the standard deviation is also lower than that of the market, leading to higher Sharpe ratios."
+    },
+    {
+      "nombre": "market neutral",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Propiedad deseable de estrategias de hedge funds donde los retornos no están correlacionados con el mercado; la estrategia de pares muestra betas de CAPM no significativos en el período completo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "The beta is not found significant in any of the cases at the five percent significance level over the full sample period. This means that over the long term, the pairs strategy has also been market neutral, which is often a desirable property for many hedge funds strategies."
+    },
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Categoría de estrategias de trading que explotan ineficiencias estadísticas de precios; el pairs trading es una de las estrategias de arbitraje estadístico más populares.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "One of the popular trading strategies found in a statistical arbitrageur's toolbox is pairs trading."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La estrategia de pairs trading con un día de espera genera un retorno anualizado del 12.53% para el portafolio equally weighted committed capital en el mercado finlandés (1988-2008), superior al 9.31% reportado por Gatev et al. en EE.UU.",
+      "mercado": "Helsinki Stock Exchange (OMXH)",
+      "periodo": "1988-2008",
+      "magnitud": "12.53% retorno anualizado equally weighted committed capital; mensual medio 0.497%",
+      "condiciones": "TOP 5 pares, un día de espera tras la señal, equally weighted committed capital",
+      "robustez": "alta",
+      "cita_textual": "the more realistic trading approach, which requires one day waiting period, suggests an annualized return of 12.53 percent for the equally weighted committed capital pairs, which is a bit higher than what Gatev et al. found in the US market (9.31%)."
+    },
+    {
+      "afirmacion": "El 55.2% de los pares formados (116 de 210) se componen de diferentes clases de acciones de la misma compañía, y el 88.1% de los mejores pares corresponden a esta categoría, indicando que las múltiples clases accionarias ofrecen oportunidades superiores de pairs trading.",
+      "mercado": "Helsinki Stock Exchange (OMXH)",
+      "periodo": "1988-2008",
+      "magnitud": "55.2% del total; 88.1% de los mejores pares",
+      "condiciones": "TOP 5 pares por período de trading, 42 períodos de 6 meses cada uno",
+      "robustez": "alta",
+      "cita_textual": "55.2 percent of the 210 pairs (42 trading periods times five pairs in each portfolio) are formed between company's different share classes. More detailed analysis shows that 88.1 percent of the best pairs are formed by combining two different share classes for one company."
+    },
+    {
+      "afirmacion": "El half-life promedio de los pares que exhiben relación de cointegración es de solo dos días, generando señales de trading demasiado frecuentes comparado con los 23.18 días promedio que los pares permanecen abiertos bajo el enfoque SSD.",
+      "mercado": "Helsinki Stock Exchange (OMXH)",
+      "periodo": "1988-2008",
+      "magnitud": "half-life promedio = 2 días; promedio de días abiertos = 23.18 días",
+      "condiciones": "Pares con relación de cointegración en el período de formación de 12 meses",
+      "robustez": "media",
+      "cita_textual": "we calculated the half-life to be only two days, on average, for those pairs exhibiting a cointegrated relationship. Using the half-life as a rule to close the pair, would generate higher transactions costs than those indicated by the SSD framework because the average time pairs are open is approximately 23 days."
+    },
+    {
+      "afirmacion": "Solo el 54% de los pares seleccionados por SSD resultan cointegrados durante el período de formación, sugiriendo que ambos métodos capturan señales diferentes pero complementarias para la selección de pares.",
+      "mercado": "Helsinki Stock Exchange (OMXH)",
+      "periodo": "1988-2008",
+      "magnitud": "54% de los pares cointegrados",
+      "condiciones": "Tests de cointegración sobre pares seleccionados por SSD en período de formación de 12 meses con datos diarios",
+      "robustez": "media",
+      "cita_textual": "In fact, we find only 54% of the pairs in our sample are cointegrated during the formation period. Pairs appear to be moving together enough to be recognized by the SSD approach, but not moving together enough to be recognized through cointegration tests."
+    },
+    {
+      "afirmacion": "Los retornos de la estrategia no están expuestos al riesgo sistemático de mercado: las betas del CAPM no son significativas al 5% en ningún caso durante el período muestral completo, y los alfas son positivos y estadísticamente significativos.",
+      "mercado": "Helsinki Stock Exchange (OMXH)",
+      "periodo": "1988-2008",
+      "magnitud": "Alpha equally weighted committed capital = 0.0050 (t=2.340); alpha fully invested = 0.010 (t=2.447); betas no significativas",
+      "condiciones": "Regresión CAPM con errores Newey-West (3 rezagos), retornos mensuales en exceso",
+      "robustez": "alta",
+      "cita_textual": "The beta is not found significant in any of the cases at the five percent significance level over the full sample period. This means that over the long term, the pairs strategy has also been market neutral."
+    },
+    {
+      "afirmacion": "Al imponer la restricción de que el volumen de trading sea positivo al abrir un par, los retornos anualizados caen aproximadamente tres puntos porcentuales: de 12.53% a 9.52% (fully invested) y de 6.13% a 4.20% (committed capital).",
+      "mercado": "Helsinki Stock Exchange (OMXH)",
+      "periodo": "1988-2008",
+      "magnitud": "Caída de 12.53% a 9.52% (fully invested); de 6.13% a 4.20% (committed capital)",
+      "condiciones": "Un día de espera + volumen > 0 al abrir el par, equally weighted",
+      "robustez": "alta",
+      "cita_textual": "Combined with the one day waiting rule before implementing the trade, we find that the average annualized return for equally weighted strategies are 4.203 and 9.521 percent (vs. 6.133 and 12.531) for committed capital and fully invested portfolios, respectively."
+    },
+    {
+      "afirmacion": "Reducir el umbral de iniciación de trades por debajo de dos desviaciones estándar incrementa los retornos incluso después de contabilizar costos de trading del 0.2%, sugiriendo que existe un umbral óptimo inferior al tradicional de Gatev et al.",
+      "mercado": "Helsinki Stock Exchange (OMXH)",
+      "periodo": "1988-2008",
+      "magnitud": "Umbrales desde 0.5x a 3x desviación estándar; costs de 0.2% por trade; mayor retorno para menores umbrales",
+      "condiciones": "Análisis de sensibilidad variando el criterio de apertura con y sin costos de trading del 0.2%",
+      "robustez": "media",
+      "cita_textual": "The results show that the smaller the criterion, the higher the average return. This is consistent with our hypothesis as lower criterion allows one to profit potentially from smaller price divergences."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "baja", "nota": "La estrategia utiliza precios de cierre diarios y horizontes de formación de 12 meses con períodos de trading de 6 meses; el half-life promedio de 2 días y los 23.18 días de duración media de los pares sugieren frecuencias de días/semanas, no intradía."}
+}

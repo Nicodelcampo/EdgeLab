@@ -1,0 +1,117 @@
+{
+  "doc_id": 209,
+  "titulo": "Limit Order Book Dynamics with Hawkes Processes: Mathematical Foundations, Microstructure Modeling, and Simulation",
+  "resumen_operativo": "Documento pedagógico y matemático que introduce el uso de procesos de Hawkes (univariados y multivariados) para modelar la dinámica de libros de órdenes limitadas (LOB). Desarrolla la teoría de intensidades, la representación de ramificación (cluster) y el uso de kernels exponenciales. Provee código en Python para simulación (Ogata thinning) y calibración por máxima verosimilitud (MLE). Además, introduce un método (Model C) para derivar eventos sintéticos de órdenes a partir de datos OHLCV de Binance usando descomposición direccional de volumen, ilustrando cómo el flujo de órdenes opera en un régimen casi crítico (near-critical). Excelente material formativo en microestructura de alta frecuencia.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Hawkes process",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso estocástico de puntos auto-excitado donde la intensidad de eventos futuros depende linealmente de eventos pasados a través de un núcleo (kernel), usado para modelar el agrupamiento (clustering) de órdenes de mercado.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "order clustering"
+        },
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "limit order book dynamics"
+        }
+      ],
+      "cita_textual": "Hawkes models capture empirically observed clustering of orders, self- and cross-excitation of buy/sell flows, and volatility bursts at high frequency."
+    },
+    {
+      "nombre": "branching ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "La integral del kernel de un proceso de Hawkes, que representa el número esperado de 'descendientes' por cada evento. Si está cercano a 1, indica un régimen casi crítico con fuerte feedback endógeno.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "near-critical regime"
+        }
+      ],
+      "cita_textual": "Empirically, markets often appear to operate in a near-critical regime: estimates of η are close to 1, highlighting strong endogenous feedback."
+    },
+    {
+      "nombre": "near-critical regime",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Estado del mercado modelado por un proceso de Hawkes donde la ratio de ramificación es cercana a 1, provocando dependencia a largo plazo, grandes cascadas de órdenes y volatilidad persistente.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "branching ratio"
+        },
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Hawkes process"
+        }
+      ],
+      "cita_textual": "From a financial perspective, the near-critical Hawkes regime captures the idea that most trades are triggered by past trades rather than by external news."
+    },
+    {
+      "nombre": "multivariate Hawkes process",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Extensión del proceso de Hawkes a múltiples dimensiones para modelar la auto-excitación y excitación cruzada entre distintos tipos de eventos, como compras y ventas en el libro de órdenes.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "cross-excitation"
+        }
+      ],
+      "cita_textual": "We now model the joint dynamics of buy and sell events using a 2-dimensional Hawkes process with multiscale kernels"
+    },
+    {
+      "nombre": "order-flow imbalance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre las intensidades de órdenes de compra y venta del mercado, usada en un modelo de precio simple para explicar derivas de corto plazo (drifts).",
+      "relaciones": [
+        {
+          "tipo": "PREDICE",
+          "objeto": "short-term upward drift"
+        }
+      ],
+      "cita_textual": "Periods where buy intensity λb,M consistently exceeds sell intensity λs,M generate short-term upward drift."
+    },
+    {
+      "nombre": "directional volume decomposition",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Enfoque para construir flujos de eventos sintéticos a partir de velas OHLCV de baja frecuencia, dividiendo el volumen en compras y ventas basándose en la relación entre el precio de apertura y cierre.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "OHLCV candles"
+        }
+      ],
+      "cita_textual": "We adopt a Directional Volume Decomposition approach, which uses the relationship between price change and traded volume to infer buy versus sell pressure within each candle."
+    },
+    {
+      "nombre": "Ogata thinning algorithm",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo de simulación utilizado para generar de manera exacta los tiempos de llegada de eventos de un proceso de Hawkes simulado paso a paso.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "Hawkes process"
+        }
+      ],
+      "cita_textual": "We simulate a univariate Hawkes process with exponential kernel using Ogata’s thinning method."
+    },
+    {
+      "nombre": "multiscale kernel",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Núcleo de excitación formado por una suma de múltiples exponenciales con diferentes escalas temporales, utilizado para aproximar empíricamente decaimientos de ley de potencias (power-law).",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "multivariate Hawkes process"
+        }
+      ],
+      "cita_textual": "We assume that all four excitation kernels (buy→buy, buy→sell, sell→buy, sell→sell) share the same time scales {βm}M m=1, with M = 3 exponentials, but have different weights αij,m"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "Aunque el artículo tiene un enfoque principalmente pedagógico y usa datos de criptomonedas (Binance) para su calibración, la metodología de procesos de Hawkes es extremadamente relevante para el trading intradía de futuros (ES). Las herramientas proveídas para medir desbalance de flujo de órdenes (order-flow imbalance) y fenómenos de excitación cruzada son directamente trasladables a estrategias de microestructura basadas en tick data."
+  }
+}

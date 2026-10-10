@@ -1,0 +1,1164 @@
+A Rigorous Exploration of the
+Black-Scholes-Merton Model:
+Quantitative Finance Fundamentals
+Aurokrishnaa Ravindran Lakshmi
+University at Buffalo
+January 1, 2025
+Abstract
+This document presents a comprehensive look into the Black-Scholes-Merton
+model, a cornerstone in quantitative finance. It explores the model’s theoretical foundations, assumptions, and practical applications in options pricing.
+This work aims to demonstrate a deep understanding of the model’s principles and its significance in financial markets, reflecting the knowledge gained
+through rigorous study and mathematical rigor.
+Acknowledgment
+I would like to express my gratitude to John C. Hull, whose book ”Options, Futures, and Other Derivatives” has been an invaluable resource in
+developing my understanding of quantitative finance concepts, particularly
+the Black-Scholes-Merton model. This document draws inspiration from the
+comprehensive coverage and clear explanations provided in Hull’s work.
+1
+
+Aurokrishnaa R.L
+A Rigorous Exploration of the Black-Scholes-Merton Model:
+Contents
+1
+Introduction and Setting the Context
+5
+1.1
+Introduction to Options and Derivatives
+. . . . . . . . . . . . . . . . . .
+5
+1.2
+Importance of Option Pricing Models . . . . . . . . . . . . . . . . . . . .
+5
+1.3
+The Significance of the Black-Scholes Merton Model . . . . . . . . . . . .
+5
+2
+Stochastic Processes & the Wiener Process
+5
+2.1
+Stochastic Processes
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+5
+2.2
+Random Walk →Continuous Limit . . . . . . . . . . . . . . . . . . . . .
+5
+2.3
+Wiener Process (Brownian Motion) . . . . . . . . . . . . . . . . . . . . .
+6
+2.4
+Finance Application
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+3
+Geometric Brownian Motion (GBM)
+6
+3.1
+SDE for GBM . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+3.2
+Rewrite in Relative Form . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+3.3
+Solution via Integration
+. . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+3.4
+Log of St . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+3.5
+Closed-Form Expression
+. . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+3.6
+Lognormal Distribution . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+3.7
+Relevance in Finance . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+4
+Ito’s Lemma
+7
+4.1
+General Statement
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+4.2
+Motivation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+4.3
+Derivation (Simplified Outline)
+. . . . . . . . . . . . . . . . . . . . . . .
+8
+4.4
+Example: V = ln(St) . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+8
+4.5
+Finance Context
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+8
+5
+Risk-Neutral Valuation
+8
+5.1
+Risk-Neutral Concept . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+8
+5.2
+Girsanov’s Theorem (High-Level) . . . . . . . . . . . . . . . . . . . . . .
+8
+5.3
+Risk-Neutral SDE for Stock Price . . . . . . . . . . . . . . . . . . . . . .
+8
+5.4
+Discounted Asset Price is a Martingale . . . . . . . . . . . . . . . . . . .
+9
+5.5
+Practical Formula . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+9
+6
+Derivation of the Black-Scholes PDE
+9
+6.1
+Hedging Argument . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+9
+6.2
+No-Arbitrage & Risk-Free Portfolio . . . . . . . . . . . . . . . . . . . . .
+9
+6.3
+Dynamics of Πt . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+9
+6.4
+Plug in ∆= ∂V
+∂S . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+9
+6.5
+Equating to Risk-Free Growth . . . . . . . . . . . . . . . . . . . . . . . .
+10
+6.6
+Black-Scholes PDE . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+10
+6.7
+Interpretation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+10
+2
+
+Aurokrishnaa R.L
+A Rigorous Exploration of the Black-Scholes-Merton Model:
+7
+Heat Equation Analogy
+10
+7.1
+Black–Scholes PDE (from Part 6) . . . . . . . . . . . . . . . . . . . . . .
+10
+7.2
+Key Transformations . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+10
+7.3
+Derive PDE in τ, x . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+10
+7.4
+Resulting ”Heat Equation” Form
+. . . . . . . . . . . . . . . . . . . . . .
+10
+7.5
+Significance . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+11
+8
+Black–Scholes Closed-Form Solution
+11
+8.1
+European Call Option
+. . . . . . . . . . . . . . . . . . . . . . . . . . . .
+11
+8.2
+Lognormal Distribution of ST
+. . . . . . . . . . . . . . . . . . . . . . . .
+11
+8.3
+Standard Result via Heat Equation or Direct Integration . . . . . . . . .
+11
+8.4
+European Put Option . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+11
+8.5
+Intuition of d1, d2 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+11
+8.6
+Interpretation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+11
+9
+Greeks & Sensitivity Analysis
+12
+9.1
+Greeks Overview
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+12
+9.2
+Delta ∆. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+12
+9.3
+Gamma Γ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+12
+9.4
+Vega ν . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+12
+9.5
+Theta Θ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+12
+9.6
+Rho ρ
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+12
+9.7
+Practical Use
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+13
+10 Numerical Methods
+13
+10.1 Why Numerical?
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+13
+10.2 Finite Difference Methods
+. . . . . . . . . . . . . . . . . . . . . . . . . .
+13
+10.3 Monte Carlo Simulations . . . . . . . . . . . . . . . . . . . . . . . . . . .
+13
+10.4 Practical Considerations . . . . . . . . . . . . . . . . . . . . . . . . . . .
+13
+11 Extensions of the Model
+13
+11.1 Dividend-Paying Stocks
+. . . . . . . . . . . . . . . . . . . . . . . . . . .
+13
+11.2 American Options . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+14
+11.3 Stochastic Volatility Models . . . . . . . . . . . . . . . . . . . . . . . . .
+14
+11.4 Jump-Diffusion Models . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+14
+11.5 Other Extensions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+14
+12 Practical Example
+14
+12.1 Given Parameters . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+14
+12.2 Compute d1 and d2 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+15
+12.3 Find N(d1) and N(d2) . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+15
+12.4 Plug into Black–Scholes Call Formula . . . . . . . . . . . . . . . . . . . .
+15
+12.5 Interpretation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+15
+13 Limitations of the Black–Scholes Model and Practical Implications
+16
+13.1 Assumptions vs. Real Markets . . . . . . . . . . . . . . . . . . . . . . . .
+16
+13.1.1 Constant Volatility . . . . . . . . . . . . . . . . . . . . . . . . . .
+16
+13.1.2 No Transaction Costs . . . . . . . . . . . . . . . . . . . . . . . . .
+16
+13.1.3 Continuous Hedging
+. . . . . . . . . . . . . . . . . . . . . . . . .
+16
+3
+
+Aurokrishnaa R.L
+A Rigorous Exploration of the Black-Scholes-Merton Model:
+13.1.4 No Jumps in Prices . . . . . . . . . . . . . . . . . . . . . . . . . .
+16
+13.2 Practical Challenges
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+16
+13.2.1 Mispricing . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+16
+13.2.2 Adjustments by Traders . . . . . . . . . . . . . . . . . . . . . . .
+16
+13.3 Extensions to Improve the Model . . . . . . . . . . . . . . . . . . . . . .
+17
+13.3.1 Stochastic Volatility Models . . . . . . . . . . . . . . . . . . . . .
+17
+13.3.2 Local Volatility Models . . . . . . . . . . . . . . . . . . . . . . . .
+17
+13.3.3 Jump-Diffusion Models . . . . . . . . . . . . . . . . . . . . . . . .
+17
+14 Summary and My Learning Journey
+17
+14.1 The Black–Scholes–Merton Adventure
+. . . . . . . . . . . . . . . . . . .
+17
+14.2 The Beauty of Black Scholes . . . . . . . . . . . . . . . . . . . . . . . . .
+18
+14.3 Recognizing the Limitations . . . . . . . . . . . . . . . . . . . . . . . . .
+18
+14.4 Practical Applications and Adjustments
+. . . . . . . . . . . . . . . . . .
+18
+14.5 My Future Explorations
+. . . . . . . . . . . . . . . . . . . . . . . . . . .
+19
+14.6 Reflecting on My Black–Scholes Journey . . . . . . . . . . . . . . . . . .
+19
+4
+
+Aurokrishnaa R.L
+A Rigorous Exploration of the Black-Scholes-Merton Model:
+1
+Introduction and Setting the Context
+1.1
+Introduction to Options and Derivatives
+Derivatives are financial instruments whose value is derived from an underlying asset
+(e.g., stocks, bonds, commodities). Options, a type of derivative contract, grant the right
+(but not the obligation) to buy or sell an asset at a specified strike price before or at
+expiration.
+Key Point: Options provide leverage and hedging benefits, making them
+crucial in risk management.
+1.2
+Importance of Option Pricing Models
+• Why We Need Models: Options have non-linear payoffs; we need a systematic
+way to value them under uncertainty.
+• Market Efficiency: A robust pricing model helps ensure fair market prices, reduce
+arbitrage, and aid in financial decision-making (hedging, speculation, etc.).
+Key Point: Without a solid pricing framework, markets can misprice risk,
+leading to potential inefficiencies or arbitrage opportunities.
+1.3
+The Significance of the Black-Scholes Merton Model
+The Black-Scholes-Merton model, published in 1973 by Fischer Black, Myron Scholes, and
+Robert Merton, revolutionized option pricing by providing a closed-form solution for
+European-style options. It forms the foundation of modern derivatives pricing and serves
+as the basis for many extended or more sophisticated models (e.g., stochastic volatility,
+jump-diffusion).
+Key Point: Black-Scholes-Merton (BSM) gave the first widely-accepted,
+mathematically rigorous method to price a European call or put, drastically
+changing the landscape of finance.
+2
+Stochastic Processes & the Wiener Process
+2.1
+Stochastic Processes
+A stochastic process is a sequence {Xt} of random variables indexed by t. In a financial
+context, this represents how asset prices change randomly over time.
+2.2
+Random Walk →Continuous Limit
+• Discrete random walk: Xt+1 = Xt + ϵt, where ϵt ∼N(0, σ2)
+• As ∆t →0, this leads to the Wiener process (Brownian motion)
+5
+
+Aurokrishnaa R.L
+A Rigorous Exploration of the Black-Scholes-Merton Model:
+2.3
+Wiener Process (Brownian Motion)
+1. Definition: Wt with W0 = 0, independent increments, and Wt −Ws ∼N(0, t −s)
+2. Differential Notation: dWt ∼
+√
+dt Z, where Z ∼N(0, 1)
+3. Key Property: E[dWt] = 0, Var(dWt) = dt
+2.4
+Finance Application
+The Wiener process forms the foundation for continuous-time models in finance:
+dSt = µSt dt + σSt dWt
+(to come in GBM)
+(1)
+This formulation is crucial in the Black–Scholes–Merton derivations.
+3
+Geometric Brownian Motion (GBM)
+3.1
+SDE for GBM
+The Stochastic Differential Equation (SDE) for Geometric Brownian Motion is:
+dSt = µSt dt + σSt dWt,
+(2)
+where:
+• St: Stock price at time t
+• µ: Drift (expected return)
+• σ: Volatility
+• Wt: Standard Wiener process
+3.2
+Rewrite in Relative Form
+We can rewrite the SDE in relative form:
+dSt
+St
+= µ dt + σ dWt.
+(3)
+3.3
+Solution via Integration
+Integrate both sides from 0 to t:
+Z t
+0
+dSu
+Su
+=
+Z t
+0
+µ du +
+Z t
+0
+σ dWu.
+(4)
+The left side becomes ln St −ln S0.
+6
+
+Aurokrishnaa R.L
+A Rigorous Exploration of the Black-Scholes-Merton Model:
+3.4
+Log of St
+Using Ito’s Lemma (see Part 4 for derivation details), we get:
+ln St −ln S0 = µt −1
+2σ2t + σWt.
+(5)
+3.5
+Closed-Form Expression
+The closed-form solution for St is:
+St = S0 exp
+h µ −1
+2σ2
+t + σWt
+i
+.
+(6)
+3.6
+Lognormal Distribution
+ln St is normally distributed with:
+Mean = ln S0 +
+ µ −1
+2σ2
+t,
+(7)
+Variance = σ2t.
+(8)
+Therefore, St ∼Lognormal(. . . ).
+3.7
+Relevance in Finance
+• BSM Assumption: Stock prices follow GBM for continuous-time option pricing.
+• Captures drift & volatility in a realistic, continuous manner.
+4
+Ito’s Lemma
+4.1
+General Statement
+Let Xt follow:
+dXt = a(Xt, t) dt + b(Xt, t) dWt.
+(9)
+For V (t, Xt), Ito’s Lemma states:
+dV =
+∂V
+∂t + a ∂V
+∂X + 1
+2b2 ∂2V
+∂X2
+
+dt + b ∂V
+∂X dWt.
+(10)
+4.2
+Motivation
+We often need d(ϕ(St)) for a function ϕ, e.g., ϕ(St) = ln(St) or an option payoff. Ordinary
+differentiation fails because dWt has variance ∼dt. The key is that an extra 1
+2b2 ∂2
+∂X2 term
+arises from the stochastic part.
+7
+
+Aurokrishnaa R.L
+A Rigorous Exploration of the Black-Scholes-Merton Model:
+4.3
+Derivation (Simplified Outline)
+The idea is to expand V (t + ∆t, Xt+∆t) with a Taylor series:
+V (t + ∆t, Xt+∆t) ≈V + ∂V
+∂t ∆t + ∂V
+∂X ∆X + 1
+2
+∂2V
+∂X2(∆X)2 + . . .
+(11)
+In stochastic terms:
+∆X = a∆t + b∆W,
+(∆W)2 ≈∆t.
+(12)
+Collect terms in ∆t and ∆W. The limit as ∆t →0 yields Ito’s formula.
+4.4
+Example: V = ln(St)
+Suppose dSt = µSt dt + σSt dWt. Then V (t, St) = ln(St). Compute partial derivatives:
+∂V
+∂S = 1
+St
+,
+∂2V
+∂S2 = −1
+S2
+t
+.
+(13)
+Plug into Ito’s Lemma:
+d(ln St) =
+ ∂
+∂t(ln St) + µ −1
+2σ2
+
+dt + σ dWt =
+ µ −1
+2σ2
+dt + σ dWt.
+(14)
+4.5
+Finance Context
+Ito’s Lemma is essential for deriving option-pricing PDEs, risk-neutral valuation, and
+other transformations (e.g., from St to ln St, or from an asset price to an option payoff).
+5
+Risk-Neutral Valuation
+5.1
+Risk-Neutral Concept
+The key idea is to price a derivative by taking the expected value of its discounted
+payoff under a risk-neutral measure Q. In a no-arbitrage world with a constant
+risk-free rate r:
+Derivative Price at t = e−r(T−t) EQ
+Payoff at T | Ft
+
+.
+(15)
+5.2
+Girsanov’s Theorem (High-Level)
+Girsanov’s Theorem changes the measure from the real-world measure P to the riskneutral measure Q. Under Q, the drift of the asset becomes r, i.e., µ is replaced by
+r.
+5.3
+Risk-Neutral SDE for Stock Price
+Original (real-world):
+dSt = µSt dt + σSt dW P
+t .
+(16)
+Under risk-neutral Q:
+dSt = rSt dt + σSt dW Q
+t ,
+(17)
+where W Q
+t is a Wiener process under Q.
+8
+
+Aurokrishnaa R.L
+A Rigorous Exploration of the Black-Scholes-Merton Model:
+5.4
+Discounted Asset Price is a Martingale
+Define ˜St = e−rtSt. Under Q, ˜St evolves with zero drift (martingale property):
+d ˜St = e−rtσSt dW Q
+t .
+(18)
+This implies no free lunch: Expected growth under Q is exactly r, so the discounted
+price has no drift.
+5.5
+Practical Formula
+Derivative Value at time 0:
+V0 = e−rT EQ
+Payoff(ST)
+
+.
+(19)
+Example for a European call payoff max(ST −K, 0):
+C0 = e−rT EQ
+max(ST −K, 0)
+
+.
+(20)
+6
+Derivation of the Black-Scholes PDE
+6.1
+Hedging Argument
+Consider a derivative V (t, St). Hedge by shorting ∆units of the underlying St. The
+portfolio is:
+Πt = V (t, St) −∆St.
+(21)
+6.2
+No-Arbitrage & Risk-Free Portfolio
+Choose ∆= ∂V
+∂S to eliminate exposure to dSt at first order. Then Πt should earn the
+risk-free rate r if it’s truly riskless:
+dΠt = r Πt dt.
+(22)
+6.3
+Dynamics of Πt
+From Ito’s Lemma (Part 4) and the SDE for St under the risk-neutral measure (Part 5):
+dV = ∂V
+∂t dt + ∂V
+∂S dSt + 1
+2
+∂2V
+∂S2 (σ2S2
+t ) dt,
+(23)
+dSt = r St dt + σ St dW Q
+t .
+(24)
+Hence,
+dΠt = dV −∆dSt.
+(25)
+6.4
+Plug in ∆= ∂V
+∂S
+Substitute into dΠt:
+dΠt = ∂V
+∂t dt + 1
+2σ2S2
+t
+∂2V
+∂S2 dt
+|
+{z
+}
+terms not canceled
++ ∂V
+∂S dSt −∆dSt
+|
+{z
+}
+hedged out
+.
+(26)
+The dSt terms cancel out exactly.
+9
+
+Aurokrishnaa R.L
+A Rigorous Exploration of the Black-Scholes-Merton Model:
+6.5
+Equating to Risk-Free Growth
+By no-arbitrage,
+dΠt = r Πt dt = r
+ V −∆St
+
+dt.
+(27)
+Equate:
+∂V
+∂t + 1
+2σ2S2
+t
+∂2V
+∂S2 = r
+ V −St
+∂V
+∂S
+
+.
+(28)
+6.6
+Black-Scholes PDE
+Rearrange:
+∂V
+∂t + r St
+∂V
+∂S + 1
+2σ2S2
+t
+∂2V
+∂S2 −r V = 0.
+(29)
+6.7
+Interpretation
+This is the core PDE for pricing a European-style option on a non-dividend-paying
+stock. The next step (Part 7) shows transformation into a Heat Equation form.
+7
+Heat Equation Analogy
+7.1
+Black–Scholes PDE (from Part 6)
+∂V
+∂t + rS ∂V
+∂S + 1
+2σ2S2∂2V
+∂S2 −rV = 0.
+(30)
+7.2
+Key Transformations
+Change of variables:
+τ = T −t
+(time to maturity),
+x = ln(S).
+(31)
+Often set an ansatz, e.g.:
+V (t, S) = e−αx−βt u(τ, x),
+(32)
+where α and β are constants chosen to simplify terms (details vary by reference).
+7.3
+Derive PDE in τ, x
+Compute partial derivatives of V w.r.t. t, S and substitute into the Black–Scholes PDE.
+After careful algebra (using
+∂x
+∂S =
+1
+S, ∂x
+∂t = 0, etc.), you get a diffusion-like PDE for
+u(τ, x).
+7.4
+Resulting ”Heat Equation” Form
+Typical final form (simplified version):
+∂u
+∂τ = 1
+2σ2∂2u
+∂x2 +
+ r −1
+2σ2∂u
+∂x −r u.
+(33)
+With further manipulations (and choosing α, β properly), this reduces to a standard
+heat equation in variable τ.
+10
+
+Aurokrishnaa R.L
+A Rigorous Exploration of the Black-Scholes-Merton Model:
+7.5
+Significance
+• Easier to Solve: Transforming into a heat/diffusion equation leverages well-known
+solution methods.
+• Analogy: Heat conduction in physics ↔Option price diffusion in finance.
+8
+Black–Scholes Closed-Form Solution
+8.1
+European Call Option
+Payoff at maturity T: max(ST −K, 0). Under the risk-neutral measure Q:
+C0 = e−rT EQ
+max(ST −K, 0)
+
+.
+(34)
+8.2
+Lognormal Distribution of ST
+If St follows
+dSt = r St dt + σ St dW Q
+t ,
+(35)
+then
+ST = S0 exp
+ r −1
+2σ2
+T + σ
+√
+T Z
+
+,
+Z ∼N(0, 1).
+(36)
+8.3
+Standard Result via Heat Equation or Direct Integration
+After solving the transformed PDE (Part 7), we get:
+C0 = S0 N(d1) −K e−rT N(d2),
+(37)
+where
+d1 = ln
+  S0
+K
+
++
+ r + 1
+2σ2
+T
+σ
+√
+T
+,
+d2 = d1 −σ
+√
+T.
+(38)
+N(·) is the cumulative distribution function of the standard normal distribution.
+8.4
+European Put Option
+By Put-Call Parity or directly:
+P0 = K e−rT N(−d2) −S0 N(−d1).
+(39)
+8.5
+Intuition of d1, d2
+• d1 relates to the z-score for the expected log price relative to strike.
+• d2 = d1 −σ
+√
+T shifts for volatility/time.
+8.6
+Interpretation
+• S0 N(d1): ”Risk-adjusted” probability of finishing in the money under Q.
+• K e−rT N(d2): Discounted strike payment, also under Q.
+• This formula revolutionized derivative pricing (practical, closed-form).
+11
+
+Aurokrishnaa R.L
+A Rigorous Exploration of the Black-Scholes-Merton Model:
+9
+Greeks & Sensitivity Analysis
+9.1
+Greeks Overview
+Purpose: Measure how the option value V changes with respect to parameters: S0
+(underlying price), σ (volatility), r (interest rate), and t (time).
+9.2
+Delta ∆
+Definition: ∆= ∂V
+∂S0.
+For a European Call (from Part 8):
+∆call = N(d1).
+(40)
+Interpretation: Approx. change in option price for a $1 change in the underlying.
+9.3
+Gamma Γ
+Definition: Γ = ∂2V
+∂S2
+0 = ∂∆
+∂S0.
+For a European Call:
+Γ = N ′(d1)
+S0 σ
+√
+T
+,
+where N ′(d1) =
+1
+√
+2πe−d2
+1
+2 .
+(41)
+Interpretation: Measures how fast ∆changes with S0.
+9.4
+Vega ν
+Definition: ν = ∂V
+∂σ .
+For a European Call:
+ν = S0
+√
+T N ′(d1).
+(42)
+Interpretation: Sensitivity to volatility changes.
+9.5
+Theta Θ
+Definition: Θ = ∂V
+∂t (often expressed as ∂V
+∂T with T = time to maturity).
+For a European Call (in terms of time to expiry T):
+Θ ≈−S0 N ′(d1) σ
+2
+√
+T
+−r K e−rT N(d2).
+(43)
+Interpretation: Daily ”time decay” of the option value.
+9.6
+Rho ρ
+Definition: ρ = ∂V
+∂r .
+For a European Call:
+ρ = K T e−rT N(d2).
+(44)
+Interpretation: Sensitivity to interest rate changes.
+12
+
+Aurokrishnaa R.L
+A Rigorous Exploration of the Black-Scholes-Merton Model:
+9.7
+Practical Use
+• Risk Management: Traders adjust hedge ratios, monitor Gamma exposure, etc.
+• Scenario Analysis: Evaluate how an option’s value might shift if σ or S0 changes.
+10
+Numerical Methods
+10.1
+Why Numerical?
+• Some derivatives (e.g., path-dependent) lack closed-form solutions.
+• Approximate via computational methods.
+10.2
+Finite Difference Methods
+• Discretize the Black–Scholes PDE in time and stock-price space.
+• Schemes: Explicit, Implicit, Crank–Nicolson.
+• Use boundary conditions (option payoff at expiry, behavior as S →0 or S →∞)
+to iterate and find V .
+10.3
+Monte Carlo Simulations
+• Simulate random paths under the risk-neutral measure:
+St+∆t = St exp
+h r −1
+2σ2
+∆t + σ
+√
+∆t Z
+i
+,
+Z ∼N(0, 1).
+(45)
+• Calculate payoff for each path, discount, and average.
+• Accuracy ↑as number of paths ↑.
+10.4
+Practical Considerations
+• Trade-off: more grid points / more paths →higher accuracy, but more computation.
+• Widely used for exotic options where PDE approaches are complex.
+11
+Extensions of the Model
+11.1
+Dividend-Paying Stocks
+If continuous dividend yield = q, then under Q:
+dSt = (r −q)St dt + σSt dW Q
+t .
+(46)
+Black–Scholes Formula modifies to:
+C0 = S0e−qTN(d1) −Ke−rTN(d2),
+(47)
+13
+
+Aurokrishnaa R.L
+A Rigorous Exploration of the Black-Scholes-Merton Model:
+where
+d1 = ln
+  S0
+K
+
++
+ r −q + 1
+2σ2
+T
+σ
+√
+T
+,
+d2 = d1 −σ
+√
+T.
+(48)
+11.2
+American Options
+• Early Exercise possible (e.g., American put on non-dividend stock).
+• No simple closed-form (except some special cases).
+• Methods: Binomial Trees, Finite Differences with a free boundary condition.
+11.3
+Stochastic Volatility Models
+Heston Model: Volatility follows its own SDE, e.g.,
+dνt = κ(θ −νt) dt + ξ√νt dW ν
+t .
+(49)
+Addresses vol smile/skew not captured by constant σ.
+11.4
+Jump-Diffusion Models
+Add jumps to the price dynamics (e.g., Merton jump model):
+dSt = rSt dt + σSt dW Q
+t + jumps.
+(50)
+Useful for capturing large, discrete price moves.
+11.5
+Other Extensions
+• Local Volatility: σ = σ(St, t).
+• Interest Rate Models (Hull–White, etc.) for interest rate derivatives.
+12
+Practical Example
+12.1
+Given Parameters
+• S0 = 100 (current stock price)
+• K = 110 (strike)
+• T = 1 year (time to maturity)
+• r = 0.05 (risk-free rate)
+• σ = 0.20 (volatility)
+14
+
+Aurokrishnaa R.L
+A Rigorous Exploration of the Black-Scholes-Merton Model:
+12.2
+Compute d1 and d2
+d1 = ln
+  S0
+K
+
++
+ r + 1
+2σ2
+T
+σ
+√
+T
+,
+d2 = d1 −σ
+√
+T.
+(51)
+Plug in numbers:
+d1 = ln
+  100
+110
+
++
+ 0.05 + 0.5 × 0.22
+× 1
+0.2
+√
+1
+= ln(0.9091) + 0.05 + 0.02
+0.2
+= −0.0953 + 0.07
+0.2
+= −0.0253
+0.2
+≈−0.1265.
+d2 = −0.1265 −0.2 ≈−0.3265.
+12.3
+Find N(d1) and N(d2)
+Use a standard normal CDF table or a calculator:
+N(−0.1265) ≈0.4496,
+N(−0.3265) ≈0.3724.
+Hence,
+N(d1) = 1 −0.4496 = 0.5504,
+N(d2) = 0.3724 (corrected).
+12.4
+Plug into Black–Scholes Call Formula
+C0 = S0N(d1) −Ke−rTN(d2).
+(52)
+Compute each term:
+S0N(d1) = 100 × 0.5504 = 55.04,
+Ke−rTN(d2) = 110 e−0.05×1 × 0.3724
+≈110 × 0.9512 × 0.3724
+≈110 × 0.3544
+≈38.98.
+Hence,
+C0 ≈55.04 −38.98 = 16.06.
+12.5
+Interpretation
+• Call Price ≈16.06.
+• Higher than naive expectation because there’s still a decent chance the stock could
+finish above 110 in a year, plus time-value and volatility factors.
+15
+
+Aurokrishnaa R.L
+A Rigorous Exploration of the Black-Scholes-Merton Model:
+13
+Limitations of the Black–Scholes Model and Practical Implications
+13.1
+Assumptions vs. Real Markets
+The Black–Scholes model makes certain assumptions that don’t fully match how real
+markets work:
+13.1.1
+Constant Volatility
+• The model assumes that volatility stays the same over time.
+• In reality, volatility changes and depends on strike prices and expirations, creating
+volatility smiles and skews.
+13.1.2
+No Transaction Costs
+• The model assumes trading has no costs—no fees, bid–ask spreads, or slippage.
+• In actual markets, these costs can be significant, especially during high volatility
+or low liquidity.
+13.1.3
+Continuous Hedging
+• It assumes traders can rebalance their positions continuously without any delays.
+• But in real life, hedging happens at intervals (discrete), which can be costly and
+lead to small risks.
+13.1.4
+No Jumps in Prices
+• The model assumes stock prices move smoothly.
+• Real prices can jump due to unexpected news or events, which this model doesn’t
+capture.
+13.2
+Practical Challenges
+These assumptions can create real-world issues:
+13.2.1
+Mispricing
+Options may be incorrectly priced, and the Greeks (like Delta and Vega) may not always
+be accurate. This can lead to poor hedging strategies and unexpected losses.
+13.2.2
+Adjustments by Traders
+Traders often use implied volatility surfaces (adjustments for market realities) or
+adopt more advanced models to deal with these gaps.
+16
+
+Aurokrishnaa R.L
+A Rigorous Exploration of the Black-Scholes-Merton Model:
+13.3
+Extensions to Improve the Model
+To address these problems, some improved versions of the Black–Scholes model have been
+developed:
+13.3.1
+Stochastic Volatility Models
+These models allow volatility to change over time. For example, the Heston model is
+popular in practice.
+13.3.2
+Local Volatility Models
+These use market data to adjust volatility based on the stock price and time, providing
+more accurate pricing.
+13.3.3
+Jump-Diffusion Models
+Models like the Merton Jump-Diffusion Model include sudden price jumps along
+with regular price changes to handle unexpected events better.
+14
+Summary and My Learning Journey
+14.1
+The Black–Scholes–Merton Adventure
+It’s been an incredible journey going through the Black–Scholes model! Let me try and
+break it down
+• It all started with stochastic processes. I remember feeling a bit overwhelmed
+at first, but it’s fascinating how randomness can be modeled mathematically!
+• Then came Geometric Brownian Motion (GBM). Learning how this describes
+stock prices was a real ”wow!” moment for me. It’s amazing how a simple equation
+can capture the unpredictability of the market.
+• Ito’s Lemma was a tough nut to crack. But once I saw it applied to option pricing,
+it clicked! It’s like a special rule for dealing with randomness in calculus.
+• The concept of Risk-Neutral Valuation is so intuitive. The idea that we can
+price options as if everyone is risk neutral is so counterintuitive, yet so useful!
+• Deriving the Black Scholes Partial Differential Equation (PDE) felt like
+putting together a complex puzzle. Each piece – from Ito’s Lemma to the risk-free
+portfolio – came together beautifully.
+• The Heat Equation analogy was a game changer for me. Seeing how option
+pricing relates to heat diffusion in physics made the math feel more tangible and
+less abstract.
+• Finally, arriving at the closed form solution was like reaching the summit of a
+mountain. After all the complex derivations, seeing that elegant formula for option
+pricing felt truly rewarding!
+17
+
+Aurokrishnaa R.L
+A Rigorous Exploration of the Black-Scholes-Merton Model:
+14.2
+The Beauty of Black Scholes
+What makes this model so impressive to me:
+• The formula’s simplicity and elegance are astounding. With just a few inputs,
+we can price options – it feels like a treasure!
+• I’m in awe of how this model became the cornerstone of modern financial
+theory. It’s not just about option pricing; it’s changed how we think about risk
+and valuation in finance.
+• The Greeks (Delta, Gamma, Vega, etc.) derived from the model provide such
+powerful tools for risk management. It’s like having a financial GPS.
+• Learning about how the model led to the growth of derivatives markets has given
+me a new perspective on financial innovation.
+14.3
+Recognizing the Limitations
+As I delved deeper, I began to see where the model falls short:
+• The assumption of constant volatility now seems oversimplified to me.
+Real
+markets are much more dynamic.
+• Ignoring transaction costs and assuming continuous trading are idealistic. I
+can see how these assumptions could lead to practical issues in real trading.
+• The model’s struggle with extreme events or sudden jumps in prices is a significant limitation. It’s made me realize how important it is to consider ”black swan”
+events in finance.
+• Learning about volatility smiles and skews in real options markets was eyeopening. It showed me how market participants adjust for the model’s shortcomings.
+14.4
+Practical Applications and Adjustments
+Despite its limitations, I’ve learned that the Black–Scholes model is still widely used:
+• The concept of implied volatility fascinates me. It’s clever how traders use it to
+reverse-engineer market prices and adjust the model.
+• I find it interesting how the model serves as a common language in the financial
+world, even when more complex models are used behind the scenes.
+• Learning about how the model is adapted for different assets (like currencies or
+commodities) showed me its versatility.
+18
+
+Aurokrishnaa R.L
+A Rigorous Exploration of the Black-Scholes-Merton Model:
+14.5
+My Future Explorations
+This journey has sparked my curiosity for further learning:
+• I’m excited to dive into more advanced models like stochastic volatility and
+jump-diffusion models. The Heston model, in particular, sounds intriguing!
+• Exploring numerical methods for option pricing is next on my list. I’m keen
+to understand how Monte Carlo simulations and finite difference methods work in
+practice.
+• I’d love to get hands-on experience with model calibration using real market
+data. It seems like a great way to bridge theory and practice.
+• The world of exotic options and how they’re priced is another area I’m eager to
+explore. It seems like a field where creativity in finance really shines.
+14.6
+Reflecting on My Black–Scholes Journey
+This deep dive into the Black–Scholes model has been more than just learning a formula;
+it’s opened up a whole new way of thinking about finance for me. From grappling with
+stochastic calculus to understanding the nuances of option pricing, each step has been
+challenging yet incredibly rewarding.
+I’m amazed at how a single model can have such a profound impact on an entire field.
+It’s not just about the mathematics – it’s about how we conceptualize risk, value, and
+the nature of financial markets.
+As I look back on this journey, I feel a sense of accomplishment mixed with excitement
+for what’s to come. The Black–Scholes model has given me a solid foundation, but I now
+see it as a starting point for exploring even more complex and fascinating areas of financial
+mathematics.
+I can’t wait to apply these concepts in real-world scenarios and continue expanding
+my knowledge. This journey has reinforced my passion for finance and mathematics, and
+I’m thrilled about the possibilities that lie ahead in my studies and future career!
+19
+View publication stats

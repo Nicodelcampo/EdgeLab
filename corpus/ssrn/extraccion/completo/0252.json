@@ -1,0 +1,76 @@
+{
+  "doc_id": 252,
+  "titulo": "Empirical Inference of Related Trading Between Two Securities: Detecting Pairs Trading, Merger Arbitrage, and Strategy Rules",
+  "resumen_operativo": "Desarrolla una metodología estadística para inferir trading relacionado entre dos valores a partir de registros anónimos de transacciones, basada en la distribución de diferencias temporales entre trades. Construye Related Trading Indicators (RTIs) capaces de distinguir pares esperados de pares pseudo-aleatorios, detectar merger arbitrage entre grandes conjuntos de pares, e inferir reglas de trading dominantes (price equalisation vs mean reversion a medias móviles). Aplicado a Royal Dutch Shell, Unilever, Carnival y BHP Billiton, confirma que la estrategia inferida es consistente con las características fundamentales de cada par.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Related Trading Indicators (RTIs)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Indicadores construidos a partir de la diferencia entre la distribución empírica de diferencias temporales entre trades y una distribución uniforme (que sería esperable bajo trading no relacionado). La magnitud de la desviación es el proxy de trading relacionado inferido.",
+      "relaciones": [{"tipo": "USA", "objeto": "Time Difference Distribution"}, {"tipo": "MIDE", "objeto": "Related Trading Intensity"}],
+      "cita_textual": "The difference measured between the empirical distribution and a uniform distribution becomes the proxy for the amount of inferred related trading"
+    },
+    {
+      "nombre": "K-Quantile Ordering Scores (KQOSs)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Métrica análoga a correlación (rango [-1,1]) que mide la consistencia entre el trading empíricamente inferido y una regla de trading hipotética, permitiendo determinar qué estrategia domina en la práctica.",
+      "relaciones": [{"tipo": "MIDE", "objeto": "Strategy Rule Consistency"}, {"tipo": "EQUIVALE_A", "objeto": "Correlation Analog"}],
+      "cita_textual": "The numbers are the 5-quantile ordering scores (5QOSs)... and are analogous to correlation with a range of [-1, 1]"
+    },
+    {
+      "nombre": "Passive Pairs Trading Indicators (PPTIs)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Variante de RTIs que no requiere inferir dirección de agresividad de las órdenes (compra/venta), útil cuando la clasificación de trades es incierta o ruidosa.",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "Related Trading Indicators"}],
+      "cita_textual": "Passive pairs trading indicators (PPTIs) and basket trading indicators (BTIs) defined similarly"
+    },
+    {
+      "nombre": "Aggressive Pairs Trading Indicators (APTIs)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Variante que incorpora inferencias de dirección compra/venta a partir de datos de precio (algoritmo de Lee-Ready), permitiendo identificar estrategias de arbitraje direccional como merger arbitrage.",
+      "relaciones": [{"tipo": "USA", "objeto": "Lee-Ready Algorithm"}, {"tipo": "MEJORA_A", "objeto": "Passive Pairs Trading Indicators"}],
+      "cita_textual": "Aggressive pairs trading indicators (APTIs) which incorporate buy and sell inferences from price data"
+    },
+    {
+      "nombre": "Trade Anonymity Problem",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Barrera fundamental en investigación empírica de trading: los registros de transacciones no identifican al trader, impidiendo saber si trades en dos securities fueron ejecutados por la misma entidad.",
+      "relaciones": [{"tipo": "SE_OPONE_A", "objeto": "Related Trading Detection"}, {"tipo": "REQUIERE", "objeto": "Statistical Inference Methods"}],
+      "cita_textual": "One of the greatest challenges in empirical trading research is to overcome the anonymity of reported trades"
+    },
+    {
+      "nombre": "Moving Average Reversion (Inferred Strategy)",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de trading inferida empíricamente que revierte el precio relativo a una media móvil de N trades en lugar de a la paridad de precios. Dominante en BHP Billiton con score 0.98 para media móvil de ~1,000 trades (~40 min).",
+      "relaciones": [{"tipo": "SE_OPONE_A", "objeto": "Price Equalisation Strategy"}, {"tipo": "USA", "objeto": "High-Frequency Pairs Trading"}],
+      "cita_textual": "The rejection of empirical evidence of a price equalisation strategy makes sense given the persistent 20% price difference, while the strong compatibility with the 40-minute moving average strategy suggests pairs trading is occurring on a high-frequency basis"
+    },
+    {
+      "nombre": "One-Way Arbitrage",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Concepto de Deardorff (1979): el arbitraje puede realizarse con una sola operación direccional (no round-trip) si el precio de un activo está lo suficientemente desalineado, explicando por qué el volumen de single-sided trades puede superar al de round-trip trades.",
+      "relaciones": [{"tipo": "SE_OPONE_A", "objeto": "Round-Trip Arbitrage"}, {"tipo": "EXPLICA", "objeto": "Single-Sided Trade Volume"}],
+      "cita_textual": "the single-sided trades being more important in enforcing the prices than round-trip arbitrage trades, a concept described earlier by Deardorff (1979) as 'one-way arbitrage'"
+    },
+    {
+      "nombre": "Merger Arbitrage Detection",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Aplicación de APTIs para encontrar pares involucrados en arbitraje de fusiones entre conjuntos masivos de pares formados por constituyentes de índices, demostrando que la metodología escala a grandes universos.",
+      "relaciones": [{"tipo": "USA", "objeto": "Aggressive Pairs Trading Indicators"}, {"tipo": "APLICA_A", "objeto": "Massive Pair Sets"}],
+      "cita_textual": "APTIs... are shown to be capable of finding securities involved in merger arbitrage and pairs trading from amongst massively large sets of security pairs"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La metodología infiere correctamente las estrategias dominantes: Royal Dutch Shell → price equalisation; Unilever/Carnival → mean reversion a ~10,000-1,000 trades; BHP Billiton → mean reversion a ~1,000 trades (40 min) con score 0.98, rechazando price equalisation.",
+      "mercado": "NYSE/NASDAQ (ADR dual-listed: Royal Dutch Shell, Unilever, Carnival, BHP Billiton)",
+      "periodo": "2009 (datos tick intradía)",
+      "magnitud": "5QOS scores: BHP=0.98 (media móvil 1,000 trades), Royal Dutch Shell=0.87 (price equalisation); precisión de inferencia alta",
+      "condiciones": "Datos tick con resolución de milisegundos; algoritmo Lee-Ready para dirección; pares de empresas gemelas (dual-listed/Siamese twins)",
+      "robustez": "media",
+      "cita_textual": "The results for BHP... reject the strategy of mean reversion with the poorest match of all four strategies under test, while giving a near-perfect score of 0.98 for the strategy of reverting to a moving average of 1 000 trades"
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Metodología diseñada para datos tick intradía; los RTIs pueden calcularse en tiempo real para monitorear actividad de arbitraje; aplicable a detección de insider trading y estrategias HFT."}
+}

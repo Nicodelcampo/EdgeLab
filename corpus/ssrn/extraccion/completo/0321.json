@@ -1,0 +1,112 @@
+{
+  "doc_id": 321,
+  "titulo": "Stochastic Arbitrage Opportunities: Set Estimation and Statistical Testing",
+  "resumen_operativo": "Define el Stochastic Arbitrage Opportunity (SAO) como un portafolio de costo cero que mejora todo benchmark factible para toda función de utilidad admisible. Proporciona teoría de estimación consistente del conjunto de SAOs usando la distribución empírica y un test de Empirical Likelihood Ratio (ELR) basado en bloques para probar si un portafolio de arbitraje dado es un SAO poblacional. El test ELR es asintóticamente conservativo usando una distribución chi-bar-squared majorizada por chi-cuadrado con grados de libertad estimables.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Stochastic Arbitrage Opportunity (SAO)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Portafolio de arbitraje de costo cero que mejora estocásticamente todo benchmark factible para todas las funciones de utilidad admisibles en sentido de dominancia estocástica. Existe en versión estricta (desigualdad > 0) y débil (desigualdad >= 0).",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Weak Arbitrage Opportunity (WAO)"},
+        {"tipo": "USA", "objeto": "Stochastic Dominance"},
+        {"tipo": "PARTE_DE", "objeto": "Arbitrage Portfolio Set"}
+      ],
+      "cita_textual": "A Stochastic Arbitrage Opportunity (SAO) is defined as a zero-cost investment portfolio that enhances every feasible benchmark portfolio for all admissible utility functions."
+    },
+    {
+      "nombre": "Empirical Likelihood Ratio (ELR) test",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Test estadístico basado en bloques que evalúa si un portafolio de arbitraje empíricamente óptimo es un SAO poblacional. Se basa en resolver un problema de mínima entropía relativa (Minimum Relative Entropy) sobre distribuciones de bloques, y el estadístico sigue una distribución chi-bar-squared bajo la nula.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Kullback-Leibler divergence"},
+        {"tipo": "APLICA_A", "objeto": "Stochastic Arbitrage Opportunity (SAO)"},
+        {"tipo": "MITIGA", "objeto": "Type I error"}
+      ],
+      "cita_textual": "The test statistic can be computed by solving the following Minimum Relative Entropy problem: min_{G in G_T} KL(G_T || G) s.t. delta in Delta_WAO(U,K,G)."
+    },
+    {
+      "nombre": "Second-degree Stochastic Dominance (SSD)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Criterio de dominancia estocástica de segundo grado donde las funciones de utilidad extremas son funciones ramp uniparamétricas v_{2,phi}(x) = -(phi - x)_+. Permite discretizar el conjunto continuo de utilidades usando el parámetro phi en [a,b].",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Stochastic Dominance"},
+        {"tipo": "USA", "objeto": "Russell and Seo utility functions"}
+      ],
+      "cita_textual": "For Second-degree Stochastic Dominance (SSD), U_2^(0) consists of the one-parameter functions v_{2,phi}(x) = -(phi - x)_+, phi in [a,b]."
+    },
+    {
+      "nombre": "Joint Enhancement (JE)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Supuesto que asegura la existencia de un entorno de cada WAO débil que contiene SAOs estrictos. Mitiga el efecto adverso de desigualdades vinculantes (binding inequalities) sobre la consistencia de las soluciones empíricas.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Consistency of empirical SAO set"},
+        {"tipo": "MITIGA", "objeto": "Binding inequalities problem"}
+      ],
+      "cita_textual": "The assumption essentially ensures the existence of some neighborhood of every weak SAO that contains strict SAOs, if strict SAOs exist."
+    },
+    {
+      "nombre": "Blockwise ELR statistic",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Estadístico de test definido como ELR_T = 2(T/(T*B)) * KL(G_T || G(delta)), donde T* es el número de bloques, B es el tamaño del bloque, y G(delta) es la solución del problema de mínima entropía relativa. Su distribución nula límite es chi-bar-squared.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Empirical Likelihood Ratio (ELR) test"},
+        {"tipo": "EQUIVALE_A", "objeto": "Scaled Kullback-Leibler divergence"}
+      ],
+      "cita_textual": "ELR_T = 2 * T/(T*B) * KL(G_T || G(delta)), with G(delta) the solution of (8)."
+    },
+    {
+      "nombre": "Painlevé-Kuratowski (PK) convergence",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modo de convergencia para secuencias de subconjuntos compactos de Delta usado en las demostraciones de consistencia del conjunto empírico de SAOs hacia el conjunto poblacional.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Consistency proofs"},
+        {"tipo": "APLICA_A", "objeto": "Empirical weak SAO set"}
+      ],
+      "cita_textual": "The analysis also uses Painlevé-Kuratowski (PK) convergence for sequences of compact subsets of Delta."
+    },
+    {
+      "nombre": "chi-bar-squared distribution",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Distribución nula exacta del estadístico ELR bajo dependencia temporal débil. Sus pesos de mezcla dependen de P latente. Se majora conservadoramente por una chi-cuadrado con grados de libertad igual al número de desigualdades vinculantes estimadas.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Null distribution of ELR test"},
+        {"tipo": "MITIGA", "objeto": "Unknown mixing weights"}
+      ],
+      "cita_textual": "The exact limit null distribution of ELR is known to be a chi-bar-squared distribution... This null distribution cannot be directly implemented, because the mixing weights of the chi-bar-squared depend on the latent P."
+    },
+    {
+      "nombre": "Stationarity and Mixing (Assumption 3.1)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Supuesto de que la serie temporal de cash flows es estacionaria y absolutamente regular con coeficientes de mixing beta_k = O(k^{-r}) para r > 1. Compatible con versiones estacionarias de modelos ARMA-GARCH o Stochastic Volatility.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Empirical Likelihood Ratio (ELR) test"},
+        {"tipo": "APLICA_A", "objeto": "Time series of returns"}
+      ],
+      "cita_textual": "(x_t) is stationary and absolutely regular with mixing coefficients (beta_k) that satisfy beta_k = O(k^{-r}) for r > 1."
+    },
+    {
+      "nombre": "Minimum Relative Entropy problem",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Problema de optimización convexa que busca la distribución de probabilidad G sobre bloques que minimiza la divergencia KL respecto a la distribución empírica G_T, sujeta a que el portafolio de arbitraje delta sea un WAO bajo G.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Kullback-Leibler divergence"},
+        {"tipo": "EQUIVALE_A", "objeto": "Convex Optimization problem"}
+      ],
+      "cita_textual": "The Minimum Relative Entropy problem reduces to a standard, finite Convex Optimization problem, if also U^(0) and K^(0) are discrete."
+    },
+    {
+      "nombre": "Type I error control",
+      "tipo": "metrica",
+      "definicion_en_contexto": "El test ELR controla el error tipo I (falso rechazo de un SAO verdadero) de forma asintóticamente conservativa, garantizando que el p-valor estimado es menor o igual al nivel de significancia nominal en muestras grandes.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "False rejection of SAO"},
+        {"tipo": "APLICA_A", "objeto": "Hypothesis testing"}
+      ],
+      "cita_textual": "This conservative approach guarantees that the estimated p-value is smaller than or equal to the nominal significance level, so that the test size, or the probability of false rejection of a SAO is under control, in large samples."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "baja", "nota": "Marco teórico puro sin aplicación empírica; el test ELR por bloques puede aplicarse a cualquier frecuencia pero requiere calibración del tamaño de bloque."}
+}

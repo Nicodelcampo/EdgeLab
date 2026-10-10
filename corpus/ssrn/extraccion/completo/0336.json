@@ -1,0 +1,90 @@
+{
+  "doc_id": 336,
+  "titulo": "The Impact of HFT on the Speed of Adjustment to New Information: Evidence from Interest Rate Derivatives",
+  "resumen_operativo": "Examina el impacto del algorithmic trading (AT) sobre la velocidad de ajuste a nueva información en derivados de tasas de interés australianos, usando la introducción de co-location en ASX en febrero 2012 como experimento natural. Encuentra que el AT mejora la velocidad de ajuste tanto en futuros (90-day BABs) como en swaps OTC, con spillover vía arbitraje cross-market. La contribución a price discovery de futuros aumenta significativamente en días de anuncios macroeconómicos. Usa 176 anuncios macro (CPI, GDP, PPI, retail sales, building approvals, RBA rate, unemployment) en el período 2010-2014.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Co-location services introduction",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Introducción de servicios de co-location en Australian Securities Exchange (ASX) el 20 febrero 2012 que permitió a traders de futuros ubicar servidores en el data center del exchange, reduciendo latencia. Usado como experimento natural para identificar el efecto causal de AT sobre calidad de mercado.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Increased algorithmic trading"},
+        {"tipo": "USA", "objeto": "Natural experiment identification"}
+      ],
+      "cita_textual": "In February 2012, the Australian Securities Exchange (ASX) introduced co-location services for futures traders. This change in market structure increases AT."
+    },
+    {
+      "nombre": "Speed of adjustment",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de resiliencia de liquidez que captura qué tan rápido el mercado ajusta precios tras nueva información. Se mide como la diferencia entre volatilidad/liquidez real y un benchmark pre-anuncio (t-50 a t-20 minutos). Distinta de medidas estáticas de liquidez como spreads.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Market resiliency"},
+        {"tipo": "MEJORA_A", "objeto": "Static liquidity measures"}
+      ],
+      "cita_textual": "We focus on the speed of adjustment which measures the resiliency of liquidity in a market, rather than simply measuring liquidity."
+    },
+    {
+      "nombre": "90-day BABs futures",
+      "tipo": "dato",
+      "definicion_en_contexto": "Contrato de futuros sobre bank-accepted bills a 90 días del ASX, uno de los más líquidos del mundo con promedio diario de 114,805 contratos en 2017 (6x el volumen del SPI futures). Opera en ASX Trade24 con ciclo de expiración trimestral.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Australian interest rate derivatives"},
+        {"tipo": "USA", "objeto": "Co-location services introduction"}
+      ],
+      "cita_textual": "The Australian 90-day BABs futures contract, introduced in 1979, has become one of the most liquid contracts in the world, trading a daily average of 114,805 contracts in 2017."
+    },
+    {
+      "nombre": "Information Share (IS) and Information Leadership Share (ILS)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Medidas de price discovery de Hasbrouck (1995): IS mide la contribución relativa de cada mercado a la varianza del factor común (influenciada por ruido relativo). ILS de Putnins (2013) aísla la velocidad relativa de incorporación de información del nivel de ruido, siendo más adecuada cuando mercados tienen estructuras diferentes (futuros vs OTC swaps).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Price discovery"},
+        {"tipo": "APLICA_A", "objeto": "Futures vs swaps lead-lag"}
+      ],
+      "cita_textual": "We also employ an additional price discovery measure, namely, information leadership share, to isolate the relative speed at which information is impounded by a price series from its relative level of noise."
+    },
+    {
+      "nombre": "Cross-market arbitrage spillover",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Mecanismo por el cual la reducción de latencia en futuros (donde se introdujo co-location) mejora también la eficiencia de precios en swaps OTC (donde no hubo co-location). Arbitrajistas que operan en ambos mercados transmiten los beneficios de velocidad del mercado de futuros al de swaps.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Swap market efficiency improvement"},
+        {"tipo": "REQUIERE", "objeto": "Co-location services introduction"}
+      ],
+      "cita_textual": "We find that the speed of adjustment to new information has improved for both futures and swap markets following co-location. We conjecture that the reduced latency in futures has led to an improvement in price efficiency for OTC-traded swaps through cross-market arbitrage."
+    },
+    {
+      "nombre": "Price-matched sample approach",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de matching que empareja cada anuncio pre-AT con uno post-AT de retorno similar (máxima diferencia 4 bps), y cada día de anuncio con un día sin anuncio de retorno similar. Controla que diferencias en magnitud de información no confundan los resultados. Muestra final: 63/57 anuncios pre/post para futuros.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "Information magnitude confounding"},
+        {"tipo": "USA", "objeto": "Matched sample design"}
+      ],
+      "cita_textual": "To ensure that the size of information is similar across the two sub-periods, we match each announcement day in the pre-AT period to an announcement day in the post-AT period with the closest return."
+    },
+    {
+      "nombre": "Macroeconomic announcement types",
+      "tipo": "dato",
+      "definicion_en_contexto": "Seis tipos de anuncios macroeconómicos australianos con impacto significativo en volatilidad: CPI, GDP, PPI, retail sales, building approvals, RBA interest rate y unemployment rate. Total de 176 releases entre 2010-2014 (88 pre y 88 post co-location), publicados a las 11:30 o 14:30 AEST.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Market volatility"},
+        {"tipo": "APLICA_A", "objeto": "Speed of adjustment measurement"}
+      ],
+      "cita_textual": "We select the types of announcements that have a significant impact on market volatility, with the six selected types being: CPI, GDP, PPI, retail sales, building approvals, RBA interest rate and unemployment rate."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La introducción de co-location en ASX mejoró la velocidad de ajuste a nueva información para futuros 90-day BABs y swaps OTC. La contribución a price discovery del mercado de futuros aumentó significativamente en días con anuncios macroeconómicos en el período post-AT.",
+      "mercado": "ASX 90-day BABs futures y OTC 1-year interest rate swaps (Australia)",
+      "periodo": "Pre-AT: marzo 2010 - febrero 2012; Post-AT: febrero 2012 - febrero 2014",
+      "magnitud": "Mejora significativa en speed of adjustment post-AT para futures y swaps; mayor price discovery contribution de futures en días de anuncio. Magnitudes exactas requieren lectura completa de tablas de regresión.",
+      "condiciones": "176 anuncios macroeconómicos; matching por magnitud de retorno (máx 4 bps diff); ventanas de 50 min pre-anuncio como benchmark; datos intraday TRTH",
+      "robustez": "alta",
+      "cita_textual": "Our results demonstrate that, in the presence of AT, the speed of adjustment to new information has improved for both futures and swaps. In addition, we find that the price discovery contribution of the futures market improves in the post-AT period, with this improvement significant for announcement days."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Estudio intradiario con intervalos de 5 minutos alrededor de anuncios macroeconómicos; relevante para estrategias de trading basadas en news y arbitraje cross-market intradiario."}
+}

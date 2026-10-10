@@ -1,0 +1,179 @@
+{
+  "doc_id": 53,
+  "titulo": "Analytic solutions for optimal statistical arbitrage trading",
+  "resumen_operativo": "El paper deriva fórmulas cerradas para el retorno esperado, la varianza del retorno y la duración de trade de una estrategia de statistical arbitrage sobre un activo sintético que sigue un proceso Ornstein-Uhlenbeck, usando la teoría de first-passage time. Permite calcular en tiempo real (sin simulación) las bandas de entrada/salida óptimas que maximizan el retorno esperado o el Sharpe ratio, incorporando costos de transacción. Demuestra analíticamente que las bandas óptimas son simétricas respecto a la media, contradiciendo la práctica común de usar bandas asimétricas (ej. entrar en 2 desvíos estándar, salir en la media). Útil como base matemática para calibrar entrada/salida de pairs trading o mean reversion intradía cuando el spread es aproximable por un OU process.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Trading altamente automatizado y de alta frecuencia basado en métodos estocásticos para identificar ineficiencias de precio, construyendo un activo sintético estacionario y mean-reverting como combinación lineal de valores.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Ornstein-Uhlenbeck process"},
+        {"tipo": "USA", "objeto": "pairs trading"},
+        {"tipo": "REQUIERE", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "The goal of this type of trading is to develop highly automated trading strategies that take a probabilistic approach to trading."
+    },
+    {
+      "nombre": "Ornstein-Uhlenbeck process",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Proceso estocástico mean-reverting usado para modelar el log-precio del activo sintético de arbitraje estadístico; permite derivar analíticamente propiedades de la estrategia de trading.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "statistical arbitrage"},
+        {"tipo": "USA", "objeto": "first-passage time"}
+      ],
+      "cita_textual": "dXt = −αXtdt + ηdWt"
+    },
+    {
+      "nombre": "first-passage time",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Tiempo aleatorio que tarda el proceso en alcanzar una barrera dada; el paper enmarca la duración del trade (T1, T2) en términos de first-passage times independientes del proceso OU para derivar media y varianza de la duración del trade.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "trade length"},
+        {"tipo": "USA", "objeto": "Ornstein-Uhlenbeck process"}
+      ],
+      "cita_textual": "By framing the problem in terms of the ﬁrst-passage time of the process, we derive expressions for the mean and variance of the trade length and the return."
+    },
+    {
+      "nombre": "trade length",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Duración total del ciclo de trade (entrada a en Xt hasta volver a a pasando por la salida m), es una variable aleatoria cuya media y varianza determinan la frecuencia de trading y por ende el retorno por unidad de tiempo.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "expected return"},
+        {"tipo": "USA", "objeto": "first-passage time"}
+      ],
+      "cita_textual": "We refer to T as the total trade length. Thus, the behavior of T will largely determine the properties of the strategy."
+    },
+    {
+      "nombre": "expected return",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Retorno esperado de la estrategia por unidad de tiempo, calculado como el retorno por trade multiplicado por la frecuencia esperada de trades (inversa de la duración esperada del trade), función de los niveles de entrada, salida y costo de transacción.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "trade length"},
+        {"tipo": "MEJORA_A", "objeto": "asymmetric trading bands"},
+        {"tipo": "REQUIERE", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "µ(a, m, c) = r(a, m, c)E [1/T ]"
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Definido en contexto de trading continuo como el retorno esperado en exceso de una tasa libre de riesgo equivalente al horizonte del trade, normalizado por el desvío estándar del retorno; se maximiza para elegir bandas óptimas incorporando riesgo.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"},
+        {"tipo": "USA", "objeto": "expected return"},
+        {"tipo": "SE_OPONE_A", "objeto": "maximum expected return"}
+      ],
+      "cita_textual": "The Sharpe ratio is deﬁned as the expected return in excess of the risk-free rate normalised by the standard deviation of the return."
+    },
+    {
+      "nombre": "symmetric trading bands",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Resultado analítico central del paper: tanto al maximizar el retorno esperado como el Sharpe ratio, los niveles óptimos de entrada y salida resultan simétricos respecto a cero (m = -a), contrario a la práctica habitual de bandas asimétricas.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "asymmetric trading bands"},
+        {"tipo": "CONTRADICE_A", "objeto": "asymmetric trading bands"}
+      ],
+      "cita_textual": "We prove that for optimal trading, the trading bands are symmetric about the mean of the traded security."
+    },
+    {
+      "nombre": "asymmetric trading bands",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Enfoque paradigmático previo para tradear un proceso mean-reverting: entrar en un evento de dos desvíos estándar y salir cuando el proceso vuelve a cero; el paper muestra que no es óptimo.",
+      "relaciones": [],
+      "cita_textual": "the paradigm approach for trading a mean reverting process is to use asymmetric bands, entering a trade when the process exhibits a two standard deviation event and exiting when it returns to zero"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costo por trade que se resta del retorno de la operación (r(a,m,c) = m-a-c); es determinante para saber si una estrategia de arbitraje estadístico es rentable y afecta directamente los niveles óptimos de entrada/salida.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "trade length"},
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "It is clear that, for a strategy to be proﬁtable, the return gained by moving from a to m must ﬁrst exceed the transaction costs."
+    },
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Método de statistical arbitrage donde se construye un activo sintético estacionario y mean-reverting como combinación lineal de dos valores (ej. acciones dual-listed), tradeado cuando el proceso alcanza valores extremos.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Ornstein-Uhlenbeck process"},
+        {"tipo": "PARTE_DE", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "One example is the method of pairs trading which has been the focus of several recent studies"
+    },
+    {
+      "nombre": "trading frequency",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Cantidad de trades por unidad de tiempo (1/T), tratada como un proceso de renovación; su comportamiento no lineal respecto a los niveles de entrada/salida influye fuertemente en la rentabilidad de la estrategia pese a que el retorno por trade es lineal.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "expected return"},
+        {"tipo": "USA", "objeto": "trade length"}
+      ],
+      "cita_textual": "Although the return per trade r(a, m, c) is linear, it is apparent that the non-linear behavior of the trading frequency has a strong inﬂuence on the proﬁtability of the trading strategy."
+    },
+    {
+      "nombre": "maximum expected return",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Objetivo de optimización que ignora el riesgo (varianza); se obtiene una solución analítica exacta para los niveles óptimos de entrada/salida vía diferenciación de la fórmula de retorno esperado, más una aproximación de Taylor de tercer orden para costos de transacción pequeños.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Sharpe ratio"},
+        {"tipo": "USA", "objeto": "Taylor series approximation"}
+      ],
+      "cita_textual": "An exact analytic solution is obtained for the case of maximising the expected return."
+    },
+    {
+      "nombre": "Taylor series approximation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Aproximación de tercer orden de la ecuación implícita que define el nivel de entrada óptimo, válida para valores pequeños de a√α/η (costos de transacción pequeños), que da una solución cúbica explícita cercana a la solución exacta.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "numerical root-finding"}
+      ],
+      "cita_textual": "we obtain, an approximation that is valid for small values of a√α/η"
+    },
+    {
+      "nombre": "risk-free rate",
+      "tipo": "dato",
+      "definicion_en_contexto": "Tasa libre de riesgo ajustada al mismo horizonte temporal que el retorno de la estrategia (r* = rf/E[T]), usada como benchmark para calcular el Sharpe ratio de la estrategia continua; a mayor rf, la estrategia se vuelve menos atractiva.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Sharpe ratio"}
+      ],
+      "cita_textual": "As the risk-free return increases, the strategy becomes less attractive on a return per unit risk basis."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "En la estrategia óptima que maximiza el retorno esperado, aplicada a un par sintético de acciones dual-listed (ANZ.AX/ANZ.NZ), a mayor costo de transacción el retorno esperado óptimo cae marcadamente y las bandas óptimas se alejan de cero.",
+      "mercado": "acciones dual-listed ANZ.AX / ANZ.NZ (par sintético OU)",
+      "periodo": "no especificado",
+      "magnitud": "con c=0.0010, a*=-0.0047152 y µ*=0.49236; con c=0.0200, a*=-0.0153880 y µ*=0.09536 (parámetros α=180.9670, η=0.1538)",
+      "condiciones": "resultado teórico/analítico sobre datos calibrados de un ejemplo previo (Ref. [5]); incluye costos de transacción; no se reporta período de calibración, ni validación OOS, ni benchmark de mercado real más allá del ejemplo de calibración",
+      "robustez": "baja",
+      "cita_textual": "Results for the optimal strategy with diﬀerent transaction costs are shown in Table 1."
+    },
+    {
+      "afirmacion": "Al maximizar el Sharpe ratio con costo de transacción fijo, un aumento de la tasa libre de riesgo reduce fuertemente el Sharpe ratio óptimo y el retorno esperado óptimo de la estrategia, y desplaza las bandas óptimas.",
+      "mercado": "acciones dual-listed ANZ.AX / ANZ.NZ (par sintético OU)",
+      "periodo": "no especificado",
+      "magnitud": "con rf=0.0010, S*=9.2824 y µ=0.49231; con rf=0.0200, S*=1.6249 y µ=0.23890 (c=0.001, α=180.9670, η=0.1538)",
+      "condiciones": "resultado analítico/numérico sobre parámetros calibrados de un ejemplo previo; sin OOS ni comparación contra retornos de mercado real fuera de la calibración inicial",
+      "robustez": "baja",
+      "cita_textual": "Table 2 presents the results of the optimization together with the expected return and the variance in each case."
+    },
+    {
+      "afirmacion": "La aproximación analítica vía Taylor series de tercer orden para el nivel de entrada óptimo coincide de cerca con la solución numérica exacta cuando los costos de transacción son pequeños, pero diverge a medida que el costo de transacción crece.",
+      "mercado": "acciones dual-listed ANZ.AX / ANZ.NZ (par sintético OU)",
+      "periodo": "no especificado",
+      "magnitud": "con c=0.0010: a=-0.0047152 vs aapprox=-0.0048750 (cercano); con c=0.0200: a=-0.0153880 vs aapprox=-0.0199340 (diverge notablemente), µ*=0.09536 vs µapprox=0.067177",
+      "condiciones": "comparación numérica exacta vs aproximación de Taylor, sin datos de mercado en tiempo real ni backtest de trading",
+      "robustez": "baja",
+      "cita_textual": "this ﬁgure shows that despite being a low order approximation, Eq. (14) is in good agreement with the exact solution for small values of a"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El marco analítico de bandas simétricas óptimas vía first-passage time de un proceso OU podría testearse para calibrar entrada/salida de spreads/zonas mean-reverting intradía en ES, pero requiere validar el supuesto gaussiano/OU y agregar costos reales, ya que el paper carece de backtest OOS o validación empírica robusta."
+  }
+}

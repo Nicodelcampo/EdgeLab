@@ -1,0 +1,281 @@
+{
+  "doc_id": 25,
+  "titulo": "A Standardized R-Multiple Framework for the Statistical Validation of Trading Edge in Retail Trading Systems",
+  "resumen_operativo": "El paper traslada la lógica de validación estadística de performance (en la tradición de Sharpe/PSR/DSR) al espacio de R-multiples, la unidad nativa en que los traders retail registran sus trades con stop-loss fijo y reward-to-risk asimétrico. Deriva umbrales de significancia para el R acumulado bajo una nula de edge cero, el largo mínimo de muestra necesario para detectar edge, valores de referencia para diagnósticos de path (MFE, MAE, drawdown, rachas de pérdidas) y un ajuste post-selección para cuando el setup final surge de una búsqueda entre múltiples variantes. Es directamente aplicable para auditar si un backtest de estrategia intradía en R-multiples (ej. sistemas ES con stop/target fijo) muestra edge genuino o ruido de muestra finita, y para calibrar cuántos trades hacen falta antes de confiar en un resultado.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "R-multiple",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Unidad de medida de resultado de trade normalizada por el riesgo inicial (stop-loss), usada en lugar del retorno de portfolio para evaluar sistemas retail con riesgo fijo por operación.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "expectancy"},
+        {"tipo": "SE_OPONE_A", "objeto": "Sharpe ratio"}
+      ],
+      "cita_textual": "Retail traders commonly evaluate performance at the trade level using R-multiples, where each outcome is normalized by initial risk."
+    },
+    {
+      "nombre": "binary payoff structure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo base del framework: cada trade rinde +b (múltiplo de reward) con probabilidad p o -1 con probabilidad 1-p, representando el setup retail típico de stop-loss y take-profit fijos.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "R-multiple"},
+        {"tipo": "USA", "objeto": "expectancy"}
+      ],
+      "cita_textual": "the baseline model assumes a binary payoff structure"
+    },
+    {
+      "nombre": "expectancy",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Valor esperado del resultado de un trade en R, e = pb - (1-p); la nula central del framework es e = 0 (ausencia de edge).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "trading edge"},
+        {"tipo": "USA", "objeto": "binary payoff structure"}
+      ],
+      "cita_textual": "𝑒= 𝔼[𝑋!] = 𝑝𝑏−(1 −𝑝)."
+    },
+    {
+      "nombre": "break-even win rate",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Tasa de aciertos mínima p0 = 1/(b+1) que hace que la expectativa sea cero dado un reward multiple b; el paper insiste en que alcanzarla no equivale a tener edge estadísticamente validado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "expectancy"},
+        {"tipo": "CONTRADICE_A", "objeto": "trading edge"}
+      ],
+      "cita_textual": "break-even logic is not the same as edge validation"
+    },
+    {
+      "nombre": "zero-edge null hypothesis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Hipótesis nula H0: e = 0 (ausencia de edge) sobre la cual se construyen todos los umbrales de significancia del framework en R-space.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "cumulative-R significance threshold"},
+        {"tipo": "APLICA_A", "objeto": "R-multiple"}
+      ],
+      "cita_textual": "The primary null hypothesis is therefore 𝐻\": 𝑒= 0"
+    },
+    {
+      "nombre": "cumulative-R significance threshold",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Umbral S_N > z_alpha * sqrt(N*b) sobre el cual la performance acumulada en R se considera significativa bajo la nula de edge cero, dado el estadístico estandarizado Z_N.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "trading edge"},
+        {"tipo": "USA", "objeto": "zero-edge null hypothesis"},
+        {"tipo": "MEJORA_A", "objeto": "raw cumulative profit"}
+      ],
+      "cita_textual": "𝑆# > 𝑧&√𝑁𝑏, where 𝑧&is the relevant standard normal critical value"
+    },
+    {
+      "nombre": "minimum trade record length",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Número mínimo de trades N_min = z_alpha^2 * b / e^2 requerido para detectar un edge verdadero e con confianza dada; crece linealmente con el reward multiple y cuadráticamente al reducirse el edge.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Minimum Track Record Length"},
+        {"tipo": "MIDE", "objeto": "trading edge"},
+        {"tipo": "USA", "objeto": "cumulative-R significance threshold"}
+      ],
+      "cita_textual": "𝑁'() = 𝑧&*𝑏 𝑒*"
+    },
+    {
+      "nombre": "Minimum Track Record Length",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Concepto de Bailey y López de Prado sobre cuántos datos hacen falta antes de que una performance reportada en Sharpe pueda considerarse estadísticamente creíble; el paper lo traslada al espacio de R-multiples.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Probabilistic Sharpe Ratio"},
+        {"tipo": "REQUIERE", "objeto": "Sharpe ratio"}
+      ],
+      "cita_textual": "Bailey and López de Prado developed the Probabilistic Sharpe Ratio (PSR) and the Minimum Track Record Length (MinTRL)"
+    },
+    {
+      "nombre": "Probabilistic Sharpe Ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Reformula la evaluación de performance como la probabilidad de que el Sharpe verdadero supere un benchmark elegido, incorporando tamaño de muestra y momentos superiores de la distribución de retornos.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Sharpe ratio"},
+        {"tipo": "MEJORA_A", "objeto": "Sharpe ratio"}
+      ],
+      "cita_textual": "The PSR reframes performance evaluation as the probability that the true Sharpe ratio exceeds a chosen benchmark"
+    },
+    {
+      "nombre": "Deflated Sharpe Ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ajusta la inferencia de performance por no-normalidad y por la inflación que surge cuando se testean muchas estrategias candidatas y se reporta la mejor; sirve de análogo al post-selection adjustment del paper en R-space.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Sharpe ratio"},
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"},
+        {"tipo": "EQUIVALE_A", "objeto": "post-selection adjustment"}
+      ],
+      "cita_textual": "The Deflated Sharpe Ratio (DSR) adjusts performance inference for non-normality and for the inflation that arises when many candidate strategies are tested and the best is reported."
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de que el proceso de investigación mismo sea estructuralmente propenso a falsos descubrimientos, relevante para traders retail que seleccionan setups tras búsqueda iterativa entre entradas, filtros y reglas de gestión.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "post-selection adjustment"},
+        {"tipo": "PARTE_DE", "objeto": "Probability of Backtest Overfitting"}
+      ],
+      "cita_textual": "the research process itself may be structurally prone to false discoveries"
+    },
+    {
+      "nombre": "post-selection adjustment",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Corrección aplicada al umbral de significancia de R acumulado cuando el setup reportado fue elegido entre múltiples variantes (entradas, filtros, reward-to-risk, reglas de gestión), elevando el umbral de evidencia requerido.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"},
+        {"tipo": "USA", "objeto": "cumulative-R significance threshold"},
+        {"tipo": "EQUIVALE_A", "objeto": "Deflated Sharpe Ratio"}
+      ],
+      "cita_textual": "the validation threshold must be adjusted upward to reflect post-selection bias"
+    },
+    {
+      "nombre": "multiple testing",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Problema de que el setup final reportado suele ser el mejor resultado de una búsqueda entre muchas variantes de entradas, filtros, sesiones y reglas, no de un experimento único pre-especificado.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "post-selection adjustment"},
+        {"tipo": "PARTE_DE", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "This creates a multiple-testing problem: the reported strategy is often the best realization drawn from a larger research space rather than the outcome of a single pre-specified experiment."
+    },
+    {
+      "nombre": "maximum drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Mayor caída peak-to-trough de la curva de equity en R; el paper deriva valores benchmark de MDD esperados bajo la nula de edge cero para distintos N y reward-to-risk.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "path-dependent diagnostics"},
+        {"tipo": "MIDE", "objeto": "equity curve"}
+      ],
+      "cita_textual": "maximum drawdown as the largest peak-to-trough decline"
+    },
+    {
+      "nombre": "path-dependent diagnostics",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Segunda capa inferencial del framework compuesta por MFE, MAE, maximum drawdown y longest losing streak de la curva de equity en R, con valores benchmark bajo la nula de edge cero.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "R-multiple"},
+        {"tipo": "USA", "objeto": "zero-edge null hypothesis"}
+      ],
+      "cita_textual": "the framework includes a second inferential layer based on path-dependent diagnostics"
+    },
+    {
+      "nombre": "equity maximum favorable excursion",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Nivel más alto alcanzado por la curva de equity acumulada en R; su magnitud esperada escala aproximadamente con sqrt(N*b) incluso sin edge real.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "path-dependent diagnostics"},
+        {"tipo": "EQUIVALE_A", "objeto": "equity maximum adverse excursion"}
+      ],
+      "cita_textual": "maximum favorable excursion as the highest level reached by the equity curve"
+    },
+    {
+      "nombre": "equity maximum adverse excursion",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Nivel más bajo alcanzado por la curva de equity acumulada en R; junto con la MFE, escala con sqrt(N*b) bajo la nula de edge cero.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "path-dependent diagnostics"}
+      ],
+      "cita_textual": "maximum adverse excursion as the lowest level reached"
+    },
+    {
+      "nombre": "longest losing streak",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Máxima corrida de trades consecutivos perdedores en la secuencia de resultados; el paper provee valores benchmark bajo la nula de edge cero, crecientes con N y con el reward-to-risk.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "path-dependent diagnostics"}
+      ],
+      "cita_textual": "longest losing streak as the maximum run of consecutive losing trades"
+    },
+    {
+      "nombre": "reward-to-risk ratio",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Relación entre el reward multiple b y el riesgo unitario (1R) que define el payoff asimétrico del sistema; el paper muestra que aumentarlo reduce el break-even win rate pero también aumenta la varianza del proceso, dificultando la validación estadística.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "break-even win rate"},
+        {"tipo": "CAUSA", "objeto": "path-dependent diagnostics"}
+      ],
+      "cita_textual": "increasing 𝑏lowers the break-even win rate, but it also increases the noise of the process, so higher reward asymmetry does not make edge easier to validate statistically"
+    },
+    {
+      "nombre": "Monte Carlo validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Simulaciones usadas no para generar el framework sino para chequear su usabilidad empírica en muestras finitas: aproximación de los umbrales analíticos, plausibilidad de los diagnósticos de path y magnitud de la inflación post-selección.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"},
+        {"tipo": "USA", "objeto": "cumulative-R significance threshold"}
+      ],
+      "cita_textual": "the simulations are used to assess three questions: whether the analytical cumulative-R thresholds provide a reasonable approximation to finite-sample critical values"
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida canónica de performance ajustada por riesgo a nivel de retornos de portfolio; el paper la toma como punto de referencia return-level frente al cual posiciona su framework trade-level en R-multiples.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "R-multiple"},
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"}
+      ],
+      "cita_textual": "The Sharpe ratio remains the canonical measure of risk-adjusted performance, summarizing mean excess return per unit of return volatility."
+    },
+    {
+      "nombre": "i.i.d. trade outcomes",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Supuesto central del modelo base: los trades son independientes e idénticamente distribuidos; el paper reconoce que procesos reales pueden exhibir dependencia serial, regímenes cambiantes y no-estacionariedad, limitando la aplicabilidad directa.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "binary payoff structure"},
+        {"tipo": "CONTRADICE_A", "objeto": "regime switching"}
+      ],
+      "cita_textual": "it is built on a benchmark model with i.i.d. trade outcomes and a binary payoff structure"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Bajo la nula de edge cero, el umbral de R acumulado necesario para 'strong evidence' (99%, z=2.326) con N=100 trades crece de 23.3R a 73.6R cuando el reward-to-risk pasa de 1:1 a 1:10, mostrando que mayor asimetría de payoff aumenta la varianza del proceso y encarece la validación estadística aunque reduzca el break-even win rate.",
+      "mercado": "no especificado (modelo genérico de trading retail, agnóstico de activo)",
+      "periodo": "no especificado (resultado analítico/simulado, no serie histórica de mercado)",
+      "magnitud": "umbral strong evidence N=100: 23.3R (RR 1:1) vs 73.6R (RR 1:10); z=1.282/1.645/2.326 para weak/moderate/strong",
+      "condiciones": "supone trades i.i.d. bajo estructura de payoff binaria +b/-1, sin costos de transacción explícitos, derivado analíticamente y validado con Monte Carlo",
+      "robustez": "media",
+      "cita_textual": "The central result of the framework is that higher reward-to-risk ratios do not make statistical validation easier simply because they lower the break-even win rate."
+    },
+    {
+      "afirmacion": "El número mínimo de trades para detectar edge verdadero crece linealmente con el reward multiple y cuadráticamente a medida que el edge verdadero se reduce: para RR 1:1 con e=0.05R hacen falta 658 trades (weak evidence), mientras que para RR 1:10 con el mismo edge hacen falta 6573 trades.",
+      "mercado": "no especificado (modelo genérico)",
+      "periodo": "no especificado",
+      "magnitud": "N_min weak evidence: 658 trades (RR 1:1, e=0.05R) vs 6573 trades (RR 1:10, e=0.05R); ver Tablas A.6-A.8",
+      "condiciones": "resultado cerrado analítico bajo nula de edge cero e i.i.d.",
+      "robustez": "media",
+      "cita_textual": "The number of trades required to validate edge increases linearly with the reward multiple and quadratically as the true edge becomes smaller."
+    },
+    {
+      "afirmacion": "Incluso sin edge real, muestras finitas generan diagnósticos de path sustanciales: para RR 1:1 y N=200 el drawdown medio esperado bajo la nula es 16.6R y la racha de pérdidas media 7.0 trades, mientras que para RR 1:10 con el mismo N el drawdown medio sube a 49.0R y la racha a 36.0 trades.",
+      "mercado": "no especificado",
+      "periodo": "no especificado",
+      "magnitud": "MDD medio N=200: 16.6R (RR 1:1) vs 49.0R (RR 1:10); LLS medio: 7.0 vs 36.0 trades (Tablas A.9, A.13)",
+      "condiciones": "valores benchmark derivados analíticamente y confirmados por simulación Monte Carlo bajo zero-edge null, i.i.d.",
+      "robustez": "media",
+      "cita_textual": "even under zero edge, finite trade records can generate substantial temporary profits, deep adverse excursions, and long loss sequences, especially when reward asymmetry is high"
+    },
+    {
+      "afirmacion": "Las simulaciones Monte Carlo muestran que los valores críticos empíricos de Z_N para muestras pequeñas exceden ligeramente los teóricos (ej. RR 1:10, N=20: crítico teórico 99% = 2.326 vs empírico = 2.44), lo cual desaparece con N grande (N=100: 2.326 teórico vs 2.36 empírico).",
+      "mercado": "no especificado",
+      "periodo": "no especificado",
+      "magnitud": "desviación finite-sample en Z_N: hasta +0.11 en el percentil 99% para N=20, RR 1:10; se reduce a +0.03 con N=100",
+      "condiciones": "simulación Monte Carlo propia bajo nula de edge cero, i.i.d., sin datos de mercado reales",
+      "robustez": "baja",
+      "cita_textual": "the analytical endpoint thresholds based on the standardized statistic 𝑍# = 𝑆#/√𝑁𝑏perform well for moderate and large trade samples, with only modest finite-sample deviations at very small 𝑁"
+    },
+    {
+      "afirmacion": "El ajuste post-selección infla sustancialmente la muestra mínima requerida: con 10 variantes candidatas correlacionadas evaluadas y RR 1:3, e=0.10R, el N mínimo pasa de 812 (single-test) a 1731 trades ajustados; con RR 1:5, e=0.10R pasa de 1353 a 2886 trades.",
+      "mercado": "no especificado",
+      "periodo": "no especificado",
+      "magnitud": "N_min ajustado con M_eff=10: 1731 (RR 1:3, e=0.10R) vs 812 single-test; 2886 (RR 1:5, e=0.10R) vs 1353 single-test (Tabla A.17)",
+      "condiciones": "asume 10 variantes candidatas correlacionadas evaluadas en el proceso de búsqueda, derivado analíticamente con validación Monte Carlo",
+      "robustez": "media",
+      "cita_textual": "post-selection search across multiple candidate variants materially raises the critical values required to validate edge, implying that single-test thresholds are insufficient whenever the final setup is chosen from a broader research process"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "Aplica directamente a la validación de estrategias ES con stop/target fijo (R-multiples): permite calcular cuántos trades hacen falta antes de confiar en un backtest, comparar drawdown/rachas de pérdidas observados contra benchmarks de edge-cero, y ajustar el umbral de significancia cuando el setup surgió de minería con Optuna sobre múltiples variantes."
+  }
+}

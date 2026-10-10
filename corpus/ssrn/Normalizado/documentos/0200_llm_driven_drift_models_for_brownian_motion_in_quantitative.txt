@@ -1,0 +1,607 @@
+LLM-Driven Drift Models for Brownian Motion in
+Quantitative Finance
+Yifan Guo
+January 31, 2026
+Abstract
+Large language models (LLMs) extract high-dimensional semantic signals from unstructured
+financial text, while Brownian motion and stochastic differential equations (SDEs) remain
+canonical for continuous-time asset modeling. Most existing approaches keep these tools separate:
+continuous-time models rely on low-dimensional parametric drifts/volatilities, whereas LLMs
+are used primarily for discrete-time prediction or qualitative analysis. We propose a rigorous
+framework for LLM-driven drift SDEs, in which the drift of a Brownian-motion model is a
+measurable functional of an LLM-derived market-context representation. We formalize the
+model on a filtered probability space, provide well-posedness (existence/uniqueness of strong
+solutions) under natural regularity conditions, and characterize induced risk-neutral measures
+via a Girsanov transform. On the statistical side, we analyze drift estimation via empirical risk
+minimization (ERM) with LLM features, and state sufficient conditions for consistency in a highfrequency sampling regime. Empirically, we outline an evaluation protocol on equities and index
+futures using pretrained LLM embeddings from news and order-book commentary, and extend
+the model to an LLM-conditioned diffusion. Across forecasting, hitting-time calibration, and
+quadratic-variation decomposition by embedding-defined regimes, the proposed framework aims
+to match or outperform classical parametric SDEs and black-box deep discrete-time baselines
+while retaining a clean stochastic-process interpretation.
+1 Introduction
+Brownian motion and its generalizations are foundational in quantitative finance, underpinning
+models from Black–Scholes to stochastic volatility and jump–diffusions. In parallel, LLMs have
+transformed how unstructured information—news, earnings calls, social media, analyst notes, and
+order-book commentary—is summarized into features. Despite this, standard practice largely treats
+continuous-time stochastic modeling and LLM-based representation learning as separate tools:
+SDEs are calibrated under stylized parametric drifts/volatilities, while LLMs produce discrete-time
+predictors or sentiment scores.
+This separation is increasingly limiting in markets where prices reflect both fast microstructural
+noise and slower, text-driven regime shifts. Parametric drifts cannot incorporate high-dimensional
+semantics in a principled way; discrete-time neural predictors often lose interpretability and the
+theoretical toolkit of martingales, quadratic variation, and hitting times.
+1
+
+Goal.
+We seek a framework in which:
+• the randomness remains modeled by Brownian motion (preserving continuous-time stochastic
+calculus); and
+• the drift (and optionally volatility) depends flexibly on an LLM representation of evolving market
+context.
+Contributions.
+• LLM-driven drift SDE. We define SDEs whose drift is a measurable functional of LLM
+embeddings of contextual text.
+• Well-posedness. Under Lipschitz and linear-growth conditions (including in the embedding
+argument), we prove existence and uniqueness of strong solutions.
+• Risk-neutral measures.
+We describe an equivalent martingale measure via a Girsanov
+transform and specify sufficient integrability (Novikov/Kazamaki-type) conditions.
+• Learning and consistency.
+We propose ERM for drift estimation from high-frequency
+increments with LLM features and provide a consistency theorem under standard M-estimation
+conditions.
+• Empirical protocol. We outline tasks (forecasting, hitting times, quadratic variation by
+regimes) that stress the continuous-time interpretation.
+2 Background
+2.1 Probability space, Brownian motion, SDEs
+Let (Ω, F, (Ft)t≥0, P) be a filtered probability space satisfying the usual conditions (right-continuity
+and completeness). Let (Wt)t≥0 be a one-dimensional (Ft)-Brownian motion.
+An Itô SDE for a real-valued process (Xt)t∈[0,T] is
+dXt = µ(t, Xt) dt + σ(t, Xt) dWt,
+X0 = x0.
+(1)
+Classical results state that if µ, σ are globally Lipschitz in x and satisfy linear growth, (1) admits a
+unique strong solution.
+2.2 Quadratic variation and hitting times
+Let Πn = {0 = t0 < t1 < · · · < tn = T} be a partition of [0, T] with mesh ∥Πn∥= maxk(tk+1 −tk).
+Define the discrete quadratic variation
+[X]Πn
+T
+:=
+n−1
+X
+k=0
+ Xtk+1 −Xtk
+2 .
+2
+
+For an Itô process of the form (1) with suitable regularity,
+[X]Πn
+T
+a.s.
+−−−→
+n→∞[X]T :=
+Z T
+0
+σ2(t, Xt) dt,
+so quadratic variation depends on diffusion, not drift. This is crucial when diagnosing volatility
+specification.
+Another intrinsic continuous-time statistic is the first hitting time of a barrier a ∈R:
+τa := inf{t ≥0 : Xt ≥a}.
+(2)
+The distribution of τa depends on both drift and diffusion and is sensitive to regime shifts.
+2.3 LLM-based representations
+Let (Ct)t∈[0,T] denote the (possibly unstructured) market context at time t: news text, earnings-call
+segments, tweets, analyst commentary, or order-book meta-text. A pretrained LLM encoder defines
+an embedding map
+Zt = LLM(Ct) ∈Rd.
+(3)
+In practice, Zt may be pooled and compressed (e.g., PCA) before used downstream. In this paper,
+we treat the LLM as a fixed measurable encoder and study how Zt enters continuous-time dynamics.
+3 LLM-Driven Drift SDE
+3.1 Model specification
+We consider an asset-related process (Xt)t∈[0,T] satisfying
+dXt = µθ(t, Xt, Zt) dt + σ(t, Xt) dWt,
+X0 = x0,
+(4)
+where Zt = LLM(Ct) is the embedding, µθ : [0, T] × R × Rd →R is a parametric drift (e.g., shallow
+NN), and σ : [0, T] × R →R is a diffusion coefficient (baseline: no direct dependence on Zt).
+Assumption 3.1 (Information structure and measurability). The context process (Ct)t∈[0,T] is
+(Ft)-adapted and càdlàg. The map LLM is Borel measurable, hence Zt = LLM(Ct) is (Ft)-adapted
+and càdlàg. The function µθ(t, x, z) is Borel measurable in (t, x, z) and the process t 7→µθ(t, Xt, Zt)
+is (Ft)-progressively measurable. Likewise, t 7→σ(t, Xt) is progressively measurable.
+Remark 3.2. Assumption 3.1 enforces the financial causality requirement: drift at time t can only
+depend on information available up to t, summarized by Zt, and on current state Xt.
+3.2 Regularity assumptions
+We impose global Lipschitz and linear growth in both x and z.
+Assumption 3.3 (Global Lipschitz and linear growth). There exist constants L, K > 0 such that
+3
+
+for all t ∈[0, T], x, y ∈R, z, z′ ∈Rd:
+µθ(t, x, z) −µθ(t, y, z′)
+ ≤L |x −y| + L
+z −z′ ,
+(5)
+|σ(t, x) −σ(t, y)| ≤L |x −y| ,
+(6)
+|µθ(t, x, z)|2 + |σ(t, x)|2 ≤K
+ 1 + |x|2 + ∥z∥2 .
+(7)
+Assumption 3.4 (Embedding moment bound). E
+h
+supt∈[0,T] ∥Zt∥2i
+< ∞.
+3.3 Existence and uniqueness of strong solutions (detailed proof)
+Theorem 3.5 (Existence and uniqueness). Under Assumptions 3.1–3.4, the SDE (4) admits a
+unique strong solution (Xt)t∈[0,T] adapted to (Ft), with E[supt≤T |Xt|2] < ∞.
+Proof. We prove existence and uniqueness by a standard Picard iteration argument, taking care to
+treat (Zt) as an adapted input signal.
+Step 1: Integral formulation.
+A process (Xt) solves (4) iff it satisfies
+Xt = x0 +
+Z t
+0
+µθ(s, Xs, Zs) ds +
+Z t
+0
+σ(s, Xs) dWs.
+(8)
+Step 2: Picard iteration.
+Define X(0)
+t
+≡x0. For n ≥0, define recursively
+X(n+1)
+t
+:= x0 +
+Z t
+0
+µθ(s, X(n)
+s
+, Zs) ds +
+Z t
+0
+σ(s, X(n)
+s
+) dWs.
+By Assumption 3.1, the integrands are progressively measurable, so the integrals are well-defined.
+Step 3: L2 contraction on a short horizon.
+Fix t ∈[0, T]. Using Itô isometry and Cauchy–
+Schwarz:
+E
+X(n+1)
+t
+−X(n)
+t
+
+2 = E
+
+Z t
+0
+ µθ(s, X(n)
+s
+, Zs) −µθ(s, X(n−1)
+s
+, Zs)
+ ds +
+Z t
+0
+ σ(s, X(n)
+s
+) −σ(s, X(n−1)
+s
+)
+ dWs
+
+2
+≤2t
+Z t
+0
+E
+µθ(s, X(n)
+s
+, Zs) −µθ(s, X(n−1)
+s
+, Zs)
+
+2 ds + 2
+Z t
+0
+E
+σ(s, X(n)
+s
+) −σ(s, X(n−1)
+s
+)
+
+2 ds
+≤2t
+Z t
+0
+L2E
+X(n)
+s
+−X(n−1)
+s
+
+2 ds + 2
+Z t
+0
+L2E
+X(n)
+s
+−X(n−1)
+s
+
+2 ds
+= 2L2(t + 1)
+Z t
+0
+E
+X(n)
+s
+−X(n−1)
+s
+
+2 ds.
+Define un(t) = E
+X(n+1)
+t
+−X(n)
+t
+
+2. Then
+un(t) ≤A
+Z t
+0
+un−1(s) ds,
+A := 2L2(T + 1).
+Iterating yields the classical bound un(t) ≤(At)n
+n! u0(t), hence P
+n supt≤T un(t)1/2 < ∞. Therefore
+(X(n)) is Cauchy in L2(Ω; C([0, T])) and converges to some adapted process (Xt).
+4
+
+Step 4: Passing to the limit.
+We show X satisfies (8). By Lipschitz continuity and dominated
+convergence,
+Z t
+0
+µθ(s, X(n)
+s
+, Zs) ds →
+Z t
+0
+µθ(s, Xs, Zs) ds
+in L2,
+and similarly for the stochastic integral using Itô isometry. Hence taking limits in the Picard
+recursion gives (8).
+Step 5: Uniqueness.
+Let X and eX be two solutions. Then
+Xt −eXt =
+Z t
+0
+ µθ(s, Xs, Zs) −µθ(s, eXs, Zs)
+ ds +
+Z t
+0
+ σ(s, Xs) −σ(s, eXs)
+ dWs.
+Taking E |·|2 and repeating the estimate above yields
+E
+Xt −eXt
+
+2 ≤A
+Z t
+0
+E
+Xs −eXs
+
+2 ds,
+so by Grönwall E
+Xt −eXt
+
+2 = 0 for all t, hence X = eX a.s.
+Step 6: Second-moment bound.
+Using (8), BDG inequality, and the linear growth condition
+(7) plus Assumption 3.4, one obtains E[supt≤T |Xt|2] < ∞by standard arguments.
+Remark 3.6. The only non-classical ingredient is that the drift depends on the exogenous adapted
+signal Zt. Assumption 3.4 ensures this input does not destroy moment bounds and well-posedness.
+4 Risk-Neutral Measure and Girsanov Transform
+We now show that LLM-driven physical drifts still support standard risk-neutral pricing under
+suitable integrability. For clarity, consider a log-price model with constant diffusion:
+dXt = µθ(t, Xt, Zt) dt + σ dWt,
+σ > 0,
+(9)
+and St = S0eXt. Let Bt = ert be the money-market account.
+4.1 Market price of risk and Novikov condition
+Define the (candidate) market price of risk:
+λt := µθ(t, Xt, Zt) −r
+σ
+.
+(10)
+Assumption 4.1 (Novikov condition).
+E
+"
+exp
+ 
+1
+2
+Z T
+0
+λ2
+s ds
+!#
+< ∞.
+5
+
+4.2 Equivalent martingale measure (detailed proof)
+Theorem 4.2 (LLM-driven risk-neutral measure). Under Assumptions 3.1–3.4 and 4.1, define
+dQ
+dP := exp
+ 
+−
+Z T
+0
+λs dWs −1
+2
+Z T
+0
+λ2
+s ds
+!
+.
+(11)
+Then Q is a probability measure equivalent to P, the process
+W Q
+t := Wt +
+Z t
+0
+λs ds
+(12)
+is a Brownian motion under Q, and under Q we have
+dXt = r dt + σ dW Q
+t .
+(13)
+Consequently, the discounted price eSt := e−rtSt is a Q-martingale.
+Proof. We give a concise but explicit argument.
+Step 1: Q is well-defined and equivalent.
+By Assumption 4.1, the stochastic exponential in
+(11) is a true martingale with expectation 1. Hence it defines a probability measure Q absolutely
+continuous w.r.t. P. Since the density is strictly positive a.s., Q is equivalent to P.
+Step 2: Drift shift.
+Girsanov’s theorem states that under Q, the process W Q defined in (12) is
+a Brownian motion.
+Step 3: Dynamics under Q.
+Rewrite (9) using dWt = dW Q
+t −λt dt:
+dXt = µθ(t, Xt, Zt) dt + σ
+  dW Q
+t −λt dt
+ =
+ µθ(t, Xt, Zt) −σλt
+ dt + σ dW Q
+t .
+By the definition (10), µθ −σλ = r, yielding (13).
+Step 4: Martingale property of discounted price.
+Applying Itô’s formula to St = S0eXt
+under (13) gives
+dSt = rSt dt + σSt dW Q
+t ,
+so d(e−rtSt) = σe−rtSt dW Q
+t is a local martingale. Standard integrability (implied by constant σ
+and finite horizon) gives a true martingale, hence eSt is a Q-martingale.
+Remark 4.3. The LLM signal affects the physical drift and therefore the market price of risk
+λt (hence the density (11)), but the risk-neutral dynamics recover the standard drift r once the
+measure is changed.
+6
+
+5 Extension: LLM-Conditioned Volatility
+Empirically, text-driven regimes often change volatility, not just drift. We therefore consider:
+dXt = µθ(t, Xt, Zt) dt + σφ(t, Xt, Zt) dWt.
+(14)
+Assumption 5.1 (Regularity for LLM-conditioned diffusion). There exist constants L′, K′ > 0
+such that for all t ∈[0, T], x, y ∈R, z, z′ ∈Rd:
+σφ(t, x, z) −σφ(t, y, z′)
+ ≤L′ |x −y| + L′ z −z′ ,
+(15)
+|σφ(t, x, z)|2 ≤K′ 1 + |x|2 + ∥z∥2 ,
+(16)
+and t 7→σφ(t, Xt, Zt) is progressively measurable.
+Proposition 5.2 (Well-posedness with LLM-conditioned volatility). Under Assumptions 3.1, 3.3,
+3.4, and 5.1, the SDE (14) has a unique strong solution.
+Proof. Repeat the proof of Theorem 3.5 with σ(t, x) replaced by σφ(t, x, z). All estimates remain
+valid with Lipschitz constants adjusted, since both drift and diffusion are Lipschitz and satisfy linear
+growth in (x, z).
+Remark 5.3 (Quadratic variation diagnostics). For (14), quadratic variation is
+[X]T =
+Z T
+0
+σ2
+φ(t, Xt, Zt) dt,
+so regime-wise quadratic variation becomes a direct diagnostic for how well σφ responds to embeddingdefined regimes.
+6 Learning the LLM-Driven Drift
+We now address estimation from discrete observations on a grid 0 = t0 < t1 < · · · < tN = T. Let
+∆tk = tk+1 −tk, ∆Xk = Xtk+1 −Xtk, and Zk = Ztk.
+6.1 Euler approximation and regression target
+For (4), Euler–Maruyama suggests
+∆Xk ≈µθ(tk, Xtk, Zk)∆tk + σ(tk, Xtk)
+p
+∆tk εk,
+εk ∼N(0, 1).
+(17)
+Then, heuristically,
+E
+∆Xk
+∆tk
+ Ftk
+
+≈µθ(tk, Xtk, Zk).
+This motivates least-squares estimation of the drift.
+7
+
+6.2 Empirical risk minimization
+Assume σ is known (or separately pre-estimated) and focus on drift. Define the empirical objective:
+bθN ∈arg min
+θ∈Θ
+1
+N
+N−1
+X
+k=0
+∆Xk
+∆tk
+−µθ(tk, Xtk, Zk)
+2
+,
+(18)
+where Θ is compact and µθ is a fixed-capacity parametric family (e.g., 2-layer MLP operating on
+concatenated features (t, x, z)).
+6.3 A consistency result (more explicit)
+We state an “informal-but-rigorous” theorem that isolates the key assumptions. In practice, one can
+refine it using high-frequency asymptotics for diffusions and empirical process theory.
+Assumption 6.1 (Statistical setting). Assume:
+(i) (Data-generating model) X solves (4) with a true parameter θ⋆∈Θ.
+(ii) (Compactness/continuity) Θ is compact and (t, x, z) 7→µθ(t, x, z) is continuous for each θ,
+and θ 7→µθ(t, x, z) is continuous for each (t, x, z).
+(iii) (Identifiability) If µθ(t, Xt, Zt) = µθ′(t, Xt, Zt) a.s. for Lebesgue-a.e. t ∈[0, T], then θ = θ′.
+(iv) (Ergodicity/mixing) The process (Xt, Zt) is stationary ergodic (or asymptotically stationary)
+and satisfies a mixing condition sufficient for a uniform law of large numbers over the function
+class {µθ : θ ∈Θ}.
+(v) (High-frequency regime) The mesh satisfies maxk ∆tk →0 as N →∞and the time span
+grows (e.g., T = TN →∞).
+Theorem 6.2 (Consistency of ERM drift estimation). Under Assumptions 3.1, 3.3, 3.4, and 6.1,
+any measurable minimizer bθN of (18) satisfies
+bθN
+P−→θ⋆
+as N →∞.
+Proof sketch with explicit structure. Define the population risk at time t:
+(θ) := E
+h µθ⋆(t, Xt, Zt) −µθ(t, Xt, Zt)
+2i
+,
+which is constant in t under stationarity. The key steps are:
+Step 1: Approximation of increments. Under Lipschitz conditions, the Euler approximation yields
+∆Xk
+∆tk = µθ⋆(tk, Xtk, Zk) + ξk + bk, where ξk is a martingale difference noise term of variance
+≍1/∆tk scaled appropriately, and bk is discretization bias with maxk |bk| →0 as maxk ∆tk →0.
+Step 2: Risk decomposition. Plugging into (18) shows the empirical objective equals
+bN(θ) = 1
+N
+X
+k
+ µθ⋆(tk, Xtk, Zk) −µθ(tk, Xtk, Zk)
+2 + (terms vanishing uniformly in θ),
+under mixing and moment assumptions.
+8
+
+Step 3: Uniform law of large numbers. By Assumption 6.1(iv), supθ∈Θ
+bN(θ)−(θ)
+ →0 in probability.
+Step 4: Identification of the unique minimizer. By identifiability, (θ) is uniquely minimized at θ⋆.
+Compactness plus uniform convergence implies argmin consistency, hence bθN →θ⋆in probability.
+A fully formal proof requires specifying the high-frequency asymptotics and empirical process
+conditions in Steps 1–3; the above summarizes the standard route for M-estimators in dependent
+settings.
+Remark 6.3. In the extended model (14), one can estimate (θ, φ) by maximizing a Gaussian
+quasi-likelihood with conditional mean and variance dependent on (tk, Xtk, Zk). A full theory would
+require controlling diffusion estimation error under feature-dependent heteroskedasticity; we leave
+rates/asymptotic normality for future work.
+7 Empirical Evaluation Protocol
+This section specifies what to measure and why it aligns with the continuous-time theory. Numerical
+results and plots should be filled in with real data.
+7.1 Data and preprocessing
+For each asset:
+• Construct log-price (or mid-price) samples Xtk on a regular grid (e.g., 1-min or 5-min).
+• Aggregate contextual text Ctk over a recent window (news headlines, filings, order-book commentary).
+• Compute embeddings Ztk = LLM(Ctk), optionally compress (PCA) to reduce d and stabilize
+learning.
+• Standardize features and align timestamps to avoid lookahead bias (strictly causal windows).
+7.2 Baselines
+Compare against:
+• Classical SDEs: constant drift/volatility (Black–Scholes log model), Ornstein–Uhlenbeck for
+mean-reverting factors.
+• Discrete-time volatility models: GARCH(1,1) variants on returns.
+• Deep discrete-time models: transformer/time-series baselines with and without concatenated
+LLM features.
+This separation isolates the gain from (i) LLM semantics, (ii) continuous-time structure, and (iii)
+the interaction.
+9
+
+7.3 Forecasting metrics
+For one-step-ahead returns ∆Xk:
+• MSE of conditional mean forecast [
+∆Xk.
+• Directional accuracy P(sign([
+∆Xk) = sign(∆Xk)).
+• Strategy metrics (Sharpe / turnover / max drawdown) for simple sign-based trading rules, with
+realistic transaction costs.
+7.4 Hitting times
+Choose barrier levels a relative to current Xtk (e.g., a = Xtk + α for fixed α). For each model:
+• Condition on the realized embedding path (Zt) over a horizon (piecewise constant interpolation
+from the grid).
+• Simulate many SDE paths using estimated parameters to compute bτa.
+• Compare empirical CDFs of τa across models vs. realized data (or bootstrap proxies).
+Hitting-time calibration stresses whether drift+diffusion respond correctly to embedding-defined
+regimes.
+7.5 Quadratic variation by embedding-defined regimes
+Define regimes via a scalar summary of Ztk (e.g., first PCA component Z(1)
+tk ) and quantile bins:
+low: Z(1)
+tk < q0.3,
+mid: q0.3 ≤Z(1)
+tk ≤q0.7,
+high: Z(1)
+tk > q0.7.
+Compute regime-wise realized variation:
+RV(regime) :=
+X
+k∈regime
+(∆Xk)2,
+and compare to model-implied variation (from
+R σ2
+φ(·) dt or simulated increments).
+Constantvolatility models cannot match regime-wise RV; an LLM-conditioned σφ can.
+8 Related Work
+8.1 LLMs in finance
+LLMs and transformers are widely used for sentiment, event extraction, earnings-call understanding,
+and text-to-signal pipelines. Most of these methods are discrete-time predictors and do not explicitly
+embed signals into continuous-time stochastic calculus.
+8.2 Neural SDEs and conditional diffusion
+Neural SDEs learn flexible drifts/diffusions and can be conditioned on covariates. Our contribution is
+a structured conditional SDE where conditioning features are explicitly LLM embeddings of market
+10
+
+text, paired with finance-facing diagnostics (hitting times, quadratic variation) and risk-neutral
+measure construction.
+8.3 Classical continuous-time finance models
+Black–Scholes, Heston, OU, and Lévy/jump models provide interpretable continuous-time foundations but rely on rigid parametric forms. LLM-driven coefficients offer a middle ground: feature-rich
+adaptivity with preserved stochastic-process semantics.
+9 Conclusion and Future Work
+We proposed a rigorous framework for LLM-driven drift SDEs, unifying semantic market context
+(via LLM embeddings) with Brownian-motion-based continuous-time modeling. We established
+well-posedness under natural Lipschitz/growth assumptions, constructed risk-neutral measures via
+Girsanov under integrability conditions, and provided an ERM drift estimation scheme with a
+consistency result in a high-frequency learning regime. Empirically, we outlined evaluation tasks
+that emphasize continuous-time interpretability, including hitting-time calibration and regime-wise
+quadratic variation.
+Promising directions include: (i) joint drift–diffusion estimation theory with rates and asymptotic
+normality; (ii) multi-asset and multidimensional factor extensions for cross-sectional modeling and
+portfolio optimization; (iii) stronger conditioning mechanisms (attention over text windows) while
+retaining measurability and causality; (iv) counterfactual stress testing under hypothetical news
+trajectories.
+References
+[1] B. Øksendal. Stochastic Differential Equations: An Introduction with Applications. Springer, 6th
+edition, 2010.
+[2] I. Karatzas and S. E. Shreve. Brownian Motion and Stochastic Calculus. Springer, 2nd edition,
+1991.
+[3] S. E. Shreve. Stochastic Calculus for Finance II: Continuous-Time Models. Springer, 2004.
+[4] R. Liptser and A. Shiryaev. Statistics of Random Processes I: General Theory. Springer, 2nd
+edition, 2001.
+[5] P. E. Kloeden and E. Platen. Numerical Solution of Stochastic Differential Equations. Springer,
+1992.
+[6] J. Fan and Y. Xiu. Incorporating global and local information for high-frequency volatility
+estimation. Journal of the American Statistical Association, 2020.
+[7] X. Li, T.-K. L. Wong, R. T. Q. Chen, and D. Duvenaud. Scalable gradients for stochastic
+differential equations. AISTATS, 2020.
+11

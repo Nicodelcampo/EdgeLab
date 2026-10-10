@@ -1,0 +1,116 @@
+{
+  "doc_id": 235,
+  "titulo": "Model-Driven Statistical Arbitrage on LETF Option Markets",
+  "resumen_operativo": "Estudia las propiedades estadísticas de la transformación de moneyness scaling de Leung y Sircar para opciones sobre ETFs apalancados (LETFs). Construye bandas de confianza bootstrap uniformes que muestran que las implied volatility smiles de ETFs y LETFs son estadísticamente diferentes incluso tras el scaling. Propone una estrategia de arbitraje estadístico basada en un modelo dinámico semiparamétrico de factores que genera recomendaciones de trading comparando superficies de IV observadas y modeladas. Reporta backtesting con retornos positivos.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Leveraged ETF (LETF)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "ETF que busca generar un múltiplo β (ej. +2, −2) del retorno diario del subyacente, menos una comisión de gestión. Ejemplos: SSO (β=+2 sobre S&P500), SDS (β=−2). Sus opciones tienen dinámicas de implied volatility diferentes a las del ETF sin apalancar.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Moneyness Scaling"},
+        {"tipo": "REQUIERE", "objeto": "Heston stochastic volatility"}
+      ],
+      "cita_textual": "Leveraged ETFs (LETFs) are used to generate multiples or inverse multiples of returns on the underlying asset."
+    },
+    {
+      "nombre": "Moneyness Scaling",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Transformación de coordenadas propuesta por Leung y Sircar (2015) que ajusta la coordenada de moneyness de la implied volatility smile de opciones LETF para eliminar la discrepancia visual con el smile del ETF subyacente.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Leveraged ETF (LETF)"},
+        {"tipo": "REQUIERE", "objeto": "stochastic volatility"}
+      ],
+      "cita_textual": "The moneyness scaling technique proposes a coordinate transformation for the LETF option implied volatility and potentially reflects the increase of risk in the underlying index."
+    },
+    {
+      "nombre": "Bootstrap Uniform Confidence Bands",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica no paramétrica que construye bandas de confianza simultáneas para funciones de implied volatility usando M-smoothing local lineal con remuestreo bootstrap de residuos, permitiendo evaluar si dos curvas IV son estadísticamente diferentes.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "implied volatility smile comparison"},
+        {"tipo": "MEJORA_A", "objeto": "Bonferroni bands"}
+      ],
+      "cita_textual": "We construct bootstrap uniform confidence bands which allow for more flexible error analysis."
+    },
+    {
+      "nombre": "Implied Volatility Smile",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Patrón de implied volatility en función de moneyness y tiempo a vencimiento que forma una 'sonrisa'. Los smiles de LETFs y ETFs son estadísticamente diferentes incluso tras aplicar moneyness scaling.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Moneyness Scaling"},
+        {"tipo": "CAUSA", "objeto": "statistical arbitrage opportunities"}
+      ],
+      "cita_textual": "The results indicate that the implied volatility smiles are statistically different, even after moneyness scaling has been performed."
+    },
+    {
+      "nombre": "Dynamic Semiparametric Factor Model (DSFM)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo que descompone la superficie de implied volatility en factores latentes dinámicos Zt multiplicados por funciones de carga no paramétricas m(Xt), permitiendo forecasting out-of-sample de IV surfaces.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Statistical Arbitrage Strategy"},
+        {"tipo": "APLICA_A", "objeto": "Implied Volatility Smile"}
+      ],
+      "cita_textual": "This strategy utilizes the dynamic structure of implied volatility surface allowing out-of-sample forecasting."
+    },
+    {
+      "nombre": "Statistical Arbitrage Strategy on IV Surfaces",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia que explota discrepancias entre la IV observada de LETF y la IV teórica predicha por el DSFM usando información de opciones del ETF sin apalancar. Genera recomendaciones de trading con alta probabilidad de retorno positivo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Dynamic Semiparametric Factor Model (DSFM)"},
+        {"tipo": "APLICA_A", "objeto": "Leveraged ETF (LETF)"}
+      ],
+      "cita_textual": "A statistical arbitrage type strategy based on a dynamic semiparametric factor model is presented. It is shown to generate positive returns with a high probability."
+    },
+    {
+      "nombre": "Heston Stochastic Volatility",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de volatilidad estocástica incorporado al moneyness scaling para proveer una expresión analítica de la esperanza condicional EQ[∫σ²dt | log(ST/S0) = LM(1)], mejorando la tractabilidad.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Moneyness Scaling"}
+      ],
+      "cita_textual": "We also incorporate Heston stochastic volatility into the moneyness scaling method for better tractability of the model."
+    },
+    {
+      "nombre": "Empirical Leverage Ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio de apalancamiento efectivo observado en datos que puede diferir del declarado, especialmente para períodos de tenencia largos donde las discrepancias de retorno entre ETF y LETF aumentan.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "LETF tracking error"}
+      ],
+      "cita_textual": "Declared leverage ratios are not always the same as the empirical ones. Particularly for longer holding periods, return discrepancies between ETFs and LETFs increase."
+    },
+    {
+      "nombre": "Model-Driven Statistical Arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Clase de estrategias (Avellaneda y Lee, 2010) que explotan discrepancias estadísticas entre precios de mercado y valores teóricos derivados de un modelo, en contraste con el arbitraje estadístico puramente data-driven.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "LETF option markets"}
+      ],
+      "cita_textual": "This strategy exploits statistical discrepancies on (L)ETF markets and falls within the class of model-driven statistical arbitrage described in Avellaneda and Lee (2010)."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Las bandas de confianza bootstrap uniformes muestran que los implied volatility smiles de LETFs (SSO, UPRO, SDS, SPXU) y del ETF SPY son estadísticamente diferentes incluso después de aplicar la transformación de moneyness scaling de Leung y Sircar.",
+      "mercado": "Opciones sobre LETFs del S&P500 (SSO, UPRO, SDS, SPXU)",
+      "periodo": "Datos intradiarios de opciones (fechas no explícitas en el extracto)",
+      "magnitud": "Diferencias estadísticamente significativas en múltiples puntos de la superficie IV",
+      "condiciones": "Bootstrap uniform confidence bands; M-smoothing local lineal; modelo Heston para la esperanza condicional",
+      "robustez": "alta",
+      "cita_textual": "The results indicate that the implied volatility smiles are statistically different, even after moneyness scaling has been performed."
+    },
+    {
+      "afirmacion": "La estrategia de arbitraje estadístico basada en DSFM genera retornos positivos con alta probabilidad en backtesting, explotando discrepancias entre IV observada de LETFs y la IV teórica predicha out-of-sample.",
+      "mercado": "Opciones sobre LETFs del S&P500",
+      "periodo": "Período de backtesting out-of-sample (detalles en artículo completo)",
+      "magnitud": "Retornos positivos con alta probabilidad",
+      "condiciones": "Modelo DSFM con forecasting out-of-sample; bandas de confianza uniformes para señales de entrada",
+      "robustez": "media",
+      "cita_textual": "It is shown to generate positive returns with a high probability."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "Usa datos intradiarios de opciones sobre LETFs; la estrategia opera sobre superficies de IV que se actualizan intradía, con horizontes de inversión cortos."}
+}

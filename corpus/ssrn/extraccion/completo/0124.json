@@ -1,0 +1,75 @@
+{
+  "doc_id": 124,
+  "titulo": "Trading Strategies within the Edges of No-Arbitrage",
+  "resumen_operativo": "El paper desarrolla una estrategia óptima para activos dependientes (ej. futuros y su subyacente) combinando limit y market orders. Actúa como market maker lejos de los límites de no-arbitraje y ejecuta arbitraje estadístico cerca de ellos, gestionando simultáneamente el riesgo de inventario.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "no-arbitrage region",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El rango de precios medios dentro del cual un grupo de activos estructuralmente dependientes no presenta oportunidades de arbitraje, delimitado por sus bid-ask spreads.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "The no-arbitrage region, denoted by A ⊂Rn, is the set of midprices that makes this economy arbitrage free."
+    },
+    {
+      "nombre": "market making",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Provisión de liquidez mediante la colocación de órdenes limitadas de compra y venta, utilizada por el algoritmo cuando los precios están lejos de las fronteras de arbitraje.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "limit order book"}
+      ],
+      "cita_textual": "the strategy behaves as that of a market maker who posts buy and sell limit orders."
+    },
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Aprovechamiento de anomalías estadísticas cerca de los límites de no arbitraje utilizando órdenes a mercado y limitadas para obtener beneficios antes de que la presión de los precios los restaure.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "no-arbitrage region"}
+      ],
+      "cita_textual": "the strategy executes a combination of market orders and limit orders to proﬁt from statistical arbitrages."
+    },
+    {
+      "nombre": "inventory risk",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El riesgo derivado de mantener posiciones abiertas no balanceadas, gestionado en este modelo penalizando la función de valor durante toda la vida de la operación.",
+      "relaciones": [],
+      "cita_textual": "The investor’s goal is to maximize cash proﬁts at some terminal time T, while controlling for inventory risk by penalizing open positions."
+    },
+    {
+      "nombre": "adverse selection",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Riesgo originado por operar con contrapartes informadas, cuyo flujo de órdenes genera movimientos persistentes en los precios en contra de las órdenes limitadas ejecutadas.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "market impact"}
+      ],
+      "cita_textual": "The investor might be trading with better informed counterparties and therefore faces the risk of buying assets right before prices drop or selling assets right before prices rise."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "En presencia de alta selección adversa, tener baja aversión al riesgo de inventario puede reducir los retornos, ya que expone a la estrategia por más tiempo a movimientos perjudiciales en los precios.",
+      "mercado": "Simulated correlated assets",
+      "periodo": "no especificado",
+      "magnitud": "ϵ = 0.04 reduces return as φ decreases",
+      "condiciones": "simulated scenarios with informed market orders affecting drift",
+      "robustez": "media",
+      "cita_textual": "In the extreme case of ϵ = 0.04, these eﬀects are so strong that decreasing the investor’s inventory aversion actually decreases return because she is allowing her portfolio to be exposed to these eﬀects for a longer period of time."
+    },
+    {
+      "afirmacion": "Un aumento en el factor de penalización del riesgo de inventario incrementa significativamente el volumen de órdenes a mercado ejecutadas, induciendo una reversión a la media más fuerte en el inventario.",
+      "mercado": "Simulated correlated assets",
+      "periodo": "no especificado",
+      "magnitud": "Higher MO count for φ up to 200",
+      "condiciones": "ϵ = 0.01 and ρ = 0.50",
+      "robustez": "media",
+      "cita_textual": "the larger the inventory penalty parameter φ is, the more MOs are executed by the investor. Larger φ means that the investor imposes a higher penalty on running inventory, which induces higher mean reversion in inventories."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "El modelo sirve directamente para optimizar el market making multiactivo intradía, o el arbitraje estadístico de contratos altamente correlacionados (e.g. spread ES-NQ)."
+  }
+}

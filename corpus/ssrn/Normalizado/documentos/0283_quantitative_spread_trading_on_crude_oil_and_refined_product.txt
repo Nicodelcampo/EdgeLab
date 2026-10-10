@@ -1,0 +1,3185 @@
+Electronic copy available at: http://ssrn.com/abstract=1932471
+Quantitative Spread Trading on
+Crude Oil and Rened Products Markets
+Mark Cummins∗
+Andrea Bucca†
+August 27, 2011
+Abstract
+Quantitative trading in oil based markets are investigated over 2003-2010, with focus on WTI, Brent, heating oil and gasoil.
+A total of 861 spreads are considered.
+A novel optimal statistical arbitrage trading model is applied, with generalised stepwise procedures controlling for data snooping bias. Aggregating upward and downward
+mean-reversion, protable strategies are identied with Sharpe ratios greater than 2 in
+many instances. For the top categories, average daily returns range from 0.07%-0.55%,
+with trade lengths of 9-55 days. A collapse in the number of protable trading strategies is seen in 2008. Robustness to varying transactions costs is examined.
+Keywords: Crude oil; rened products; spreads; statistical arbitrage; multiple hypothesis testing; data snooping bias.
+∗Corresponding Author: Mark Cummins, Lecturer in Finance, DCU Business School, Dublin City University, Dublin 9, Ireland. E-mail: Mark.Cummins@dcu.ie.
+†Andrea Bucca, Risk Manager, Glencore International Ltd., 50 Berkley Street, London, W1J 8HD, United
+Kingdom. E-mail: andrea.bucca@glencore.co.uk.
+1
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+Electronic copy available at: http://ssrn.com/abstract=1932471
+1
+Introduction
+A signicant increase in commodities trading has been observed over the past decade. This
+increased activity has emerged in a range of forms, including commodity index investment
+and the proliferation of commodity-based hedge funds. Mou (2010), reports that by mid2008 the value of long positions held by index investors reached $256bn, with the market
+ratio of index investment positions to total open interest at 44%. The collapse in commodity
+markets resulting from the credit crisis and global economic recession concerns led to a
+huge sell o of positions, with the total index investment value falling to $112bn and the
+market ratio falling to 39%, although both measures had recovered by the end of 2009 to
+$211bn and 52% respectively. Gregeriou, Hubner and Kooli (2009) report that assets under
+management by the Commodity Trading Advisor (CTA) industry reached $208bn by the
+end of 2008.
+This increased commodity trading activity has led to contentious debates
+within both academia and industry on price bubbles in commodity markets and the role
+of speculators in particular; see for instance, Gilbert (2008). Undisputed is the fact that
+speculative trading is a key feature of modern commodity markets as investors and funds
+seek to actively and often aggressively search out returns. In this context, this study makes
+a number of key contributions to the literature.
+Quantitative trading opportunities in the crude oil and rened products markets are
+investigated over the period 2003-2010, with particular focus on WTI, Brent, heating oil and
+gasoil. A wide range of common- and cross-commodity spreads (including calendar, crack
+and locational spreads) are considered. Trading strategies are designed so as to exploit any
+predictability that exists in the unit volumetric spreads. Drawing on the current literature,
+the novel optimal statistical arbitrage trading model of Bertram (2010) is applied for the
+empirical analysis in this study.1 Few papers deal directly with the issue of optimal entry and
+exit trading signals for statistical arbitrage trading strategies. These include Vidyamurthy
+(2004), Elliott et al (2005) and Do et al (2006). The approach of Bertram (2010) is very much
+distinct from these papers. Specically, modelling a given spread series as a mean-reverting
+Ornstein-Uhlenbeck process, analytic solutions exist for the optimal entry and exit levels
+determined through maximising the expected return per unit time, which is dened as the
+ratio of the deterministic return of the strategy to the expected trade cycle time. Statistical
+arbitrage trading strategies with dened entry and exit levels oer deterministic returns but
+1A number of alternative studies in the area of statistical arbitrage trading have been conducted to date,
+including Burgess (1999, 2000), Trapletti, Geyer and Leisch (2002), Vidyamurthy (2004), Whistler (2004),
+Elliott,Van Der Hoek and Malcolm (2005), Gatev, Goetzmann and Rouwenhorst (2006), Do, Fa and Hamza
+(2006) and Avellaneda and Lee (2010). Andrade, di Petro and Seasholes (2005), Papadakis and Wysocki
+(2007) and Do and Fa (2009) provide independent verication of the trading rule proposed by Gatev et
+al. (2006). Aldridge (2009), Bowen, Hutchinson and O'Sullivan (2010) and Dunis, Giorgini, Laws and Rudy
+(2010) consider high-frequency applications. Other papers of interest include Shleifer and Vishny (1997),
+Hogan, Jarrow, Teo and Warachka (2004) and Lin, McRae and Gulati (2006).
+2
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+uncertainty lies in the length of the trade cycles. Normalisation by the expected trade cycle
+time explicitly accounts for the alternative deterministic returns and stochastic trade cycle
+times associated with alternative strategies, allowing for consistent cross-comparison.
+The full set of commodity data considered leads to 861 spreads in total. The objective
+of this study is to statistically test the performance of just over 2,500 statistical arbitrage
+style strategies simultaneously, based o the constructed spreads.
+The hypothesis tests
+are designed to formally identify those trading strategies that, with statistical signicance,
+outperform a given benchmark in terms of mean daily log-return. The benchmark is dened
+to have zero mean daily log-return, corresponding to taking no position in a given spread.
+This introduces the well-known issue of data snooping bias, whereby under naive analysis
+protable trading strategies may be identied by pure chance alone.
+This links directly
+to the broader issue of multiple hypothesis testing in general statistical and econometric
+applications. Romano, Shaikh and Wolf (2009) provide a detailed exposition of the issues
+pertaining to multiple hypothesis testing, outlining the key literature in the area.
+Two
+recent generalised stepwise techniques proposed in the literature are used to control for
+data snooping bias. The stepdown procedure of Romano and Wolf (2007) and the balanced
+stepdown procedure of Romano and Wolf (2010) are applied, both serving as improvements
+over more conservative single step approaches, such as the seminal reality check bootstrap
+test of White (2000) and the superior predictive ability test of Hansen (2005). The generalised
+procedures oer greater power, where power is loosely dened as the ability to reject false
+null hypotheses. The balanced stepdown procedure oers a further improvement in allowing
+for balance amongst the hypothesis tests in the sense that each is treated equally in terms
+of power. Applying these generalised stepwise procedures to control for data snooping bias
+within this quantitative trading study presents a signicant contribution to the literature.
+Specically, whereas the conservative single step procedures allow for statistical inferences
+around the best performing trading strategy only, the stepwise procedures recursively identify
+all of those trading strategies that are protable with statistical signicance.
+The reality check bootstrap test of White (2000) has been applied in a number of quantitative trading studies to identify protability while rigourously controlling for data snooping
+bias. Sullivan, Timmerman and White (1999), Hsu and Kuan (2005), Qui and Wu (2006),
+Park and Irwin (2007), and Marshall, Cahan and Cahan (2008) apply the reality check bootstrap test to evaluate the protability of a wide range of technical trading rules commonly
+used in industry. Marhsall, Cahan and Cahan (2008) consider a data set of 15 commodities,
+including crude oil and heating oil, and conclude that with the exception of oats technical
+trading rules are not protable. Hsu, Hsu and Kuan (2009) apply a stepwise extension of the
+superior predictive ability test of Hansen (2005) to re-evaluate the protability of technical
+trading rules. Our study is distinct from these papers in that statistical arbitrage techniques
+are employed to exploit predictability or mean-reversion in the spreads where it exits.
+The study further contributes by allowing for practical comparison of the stepwise and the
+balanced stepwise procedures in the context of a trading application. The stepwise procedure
+3
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+of Romano and Wolf (2007) improves on single step procedures with subsequent iterative
+steps that allow for additional protable strategies to be identied. The balanced stepwise
+procedure of Romano and Wolf (2010) likewise improves on single step procedures with
+subsequent iterative steps that allow for additional protable strategies to be identied, but
+with the added benet of balance such that trading strategies with large mean daily returns
+do not dominate those with lower mean daily returns. The balanced stepdown procedure is
+shown to identify many more protable strategies compared to the non-balanced stepdown
+procedure. However, there exists broad consistency, in the sense that those trading strategies
+identied as being protable by the stepdown procedure are also identied in general by the
+balanced stepdown procedure.
+The remainder of the paper is organised as follows. Section 2 discusses the crude oil
+and rened products markets, describing in detail the data used for the empirical analysis.
+Section 3 presents the optimal statistical arbitrage trading model of Bertram (2010). Section
+4 discusses the issue of data snooping bias and links this to the broader issue of multiple
+hypothesis testing. The details of the stepdown procedure of Romano and Wolf (2007) and
+the balanced stepdown procedure of Romano and Wolf (2010) are also given. The empirical
+analysis conducted in this study is outlined in Section 5, dening the formal hypothesis
+tests and discussing transaction cost and liquidity issues.
+Section 6 presents the results
+of the empirical analysis and considers robustness to varying transaction costs. Section 7
+concludes.
+2
+Crude Oil and Rened Products Markets
+The importance of crude oil and rened products markets within the modern economy is well
+appreciated. Increased volatility and uncertainty around prices underlies the active trading of
+derivatives products to hedge and manage the wide variety of risk exposures of producers and
+consumers in the energy sector. The trading of futures spreads oer a range of exible risk
+management solutions. Calendar spreads involve the trading of futures contracts on the same
+underlying commodity with dierent maturities. Such spreads allow producers and suppliers
+to trade maturity-based price dierentials and hedge movements along the futures curve,
+in particular transitions between backwardation and contango. Crack spreads represent the
+price dierential between a given crude oil and rened product and essentially represent the
+production margin for reneries. Locational spreads represent the price dierential between
+the same or related commodities trading in dierent geographical regions. These spreads
+allow energy market participants to exploit locational arbitrage, subject to transport and
+associated costs in the case of physical deliveries.
+Volatility in the crude oil and rened products markets has attracted much interest
+in speculative trading opportunities. The quantitative trading of futures spreads in these
+markets is the primary focus of this study, premised on the existence of predictability and
+4
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+mean-reversion in relative price movements. Under the seminal cost of carry theory (Kaldor,
+1939), a number of studies examine the term structure relationship between spot and futures
+prices from both a market eciency perspective (Crowder and Hamed, 1993; Kellard, Newbold, Rayner and Ennew, 1999) and a price discovery perspective (Schwarz and Szakmary,
+1994; Silvapulle and Moosa, 1999). Girma and Paulson (1999) and Gjolberg and Johnsen
+(1999) examine the relation between crude oil and a range of rened products. It is concluded that cointegrating relationships exist, implying predictability in the crack spreads.
+Kinnear (2002) and Alizadeh and Nomikos (2004) consider locational arbitrage opportunities
+in the crude oil markets. All of these studies provide motivation for exploring the existence
+of predictability and mean-reversion in spreads from a trading perspective. Rather than test
+for these features directly, the approach taken in this study is to apply mean-reversion based
+trading strategies to a large data set of spreads and use advanced data snooping control
+procedures to identify statistically signicant protability.
+For the empirical analysis to follow, a comprehensive data set of crude oil and rened
+product futures contracts are used, comprising WTI and Brent on the crude oil side and
+gasoil (GO) and heating oil (HO) on the rened products side.
+These commodities are
+chosen for this study on the basis of size, importance and liquidity. WTI and HO are both
+traded on the New York Mercentile Exchange (NYMEX), while Brent and GO are both
+traded on the Intercontinental Exchange (ICE). The data set covers the 11-year period from
+3rd January 2000 to 31st December 2010. Most notably, this period covers the record high
+crude oil prices recorded in 2008 and the subsequent collapse in the latter part of the same
+year resulting from the global economic crisis, in addition to the gradual recovery in crude
+oil prices over 2009-2010. All relevant conversions were done to ensure the time series are
+quoted consistently in dollars per barrel.
+The data set includes futures curves for WTI, Brent and HO running from the prompt
+month up to month twelve, with the GO futures curve running from the prompt month up to
+month six. These choices are made to ensure sucient liquidity from a trading perspective,
+with the construction of the individual time series explicitly taking into account the rolling
+of futures contracts. Transaction costs and contract liquidity are discussed in more detail
+later in Section 5. For the quantitative spread trading analysis, the full range of commonand cross-commodity spreads (including calendar, crack and locational spreads) are considered. With 42 dierent maturity contracts across the four commodity groups, a total of 861
+individual spreads are available for analysis. Finally, non-synchronicity bias is avoided with
+all time series being observed at the same time of 5.15pm EDT, coinciding with the close of
+the WTI crude oil market.
+5
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+3
+Optimal Statistical Arbitrage Trading Model
+This section provides a detailed mathematical exposition of the novel optimal statistical
+arbitrage trading model of Bertram (2010). The issue of optimal statistical arbitrage trading
+is approached by rst assuming that the spread between two asset log-price series, denoted
+st, is given by the following zero-mean OU process:2
+dst = −αstdt + σdWt,
+with α, σ > 0 and Wt denoting a Wiener process. Dening the entry and exit levels of the
+trading strategy by a and m respectively, a complete trade cycle is the time taken for the
+spread process to transition from a to m and then return back to a. Formally, the trade
+cycle time is dened as follows:
+T ≡Ta→m + Tm→a,
+where Ta→m is the time to transition from a to m and Tm→a is the time to transition from m
+to a, and the independence of the two times follows from the Markovian property of the OU
+process. Given relative transaction costs c, the total log-return from one trade cycle of the
+statistical arbitrage trading strategy is given by r (a, m, c) ≡m−a−c, which is deterministic
+but for which the associated trading cycle time is stochastic. In this context, Bertram (2010)
+proposes the following expected return per unit time and variance of return per unit time
+measures:
+ξ (a, m, c)
+≡
+r (a, m, c)
+E (T )
+,
+ς (a, m, c)
+≡
+r2 (a, m, c) V (T )
+E3 (T )
+where E (T ) = E (Ta→m)+E (Tm→a) is the expected trade cycle time and V (T ) = V (Ta→m)+
+V (Tm→a) is the variance of the trade cycle time. Following a transformation of the OU process to a dimensionless system, and drawing on the rst-passage time theory of Thomas
+(1975), Sato (1977), and Ricciardi and Sato (1988), Bertram (2010) derives the following
+analytic expressions for E (T ) , V (T ) , ξ (a, m, c) and ς (a, m, c):
+E (T ) = π
+α
+ 
+Er
+ m√α
+σ
+!
+−Er
+ a√α
+σ
+!!
+,
+2The zero-mean assumption does not present any issue in practice. The optimal entry and exit levels
+obtained can be easily translated to account for a non-zero mean in empirical data.
+6
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+V (T ) =
+w1
+
+m
+√
+2α
+σ
+
+−w1
+
+a
+√
+2α
+σ
+
+−w2
+
+m
+√
+2α
+σ
+
++ w2
+
+a
+√
+2α
+σ
+
+α2
+,
+ξ (a, m, c) =
+α (m −a −c)
+π
+
+Er
+ m√α
+σ
+
+−Er
+ a√α
+σ
+,
+ς (a, m, c) = α (m −a −c)2 w1
+
+m
+√
+2α
+σ
+
+−w1
+
+a
+√
+2α
+σ
+
+−w2
+
+m
+√
+2α
+σ
+
++ w2
+
+a
+√
+2α
+σ
+
+π3
+
+Er
+ m√α
+σ
+
+−Er
+ a√α
+σ
+3
+,
+where Er (z) is the imaginary error function,
+w1 (z) ≡
+
+1
+2
+∞
+X
+g=1
+Γ
+g
+2
+ √
+2z
+g /g!
+
+
+2
+−
+
+1
+2
+∞
+X
+g=1
+(−1)g Γ
+g
+2
+ √
+2z
+g /g!
+
+
+2
+,
+w2 (z) ≡
+∞
+X
+g=1
+Γ
+ (2g −1)
+2
+!
+Ψ
+ (2g −1)
+2
+! √
+2z
+(2g−1) / (2g −1)!,
+and Ψ (z) ≡ψ (z) −ψ (1), with Γ (z) and ψ (z) the gamma and digamma functions respectively.
+With these analytic results in place, it is shown that the optimal entry and exit levels a∗
+and m∗may be derived by either maximising the expected return per unit time ξ (a, m, c) or
+the associated per unit time Sharpe ratio. In the former case, it is established that m∗= −a∗,
+with a∗< 0 being the root of the equation
+exp
+ αa2
+σ2
+!
+(2a + c) −σ
+rπ
+αEr
+ a√α
+σ
+!
+= 0.
+In the latter case, the risk-free rate of interest rf is introduced and the associated per unit
+time Sharpe ratio is given by
+S (a, m, c, rf)
+≡
+ξ (a, m, c) −
+rf
+E(T )
+σ
+=
+(m −a −c −rf)
+v
+u
+u
+t
+E (T )
+(m −a −c)2 V (T )
+7
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+= (m −a −c −rf)
+v
+u
+u
+u
+u
+u
+t
+π
+α
+
+Er
+ m√α
+σ
+
+−Er
+ a√α
+σ
+
+(m −a −c)2 w1
+
+m
+√
+2α
+σ
+
+−w1
+
+a
+√
+2α
+σ
+
+−w2
+
+m
+√
+2α
+σ
+
++w2
+
+a
+√
+2α
+σ
+
+α2
+.
+It is established similarly that m = −a, a < 0, and the optimal entry level a∗follows from
+maximising the Sharpe ratio expression with this substitution for m.
+4
+Multiple Hypothesis Testing: Data Snooping Bias
+The objective of the study is to formally and statistically test the performance of the optimal
+statistical arbitrage trading model of Bertram (2010) described in the previous section for
+the quantitative trading of spreads in the crude oil and rened products markets. This will
+inevitably involve the testing of a large number of implementations of the trading model
+simultaneously. This introduces the well-established issue of data snooping bias, whereby
+under naive analysis protable trading strategies may be identied by pure chance alone.
+This links directly to the broader issue of multiple hypothesis testing in statistical and
+econometric applications. The remainder of the section expands on this, and introduces two
+key generalised techniques that will be used to control for the problem of data snooping bias.
+The issue with multiple hypothesis testing is that the probability of false discoveries, i.e.
+the rejection of true null hypotheses by chance alone, is often signicant. There are a number
+of approaches described in the literature to deal with this multiple comparisons problem and
+control for the familywise error rate and variants of this. Romano et al (2009) provide an
+excellent summary of the issues and the literature. The familywise error rate (FWER) is
+dened as the probability that at least one or more false discoveries occur. Consistent with
+the notation of Romano et al (2009), the following denition is made:
+FWERθ = Pθ {reject at least one null hypothesis H0,s : s ∈I (θ)} ,
+where H0,s, s = 1, . . . , S, is a set of null hypotheses; and I (θ) is the set of true null hypotheses. Controlling the FWE involves setting a signicance level ˜α and requiring that
+FWERθ ≤˜α. Controlling for the FWE in this way is particularly conservative given that it
+does not allow even for one false discovery and so is criticised for lacking power, where power
+is loosely dened as the ability to reject false null hypotheses, i.e. identify true discoveries
+(Romano et al, 2009). The greater S, the more dicult it is to make true discoveries.
+To deal with this weakness, generalised FWE approaches have been proposed in the
+literature. The generalised FWE seeks to control for k (where k ≥1) or more false discoveries
+and, in so doing, allows for greater power in multiple hypothesis testing. The generalised
+k-FWE is dened as follows:
+8
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+k-FWERθ = Pθ {reject at least knull hypothesis H0,s : s ∈I (θ)} .
+Towards building a framework to identify protable trading strategies, with statistical signicance, on the set of calendar and crack spreads in this study, the following one-sided
+hypothesis tests will be considered:
+H0,s : θs ≤0
+vs. H1,s : θs > 0.
+The objective is to control for the multiple comparisons in this scenario through the generalised familywise error rate, which oers greater power while also implicitly accounting for
+the dependence structure that exists between the tests. This section continues as follows:
+Section 4.1 presents a single step procedure as described by Romano et al (2009); Section 4.2
+presents the stepwise procedure of Romano and Wolf (2007), which serves as an improvement
+on the single step approach by allowing for subsequent iterative steps to identify additional
+hypothesis rejections; and Section 4.3 presents the balanced stepwise procedure of Romano
+and Wolf (2010), which is a marked improvement again that allows for balance amongst
+the hypothesis tests in the sense that each is treated equally in terms of power, i.e. in the
+identication of true discoveries.
+4.1
+Single-Step Procedure
+Assume a set of test statistics Tn,s = ˆθn,s associated with the hypothesis tests, where n
+is introduced to denote the sample size of the data used for estimation.3
+Letting A ≡
+{1, . . . , S}, the single step procedure proceeds by rejecting all hypotheses where Tn,s ≥
+cn,A (1 −˜α, k), and where cn,A (1 −˜α, k) represents the (1 −˜α)-quantile of the distribution
+of k-max
+ˆθn,s −θs
+
+under Pθ. With Pθ unknown, the critical value cn,A (1 −˜α, k) is also
+unknown. However, an estimate critical value may be determined using appropriate bootstrapping techniques. That is, the critical value ˆcn,A (1 −˜α, k) is estimated as the (1 −˜α)-
+quantile of the distribution of k-max
+ˆθ∗
+n,s −ˆθn,s
+
+for ˆPθ an unrestricted estimate of Pθ. See
+Romano and Wolf (2009) for further technical details.
+4.2
+Stepdown Procedure
+The stepwise procedure of Romano and Wolf (2007) improves on the single step procedure
+described in the previous section by allowing for subsequent iterative steps to identify additional hypothesis rejections. The stepdown procedure is constructed such that at each
+stage, information on the rejected hypotheses to date is used in re-testing for signicance
+3<< insert footnote on the more generalized studentized test statistics of the form Tn,s = ˆθn,s/ˆσn,s >>
+9
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+on the remaining hypotheses. Romano and Wolf (2007) describe the following steps to the
+algorithm.
+• Step 1: Let A1 denote the full set of hypothesis indices, i.e. A1 ≡{1, . . . , S}. If
+the maximum test statistic observed, i.e.
+max (Tn,s), is less than or equal to the
+estimated critical value ˆcn,A1 (1 −˜α, k) then fail to reject all null hypotheses and stop
+the algorithm.
+Otherwise, proceed to reject all null hypotheses H0,s for which the
+associated test statistics exceed the critical value level, i.e. where Tn,s > ˆcn,A1 (1 −˜α, k).
+• Step 2: Let R2 denote the set of indices for the hypotheses rejected in Step 1 and let
+A2 denote the indices for those hypotheses not rejected. If the number of elements in
+R2 is less than k, i.e. |R2| < k, then stop the algorithm; as the probability of k or
+more false discoveries is zero in this case. Otherwise, the appropriate critical value to
+be applied at this stage is calculated as follows:
+ˆdn,A2 (1 −˜α, k) =
+max
+I⊆R2,|I|=k−1 {ˆcn,K (1 −˜α, k) : K ≡A2 ∪I} .
+Hence, additional hypotheses from A2 are rejected if Tn,s > ˆdn,A2 (1 −˜α, k) , s ∈A2. If
+no further rejections are made then stop the algorithm.
+...
+• Step j: Let Rj denote the set of indices for the hypotheses rejected up to Step (j −1)
+and let Aj denote the indices for those hypotheses not rejected. The critical value to
+be applied at this stage is calculated as follows:
+ˆdn,Aj (1 −˜α, k) =
+max
+I⊆Rj,|I|=k−1 {ˆcn,K (1 −˜α, k) : K ≡Aj ∪I} .
+Hence, additional hypotheses from Aj are rejected if Tn,s > ˆdn,Aj (1 −˜α, k) , s ∈Aj. If
+no further rejections are made then stop the algorithm.
+...
+From the description of the algorithm above, at each stage j in the stepwise procedure,
+the hypotheses that are not rejected thus far are re-tested over a smaller population of hypothesis tests than previously. The size of this smaller population is given (|Aj| + k −1),
+which includes all the hypotheses within Aj, in addition to (k −1) hypotheses drawn from
+those already rejected, i.e. drawn from Rj. Given that control of the generalised k-FWER
+is the premise of the procedure, it is expected that there are at most (k −1) false discoveries amongst the set of hypotheses rejected Rj.
+However, it is not known which of
+the rejected hypotheses may represent false discoveries. Hence, it is necessary to circulate
+through all combinations of Rj, of size (k −1) , in order to obtain the maximum critical
+10
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+value ˆdn,Aj (1 −˜α, k) against which to test the hypotheses within Aj. See Romano and Wolf
+(2007) for further technical details.
+4.2.1
+Operative Method
+In requiring to circulate through all subsets of Rj, of size (k −1) , in order to obtain the
+maximum critical value to apply at each stage of the stepdown procedure, the algorithm can
+become highly, if not excessively, computationally burdensome. Depending on the |Rj| and
+the value of k, the number of combinations |Rj|Ck−1 can become very large. Romano and
+Wolf (2007) therefore suggest an operative method that reduces this computational burden,
+while at the same time maintaining much of the attractive properties of the algorithm.4
+For this, rst consider the hypothesis tests rejected up to step (j −1) and place these in
+descending order of test statistic, i.e.
+Tn,r1 ≥Tn,r2 ≥. . . ≥Tn,r|Rj|,
+where
+n
+r1, r2, . . . , r|Rj|
+o
+is the appropriate permutation of associated hypothesis test indices
+that gives this ordering. Now consider a user-dened maximum number of combinations,
+Nmax, at each step of the algorithm. Then choose an integer value such that MCk−1 ≤Nmax
+and replace the critical value calculation at each step j of the algorithm with the following:
+ˆdn,Aj (1 −˜α, k) =
+max
+I⊆
+
+rmax(1,|Rj|−M+1),...,r|Rj|
+
+,|I|=k−1
+{ˆcn,K (1 −˜α, k) : K ≡Aj ∪I} .
+What this serves to do is to replace circulating through all the hypothesis tests rejected to
+date with that of circulating through only the M least signicant hypothesis tests rejected.
+Of course, in the case where M ≥|Rj| then this amounts to circulating through all the
+hypotheses rejected. Although this approach is premised on the assumption that the (up to
+k −1) false discoveries lie within the least signicant hypotheses rejected so far, it does oer
+signicant computational eciencies for the algorithm. It is this operative method that is
+used for the empirical analysis in subsequent sections.
+4.3
+Balanced Stepdown Procedure
+Whereas the stepwise procedure of the previous section is an improvement on the single step
+procedure of Section 4.1, it does not oer by construction balance in the sense that each
+4<< outline these attractive properties: conservativeness; allows for nite sample control of the k-FWER
+under Pθ; and provides asymptotic control in the case of contiguous alternatives. see Romano and Wolf
+(2005), p.23 >>
+11
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+hypothesis test is treated equally in terms of power. The balanced stepwise procedure of
+Romano and Wolf (2010) addresses this issue.
+Introducing some notation, let Hn,s (·, Pθ) denote the distribution function of
+ˆθn,s −θs
+
+and let cn,s (˜γ) denote the ˜γ-quantile of this distribution. The condence interval
+n
+θs : ˆθn,s −θs ≤cn,s (˜γ)
+o
+then has coverage probability ˜γ. Balance is the property that the marginal condence intervals for a population of S simultaneous hypothesis tests have the same probability coverage.
+Within the context of controlling the generalised k-FWER, the overall objective is to ensure
+that the simultaneous condence interval covers all parameters θs, s = 1, ..., S, except for
+at most (k −1) of them, for a given limiting probability (1 −˜α), while at the same time
+ensuring balance (at least asymptotically). So, what is sought is that
+Pθ
+nˆθn,s −θs ≤cn,s (˜γ)
+for all but at most (k −1)of the hypotheses
+o
+≡Pθ
+n
+Hn,s
+ˆθn,s −θs, Pθ
+
+≤˜γ for all but at most (k −1)of the hypotheses
+o
+≡Pθ
+n
+k- max
+
+Hn,s
+ˆθn,s −θs, Pθ
+
+≤˜γ
+o
+= 1 −˜α.
+Letting Ln,{1,...,S} (k, Pθ) denote the distribution of k- max
+
+Hn,s
+ˆθn,s −θs, Pθ
+
+, the appropriate choice of the coverage probability ˜γ is then L−1
+n,{1,...,S} (1 −˜α, k, Pθ).
+As before, given that Pθ is unknown, it necessary to use appropriate bootstrapping techniques to generate an estimate of the coverage probability L−1
+n,{1,...,S}
+
+1 −˜α, k, ˆPθ
+
+, under ˆPθ .
+Therefore, from this development it is possible to dene the simultaneous condence interval
+n
+θs : ˆθn,s −θs ≤H−1
+n,s
+
+L−1
+n,{1,...,S}
+
+1 −˜α, k, ˆPθ
+
+, ˆPθ
+o
+.
+The right hand side of the above inequality will form the basis of the critical value denitions used within the stepdown procedure. See Romano and Wolf (2010) for further technical
+details. Note that although the above development was made assuming the full set of hypothesis tests, it equally applies to any subset K ⊆{1, . . . , S} . Hence, the balanced stepwise
+algorithm may now be described as follows.
+• Step 1: Let A1 denote the full set of hypothesis indices, i.e. A1 ≡{1, . . . , S}. If
+for each hypothesis test, the associated test statistic Tn,s is less than or equal to the
+corresponding critical value estimate ˆcn,A1,s (1 −˜α, k) ≡H−1
+n,s
+
+L−1
+n,A1
+
+1 −˜α, k, ˆPθ
+
+, ˆPθ
+
+then fail to reject all null hypotheses and stop the algorithm. Otherwise, proceed to
+reject all null hypotheses H0,s for which the associated test statistics exceeds the critical
+value level, i.e. where Tn,s > ˆcn,A1,s (1 −˜α, k).
+12
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+• Step 2: Let R2 denote the set of indices for the hypotheses rejected in Step 1 and let
+A2 denote the indices for those hypotheses not rejected. If the number of elements in
+R2 is less than k, i.e. |R2| < k, then stop the algorithm; as the probability of k or
+more false discoveries is zero in this case. Otherwise, the appropriate critical value to
+be applied for each hypothesis test s at this stage is calculated as follows:
+ˆdn,A2,s (1 −˜α, k) =
+max
+I⊆R2,|I|=k−1 {ˆcn,K,s (1 −˜α, k) : K ≡A2 ∪I} .
+Hence, additional hypotheses from A2 are rejected if Tn,s > ˆdn,A2,s (1 −˜α, k) , s ∈A2.
+If no further rejections are made then stop the algorithm.
+...
+• Step j: Let Rj denote the set of indices for the hypotheses rejected up to Step (j −1)
+and let Aj denote the indices for those hypotheses not rejected. The appropriate critical value to be applied for each hypothesis test s at this stage is calculated as follows:
+ˆdn,Aj,s (1 −˜α, k) =
+max
+I⊆Rj,|I|=k−1 {ˆcn,K,s (1 −˜α, k) : K ≡Aj ∪I} .
+Hence, additional hypotheses from Aj are rejected if Tn,s > ˆdn,Aj,s (1 −˜α, k) , s ∈Aj.
+If no further rejections are made then stop the algorithm.
+...
+Similar to the stepwise algorithm of the previous section, at each stage j in the stepwise procedure, the hypotheses that are not rejected thus far are re-tested over a smaller population of
+hypothesis tests than previously. The size of this smaller population is given (|Aj| + k −1),
+which includes all the hypotheses within Aj, in addition to (k −1) hypotheses drawn from
+those hypotheses already rejected, i.e. drawn from Rj. Given that control of the generalised
+k-FWER is the premise of the procedure, it is expected that there are at most (k −1) false
+discoveries amongst the set of hypotheses rejected Rj. However, it is not known which of
+the rejected hypotheses may represent false discoveries. Hence, it is necessary to circulate
+through all combinations of Rj, of size (k −1) , in order to obtain the appropriate critical
+values. Where the algorithm departs signicantly from the previous section is that a maximum critical value ˆdn,Aj,s (1 −˜α, k) must be determined for each hypothesis test s. This
+adds an additional layer of computational burden on the algorithm.
+4.3.1
+Operative Method
+Similar to the stepdown procedure of Section 4.2, the need to circulate through all subsets of
+Rj, of size (k −1) , in order to obtain, in this case, a set of maximum critical values to apply
+13
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+at each stage of the stepdown procedure, means the algorithm can become excessively computationally burdensome. Romano and Wolf (2010) therefore suggest an operative method
+that reduces this computational burden in the spirit of that proposed by the authors for the
+stepdown procedure (Romano and Wolf, 2007).
+It is rst necessary to be able to order the hypothesis tests rejected up to step (j −1)
+in terms of signicance. To this end, it is noted that marginalp-values can be obtained as
+follows:
+ˆpn,s ≡1 −Hn,s
+ˆθn,s, ˆPθ
+
+.
+This gives the following ascending order for the signicance of the hypothesis tests:
+ˆpn,r1 ≤ˆpn,r2 ≤. . . ≤ˆpn,r|Rj|,
+where
+n
+r1, r2, . . . , r|Rj|
+o
+is the appropriate permutation of associated hypothesis test indices
+that gives this ordering. As before, a maximum number of combinations, Nmax, at each step
+of the algorithm is dened. Then an integer value M is chosen such that MCk−1 ≤Nmax,
+leading to the calculation of the critical values as follows:
+ˆdn,Aj,s (1 −˜α, k) =
+max
+I⊆
+
+rmax(1,|Rj|−M+1),...,r|Rj|
+
+,|I|=k−1
+{ˆcn,K,s (1 −˜α, k) : K ≡Aj ∪I} .
+The rationale for this approach is the exact same as that described in Section 4.2.1, with the
+same eect being the introduction of signicant computational eciencies to the algorithm.
+It is this operative method that is used for the empirical analysis in subsequent sections.
+5
+Outline of Empirical Analysis
+With the objective being to formally test the performance of the optimal statistical arbitrage
+trading model for the quantitative trading of spreads in the crude oil and rened products
+markets, data snooping bias presents a real issue that needs to be controlled. Furthermore,
+the performance tests are correlated by nature of the pairings and the markets considered,
+and so any testing procedure needs to be suciently exible to account for this dependence
+structure. The stepdown and balanced stepdown procedures described in the previous section oer a more generalised and exible approach to controlling data snooping bias than
+the commonly used reality check bootstrap test of White (2000) or the superior predictive
+ability test of Hansen (2005). As identied by Romano et al (2009), both tests lack power
+in the sense that they control only the familywise error rate (i.e. k = 1), and are further restrictive by being only single step procedures. Additionally, the reality check bootstrap test
+14
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+of White (2000) does not consider studentised test statistics and so by construction suers
+from lack of balance. The stepdown and balanced stepdown procedures in contrast control
+the generalised familywise error rate using stepwise procedures, with the latter also oering
+balance by construction. Given that the test statistics used in this study are not studentised,
+the balanced stepdown procedure is considered superior to the stepdown procedure as it is
+asymptotically equivalent to studentisation. Hence, as each test is treated equally, from a
+practitioner perspective the balanced stepdown procedure shows no bias between the trading strategies considered. This novel application of the stepdown and balanced stepdown
+procedures to the problem of quantitative trading within the energy markets represents a
+key contribution of this study to the literature.
+In implementing the stepdown and balanced stepdown procedures, it is rst necessary to
+identify the formal hypothesis tests that are to be be applied. The approach taken in this
+study is to formally identify those spread trading strategies that, with statistical signicance,
+outperform a given benchmark in terms of mean daily log-return. The benchmark is dened
+as in Hsu and Kuan (2005) as equivalent to taking no position in the spread, and so the
+hypothesis tests look to identify departures from the zero mean daily log-return. Letting ζs
+denote the daily log-return of trading strategy s and θs ≡E (ζs), then the hypothesis tests
+may be formalised as follows:
+H0,s : θs ≤0
+vs. H1,s : θs > 0,
+for a full set of hypothesis tests {1, . . . , S} , where S is set equal the number of tests considered. The appropriate estimate of θs is the mean daily log-return observed on trading
+strategy s over a given historical period with n daily observations. Letting ζt,s, t = 1, . . . , n,
+denote the daily log-return of trading strategy s at time t, the estimate ˆθn,s = Pn
+t=1 ζt,s/n.
+Given that θs is unknown, implementing the stepdown and balanced stepdown procedures
+requires use of appropriate bootstrapping techniques. This involves replacing the true speci-
+cation
+ˆθn,s −θs
+
+with the estimates
+ˆθ∗
+n,s (b) −ˆθn,s
+
+, where ˆθ∗
+n,s (b) are bootstrap estimates
+of θs and b = 1, . . . , B, are the indices for the bootstrap samples.
+With the hypothesis tests formalised, the next stage is to implement the optimal statistical arbitrage trading model on each spread within the data set. For this it is necessary to
+t the following general OU process to each spread time series:
+dst = α (µ −st) dt + σdWt,
+(1)
+in order to obtain parameters estimates ˆα, ˆµ and ˆσ for generating the entry and exit trading
+signals as described in Section 3.
+Adjusting the signals from the trading model for the
+non-zero long-run mean level ˆµ is straightforward, giving the eective entry and exit levels
+ˆa ≡a + ˆµ and ˆm ≡m + ˆµ respectively, where by denition of a and m, ˆa < ˆm.
+To
+optimise trading performance and exploit the mean reversion fully (where it exits in the
+data), trades will be executed to exploit the transition from ˆa →ˆm and the transition back
+15
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+from ˆm →ˆa. Therefore, ˆa and ˆm will herein be referred merely as trading signals, alternating
+interpretation between entry and exit signals. The trading strategies are constructed to go
+long (short) the spread when the trading signal ˆa ( ˆm) is breached and then close out the
+position once ˆm(ˆa) is breached. In this context, it is important to emphasise that the results
+reported in the next section reect the aggregation of these two trading approaches.
+A number of alternative in-sample and out-of-sample periods are considered for estimation and evaluation of the spread trading strategies. Specically, eight separate one-year
+out-of-sample periods are considered for evaluation of trading strategy performance; namely,
+each year over the period 2003-2010. These choices allow for a wider testing of the optimal
+statistical arbitrage trading model and an examination of trading protability over time.
+Three separate in-sample periods are then considered for the estimation of the trading models and the generation of trading signals to be applied out-of-sample. One-year, two-year
+and three-year periods are considered for estimation, where for convenience of construction
+252 trade days are assumed in each year. So for example, the two-year in-sample period
+includes the 2 × 252 trade dates prior to the start of the out-of-sample period. Given the
+daily frequency of the data these choices are seen as reasonable to capture consistent meanreversion eects, while at the same time examining the impact of alternative estimation
+periods. Hence, for each out-of-sample period, a total of 2, 583 (i.e. 3 × 861) individual
+trading strategies are tested simultaneously.
+To complete the set up of the empirical analysis, is nally necessary to discuss the choice
+of generalising parameter k and the probability parameter ˜α to be used within the stepwise
+and balanced stepwise procedures. To ensure tight control of the number of false discoveries
+while at the same time oering power to the tests, k is chosen to ensure that no more than 1%
+of the tests considered represent false discoveries. Hence, based on a population of S = 2, 583
+tests, k is set equal to ⌈S × 1%⌉= 26. The signicance level ˜α chosen is 5%, such that the
+implementation of the stepwise and balanced stepwise procedures amount to ensuring that
+Pθ {k = 26 or more false discoveries} ≤˜α = 5%.
+Remark on Transaction Costs
+Transaction costs are considered and incorporated into the analysis via the transaction costs
+parameter c detailed in Section 3. Given the unavailability to the authors of detailed bidask spread information on the underlying futures contracts over the full sample period, the
+authors draw on the literature to estimate transaction costs. Laws, Dunis and Evans (2008)
+apply lter techniques for the trading of spreads comprised from WTI, Brent and HO using
+data over the period 1995-2005. The relative transactions costs reported by the authors
+for these three commodities are presented in Table 1. These transaction costs represent the
+average of four intraday spreads. Without information on bid-ask spreads in the GO market,
+the relative transaction costs of the HO market are assumed to be a reasonable proxy. Hence,
+16
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+for each spread transaction, the total relative transactions costs are given by the sum of the
+costs for the individual legs.
+WTI
+0.0940%
+Brent
+0.0289%
+Heating Oil
+0.2482%
+Gasoil
+0.2482%
+Table 1: Estimate Relative Transactions Costs
+The transaction costs are assumed to apply across the full futures curve, which eases the
+analysis but is clearly restrictive in the sense that transaction costs are likely to increase
+with increasing maturity. Additionally, given that the sample period of Laws, Dunis and
+Evans (2008) does not coincide with this study, the transactions costs assumed may not be
+representative. In light of these limitations, the robustness of the empirical results to varying
+the transaction costs parameter c is examined at the close of the next section. In particular,
+a range of higher transaction cost levels are assumed and the analysis repeated in order to
+determine the impact on average daily returns and the number of protable trades identied.
+Remark on Liquidity
+An additional issue of practitioner relevance for this study is the level of liquidity across the
+various futures curves. The ability to execute large volumes of trades based on quantitative
+trading signals is a key consideration for industry. With only volume data available to the
+authors, volume-based measures are used here to provide insights into average liquidity across
+the sample data. Two common measures are calculated for each commodity and maturity
+futures contract, broken down by each of the 2003-2010 trading years. These measures are
+the ve-day turnover rate and the ve-day Hui-Heubel liquidity ratio. A more comprehensive
+study of liquidity would be extremely benecial but due to data constraints is beyond the
+scope of this paper. The issue of liquidity is not considered a source of bias for the stylised
+trading analysis of this paper given the unit volumetric assumption made in the spread
+trading design.
+Sarr and Lybek (2002) provide a detailed overview of liquidity measures, including the
+two volume-based measures considered here. The turnover rate captures the number of times
+the outstanding volume changes hands over a specied period. The ve-day turnover rate
+(TR) is used here to give a measure of liquidity over ve consecutive trade dates and is
+dened formally as follows:
+TR = V/
+
+S × ¯P
+
+;
+where S is the outstanding volume, ¯P is the average closing price over the ve days and V
+is the monetary volume value given by
+17
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+V =
+X
+i
+Pi × Qi,
+where Pi and Qi are the closing prices and trade volume on date i. The greater the turnover
+rate then the greater the depth to the market.
+The Hui-Heibel liquidity ratio on the other hand seeks to incorporate the impact of
+trading on price.
+It considers the percentage price dierential between the highest and
+lowest prices achieved over a specied period relative to the monetary volume value. The
+ve-day Hui-Heubel ratio is used and is dened formally as follows:
+Lhh ≡[(Pmax −Pmin) /Pmin] /TR,
+where Pmax and Pmin are the maximum and minimum closing prices recorded over the ve
+trade days and TR is the ve-day turnover rate already dened. The lower the value of the
+Hui-Heubel liquidity ratio then the greater the level of liquidity.
+Tables 4-7 present for each commodity and each trading year the average values of the
+calculated turnover and Hui-Heubel measures. For the most part, all four commodities show
+declining liquidity across the futures curve, with high liquidity over the short-dated contracts
+in particular. Despite the dierences in the size of the various markets, there are relatively
+comparable levels of liquidity across the futures curves based on both measures. The turnover
+rates also appear to suggest increasing levels of liquidity over the eight-year period, with the
+Hui-Heubel liquidity ratio results showing broad agreement with this observation.
+6
+Empirical Results
+Performing the empirical analysis as set out in the previous section leads to a number of interesting observations. Tables 2 and 3 present trading performance results based on applying
+the stepdown and balanced stepdown procedures respectively to control for data snooping
+bias. For each trading year, average daily returns, Sharpe ratios and trade lengths are reported for three specic categories; namely, the top ten, top twenty and all trading strategies
+identied by the procedures as being protable with statistical signicance. Also reported
+for each category are the average estimates for the structural parameters of the underlying
+OU process. The nal column in each table gives the total number of protable trading
+strategies identied in each year.
+It is important to again emphasise that the results reported reect the aggregation of two
+trading approaches, one taking long positions in the spreads to exploit upward movements
+between the trading signals and the second taking short positions to exploit downward
+movements between the trading signals. Many protable trading strategies are identied,
+which in many instances report Sharpe ratios that exceed 2 and in some instances are even
+18
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+close to 4.
+For the top ten and top 20 categories, average daily returns fall within the
+approximate range of 0.07%-0.35% for most years, with 2009 showing exceptional results
+in the range of 0.5%-0.55% driven by the locational HO-GO spreads. The associated trade
+lengths lie in the approximate range of 9-55 trade dates, with the shortest horizons being
+reported for 2009. The years 2003 and 2009 prove to be particularly successful relative to
+other years with Sharpe ratios close to or in excess of 3.
+For the years 2008 and 2010,
+the stepdown procedure actually fails to identify any protable strategies, with the balanced
+stepdown procedure only extracting 8 and 23 protable strategies respectively. The numbers
+are much lower than in other years. Average daily returns in excess of 0.2% are reported for
+2008 but the associated Sharpe ratios are seen to fall below 2 on average. The discussion
+to follow will explore further these observations for 2008 in the context of the dierences
+between the stepdown and balanced stepdown procedures.
+Similar poor performance is
+observed for the year 2010, where average daily returns can be seen to be at the lower range
+of approximately 0.07%, with Sharpe ratios again below 2 on average.
+Substantial dierences are observed between the stepdown and balanced stepdown procedures in terms of the total number of protable trading strategies identied, despite showing
+broad consistency within the top 10 and top 20 categories. The balanced stepdown procedure manages to identify between 1.5 and 9.5 times the number of protable strategies
+and succeeds in identifying strategies in 2008 and 2010 where the stepdown procedure fails.
+This observation reects the manner in which the balanced stepdown procedure treats each
+hypothesis test equally in terms of power, whereas the stepdown procedure is biased towards
+those trading strategies with larger average daily returns. The dramatic reduction in the
+number of protable strategies in 2008 relative to 2007 and the years previous reects the
+collapse in crude oil and other commodity prices resulting from the credit crisis shock and
+concerns over global commodity demand. The eect of the collapse in commodity prices
+manifests as a structural shift in the range of the spreads over 2008 relative to 2007, 2006
+and 2005. Therefore, large divergences from the long-run mean levels estimated in-sample
+are observed for the majority of spreads. These divergences lead to signicant losses for the
+majority of trading strategies out-of-sample in 2008.
+For further insights, Appendix B presents the top ten tradable spreads identied each
+year and gives the associated average daily return, Sharpe ratio and trade length results.
+Crack spreads and HO-GO locational spreads can be seen to dominate the composition
+of the top ten strategies. The crack spreads include the common-exchange WTI-HO and
+Brent-GO cracks in addition to the cross-exchange WTI-GO crack. For the most part, the
+spreads involve either common, adjacent or at least near-by dated contracts. Interestingly,
+not a single calendar spread makes up the top ten strategies for any of the years, while
+locational Brent-WTI spreads only appear in the mix for 2010 (with the exception of one
+observation in 2003).
+In terms of the in-sample estimation period used to generate the
+trading signals, the top ten protable strategies do not show any particular pattern. The
+one-, two- and three-year in-sample estimation periods are all represented within the top ten
+19
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+strategy groups. Across the eight years, the one-year in-sample period does marginally come
+out on top representing approximately 40% of the protable strategies, with more or less an
+even split between the two- and three-years estimation periods.
+Year
+Avg. Daily Ret.
+Avg. Sharpe Ratio
+Avg. Trade Length
+Avg. α
+Avg. µ
+Avg. σ
+# Protable
+(days)
+Strategies
+2003
+Top 10
+0.00361
+2.94
+15.09
+59.367
+-0.094
+0.259
+Top 20
+0.00345
+2.92
+15.81
+53.443
+-0.103
+0.252
+All
+0.00345
+2.92
+15.81
+53.443
+-0.103
+0.252
+15
+2004
+Top 10
+0.00299
+2.44
+18.74
+50.529
+-0.098
+0.295
+Top 20
+0.00275
+2.30
+18.88
+52.578
+-0.096
+0.279
+All
+0.00265
+2.24
+19.58
+54.128
+-0.099
+0.275
+28
+2005
+Top 10
+0.00259
+2.33
+19.08
+26.167
+-0.169
+0.275
+Top 20
+0.00253
+2.22
+19.81
+23.461
+-0.172
+0.280
+All
+0.00253
+2.22
+19.81
+23.461
+-0.172
+0.280
+14
+2006
+Top 10
+0.00241
+2.41
+19.36
+34.984
+-0.078
+0.287
+Top 20
+0.00220
+2.19
+21.28
+34.765
+-0.092
+0.289
+All
+0.00195
+1.98
+24.22
+33.899
+-0.102
+0.279
+35
+2007
+Top 10
+0.00293
+2.93
+12.62
+83.288
+-0.127
+0.233
+Top 20
+0.00272
+2.75
+13.33
+87.855
+-0.120
+0.226
+All
+0.00233
+2.32
+16.22
+79.593
+-0.121
+0.227
+54
+2008
+Top 10
+-
+-
+-
+-
+-
+-
+Top 20
+-
+-
+-
+-
+-
+-
+All
+-
+-
+-
+-
+-
+-
+-
+2009
+Top 10
+0.00547
+3.95
+9.13
+92.993
+0.010
+0.260
+Top 20
+0.00499
+3.66
+10.05
+86.505
+0.007
+0.256
+All
+0.00456
+3.32
+11.14
+95.267
+0.008
+0.258
+31
+2010
+Top 10
+-
+-
+-
+-
+-
+-
+Top 20
+-
+-
+-
+-
+-
+-
+All
+-
+-
+-
+-
+-
+-
+-
+Table 2: Average Empirical Results: Stepdown Procedure
+20
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+Year
+Avg. Daily Ret.
+Avg. Sharpe Ratio
+Avg. Trade Length
+Avg. α
+Avg. µ
+Avg. σ
+# Protable
+(days)
+Strategies
+2003
+Top 10
+0.00354
+2.96
+14.28
+65.130
+-0.089
+0.263
+Top 20
+0.00314
+2.87
+14.84
+66.133
+-0.105
+0.253
+All
+0.00164
+2.16
+27.24
+28.997
+-0.078
+0.183
+142
+2004
+Top 10
+0.00298
+2.47
+17.58
+53.573
+-0.096
+0.281
+Top 20
+0.00272
+2.34
+20.09
+47.738
+-0.103
+0.279
+All
+0.00174
+1.84
+28.21
+33.896
+-0.068
+0.197
+52
+2005
+Top 10
+0.00258
+2.33
+19.46
+25.491
+-0.167
+0.273
+Top 20
+0.00246
+2.22
+20.71
+23.742
+-0.160
+0.276
+All
+0.00202
+2.05
+23.71
+23.444
+-0.170
+0.251
+71
+2006
+Top 10
+0.00241
+2.41
+19.36
+34.984
+-0.078
+0.287
+Top 20
+0.00220
+2.19
+21.28
+34.765
+-0.092
+0.289
+All
+0.00164
+2.03
+24.93
+36.322
+-0.093
+0.237
+46
+2007
+Top 10
+0.00293
+2.93
+12.62
+83.288
+-0.127
+0.233
+Top 20
+0.00272
+2.75
+13.33
+87.855
+-0.120
+0.226
+All
+0.00199
+2.18
+23.83
+66.403
+-0.120
+0.219
+82
+2008
+Top 10
+0.00244
+1.86
+18.26
+99.863
+0.001
+0.232
+Top 20
+0.00244
+1.86
+18.26
+99.863
+0.001
+0.232
+All
+0.00244
+1.86
+18.26
+99.863
+0.001
+0.232
+8
+2009
+Top 10
+0.00547
+3.95
+9.13
+92.993
+0.010
+0.260
+Top 20
+0.00499
+3.66
+10.05
+86.505
+0.007
+0.256
+All
+0.00264
+2.43
+24.38
+46.336
+0.011
+0.174
+63
+2010
+Top 10
+0.00092
+1.91
+43.88
+55.796
+-0.014
+0.262
+Top 20
+0.00066
+1.82
+55.43
+30.522
+-0.004
+0.184
+All
+0.00060
+1.73
+56.54
+26.737
+-0.005
+0.164
+23
+Table 3: Average Empirical Results: Balanced Procedure
+21
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+6.1
+Robustness to Transaction Costs
+As outlined in Section 5, the levels of transaction costs assumed for the analysis thus far
+has been taken from Laws, Dunis and Evans (2008), with the HO transaction costs assumed
+to apply for the GO market as well. Given that the sample period used by these authors
+does not coincide with this study, the transactions costs assumed may not be representative.
+Therefore, this section now examines the robustness of trading strategy performance to
+varying transaction cost levels.
+The transaction parameter c used in the trading model
+is allowed to range between lower and higher levels than those outlined in Table 1, with
+the objective being to determine the impact on average daily returns and the number of
+protable trades identied. For ease of analysis and exposition, a set of transaction cost
+factors is considered. Each factor is applied to the transaction costs in Table 1 and the
+empirical analysis of the previous section is then repeated.
+The set of transaction cost
+factors assumed is {0.8, 0.9, . . . , 1.9, 2} , allowing transaction costs to vary between 80% and
+200% of those assumed so far.
+Figures 1-4 present plots of the average daily returns and the number of protable trading
+strategies for each out-of-sample trading year considered. Broadly speaking it can be seen
+that the returns and the number of strategies decline with increasing transaction cost levels.
+However, these declines are not monotonic, reecting that the calculation of the trading
+signals is a function of the transaction cost parameter c as outlined in Section 3. So as the
+transaction cost parameter c varies then so too does the positioning of the signals. Between
+the lowest and highest transaction cost factors (i.e. 0.8 and 2 respectively), average daily
+returns in annualised terms decline by approximately 10%-15% for 2004, 2006, 2007 and 2009
+and by 4%-7% for 2003, 2005 and 2010. In the case of trading year 2008, it has been seen
+already that the number of protable strategies collapses relative to other years, with only 8
+trading strategies identied as protable from the full data set. For the highest transaction
+cost factor this reduces to a single strategy. The decline in average daily returns in annualised
+terms between the lowest and highest transaction cost factors is a signicant 44%.
+22
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
+0.12
+0.14
+0.16
+0.18
+TRANSACTION COST FACTOR
+AVG DAILY RETURN (%)
+TRADING YEAR 2003
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
+50
+100
+150
+200
+# PROFITABLE STRATEGIES
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
+0.1
+0.15
+0.2
+0.25
+TRANSACTION COST FACTOR
+AVG DAILY RETURN (%)
+TRADING YEAR 2004
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
+20
+40
+60
+80
+# PROFITABLE STRATEGIES
+Figure 1: Transaction Cost Robustness: 2003 & 2004
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
+0.18
+0.2
+0.22
+TRANSACTION COST FACTOR
+AVG DAILY RETURN (%)
+TRADING YEAR 2005
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
+0
+50
+100
+# PROFITABLE STRATEGIES
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
+0.1
+0.15
+0.2
+TRANSACTION COST FACTOR
+AVG DAILY RETURN (%)
+TRADING YEAR 2006
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
+0
+50
+100
+# PROFITABLE STRATEGIES
+Figure 2: Transaction Cost Robustness: 2005 & 2006
+23
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
+0.1
+0.15
+0.2
+0.25
+TRANSACTION COST FACTOR
+AVG DAILY RETURN (%)
+TRADING YEAR 2007
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
+40
+60
+80
+100
+# PROFITABLE STRATEGIES
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
+0
+0.2
+0.4
+TRANSACTION COST FACTOR
+AVG DAILY RETURN (%)
+TRADING YEAR 2008
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
+0
+5
+10
+# PROFITABLE STRATEGIES
+Figure 3: Transaction Cost Robustness: 2007 & 2008
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
+0.2
+0.22
+0.24
+0.26
+0.28
+TRANSACTION COST FACTOR
+AVG DAILY RETURN (%)
+TRADING YEAR 2009
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
+40
+50
+60
+70
+80
+# PROFITABLE STRATEGIES
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
+0
+0.05
+0.1
+TRANSACTION COST FACTOR
+AVG DAILY RETURN (%)
+TRADING YEAR 2010
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
+10
+20
+30
+# PROFITABLE STRATEGIES
+Figure 4: Transaction Cost Robustness: 2009 & 2010
+24
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+7
+Conclusion
+This study examines the quantitative trading of spreads in the crude oil (WTI and Brent)
+and rened products (heating oil and gasoil) markets, making a number of contributions
+to the literature. Firstly, the novel statistical arbitrage trading model of Bertram (2010)
+is applied to a wide range of spreads (including calendar, crack and locational spreads),
+representing a comprehensive empirical analysis of this model. The model leads to protable
+spread trading and it is shown that performance is quite robust to varying transaction costs.
+Secondly, generalised stepwise procedures are used to control for data snooping bias within
+the quantitative trading application. The stepdown procedure of Romano and Wolf (2007)
+and the balanced stepdown procedure of Romano and Wolf (2010) are applied, both serving
+as improvements over more conservative single step approaches, such as the reality check
+bootstrap test of White (2000) and the superior predictive ability test of Hansen (2005). The
+generalised procedures oer greater power to reject false null hypotheses, with the balanced
+stepdown procedure oering equal treatment in the identication of protable strategies.
+Protable trading strategies are identied, with results reecting the aggregation of taking
+long and short positions in the spreads. For the top 10 and top 20 categories, average daily
+returns fall within the approximate range of 0.07%-0.55%, with trade lengths of 9-55 days
+and Sharpe ratios of between 2 and 4 in many cases. Thirdly, the study allows for practical
+comparison of the stepwise and the balanced stepwise procedures in the context of a trading
+application. The balanced stepdown procedure is unbiased in its approach and is shown to
+identify many more protable trading strategies compared to the non-balanced stepdown
+procedure. For instance, a collapse in the number of protable trading strategies is seen
+in 2008, reecting the impact of the credit crisis and the distortion of spreads relative to
+previous years. Whereas the stepdown procedure fails to identify any protable strategies,
+the balanced procedure is successful in doing so.
+25
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+References
+[1] Alizadeh, A.H. and Nomikos, N.K., Cost of carry, causality and arbitrage between oil
+futures and tanker freight markets. Transportation Research Part E, 2004, 40, 297-316.
+[2] Aldridge, I., High-Frequency Trading: A Practical Guide to Algorithmic Strategies and
+Trading Systems, 2009 (John Wiley & Sons: New Jersey).
+[3] Andrade, S., di Pietro, V. and Seasholes, M., Understanding the protability of pairs
+trading. Working Paper, UC Berkley, 2005.
+[4] Avellaneda, M. and Lee, J.H. Statistical arbitrage in the US equities market, Quantitative Finance, 2010, 10, 761-782.
+[5] Bertram, W.K., Analytic solutions for optimal statistical arbitrage trading. Physica A,
+2010, 389, 2234-2243.
+[6] Bowen, D., Hutchinson, M.C. and O'Sullivan, N., High-frequency equity pairs trading:
+Transaction costs, speed of execution, and patterns in returns. The Journal of Trading,
+2010, 5, 1-38.
+[7] Burgess, A.N., A computational methodology for modelling the dynamics of statistical
+arbitrage. PhD Thesis, London Business School, 1999.
+[8] Burgess, A.N., Statistical Arbitrage Models on the FTSE 100. In Computational Finance, eds. Abu-Mustafa, Y., LeBaron, B., Lo, A.W. and Weigend, A.S., 2000 (The
+MIT Press: Cambridge, Massachusetts).
+[9] Crowder, W. and Hamed, A., A cointegration test for oil futures market eciency. The
+Journal of Futures Markets, 1993, 13, 933-941.
+[10] Do, B., and Fa, R. Does naïve pairs trading still work?
+Working Paper, Monash
+University, 2009.
+[11] Do, B., Fa, R. and Hamza, K., A new approach to modeling and estimation for pairs
+trading. Working Paper, Monash University, 2006.
+[12] Dunis, C.L., Giorgini, G., Laws, J. and Rudy, J., Statistical arbitrage and high-frequency
+data with an application to Eurostoxx 50 equities. Working Paper, Liverpool Business
+School, 2010.
+[13] Elliott, R.J., Van der Hoek, J. and Malcolm, W.P., Pairs trading. Quantitative Finance,
+2005, 5, 271-276.
+26
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+[14] Gatev, E., Goetzmann, W.N. and Rouwenhorst, K.G., Pairs trading: Performance of a
+relative-value arbitrage rule. The Review of Financial Studies, 2006, 19, 797-827.
+[15] Gilbert, C.L., Commodity speculation and commodity investment. Working Paper, Universita Degli Studi di Trento, 2008.
+[16] Girma, P.B. and Paulson, A.S., Risk arbitrage opportunities in petroleum futures
+spreads. Journal of Futures Markets, 1999, 19, 931955.
+[17] Gjolberg, O. and Johnsen, T., Risk management in the oil industry: Can information
+on long-run equilibrium prices be utilized? Energy Economics, 1999, 21, 517527.
+[18] Gregeriou, G.N., Huber, G. and Kooli, M., Performance and persistence of commodity
+trading advisors: Further evidence. Journal of Futures Markets, 2009, 30, 725-752.
+[19] Hansen, P.R., A test for superior predictive ability. Journal of Business and Economics
+Statistics, 2005, 23, 365380.
+[20] Hogan, S., Jarrow, R., Teo, R. and Warachka, M., Testing marking eciency using
+statistical arbitrage with applications to momentum and value strategies. Journal of
+Financial Economics, 2004, 73, 525- 565.
+[21] Hsu, P.H. and Kuan, C.M., Re-examining the protability of technical analysis with
+White's reality check. Working paper, 2005.
+[22] Hsu, P.H., Hsu, Y.C. and Kuan, C.M., Testing the predictive ability of technical analysis
+using a new stepwise test without data snooping bias. Working paper, 2009.
+[23] Kaldor, N., Speculation and economic stability. Review of Economic Studies, 1939, 7,
+1-27.
+[24] Kanamura, T., Rachev, S.T. and Fabozzi, F.J., A prot model for spread trading with
+an application to energy futures. Journal of Trading, 2010, 5, 48-62.
+[25] Kavussanos, M.G. and Alizadeh, A., The expectations hypothesis of the term structure
+and risk premia in dry bulk shipping freight markets. Journal of Transport Economics
+and Policy, 2002, 36, 267-304.
+[26] Kellard, N., Newbold, P., Rayner, A. and Ennew, C., The relative eciency of commodity futures markets. Journal of Futures Markets, 1999, 19, 413432
+[27] Kinnear, K., The Brent WTI Arbitrage: Linking the World's Key Crudes. Working
+paper, 2002.
+27
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+[28] Laws, J., Dunis, C.L. and Evans, B., Trading and ltering futures spread portfolios:
+Futher applications of threshold and correlation lters. Working paper, 2008.
+[29] Lin, Y., McRae M., and Gulati, C., Loss protection in pairs trading through minimum
+prot bounds: A cointegration approach. Journal of Applied Mathematics and Decision
+Sciences, 2006, 6, 1-14.
+[30] Marshall, B.R., Cahan, R.H., and Cahan, J.M., Can commodity futures be protably
+traded with quantiative market timing strategies? Working paper, 2008.
+[31] Mou, Y., Limits to arbitrage and commodity index investment: Front-running the Goldman roll. Working paper, 2010.
+[32] Park, C.H. and Irwin, S.H., What do we know about the protability of technical
+analysis? Journal of Economic Surveys, 2007, 21, 786-826.
+[33] Qui, M., and Wu, Y., Technical trading-rule protability, data snooping, and reality
+check: Evidence from the foreign exchange market. Journal of Money, Credit, and
+Banking, 2006, 38, 2135-2158.
+[34] Romano, J.P., Shaikh, A.M., Wolf, M., Hypothesis Testing in Econometrics. Working
+paper, 2009.
+[35] Romano, J.P., Wolf, M., Control of generalized error rates in multiple testing. Annals
+of Statistics, 2007, 35, 13781408.
+[36] Romano, J.P., Wolf, M., Balanced control of generalized error rates. Annals of Statistics,
+2010, 38, 598-633.
+[37] Sarr, A., Lybek, T., Measuring liquidity in nancial markets. Working paper, 2002.
+[38] Schwarz, T.V. and Szakmary, A.C., Price discovery in petroleum markets: Arbitrage
+cointegration and the time interval of analysis. Journal of Futures Markets, 1994,
+14,147167.
+[39] Shleifer, A., and Vishny, R., The limits of arbitrage. Journal of Finance, 1997, 52, 35-55.
+[40] Silvapulle, P., and Moosa, I., The relationship between spot and futures prices: evidence
+from the crude oil market. Journal of Futures Markets, 1999, 19, 175-193.
+[41] Sullivan, R., Timmermann, A. and White, H. Data-snooping, technical trading rule
+performance, and the bootstrap. Journal of Finance, 1999, 54, 16471691.
+[42] Trapletti, A., Geyer, A. and Leisch, F., Forecasting exchange rates using cointegration
+models and intraday data. Journal of Forecasting, 2002, 21, 151-166.
+28
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+[43] Vidyamurthy, G., Pairs Trading: Quantitative Methods and Analysis, 2004 (John Wiley
+& Sons: New Jersey).
+[44] Whistler, M., Trading Pairs: Capturing Prots and Hedging Risk with Statistical Arbitrage Strategies, 2004 (John Wiley & Sons: Hoboken, New Jersey).
+[45] White, H., A reality check for data snooping. Econometrica, 2000, 68, 1097-1126.
+A
+Liquidity Measures
+Year
+M1
+M2
+M3
+M4
+M5
+M6
+M7
+M8
+M9
+M10
+M11
+M12
+Average 5-Day Turnover Rate
+2003
+4.05
+3.01
+1.78
+1.08
+0.69
+0.54
+NaN
+0.44
+0.38
+0.33
+0.27
+0.25
+2004
+4.15
+2.85
+1.64
+1.02
+0.73
+0.60
+NaN
+0.45
+0.39
+0.34
+0.31
+0.29
+2005
+4.15
+2.55
+1.85
+1.25
+0.84
+0.67
+NaN
+0.49
+0.37
+0.32
+0.32
+0.24
+2006
+4.51
+2.41
+1.71
+1.06
+0.76
+0.60
+NaN
+0.53
+0.48
+0.44
+0.43
+0.30
+2007
+7.39
+3.17
+2.20
+1.44
+0.95
+0.74
+NaN
+0.44
+0.37
+0.28
+0.26
+0.21
+2008
+9.09
+3.59
+2.48
+1.80
+1.33
+0.94
+NaN
+0.50
+0.41
+0.32
+0.31
+0.34
+2009
+10.04
+3.60
+2.45
+1.82
+1.50
+1.24
+NaN
+0.82
+0.73
+0.68
+0.55
+0.53
+2010
+11.86
+3.87
+2.63
+2.11
+1.64
+1.39
+NaN
+1.02
+0.83
+0.73
+0.67
+0.61
+Average 5-Day Hui-Heubel Ratio
+2003
+0.018
+0.017
+0.026
+0.040
+0.058
+0.072
+NaN
+0.092
+0.116
+0.120
+0.143
+0.191
+2004
+0.019
+0.019
+0.031
+0.048
+0.067
+0.092
+NaN
+0.121
+0.147
+0.188
+0.226
+0.244
+2005
+0.018
+0.019
+0.025
+0.036
+0.053
+0.066
+NaN
+0.110
+0.170
+0.233
+0.182
+0.512
+2006
+0.015
+0.018
+0.023
+0.035
+0.050
+0.065
+NaN
+0.076
+0.093
+0.102
+0.123
+0.191
+2007
+0.011
+0.014
+0.019
+0.028
+0.041
+0.055
+NaN
+0.095
+0.127
+0.162
+0.240
+0.267
+2008
+0.016
+0.024
+0.031
+0.040
+0.057
+0.077
+NaN
+0.168
+0.250
+0.289
+0.314
+0.474
+2009
+0.015
+0.022
+0.029
+0.037
+0.044
+0.049
+NaN
+0.076
+0.089
+0.094
+0.117
+0.145
+2010
+0.006
+0.011
+0.016
+0.020
+0.025
+0.030
+NaN
+0.042
+0.048
+0.054
+0.061
+0.073
+Table 4: Liquidity Measures: WTI
+29
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+Year
+M1
+M2
+M3
+M4
+M5
+M6
+M7
+M8
+M9
+M10
+M11
+M12
+Average 5-Day Turnover Rate
+2003
+3.01
+1.86
+1.69
+1.11
+0.77
+0.53
+0.40
+0.41
+0.41
+0.56
+1.06
+2.05
+2004
+2.85
+2.07
+1.75
+1.01
+0.65
+0.53
+0.36
+0.43
+0.38
+0.31
+0.40
+2.01
+2005
+4.48
+2.10
+2.11
+1.45
+0.94
+0.64
+0.47
+0.44
+0.39
+0.33
+0.39
+0.69
+2006
+5.81
+2.09
+2.12
+1.44
+0.96
+0.73
+0.54
+0.47
+0.48
+0.42
+0.43
+0.52
+2007
+5.12
+2.35
+2.41
+1.63
+1.07
+0.81
+0.63
+0.49
+0.37
+0.37
+0.36
+0.33
+2008
+7.24
+2.64
+2.55
+2.08
+1.53
+1.11
+0.90
+0.71
+0.59
+0.45
+0.34
+0.31
+2009
+5.82
+2.59
+2.38
+1.87
+1.49
+1.25
+1.04
+0.92
+0.86
+0.71
+0.58
+0.47
+2010
+6.19
+2.69
+2.26
+1.94
+1.71
+1.50
+1.29
+1.11
+1.02
+0.89
+0.73
+0.67
+Average 5-Day Hui-Heubel Ratio
+2003
+0.185
+0.093
+0.030
+0.041
+0.062
+0.089
+0.123
+0.163
+0.125
+0.172
+0.257
+0.156
+2004
+0.028
+0.026
+0.029
+0.049
+0.078
+0.108
+0.194
+0.355
+0.321
+0.527
+0.415
+0.220
+2005
+0.013
+0.022
+0.021
+0.029
+0.048
+0.078
+0.129
+0.262
+0.340
+0.903
+0.355
+0.651
+2006
+0.010
+0.020
+0.019
+0.027
+0.040
+0.059
+0.099
+0.155
+0.199
+0.177
+0.629
+1.621
+2007
+0.009
+0.017
+0.017
+0.023
+0.037
+0.049
+0.069
+0.102
+0.154
+0.173
+0.845
+0.623
+2008
+0.013
+0.036
+0.034
+0.052
+0.061
+0.082
+0.089
+0.124
+0.165
+0.275
+0.363
+1.926
+2009
+0.016
+0.026
+0.028
+0.033
+0.042
+0.048
+0.058
+0.069
+0.073
+0.092
+0.108
+0.155
+2010
+0.009
+0.015
+0.017
+0.020
+0.023
+0.027
+0.030
+0.037
+0.041
+0.047
+0.061
+0.067
+Table 5: Liquidity Measures: Brent
+30
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+Year
+M1
+M2
+M3
+M4
+M5
+M6
+M7
+M8
+M9
+M10
+M11
+M12
+Average 5-Day Turnover Rate
+2003
+4.13
+2.29
+1.24
+0.77
+0.60
+0.48
+0.39
+0.39
+0.35
+0.33
+0.29
+0.36
+2004
+3.84
+1.98
+1.12
+0.73
+0.60
+0.46
+0.38
+0.35
+0.35
+0.37
+0.29
+0.30
+2005
+3.88
+1.89
+1.16
+0.78
+0.57
+0.49
+0.44
+0.39
+0.36
+0.36
+0.32
+0.38
+2006
+4.05
+1.83
+1.19
+0.79
+0.56
+0.48
+0.53
+0.40
+0.38
+0.39
+0.34
+0.31
+2007
+4.27
+2.02
+1.43
+1.02
+0.79
+0.65
+0.58
+0.48
+0.45
+0.40
+0.45
+0.45
+2008
+5.09
+2.39
+1.73
+1.32
+1.06
+0.87
+0.82
+0.75
+0.66
+0.49
+0.41
+0.41
+2009
+4.90
+2.25
+1.33
+1.01
+0.85
+0.75
+0.73
+0.67
+0.64
+0.58
+0.56
+0.50
+2010
+6.87
+2.33
+1.53
+1.18
+1.01
+0.77
+0.68
+0.64
+0.57
+0.46
+0.39
+0.43
+Average 5-Day Hui-Heubel Ratio
+2003
+0.020
+0.026
+0.041
+0.064
+0.084
+0.110
+0.122
+0.134
+0.184
+0.317
+0.517
+0.466
+2004
+0.021
+0.030
+0.050
+0.072
+0.090
+0.118
+0.139
+0.159
+0.186
+0.227
+0.253
+0.377
+2005
+0.021
+0.030
+0.045
+0.066
+0.088
+0.122
+0.166
+0.156
+0.203
+0.191
+0.234
+0.378
+2006
+0.017
+0.025
+0.037
+0.053
+0.073
+0.087
+0.079
+0.116
+0.135
+0.229
+0.388
+0.332
+2007
+0.013
+0.020
+0.027
+0.036
+0.047
+0.059
+0.064
+0.094
+0.089
+0.121
+0.143
+0.228
+2008
+0.018
+0.029
+0.038
+0.051
+0.062
+0.076
+0.086
+0.089
+0.108
+0.147
+0.213
+0.253
+2009
+0.019
+0.029
+0.046
+0.061
+0.070
+0.078
+0.081
+0.090
+0.093
+0.109
+0.127
+0.119
+2010
+0.012
+0.018
+0.025
+0.033
+0.040
+0.052
+0.059
+0.072
+0.077
+0.094
+0.115
+0.113
+Table 6: Liquidity Measures: Heating Oil
+31
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+Year
+M1
+M2
+M3
+M4
+M5
+M6
+Average 5-Day Turnover Rate
+2003
+5.32
+1.43
+1.79
+0.61
+0.41
+0.38
+2004
+5.72
+0.95
+0.94
+0.57
+0.38
+0.31
+2005
+5.49
+1.54
+1.32
+0.72
+0.45
+0.38
+2006
+17.31
+1.90
+1.57
+0.97
+0.55
+0.42
+2007
+11.61
+2.08
+1.63
+0.99
+0.60
+0.45
+2008
+15.73
+2.69
+2.19
+1.35
+0.94
+0.74
+2009
+8.29
+2.54
+1.76
+1.11
+0.78
+0.64
+2010
+6.22
+2.92
+2.12
+1.44
+1.03
+0.80
+Average 5-Day Hui-Heubel Ratio
+2003
+0.047
+0.043
+0.045
+0.102
+0.149
+0.384
+2004
+0.149
+0.169
+0.090
+0.116
+0.171
+0.330
+2005
+0.025
+0.034
+0.041
+0.073
+0.155
+0.228
+2006
+0.013
+0.022
+0.027
+0.040
+0.073
+0.108
+2007
+0.012
+0.017
+0.022
+0.036
+0.061
+0.084
+2008
+0.017
+0.033
+0.037
+0.064
+0.088
+0.115
+2009
+0.021
+0.026
+0.037
+0.056
+0.078
+0.099
+2010
+0.014
+0.013
+0.019
+0.028
+0.038
+0.050
+Table 7: Liquidity Measures: Gasoil
+32
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+B
+Top 10 Protable Trading Strategies
+Series
+Avg. Daily Ret.
+Sharpe Ratio
+Avg. Trade Length
+α
+µ
+σ
+(days)
+2003
+GO M01-HO M02 (1Y)
+0.444%
+3.06
+9.67
+142.90
+-0.04
+0.24
+WTI M04-GO M04 (1Y)
+0.404%
+4.12
+9.21
+105.55
+-0.09
+0.24
+GO M01-HO M01 (1Y)
+0.373%
+2.31
+10.44
+106.44
+-0.03
+0.26
+GO M01-HO M02 (3Y)
+0.362%
+2.46
+17.40
+51.36
+-0.03
+0.31
+Brent M11-WTI M01 (1Y)
+0.355%
+3.32
+18.64
+3.76
+-0.20
+0.20
+Brent M01-GO M03 (3Y)
+0.327%
+3.04
+18.50
+17.00
+-0.13
+0.31
+Brent M01-GO M03 (2Y)
+0.327%
+3.03
+16.19
+23.87
+-0.13
+0.28
+WTI M05-GO M04 (1Y)
+0.320%
+3.22
+10.88
+76.15
+-0.10
+0.24
+WTI M04-GO M03 (2Y)
+0.319%
+3.01
+14.50
+30.24
+-0.10
+0.28
+GO M01-HO M02 (2Y)
+0.306%
+2.07
+17.40
+94.04
+-0.03
+0.28
+2004
+GO M04-HO M04 (3Y)
+0.392%
+3.22
+12.48
+89.72
+-0.04
+0.26
+GO M05-HO M05 (3Y)
+0.328%
+2.76
+12.38
+78.74
+-0.04
+0.26
+GO M04-HO M05 (3Y)
+0.310%
+2.57
+12.48
+64.79
+-0.03
+0.27
+GO M05-HO M05 (2Y)
+0.292%
+2.44
+13.68
+73.71
+-0.04
+0.25
+GO M04-HO M04 (2Y)
+0.283%
+2.27
+17.47
+82.53
+-0.04
+0.26
+Brent M12-GO M01 (1Y)
+0.281%
+2.33
+26.10
+10.89
+-0.28
+0.38
+WTI M04-GO M06 (3Y)
+0.281%
+2.37
+17.47
+28.99
+-0.08
+0.26
+Brent M11-GO M01 (1Y)
+0.274%
+2.28
+26.10
+11.28
+-0.27
+0.37
+GO M05-HO M04 (3Y)
+0.273%
+2.20
+20.15
+53.24
+-0.04
+0.27
+WTI M05-GO M06 (3Y)
+0.270%
+2.31
+17.47
+41.83
+-0.10
+0.25
+Table 8: Top 10 Protable Trading Strategies: 2003 & 2004
+33
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+Series
+Avg. Daily Ret.
+Sharpe Ratio
+Avg. Trade Length
+α
+µ
+σ
+(days)
+2005
+Brent M12-GO M06 (3Y)
+0.288%
+2.99
+13.68
+33.48
+-0.21
+0.24
+Brent M01-GO M01 (1Y)
+0.280%
+2.19
+17.13
+20.35
+-0.20
+0.30
+Brent M11-GO M06 (3Y)
+0.267%
+2.76
+15.29
+36.58
+-0.21
+0.24
+WTI M08-GO M02 (1Y)
+0.265%
+2.23
+19.92
+22.79
+-0.17
+0.30
+Brent M03-GO M01 (2Y)
+0.255%
+2.04
+19.69
+19.45
+-0.20
+0.31
+Brent M10-GO M06 (2Y)
+0.249%
+2.57
+15.29
+41.76
+-0.20
+0.23
+WTI M06-GO M02 (3Y)
+0.246%
+2.10
+21.25
+17.17
+-0.14
+0.29
+WTI M04-HO M01 (1Y)
+0.244%
+2.66
+28.89
+6.68
+-0.15
+0.18
+GO M01-HO M01 (3Y)
+0.243%
+1.77
+19.92
+42.34
+-0.03
+0.34
+WTI M08-GO M02 (3Y)
+0.242%
+2.03
+23.55
+14.30
+-0.16
+0.29
+2006
+GO M02-HO M03 (2Y)
+0.300%
+3.07
+14.44
+52.70
+-0.02
+0.29
+GO M01-HO M02 (2Y)
+0.265%
+2.46
+18.57
+39.03
+-0.02
+0.33
+GO M02-HO M03 (3Y)
+0.263%
+2.67
+16.25
+45.65
+-0.03
+0.30
+GO M04-HO M04 (1Y)
+0.238%
+2.51
+18.57
+43.18
+-0.01
+0.26
+GO M03-HO M03 (1Y)
+0.235%
+2.41
+18.57
+35.95
+-0.01
+0.27
+WTI M02-GO M05 (1Y)
+0.228%
+2.32
+20.00
+16.83
+-0.19
+0.26
+WTI M03-GO M01 (2Y)
+0.228%
+2.13
+23.64
+22.05
+-0.14
+0.32
+WTI M02-GO M01 (2Y)
+0.222%
+2.04
+23.64
+18.38
+-0.14
+0.33
+GO M05-HO M05 (1Y)
+0.220%
+2.37
+16.25
+57.80
+-0.01
+0.25
+WTI M01-GO M05 (1Y)
+0.217%
+2.09
+23.64
+18.25
+-0.20
+0.28
+Table 9: Top 10 Protable Trading Strategies: 2005 & 2006
+34
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+Series
+Avg. Daily Ret.
+Sharpe Ratio
+Avg. Trade Length
+α
+µ
+σ
+(days)
+2007
+WTI M02-GO M01 (2Y)
+0.319%
+2.78
+16.31
+34.48
+-0.16
+0.29
+Brent M02-GO M03 (1Y)
+0.309%
+3.16
+9.00
+101.02
+-0.17
+0.21
+Brent M05-GO M03 (1Y)
+0.295%
+3.23
+10.88
+94.83
+-0.15
+0.21
+Brent M03-GO M03 (1Y)
+0.295%
+3.10
+9.00
+108.19
+-0.16
+0.20
+Brent M05-GO M04 (1Y)
+0.292%
+3.22
+11.35
+96.84
+-0.16
+0.20
+Brent M04-GO M04 (1Y)
+0.288%
+3.11
+11.35
+106.38
+-0.17
+0.20
+GO M01-HO M01 (2Y)
+0.287%
+2.66
+15.35
+56.23
+0.00
+0.29
+GO M02-HO M02 (1Y)
+0.283%
+2.88
+12.43
+122.85
+0.00
+0.22
+Brent M02-GO M01 (1Y)
+0.282%
+2.62
+11.86
+79.97
+-0.15
+0.23
+WTI M03-GO M01 (2Y)
+0.278%
+2.50
+18.64
+32.09
+-0.15
+0.28
+2008
+GO M02-HO M01 (2Y)
+0.283%
+2.26
+15.35
+91.53
+0.01
+0.23
+GO M03-HO M02 (2Y)
+0.261%
+2.07
+15.35
+113.21
+0.00
+0.22
+GO M03-HO M04 (1Y)
+0.248%
+1.99
+16.38
+115.36
+-0.01
+0.21
+GO M02-HO M01 (3Y)
+0.247%
+1.96
+20.08
+67.23
+0.01
+0.26
+GO M02-HO M01 (1Y)
+0.239%
+1.89
+17.40
+176.82
+0.00
+0.20
+GO M01-HO M01 (2Y)
+0.229%
+1.49
+18.29
+116.17
+0.00
+0.24
+GO M01-HO M01 (3Y)
+0.223%
+1.45
+21.42
+70.32
+0.00
+0.28
+GO M03-HO M05 (1Y)
+0.219%
+1.75
+21.83
+48.26
+-0.01
+0.23
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+Table 10: Top 10 Protable Trading Strategies: 2007 & 2008
+35
+Electronic copy available at: https://ssrn.com/abstract=1932471
+
+Series
+Avg. Daily Ret.
+Sharpe Ratio
+Avg. Trade Length
+α
+µ
+σ
+(days)
+2009
+GO M01-HO M02 (2Y)
+0.66%
+4.77
+7.46
+90.81
+0.01
+0.26
+GO M02-HO M03 (2Y)
+0.59%
+4.32
+9.00
+91.26
+0.01
+0.25
+GO M01-HO M02 (3Y)
+0.56%
+3.96
+9.00
+93.50
+0.01
+0.25
+GO M02-HO M02 (1Y)
+0.56%
+3.99
+9.67
+102.62
+0.02
+0.29
+GO M01-HO M01 (3Y)
+0.55%
+3.85
+8.42
+83.40
+0.01
+0.25
+GO M01-HO M03 (3Y)
+0.54%
+3.85
+9.67
+64.28
+0.00
+0.25
+GO M03-HO M03 (1Y)
+0.52%
+3.86
+9.67
+117.69
+0.02
+0.28
+GO M02-HO M03 (3Y)
+0.51%
+3.65
+10.44
+86.65
+0.00
+0.24
+GO M01-HO M02 (1Y)
+0.49%
+3.44
+9.00
+121.83
+0.02
+0.28
+GO M04-HO M05 (3Y)
+0.49%
+3.79
+9.00
+77.89
+0.00
+0.24
+2010
+WTI M01-GO M05 (1Y)
+0.114%
+1.43
+65.25
+14.94
+-0.16
+0.43
+GO M05-HO M06 (1Y)
+0.104%
+1.58
+23.64
+164.86
+-0.01
+0.27
+GO M04-HO M05 (1Y)
+0.103%
+1.55
+23.64
+160.37
+-0.01
+0.28
+Brent M09-WTI M01 (3Y)
+0.102%
+2.31
+46.60
+4.12
+0.06
+0.27
+Brent M10-WTI M01 (3Y)
+0.101%
+2.25
+45.40
+3.83
+0.06
+0.28
+Brent M08-WTI M01 (3Y)
+0.099%
+2.29
+46.60
+4.49
+0.05
+0.27
+WTI M02-HO M10 (1Y)
+0.083%
+2.31
+52.20
+7.75
+-0.18
+0.21
+GO M05-HO M07 (1Y)
+0.081%
+1.22
+31.13
+184.38
+-0.02
+0.26
+Brent M05-WTI M02 (2Y)
+0.070%
+2.13
+52.20
+7.23
+0.03
+0.17
+Brent M06-WTI M02 (2Y)
+0.067%
+1.99
+52.20
+5.99
+0.04
+0.17
+Table 11: Top 10 Protable Trading Strategies: 2009 & 2010
+36
+Electronic copy available at: https://ssrn.com/abstract=1932471

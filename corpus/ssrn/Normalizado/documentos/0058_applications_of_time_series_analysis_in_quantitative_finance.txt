@@ -1,0 +1,635 @@
+Applications of Time Series Analysis in Quantitative
+Finance
+Yifan Guo
+August 6, 2025
+Abstract
+Time series analysis is a cornerstone of quantitative finance, underpinning models
+for forecasting asset returns, quantifying risk and optimizing portfolios. Classical statistical models such as ARIMA and GARCH, as well as more recent machine learning and
+deep learning approaches, have all been applied to financial time series. However, realworld financial markets are non-stationary, regime-switching and highly noisy, which
+makes direct application of textbook models fragile.
+In this paper we study the applications of time series analysis in quantitative finance
+from a unified perspective. First, we formalize a task–model mapping that connects
+major financial tasks (return forecasting, volatility prediction, risk measurement and
+dynamic portfolio allocation) with appropriate model classes. Second, we propose a
+simple Regime-Aware Hybrid Forecasting (RAHF) framework that combines linear time
+series models with nonlinear learners under a latent-regime view of the market. We
+provide a detailed bias–variance analysis of the hybrid forecast and show that, under
+mild conditions, hybridization can reduce mean squared forecast error relative to singlemodel baselines. Finally, we provide an empirical protocol template for evaluating time
+series models in equity markets, including recommended figures and tables that can be
+instantiated with Python-generated plots in future work.
+1
+Introduction
+Quantitative finance relies heavily on time series analysis. Asset prices, returns, interest
+rates, volatility indices and macroeconomic indicators all arrive as sequences over time. These
+series exhibit serial dependence, volatility clustering, heavy tails and structural breaks. A
+central challenge is to extract predictive structure from such data while acknowledging their
+non-stationary nature.
+1
+
+Classical financial econometrics has developed a rich toolkit for this purpose. Autoregressive integrated moving average (ARIMA) models describe conditional means; generalized autoregressive conditional heteroskedasticity (GARCH) models describe conditional variances;
+state-space models encode latent factors. In parallel, the machine learning community has
+introduced flexible nonlinear models such as tree ensembles and recurrent neural networks
+(RNNs), which can capture complex patterns at the cost of interpretability and, sometimes,
+stability.
+Figure 1: Illustrative example of a financial time series: log-price and log-returns of an equity
+index over time. This figure can be generated in Python from historical data.
+The goal of this paper is not to introduce yet another highly specialized model, but rather
+to provide a structured perspective on how time series analysis can be systematically applied
+to core problems in quantitative finance, and to show how linear and nonlinear models can
+be combined in a principled way.
+Problem Setup
+We consider a discrete-time financial market observed at times t = 1, 2, . . . , T. Let
+Rt = (R1,t, . . . , Rn,t)⊤
+denote the random vector of asset returns at time t, and let
+Ft = σ(R1, . . . , Rt)
+2
+
+be the information set up to time t. A generic time series model produces forecasts of objects
+such as:
+• conditional mean returns E[Rt+1 | Ft],
+• conditional covariance matrices Cov(Rt+1 | Ft),
+• risk functionals (e.g., Value at Risk) of a portfolio w⊤Rt+1,
+• latent states indicating market regimes (e.g., high-volatility vs. low-volatility).
+These forecasts are then used in downstream tasks such as trading, risk management, and
+portfolio optimization.
+Contributions
+The main contributions of this paper are threefold:
+(1) Task–Model Map. We provide a concise taxonomy that links key quantitative finance
+tasks (mean forecasting, volatility forecasting, risk measurement, dynamic allocation) to
+appropriate families of time series models (linear, volatility, state-space, and nonlinear
+machine learning models).
+(2) Regime-Aware Hybrid Forecasting (RAHF). We introduce a simple hybrid framework that combines linear time series models with nonlinear residual learners under a
+latent-regime view of the market. We provide a detailed bias–variance analysis of the
+hybrid forecast and give conditions under which it strictly improves mean squared error
+over linear baselines.
+(3) Evaluation Protocol Template.
+We outline an empirical evaluation protocol for
+financial time series models, including rolling-window backtesting, risk-adjusted performance metrics and robustness checks, together with suggested figures and tables that
+can be populated using Python.
+2
+Time Series Modeling Toolkit for Finance
+In this section, we review the main model classes used in financial time series analysis and
+position them for subsequent use in our unified framework.
+3
+
+2.1
+Linear Time Series Models
+2.1.1
+AR and ARIMA Models
+For a univariate return series {Yt} (e.g., log-returns on a single asset), an autoregressive
+model of order p, AR(p), is given by
+Yt = ϕ0 + ϕ1Yt−1 + · · · + ϕpYt−p + εt,
+(1)
+where εt is a white-noise error term with mean zero and variance σ2
+ε.
+When the series is non-stationary, we consider ARIMA(p, d, q) models, where differencing
+of order d is applied to obtain stationarity. Let ∇dYt denote the d-th difference; then an
+ARIMA(p, d, q) model satisfies
+∇dYt = ϕ0 +
+p
+X
+i=1
+ϕi∇dYt−i + εt +
+q
+X
+j=1
+θjεt−j.
+(2)
+ARIMA models primarily capture the conditional mean of returns.
+Figure 2:
+Sample autocorrelation function (ACF) and partial autocorrelation function
+(PACF) of returns, used to guide ARIMA model order selection.
+2.1.2
+Vector Autoregression (VAR)
+For multiple assets, we can stack returns into Rt ∈Rn and consider a vector autoregression
+VAR(p):
+Rt = c +
+p
+X
+i=1
+AiRt−i + εt,
+(3)
+4
+
+where Ai ∈Rn×n are coefficient matrices and εt is a noise vector. VAR models capture
+lead–lag interactions and cross-asset dependencies in the mean.
+2.2
+Volatility Models: GARCH and Extensions
+Empirically, financial returns exhibit volatility clustering: large moves tend to cluster in
+time. GARCH models are designed to capture such time-varying conditional variances.
+A standard GARCH(p, q) model for a univariate series Yt writes
+Yt = µt + εt,
+εt =
+q
+htzt,
+(4)
+where {zt} is i.i.d. with mean 0 and variance 1, and the conditional variance ht evolves as
+ht = α0 +
+p
+X
+i=1
+αiε2
+t−i +
+q
+X
+j=1
+βjht−j,
+α0 > 0, αi ≥0, βj ≥0.
+(5)
+Multivariate GARCH models (e.g., BEKK, DCC) extend this idea to covariance matrices of
+Rt.
+2.3
+State-Space and Regime-Switching Models
+State-space models introduce latent variables to represent hidden economic factors or regimes.
+A simple linear Gaussian state-space model is
+xt+1 = Fxt + ut,
+(6)
+Rt = Hxt + εt,
+(7)
+where xt is the latent state, F and H are system matrices, ut and εt are noise processes.
+Kalman filtering provides optimal state estimates under Gaussian assumptions.
+Regime-switching models assume that parameters depend on a discrete latent state St ∈
+{1, . . . , K}, which itself follows a Markov chain. For example, in a two-regime model,
+Yt = µSt + εt,
+St ∈{low-vol, high-vol},
+(8)
+with regime-specific means or variances.
+2.4
+Machine Learning and Deep Learning Models
+Nonlinear models can flexibly approximate complex dependencies:
+5
+
+• Random forests and gradient boosting exploit tree-based ensembles over handcrafted features (lags, technical indicators, macro variables).
+• Support Vector Regression (SVR) finds a function f(x) = w⊤ϕ(x) + b that approximates returns with controlled complexity.
+• Recurrent neural networks (RNNs) and LSTMs model long-range temporal dependencies via hidden states.
+Given a feature vector xt summarizing information up to time t, a generic nonlinear model
+produces a forecast ˆYt+1 = fθ(xt), where θ denotes parameters learned by minimizing a loss
+such as mean squared error.
+Figure 3: Schematic representation of an LSTM-based forecasting model for financial time
+series.
+3
+A Regime-Aware Hybrid Forecasting Framework
+We now introduce a simple hybrid framework that will later be linked to concrete applications
+in risk management and portfolio allocation.
+3.1
+Latent Regimes and Hybrid Models
+Financial markets often alternate between qualitatively different regimes, such as low-volatility
+“normal” periods and high-volatility “stress” periods. We model this with a latent regime
+variable St ∈{1, . . . , K}.
+Definition 3.1 (Regime-Aware Hybrid Forecasting (RAHF)). Let Yt be a univariate return
+series. A Regime-Aware Hybrid Forecasting model consists of:
+(i) a base linear model mlin (e.g., ARIMA or GARCH) producing a forecast ˆY lin
+t+1;
+6
+
+(ii) a nonlinear residual model mnl that predicts residual corrections
+ˆenl
+t+1 = fθ(xt, ˆpt),
+where xt are features and ˆpt = (ˆpt,1, . . . , ˆpt,K) are estimated regime probabilities;
+(iii) a combined forecast
+ˆYt+1 = ˆY lin
+t+1 + ˆenl
+t+1.
+(9)
+Figure 4: Conceptual architecture of the Regime-Aware Hybrid Forecasting (RAHF) framework, combining a linear base model with a nonlinear residual learner conditioned on regime
+probabilities.
+Intuitively, the linear model captures the dominant structure in the data (e.g., AR components or volatility clustering), while the nonlinear model corrects for residual patterns that
+may depend on regime probabilities.
+3.2
+Bias–Variance Analysis of Hybrid Forecasts
+We now provide a more detailed bias–variance view of the hybrid forecast.
+Let Yt+1 be the true return. Consider three forecasts:
+ˆY lin
+t+1,
+ˆY nl
+t+1,
+ˆYt+1 = ˆY lin
+t+1 + ˆenl
+t+1,
+where ˆenl
+t+1 is the nonlinear estimate of the residual.
+7
+
+Figure 5: Illustrative regime probabilities over time for a two-regime model (e.g., low vs.
+high volatility) inferred from returns.
+Define the errors:
+elin
+t+1 = Yt+1 −ˆY lin
+t+1,
+(10)
+ehyb
+t+1 = Yt+1 −ˆYt+1 = Yt+1 −ˆY lin
+t+1 −ˆenl
+t+1 = elin
+t+1 −ˆenl
+t+1.
+(11)
+Assumption 3.1. We assume:
+(a) E[elin
+t+1] = blin and E[ˆenl
+t+1] = bnl exist and are finite;
+(b) Var(elin
+t+1) = σ2
+lin and Var(ˆenl
+t+1) = σ2
+nl are finite;
+(c) Cov(elin
+t+1, ˆenl
+t+1) exists and is finite.
+Lemma 3.1 (Bias and Variance of Hybrid Error). Under Assumption 3.1, the bias and
+variance of the hybrid error ehyb
+t+1 satisfy
+E[ehyb
+t+1] = blin −bnl,
+(12)
+Var(ehyb
+t+1) = σ2
+lin + σ2
+nl −2 Cov(elin
+t+1, ˆenl
+t+1).
+(13)
+Proof. By linearity of expectation,
+E[ehyb
+t+1] = E[elin
+t+1 −ˆenl
+t+1] = E[elin
+t+1] −E[ˆenl
+t+1] = blin −bnl.
+8
+
+For the variance,
+Var(ehyb
+t+1) = Var(elin
+t+1 −ˆenl
+t+1)
+(14)
+= Var(elin
+t+1) + Var(ˆenl
+t+1) −2 Cov(elin
+t+1, ˆenl
+t+1)
+(15)
+= σ2
+lin + σ2
+nl −2 Cov(elin
+t+1, ˆenl
+t+1).
+(16)
+Proposition 3.1 (Hybrid MSE Relative to Linear MSE). Under Assumption 3.1, the mean
+squared errors satisfy
+MSE(ˆY lin
+t+1) = E
+h
+(elin
+t+1)2i
+= σ2
+lin + b2
+lin,
+(17)
+MSE(ˆYt+1) = E
+h
+(ehyb
+t+1)2i
+= σ2
+lin + σ2
+nl −2 Cov(elin
+t+1, ˆenl
+t+1) + (blin −bnl)2.
+(18)
+Proof. The formula for MSE(ˆY lin
+t+1) is the standard decomposition into variance plus squared
+bias. For the hybrid,
+MSE(ˆYt+1) = E[(ehyb
+t+1)2] = Var(ehyb
+t+1) + (E[ehyb
+t+1])2.
+Using the expressions from the lemma,
+Var(ehyb
+t+1) = σ2
+lin + σ2
+nl −2 Cov(elin
+t+1, ˆenl
+t+1),
+(19)
+(E[ehyb
+t+1])2 = (blin −bnl)2.
+(20)
+Summing these two terms yields the stated expression.
+Proposition 3.2 (Sufficient Condition for Hybrid Improvement). Suppose bnl = blin (the
+nonlinear residual learner matches the linear bias) and
+Cov(elin
+t+1, ˆenl
+t+1) ≥σ2
+nl
+2 .
+Then
+MSE(ˆYt+1) ≤MSE(ˆY lin
+t+1),
+with strict inequality if Cov(elin
+t+1, ˆenl
+t+1) > σ2
+nl/2.
+Proof. If bnl = blin, then blin −bnl = 0 and the hybrid MSE becomes
+MSE(ˆYt+1) = σ2
+lin + σ2
+nl −2 Cov(elin
+t+1, ˆenl
+t+1).
+9
+
+We compare this to MSE(ˆY lin
+t+1) = σ2
+lin + b2
+lin. Under the assumption bnl = blin, we have b2
+lin in
+both, but here it cancels when comparing differences. It suffices to show
+σ2
+lin + σ2
+nl −2 Cov(elin
+t+1, ˆenl
+t+1) ≤σ2
+lin,
+which is equivalent to
+σ2
+nl −2 Cov(elin
+t+1, ˆenl
+t+1) ≤0
+⇐⇒
+Cov(elin
+t+1, ˆenl
+t+1) ≥σ2
+nl
+2 .
+Strict inequality in the covariance condition yields strict inequality for the MSEs.
+Remark 3.1. Proposition 3.2 formalizes an intuitive requirement: the nonlinear residual
+learner must be sufficiently aligned with the true linear residuals (positive covariance) to
+offset the additional variance it introduces. In practice, this is encouraged by training the
+nonlinear model directly on residuals and validating on out-of-sample data.
+Figure 6: Illustrative comparison of residual distributions for linear vs. hybrid forecasts.
+A tighter distribution around zero for the hybrid model indicates reduced variance and
+potentially lower MSE.
+3.3
+Task–Model Map Under RAHF
+Table 1 summarizes how different tasks can be addressed within the RAHF framework.
+10
+
+Table 1: Task–model mapping for financial time series under the RAHF framework.
+Task
+Base Linear Model
+Nonlinear / Regime Component
+Return forecasting
+ARIMA / VAR
+LSTM
+or
+tree-based
+model
+on residuals, conditioned on
+regime probabilities.
+Volatility forecasting
+GARCH / EGARCH /
+GJR-GARCH
+Nonlinear mapping from features
+(order
+flow,
+realized
+volatility) to variance corrections.
+Risk
+measures
+(VaR, ES)
+GARCH-based parametric models
+Nonparametric tail correction
+based on extreme-value features and regimes.
+Dynamic
+portfolio
+allocation
+VAR
++
+multivariate
+GARCH for mean and
+covariance
+Nonlinear
+forecast
+of
+timevarying
+Sharpe
+ratios
+or
+transaction-cost-adjusted
+returns.
+4
+Applications in Quantitative Finance
+We now instantiate the general framework for several canonical applications in quantitative
+finance.
+4.1
+Asset Return Forecasting
+Let Yt denote log-returns on an index or stock. A simple RAHF specification proceeds in
+three steps:
+(1) Fit an ARIMA(p, d, q) model to Yt and obtain one-step-ahead forecasts ˆY lin
+t+1 and residuals
+ˆelin
+t+1.
+(2) Estimate regime probabilities ˆpt using, for example, a hidden Markov model (HMM)
+fitted to volatility or other features.
+(3) Train a nonlinear model (e.g., gradient boosting or LSTM) to predict residual corrections
+ˆenl
+t+1 from features (xt, ˆpt).
+The final forecast is
+ˆYt+1 = ˆY lin
+t+1 + ˆenl
+t+1.
+(21)
+11
+
+Figure 7: Illustrative example of one-step-ahead return forecasts for an equity index under
+different models (ARIMA, LSTM, and RAHF). Numerical results to be filled in after experiments.
+4.2
+Volatility and Risk Forecasting
+For a portfolio with weight vector w ∈Rn, the one-period portfolio return is
+Rp,t+1 = w⊤Rt+1.
+(22)
+Given a forecast of the conditional variance ˆσ2
+p,t+1, a parametric one-day Value at Risk (VaR)
+at confidence level α is
+VaRα,t+1 = −ˆµp,t+1 −zαˆσp,t+1,
+(23)
+where ˆµp,t+1 is a forecast of the mean and zα is the α-quantile of the standard normal
+distribution.
+Under RAHF, we can refine both ˆµp,t+1 and ˆσp,t+1:
+• the base model provides (ˆµlin
+p,t+1, ˆσlin
+p,t+1);
+• a nonlinear learner predicts corrections (∆ˆµnl
+p,t+1, ∆ˆσnl
+p,t+1) based on current regime probabilities and market features.
+The corrected values are
+ˆµp,t+1 = ˆµlin
+p,t+1 + ∆ˆµnl
+p,t+1,
+(24)
+ˆσp,t+1 = ˆσlin
+p,t+1 + ∆ˆσnl
+p,t+1.
+(25)
+12
+
+Figure 8: Illustrative comparison of realized volatility and one-step-ahead volatility forecasts
+under different models (e.g., GARCH and RAHF-based volatility).
+Figure 9: Illustrative VaR backtest: portfolio loss series with VaR threshold and violation
+indicators for a given model.
+4.3
+Dynamic Portfolio Optimization
+In a mean–variance setting, the optimal portfolio weights at time t solve
+max
+w
+w⊤µt+1
+q
+w⊤Σt+1w
+subject to
+1⊤w = 1,
+(26)
+where µt+1 = E[Rt+1 | Ft] and Σt+1 = Cov(Rt+1 | Ft) are time-varying conditional mean
+and covariance.
+Within RAHF:
+• A VAR + multivariate GARCH model provides base forecasts (µlin
+t+1, Σlin
+t+1).
+• A nonlinear model predicts regime-dependent corrections (∆µnl
+t+1, ∆Σnl
+t+1).
+13
+
+The dynamic portfolio optimization then uses
+µt+1 = µlin
+t+1 + ∆µnl
+t+1,
+(27)
+Σt+1 = Σlin
+t+1 + ∆Σnl
+t+1.
+(28)
+Solving the mean–variance problem with these quantities yields regime-aware dynamic weights.
+Figure 10: Illustrative equity curves for trading strategies driven by different forecasting
+models (ARIMA, GARCH, LSTM and RAHF).
+Figure 11: Illustrative distribution of daily portfolio returns under different forecastingdriven strategies, highlighting differences in tail behavior and risk.
+5
+Empirical Evaluation Protocol (Template)
+In this section we outline a general empirical protocol for evaluating the RAHF framework on
+real financial data. The details (dataset choice, model hyperparameters, numerical results)
+14
+
+can be instantiated in future work.
+5.1
+Data and Preprocessing
+A typical empirical setup could be:
+• Universe: Daily returns for a major equity index (e.g., S&P 500 ETF) or a crosssection of large-cap stocks.
+• Sample period: A multi-year horizon (e.g., 10–20 years) including both calm and
+crisis periods.
+• Preprocessing: Log-returns, alignment of trading days, winsorization of extreme
+outliers if desired.
+5.2
+Rolling-Window Backtesting
+We use a rolling-window procedure:
+(1) Use a fixed-length estimation window (e.g., 3 years) to fit base linear models and nonlinear residual models.
+(2) Generate one-step-ahead forecasts for the next day.
+(3) Move the window forward by one day and repeat.
+This yields a sequence of out-of-sample forecasts and realized returns.
+5.3
+Performance Metrics
+For point forecasts of returns or volatility, we can use:
+• Root mean squared error (RMSE)
+• Mean absolute error (MAE)
+For portfolio strategies driven by forecasts, relevant metrics include:
+• Annualized mean return and volatility
+• Sharpe ratio
+• Maximum drawdown
+• Hit rate for VaR backtesting (e.g., Kupiec test)
+15
+
+Table 2: Illustrative evaluation table format for forecast performance. Values shown here
+are synthetic placeholders for demonstration only; empirical results will be inserted after
+experiments.
+Model
+RMSE
+MAE
+Sharpe (strategy)
+ARIMA baseline
+1.032
+0.812
+0.62
+GARCH baseline
+0.978
+0.795
+0.68
+LSTM only
+0.915
+0.742
+0.83
+RAHF (ARIMA + LSTM)
+0.842
+0.691
+1.05
+RAHF (GARCH + LSTM)
+0.828
+0.676
+1.12
+Figure 12: Illustrative comparison of forecast error (RMSE, MAE) and Sharpe ratio across
+different models. Values to be filled in after empirical experiments.
+5.4
+Robustness and Regime Analysis
+To understand when hybrid models help the most, we can:
+• Evaluate performance separately in high-volatility vs. low-volatility regimes.
+• Conduct sensitivity analysis with respect to window length and model hyperparameters.
+6
+Challenges and Limitations
+Despite the flexibility of RAHF and modern time series tools, several challenges remain when
+applying them in practice.
+6.1
+Non-Stationarity and Structural Breaks
+Even regime-switching models with a fixed number of regimes may fail to capture structural
+changes in market dynamics. Models must be regularly re-estimated, and performance can
+16
+
+deteriorate rapidly after regime shifts.
+6.2
+Overfitting and Model Complexity
+Nonlinear models, especially deep networks, are prone to overfitting unless strong regularization, careful validation, and meaningful feature engineering are employed. Combining linear
+and nonlinear components increases model complexity and must be justified by out-of-sample
+gains.
+6.3
+Data Quality and Microstructure Noise
+High-frequency data introduce microstructure noise, while daily data may hide intraday
+dynamics. Missing data, corporate actions and survivorship bias can all distort empirical
+results if not handled carefully.
+6.4
+Transaction Costs and Market Impact
+In a realistic trading setting, forecast improvements must be weighed against transaction
+costs and potential market impact. A strategy with slightly higher forecast accuracy but
+much higher turnover may perform worse after costs.
+7
+Conclusion
+Time series analysis provides the quantitative backbone for many tasks in modern finance,
+from forecasting and risk measurement to dynamic portfolio optimization. In this paper,
+we revisited classical models such as ARIMA, GARCH and state-space models, and situated them alongside nonlinear machine learning approaches within a unified regime-aware
+perspective.
+We introduced the Regime-Aware Hybrid Forecasting (RAHF) framework, in which a
+linear baseline model is complemented by a nonlinear residual learner that exploits latent
+information about market regimes. We provided a detailed bias–variance analysis and conditions under which the hybrid model can strictly improve mean squared forecast error over
+linear baselines, and we illustrated how RAHF can be instantiated for return forecasting,
+volatility and risk estimation, and dynamic allocation.
+Future work includes implementing the full empirical evaluation protocol on real-world equity or multi-asset data, exploring more structured latent-regime models (e.g., macro-driven
+17
+
+regimes), and extending the hybrid approach to multi-horizon forecasts and reinforcementlearning-based trading strategies. More broadly, combining the interpretability of classical
+time series models with the flexibility of machine learning remains a promising direction for
+quantitative finance.
+References
+1. Hamilton, J. D. (1994). Time Series Analysis. Princeton University Press.
+2. Engle, R. F. (1982). Autoregressive Conditional Heteroskedasticity with Estimates of
+the Variance of United Kingdom Inflation. Econometrica, 50(4), 987–1007.
+3. Bollerslev, T. (1986). Generalized Autoregressive Conditional Heteroskedasticity. Journal of Econometrics, 31(3), 307–327.
+4. Box, G. E. P., Jenkins, G. M., Reinsel, G. C., & Ljung, G. M. (2015). Time Series
+Analysis: Forecasting and Control. Wiley.
+5. Tsay, R. S. (2010). Analysis of Financial Time Series. Wiley.
+6. Hochreiter, S., & Schmidhuber, J. (1997). Long Short-Term Memory. Neural Computation, 9(8), 1735–1780.
+18

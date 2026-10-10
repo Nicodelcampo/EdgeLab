@@ -1,0 +1,92 @@
+{
+  "doc_id": 180,
+  "titulo": "Impact of Quantitative Trading Strategies on Portfolio Performance during Market Volatility: Evidence from Indian Markets",
+  "resumen_operativo": "El paper evalúa el impacto de estrategias cuantitativas (momentum, reversión a la media, pairs trading y arbitraje estadístico) en el mercado accionario indio (NSE y BSE) entre 2015 y 2025. Utilizando modelos GARCH(1,1), optimización media-varianza y métricas de riesgo de cola (VaR, CVaR) sobre precios diarios, concluye que la estrategia de momentum supera al índice en regímenes de baja volatilidad (Sharpe 1.85), mientras que la reversión a la media sobresale en periodos de alta volatilidad (Sharpe 1.62). Pairs trading presenta el desempeño más estable a través de regímenes. Provee evidencia empírica útil sobre la adaptación de estrategias a distintos regímenes de volatilidad, aunque sobre datos de baja frecuencia (diarios) con largos periodos de tenencia.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "momentum strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia que identifica acciones en el quintil superior de rendimientos pasados de 6 meses y mantiene posiciones largas por 3 meses, demostrando retornos superiores ajustados por riesgo en mercados en tendencia o de baja volatilidad.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "passive market index"}
+      ],
+      "cita_textual": "Identifies stocks in the top quintile of 6-month returns and maintains positions for 3 months."
+    },
+    {
+      "nombre": "mean reversion strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia contra-cíclica que identifica acciones cotizando a más de 2 desviaciones estándar por debajo de su media móvil de 60 días para tomar posiciones largas, logrando un mejor rendimiento durante regímenes de alta volatilidad.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "simple moving average"}
+      ],
+      "cita_textual": "Identifies stocks trading more than 2 standard deviations below their 60-day moving average and takes long positions."
+    },
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia neutral al mercado que identifica pares cointegrados mediante el test Dickey-Fuller aumentado y opera las desviaciones del equilibrio, destacando por su desempeño consistente en cualquier régimen de volatilidad.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Augmented Dickey-Fuller test"}
+      ],
+      "cita_textual": "Identifies cointegrated pairs using the Augmented Dickey-Fuller test and trades deviations from equilibrium."
+    },
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Enfoque que emplea modelos multifactoriales para identificar errores de fijación de precios basados en factores técnicos y fundamentales.",
+      "relaciones": [],
+      "cita_textual": "Employs multi-factor models to identify mispricings based on fundamental and technical factors."
+    },
+    {
+      "nombre": "GARCH(1,1)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo econométrico utilizado para estimar y modelar la volatilidad condicional que varía en el tiempo en el mercado accionario, permitiendo evaluar la eficacia de las estrategias frente al riesgo.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market volatility"}
+      ],
+      "cita_textual": "The GARCH(1,1) model captures time-varying volatility... where σt² is conditional variance at time t"
+    },
+    {
+      "nombre": "Value at Risk (VaR)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de riesgo que estima la pérdida potencial máxima a un nivel de confianza del 95%, empleada para demostrar que las restricciones de riesgo en estrategias cuantitativas reducen significativamente las pérdidas en la cola de distribución.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "tail risk"}
+      ],
+      "cita_textual": "Value at Risk at confidence level (1-α) is defined as: VaRα = min{v : P(Rp < -v) ≤ α}"
+    },
+    {
+      "nombre": "Conditional Value at Risk (CVaR)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica también conocida como Expected Shortfall que cuantifica la pérdida promedio que excede el umbral de VaR, evidenciando el comportamiento de las estrategias durante los peores escenarios de mercado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "tail risk"}
+      ],
+      "cita_textual": "Conditional Value at Risk (Expected Shortfall): CVaRα = E[Rp | Rp ≤ -VaRα]"
+    },
+    {
+      "nombre": "volatility regimes",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Clasificación de estados de mercado en base a cuartiles de desviación estándar móvil a 30 días, que demuestra cómo el desempeño relativo de las estrategias de trading varía fuertemente según el régimen.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "strategy performance patterns"}
+      ],
+      "cita_textual": "Volatility regimes defined based on rolling 30-day standard deviation quartiles: Low Vol (Q1), Medium Vol (Q2-Q3), High Vol (Q4)."
+    },
+    {
+      "nombre": "Fama-French 3-Factor Regression",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Análisis utilizado para desglosar el origen de los retornos, confirmando que la estrategia momentum en mercados indios genera alfa genuino tras ajustar por mercado, tamaño y valor.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "abnormal returns"}
+      ],
+      "cita_textual": "The Fama-French 3-factor regression results (Table 4) reveal that momentum strategy alpha... is economically substantial"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El estudio utiliza precios de cierre diarios, modelado GARCH diario y horizontes de mantenimiento de inversión de varios meses (por ejemplo, mantener posiciones momentum durante 3 meses). Si bien la idea de cambiar estrategias en función del régimen de volatilidad es conceptualmente válida, no aporta metodologías, indicadores de order flow ni análisis de microestructura aplicables al entorno intradía del S&P500."
+  }
+}

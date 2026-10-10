@@ -1,0 +1,1051 @@
+Managing Volatility for Profitable Options Trading:
+Evidence from Pairs Trading Strategies
+Irene Aldridgea,1,∗, Kelvin Jianga,1
+aCornell Univeristy ORIE, Financial Engineering, 2 West Loop Rd., New
+York, 10044, NY, USA
+bAbleMarkets, , New York, , NY, USA
+Abstract
+This study investigates the potential of managing volatility to generate profitable returns in options trading. The paper introduces a novel methodology
+for modeling pairs trading strategies in options, utilizing underlying asset
+volatility and publicly available daily variables to predict volatility. Through
+simulation results, we demonstrate the potential for ex-ante profitable options pairs.
+Consistent with previous research, we provide evidence that
+microstructure factors significantly influence underlying asset volatility and
+options pairs performance.
+Importantly, we find that microstructure factors exhibit persistence and can be effectively utilized to create profitable
+strategies.
+Furthermore, we empirically test the performance of the proposed options trading strategies and find that it aligns with our theoretical
+predictions. Notably, while AI-based prediction using Neural Networks is
+explored, we find that simple OLS linear regressions outperform in the specific application considered. This study contributes to the understanding of
+volatility management and provides practical insights for options traders.
+∗irene.aldridge@gmail.com, cj455@cornell.edu
+Preprint submitted to Elsevier
+September 11, 2024
+
+Keywords:
+Options, microstructure, trading, market efficiency.
+1. Introduction
+Recent literature has documented abnormal returns associated with asset
+volatility. For example, [1] show that volatility-managed portfolios produce
+abnormal returns.
+In this paper, we propose and test a methodology to
+successfully harness the volatility persistence via novel options pair trading
+strategies. We use microstructure effects to forecast volatility. Thus, our
+paper contributes to the literature on persistence of microstructure effects,
+as well as volatility forecasting and explaining informational inefficiencies in
+today’s markets.
+Pairs trading involves the simultaneous trading of two financial instruments that exhibit a tendency to move in unison. In this strategy, traders
+take a long position (buy) in one security and a short position (sell or shortsell) in the other security.The strategy was initially developed by Morgan
+Stanley in the 1980s and extensively examined in research studies like [2]
+and [3],
+Pairs trading strategy is based on temporary dislocations of the prices
+away from the Law of One Price. The prices of two financial instruments may
+deviate temporarily from their long-term relationship, providing a potential
+opportunity for a profitable trade. Traders often rely on the assumption that
+these prices will ”mean-revert,” returning to their usual relationship over
+time. In pursuit of profit, traders may buy the undervalued asset and sell
+the overvalued one, a trade commonly known as arbitrage. It’s important
+2
+
+to note that most arbitrage carries some level of risk, as traders make a
+bet on the relationship holding or mean-reverting and act accordingly. For a
+comprehensive analysis of the differences between risky and riskless arbitrage,
+refer to studies such as [4], [5], [6], [7], [8], [9], [10] and [11]). [12] hypothesized
+that even riskless arbitrage entails execution effects that introduce risk into
+the investment.
+In this research, following [1], we create alternative volatility-managed
+portfolios via options pairs trading. Using the seminal Black-Scholes model
+([13]), we construct pairwise options portfolios that are only dependent on
+market volatility.
+The literature on options pairs arbitrage is rather scarce. Research on
+options pairs trading in the public domains includes [14], [15] and [16]. [15]
+note that most options mispricings disappear once transaction costs are taken
+into account. [14] also highlight that option mispricing relative to their theoretical benchmarks may be primarily due to microstructure effects and high
+trading costs in the options market. [16] try to construct the index options
+pairs, but do not find sustained profitability.
+However, [17] show that microstructure effects account for a substantial
+portion of asset volatility. In our implementation, we also rely on microstructure effects to successfully estimate short-term volatility realizations.
+To simplify estimation, we rely on daily data of underlying assets to estimate relevant microstructure effects, following well-established literature.
+For example,[18] discuss how traditional liquidity metrics such as price impact and [19] measures are effective in capturing microstructure effects. [20]
+uses Gibbs estimates on daily prices to capture effective trading costs. [21]
+3
+
+show that microstructure effects can be successfully proxied using daily Open,
+High, Low and Close prices. [22] show that using higher-frequency data in
+volatility prediction does not improve the outcome.
+In order to assess the impact of execution effects on options arbitrage,
+we conduct empirical investigations. Our findings demonstrate that intraday microstructure effects indeed influence volatility spread. These effects
+vary depending on the specific pair of securities chosen. Specifically, we observe that intraday price bounce following [23], price dispersion according to
+([24]), price impact as described by [19] and [25], as well as realized volatility
+following [26], all have a significant impact on volatility estimates. Consequently, these factors must be taken into consideration when engaging in
+options arbitrage.
+Finally, we test and document the empirical performance of the options
+trading strategies using microstructure factors to predict volatility. We find
+that our empirical findings are consistent with our theoretical predictions.
+2. Constructing Options Trading Pairs
+Options traders routinely take advantage of volatility. According to [13],
+[27] and many others, the price of a security can be assumed to move according to a Geometric Brownian Motion:
+dSt = µStdt + σStdWt
+(1)
+And then, the price of a derivative on this security is determined by the
+payoff of the contract at time T:
+P(St, t) = Ke−r(T−t) −St + C(St, t)
+(2)
+4
+
+And, so, the value of a call option is:
+C(St, t) = N(d+) −N(d−)Ke−r(T−t)
+(3)
+where
+d+ =
+1
+σ
+√
+T −t[ln(St/K) + (r + σ2/2)(T −t)]
+(4)
+and
+d−= d+ −σ
+√
+T −t
+(5)
+In our analysis, we consider short-term portfolio optimization restricted
+to just two securities and their options. These can be viewed as two-option
+trading baskets, or as options pairs-trading strategies. Suppose that both
+securities are moving with the same Brownian motion dWt: this can be a
+realistic case when the two stocks are of companies in the same industry and
+are exposed to the same exogenous shocks, such as news.
+Security 1:
+dSt = Stdt + StdWt
+(6)
+Security 2:
+dZt = Ztdt + ZtdWt
+(7)
+Suppose we choose to trade European options on the two securities with
+the same S/K ratio and the same time to maturity to simplify the d computation in their respective Black-Scholes equations. The S/K ratio reflects
+how far the current price is away from the strike price and is known as the
+moneyness of the options. The S/K is quite often “set” or ”targeted” by the
+traders. Various properties of moneyness were documented by [28].
+5
+
+With a given moneyness M = S/KS = Z/KZ, we can rewrite the prices
+of options as:
+CS/KS = N(dS+)M + N(dS−)e−r(T−t)
+(8)
+and
+CZ/KZ = N(dZ+)M + N(dZ−)e−r(T−t)
+(9)
+where N(.) is the Normal cumulative distribution function (cdf).
+The only difference between dS and dZ is in volatility, σ and ς, respectively:
+dS+ = 1/(σ
+√
+T −t)[ln(M) + (r + σ2/2)(T −t)]
+(10)
+dZ+ = 1/(ς
+√
+T −t)[ln(M) + (r + ς2/2)(T −t)]
+(11)
+dS−= dS+ −σ
+√
+T −t
+(12)
+dZ−= dZ+ −ς
+√
+T −t
+(13)
+Now, we can form a long-short portfolio of these two options as follows:
+π = CS/KS −CZ/KZ
+(14)
+π = N(dS+)M + N(dS−)e−r(T−t) −N(dZ+)M −N(dZ−)e−r(T−t)
+(15)
+Rewritten differently,
+π = M[N(dS+) −N(dZ+)] + e−r(T−t)[N(dS−) −N(dZ−)]
+(16)
+6
+
+Since, by 10 and 11, dS and dZ only differ due to their respective volatilities, σ and ς, respectively, the profit from our options pair arbitrage strategy
+should be dependent on the solely on the volatility measures as well.
+Thus, our portfolio value π is expected to increase with σ and decrease
+with ς.
+Having established that for the given levels of moneyness M and interest rate r, the profitability of our options trading strategy is driven solely
+by the changes in the difference of volatility of the respective underlying
+instruments, we define the volatility residual as:
+V olϵt = σt −ςt
+(17)
+In the next sections, we seek to define and quantify the vol-residual pairs
+trading strategy.
+3. Simulation
+In this section, we simulate our theoretical predictions to better understand the distributions of the variables at hand. Figures 1-9 show the profitability surface π developed as a result of different values of σ and ς for
+different levels of Moneyness, M. As the Figures show, the shape of the
+profitability surface changes drastically with changes in Moneyness. When
+the options are in the money, i.e. M > 1, the highest profitability strategies
+are those with low volatility on asset S, σ, and high volatility on asset Z,
+ς. However, when the moneyness is just below 1, the highest profitability is
+recorded when σ is high and ς is low.
+As shown in the Figures, the paupff for the Moneyness > 1 is monotonically increasing with descrease in volatility of S and increase in volatility of
+7
+
+Figure 1: Simulation of option strategy profitability, equation (16), vis-a-vis σ (Volatility
+S) and ς (Volatility Z), Moneyness = 0.2
+Z, making it an easy choice for a trading strategy. However, the payoff for
+the Moneyness < 1 is highly non-linear in ϵ and ε. Therefore, we focus on
+creating strategies with the Moneyness > 1.
+Based on our analysis and simulation, we can derive the following trading
+strategy:
+3.0.1. Trading Strategy for Moneyness > 1
+For Moneyness > 1, We expect the following strategy to be profitable
+whenever we expect the volatility residual to decrease, Et[V olϵt+1] < 0
+8
+
+Figure 2: Simulation of option strategy profitability, equation (16), vis-a-vis σ (Volatility
+S) and ς (Volatility Z), Moneyness = 0.5
+(Et[σt+1] < Et[ςt+1]):
+• Buy a Call option on asset S with moneyness M and expiration T
+• Sell a Call option on asset Z with moneyness M and expiration T
+Similarly, whenever we expect the volatility residual to increase, Et[V olϵt+1] >
+0 (Et[σt+1] > Et[ςt+1]):
+• Sell a Call option on asset S with moneyness M and expiration T
+• Buy a Call option on asset Z with moneyness M and expiration T
+9
+
+Figure 3: Simulation of option strategy profitability, equation (16), vis-a-vis σ (Volatility
+S) and ς (Volatility Z), Moneyness = 0.75
+Once again, for moneyness very close to 1, the state of the options pair is
+fragile as the moneyness can tip into the < 1 territory.
+4. Predicting Volatility with Microstructure – Empirical Analysis
+Our theoretical analysis is highly dependent on correct prediction of future volatility residual. To anticipate changes in volatility, we next aimed
+to explain and predict fluctuations in asset volatility spreads by employing
+a range of microstructure variables.
+For each asset pair analyzed, we calculated the difference in their Range
+10
+
+Figure 4: Simulation of option strategy profitability, equation (16), vis-a-vis σ (Volatility
+S) and ς (Volatility Z), Moneyness = 0.97
+Volatility—a measure reflecting the variability of each asset’s price movements over a specified time period. Using these calculated differences, which
+we term ’volatility residuals,’ we then constructed individual regression models.
+These models leveraged key variables from each asset to predict the
+extent of the volatility residual.
+Volatility prediction is a robust field with many models and extensions,
+including celebrated ARCH of [29] and GARCH of [30]. Most of these models
+measure volatility as a historical standard deviation, typically estimated over
+at least two weeks of data. In our study, we want to localize the data used
+11
+
+Figure 5: Simulation of option strategy profitability, equation (16), vis-a-vis σ (Volatility
+S) and ς (Volatility Z), Moneyness = 1.0
+to avoid potential biases and ”data contamination” from other trading days.
+To do so, we estimate volatility as range volatility due to [31], depending
+only on the Open, High and Low prices on a given day:
+RangeV olt = Hight −Lowt
+Opent
+(18)
+The normalization by the Open price helps to adjust for the overall price
+level of the asset, making it easier to compare the volatility across different
+assets with varying price ranges.
+To thoroughly assess microstructure impact on the volatility spreads, we
+12
+
+Figure 6: Simulation of option strategy profitability, equation (16), vis-a-vis σ (Volatility
+S) and ς (Volatility Z), Moneyness = 1.03
+use the following microstructure metrics:
+• Realized volatility [26] is a measure of the standard deviation of returns
+over a specified period, typically within a trading day. It provides a
+statistical measure of the dispersion of returns, giving a sense of how
+much the price of an asset varies around its mean (average) return.
+Mathematically, it can be expressed as:
+RealizedV olt =
+1
+T −1
+sX
+τ
+(rτ −Erτ)2
+(19)
+Where: T is the number of trading hours in a trading day, rτ is the
+13
+
+Figure 7: Simulation of option strategy profitability, equation (16), vis-a-vis σ (Volatility
+S) and ς (Volatility Z), Moneyness = 1.1
+hourly return at time τ, Erτ is the mean of the hourly returns for the
+day.
+• Roll measure ([23]) is a measure of market liquidity derived from observed prices. It utilizes the covariance of successive price changes to
+measure the spread between the bid and the ask prices, a key indicator
+of market liquidity. It is computed as:
+Rollt = 2
+p
+−cov(∆Pt, ∆Pt−1)
+(20)
+where: ∆Pt is the price change from time t −1 to time t, ∆Pt−1 is
+14
+
+Figure 8: Simulation of option strategy profitability, equation (16), vis-a-vis σ (Volatility
+S) and ς (Volatility Z), Moneyness = 1.25
+the price change from time t −2 to time t −1, Cov(∆Pt, ∆Pt−1) is the
+covariance of successive price changes.
+The negative sign inside the square root reverses the typical negative
+value of the covariance caused by the bid-ask bounce.
+The bid-ask
+bounce refers to the tendency of prices to oscillate between bid and ask
+prices, which creates a negative covariance in high-frequency transaction data.
+15
+
+Figure 9: Simulation of option strategy profitability, equation (16), vis-a-vis σ (Volatility
+S) and ς (Volatility Z), Moneyness = 1.5
+• Price Dispersion was first developed by [24] as
+DPt =
+sX
+t
+(wt(Pt −EPt)2)
+(21)
+where: t ∈T is the number of trading hours in a trading day, Pt is the
+closing price at the trading hour t, EPt is the average closing price of
+the day, calculated as:
+P = 1
+N
+X
+t
+Pt,
+(22)
+wt is the trading volume weight for the trading hour t. wt is calculated
+16
+
+Figure 10: Simulation of option strategy profitability, equation (16), vis-a-vis σ (Volatility
+S) and ς (Volatility Z), Moneyness = 1.25
+as:
+wt =
+Vt
+P
+t Vt
+(23)
+where Vt is the trading volume hour t and V = P Vt is the total trading
+volume for the day for the given security.
+Price dispersion offers insights into the internal volatility of an asset
+within a single day, considering both price fluctuations and the weight
+of transactions contributing to these prices. Higher dispersion indicates
+larger variability in price relative to the day’s average, often suggesting
+17
+
+greater market uncertainty or mixed trading signals.
+• Price impact ([19], [25]) is a measure that quantifies the relationship
+between trading volume and price changes within a specific trading
+period, typically within a day. It measures how much the price of an
+asset could potentially move per unit of volume traded. It offers a way
+to understand the sensitivity of the asset’s price to changes in trading
+volume. It is computed as:
+IPt = 1
+T
+X
+t∈T
+|∆Pt|
+Vt
+(24)
+where: ∆Pt is the difference between the high and low prices within a
+trading hour,
+∆Pt = Hight −Lowt
+(25)
+Vt is the trading volume for the same period, T is the total number of
+periods within a day.
+To evaluate the impact of each variable on the volatility spread, we run the
+following contemporaneous regressions for various futures and equity pairs S
+and Z:
+V olϵt = α + βRoll,SRollS,t + βPD,SPDS,t + βPI,SPIS,t + βRV,SRVS,t+
+(26)
+βRoll,ZRollZ,t + βPD,ZPDZ,t + βPI,ZPIZ,t + βRV,ZRVZ,t + νt
+(27)
+All variables were constructed from hourly data for the 2022-2023 period.
+Tables 1-3 summarize the results. As shown in the Tables, we obtain
+statistically significant results for most variables. However, the signs of the
+18
+
+coefficients vary from one asset pair to the next. The intercept is also highly
+significant across all pairs, implying that additional variables can explain the
+variation of the volatility residuals better. The Adjusted R2 is much higher
+for futures as opposed to equities, implying that our models capture more
+inefficiencies in the futures markets, potentially due to the higher overall
+inefficiencies in futures.
+In addition to linear regressions documented in the main body of the
+paper, we considered using various neural network specifications to enhance
+the predictive power of our models.
+However, we found that the neural
+networks we formulated did not enhance the performance of the model as
+compared to the linear regression results. Our results for the neural network
+are summarized in Appendix 6.
+5. Trading Strategy Evaluation
+Next, to fully test our hypothesis, we constructed 2-day-ahead rolling
+window forecasts of the volatility residuals for selected pairs. On trading day
+t using hourly data for day t, we forecasted the volatility residual for date t+1.
+Based on our in-the-money trading strategy, we simulated buying/selling the
+pair of the options at close on day t and reversing our position at close on
+day t + 1.
+In our results, we were constrained by the availability of quality options
+data. We were able to source the options data for only two equity equity pairs:
+OXY-XOM and MSFT-GOOGL. Both pairs were identified as appropriate
+for pairs trading in [?].
+Figures 5 and 5 document our out-of-sample results.
+As the Fugures
+19
+
+Table 1: Linear Regression Results: Predicting Vol Residual for Futures Pairs S and Z, Et[V olϵt+1] One Day Ahead. t-statistics
+are reported in parentheses. * indicates statistical significance at 90%+ level.
+Pair
+S/Z
+Roll
+S
+Price
+Dispersion
+S
+Price
+Impact
+S
+Realized
+Vol
+S
+Roll
+Z
+Price
+Dispersion
+Z
+Price
+Impact
+Z
+Realized
+Vol
+Z
+Intercept
+Adj
+R2
+SPY/
+GC=F
+-0.0008
+(-2.038)*
+8.027e-05
+(0.169)
+0.0024
+(5.106)*
+0.0010
+(1.882)*
+-9.46e-05
+(-0.247)
+-0.0021
+(-3.778)*
+-0.0023
+(-5.681)*
+0.0016
+(2.705)*
+0.0043
+(12.089)*
+0.208
+SPY/
+ZB=F
+-0.0003
+(-0.743)
+-0.0001
+(-0.301)
+0.0012
+(2.471)*
+0.0013
+(2.515)*
+-0.0006
+(-1.695)*
+0.0008
+(1.685)*
+0.0011
+(3.084)*
+-0.0005
+(-0.957)
+-0.0001
+(-0.364)
+0.115
+SPY/
+ES=F
+-0.0002
+(-1.073)
+-0.0003
+(-1.003)
+-0.0007
+(-2.311)*
+3.47e-05
+(0.109)
+-0.0001
+(-0.641)
+0.0006
+(1.650)
+1.098e-05
+(0.068)
+-0.0004
+(-1.085)
+-0.0028
+(-14.933)*
+0.050
+SPY/
+ZF=F
+-0.0004
+(-1.248)
+0.0004
+(0.875)
+0.0020
+(5.015)*
+0.0012
+(2.582)*
+3.989e-05
+(0.141)
+0.0003
+(0.716)
+0.0004
+(0.657)
+-0.0003
+(-0.549)
+0.0080
+(27.010)*
+0.184
+SPY/
+ZN=F
+-0.0003
+(-1.059)
+0.0001
+(0.368)
+0.0021
+(5.391)*
+0.0009
+(2.072)*
+0.0002
+(0.623)
+0.0003
+(0.621)
+0.0002
+(0.584)
+-0.0002
+(-0.483)
+0.0054
+(18.491)*
+0.161
+SPY/
+ZT=F
+-0.0006
+(-1.738)*
+0.0004
+(1.098)
+0.0022
+(5.452)*
+0.0015
+(3.347)*
+0.0001
+(0.303)
+-0.0003
+(-0.618)
+0.0004
+(0.897)
+-0.0003
+(-0.491)
+0.0105
+(35.230)*
+0.224
+GC=F/
+ZB=F
+-0.0001
+(-0.279)
+0.0017
+(3.008)*
+0.0016
+(3.879)*
+-0.0008
+(-1.375)
+0.0002
+(0.505)
+0.0006
+(1.203)
+0.0004
+(0.908)
+-0.0006
+(-1.031)
+-0.0042
+(-11.791)*
+0.069
+20
+
+Table 2: Linear Regression Results: Predicting Vol Residual for Futures Pairs S and Z, Et[V olϵt+1] One Day Ahead. t-statistics
+are reported in parentheses. * indicates statistical significance at 90%+ level.
+Pair
+S/Z
+Roll
+S
+Price
+Dispersion
+S
+Price
+Impact
+S
+Realized
+Vol
+S
+Roll
+Z
+Price
+Dispersion
+Z
+Price
+Impact
+Z
+Realized
+Vol
+Z
+Intercept
+Adj
+R2
+GC=F/
+ES=F
+-6.917e-05
+(-1.700)*
+0.0027
+(4.279)*
+0.0019
+(3.935)*
+-0.0011
+(-1.594)
+0.0002
+(0.300)
+0.0011
+(1.937)*
+-0.0008
+(-2.241)*
+-0.0038
+(-4.317)*
+-0.0064
+(-16.296)*
+0.203
+GC=F/
+ZF=F
+-0.0002
+(-0.773)
+0.0011
+(2.283)*
+0.0017
+(4.592)*
+-0.0008
+(-1.616)
+0.0002
+(0.404)
+0.0008
+(1.670)
+0.0002
+(0.723)
+-0.0002
+(-0.361)
+0.0036
+(12.605)*
+0.068
+GC=F/
+ZN=F
+-0.0001
+(-0.340)
+0.0011
+(2.365)*
+0.0017
+(4.599)*
+-0.0008
+(-1.389)
+7.333e-05
+(0.217)
+0.0005
+(1.547)
+0.0002
+(1.192)
+-0.0009
+(-1.580)
+0.0062
+(21.594)*
+0.099
+GC=F/
+ZT=F
+0.0006
+(1.654)
+-0.0011
+(-2.106)*
+-0.0017
+(-4.526)*
+0.0016
+(2.795)*
+0.0002
+(0.303)
+0.0011
+(2.098)*
+-0.0010
+(-3.050)*
+-0.0034
+(-5.765)*
+-0.0022
+(-6.205)*
+0.183
+ZB=F/
+ES=F
+4.766e-05
+(0.199)
+0.0003
+(0.886)
+-0.0004
+(-1.294)
+0.0011
+(3.065)*
+-0.0002
+(-0.354)
+-0.0007
+(-2.939)*
+0.0002
+(0.502)
+-9.557e-05
+(-0.192)
+0.0103
+(42.897)*
+0.048
+ES=F/
+ZF=F
+-0.0002
+(-0.401)
+-0.0007
+(-1.521)
+0.0019
+(4.260)*
+0.0043
+(8.240)*
+0.0002
+(0.849)
+-0.0001
+(-0.230)
+0.0022
+(2.818)*
+-0.0019
+(-2.884)*
+0.0103
+(30.692)*
+0.218
+ES=F/
+ZN=F
+-0.0003
+(-0.665)
+-0.0008
+(-1.584)
+0.0009
+(3.092)*
+0.0040
+(7.604)*
+-7.968e-05
+(-0.252)
+0.0003
+(0.552)
+0.0011
+(2.699)*
+-0.0018
+(-3.050)*
+0.0076
+(23.157)*
+0.192
+21
+
+Table 3: Linear Regression Results: Predicting Vol Residual for Equity Pairs S and Z, Et[V olϵt+1] One Day Ahead. t-statistics
+are reported in parentheses. * indicates statistical significance at 90%+ level.
+Pair
+S/Z
+Roll
+S
+Price
+Dispersion
+S
+Price
+Impact
+S
+Realized
+Vol
+S
+Roll
+Z
+Price
+Dispersion
+Z
+Price
+Impact
+Z
+Realized
+Vol
+Z
+Intercept
+Adj
+R2
+MSFT/
+GOOGL
+-0.0005
+(0.928)
+-0.0004
+(-0.671)
+0.0028
+(2.047)*
+0.0011
+(1.805)*
+-0.0008
+(-1.323)
+-0.0005
+(-0.664)
+0.0007
+(0.954)
+-0.0009
+(-1.635)
+-0.0027
+(-5.679)*
+0.011
+CVS/
+JNJ
+-0.0004
+(-0.808)
+0.0010
+(1.508)
+-0.0011
+(-1.843)*
+0.0007
+(1.320)
+-0.0010
+(-1.930)*
+0.0005
+(0.809)
+0.0015
+(2.561)*
+-0.0005
+(-0.793)
+0.0054
+(10.888)*
+0.024
+OXY/
+XOM
+0.0014
+(2.032)*
+0.0021
+(2.531)*
+-0.0005
+(-0.739)
+0.0027
+(2.560)*
+-0.0013
+(-1.959)*
+-0.0011
+(-1.418)
+-0.0010
+(-1.388)
+0.0006
+(0.663)
+0.0064
+(10.836)*
+0.147
+WELL/
+VTR
+-0.0006
+(-1.065)
+0.0005
+(0.744)
+0.0001
+(0.317)
+0.0010
+(1.446)*
+-0.0004
+(-0.691)
+-0.0002
+(-0.260)
+0.0006
+(1.242)
+-0.0017
+(-2.659)*
+-0.0017
+(-3.784)*
+0.016
+VZ/
+TMUS
+0.0006
+(1.153)
+-0.0006
+(-1.110)
+-0.0014
+(-2.620)*
+0.0009
+(1.641)
+0.0005
+(0.857)
+-0.0005
+(-0.788)
+0.0005
+(1.107)
+-0.0010
+(-1.708)*
+-0.0007
+(-1.471)
+0.049
+CSX/
+NSC
+6.814e-05
+(0.172)
+-0.0007
+(-1.241)
+-0.0003
+(-0.657)
+0.0007
+(1.416)
+-9.795e-05
+(-0.227)
+0.0008
+(1.359)
+0.0004
+(1.107)
+-0.0002
+(-0.466)
+-0.0006
+(-1.868)*
+-0.005
+PPG/
+SHW
+-0.0008
+(-1.307)
+0.0010
+(1.640)
+-0.0005
+(-0.907)
+0.0005
+(0.891)
+0.0002
+(0.319)
+-0.0010
+(-1.511)
+0.0007
+(1.340)
+-0.0007
+(-1.312)
+-0.0006
+(-1.167)
+0.008
+22
+
+show, our resulting strategies were quite volatile. Nevertheless, the results
+were considerable: the OXY-XOM strategy produced 175% average annual
+return with an annualized Sharpe ratio of 2.29. The MSFT-GOOGL strategy
+produced annualized return of 97% and a Sharpe ratio of 1.00.
+Despite our limited data sample, we are also able to observe common
+trends and generate ideas for future research. For example, both MSFTGOOGL and OXY-XOM call option pairs appear to experience the same
+shock in December 2022.
+The nature of the shock is not clear from our
+study, but may well be related to the end-of-year portfolio reallocations by
+large investment managers. Ascertaining such phenomena can help traders
+dramatically improve the strategy performance by avoiding the end-of-year
+trading altogether.
+Figure 11: Backtest of 1 day ahead predictability of OXY/XOM near-expiration options
+pair, in-the-money and out-of-the-money strategies
+23
+
+Figure 12: Backtest of 1 day ahead predictability of MSFT/GOOGL near-expiration options pair, in-the-money and out-of-the-money strategies
+6. Conclusions
+Our results are significant and promising. As our results show, the microstructure effects of the underlying assets can be profitably harnessed in
+the derivatives’ universe. Our results contribute a better understanding of
+derivatives pricing and microstructure.
+Appendix A. Appendix: Neural network predictability of volatility residuals
+We considered simple neural networks with three distinct activation functions, ReLu, Sigmoid and Tanh, described in [32]. Figures A.13-A.16 show
+realized vs. predicted volatility residual values for:
+• A.13: A Simple Linear Regression
+24
+
+• A.14: A Neural Network with a ReLu activation function
+• A.15: A Neural Network with a Sigmoid activation function
+• A.14: A Neural Network with a Tanh activation function
+In a Relu Neural Network, most points are tightly clustered along certain lines parallel to the diagonal, suggesting that the ReLU model tends to
+predict a limited range of values for residuals. This could be due to ReLU’s
+nature of outputting zeros for negative values, potentially limiting variability
+in lower range predictions.
+When we applied sigmoid as our activation function, we observed that
+points tend to concentrate in more limited ranges compared to the linear
+model.
+This is because the sigmoid activation function squeezes outputs
+into a range between 0 and 1, which reduces the variance of predictions and
+potentially causes clustering.
+The Tanh function, which outputs values between -1 and 1, also shows
+clustering around certain lines. It shares the limited output range characteristic but can handle negative predictions more flexibly than ReLU.
+It appears that neural networks, regardless of activation function, predict the residuals with a consistent bias or variance in certain directions.
+When comparing these models, linear regression shows a more generalized
+performance across different values.
+References
+[1] P. Barroso, A. Detzel, Do limits to arbitrage explain the benefits of
+volatility-managed portfolios?, Journal of Financial Economics 140 (3)
+25
+
+Figure A.13: Predictability of Volatility Residual Using OLS Linear Regression
+(2021) 744–767.
+[2] G. Vidyamurthy, Pairs Trading: Quantitative Methods and Analysis.,
+John Wiley Sons, Inc, 2004.
+[3] E. Gatev, W. N. Goetzmann, K. G. Rouwenhorst, Pairs Trading: Performance of a Relative-Value Arbitrage Rule, The Review of Financial
+Studies 19 (3) (2006) 797–827.
+[4] M. Mitchell, T. Pulvino, E. Stafford, Limited arbitrage in equity markets, Journal of Finance 57 (2002) 551–584.
+[5] J. Liu, A. Timmermann, Risky arbitrage strategies: Optimal portfolio choice and economic implications., Working Paper, UC San Diego
+(2009).
+[6] F. Akram, D. Rime, L. Sarno, Arbitrage in the foreign exchange mar26
+
+Figure A.14: Neural Network on Residual Table - ReLu
+ket: Turning on the microscope, Journal of International Economics 76
+(2008) 237–253.
+[7] W.-M. Fong, G. Valente, J. Fung, Market liquidity and fx arbitrage in
+emerging markets: Evidence from hong kong tick data, Working Papers
+082008, Hong Kong Institute for Monetary Research. (2008).
+[8] B. Marshall, S. Treepongkaruna, M. Young, Exploitable arbitrage opportunities exist in the foreign exchange market, American Finance Association Annual Meeting (2008).
+[9] L. Gagnon, G. Andrew Karolyi, Multi-market trading and arbitrage,
+Journal of Financial Economics 97 (1) (2010) 53–80.
+[10] O. Lamont, R. Thaler, Can the market add and subtract? mispricing in
+tech stock carve-outs, Journal of Political Economy 111 (2003) 227–268.
+[11] E. Ofek, M. Richardson, R. Whitelaw, Limited arbitrage and short sales
+27
+
+Figure A.15: Neural Network on Residual Table - Sigmoid
+restrictions. evidence from the options markets., Journal of Financial
+Economics 74 (2004) 305–342.
+[12] T. Foucault, R. Kozhan, W. W. Tham, Toxic Arbitrage, The Review of
+Financial Studies 30 (4) (2016) 1053–1094.
+[13] F. Black, M. Scholes, ”the pricing of options and corporate liabilities”,
+Journal of Political Economy 81 (1973) 637–654.
+[14] J. A. Faias, P. Santa-Clara, “optimal option portfolio strategies: Deepening the puzzle of index option mispricing.”, Journal of Financial and
+Quantitative Analysis” (2017) 277–303.
+[15] M. Ammann, S. Herriger, Relative implied-volatility arbitrage with index options., Financial Analysts Journal 58 (2002) 42–55.
+[16] M. Brunetti, R. De Luca, Pairs trading in the index options market,
+Eurasian Economic Review (2023) 145–173.
+28
+
+Figure A.16: Neural Network on Residual Table - Tanh
+[17] F. M. Bandi, J. R. Russell, Separating microstructure noise from volatility, Journal of Financial Economics 79 (3) (2006) 655–692.
+[18] R. Y. Goyenko, C. W. Holden, C. A. Trzcinka, Do liquidity measures
+measure liquidity?, Journal of Financial Economics 92 (2) (2009) 153–
+181.
+[19] Y. Amihud, “illiquidity and stock returns: cross-section and time-series
+effects”, Journal of Financial Markets 5 (2002) 31–56.
+[20] J. Hasbrouck, Trading costs and returns for u.s. equities: Estimating
+effective costs from daily data, The Journal of Finance 64 (3) (2009)
+1445–1477.
+[21] D. Ardia, E. Guidotti, T. A. Kroencke, Efficient estimation of bid–ask
+spreads from open, high, low, and close prices, Journal of Financial
+Economics 161 (2024) 103916.
+29
+
+[22] E. Ghysels, P. Santa-Clara, R. Valkanov, Predicting volatility: getting
+the most out of return data sampled at different frequencies, Journal of
+Econometrics 131 (1) (2006) 59–95.
+[23] R. Roll, “a simple implicit measure of the effective bid–ask spread in an
+efficient market.”, Journal of Finance 39 (1984) 1127–1139.
+[24] R. Jankowitsch, A. Nashikkar, M. G. Subrahmanyam, “price dispersion
+in otc markets: A new measure of liquidity.”, Journal of Banking and
+finance, 35 (2011) 343–357.
+[25] Y. C. Loon, Z. K. Zhong, Does dodd-frank affect otc transaction costs
+and liquidity? evidence from real-time cds trade reports., Journal of
+Financial Economics 119 (2016) 645–672.
+[26] T. G. Andersen, T. Bollerslev, F. X. Diebold, P. Labys, Modeling and
+forecasting realized volatility, Econometrica 71 (2) (2003) 579–625.
+[27] R. C. Merton, ”theory of rational option pricing”, Bell Journal of Economics and Management Science. 4 (1973) 141–183.
+[28] P. Carr, L. Wu, The finite moment log stable process and option pricing,
+The Journal of Finance 58 (2) (2003) 753–777.
+[29] R. F. Engle, “autoregressive conditional heteroscedasticity with estimates of the variance of united kingdom inflation.”, Econometrica 50
+(1982) 987–1007.
+[30] T. Bollerslev, Generalized autoregressive conditional heteroskedasticity,
+Journal of Econometrics 31 (3) (1986) 307–327.
+30
+
+[31] S. Alizadeh, M. W. Brandt, F. X. Diebold, Range-based estimation of
+stochastic volatility models, The Journal of Finance 57 (3) (2002) 1047–
+1091.
+[32] I. Aldridge, M. Avellaneda, Neural networks in finance: Design and
+performance, The Journal of Financial Data Science 1 (2019) 39 – 62.
+31

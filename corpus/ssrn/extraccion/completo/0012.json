@@ -1,0 +1,250 @@
+{
+  "doc_id": 12,
+  "titulo": "A Market Microstructure Approach to the Foreign Exchange Market in Vietnam",
+  "resumen_operativo": "Paper institucional/descriptivo (no cuantitativo) que documenta cómo la administración del tipo de cambio VND/USD por el banco central vietnamita produce iliquidez crónica, spreads bid-ask artificialmente comprimidos y no informativos, y un mercado paralelo persistente. Es útil para un trader-quant sobre todo como advertencia metodológica: en mercados con precio administrado (pegs/bandas), los spreads cotizados y los datos oficiales de FX no reflejan el verdadero costo de transacción ni la liquidez real, lo cual invalida backtests que asuman esos datos como precios de ejecución limpios.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "market microstructure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Enfoque analítico que explica el comportamiento de precios y otras conductas de mercado a partir de cómo el mercado está organizado y administrado, aplicado aquí al mercado FX vietnamita en vez de a microestructura de order book de alta frecuencia.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "bid-ask spread"},
+        {"tipo": "APLICA_A", "objeto": "liquidity"}
+      ],
+      "cita_textual": "this approach sees pricing and other behaviors in a market as being heavily influenced by its microstructure, i.e., how it is organized and administered"
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "En este mercado administrado, el spread cotizado entre ask y bid de los bancos comerciales se comprime artificialmente a valores cercanos a cero por la interacción entre exceso de demanda y el techo de la banda cambiaria, sin reflejar el costo de transacción real.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "liquidity"},
+        {"tipo": "SE_OPONE_A", "objeto": "effective spread"}
+      ],
+      "cita_textual": "the quoted bid-ask spread by itself is often unreliable as a measure of a particular forex market’s true liquidity, because it may also reflect the flexibility/stickiness of the exchange rate"
+    },
+    {
+      "nombre": "effective spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costo de transacción real pagado por clientes finales, sustancialmente mayor que el spread cotizado entre ask y bid oficiales; en episodios de exceso de demanda llegó a superar el 10%.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "bid-ask spread"},
+        {"tipo": "MIDE", "objeto": "liquidity"}
+      ],
+      "cita_textual": "The effective bid-ask spread at times increased to more than 10 percent"
+    },
+    {
+      "nombre": "liquidity",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Capacidad de ejecutar un gran volumen de operaciones con efecto mínimo sobre el precio; en Vietnam el mercado ha sufrido episodios frecuentes de iliquidez extrema por falta de contrapartes dispuestas al precio legalmente permitido, pese a spreads cotizados muy bajos.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "administered pricing"}
+      ],
+      "cita_textual": "a large volume of trades can be immediately executed with minimum effect on price"
+    },
+    {
+      "nombre": "administered pricing",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Régimen en el que la autoridad monetaria fija el tipo de cambio oficial y una banda de cotización permitida alrededor de este, actuando como un techo/piso de precio que genera no clearing de mercado y distorsiona las señales de precio.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "liquidity"},
+        {"tipo": "CAUSA", "objeto": "parallel market"},
+        {"tipo": "MITIGA", "objeto": "price discovery"}
+      ],
+      "cita_textual": "in this market, prices (i.e., exchange rates) have been extensively administered by a combination of price ceilings and floors that are variable and mostly binding"
+    },
+    {
+      "nombre": "parallel market",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Mercado negro de USD/VND que coexiste con el mercado oficial y cotiza a un premio persistente sobre la tasa comercial legal, sirviendo como indicador del exceso de demanda de divisas no satisfecho.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "administered pricing"},
+        {"tipo": "MIDE", "objeto": "administered pricing"}
+      ],
+      "cita_textual": "the exchange rate in the parallel market would be quoted at a much higher level than in the official market"
+    },
+    {
+      "nombre": "price discovery",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Proceso por el cual el mercado revela el precio de equilibrio a partir de la interacción de oferta y demanda; en Vietnam el reducido tamaño del segmento interbancario limita su utilidad como mecanismo inmediato de price discovery.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "interbank market"}
+      ],
+      "cita_textual": "the small size of the interbank market segment may limit its usefulness as a means of immediate price discovery"
+    },
+    {
+      "nombre": "interbank market",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Segmento del mercado FX donde operan bancos comerciales entre sí; en los mercados globales concentra la mayoría del volumen, pero en Vietnam representa una porción muy pequeña frente al segmento cliente-banco.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "forex market structure"},
+        {"tipo": "SE_OPONE_A", "objeto": "client-bank market"}
+      ],
+      "cita_textual": "the interbank segment (including transactions carried out by nonbank financial institutions) accounts for 80 percent or more of total market trading volume"
+    },
+    {
+      "nombre": "client-bank market",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Segmento de mercado retail entre bancos comerciales y clientes finales (empresas e individuos), que domina el volumen total de operaciones FX en Vietnam en contraste con el patrón internacional.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "interbank market"}
+      ],
+      "cita_textual": "the client-bank segment has dominated the overall market"
+    },
+    {
+      "nombre": "market concentration",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Alta concentración de las transacciones interbancarias en pocos bancos, con el banco central dominando el segmento en un grado muy elevado, reduciendo la competencia y la formación de precios descentralizada.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "price discovery"}
+      ],
+      "cita_textual": "interbank transactions are also heavily concentrated among a small number of banks, with the SBV in particular dominating the scene to a very large degree"
+    },
+    {
+      "nombre": "exchange rate peg",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Régimen cambiario de facto identificado por los autores pese a la denominación oficial de 'managed float', caracterizado por cotizaciones comerciales pegadas casi todo el tiempo a los límites de la banda permitida.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "administered pricing"},
+        {"tipo": "SE_OPONE_A", "objeto": "managed float"}
+      ],
+      "cita_textual": "commercial VND/USD quotes have been at their upper or lower bounds more than 85% of the time"
+    },
+    {
+      "nombre": "managed float",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Denominación oficial del régimen cambiario vietnamita, en el cual el tipo de cambio en principio se determina por fuerzas de mercado con intervención del banco central; el paper argumenta que en la práctica funciona como un peg ajustable.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "exchange rate peg"}
+      ],
+      "cita_textual": "the current exchange rate regime has been described by the authorities as a managed float"
+    },
+    {
+      "nombre": "coefficient of variation",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida simple de variabilidad de una serie temporal, definida como el ratio entre el desvío estándar y la media, usada para cuantificar la estabilidad de la tasa VND/USD.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "exchange rate volatility"}
+      ],
+      "cita_textual": "a simple measure of variability in a data series is its coefficient of variation (CV), defined as ratio of the standard deviation to the mean"
+    },
+    {
+      "nombre": "root mean square percentage error",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica de error de predicción usada para cuantificar la volatilidad/impredecibilidad de la tasa cambiaria, comparando el valor observado contra un pronóstico de caminata aleatoria (valor del período anterior).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "exchange rate volatility"},
+        {"tipo": "USA", "objeto": "random walk model"}
+      ],
+      "cita_textual": "an alternative measure may also be used, namely the root mean square percentage error (RMPSE)"
+    },
+    {
+      "nombre": "random walk model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Mecanismo de pronóstico simple donde el valor observado en el período t-1 se usa como predicción para el período t, empleado aquí como benchmark para calcular el RMPSE de la tasa cambiaria.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "root mean square percentage error"}
+      ],
+      "cita_textual": "A simple yet useful forecasting mechanism is the random walk model, where the actual Et-1 value observed in period t-1 is used as the forecast value Êt for period t"
+    },
+    {
+      "nombre": "exchange rate volatility",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Grado de variación de la tasa de cambio VND/USD, mantenida artificialmente baja por la política oficial de estabilidad, en contraste con la mayor volatilidad de otras monedas bilaterales comparables.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "administered pricing"}
+      ],
+      "cita_textual": "the VND/USD rate was kept very stable compared with other bilateral exchange rates"
+    },
+    {
+      "nombre": "nominal anchor",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Rol que cumple una moneda de referencia (el USD) para estabilizar expectativas inflacionarias y de política monetaria en países con baja credibilidad institucional, motivo aducido para el peg del VND.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "exchange rate peg"}
+      ],
+      "cita_textual": "the preference by some monetary authorities for a fixed exchange rate regime is often explained in terms of a stabilizing \"nominal anchor\""
+    },
+    {
+      "nombre": "market illiquidity episode",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Situación recurrente en la que muchos participantes no pueden completar transacciones al precio cotizado por falta de contrapartes dispuestas, distinta de un spread ancho, y causada por exceso de demanda no satisfecho bajo el techo de la banda.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "parallel market"},
+        {"tipo": "PARTE_DE", "objeto": "administered pricing"}
+      ],
+      "cita_textual": "this term is meant to describe the situation where many participants find it difficult, if not impossible, to complete transactions (either sales or purchases) at the market-quoted price"
+    },
+    {
+      "nombre": "regulatory circumvention technique",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Conjunto de prácticas ad hoc (fees adicionales, préstamos en VND a tasas elevadas, triangulación vía terceras monedas como el EUR, forwards, opciones) desarrolladas por bancos y clientes para operar efectivamente por fuera de la banda oficial permitida.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "effective spread"},
+        {"tipo": "MITIGA", "objeto": "administered pricing"}
+      ],
+      "cita_textual": "market participants will always come up with new and more ingenious ways of beating the system"
+    },
+    {
+      "nombre": "sterilized intervention",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Intervención del banco central en el mercado cambiario compensada por operaciones de mercado abierto (venta de títulos públicos) para neutralizar el impacto sobre la oferta monetaria, mencionada como alternativa de política no adoptada plenamente.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "exchange rate volatility"}
+      ],
+      "cita_textual": "sterilized intervention should have little impact on the money supply, as the authorities would simply mop up any injections of VND into the system"
+    },
+    {
+      "nombre": "forex market turnover",
+      "tipo": "dato",
+      "definicion_en_contexto": "Volumen diario total transado en el mercado FX, utilizado como proxy de tamaño y desarrollo del mercado y comparado contra el volumen de comercio internacional del país.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "liquidity"}
+      ],
+      "cita_textual": "Daily total turnover on the forex market in Vietnam increased seven-fold from around $20 million in 1995 to around $150 million in 2006"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Las cotizaciones comerciales de la tasa VND/USD estuvieron pegadas a los límites (techo o piso) de la banda cambiaria permitida la gran mayoría del tiempo, evidenciando un peg de facto pese a la denominación oficial de 'managed float'.",
+      "mercado": "FX VND/USD (Vietnam)",
+      "periodo": "enero 2002 - junio 2009",
+      "magnitud": "cotizaciones dentro de 0.01% de la banda >86% de los días; ask rate de Vietcombank dentro de 0.01% del límite superior en 76.3% de los días observados; bid rate dentro de 0.01% del límite inferior en 9.8% de los días",
+      "condiciones": "datos diarios oficiales publicados; no incluye mercado paralelo; sin costos de transacción reales; análisis puramente descriptivo, sin backtest",
+      "robustez": "media",
+      "cita_textual": "we found that commercial bank quotations of the exchange rate were at or near the bounds for more than 86 percent of the time"
+    },
+    {
+      "afirmacion": "El spread bid-ask cotizado por el banco líder fue prácticamente nulo durante varios años y se mantuvo muy angosto por estándares internacionales, pero no reflejó el verdadero costo de transacción.",
+      "mercado": "FX VND/USD (Vietnam) - retail",
+      "periodo": "2002-2008",
+      "magnitud": "spread efectivamente cero entre 2002-2005; spread <0.10% en 2008; spread efectivo real llegó a superar 10% en episodios de exceso de demanda",
+      "condiciones": "spread cotizado vs. spread efectivamente pagado por clientes finales; sin ajuste por comisiones ni triangulación de monedas",
+      "robustez": "baja",
+      "cita_textual": "the typical spread was still less than 0.10 of 1 percent"
+    },
+    {
+      "afirmacion": "La participación del segmento interbancario en el volumen total de FX en Vietnam es marcadamente inferior a la de mercados internacionales y mercados emergentes comparables.",
+      "mercado": "FX VND/USD (Vietnam) vs. mercados globales/emergentes",
+      "periodo": "no especificado (datos históricos hasta ~2007)",
+      "magnitud": "segmento interbancario <15% del turnover total en Vietnam, vs. 80%+ a nivel global y 55-95% en otros mercados emergentes",
+      "condiciones": "datos agregados de fuentes oficiales dispares, no estrictamente comparables entre países",
+      "robustez": "baja",
+      "cita_textual": "the corresponding figure for Vietnam has been less than 15 percent"
+    },
+    {
+      "afirmacion": "El premio del mercado paralelo sobre la tasa comercial oficial mostró alta correlación con una medida indirecta de sobrevaluación del VND basada en el cross rate VND/EUR implícito.",
+      "mercado": "FX VND/USD paralelo vs. oficial (Vietnam)",
+      "periodo": "enero 2008 - junio 2009",
+      "magnitud": "coeficiente de correlación simple = 0.80, en el subperíodo donde ambas medidas superaron 5%",
+      "condiciones": "muestra reducida a períodos con datos disponibles para ambas medidas; sin test de significancia estadística reportado",
+      "robustez": "baja",
+      "cita_textual": "the relevant simple correlation coefficient was 0.80"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "nula",
+    "nota": "Paper institucional sobre política cambiaria y desarrollo de mercado en Vietnam, sin metodología de trading, backtest ni datos de microestructura de alta frecuencia aplicables al ecosistema ES; su único valor es como recordatorio cualitativo de que precios/spreads administrados o poco líquidos pueden no reflejar costos de ejecución reales."
+  }
+}

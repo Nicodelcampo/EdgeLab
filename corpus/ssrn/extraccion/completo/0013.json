@@ -1,0 +1,257 @@
+{
+  "doc_id": 13,
+  "titulo": "A Market Neutral Statistical Arbitrage Trading Model",
+  "resumen_operativo": "Tesis de máster (Estocolmo, 2003) que construye un simulador de trading realista (220 páginas de Java) para testear una estrategia long/short de momentum market-neutral en acciones suecas 1995-2001, con costos de transacción y reglas de control de riesgo (stop-loss, matriz de covarianza, bans sectoriales). Muestra que la pérdida de retorno por costos se compensa con la reducción de riesgo de las reglas avanzadas (Sharpe 0.71 vs 0.68 del modelo simplista sin costos). Su aporte más transferible es metodológico: critica el CAR académico simplista, usa rankings aleatorios como benchmark nulo y tests out-of-sample en 4 países.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "momentum",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Persistencia de los retornos de acciones en horizontes de 3 a 12 meses, seguida de reversión a la media en el largo plazo; el paper lo atribuye a inversores irracionales (sobre/subreacción) y arbitraje limitado, y es la ineficiencia que su modelo explota.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "mean reversion"},
+        {"tipo": "CAUSA", "objeto": "statistical arbitrage"},
+        {"tipo": "SE_OPONE_A", "objeto": "efficient market hypothesis"}
+      ],
+      "cita_textual": "the persistence in the returns of stocks over horizons between three\nmonths and one year"
+    },
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Familia de estrategias donde las posiciones se toman según modelos sistemáticos que detectan desviaciones del valor relativo predicho, con exposición neta acotada (nunca más de 20% long o short según la definición de Morgan Stanley que adopta el paper). El paper lo plantea como un problema de optimización estocástica multivariable con máximos locales inestables.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "momentum"},
+        {"tipo": "APLICA_A", "objeto": "market neutral strategy"},
+        {"tipo": "USA", "objeto": "risk control"}
+      ],
+      "cita_textual": "In essence, the problem of building a statistical arbitrage model that yields an optimal\nrisk-return proﬁle is an optimization problem."
+    },
+    {
+      "nombre": "market neutral strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Cartera long/short con beta prácticamente cero (10 largos y 10 cortos siempre en el paper), atractiva por su baja correlación con el mercado; aísla el efecto del arbitraje del riesgo direccional.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "statistical arbitrage"},
+        {"tipo": "MITIGA", "objeto": "market risk"}
+      ],
+      "cita_textual": "A market neutral strategy is neutral to market movements, i.e. its β is\npractically zero."
+    },
+    {
+      "nombre": "overreaction",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Retorno medio menor tras una racha de buenas noticias que tras una racha de malas: el precio sobrepasa el valor fundamental tras trends de noticias y luego revierte. Junto con la subreacción genera el momentum.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "momentum"},
+        {"tipo": "USA", "objeto": "representativeness heuristic"}
+      ],
+      "cita_textual": "prices of a stock keep irrationally\ntrending up after the release of good news, and vice versa when the news is bad"
+    },
+    {
+      "nombre": "underreaction",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El retorno tras un anuncio de buenas noticias es mayor que tras malas noticias: el precio incorpora la información lentamente, generando continuación de retornos en el corto plazo.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "momentum"},
+        {"tipo": "USA", "objeto": "conservatism bias"}
+      ],
+      "cita_textual": "the\nreturn on a company’s stock is higher following an announcement of good news than the\nreturn following bad news"
+    },
+    {
+      "nombre": "representativeness heuristic",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Sesgo por el cual los inversores ven patrones sistemáticos en secuencias puramente aleatorias (aquí, en earnings que son un random walk) y extrapolan trends, causando sobrerreacción.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "overreaction"}
+      ],
+      "cita_textual": "she sees systematic patterns in sequences that are in fact completely randomly\ngenerated"
+    },
+    {
+      "nombre": "conservatism bias",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Tendencia de los inversores a ponderar de menos la información nueva al actualizar sus creencias, lo que produce subreacción a las noticias.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "underreaction"}
+      ],
+      "cita_textual": "People with a bias towards conservatism tend to underweight new information in\nupdating their weighting of new information"
+    },
+    {
+      "nombre": "stop-loss rule",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Liquidar la posición perdedora al cruzar un límite (20% desde el máximo del holding period en el paper); se motiva formalmente con la martingale betting strategy: sin límite de pérdida se necesita capital infinito. El paper además la interpreta como señal contrarian que invalida la tesis de momentum, y banea el stock 15 días tras ejecutarse.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "risk control"},
+        {"tipo": "MITIGA", "objeto": "drawdown risk"}
+      ],
+      "cita_textual": "the stop-loss rule means that one\nliquidates a losing position when its price exceeds or drops below a certain limit"
+    },
+    {
+      "nombre": "martingale betting strategy",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Doblar la apuesta tras cada pérdida: la esperanza de pérdida acumulada diverge, por lo que sin capital infinito lleva a la quiebra. El paper lo usa como argumento teórico a favor del stop-loss y de limitar el tamaño de las apuestas.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "stop-loss rule"}
+      ],
+      "cita_textual": "the initial capital of the gambler, or investor, needs to be inﬁnite,\nif she intends to pursue her martingale betting strategy"
+    },
+    {
+      "nombre": "cumulative abnormal return methodology",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Metodología académica estándar para medir momentum: rankear por retorno pasado, formar cartera long/short estática, medir el retorno anormal acumulado con t-stat. El paper la critica como rígida y simplista: excluye costos de transacción, usa rebalanceo estático y sobreestima el rendimiento alcanzable.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "momentum"},
+        {"tipo": "CAUSA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "methodology used when analyzing this phenomenon in most academic papers, called Cumulative Abnormal Return (CAR), is straightforward and easy to use. However, it is also very\nrigid and simplistic."
+    },
+    {
+      "nombre": "realistic trading simulation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Plataforma de simulación (Java, arquitectura de plugins de reglas, cuentas separadas long/short/transacción) que incorpora costos, ejecución al cierre, rebalanceo dinámico y reglas de riesgo; el paper la propone como metodología superior al CAR para evaluar estrategias.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "cumulative abnormal return methodology"},
+        {"tipo": "USA", "objeto": "transaction costs"},
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "a good evaluation of any trading strategy requires more realistic simulations than is\ncommonplace in academia today"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Fijados en 0.3% por trade (largo y corto); por el alto turnover de la cartera son determinantes críticos de la rentabilidad: con 0.7% el retorno cae de 21.8% a 13.4% anual.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "momentum"},
+        {"tipo": "PARTE_DE", "objeto": "realistic trading simulation"}
+      ],
+      "cita_textual": "Transaction costs are critical determinants of proﬁtability due to the high turnover of\nthe portfolio."
+    },
+    {
+      "nombre": "risk control",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Segunda etapa del modelo (tras la generación de señal): entre los 4 mejores candidatos del ranking se elige el que minimiza la suma de la matriz varianza-covarianza del portafolio; incluye stop-loss, corte por precio bajo (<3 SKr), bans sectoriales tras stop-losses agrupados y un indicador de valuaciones extremas (M/B duplicado/halvado en un año).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "stop-loss rule"},
+        {"tipo": "MITIGA", "objeto": "sector concentration risk"},
+        {"tipo": "PARTE_DE", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "Our main\nsolution is that we test the best 4 candidates for inclusion in the portfolio by calculating the\nsum of the variance-covariance matrix"
+    },
+    {
+      "nombre": "random ranking benchmark",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Correr la misma simulación con rankings generados aleatoriamente (mediana de 50 corridas) como hipótesis nula: si la señal real no supera claramente al azar, no hay edge. El benchmark aleatorio dio retornos levemente negativos, confirmando la señal de momentum.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "data snooping"},
+        {"tipo": "PARTE_DE", "objeto": "realistic trading simulation"}
+      ],
+      "cita_textual": "we have ranked the stocks randomly. The average return is centered slightly\nbelow zero due to the asymmetry between the long and short positions"
+    },
+    {
+      "nombre": "data snooping",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Encontrar patrones aparentemente significativos pero espurios; el paper lo ilustra con la regla ex post 'comprar empresas finlandesas grandes que empiecen con N' desde 1992 (Nokia) y exige que toda regla tenga sustento teórico y empírico previo.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "data mining"},
+        {"tipo": "CAUSA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "Data-snooping is ﬁnding seemingly signiﬁcant but in fact spurious patterns in data."
+    },
+    {
+      "nombre": "out-of-sample validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Testear el modelo en mercados no usados para diseñarlo (Alemania, Francia, UK, con casi 12 años de datos) y comparar con estudios previos, como chequeo contra el sesgo de muestra específica.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "data snooping"},
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "the best way of checking for the potential of any sample speciﬁc\nbias is to compare the results with previous studies and to do out-of-sample tests of the\nmodel"
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Retorno anualizado menos tasa libre de riesgo (4%) sobre desviación estándar anualizada; el paper advierte que es manipulable según cómo se calcule la desviación estándar y que no distingue volatilidad positiva de negativa, por lo que lo complementa con VaR, skewness, kurtosis y downside risk.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"}
+      ],
+      "cita_textual": "there are many ways to measure\nstandard deviation, which makes it susceptible to manipulation. Had we used 3 months\naveraged portfolio value as a basis for calculating std, the Sharpe ratio would be over\n5!"
+    },
+    {
+      "nombre": "market capacity constraint",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "La estrategia asume ejecución inmediata al cierre sin impacto; con turnover diario de 1-2 millones SKr en los stocks menos líquidos, el paper estima que la performance se degrada si el portafolio supera ~30 millones SKr, imponiendo un límite superior de capital (y uno inferior de ~1 millón SKr para lograr costos de 0.3%).",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "liquid markets"},
+        {"tipo": "SE_OPONE_A", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "we can with\na rough estimation say that returns will be hit if total portfolio value exceeds about\n30 million SKr"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El modelo de momentum market-neutral con costos (0.3%) y reglas de control de riesgo logra un retorno anualizado de 21.8% con Sharpe 0.71, beta -0.011 y desviación anualizada 25.6% en acciones suecas.",
+      "mercado": "Swedish equities (OM Stockholm, 94-175 acciones líquidas)",
+      "periodo": "1995-06-30 a 2001-11-06",
+      "magnitud": "retorno anual 21.8%, std anual 25.6%, Sharpe 0.71, beta -0.011, VaR 1% diario -3.95%, costos acumulados 13.6% del valor final",
+      "condiciones": "costos 0.3% por trade incluidos; ejecución al cierre sin impacto; sin fees de shorting ni intereses; período único de 6 años, in-sample para el diseño de reglas",
+      "robustez": "media",
+      "cita_textual": "our strategy has performed very well in this period, delivering both\nhigh returns and a low correlation with the market index"
+    },
+    {
+      "afirmacion": "La estrategia simplista de momentum (rank 6 meses, hold 4 meses, solo precio) rinde 30.4% anual sin costos (Sharpe 0.68) pero cae a 19.8% con costos de 0.3% (Sharpe 0.39), con riesgo mucho peor que el modelo con control de riesgo (std 39-41%, kurtosis 22-34, peor día -26% a -30%).",
+      "mercado": "Swedish equities",
+      "periodo": "1995-06-02 a 2001-11-06",
+      "magnitud": "sin costos: 30.4% anual, Sharpe 0.68, std 39.1%; con costos: 19.8%, Sharpe 0.39, std 40.9%, skewness -2.07, kurtosis 34.5",
+      "condiciones": "misma plataforma de simulación; rebalanceo estático cada 4 meses; sin reglas de riesgo",
+      "robustez": "media",
+      "cita_textual": "The risk characteristic of the simplistic strategy is dramatically worse than\nin our model. All the risk measures; standard deviation, downside risk, VaR, are worse."
+    },
+    {
+      "afirmacion": "La varianza mensual del modelo avanzado es significativamente menor que la del modelo simplista (con y sin costos), mientras que los retornos medios mensuales no difieren significativamente: la mejora del Sharpe viene enteramente por el lado del riesgo.",
+      "mercado": "Swedish equities",
+      "periodo": "1995-2001 (n=76 meses)",
+      "magnitud": "test de varianza: estadísticos -4.39 y -4.53 vs crítico -2.58 (rechazo H0); test de medias: -0.398 y 0.155 vs crítico -2.66 (no rechazo)",
+      "condiciones": "test de matched pairs (Newbold) sobre retornos mensuales de simulaciones en el mismo período y universo",
+      "robustez": "media",
+      "cita_textual": "The null hypothesis can\nthus (see Table 22) be rejected already at the ﬁve percent level, in favour of the hypothesis\nthat our model has a lower variance, and thereby a lower volatility."
+    },
+    {
+      "afirmacion": "La replicación del momentum simplista (sin costos ni control de riesgo) en 4 mercados europeos durante casi 12 años da retornos anuales positivos pero volátiles: 8.25% Alemania, 10.9% UK, 7.42% Francia, 13.9% Suecia (Sharpe 0.08-0.25), confirmando el efecto momentum fuera de EEUU pero con drops severos.",
+      "mercado": "Germany, UK, France, Sweden equities",
+      "periodo": "1990-07-02 a 2001-11-06",
+      "magnitud": "retornos anuales 7.4-13.9%, Sharpe 0.19/0.25/0.08/0.22, std anual 22.5-44.9%, peor año Suecia 1992: -161% (log)",
+      "condiciones": "sin costos, sin control de riesgo, ranking por retorno 6 meses, holding 4 meses; outliers ilíquidos en Francia distorsionan (excluyéndolos el retorno cae a 2.55%)",
+      "robustez": "media",
+      "cita_textual": "An abnormal return of a\nlittle bit less than 1% per month, together with a risky volatility structure with large and\nsudden drops in value."
+    },
+    {
+      "afirmacion": "El benchmark de rankings aleatorios (mediana de 50 corridas) da retornos anuales levemente negativos (-0.65% a -1.81%) y Sharpe negativo en los 4 países, mostrando que la señal de momentum es significativamente distinta del azar.",
+      "mercado": "Germany, UK, France, Sweden equities",
+      "periodo": "1990-07-02 a 2001-11-06",
+      "magnitud": "retorno anual: -0.75% DE, -1.81% UK, -1.31% FR, -0.65% SE; Sharpe -0.22 a -0.43",
+      "condiciones": "sin costos, sin control de riesgo, mediana de 50 corridas con ranking aleatorio",
+      "robustez": "media",
+      "cita_textual": "The signiﬁcance of the momentum eﬀect is clearly evident when comparing Table 17 with\nTable 18, where we have ranked the stocks randomly."
+    },
+    {
+      "afirmacion": "En la simulación Monte Carlo del modelo de Barberis-Shleifer-Vishny (50 firmas x 100 corridas), la sobrerreacción es significativa al 99% (diferencia media de retornos -4.12e-3 tras 4 shocks positivos vs negativos) y la subreacción también (media +2.84e-4 tras 1 shock), para la parametrización elegida.",
+      "mercado": "simulación teórica (earnings random walk)",
+      "periodo": "no especificado (simulación)",
+      "magnitud": "IC 99% overreaction: (-4.15e-3, -4.09e-3); underreaction: (2.62e-4, 3.06e-4); medias -4.12e-3 y 2.84e-4",
+      "condiciones": "vale solo para la parametrización específica de pi y lambda; el propio Shleifer admitió no poder motivar empíricamente esos parámetros",
+      "robustez": "baja",
+      "cita_textual": "which is consistent with the overreaction eﬀect, since the average return diﬀerence is so\nclearly below zero"
+    },
+    {
+      "afirmacion": "Sensibilidad del modelo default: sin control de riesgo el retorno sube a 39.8% (Sharpe 1.06) pero con peor riesgo y perfil tiempo-específico; con costos de 0.7% el retorno cae a 13.4%; excluyendo el 10% de stocks menos líquidos cae a 17.0%; sin stop-loss el retorno es 30.9% pero con std 30.3% y peor VaR.",
+      "mercado": "Swedish equities",
+      "periodo": "1995-06-30 a 2001-11-06",
+      "magnitud": "no risk control: 39.8%/Sharpe 1.06; TC 0.7%: 13.4%/Sharpe 0.30; sin 10% ilíquidos: 17.0%/Sharpe 0.41; sin stop-loss: 30.9% retorno, std 30.3%",
+      "condiciones": "variaciones ceteris paribus sobre el modelo default; muestra chica (los bans llegan a excluir 40% del universo)",
+      "robustez": "baja",
+      "cita_textual": "Transaction costs (TC) of 0.7% signiﬁcantly lowers the return."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El edge (momentum mensual en acciones suecas de 2001) no transfiere a futuros ES intradía, pero sí la metodología: benchmark de señales aleatorias como hipótesis nula, medir costos/turnover explícitamente, stop-loss como control de cola y comparar siempre contra la versión 'simplista' de la misma estrategia — todo replicable en el pipeline VectorBT."
+  }
+}

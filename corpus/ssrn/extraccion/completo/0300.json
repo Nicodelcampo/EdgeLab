@@ -1,0 +1,118 @@
+{
+  "doc_id": 300,
+  "titulo": "Risk Control of Mean Reversion Time in Statistical Arbitrage",
+  "resumen_operativo": "Aborda el riesgo de mala estimación de la velocidad de reversión a la media en arbitraje estadístico. Propone tres controles: (1) selección de portafolio basada en ranking de velocidad de reversión (κ) estimada con training histórico, (2) filtrado de señales de trading por R² de la estimación OU, y (3) actualización regular del portafolio. Formula la asignación de activos como problema de optimización con restricciones de neutralidad de mercado, neutralidad de dólar y leverage. Backtesting con 378 acciones del S&P500 entre 2000-2014 muestra Sharpe ratios consistentemente superiores a portafolios aleatorios o por capitalización.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Mean-Reversion Speed Ranking (Quality Score)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Score de calidad QS_i = promedio de κ estimados durante el período de entrenamiento. Solo los residuos con mayor QS (reversión más rápida) se seleccionan para el portafolio. Se testean tamaños de 25, 50, 75 y 100 acciones de 378.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Ornstein-Uhlenbeck Calibration"},
+        {"tipo": "PREDICE", "objeto": "Out-of-Sample Mean-Reversion"}
+      ],
+      "cita_textual": "A quality score is defined as the average of mean-reverting speed that are estimated for each stock on each day of the training period. Since a higher score implies a higher mean-reversion speed, those stocks are selected."
+    },
+    {
+      "nombre": "R²-Value Screening for Trading Signals",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Filtro de calidad estadística: solo se aceptan señales de trading cuya estimación OU tenga R² > η. Reduce la frecuencia de trades ineficientes y costos de transacción innecesarios. Con distintos thresholds según longitud de ventana para mantener ~50% de reducción de trades.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Trading Signal Reliability"},
+        {"tipo": "MITIGA", "objeto": "Parameter Estimation Error"}
+      ],
+      "cita_textual": "Any trading signal with large estimation error is screened out. We accept estimation results only with high enough goodness-of-fit measured by R²-value."
+    },
+    {
+      "nombre": "Market-Neutral Optimization Problem",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Problema de optimización min_q ||Lq||₁ sujeto a signos de posición dados por señales, dollar-neutrality y leverage constraint. Solo se rebalancean posiciones cambiadas (conjunto C_t), preservando las no cambiadas (U_t) para reducir costos de transacción.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Dollar-Neutrality"},
+        {"tipo": "USA", "objeto": "Factor Loadings L"}
+      ],
+      "cita_textual": "We take one of the conditions and modify it to the objective function... the objective function is set as minimizing the sum of absolute values of factor exposures."
+    },
+    {
+      "nombre": "PCA Factor Extraction",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Factores estadísticos no observables extraídos de retornos accionarios usando eigenvalores y eigenvectores de la matriz de correlación. Los eigen-signals se construyen como bF_m = ⟨q_m, r_t⟩ donde q_i^m = v_i^m/σ_i con v_i^m componentes del eigenvector.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Correlation Matrix"},
+        {"tipo": "USA", "objeto": "Residual Generation"}
+      ],
+      "cita_textual": "We use principal components. From the data matrix R, a correlation matrix can be obtained. Each eigenvector can be considered as a realization of an N-security portfolio."
+    },
+    {
+      "nombre": "OU Parameter Estimation via AR(1)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Discretización del proceso OU a un AR(1): X_{k+1} = a + bX_k + ε_k. Los parámetros {â, b̂, ν̂} se mapean a {κ̂, m̂, σ̂} del OU continuo. La estimación es por mínimos cuadrados (equivalente a máxima verosimilitud).",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Maximum Likelihood Estimation"},
+        {"tipo": "REQUIERE", "objeto": "Integrated Residual Process"}
+      ],
+      "cita_textual": "One way to deal with discrete observations is to discretize the OU process to the autoregressive process of order 1, and use least-squares to estimate parameters."
+    },
+    {
+      "nombre": "Threshold-Based Trading Rule",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Señal de trading normalizada s_it = (X_it - m_i)/σ̃_i. Short si s > 1.25, cierra short si s < 0.5; long si s < -1.25, cierra long si s > -0.5. Los umbrales son fijos y determinan solo la dirección de la posición, no el monto.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "OU Parameter Estimation via AR(1)"},
+        {"tipo": "APLICA_A", "objeto": "Mean-Reversion Trading"}
+      ],
+      "cita_textual": "If the signal is strongly positive, the asset is assumed to be over-valued. Then we open a short position... open short position (s_it > 1.25) → close short position (s_it < 0.5)."
+    },
+    {
+      "nombre": "Realized Mean-Reversion Time",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Duración observada entre apertura y cierre de una posición durante el trading real. En los tests out-of-sample, el portafolio controlado muestra tiempos de reversión 0.5-1 día más cortos que otros portafolios, validando el training basado en κ estimado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Mean-Reversion Speed κ"},
+        {"tipo": "EQUIVALE_A", "objeto": "Days of Active Positions"}
+      ],
+      "cita_textual": "Realized mean-reversion time := length of days of active positions. The realized mean-reversion times of the controlled portfolio are 0.5 to 1 day shorter than those of other portfolios."
+    },
+    {
+      "nombre": "Dollar-Neutrality",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Restricción Σ_i q_it = 0 que asegura simetría entre posiciones largas y cortas. No hay inversión neta de dinero, permitiendo comparación justa entre estrategias. Combinada con market-neutrality elimina exposición a factores y al mercado.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Market-Neutrality"},
+        {"tipo": "APLICA_A", "objeto": "Fair Strategy Assessment"}
+      ],
+      "cita_textual": "We also want our strategy to be dollar-neutral, which just means symmetry between long and short holdings. With this condition, there is no net amount of money investment."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El portafolio controlado por velocidad de reversión produce Sharpe ratios cercanos o superiores a 2 en todos los períodos (pre-crisis, crisis, post-crisis 2005-2014) con retorno anual promedio del 20% usando ventana de 60 días y 5 factores.",
+      "mercado": "S&P 500 (378 acciones persistentes)",
+      "periodo": "2005-2014 (5 regímenes de 2 años)",
+      "magnitud": "Sharpe ≥ 2, retorno anual ~20%",
+      "condiciones": "Ventana 60 días, 5 factores PCA, portafolio de 75 acciones, costos transacción 5bp",
+      "robustez": "alta",
+      "cita_textual": "With a window of 60 days and 5 factors, the Sharpe ratios are close to or higher than 2 over all periods, and the average annual return of the strategy is 20%."
+    },
+    {
+      "afirmacion": "El portafolio anti-controlado (acciones con reversión más lenta) produce los peores resultados entre todos los portafolios, confirmando la efectividad de la selección por velocidad de reversión.",
+      "mercado": "S&P 500 (378 acciones)",
+      "periodo": "2005-2014",
+      "magnitud": "Peor performance consistentemente; fluctuaciones de PnL significativamente mayores",
+      "condiciones": "Anti-controlled portfolio: stocks con mayor mean-reversion time",
+      "robustez": "alta",
+      "cita_textual": "We also test with an anti-controlled portfolio, which is formed from the stocks with long mean-reversion times... the results are the worst among the all other portfolios considered."
+    },
+    {
+      "afirmacion": "El filtrado por R² aumenta los Sharpe ratios del portafolio controlado en promedio +0.22 (ventana 30d), +0.47 (60d), +0.74 (90d), +0.63 (120d), con incrementos de retorno anual de +3.55%, +4.5%, +5.55%, +3.93% respectivamente.",
+      "mercado": "S&P 500",
+      "periodo": "2005-2014",
+      "magnitud": "Aumento Sharpe: +0.22 a +0.74; aumento retorno: +3.55% a +5.55% anual",
+      "condiciones": "Thresholds ajustados por ventana para reducir trades ~50%",
+      "robustez": "alta",
+      "cita_textual": "The R²-screening boosts up performance. Sharpe ratios (+0.22, +0.47, +0.74, and +0.63 on average) and the average returns (+3.55%, +4.5%, +5.55%, and +3.93% on average) are increased."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "Usa datos diarios pero los métodos de selección por velocidad de reversión, optimización con restricciones y filtrado R² son adaptables a frecuencias intradiarias."}
+}

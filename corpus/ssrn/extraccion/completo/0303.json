@@ -1,0 +1,138 @@
+{
+  "doc_id": 303,
+  "titulo": "SAFE Machine Learning in Quantitative Trading",
+  "resumen_operativo": "Evalúa modelos de ML (Logistic Regression, SVM, RNN, LSTM, GRU) para generar señales de trading sobre acciones de IBM entre enero 2000 y marzo 2021. Introduce el marco SAFE (Sustainability, Accuracy, Fairness, Explainability) para evaluar confiabilidad de modelos de deep learning. Backtesting muestra que modelos DL superan al buy-and-hold durante el crash COVID-19 de marzo 2020: GRU obtiene 26.71% de retorno acumulado con drawdown de -11.58% versus -25.15% del buy-and-hold. LSTM logra 21.77% acumulado con -13.5% drawdown. Las estrategias son long-only sin short-selling ni costos de transacción.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "SAFE Framework",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Marco de evaluación de modelos de AI: Sustainability (robustez ante cambios de régimen de mercado), Accuracy (precisión predictiva), Fairness (sesgo en decisiones), Explainability (interpretabilidad). Propuesto para asegurar confiabilidad de modelos deep learning en finanzas.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Deep Learning Models"},
+        {"tipo": "MEJORA_A", "objeto": "Model Trustworthiness Assessment"}
+      ],
+      "cita_textual": "This paper introduces the novelty of the SAFE framework (Sustainability, Accuracy, Fairness, and Explainability) as a means of assessing and enhancing the trustworthiness of deep AI models."
+    },
+    {
+      "nombre": "Time Series to Supervised Learning Conversion",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Transformación de serie temporal univariada a formato tabular supervisado usando ventanas deslizantes con lag fijo. Con lag=3, las observaciones 1,2,3 predicen la 4; 2,3,4 predicen la 5, etc. Los datos son secuenciales: no se puede shuffle ni bootstrap.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Sequential Cross-Validation"},
+        {"tipo": "APLICA_A", "objeto": "Time Series Forecasting"}
+      ],
+      "cita_textual": "Observations indexed 1, 2, and 3 are used to predict the value indexed by 4; similarly, observations indexed 2, 3, and 4 predict the value indexed by 5."
+    },
+    {
+      "nombre": "LSTM (Long Short-Term Memory)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Red neuronal recurrente con celda de memoria de largo plazo ct y tres compuertas (input it, forget ft, output ot) más compuerta principal gt. La celda se actualiza como ct = ft ⊗ ct-1 + it ⊗ gt. Obtiene RMSE de 2.34 en predicción de precio de IBM.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "RNN"},
+        {"tipo": "PARTE_DE", "objeto": "Deep Learning for Trading"}
+      ],
+      "cita_textual": "LSTM incorporates four gates: input, output, and forget gates, which regulate the flow of information within the network."
+    },
+    {
+      "nombre": "GRU (Gated Recurrent Unit)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Variante simplificada de LSTM sin celda de memoria separada; usa update gate zt, reset gate rt y main gate gt. El estado oculto se actualiza como ht = zt ⊗ ht-1 + (1-zt) ⊗ gt. Mejor rendimiento empírico en el estudio con 96.5% hit rate.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "LSTM"},
+        {"tipo": "EQUIVALE_A", "objeto": "Simplified LSTM"}
+      ],
+      "cita_textual": "The Gated Recurrent Unit (GRU) is a simplified variant of the Long Short-Term Memory (LSTM) model. The GRU does not incorporate a separate long-term memory cell."
+    },
+    {
+      "nombre": "Vectorized Backtesting",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Procedimiento de backtesting intradiario vectorizado (8 pasos): split train/test, escalado min-max, conversión a formato supervisado, cross-validation temporal, regularización l2, entrenamiento/validación, generación de señales pseudo-trading, backtesting con curvas de equity.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Equity Curve"},
+        {"tipo": "USA", "objeto": "Maximum Drawdown"}
+      ],
+      "cita_textual": "A systematic 8-step procedure is employed. Step 8 assesses the performance of each strategy through intraday vectorized backtesting. The results are visualized in equity curves."
+    },
+    {
+      "nombre": "Hit Rate",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Proporción de posiciones long correctas respecto al total de posiciones long 'ideales' (aquellas donde el precio subió). GRU logra 96.5%, LSTM 68.5%, RNN 70%, Logistic Regression 62.5%, SVM 64.5%. No penaliza falsas posiciones long.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Signal Accuracy"},
+        {"tipo": "SE_OPONE_A", "objeto": "False Position Rate"}
+      ],
+      "cita_textual": "The GRU-based strategy attained the highest hit rate of 96.40%, correctly identifying 269 of the 279 ideal long positions."
+    },
+    {
+      "nombre": "Maximum Drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Máxima pérdida observada desde un pico hasta un valle durante el período de backtesting. GRU: -11.58%, LSTM: -13.50%, RNN: -18.05%, todos mejores que buy-and-hold: -25.15%. Métrica clave de gestión de riesgo.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Downside Risk"},
+        {"tipo": "USA", "objeto": "Equity Curve"}
+      ],
+      "cita_textual": "The drawdown represents the maximum loss experienced by the strategy during the testing period and serves as a key metric for evaluating the model's risk management effectiveness."
+    },
+    {
+      "nombre": "ℓ2 Regularization for Model Stability",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Regularización añadida a la función de pérdida: L_S(θ) + (γ/2)||θ||². Controla overfitting y asegura estabilidad del modelo (small input perturbation → small output change). γ es el hiperparámetro de regularización que balancea pérdida de entrenamiento vs. verdadera.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "Overfitting"},
+        {"tipo": "REQUIERE", "objeto": "Lipschitz Continuous Loss Function"}
+      ],
+      "cita_textual": "The issue of stability ultimately reduces to bounding the expected value of the loss function... the loss function is endowed with the strong properties of a Lipschitz continuous or smoothed function and is trained under an ℓ2 norm constraint."
+    },
+    {
+      "nombre": "Sequential Cross-Validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Validación cruzada para datos secuenciales donde los folds respetan el orden temporal (no shuffle). Dos variantes propuestas: ambas aseguran que el conjunto de validación sea posterior al de entrenamiento, previniendo look-ahead bias.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Time Series to Supervised Learning Conversion"},
+        {"tipo": "MITIGA", "objeto": "Look-Ahead Bias"}
+      ],
+      "cita_textual": "It is critical that the k-folds procedure respects the sequential ordering of the data. Both methods ensure that the validation set remains independent of the training set, while preserving the temporal sequence."
+    },
+    {
+      "nombre": "False Position Rate",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Proporción de posiciones long abiertas cuando el precio estaba en tendencia bajista. GRU muestra la tasa más alta (94.2%), seguido por RNN (73.6%) y LSTM (70.7%). Indica dificultad del modelo para detectar cambios de régimen de mercado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Signal Reliability"},
+        {"tipo": "SE_OPONE_A", "objeto": "Hit Rate"}
+      ],
+      "cita_textual": "The GRU-based signals result in the highest rate of false positions... This discrepancy highlights the varying accuracy of the models in generating trading signals."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La estrategia GRU-based obtiene 26.71% de retorno acumulado (CAGR 18.65%) con drawdown de -11.58% versus buy-and-hold con 0.6% retorno acumulado y -25.15% drawdown durante el período de test (feb 2019 - mar 2021).",
+      "mercado": "IBM (NYSE)",
+      "periodo": "Febrero 2019 - Marzo 2021",
+      "magnitud": "GRU: +26.71% acumulado, drawdown -11.58%; Buy&Hold: +0.6%, drawdown -25.15%",
+      "condiciones": "Long-only, sin short-selling, sin costos de transacción; 523 días de test",
+      "robustez": "baja",
+      "cita_textual": "The accumulated profit of the GRU-based strategy reached 26.70%, corresponding to a CAGR of 18.65%. In contrast, the final accumulated profit of the buy-and-hold strategy was limited to 0.6%."
+    },
+    {
+      "afirmacion": "LSTM obtiene retorno acumulado 21.77% (CAGR 10.50%) con drawdown -13.50% en el mismo período. RNN obtiene 14.30% acumulado (CAGR 6%) con drawdown -18.07%.",
+      "mercado": "IBM (NYSE)",
+      "periodo": "Febrero 2019 - Marzo 2021",
+      "magnitud": "LSTM: +21.77%, drawdown -13.5%; RNN: +14.30%, drawdown -18.07%",
+      "condiciones": "Long-only, sin costos de transacción",
+      "robustez": "baja",
+      "cita_textual": "The cumulative profit for the LSTM-based strategy reached 21.77%, corresponding to a CAGR of 10.50%."
+    },
+    {
+      "afirmacion": "Los RMSE de predicción de precios: RNN 2.40, LSTM 2.34, GRU 2.36 (dólares). Las tasas de acierto (hit rate): GRU 96.5%, RNN 70%, LSTM 68.5%, Logistic Regression 62.5%, SVM 64.5%.",
+      "mercado": "IBM (NYSE)",
+      "periodo": "Febrero 2019 - Marzo 2021",
+      "magnitud": "RMSE: RNN 2.40, LSTM 2.34, GRU 2.36; Hit rate: 62.5%-96.5%",
+      "condiciones": "Train: enero 2000 - feb 2019; Test: feb 2019 - mar 2021",
+      "robustez": "baja",
+      "cita_textual": "The root mean square error (RMSE) associated with the predictions is $2.40, $2.34, and $2.36 of the RNN, LSTM, and GRU respectively."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Backtesting intradiario vectorizado con datos diarios de IBM; framework de modelos DL (RNN/LSTM/GRU) es directamente aplicable a datos intradiarios de alta frecuencia."}
+}

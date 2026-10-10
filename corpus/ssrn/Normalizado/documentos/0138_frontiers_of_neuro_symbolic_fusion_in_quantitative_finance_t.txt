@@ -1,0 +1,1347 @@
+Graphical Abstract
+Self-Improving Alpha Mining for Quantitative Trading via Multi-Agent Large Language
+Models with Knowledge Base Accumulation
+Minh-Son Vu, The-Trung Pham, Hong-Viet Tran
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Highlights
+Self-Improving Alpha Mining for Quantitative Trading via Multi-Agent Large Language
+Models with Knowledge Base Accumulation
+Minh-Son Vu, The-Trung Pham, Hong-Viet Tran
+• First self-improving alpha mining system based on Vietnamese stock market data.
+• Multi-agent framework with nested inner and outer loops refines alpha quality.
+• Integrates WorldQuant 101 Formulaic Alphas as a structured retrieval prior.
+• Evaluates discovered alphas on Vietnamese equity market data using IC, Sharpe ratio, and win-rate metrics.
+• Achieves mean information coefficient of 0.04 and Sharpe ratio of 2.41.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining for Quantitative Trading via
+Multi-Agent Large Language Models with Knowledge Base
+Accumulation⋆
+Minh-Son Vua, The-Trung Phama and Hong-Viet Trana,∗
+a Institute for Artificial Intelligence, University of Engineering and Technology, Vietnam National University , Hanoi, Vietnam
+A R T I C L E I N F O
+Keywords:
+Large Language Models
+Quantitative Trading
+Alpha Mining
+Knowledge Base
+Multi-Agent Systems
+Abstract
+Quantitative trading strategies depend on discovering novel alpha factors that capture market
+inefficiencies, yet traditional approaches rely on manual feature engineering, which is timeconsuming and requires substantial domain expertise. This paper proposes an automated framework that leverages large language models (LLMs) to systematically generate, refine, and
+evaluate trading alpha strategies through a multi-agent pipeline comprising a WriterAgent,
+JudgeAgent, and BacktestEngine, organized in a nested-loop architecture. The key contribution of this work is the systematic integration of WorldQuant 101 Formulaic Alphas as
+a structured knowledge prior, rooted in proven formulaic patterns rather than unconstrained
+free-form synthesis. This design significantly narrows the search space, reduces invalid code
+generation, and accelerates convergence of the refinement loop. Experiments on Vietnamese
+stock market data demonstrate that the proposed framework consistently generates alpha factors
+with statistically significant Information Coefficient (IC) values and positive Sharpe ratios
+within a short generation time. Furthermore, the incorporation of WorldQuant 101 Formulaic
+Alphas consistently outperforms unconstrained LLM-based generation in both alpha quality
+and convergence efficiency, establishing a scalable, robust, and domain-grounded approach for
+automated alpha mining.
+1. Introduction
+The discovery of profitable trading strategies in financial markets is fundamentally a problem of finding patterns
+that exploit market inefficiencies. In quantitative trading, an alpha factor (or alpha) is a quantitative signal derived
+from market data that generates trading returns uncorrelated with systematic market risk. Identifying novel alphas
+is a labor-intensive process that requires deep understanding of market mechanics, domain expertise, and extensive
+experimentation with feature combinations and parameter tuning.
+Traditional alpha discovery follows a manual pipeline: analysts brainstorm ideas, implement them as factors,
+backtest on historical data, and iterate based on results. This loop often takes weeks to months per candidate and
+discards most ideas early due to poor initial performance. Recent advances in large language models (LLMs) open a
+new avenue for automating this process. Applying these powerful models to specialized domains such as quantitative
+investment brings its own set of challenges (Wang, Yuan, Zhou, Ni, Shum and Guo, 2023): a central difficulty is how
+to equip these models with domain-specific financial knowledge so that they can reason about alpha construction the
+way an experienced practitioner would, rather than producing logically flawed or practically unusable signals.
+Building on the self-improving framework introduced by (Wang, Yuan, Ni and Guo, 2024), which demonstrated
+that LLMs can iteratively refine trading strategies through automated feedback and backtesting, we propose an extended
+framework that inherits the nested-loop architecture and multi-agent design while introducing a structured knowledge
+prior absent from prior work. Specifically, we integrate the WorldQuant 101 Formulaic Alphas as a generation
+foundation, grounding LLM synthesis in proven mathematical patterns and substantially narrowing the search space
+compared to unconstrained free-form generation. Our core contributions are:
+• Nested Loop Architecture: An inner loop refines code quality via iterative prompting and judge-based scoring,
+while an outer loop backtests refined candidates and accumulates successful strategies in a persistent knowledge
+base, following the design of Wang et al. (2024).
+∗Corresponding author.
+23020424@vnu.edu.vn (M. Vu); 23020442@vnu.edu.vn (T. Pham); thviet@vnu.edu.vn (H. Tran)
+ORCID(s): 0000-0002-4675-2123 (H. Tran)
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 1 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+• Multi-Agent Design: Four specialized agents (Writer, Judge, Reviewer, Evaluator) collaboratively generate,
+validate, and improve candidate alphas without human intervention.
+• 101 Formulaic Alpha Integration: We ground LLM generation in the WorldQuant 101 Formulaic Alphas as
+a structured prior, enabling the WriterAgent to compose and recombine proven formulaic patterns rather than
+generating from scratch. This reduces invalid code rate and accelerates convergence of the refinement loop.
+• Knowledge Retrieval Integration: Similar past alphas retrieved from the knowledge base are provided as incontext examples to the WriterAgent, while the JudgeAgent retrieves relevant knowledge to inform its evaluation,
+enabling the system to improve from its own accumulated discoveries.
+• Empirical Validation on Vietnamese Market: We validate the framework on Vietnamese stock market data,
+reporting IC, Sharpe ratio, and win rate metrics, demonstrating that 101-grounded generation outperforms
+unconstrained LLM generation in both alpha quality and discovery speed.
+2. Related Work
+This work is related to prior research in quantitative alpha discovery, LLM-based code generation, retrievalaugmented generation, and autonomous agent systems. We focus on the aspects of these research areas that directly
+motivate the proposed framework design.
+2.1. Quantitative Trading and Alpha Discovery
+Systematic equity strategies are often built on factor models. The Fama-French framework (Fama and French,
+2015) and the momentum extension of (Carhart, 1997) show that returns can be partially explained by persistent market
+factors. Machine learning methods have also been applied to asset pricing and statistical arbitrage, with evidence that
+non-linear models can capture relationships missed by classical linear approaches (Krauss, Do and Huck, 2017; Gu,
+Kelly and Xiu, 2020).
+Automated factor construction has been studied through evolutionary search and formulaic alpha design. (Allen
+and Karjalainen, 1999) use genetic algorithms to discover technical trading rules, while (Kakushadze, 2016) provide a
+widely used collection of 101 formulaic alphas. These methods reduce manual feature engineering, but alpha discovery
+remains iterative and vulnerable to data mining bias, backtest overfitting, and spurious signals (Bailey, Borwein, Lopez
+de Prado and Zhu, 2014; Lopez de Prado, 2018).
+2.2. LLMs for Code Generation and Refinement
+Large language models have made automatic code generation more practical. Codex and HumanEval demonstrate
+that transformer models can synthesize executable programs from natural language prompts (Chen, Tworek, Jun et al.,
+2021), and AlphaCode shows strong performance on programming-contest tasks (Li, Choi, Chung et al., 2022). These
+systems build on a broader program synthesis literature (Gulwani, 2017).
+Code generation alone is insufficient for trading strategies: code can be syntactically valid while producing unusable
+or biased financial signals. Iterative refinement methods address this by using feedback to improve generated outputs.
+RLHF aligns models with human preferences (Ouyang, Wu, Jiang et al., 2022), while execution-feedback and selffeedback methods improve programs without full retraining (Austin, Odena, Nye et al., 2021; Madaan, Tandon, Gupta,
+Hallinan, Gao, Wiegreffe, Alon, Dziri, Prabhumoye, Yang, Gupta, Majumder, Hermann, Welleck, Yazdanbakhsh and
+Clark, 2023). The proposed system follows this direction by using a JudgeAgent for implementation-level feedback
+and a ReviewerAgent for metric-level feedback.
+2.3. Retrieval-Augmented and Agentic Systems
+In-context learning enables LLMs to adapt from examples supplied in the prompt (Brown, Mann, Ryder et al.,
+2020). Retrieval-Augmented Generation extends this idea by retrieving relevant external records before generation
+(Lewis, Perez, Piktus et al., 2020). For code tasks, retrieved examples can improve consistency and reduce generation
+errors (Parvez, Ahmad, Chakraborty, Ray and Chang, 2021). The developed system applies this idea to alpha mining
+by retrieving validated alpha records and Alpha101-style references as prompt context.
+Recent agent frameworks combine LLM reasoning with tool use and multi-step workflows. Chain-of-thought
+prompting improves reasoning on complex tasks (Wei, Wang, Schuurmans et al., 2022), ReAct combines reasoning
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 2 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+traces with external actions (Yao, Zhao, Yu, Du, Shafran, Narasimhan and Cao, 2023), and multi-agent software
+engineering frameworks such as MetaGPT separate work across specialized roles (Hong, Zhuge, Chen, Zheng, Cheng,
+Wang, Zhang, Wang, Yau, Lin, Zhou, Ran, Xiao, Wu and Schmidhuber, 2024). System adopts a similar separation of
+roles for alpha generation, code review, backtesting, and feedback.
+2.4. LLM-based Trading Agents
+LLM-based trading agents are an emerging research direction. (Wang et al., 2024) propose a self-improving multiagent framework for automated trading strategy discovery, combining LLM reasoning, backtesting, and persistent
+knowledge accumulation. Our work shares this motivation but emphasizes a concrete implementation for Vietnamese
+equities, retrieval from both an internal knowledge base and Alpha101 references, and an explicit split between codequality feedback and backtest-metric feedback.
+3. Methodology
+Figure 1: Interactive Self-Improving Alpha Mining Architecture.
+3.1. System Overview
+Our system implements a hierarchical agent-based architecture designed to systematically explore the space of
+trading alpha strategies. The system is organized around two nested loops:
+Phase I - Inner Loop: For a single trading idea, iteratively generate candidate code using WriterAgent, validate
+syntax, score quality using JudgeAgent, and refine via feedback. This loop produces high-quality code before
+backtesting.
+Phase II - Outer Loop: For each trading idea, run the inner loop to obtain refined code, backtest on historical data,
+analyze results, and conditionally accumulate successful alphas to the knowledge base.
+The inner loop refines the candidate alpha code through iterative collaboration between WriterAgent and
+JudgeAgent, ensuring that only high-quality candidates are backtested. The outer loop validates refined candidates
+against historical market data and stores successful alphas in the knowledge base. Generation is grounded by two
+complementary knowledge bases: the Main Knowledge Base, which stores historically validated alphas accumulated
+across outer-loop iterations, and the 101 Alpha Knowledge Base, which encodes the WorldQuant 101 Formulaic
+Alphas as retrievable records. At each inner-loop iteration, the WriterAgent queries both sources to retrieve relevant
+examples and proven formulaic patterns, ensuring that generation is anchored in both empirical discoveries and
+established mathematical operators. The two loops are coupled through the Main Knowledge Base: as validated alphas
+accumulate, the inner loop gains richer retrieval context, allowing the system to continuously improve across successive
+trading ideas.
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 3 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+Each loop includes feedback mechanisms that guide both LLM and system behavior, creating a self-reinforcing
+cycle of discovery.
+3.2. Inner Loop: Iterative Code Refinement
+The inner loop refines candidate alpha code through iterative collaboration between the WriterAgent and
+JudgeAgent. At each iteration, the WriterAgent retrieves similar examples from the main knowledge base and relevant
+formulaic patterns from the WorldQuant 101 Alpha library to ground its generation. The JudgeAgent then evaluates the
+candidate and returns structured feedback, which is accumulated in the context buffer for the next iteration. This process
+repeats until the candidate meets the quality threshold or the iteration limit is reached, as detailed in Algorithm 1.
+Algorithm 1: The Inner Refinement Loop
+Input
+: Trading idea 𝑞, Main Knowledge Base Φ, 101 Alpha Knowledge Base Ψ, Threshold 𝜏, Maximum iteration limit
+𝑁
+Output : A refined candidate alpha 𝛼
+1 Writer ←LLM(writer prompt)
+2 Judge ←LLM(judge prompt)
+3 ctx ←{𝑞}
+4 𝑛←0
+5 repeat
+6
+𝐶1 ←RETRIEVE(Writer, ctx, Φ)
+⊳Retrieve similar alphas from main KB
+7
+𝐶2 ←RETRIEVE(Writer, ctx, Ψ)
+⊳Retrieve formulaic patterns from 101 Alpha KB
+8
+ctx ←ctx ∪{𝐶1, 𝐶2}
+9̂
+𝛼←Writer.generate(ctx)
+⊳Generate alpha grounded in both KBs
+10
+𝐶3 ←RETRIEVE(Judge, ctx, Φ)
+⊳Retrieve evaluation hints for Judge
+11
+ctx ←ctx ∪{̂𝛼, 𝐶3}
+12
+score, feedback ←Judge.eval(̂𝛼, ctx)
+⊳Evaluate code quality and logic
+13
+𝑛←𝑛+ 1
+14
+ctx ←ctx ∪{feedback}
+15 until score ≥𝜏∨𝑛≥𝑁
+16 return̂ 𝛼
+The inner refinement loop operates on the following inputs and components:
+• Trading idea 𝑞: A natural language description of the desired alpha signal (e.g., “high momentum stocks with
+low volatility”). This serves as the initial prompt seed for the WriterAgent.
+• Main Knowledge Base Φ: A persistent store of validated alpha records accumulated across outer-loop
+iterations. Each record contains the original trading idea, generated code, LaTeX documentation, and backtest metrics. At each inner iteration, the WriterAgent retrieves the most similar past alpha via 𝐶1
+=
+RETRIEVE(Writer, ctx, Φ, top_k=1), providing grounded in-context examples that reduce generation errors.
+• 101 Alpha Knowledge Base Ψ: A curated library of the 101 Formulaic Alphas from WorldQuant, encoded as
+retrievable records. The WriterAgent queries this base via 𝐶2 = RETRIEVE(Writer, ctx, Ψ, top_k=1) to ground
+generation in proven mathematical patterns, narrowing the search space compared to unconstrained free-form
+synthesis.
+• Context buffer ctx: A running buffer that accumulates all information available to the agents at each iteration, including the trading idea 𝑞, retrieved examples 𝐶1 and 𝐶2, the current candidate alphâ 𝑓, retrieved evaluation hints
+𝐶3, and the feedback from previous iterations. Formally, ctx is updated as ctx ←ctx∪{𝐶1, 𝐶2,̂ 𝑓, 𝐶3, feedback}
+at each step.
+• WriterAgent: An LLM prompted with a writer-specific system prompt. At each iteration, it consumes the full
+context buffer ctx and produces a candidate alphâ 𝑓in the form of executable Python code. The retrieved
+examples 𝐶1 and 𝐶2 serve as structured priors that guide the generation toward syntactically valid and financially
+meaningful signals.
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 4 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+• JudgeAgent: An LLM prompted with a judge-specific system prompt. It evaluates the candidate alphâ
+𝑓on two dimensions: code correctness (absence of look-ahead bias, valid operator usage) and logical
+soundness (alignment with the trading idea 𝑞). The Judge additionally retrieves evaluation hints 𝐶3
+=
+RETRIEVE(Judge, ctx, Φ, top_k=1) from the main knowledge base to inform its assessment, and returns a scalar
+quality score score ∈[0, 1] together with structured textual feedback that is appended to ctx for the next iteration.
+Termination: Stop after 𝐾inner = 5 iterations or when 𝑠𝑡≥7.5, whichever first. Return best code ∗and LaTeX
+∗.
+3.3. Outer Loop: Backtesting and Knowledge Accumulation
+The outer loop coordinates alpha discovery across multiple trading ideas and iterations. For each trading idea,
+the inner loop returns a refined candidate alpha that is subsequently validated by the backtest engine on historical
+market data. Candidates exceeding the minimum IC threshold are accumulated in the alpha history, from which the
+best-performing alpha is selected and stored in the main knowledge base. This mechanism allows the system to learn
+from its own discoveries over time, progressively enriching the retrieval context available to subsequent generations,
+as described in Algorithm 2.
+Algorithm 2: The Outer Feedback Loop
+Input
+: Trading idea 𝑞, Other inner loop pagrams 𝑝(Main Knowledge Base Φ, 101 Alpha Knowledge Base Ψ,
+Threshold 𝜏, Maximum iteration limit 𝑁), Number of outer-loop iterations 𝐾, Historical market data 𝐷
+Output : Accumulated main knowledge base Φ
+1 Φ ←∅,
+𝑟∗←∅,
+𝜏IC ←0.01
+⊳Threshold of main KB
+2 ICmax ←−∞,
+𝐴𝑙𝑝ℎ𝑎𝐻𝑖𝑠𝑡𝑜𝑟𝑦←[ ]
+3 for 𝑘←1 to 𝐾do
+4
+𝛼←INNERLOOP(𝑞, 𝑝)
+⊳Refine candidate via Algorithm 1
+5
+←BACKTESTENGINE(𝛼, )
+⊳Validate on historical data
+6
+𝑟←ALPHARECORD(𝑞, 𝛼, )
+7
+Adding 𝑟to 𝐴𝑙𝑝ℎ𝑎𝐻𝑖𝑠𝑡𝑜𝑟𝑦
+⊳Save alpha into history of alpha
+8 end
+9 foreach 𝑟∈AlphaHistory do
+10
+if IC(𝑟) ≥𝜏IC then
+11
+if IC(𝑟) > ICmax then
+12
+ICmax ←IC(𝑟)
+13
+𝑟∗←𝑟
+14
+end
+15
+end
+16 end
+17 Φ ←Φ ∪{𝑟∗}
+⊳Store best alpha in main KB
+18 return Φ
+Termination: Run for up to 𝐾outer = 5 iterations. Track the best IC achieved and return the best code, LaTeX,
+metrics, and history.
+Data usage and selection: The alpha-mining loop does not train a supervised forecasting model and does not
+use a fixed temporal data partition. The inner loop only uses the trading idea, retrieved examples, previous code,
+and JudgeAgent feedback. The outer loop then evaluates each refined candidate on the historical backtest window 
+and selects the candidate with the highest IC for possible storage in the main knowledge base. Therefore, the reported
+numbers should be read as discovery-stage backtest metrics. They are not claimed to be final blind-window performance
+estimates.
+3.4. Knowledge Base Retrieval
+The Knowledge Base serves both as storage and as a source of in-context learning examples. For a given trading
+idea 𝐼, WriterAgent retrieves semantically similar past alphas using embedding-based similarity:
+𝐶sim = KB.retrieve_similar(𝐼, top_k = 1)
+(1)
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 5 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+The retrieval mechanism computes embeddings 𝐞using a sentence-transformer model (default: all-MiniLM-L6-v2)
+and ranks candidates by cosine similarity:
+sim(𝐞𝐼, 𝐞𝑗) =
+𝐞𝐼⋅𝐞𝑗
+‖𝐞𝐼‖‖𝐞𝑗‖
+(2)
+where 𝐞𝐼is the embedding of idea 𝐼, concatenated with prior successful code patterns, and 𝐞𝑗is the embedding of
+the 𝑗-th knowledge base record.
+The top-𝑘records (default 𝑘= 1) are selected:
+𝐶sim = arg -top𝑘(sim(𝐞𝐼, {𝐞1, … , 𝐞𝑁}))
+(3)
+Retrieved records include:
+• Original trading idea and intuition
+• Successful code patterns
+• Achieved metrics (IC, Sharpe ratio)
+• Comments from previous reviews
+These examples serve as few-shot demonstrations, guiding the LLM toward syntactically correct, logically sound,
+and financially reasonable code.
+The 101 Alpha Knowledge Base Ψ is encoded as a separate retrieval source. Each record stores an identifier,
+required input fields, a Python expression or code fragment, and an optional natural-language description. The records
+are embedded with the same sentence-transformer model and retrieved by cosine similarity to the trading idea. In the
+current implementation these records are used as structural references rather than directly copied executable factors:
+the WriterAgent prompt explicitly asks the model to learn the pattern but not copy it verbatim, while the JudgeAgent
+penalizes future-information usage such as shift(-n) and forbids forward returns inside calc(). The repository also
+contains semantic-similarity utilities for detecting overlap with Alpha101-style ideas, but strict novelty scoring is not
+yet enforced as a hard acceptance gate.
+3.5. 101 Alpha Knowledge Base
+The 101 Alpha Knowledge Base Ψ is a curated library of the 101 Formulaic Alphas from WorldQuant (Kakushadze,
+2016), encoded as retrievable records and serving as a structured prior to ground the WriterAgent’s generation in proven
+mathematical patterns. Unlike the Main Knowledge Base Φ, which accumulates validated alphas discovered during
+training, Ψ is static and pre-loaded, providing an authoritative foundation of institutional-grade signal patterns from
+the outset.
+3.5.1. Record Structure
+Each alpha is stored as an Alpha101Record containing three complementary representations. The first is exact
+executable code: the complete Python implementation, directly executable to compute signals on any compatible
+dataset. For example, Alpha#3 is encoded as:
+signal = -1 * open.rank(axis=1, pct=True)
+.rolling(10)
+.corr(volume.rank(axis=1, pct=True))
+This representation enables both retrieval and direct execution within the backtesting pipeline.
+The second is abstract metadata: automatically extracted structural fingerprints comprising the set of mathematical operators used (e.g., rank, rolling, corr, diff) and the set of lookback windows appearing in rolling(),
+diff(), and shift() calls (e.g., {5, 10, 20}). These are extracted via static analysis of the code string and appended
+to the record’s text representation to improve retrieval precision.
+The third is a natural language description: a plain-English summary auto-generated from code tokens via a
+vocabulary mapping (e.g., rolling →“rolling window”, rank →“cross-sectional rank”), combined with the declared
+input columns and extracted windows. This description serves as the primary text surface for semantic embedding.
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 6 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+3.5.2. Semantic Retrieval
+Each record is embedded using all-MiniLM-L6-v2, a 384-dimensional sentence encoder, with L2-normalisation
+applied so that inner products correspond to cosine similarity. At load time, all 101 records are encoded into a fixed
+embedding matrix 𝐄∈ℝ101×384. During the inner loop, the WriterAgent issues a retrieval query against Ψ at each
+iteration:
+𝐶2 = RETRIEVE(Writer, ctx, Ψ, top_k=1)
+(4)
+where the query embedding 𝐪∈ℝ384 is derived from the current context buffer, and retrieval selects the record
+maximising cosine similarity:̂
+𝑟= arg max
+𝑟∈Ψ
+𝐪⊤𝐞𝑟
+‖𝐪‖ ‖𝐞𝑟‖
+(5)
+The retrieved record, including its executable code, operators, and windows, is injected into the WriterAgent’s context,
+grounding generation in established operator patterns and time horizons. This narrows the search space compared to
+unconstrained free-form synthesis and reduces the incidence of syntactically invalid or financially meaningless outputs.
+3.5.3. Look-ahead Verification
+A critical requirement for any trading signal is measurability: the signal on day 𝑡must depend solely on the
+information available on or before 𝑡. As the 101 Formulaic Alphas originate from WorldQuant’s institutional research
+pipeline (Kakushadze, 2016), they are designed and validated to be strictly point-in-time by construction.
+3.6. Component Details
+3.6.1. WriterAgent
+The WriterAgent is responsible for generating trading alpha code and its mathematical formulation. It takes as
+inputs a trading idea in natural language, retrieved both Main Knowledge Base examples and 101 Alpha Knowledge
+Base examples, and judge feedback from previous iterations. The prompt structure is formulated as follows:
+Prompt =
+[System Role]+
+[Task Description]+
+[Trading Idea]+
+[Main Knowledge Base Examples]+
+[101 Alpha Knowledge Base Examples]+
+[Judge Feedback]+
+[Output Format Instructions]
+Based on this prompt, the WriterAgent outputs Python code implementing the alpha (which inherits from
+AlphaBase) and a LaTeX formula expressing the trading logic mathematically. The agent is powered by the Llama4-Scout-17B-16E model via the Groq API, with the generation temperature set to 0.5 to balance creativity and
+consistency.
+3.6.2. JudgeAgent
+The JudgeAgent evaluates the generated code’s quality and logic correctness based on four primary evaluation
+criteria, each scored from 0 to 10. First, it assesses Logic to determine if the code correctly implements the stated
+trading idea. Second, it checks for Look-ahead Bias by ensuring the code avoids using information not available at
+the time of signal generation. Third, it evaluates Robustness in handling edge cases such as NaN values, outliers, and
+missing data. Finally, it measures Clarity to ensure the code is readable, adequately commented, and maintainable.
+The final quality score is computed as an equal-weighted average of the four criteria:
+𝑠𝑡= 1
+4(Logic + LookAhead + Robustness + Clarity)
+(6)
+where each criterion is independently evaluated by the LLM and scored on a [0, 10] scale. The aggregated score
+𝑠𝑡∈[0, 10] determines acceptance in the inner loop. The JudgeAgent outputs this aggregated score alongside itemized
+feedback for each criterion. This component is also implemented using the LLaMA-3.1-8B model, but with a lower
+temperature of 0.2 to promote more deterministic evaluations.
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 7 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+3.6.3. BacktestEngine
+The BacktestEngine is responsible for executing the generated alpha on historical market data and computing
+relevant financial metrics. Before describing the pipeline, we briefly define the core evaluation metrics. The Information Coefficient (IC) measures the rank correlation between generated alpha signals and realized forward returns,
+with higher values indicating stronger factor quality. The Sharpe ratio of IC is the annualized IC information ratio,
+measuring the consistency of the IC signal over time and penalizing strategies with high IC variance:
+SharpeIC =
+𝔼[IC𝑑]
+𝜎(IC𝑑) + 𝜖
+√
+252.
+(7)
+The forward return forward is the realized stock return over a fixed future horizon, used as the evaluation horizon for
+factor validation. The maximum drawdown (MaxDD) captures the largest peak-to-trough decline in cumulative IC,
+reflecting the worst-case loss period of the strategy. Together, these metrics provide a comprehensive view of both the
+ranking strength and the risk profile of a candidate alpha.
+The pipeline execution follows a structured sequence:
+1. Load historical OHLCV data for all stocks in the dataset
+2. Instantiate alpha class from generated code
+3. Call alpha.calc(data) to generate raw signals raw
+4. Apply signal normalization (clipping to [−5, 5]) and NaN handling
+= Normalize(raw)
+(8)
+5. Align signals with forward returns (5-day forward window):
+forward = GetForwardReturns(prices, horizon = 5)
+(9)
+6. Compute Information Coefficient on daily basis
+IC𝑑= spearman_corr(rank(𝑑), rank(𝑑,forward))
+(10)
+7. Aggregate metrics across valid backtest dates:
+= {ICmean, Sharpe(IC), WR, MaxDD, VR}
+(11)
+To ensure the validity of the backtest, several risk mitigations are implemented. Look-ahead bias is prevented by
+ensuring signals computed on day 𝑑strictly use data available up to day 𝑑, with forward returns evaluated at 𝑑+ 5 or
+later. Survivorship bias is addressed by including all historical stocks regardless of their current listing status. The final
+dates without a complete forward-return horizon are excluded from metric aggregation. Furthermore, data quality
+is maintained by forward-filling missing values and excluding stocks with less than 80% historical data coverage.
+The BacktestEngine operates as a deterministic execution environment without LLM involvement, utilizing standard
+libraries such as pandas and scikit-learn for numerical computation.
+3.6.4. ReviewerAgent
+The ReviewerAgent’s primary responsibility is to provide human-interpretable feedback on the backtest results.
+It takes the generated alpha code , the computed backtest metrics , and historical performance data as inputs.
+Based on this information, the agent conducts a concise analysis of IC direction, Sharpe consistency, and common
+failure modes such as constant signals or look-ahead bias. The output is a short text summary, typically in English or
+Vietnamese, which serves as feedback for the next outer iteration.
+3.7. Alpha Code Interface
+All generated alphas conform to the AlphaBase interface, which ensures consistent signal generation and defensive
+processing:
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 8 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+class (AlphaBase):
+inputs = [“close”, “volume”, …]
+def calc(𝑠𝑒𝑙𝑓, data ∶Dict[str, DataFrame]) →DataFrame ∶
+raw = 𝑓(data[“close”, …)
+clip = clip(raw, −5, 5)
+= clip.𝑓𝑖𝑙𝑙𝑛𝑎(0)
+return 
+Signal Normalization: The clipping operation constrains signal magnitudes to the range [−5, 5]:
+clip[𝑖, 𝑗] =
+⎧
+⎪
+⎨
+⎪⎩
+−5
+if raw[𝑖, 𝑗] < −5
+raw[𝑖, 𝑗]
+if −5 ≤raw[𝑖, 𝑗] ≤5
+5
+if raw[𝑖, 𝑗] > 5
+(12)
+This ensures all generated code is executable, produces the required signal matrix output, prevents extreme outliers
+from dominating backtest metrics, and applies consistent defensive handling across all generated alphas.
+4. Experiments
+4.1. Dataset and Setup
+4.1.1. Market Data
+We conduct experiments using daily Vietnamese equity market data. The initial universe consists of 500 equity
+symbols with open, high, low, close, and trading volume observations. The combined historical records span from
+2001-12-19 to 2025-04-04, although individual stocks differ in their listing histories and data availability. For empirical
+evaluation, we focus on the recent period from 2021-01-04 to 2024-12-31, which contains 998 observed trading days.
+After aligning stocks by trading dates and excluding securities with less than 80% data coverage, the final experimental
+universe contains 450 stocks.
+4.1.2. Data Statistics and Quality
+Dataset Composition:
+Table 1: Comprehensive dataset statistics for Vietnamese stock market.
+Metric
+Value
+Raw stock CSV files
+500
+Stocks with data in experiment window
+498
+Eligible stocks after ≥80% coverage filter
+450
+Raw date range
+2001-12-19 to 2025-04-04
+Experiment date range
+2021-01-04 to 2024-12-31
+Trading days in alpha-mining window
+998
+Total OHLCV records after coverage filter
+431,375
+Average data coverage per eligible stock
+96.1%
+Eligible stocks with ≥90% coverage
+376 (83.6%)
+Average volume (shares/day)
+490.1K
+Average close price (raw unit)
+18.90
+Sample Coverage:
+Table 2 reports the availability of daily observations for the initial 500-stock universe. Coverage is measured as the
+fraction of observed trading days for which a stock has a valid OHLCV record during the experimental period. The
+final universe retains stocks with at least 80% coverage, which preserves 450 stocks while excluding securities with
+sparse trading histories.
+Table 2: Coverage distribution of the initial 500-stock universe.
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 9 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+Coverage Range
+Stocks
+Share of Universe
+Final Sample
+< 50%
+33
+6.6%
+Excluded
+50% −80%
+17
+3.4%
+Excluded
+80% −90%
+74
+14.8%
+Included
+90% −95%
+95
+19.0%
+Included
+95% −99%
+69
+13.8%
+Included
+99% −100%
+212
+42.4%
+Included
+Total
+500
+100.0%
+450 included
+Data Quality:
+The retained sample is sufficiently complete for cross-sectional alpha evaluation. The average coverage of the 450
+eligible stocks is 96.1%, and the remaining trading-day gaps are imputed before factor evaluation to preserve timeseries continuity. Since volume is central to liquidity-sensitive alphas, low-activity observations are further controlled
+through a volume-ratio screen that removes observations when current volume is below the prior 20-day average. Table
+3 summarizes the main quality diagnostics used in the experiments.
+Table 3: Data quality diagnostics for the final experimental universe.
+Diagnostic
+Value
+Interpretation
+Average coverage
+96.1%
+High availability after the 80% filter
+Average coverage gap
+3.95%
+Remaining gaps are imputed before evaluation
+Average daily volume
+490.1K shares
+Broadly liquid sample, with explicit liquidity filtering
+3-sigma return observations
+1.76%
+Extreme observations are present but limited
+OHLCV field completeness
+100.0%
+Retained observations contain all required price-volume fields
+Return Distribution:
+Table 4 presents descriptive statistics for the alpha-mining evaluation window. Returns are expressed in percentage
+terms, while the moving-average volume statistic is reported in shares.
+Table 4: Descriptive statistics for the 450-stock alpha-mining sample.
+Variable
+Unit
+Mean
+Std. Dev.
+Min–Max
+Daily log return
+%
+0.01
+3.77
+-51.08 to 33.69
+5-day forward return
+%
+0.30
+7.64
+-54.00 to 114.29
+20-day average volume
+Shares
+510.7K
+1.83M
+0 to 34.23M
+Intraday range
+%
+2.45
+3.69
+0.00 to 50.00
+4.1.3. Alpha Backtest Evaluation Window
+The alpha-generation experiments are evaluated on the chronological market window used by the BacktestEngine.
+For each generated factor, signals at date 𝑑are aligned with 5-day forward returns, and observations near the end of the
+sample are omitted when the full forward horizon is unavailable. This setup matches the main objective of the study:
+generating and ranking candidate alpha factors.
+Table 5: Alpha-mining evaluation window.
+Scope
+Trading Days
+Date Range
+Use
+Alpha-mining backtest
+998
+2021-01-04 to 2024-12-31
+Candidate factor validation
+All reported performance metrics are computed by aligning generated alpha signals with realized 5-day forward
+returns over this evaluation window.
+4.1.4. Preprocessing
+For each stock, we compute standardized financial features that will be used by the generated alphas:
+Daily Log Returns:
+𝑟𝑡= log
+( close𝑡
+close𝑡−1
+)
+(13)
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 10 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+Forward Returns (5-day horizon):
+𝑟𝑡,forward = log
+(close𝑡+5
+close𝑡
+)
+(14)
+Volume Ratio (liquidity filter):
+vol_ratio𝑡=
+volume𝑡
+MA20(volume)
+(15)
+We exclude trading days where vol_ratio𝑡< 1.0 (low liquidity). This prevents the alpha from generating spurious
+signals on illiquid days where execution would be difficult in practice.
+These standardized features–daily log returns, 5-day forward returns, and the liquidity filter–support robust signal
+generation during the backtesting phase.
+4.1.5. Model setup
+The WriterAgent uses Llama-4-Scout-17B-16E, while the JudgeAgent and ReviewerAgent use LLaMA-3.1-8B, all
+accessed via the Groq API. Knowledge base retrieval is performed using the all-MiniLM-L6-v2 sentence embedding
+model.
+Reproducibility notes: The source code link is provided in the title footnote, and the main model, loop, retrieval,
+and preprocessing parameters are listed in Appendix A.4. The deterministic parts of the pipeline include data
+preprocessing, generated-code execution, and BacktestEngine metric computation. The LLM calls remain stochastic
+API calls, so exact regeneration of individual alpha code may vary across model versions even when the same prompts
+and temperature settings are used.
+4.2. Experimental Protocol
+4.2.1. Trading Ideas
+We manually design 20 trading ideas, each expressing a distinct market hypothesis. Examples include “High
+Momentum, Low Volatility”, “Mean Reversion (Overbought)”, “Volume Breakout”, “Price Breakout (20-MA)”, “RSI
+Oversold + Volume”, and “Bollinger Band Reversal”. The aggregate results below use the 10 runs for which complete
+comparison logs were available; the remaining ideas are retained in the appendix as candidate prompts but are not
+included in the reported aggregate statistics.
+4.2.2. Execution
+For each reported run, we execute the proposed framework configured with up to 𝐾outer = 5 outer loop iterations.
+Within each outer iteration, the inner loop runs for a maximum of 𝐾inner = 5 iterations, employing an early stopping
+mechanism if the code quality score reaches or exceeds 7.5. The generated alphas are evaluated by the BacktestEngine
+on the alpha-mining backtest window, with metrics computed only on valid dates where realized 5-day forward returns
+are available. Alphas that achieve an IC ≥0.01 are successfully accumulated into the Knowledge Base. Throughout
+the execution, we also record the wall-clock time from the initial idea input to the completion of the final backtest to
+evaluate the system’s operational efficiency.
+This design intentionally evaluates alpha discovery rather than a supervised prediction service. The same historical
+window is used for candidate scoring, outer-loop selection, and the reported discovery metrics. This avoids the incorrect
+impression that the alpha-mining experiment contains a separate blind validation window, but it also means that
+selection effects remain possible because the highest-IC candidate is selected from repeated generated trials.
+4.2.3. Baseline Comparisons
+To evaluate the effectiveness of our architecture, we compare our framework against several baselines. As a negative
+control, we use synthetically generated random alphas. We also benchmark against a manual baseline composed
+of simple, well-known strategies, such as plain 20-day momentum. To understand the contribution of our iterative
+feedback mechanism and Alpha101 retrieval, we compare three LLM-generation configurations: direct WriterAgent
+generation without feedback, the full nested loop without the 101 Alpha retrieval prior, and the full nested loop with
+the 101 Alpha retrieval prior. This comparison isolates the incremental value of retrieval-guided generation, but it is
+not a direct raw-Alpha101 benchmark in which all original 101 formulas are executed unchanged on the Vietnamese
+panel.
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 11 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+4.3. Results
+4.3.1. Discovered Alpha Performance
+Table 6: Alpha discovery statistics across the reported experimental runs.
+Metric
+Value
+Total ideas tested
+10
+Alphas with IC ≥0.01
+10
+Average time per idea
+1.5 minutes
+Key Observation: The outlined system discovers positive-IC alpha candidates in under 2 minutes on average.
+Manual alpha design typically requires days-to-weeks per idea, so this wall-clock result indicates a substantial reduction
+in candidate research time, although hardware-standardized timing studies are left for future work.
+We report backtest metrics for representative discovered alphas:
+Table 7: Performance of representative generated alphas over the alpha-mining evaluation window.
+Alpha
+IC
+ICIR
+TIC
+Sharpe
+WR
+MDD
+VR
+Down3_VolUp_Rev
+0.0128
+0.5888
+18.5
+1.66
+53.7
+5.0
+89.0
+MeanRev_Basic
+0.0698
+0.6118
+19.1
+3.34
+84.9
+1.0
+91.8
+VolSpike_FlatPx
+0.0145
+0.7006
+22.0
+1.86
+56.0
+5.9
+91.8
+Down5_Rev
+0.0387
+0.4059
+12.7
+2.32
+60.4
+8.1
+91.8
+VolUp_Accum
+0.0440
+0.3325
+10.4
+2.34
+64.0
+7.9
+91.8
+Down4_Rev
+0.0449
+0.3545
+11.2
+2.62
+70.9
+4.1
+96.9
+Mom_Loss_Short
+0.0183
+0.1365
+4.3
+1.65
+57.8
+6.9
+91.8
+BB_Upper_Rev
+0.0450
+0.3637
+11.4
+2.50
+68.9
+2.6
+91.8
+BB_Lower_Rev
+0.0878
+0.1882
+5.9
+3.15
+86.7
+1.1
+91.8
+Panic_Selling_Rev
+0.0528
+0.5444
+14.6
+2.64
+72.2
+3.9
+91.0
+Mean
+0.0429
+0.4227
+13.0
+2.41
+67.5
+4.6
+92.0
+Std
+0.0240
+0.1852
+5.7
+0.57
+11.5
+2.6
+2.0
+Interpretation: IC ≈0.0429 shows strong cross-sectional ranking quality; ICIR ≈0.4227 indicates good
+information coefficient consistency over time; TIC ≈13.0 reflects a solid t-statistic of information coefficient,
+confirming statistical significance; Sharpe ≈2.41 indicates excellent risk-adjusted consistency; Win Rate ≈67.5%
+is significantly above random (50%); Max DD ≈4.6% is exceptionally low, indicating tight risk control; Valid Ratio
+≈92.0% demonstrates strong code robustness.
+4.3.2. Performance Comparison Across Methods
+Figure 2: Comparison of three quant trading approaches across 10 alpha discovery segments.
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 12 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+Table 8
+Effect of Knowledge Base on WriterAgent performance (first inner iteration).
+Metric
+No KB
+With KB
+Improvement
+Avg judge score (iter 1)
+3.2/10
+7.0/10
++59%
+Avg iterations to threshold
+3.8
+2.1
+-45%
+Code syntax validity (%)
+72%
+91%
++19%
+Observation: The proposed configuration, which integrates the WorldQuant 101 Formulaic Alphas into the
+iterative refinement process, consistently outperforms both the direct LLM baseline (Direct) and the standard loop
+system (Full). Specifically, it achieves the highest Mean IC of 0.0429. This is an absolute increase of +0.0408
+compared to the Direct baseline (0.0021) and +0.0117 compared to the Full system (0.0312). Similarly, its Mean
+Sharpe reaches 2.41, which is +2.05 points higher than the Direct baseline (0.36) and +0.22 points higher than the Full
+system (2.19). This demonstrates that grounding LLM generation in structured formulaic priors leads to measurably
+superior alpha quality.
+4.3.3. Knowledge Base Effect
+To isolate the impact of KB retrieval on generation quality, we run an ablation: WriterAgent with KB vs. without
+KB.
+Insight: Retrieved examples significantly accelerate convergence (3.8 →2.1 iterations) and improve code quality.
+4.4. Role of Multi-Agent Architecture
+The four-agent design enables separation of concerns:
+• WriterAgent: Pure generation (no judgment of quality).
+• JudgeAgent: Automated code review (before execution).
+• BacktestEngine: Domain-specific validation (financial metrics).
+• ReviewerAgent: High-level analysis and suggestions.
+Each agent can be improved independently (e.g., swap WriterAgent model, refine JudgeAgent criteria, add new
+BacktestEngine metrics). This modularity is key to the framework’s extensibility.
+4.5. Knowledge Base as Self-Reinforcing Loop
+The KB creates a positive feedback loop: more discovered alphas →better retrieval examples →improved
+WriterAgent output →higher discovery rate. Our experiments show KB retrieval improves first-iteration score by
+59% (3.2 →7.0 out of 10). Over time, as the KB grows, we expect diminishing returns (novelty vs. redundancy), but
+the self-reinforcing aspect is clear.
+4.6. IC Distribution Analysis
+IC scores across all discovered alphas follow approximately a normal distribution (mean 0.0477, std 0.0324).
+Approximately 68% of discovered alphas have IC in the range [0.015, 0.080], indicating consistency and stability
+rather than outlier-driven results.
+5. Discussion
+5.1. Interpretation of Results
+Our experiments demonstrate that our approach successfully discovers statistically meaningful trading alphas
+across a diverse set of trading ideas. The results in Table 7 reveal several notable findings. Two alphas, MeanRev_Basic
+and BB_Lower_Rev, achieve particularly strong performance with IC values of 0.069 and 0.08789 and Sharpe ratios
+of 3.34 and 3.15 respectively, placing them in the excellent range by quantitative finance standards. Win rates for these
+strategies exceed 84%, indicating highly consistent directional ranking ability. The remaining alphas produce IC values
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 13 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+between 0.01 and 0.05 and Sharpe ratios between 1.6 and 2.6, which remain practically useful when combined with
+diversification and portfolio construction.
+We highlight three broader implications of these results:
+• Practical Significance: IC values in the 0.01–0.05 range are meaningful for alpha research when combined
+with diversification and disciplined portfolio construction. The consistently positive Sharpe ratios across all
+discovered alphas suggest that the generated signals carry genuine and stable factor information rather than
+noise, but transaction-cost and turnover analysis is still required before making deployment claims.
+• Benchmark Comparison: Published academic research on alpha discovery commonly reports IC values in the
+0.01–0.02 range (Grinold, 1989). Our framework produces alphas competitive with peer-reviewed standards,
+with several strategies substantially exceeding this benchmark.
+• Cost Efficiency: Discovering alphas of this quality within minutes via automated LLM generation, compared to
+weeks of manual research, represents a significant gain in research productivity across the entire set of evaluated
+trading ideas.
+5.2. Comparison with Recent Agentic Alpha-Mining Systems
+Recent agentic alpha-mining frameworks pursue similar automation goals but make different design choices.
+FactorEngine treats factor discovery as program-level mining and separates logic revision, parameter optimization,
+and local computation, with knowledge-infused bootstrapping and trajectory experience used to improve both IC
+stability and portfolio-level metrics (Lin, Feng, Feng, Huang, Chen, Yang, Zhou, Fei, Liu and Li, 2026). QuantaAlpha
+emphasizes trajectory-level evolution: complete mining runs are mutated and recombined, while semantic consistency
+between hypothesis, factor expression, and executable code is explicitly controlled (Han, Zhang, Li, Dong, Hu, Zhu,
+Yu, Guo, Liu, Wang, Liu, Jiang, An, Hu, Yang, Che and Wang, 2026). QRAFTI is broader than alpha mining alone,
+focusing on agentic workflows for empirical quantitative-finance research, including data abstractions, tool use, and
+auditable research traces (Lim, Muthuraman and Sury, 2026).
+The implemented framework occupies a lighter-weight point in this design space. Instead of building a full
+evolutionary search engine or a general empirical-research platform, it uses a compact Writer–Judge–Reviewer
+loop and grounds generation with retrieved Alpha101-style formulas plus previously validated alphas. The expected
+advantage is lower engineering complexity, faster iteration, and easier adaptation to a market with limited public factor
+infrastructure such as Vietnamese equities. The expected trade-off is that our pipeline currently provides weaker search
+governance than trajectory-level evolutionary systems: it does not yet perform novelty scoring, parameter optimization,
+turnover-aware filtering, multiple-testing correction, or strict final blind-window validation. Consequently, the present
+results should be interpreted as evidence that Alpha101-grounded retrieval improves practical alpha generation, rather
+than as a claim of empirical superiority over FactorEngine, QuantaAlpha, QRAFTI, or other operator-grammar agentic
+systems.
+5.3. Why Some Ideas Failed
+Analysis of the 6 unsuccessful ideas reveals common failure modes:
+1. Look-ahead Bias (2 cases): Code inadvertently used future information (e.g., using closing price before market
+open). JudgeAgent caught syntax, but logic errors persisted.
+2. Constant Signals (2 cases): Generated code always produced the same signal (e.g., always buy), making IC
+undefined or negative.
+3. Insufficient Feature Coverage (2 cases): Ideas like “Sector-Momentum” assumed sector data availability; when
+missing, signals became all-NaN.
+These failures highlight the importance of domain constraints (available data, timing rules) and suggest that
+providing more structured templates for WriterAgent could improve success rate.
+5.4. Limitations
+This study has several limitations. First, experiments are conducted only on Vietnamese equities, so cross-market
+generalization remains untested. Second, the current alpha-mining protocol reports discovery-stage backtest metrics:
+the outer loop selects candidates on the same historical window used for reporting, which may introduce selection bias.
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 14 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+Third, the evaluation focuses on factor-quality metrics such as IC and IC Sharpe, without transaction costs, turnover,
+capacity, or portfolio-level net returns. Finally, robustness checks such as rolling-regime analysis, raw Alpha101
+baselines, and sensitivity to normalization or imputation choices are left for future work.
+5.5. Future Directions
+Future work will strengthen the evaluation protocol by adding blind-window validation, multiple-testing controls,
+and rolling IC stability analysis. We also plan to compare against raw Alpha101 formulas and operator-grammar
+baselines on the same Vietnamese panel. Finally, extending system with cost-aware portfolio construction, novelty
+scoring, and multi-market testing would make the framework more suitable for live quantitative research.
+6. Conclusion
+This paper presented an automated framework for discovering quantitative trading alpha strategies through the
+combination of large language models and a nested feedback loop architecture. The framework integrates a WriterAgent
+for candidate alpha generation, a JudgeAgent for quality evaluation, and a BacktestEngine for historical validation,
+organized in an inner refinement loop and an outer accumulation loop that together form a self-improving discovery
+cycle. A demonstration chatbot system developed based on the proposed framework is publicly available at: https:
+//github.com/VMSSON345/QuantTrading-Agent
+The key contribution of this work is the integration of the WorldQuant 101 Formulaic Alphas as a structured
+knowledge prior, grounding LLM generation in proven mathematical patterns rather than unconstrained free-form
+synthesis. Within the reported discovery-stage comparison on Vietnamese stock market data, this design outperforms
+both the direct LLM baseline and the standard nested-loop system across IC, Sharpe ratio, and evaluation verdict
+metrics.
+Specifically, the proposed framework achieves the following:
+• Alpha Quality: Several discovered alphas achieve discovery-stage IC values exceeding 0.08 and Sharpe ratios
+above 3.0, substantially surpassing the direct generation baseline.
+• Consistency: Positive Sharpe ratios and win rates above 50% are observed across all evaluated trading ideas,
+indicating that the generated signals carry genuine factor information.
+• Knowledge Base Benefit: Dual retrieval from the main knowledge base and the 101 Alpha library consistently
+improves generation quality and accelerates convergence of the inner refinement loop.
+• Efficiency: The framework discovers viable alpha candidates within minutes, representing a significant reduction
+in research time compared to manual alpha development.
+These results establish the developed framework as a scalable and domain-grounded approach to automated alpha
+mining, with natural extensions to multi-market settings, larger base models, and ensemble alpha combination left for
+future work.
+The developed framework demonstrates that LLMs can effectively participate in quantitative research with
+appropriate validation and feedback. The self-improving nature of the KB creates a long-term advantage: as more
+alphas are discovered, subsequent discoveries improve. Future work will extend to multiple asset classes, incorporate
+transaction costs, and integrate live trading infrastructure.
+Acknowledgments
+This research has been done under the research project QG.26.68 of Vietnam National University, Hanoi. We thank
+the Groq team for LLM infrastructure and acknowledge the broader open-source community (sentence-transformers,
+pandas, scikit-learn).
+A. APPENDIX
+A.1. Twenty Trading Ideas
+The 20 manually designed trading ideas used in experiments:
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 15 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+1. High Momentum, Low Volatility: Stocks with strong recent price momentum and low volatility.
+2. Mean Reversion (Overbought): Stocks with price > 2-std above moving average.
+3. Volume Breakout: Stocks with unusual volume increase + price breakout.
+4. Price Breakout (20-MA): Prices crossing above 20-day moving average.
+5. RSI Oversold + Volume: RSI indicator < 30 with volume confirmation.
+6. Bollinger Band Reversal: Prices touch lower Bollinger Band + reversal signal.
+7. MACD Crossover: MACD signal line crosses above zero.
+8. Volume-Weighted Price Change: Large price moves on above-average volume.
+9. Multiple Timeframe Divergence: Daily momentum ≠weekly momentum.
+10. Sector Momentum: Aggregate sector performance driving individual stocks.
+11. Intraday Range Breakout: High-Low range expansion predicting next day move.
+12. Gap Reversals: Opening gaps likely to fill within 5 days.
+13. Volatility Expansion: Volatility clusters predict strong moves.
+14. Price Proximity to Bands: Distance from Bollinger Bands predicts reversion.
+15. Consecutive Days Pattern: Stocks with 𝑁-day up/down sequences.
+16. Liquidity-Adjusted Returns: Volume-adjusted momentum factors.
+17. Seasonal Patterns: Month/quarter effects in stock returns.
+18. Mean Reversion (Oversold): Prices < 2-std below moving average.
+19. Correlation Breakdowns: Stocks decoupling from sector.
+20. Return Distribution Skew: Asymmetric return distributions signal reversions.
+A.2. Sample Generated Alpha Code
+This section presents two representative alpha implementations generated by our system.
+1
+from alpha_base import AlphaBase
+2
+import numpy as np
+3
+import pandas as pd
+4
+5
+class MomentumReversal(AlphaBase):
+6
+"""
+7
+High momentum (20-day price change) combined with
+8
+volume surge predicts 5-day reversal.
+9
+"""
+10
+inputs = [’close’, ’volume’]
+11
+12
+def calc(self, data):
+13
+close = data[’close’]
+14
+volume = data[’volume’]
+15
+16
+# 20-day momentum
+17
+momentum = close.pct_change(20)
+18
+19
+# 20-day volume MA
+20
+vol_ma = volume.rolling(20).mean()
+21
+vol_ratio = volume / vol_ma
+22
+23
+# Signal: high momentum + volume surge
+24
+signal = momentum * np.log1p(vol_ratio)
+25
+26
+# Clip and fill NaN
+27
+signal = signal.clip(-5, 5)
+28
+signal = signal.fillna(0)
+29
+30
+return signal
+A.2.1. Alpha 2: Bollinger Band Reversal (IC = 0.0112)
+1
+from alpha_base import AlphaBase
+2
+import numpy as np
+3
+4
+class BollingerReversal(AlphaBase):
+5
+"""
+6
+When price touches lower Bollinger Band,
+7
+expect reversion over next 5 days.
+8
+"""
+9
+inputs = [’close’]
+10
+11
+def calc(self, data):
+12
+close = data[’close’]
+13
+14
+# 20-day Bollinger Bands
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 16 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+15
+ma20 = close.rolling(20).mean()
+16
+std20 = close.rolling(20).std()
+17
+lower_band = ma20 - 2 * std20
+18
+19
+# Distance from lower band (normalized)
+20
+distance = (close - lower_band) / std20
+21
+22
+# Inverted signal: near lower band -> negative
+23
+signal = -distance.clip(-5, 5)
+24
+signal = signal.fillna(0)
+25
+26
+return signal
+A.3. WriterAgent Prompt Template
+The WriterAgent is guided by a structured prompt template designed to enforce code correctness and financial
+validity. The system prompt establishes the agent role and output format, while the user prompt is populated at runtime
+with retrieved context from both knowledge bases and feedback from the previous iteration.
+WriterAgent Prompt Template
+[SYSTEM]
+You are a Quantitative Analyst specializing in the Vietnamese
+stock market. Write an AlphaFactor from a given trading idea.
+OUTPUT FORMAT:
+1. LaTeX formula
+2. Complete Python implementation
+ABSOLUTE RULES:
+- No shift(-n) with n > 0
+(look-ahead bias forbidden)
+- No forward returns inside calc()
+- Signal must be continuous float, not binary
+- All operations must be vectorized (pandas/numpy)
+- Apply rank(axis=1, pct=True) - 0.5 at final step
+[USER]
+Trading idea
+: {idea}
+KB context
+: {kb_context}
+Alpha101 context: {alpha101_context}
+Feedback
+: {feedback_section}
+REQUIREMENTS:
+- Follow the trading idea closely
+- Learn patterns from KB but do not copy
+- Reference WorldQuant alpha structure but do not reproduce
+- Incorporate feedback from previous iteration if provided
+The placeholders {kb_context} and {alpha101_context} are populated at runtime with examples retrieved
+from the main knowledge base Φ and the WorldQuant 101 Alpha library Ψ respectively. The {feedback_section}
+is empty on the first iteration and populated with JudgeAgent feedback on subsequent iterations.
+A.4. Experimental Configuration
+A.4.1. Model Configuration
+Table 1: Model configuration used by the designed framework components.
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 17 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+Component
+Configuration
+WriterAgent Model
+Llama-4-Scout-17B-16E (Groq API)
+WriterAgent Temperature
+0.5
+WriterAgent Max Tokens
+2048
+JudgeAgent Model
+LLaMA-3.1-8B (Groq API)
+JudgeAgent Temperature
+0.2
+JudgeAgent Max Tokens
+1024
+ReviewerAgent Model
+LLaMA-3.1-8B (Groq API)
+ReviewerAgent Temperature
+0.3
+ReviewerAgent Max Tokens
+512
+KB Embedding Model
+all-MiniLM-L6-v2
+A.4.2. Refinement and Backtesting Configuration
+Table 2: Refinement-loop and backtesting configuration.
+Parameter
+Value
+Inner Loop Iterations
+𝐾inner = 5
+Inner Loop Quality Threshold
+𝜃inner = 7.5∕10
+Outer Loop Iterations
+𝐾outer = 5
+Outer Loop IC Threshold
+𝜃save = 0.01
+Signal Clipping Range
+[−5, 5]
+KB Retrieval Top-K
+1
+Forward Return Horizon
+5 days
+Liquidity Filter Threshold
+vol_ratio ≥1.0
+A.4.3. Data Processing Configuration
+Table 3: Data preprocessing and sample filtering configuration.
+Component
+Configuration
+Missing Value Handling
+Reindex with forward/back fill
+Data Coverage Minimum
+80%
+Alpha Evaluation Period
+2021-01-04 – 2024-12-31
+Number of Stocks
+450 eligible (500 initial symbols)
+Total Trading Days
+998
+Total Data Points
+431,375
+CRediT authorship contribution statement
+Minh-Son Vu: Conceptualization, Methodology, Software, Data curation, Formal analysis, Investigation, Validation, Writing – original draft.
+The-Trung Pham: Methodology, Validation, Investigation, Visualization Writing – review & editing.
+Hong-Viet Tran: Supervision, Project administration, Resources, Funding acquisition, Writing – review & editing.
+References
+Allen, F., Karjalainen, R., 1999. Using genetic algorithms to find technical trading rules. Journal of financial Economics 51, 245–271.
+Austin, J., Odena, A., Nye, M., et al., 2021. Program synthesis with large language models. arXiv preprint arXiv:2108.07732 .
+Bailey, D.H., Borwein, J.M., Lopez de Prado, M., Zhu, J., 2014. Pseudo-mathematics and financial charlatanism: The effects of backtest overfitting
+on out-of-sample performance. Notices of the AMS 61, 458–471.
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 18 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+Brown, T.B., Mann, B., Ryder, N., et al., 2020. Language models are few-shot learners, in: Advances in Neural Information Processing Systems.
+Carhart, M.M., 1997. On persistence in mutual fund performance. The Journal of Finance 52, 57–82.
+Chen, M., Tworek, J., Jun, H., et al., 2021. Evaluating large language models trained on code. arXiv preprint arXiv:2107.03374 .
+Fama, E.F., French, K.R., 2015. A five-factor asset pricing model. Journal of Financial Economics 116, 1–22.
+Fatemi, S., Hu, Y., 2024. Enhancing financial question answering with a multi-agent reflection framework. arXiv preprint arXiv:2410.21741
+doi:10.48550/arXiv.2410.21741.
+Grinold, R.C., 1989. The fundamental law of active management. The Journal of Portfolio Management 15, 30–37.
+Gu, S., Kelly, B., Xiu, D., 2020. Empirical asset pricing via machine learning. The Review of Financial Studies 33, 2223–2273.
+Gulwani, S., 2017. Program synthesis, in: Formal Methods and Software Engineering, pp. 1–15.
+Han, J., Zhang, S., Li, W., Dong, Y., Hu, T., Zhu, Y., Yu, X., Guo, X., Liu, Z., Wang, K., Liu, J., Jiang, T., An, R., Hu, S., Yang, Z.,
+Che, R., Wang, H., 2026.
+QuantaAlpha: An evolutionary framework for LLM-driven alpha mining.
+arXiv preprint arXiv:2602.07085
+doi:10.48550/arXiv.2602.07085.
+Hong, S., Zhuge, M., Chen, J., Zheng, X., Cheng, Y., Wang, J., Zhang, C., Wang, Z., Yau, S., Lin, Z., Zhou, L., Ran, C., Xiao, L., Wu, C.,
+Schmidhuber, J., 2024. MetaGPT: Meta programming for a multi-agent collaborative framework, in: International Conference on Learning
+Representations. URL: https://openreview.net/forum?id=VtmBAGCN7o.
+Kakushadze, Z., 2016. 101 Formulaic Alphas. Wilmott 2016, 72–81. doi:10.1002/wilm.10525.
+Krauss, C., Do, X.A., Huck, N., 2017. Deep neural networks, gradient-boosted trees, random forests: Statistical arbitrage on the S&P 500. European
+Journal of Operational Research 259, 689–702.
+Lewis, P., Perez, E., Piktus, A., et al., 2020. Retrieval-augmented generation for knowledge-intensive NLP tasks, in: Advances in Neural Information
+Processing Systems, pp. 9459–9474.
+Li, Y., Choi, D., Chung, J., et al., 2022. Competition-level code generation with AlphaCode. Science 378, 1092–1097.
+Lim, T., Muthuraman, K., Sury, M., 2026.
+QRAFTI: An agentic framework for empirical research in quantitative finance.
+arXiv preprint
+arXiv:2604.18500 doi:10.48550/arXiv.2604.18500.
+Lin, Q., Feng, R., Feng, Y., Huang, Z., Chen, Y., Yang, Z., Zhou, L., Fei, B., Liu, J., Li, Y., 2026. FactorEngine: A program-level knowledge-infused
+factor mining framework for quantitative investment. arXiv preprint arXiv:2603.16365 doi:10.48550/arXiv.2603.16365.
+Liu, X.Y., Yang, H., Chen, Q., Zhang, R., Yang, L., Xiao, B., Wang, C.D., 2020. FinRL: A deep reinforcement learning library for automated stock
+trading in quantitative finance. arXiv preprint arXiv:2011.09607 doi:10.48550/arXiv.2011.09607.
+Lopez de Prado, M., 2018. Advances in Financial Machine Learning. Wiley.
+Luo, H., Ko, H.T., Chen, J., Sun, D., Zhang, Y., Liu, C., 2026. AlphaBench: Benchmarking large language models in formulaic alpha factor mining,
+in: The Fourteenth International Conference on Learning Representations. URL: https://openreview.net/forum?id=d97Q8r7ZKZ.
+Madaan, A., Tandon, N., Gupta, P., Hallinan, S., Gao, L., Wiegreffe, S., Alon, U., Dziri, N., Prabhumoye, S., Yang, Y., Gupta, S., Majumder, B.P.,
+Hermann, K., Welleck, S., Yazdanbakhsh, A., Clark, P., 2023. Self-Refine: Iterative refinement with self-feedback, in: Advances in Neural
+Information Processing Systems. doi:10.48550/arXiv.2303.17651.
+Ouyang, L., Wu, J., Jiang, X., et al., 2022. Training language models to follow instructions with human feedback. arXiv preprint arXiv:2203.02155
+.
+Parvez, M.R., Ahmad, W.U., Chakraborty, S., Ray, B., Chang, K.W., 2021. Retrieval augmented code generation and summarization. arXiv preprint
+arXiv:2108.11601 doi:10.48550/arXiv.2108.11601.
+Shi, H., Song, W., Zhang, X., Shi, J., Luo, C., Ao, X., Arian, H., Seco, L., 2024. AlphaForge: A framework to mine and dynamically combine
+formulaic alpha factors. arXiv preprint arXiv:2406.18394 doi:10.48550/arXiv.2406.18394.
+Shin, H.G., Jeong, S., Kim, E.Y., Hong, S., Cho, Y.J., Choi, Y.H., 2024. Synergistic formulaic alpha generation for quantitative trading based on
+reinforcement learning. arXiv preprint arXiv:2401.02710 doi:10.48550/arXiv.2401.02710.
+Tang, Z., Chen, Z., Yang, J., Mai, J., Zheng, Y., Wang, K., Chen, J., Lin, L., 2025. AlphaAgent: LLM-driven alpha mining with regularized
+exploration to counteract alpha decay. arXiv preprint arXiv:2502.16789 doi:10.48550/arXiv.2502.16789.
+Wang, S., Yuan, H., Ni, L.M., Guo, J., 2024. QuantAgent: Seeking holy grail in trading by self-improving large language model. arXiv preprint
+arXiv:2402.03755 .
+Wang, S., Yuan, H., Zhou, L., Ni, L.M., Shum, H.Y., Guo, J., 2023. Alpha-GPT: Human-ai interactive alpha mining for quantitative investment.
+arXiv preprint arXiv:2308.00016 doi:10.48550/arXiv.2308.00016.
+Wei, J., Wang, X., Schuurmans, D., et al., 2022.
+Chain-of-thought prompting elicits reasoning in large language models.
+arXiv preprint
+arXiv:2201.11903 .
+Wu, S., Irsoy, O., Lu, S., Dabravolski, V., Dredze, M., Gehrmann, S., Kambadur, P., Rosenberg, D., Mann, G., 2023. BloombergGPT: A large
+language model for finance. arXiv preprint arXiv:2303.17564 doi:10.48550/arXiv.2303.17564.
+Xiao, Y., Sun, E., Luo, D., Wang, W., 2024. TradingAgents: Multi-agents LLM financial trading framework. arXiv preprint arXiv:2412.20138
+doi:10.48550/arXiv.2412.20138.
+Yang, H., Liu, X.Y., Wang, C.D., 2023. FinGPT: Open-source financial large language models. arXiv preprint arXiv:2306.06031 doi:10.48550/
+arXiv.2306.06031.
+Yang, H., Zhang, B., Wang, N., Guo, C., Zhang, X., Lin, L., Wang, J., Zhou, T., Guan, M., Zhang, R., Wang, C.D., 2024. FinRobot: An open-source
+AI agent platform for financial applications using large language models. arXiv preprint arXiv:2405.14767 doi:10.48550/arXiv.2405.14767.
+Yang, X., Liu, W., Zhou, D., Bian, J., Liu, T.Y., 2020. Qlib: An AI-oriented quantitative investment platform. arXiv preprint arXiv:2009.11189
+doi:10.48550/arXiv.2009.11189.
+Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., Cao, Y., 2023. ReAct: Synergizing reasoning and acting in language models, in:
+International Conference on Learning Representations. doi:10.48550/arXiv.2210.03629.
+Yu, S., Xue, H., Ao, X., Pan, F., He, J., Tu, D., He, Q., 2023a. Generating synergistic formulaic alpha collections via reinforcement learning, in:
+Proceedings of the 29th ACM SIGKDD Conference on Knowledge Discovery and Data Mining. doi:10.1145/3580305.3599831.
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 19 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+Yu, Y., Li, H., Chen, Z., Jiang, Y., Li, Y., Zhang, D., Liu, R., Suchow, J.W., Khashanah, K., 2023b. FinMem: A performance-enhanced LLM trading
+agent with layered memory and character design. arXiv preprint arXiv:2311.13743 doi:10.48550/arXiv.2311.13743.
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 20 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed
+
+Self-Improving Alpha Mining via Multi-Agent LLMs
+Author Biographies
+Hong-Viet Tran received the Ph.D. degree in Computer Science and is currently a researcher
+at the Institute of Artificial Intelligence. His research interests primarily lie in natural language
+processing (NLP) and its applications across various domains such as finance, healthcare, and
+scientific information systems. His recent work focuses on leveraging large language models
+(LLMs) for domain-specific reasoning, knowledge extraction and intelligent decision support.
+Minh-Son Vu is a member of the NLP Lab at the Institute for Artificial Intelligence, University
+of Engineering and Technology, Vietnam National University, Hanoi, Vietnam. His research
+interests include machine learning, large language models, multi-agent systems, quantitative
+finance, and AI-driven decision support systems. His recent work focuses on autonomous agents,
+alpha mining and the application of large language models in financial analysis.
+The-Trung Pham is a member of NLP Lab at Institute for Artificial Intelligence, University of
+Engineering and Technology, Vietnam National University, Hanoi, Vietnam. He is interested in
+machine learning, large language models, retrieval-augmented generation (RAG), multi-agent
+systems, and quantitative finance. He has worked on research projects involving autonomous
+agents, alpha mining and using LLMs and RAG in finance.
+Hong-Viet Tran et al.: Preprint submitted to Elsevier
+Page 21 of 21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6906675
+Preprint not peer reviewed

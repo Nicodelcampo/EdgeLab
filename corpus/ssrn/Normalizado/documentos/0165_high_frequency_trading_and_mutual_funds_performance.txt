@@ -1,0 +1,3287 @@
+Effect of high-frequency trading on mutual fund performance  
+ 
+Nan Qin and Vijay Singal1 
+First draft: March 15, 2016 
+This version: November 7, 2022 
+ 
+Abstract 
+We find that high-frequency trading (HFT) in stocks held by mutual funds negatively affects fund 
+performance: when sorted by HFT intensity of holdings, funds in the top quintile underperform funds 
+in the bottom quintile by 2.64% per year. The negative relation can be at least partially explained by 
+the illiquidity premium induced by high-frequency traders’ preference for more liquid stocks. This 
+reason for underperformance of mutual funds has not been previously explored or documented. In 
+addition, we do not find evidence to support the concern that HFT raises trading costs of mutual funds. 
+ 
+KEYWORDS 
+high-frequency trading, illiquidity premium, mutual fund performance, trading costs 
+JEL CLASSIFICATION 
+G12, G14, G23 
+ 
+ 
+ 
+1 Nan Qin (nanqin@niu.edu; 815-753-1114) is from the Department of Finance, Northern Illinois University, 236G 
+Barsema Hall, 740 Garden Road, DeKalb, IL 60115. Vijay Singal (singal@vt.edu; 540-231-7750) is from the 
+Department of Finance, Pamplin College of Business, Virginia Tech, 1016 Pamplin Hall, Blacksburg, VA 240610221. We thank Frank Hatheway from NASDAQ for providing the high-frequency trading data. NASDAQ makes the 
+data freely available to academics providing a project description and signing a nondisclosure agreement. We thank 
+Jonathan Brogaard, Ryan Riordan, Gjergji Cici, and Lei Zhou for comments and suggestions, as well as conference 
+and seminar participants at the 2016 FMA annual meetings, 2019 SFA annual meetings, Carleton University, 
+McMaster University, University of Windsor, and Northern Illinois University. All errors are our own. An appendix 
+containing additional tables, figures, and details of methodology is available in the supporting materials section online.  
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+1 
+ 
+Effect of high-frequency trading on mutual fund performance 
+Abstract 
+We find that high-frequency trading (HFT) in stocks held by mutual funds negatively affects fund 
+performance: when sorted by HFT intensity of holdings, funds in the top quintile underperform funds 
+in the bottom quintile by 2.64% per year. The negative relation can be at least partially explained by 
+the illiquidity premium induced by high-frequency traders’ preference for more liquid stocks. This 
+reason for underperformance of mutual funds has not been previously explored or documented. In 
+addition, we do not find evidence to support the concern that HFT raises trading costs of mutual funds. 
+ 
+1 INTRODUCTION 
+High-frequency trading (HFT) has been of interest to practitioners, policymakers, and academic 
+researchers over the past two decades. However, there is a lack of consensus about its impact on 
+traditional institutional investors. Some academic researchers find that HFT reduces trading costs 
+for most market participants (Hendershott, Jones, & Menkveld, 2011; Hendershott & Riordan, 
+2013; Goldstein, Kumar, & Graves, 2014; Conrad, Wahal, & Xiang, 2015; Brogaard & Garriott, 
+2019; Baldauf & Mollner, 2020; Boehmer, Fong, & Wu, 2021). On the other hand, many studies 
+suggest that HFT may increase the trading costs of traditional institutional investors by anticipating 
+their trades (Biais, Foucault, & Moinas, 2015; Korajczyk & Murphy, 2019; Van Kervel & 
+Menkveld, 2019; Shkilko & Sokolov, 2020; Yang & Zhu, 2020; Bongaerts & Van Achter, 2021; 
+Hirschey, 2021). A similar lack of agreement exists among practitioners, and some of them have 
+taken actions to protect themselves from HFT.2 Given the importance of institutional investors and 
+financial markets, it is important to gain better insight into this topic.  
+ 
+2 For example, in recent years many traditional investors turned to dark pools such as IntelligentCross or exchanges 
+such as Investors Exchange to combat predatory high-frequency traders (“Steven Cohen targets high-frequency 
+trading with ‘dark pool’ venture,” Wall Street Journal, April 17, 2018). 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+2 
+ 
+In this study, we examine the impact of HFT on the performance of U.S. equity mutual 
+funds that collectively manage trillions of investment dollars. We approach the role of HFT from 
+a different and previously unexplored channel by investigating whether HFT affects crosssectional stock returns through the illiquidity premium and whether mutual funds holding HFTintensive stocks are negatively affected as a consequence.   
+As suggested by prior studies, illiquid assets should provide a return premium—that is, 
+illiquidity premium—over liquid assets because investors require higher returns to compensate for 
+higher trading costs associated with illiquid assets, and the magnitude of the illiquidity return 
+premium depends not only on the cost per trade but also on trading frequency of the marginal 
+investor (Amihud & Mendelson, 1986; Chalmers & Kadlec, 1998; Amihud et al., 2015; Chen et 
+al., 2020). Compared to traders with lower trading frequencies, traders with higher trading 
+frequencies are more sensitive to trading costs as they will incur higher trading costs from the same 
+asset over the same period. The implication in the context of HFT is that high-frequency traders 
+(HFTs) will prefer to trade liquid assets,3 and the presence of intensive HFT will amplify the 
+magnitude of the illiquidity premium by lowering the risk-adjusted returns of liquid assets and 
+increasing those of illiquid assets.4  
+Based on this intuition, we hypothesize that a majority of HFT-intensive stocks are 
+relatively liquid and will deliver lower risk-adjusted returns, and therefore mutual funds holding 
+such stocks will underperform other funds that do not hold these stocks or hold them in a smaller 
+ 
+3 More precisely, liquidity-taking HFTs should prefer to trade liquid assets to save trading costs, while liquidityproviding HFTs may prefer to trade illiquid assets where more revenue can be collected. However, as reported in 
+Baron et al. (2019), liquidity-taking HFTs contribute much more HFT volume than liquidity-providing HFTs. For 
+example, in August 2012, 41% of all HFT volume on the E-mini S&P 500 futures market is generated by liquiditytaking high-frequency traders, whereas 15% is generated by liquidity-providing high-frequency traders. The rest of 
+the HFT volume is generated by high-frequency traders using both strategies. 
+4 It is important to note that the change in the illiquidity premium is not necessarily related to any change in liquidity 
+or trading costs. That is, even without any change in the level of liquidity, magnitude of the illiquidity premium could 
+still be increased by higher trading frequency. 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+3 
+ 
+proportion. For HFTs, the lower return of liquid assets is a reasonable compromise for substantial 
+savings from low trading costs. However, for most mutual funds that trade much less frequently, 
+the gains from the low trading costs of liquid assets can hardly offset the loss in returns. Therefore, 
+HFT intensity in liquid stockholdings of mutual funds will exert a downward pressure on returns 
+and consequently lead to underperformance of these funds.  
+Our empirical analyses are based on a sample of 3,536 U.S. actively managed equity 
+mutual funds and a sample of 8,150 U.S. common stocks during 2003–2018. Following 
+Hendershott, Jones, and Menkveld (2011) and Conrad, Wahal, and Xiang (2015), we use the 
+number of quote messages, defined as the number of changes in the best bid or offer quote or size 
+across all quote reporting venues in the United States, as our HFT proxy. This proxy captures one 
+of the essential features of HFT—a very large number of order submissions and cancellations 
+compared to that of non-high-frequency traders (nHFTs). Moreover, it is based on publicly 
+available Trade and Quote (TAQ) data so that it covers most U.S. common stocks since 1993. A 
+comparison between quote messages and the “NASDAQ data set” (120 stocks randomly selected 
+by the NASDAQ in 2008 and 2009) reported in Table A.1 in the Internet Appendix confirms its 
+effectiveness—quote messages indeed have a high correlation with actual HFT and significantly 
+lower correlations with actual non-high-frequency trading (nHFT). To control for the positive 
+relation that arises naturally between firm size and quote messages, we extract the component of 
+quote messages that is orthogonal to size and use it as the measure of HFT in this paper. 
+We begin our empirical analysis by investigating the relation between risk-adjusted stock 
+returns and HFT intensity. Sorting stocks into quintile portfolios by HFT intensity, we find that 
+the top quintile (highest HFT intensity) significantly underperforms the bottom quintile by a riskadjusted return of 6.12% per year. We then examine the relation between fund performance and 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+4 
+ 
+HFT intensity in fund holdings or trade portfolios and find it to be, again, significantly negative. 
+For example, the top quintile of funds sorted by HFT intensity in their holdings underperforms the 
+bottom quintile by a risk-adjusted return of 2.64% per year.  
+Next, we test the validity of the liquidity-based explanation and find that the negative 
+relation between HFT intensity and stock return and that between HFT intensity and fund 
+performance become statistically insignificant once we control for the illiquidity premium. More 
+importantly, we find that the illiquidity premium is significantly positive in stocks with highly 
+intensive HFT but is small and statistically insignificant in remaining stocks. The implication is 
+that the negative relation between HFT intensity and fund performance is not simply a 
+manifestation of self-selection bias but rather a consequence of HFT. We believe that this is one 
+of the critical findings to support our hypothesis that HFT negatively affects stock returns and fund 
+performance through its impact on the magnitude of illiquidity premium.  
+We conduct a number of tests to preclude alternative explanations. First, we consider the 
+possibility that HFT may reduce fund performance by increasing institutional trading costs. We 
+find that the negative relation between HFT intensity and fund performance exists even if returns 
+of fund holdings, which are not affected by trading costs, are used to replace the net asset value 
+(NAV)–based fund returns in the quintile portfolio analysis. 5 In addition, cross-sectional 
+regressions show that the difference between fund returns and returns of holdings is not affected 
+by HFT intensity. These results suggest that HFT is negatively related to fund performance through 
+its impact on cross-sectional stock returns rather than through higher institutional trading costs. 
+Second, we consider the possibility that the negative relation between HFT intensity and fund 
+performance may be the result of the illiquidity risk premium, the idiosyncratic volatility anomaly, 
+ 
+5 Returns of fund holdings is estimated as the value-weighted return of portfolios created by replicating the holdings 
+of mutual funds and assuming zero trading cost. 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+5 
+ 
+or an indicator of stock overpricing. To test these possibilities, we add factors that capture each of 
+these effects to the Fama-French-Carhart (Fama and French, 1993; Carhart, 1997) four-factor 
+model and find that none of these effects can explain the negative relation between HFT intensity 
+and fund performance.  
+Our paper makes several contributions to the literature of HFT, mutual fund performance, 
+and the illiquidity premium. First, our paper is the first to propose that HFT may affect crosssectional stock returns through the illiquidity premium. We thus introduce a new channel through 
+which intensive HFT may be detrimental to the performance of traditional institutional investors 
+because it makes liquidity more “expensive” to these investors. Therefore, we suggest that 
+institutional investors should reduce their investments in HFT-intensive stocks. Second, by 
+illustrating that significant illiquidity premium only exists in HFT-intensive stocks, this paper 
+provides supporting evidence to the theoretical prediction of Amihud and Mendelson (1986) and 
+Chalmers and Kadlec (1998) that, in addition to cost per trade, trading frequency is an important 
+determinant of the illiquidity premium. Third, we examine the relation between the “return gap” 
+of mutual funds and HFT intensity and do not find evidence of significantly higher institutional 
+trading costs imposed by intensive HFT. This is in contrast to recent studies suggesting that HFTs 
+may increase institutional trading costs as they cause adverse selection or provide expensive 
+liquidity (Biais, Foucault, & Moinas, 2015; Korajczyk & Murphy, 2019; Van Kervel & Menkveld, 
+2019; Shkilko & Sololov, 2020; Yang & Zhu, 2020; Bongaerts & Van Achter, 2021; Hirschey, 
+2021). Finally, we refine the methodology of measuring HFT intensity by quote messages 
+proposed by Hendershott, Jones, and Menkveld (2011) and Conrad, Wahal, and Xiang (2015) by 
+adjusting for stock size. This makes the HFT intensity measure comparable among stocks with 
+various sizes.  Our HFT intensity measure is based on publicly available TAQ data so that it covers 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+6 
+ 
+most, instead of a small fraction of, U.S. common stocks. As a result, our paper is, to the best of 
+our knowledge, the first to provide comprehensive evidence of the impact of HFT on the 
+performance of U.S. institutional investors. 
+The rest of this paper is organized as follows. Section 2 presents a simple example to 
+illustrate the impact of HFT on expected stock returns. Section 3 describes the data sources, sample 
+selection, proxies for HFT, and fund performance evaluation methods. Section 4 presents the 
+relation between HFT and fund performance as well as evidence supporting our main hypothesis. 
+Section 5 explores possible alternative explanations. Section 6 concludes. 
+ 
+2 IMPACT OF HFT ON EXPECTED STOCK RETURNS: A STYLIZED 
+ILLUSTRATION  
+Suppose a stock market has only two stocks, A and B, with the same characteristics except for 
+liquidity. Stock A has a round-trip trading cost of 25 basis points (bps), while stock B has a trading 
+cost of 5 bps. Further assume that there are three possible scenarios based on the presence and 
+intensity of HFT: (1) no HFT presence, (2) the presence of less intensive HFT, and (3) the presence 
+of more intensive HFT. Annual trading frequencies are assumed to be 1, 15, and 30 in the three 
+scenarios, respectively. In addition, the market expected return is assumed to be ERm in the three 
+scenarios. 
+In the case of no HFT presence, annual trading costs of stock A and B are simply their 
+round-trip trading costs—that is, 0.25% and 0.05%, respectively. The illiquidity premium is 
+calculated as the difference in annual trading costs of stocks A and B, so it equals to 0.25% – 0.05% 
+= 0.20%. The pre-trading-cost expected returns of stocks A and B should reflect the difference in 
+trading costs while the average return remains at ERm, the expected market return. Therefore, stock 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+7 
+ 
+A has a pre-trading-cost expected return of ERm + 0.10% while that for stock B is ERm – 0.10%. 
+After deducting annual trading costs, the post-trading-cost expected return of both stocks equals 
+to ERm – 0.15%.  
+                                            No HFT presence 
+Stock 
+A 
+B 
+Annual trading frequency 
+1 
+1 
+Trading cost (round trip) 
+0.25% 
+0.05% 
+Annual trading cost 
+0.25% 
+0.05% 
+Illiquidity premium 
+0.20% 
+Pre-trading-cost expected return 
+ERm + 0.10% 
+ERm–0.10% 
+Post-trading-cost expected return 
+ERm + 0.10% – 0.25% = ERm – 0.15% 
+ERm – 0.10% – 0.05% = ERm – 
+0.15% 
+ 
+ 
+ 
+                                                   HFT presence 
+  
+Lower intensity 
+Higher intensity 
+Stock 
+A 
+B 
+A 
+B 
+Annual trading frequency 
+15 
+15 
+30 
+30 
+Trading cost (round trip) 
+0.25% 
+0.05% 
+0.25% 
+0.05% 
+Annual trading cost 
+3.75% 
+0.75% 
+7.50% 
+1.50% 
+Illiquidity premium 
+3.00% 
+6.00% 
+Pre-trading-cost expected return 
+ERm + 
+1.50% 
+ERm – 1.50% 
+ERm + 3.00% 
+ERm  – 3.00% 
+Post-trading-cost expected return 
+ERm + 1.50% 
+– 3.75% = 
+ERm – 2.25% 
+ERm – 1.50% – 0.75% = 
+ERm – 2.25% 
+ERm + 3.00% – 
+7.50% = ERm – 
+4.50% 
+ERm – 3.00% – 
+1.50% = ERm – 
+4.50% 
+ 
+In the case of low-intensity HFT presence, the annual trading cost of each stock equals 15 
+times its round-trip trading cost, so the illiquidity premium increases to 3.00%, which is 15 times 
+that in the case of no HFT presence. Moreover, in the case of high-intensity HFT presence, annual 
+trading cost of each stock equals to 30 times its round-trip trading cost, so the illiquidity premium 
+further increases to 6.00%, which is 30 times that in the case of no HFT presence. Note that the 
+expected return after trading costs is the same for stock A and stock B in each of the three scenarios.  
+The example illustrates that the presence of HFT increases the illiquidity premium and 
+lowers the expected return after trading costs, and this effect is positively related to the intensity 
+of HFT. For example, expected return of the liquid stock B would be ERm – 0.10% with no HFT 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+8 
+ 
+presence but would decrease to ERm – 1.50% and ERm – 3.00% in the presence of less- and moreintensive HFT. It is important to note that this effect does not rely on HFT’s potential impact on 
+the level of stock liquidity. 
+A long-term investor (e.g., a mutual fund) in HFT-intense scenarios will find that stock A 
+provides a higher net return than stock B due to its much lower accumulated trading cost. For 
+example, a mutual fund, with only one round-trip trading a year, in a high-intensity HFT scenario 
+would earn a net return of ERm + 2.75% (= ERm + 3.00% – 0.25% × 1) from stock A but only ERm 
+– 3.05% (= ERm – 3.00% – 0.05% × 1) from stock B. In other words, this mutual fund would earn 
+5.80% higher return from stock A than from stock B. Thus, mutual funds that either deliberately 
+or inadvertently buy and hold high-intensity HFT stocks, such as stock B, would underperform 
+(alpha = –3.05%) when evaluated with respect to the benchmark return (ERm). In this paper, we 
+intend to provide evidence that supports the scenarios presented in this stylized illustration.   
+ 
+3 DATA AND METHODOLOGY 
+3.1 Sample of U.S. equity mutual funds 
+The sample of U.S. equity mutual funds is obtained from the Center for Research in Security Prices 
+(CRSP) survivor-bias-free U.S. mutual fund database. Quarterly stock holdings of mutual funds 
+are obtained from the CRSP mutual fund database and from the S12 database of Thomson Reuters. 
+The primary tests of this paper are based on a sample period from January 2003 to December 2018, 
+when HFT was relatively intensive.6 Certain robustness tests are based on a prior sample period 
+that extended from January 1993 to December 2002, when HFT was less intensive or nonexistent.  
+ 
+6 The NYSE implemented automatic quote dissemination in 2003 to replace manual quote dissemination. The 
+transition started in January and finished in May. As a result, HFT in U.S. stocks increased significantly—quote 
+messages increased 150% compared to that in 2002, the highest annual growth rate during 2001–2018. 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+9 
+ 
+U.S. equity mutual funds are identified by their CRSP objective codes.7 Funds with total 
+net assets (TNA) less than $10 million or funds that are younger than three years are removed to 
+mitigate data biases such as incubation bias (Evans, 2010). We also exclude funds that invest less 
+than 90% in common stocks, sector funds, and exclude fund months where reported fund holdings 
+account for less than half of a fund’s TNA because of their potentially different risk exposures.8 
+We aggregate all share classes to the fund level and match fund returns and characteristics to their 
+quarterly holdings.9 Passively managed funds, including index funds and exchange-traded funds 
+(ETFs), are removed from the sample as their managers do not engage in stock selection.10 The 
+final sample includes 3,536 actively managed domestic equity mutual funds. 
+Panel A of Table 1 summarizes fund characteristics. The average (median) TNA is $1,498 
+($309) million, suggesting that fund size is skewed by large funds. Monthly net flow ratio has an 
+average of –0.46%.11 The average fund age is 16.66 years. Expense ratio, as the ratio of a fund’s 
+operating expenses and total investment, averages 1.30% per year. Fund turnover is measured by 
+the minimum of aggregated sales or aggregated purchases of securities during a year divided by 
+the fund’s average TNA in the previous 12 months. The average turnover ratio is 74.76% per year. 
+Monthly pre-fee return, estimated as monthly post-fee return plus one-twelfth of annual expense 
+ratio, averages 0.86%. Panel B of Table 1 contains average fund characteristics by year. At the end 
+ 
+7 To be included into the sample, the CRSP objective code (CRSP_OBJ_CD) of a fund needs to start with “ED,” 
+which represents domestic equity funds. 
+8 The use of 80% or 70% as threshold for equity holdings does not significantly affect the results of this paper. 
+9 Combination of shares classes and matching of fund characteristics and holdings are mainly based on the FundPortfolio Map file provided by the CRSP, the MFLink files provided by the Wharton Research Data Services (WRDS), 
+and names of share classes. 
+10 Passive funds are identified by the CRSP index fund indicator, ETF indicator, and fund names. 
+11 Monthly flow ratio of fund i in month t is estimated as 
+𝐹𝑙𝑜𝑤𝑖,𝑡= 𝑇𝑁𝐴𝑖,𝑡−𝑇𝑁𝐴𝑖,𝑡−1(1 + 𝑅𝑖,𝑡) −𝑀𝑒𝑟𝑔𝑒𝑇𝑁𝐴𝑖,𝑡
+𝑇𝑁𝐴𝑖,𝑡−1
+,                                                        
+where 𝑅𝑖,𝑡 is the return of fund i in month t, and 𝑀𝑒𝑟𝑔𝑒𝑇𝑁𝐴𝑖,𝑡 is the TNA of all acquired funds in month t. Following 
+Chen and Qin (2017), we remove extreme flow ratios (i.e., greater than 50% or smaller than –50% in a month) that 
+could be caused by misreported fund mergers and splits. 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+10 
+ 
+of 2018, the total size of this fund sample is $3.46 trillion, representing 74% of total market 
+capitalization of all U.S. actively managed domestic equity mutual funds.12 
+[Insert Table 1 here] 
+3.2 Sample of U.S. common stocks 
+The stock sample includes 8,150 U.S. common stocks that are listed on the NYSE, AMEX, and 
+NASDAQ at any time between January 2003 and December 2018. We remove stocks not in CRSP 
+share codes 10 or 11 and remove stock-month observations where the stock price is below $2 at 
+the beginning of the month or market value is below $10 million at the end of the prior June. 
+Monthly stock returns and characteristics are taken from the CRSP. We follow Amihud et al. (2015) 
+in removing extremely large daily and monthly returns.13 Several additional databases are used for 
+other variables: Compustat for book value of equity, NYSE TAQ for intraday quote and trade data 
+required to estimate HFT proxy and transaction costs, I/B/E/S for the number of analysts and 
+dispersion of analyst forecasts, and WRDS at the University of Pennsylvania for Treasury bill rates 
+and risk factors. Panel A of Table 2 reports the summary statistics of monthly stock characteristics 
+based on a total of 691,999 stock-month observations. 
+[Insert Table 2 here] 
+3.3 Measures of HFT in individual stocks 
+3.3.1 Quote messages as a proxy of HFT 
+Following Hendershott, Jones, and Menkveld (2011) and Conrad, Wahal, and Xiang (2015), we 
+use number of quote messages estimated based on the NYSE TAQ data as the proxy for HFT 
+ 
+12 Based on 2019 Investment Company Fact Book published by Investment Company Institute, the total size of all U.S. 
+actively managed domestic equity mutual funds at the end of 2018 is $4.65 trillion. 
+13 Daily returns are set as missing if they are greater than 200% or if (1 + 𝑟𝑡)(1 + 𝑟𝑡−1) −1 ≤50%, where 𝑟𝑡 or 𝑟𝑡−1 
+is greater than 100%. Monthly returns are set as missing if they are above 500% or if they are above 300% and are 
+reversed within the following month. 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+11 
+ 
+intensity.14 As reported in Panel B of Table 2 and consistent with Conrad, Wahal, and Xiang (2015), 
+there is a noticeable difference in quote messages between small and large stocks. The average 
+quote update of the smallest 20% stocks (measured by their market value at the end of the previous 
+June) is 40,000 per month, whereas that of the largest 20% stocks is 2.42 million. Similar to the 
+finding of Baron et al. (2019), Figure A.1 in the Internet Appendix illustrates that HFT grew 
+rapidly through 2000–2011, but growth has tapered off since then.  
+3.3.2 Correlation between quote messages and HFT 
+To validate the use of quote messages as an appropriate proxy for HFT, we estimate the Spearman 
+and Pearson correlations between monthly quote messages and actual HFT activities reported in 
+the “NASDAQ data set.” As reported in Table A.1 in the Internet Appendix, quote messages is 
+highly correlated with actual HFT intensity, while its correlations with nHFT are much lower. In 
+Panel A where the actual HFT intensity is measured as a fraction of HFT volume in the total trading 
+volume of a stock, the average Spearman (Pearson) correlation between quote messages and actual 
+HFT intensity is 88.63% (68.16%). In Panel B where the actual HFT intensity is measured as the 
+ratio of HFT share volume to total shares outstanding, the average Spearman (Pearson) correlation 
+between quote messages and actual HFT intensity is 66.22% (36.76%), whereas that between 
+quote messages and nHFT intensity is –2.42% (–14.68%). The generally lower magnitudes of 
+Pearson correlations compared to Spearman correlations indicate nonlinearity in the relation 
+between quote messages and actual trading activities. Furthermore, a comparison between Panels 
+A and B of Table A.1 indicates that quote messages is closer to a relative measure of HFT, as their 
+ 
+14 The estimation of best bid and ask price is based on quotes reported by a total of 16 exchanges and trading venues 
+(TAQ exchange codes A, B, C, D, I, J, K, M, N, P, Q, T, W, X, Y, and Z). To be included in the estimation process, 
+a quote must have a mode of 1, 2, 3, 6, 10, or 12. Any quote that has bid price larger than or equal to ask price, bid 
+price less than or equal to $0.01, negative ask price, or nonpositive bid or ask size will be removed. Quotes beyond 
+regular trading hours are also removed. 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+12 
+ 
+correlations with the fraction of HFT volume in total volume are much higher than their correlation 
+with share turnover ratio induced by HFT (88.63% vs. 66.22% for Spearman correlation; 68.16% 
+vs. 36.76% for Pearson correlation). This difference is more pronounced in the largest stock 
+quintile (57.58% vs. 10.03% for Spearman correlation; 56.24% vs. 5.21% for Pearson correlation) 
+where HFT is generally more intensive. These observations reaffirm the reasonableness of using 
+quote messages as a proxy for relative intensity of HFT. 
+3.3.3 Determinants of quote messages 
+Examining the determinants of quote messages not only provides useful insights into the behavior 
+and preference of HFTs but may also preclude concerns on certain self-selection biases in the 
+primary tests. We examine the relation between quote messages and stock characteristics following 
+Fama and MacBeth’s (1973) cross-sectional regression: 
+𝐿𝑛[𝑄𝑀𝑖,𝑡] = 𝛿𝑿𝒊,𝒕−𝟏+ 𝜀𝑖,𝑡,                                                              (1) 
+where 𝐿𝑛[𝑄𝑀𝑖,𝑡] is the natural log of quote messages of stock i in month t, and X is a vector of 
+control variables including market value (MV), book-to-market ratio (BM) estimated by the same 
+approach of Fama and French (1992), stock return over the prior month (RET), share price at the 
+beginning of the month (PRC), turnover ratio of the prior month (TO), time-weighted relative 
+quoted spread (RQS) of the prior month, the Pástor and Stambaugh (2003) liquidity beta (LIQBeta), 
+institutional ownership (IO), volatility of the prior month (VOL) estimated as the standard 
+deviation of daily returns, number of analysts (ANLY), analyst forecast dispersion (DISP) 
+estimated as standard deviation of one-year earnings forecasts divided by the mean estimate, and 
+the lagged dependent variable (DV). Most explanatory variables are lagged to ensure that they are 
+predetermined and are not affected by the dependent variable. As reported in Table 3, quote 
+messages increases by firm size, prior month return, turnover ratio, institutional ownership, and 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+13 
+ 
+number of analysts and decreases by stock price and RQS. This is consistent with the common 
+understanding that HFTs prefer to trade large and liquid stocks, stocks with more institutional 
+investors, stocks with lower share prices, and stocks with more available information.  
+[Insert Table 3 here] 
+3.3.4 Controlling for the size effect 
+Large firms will naturally have more quotes due to their larger investor base and higher volume, 
+thus using raw quote messages as a measure to identify HFT-intensive stocks will lead to a bias 
+toward large stocks. Inspired by Karpoff and Lou (2010), we estimate an HFT-intensity measure 
+that is orthogonal to firm size to solve this problem. Specifically, for each month (quarter), we sort 
+all stocks in the sample into deciles based on their market value at the end of the previous June 
+and then estimate the following monthly/quarterly cross-sectional regression: 
+𝐿𝑛[𝑄𝑀𝑖,𝑡] = ∑𝛽𝑘,𝑡𝑆𝑖𝑧𝑒𝑖,𝑘,𝑡
+9
+𝑘=1
++ 𝑢𝑖,𝑡,                                                   (2) 
+where 𝐿𝑛[𝑄𝑀𝑖,𝑡] is the natural log of quote messages of stock i at month (quarter) t, and 𝑆𝑖𝑧𝑒𝑖,𝑘,𝑡 
+is a dummy variable that equals to one if firm i is within size decile k in month (quarter) t and zero 
+otherwise. Quote messages is log transformed because its relation with firm size is not linear. The 
+regression residual, 𝑢𝑖,𝑡, is denoted as the HFT-intensity measure for stock i in month (quarter) t, 
+𝐻𝐹𝑇𝑖,𝑡. We also adopt two alternative HFT measures for robustness tests: (1) monthly decile 
+ranking of quote messages within each size decile and (2) regression residual that is orthogonal to 
+both size and BM.15 
+ 
+15 We modify Equation (2) to estimate an HFT intensity measure that is orthogonal to both size and BM: 
+𝐿𝑛[𝑄𝑀𝑖,𝑡] = ∑𝛽𝑘,𝑡𝑆𝑖𝑧𝑒𝑖,𝑘,𝑡
+9
+𝑘=1
++ ∑𝛾𝑘,𝑡𝐵𝑀𝑖,𝑘,𝑡
+9
+𝑘=1
++ 𝑢𝑖,𝑡, 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+14 
+ 
+ 
+3.4 Average HFT intensity of fund holdings and trade portfolios 
+Conceptually, there could be at least two major channels through which HFT may have an impact 
+on mutual fund performance. First, if HFT affects fund performance through its impact on 
+institutional trading costs, intensity of HFT in stocks of a fund’s “trade portfolio” should be related 
+to subsequent fund performance. Therefore, based on quarterly changes of fund holdings, we 
+estimate the HFT intensity of a fund’s trade portfolio (HFTT) in a quarter as follows: 
+𝐻𝐹𝑇𝑖,𝑡
+𝑇= ∑𝑤𝑖,𝑘,𝑡
+𝑇
+𝐻𝐹𝑇𝑘,𝑡
+𝑁𝑖,𝑡
+𝑇
+𝑘=1
+,                                                       (3) 
+where 𝐻𝐹𝑇𝑘,𝑡 is the HFT-intensity proxy for stock k in quarter t, 𝑁𝑖,𝑡
+𝑇 is the number of stocks traded 
+by fund i in quarter t, and 𝑤𝑖,𝑘,𝑡
+𝑇
+ is the weight of stock k’s dollar trading volume in the trade 
+portfolio of fund i in quarter t: 
+𝑤𝑖,𝑘,𝑡
+𝑇
+=
+|∆𝑆ℎ𝑎𝑟𝑒𝑠𝑖,𝑘,𝑡|𝑃𝑘,𝑡
+∑
+|∆𝑆ℎ𝑎𝑟𝑒𝑠𝑖,𝑗,𝑡|𝑃𝑗,𝑡
+𝑁𝑖
+𝑗=1
+.                                                  (4) 
+Higher HFTT means the fund faces more intensive HFT in stocks it has traded during quarter t. 
+Since the holdings database contains only positions held, it is impossible to precisely estimate 
+trading volumes of each stock in each quarter. Instead, trading volume of a stock and the total 
+trading volume of a fund are estimated as the lower bounds of actual values. 
+Second, if HFT affects fund performance through its potential impact on cross-sectional 
+stock returns, average intensity of HFT in a fund’s current holdings should be more closely related 
+ 
+where 𝐵𝑀𝑖,𝑘,𝑡 is a dummy variable that equals to one if firm i is within BM decile k in month t and zero otherwise. 
+The use of both alternative measures gives qualitatively and quantitatively similar results for the main tests of this 
+paper. Results are not reported but are available from the authors. 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+15 
+ 
+to subsequent fund performance. Based on quarterly fund holdings, we estimate the weightedaverage HFT intensity of a fund’s holdings (HFTH) in a quarter as follows: 
+𝐻𝐹𝑇𝑖,𝑡
+𝐻= ∑𝑤𝑖,𝑘,𝑡
+𝐻𝐻𝐹𝑇𝑘,𝑡
+𝑁𝑖,𝑡
+𝐻
+𝑘=1
+,                                                       (5) 
+where 𝑤𝑖,𝑘,𝑡
+𝐻 is the weight of stock k in fund i at the end of quarter t, and 𝑁𝑖,𝑡
+𝐻 is the number of 
+holdings of fund i in quarter t. 
+ 
+3.5 Factor models and fund performance evaluation 
+We mainly use the Fama-French-Carhart four-factor (FFC-4) model to measure risk-adjusted 
+returns of active mutual funds:  
+𝑅𝑖,𝑡−𝑅𝐹,𝑡= 𝛼𝑖+ 𝛽𝑖
+𝑀𝐾𝑇(𝑅𝑀𝐾𝑇,𝑡−𝑅𝐹,𝑡) + 𝛽𝑖
+𝑆𝑀𝐵𝑆𝑀𝐵𝑡+ 𝛽𝑖,𝑇
+𝐻𝑀𝐿𝐻𝑀𝐿𝑡+ 𝛽𝑖,𝑇
+𝑈𝑀𝐷𝑈𝑀𝐷𝑡+ 𝜀𝑖,𝑡, (6) 
+where 𝑅𝑀𝐾𝑇,𝑡, 𝑅𝐹,𝑡, 𝑆𝑀𝐵𝑡, 𝐻𝑀𝐿𝑡, and 𝑈𝑀𝐷𝑡 are excess return, risk-free return, smallminus-big, high-minus-low, and momentum factors in month t. In addition, to capture the potential 
+impact of liquidity on stock and mutual fund performance, we add an illiquidity premium factor 
+(illiquid-minus-liquid, IML) to the FFC-4 model to obtain the five-factor FFC-IML model: 
+𝑅𝑖,𝑡−𝑅𝐹,𝑡= 𝛼𝑖+ 𝛽𝑖
+𝑀𝐾𝑇(𝑅𝑀𝐾𝑇,𝑡−𝑅𝐹,𝑡) + 𝛽𝑖
+𝑆𝑀𝐵𝑆𝑀𝐵𝑡+ 𝛽𝑖,𝑇
+𝐻𝑀𝐿𝐻𝑀𝐿𝑡+ 𝛽𝑖,𝑇
+𝑈𝑀𝐷𝑈𝑀𝐷𝑡 
++𝛽𝑖,𝑇
+𝐼𝑀𝐿𝐼𝑀𝐿𝑡+ 𝜀𝑖,𝑡.                                                              (7) 
+We use RQS as an inverse measure of liquidity and follow a similar approach as in Amihud 
+et al. (2015) to construct the IML factor.16 Specifically, at the beginning of each month t, stocks 
+are sorted into quintiles based on the average volatility of their daily returns in months t–3 to t–1 
+to control for the known volatility effect on cross-sectional stock returns. Within each volatility 
+ 
+16 Volume-weighted relative effective spread (RES) is also used to construct the IML factor in robustness tests. The 
+use of RES gives qualitatively and quantitatively similar results in all the relevant tests. Results are not reported but 
+are available from the authors. 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+16 
+ 
+quintile, stocks are further sorted into deciles based on average RQS in months t–3 to t–1. Valueweighted returns are then estimated for each of these 50 (5 × 10) portfolios in months t+1, t+2, 
+and t+3, whereas returns in month t are skipped to avoid potential short-term reversals. The zeroinvestment illiquidity premium factor, IML, is constructed as the difference in returns between the 
+five least liquid portfolios and the five most liquid portfolios (across volatility quintiles). During 
+the sample period, the IML factor is significantly positive at 0.63% per month (t-value = 3.32).  
+ 
+4 IMPACT OF HFT ON STOCK RETURN AND PERFORMANCE OF 
+ACTIVE FUNDS 
+In this section, we investigate the relation between HFT and stock return and that between HFT 
+and fund performance. We construct long-short portfolios by sorting stocks and funds based on 
+HFT intensity and estimate their risk-adjusted returns. Various factor models and specifications 
+are used for robustness tests. We also examine the relation between HFT and stock return in terciles 
+of stocks sorted by HFT intensity to preclude the possibility of self-selection bias. 
+ 
+4.1 HFT intensity and stock returns 
+We examine the relation between HFT intensity and stock returns using an approach consistent to 
+the construction of the IML factor described in Section 3.5. In each month t, stocks are sorted into 
+quintiles based on the volatility of daily returns over months t–3 to t–1. Within each volatility 
+quintile, stocks are further sorted into quintiles based on their HFT intensity over months t–3 to t–
+1. Value-weighted returns are then calculated for each of these 25 (5 × 5) portfolios over months 
+t+1 to t+3. Return of each HFT-intensity quintile is calculated as the equal-weighted average of 
+the returns of the five volatility quintiles within this HFT-intensity quintile. As shown in Panel A 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+17 
+ 
+of Table 4, there is clearly a negative relation between HFT intensity and stock returns—the 
+quintile with the highest HFT intensity underperforms that with the lowest HFT intensity by 0.51% 
+per month, or 6.12% per year, based on the FFC-4 model. Results based on the capital asset pricing 
+model (CAPM) and the FF-3 model are qualitatively and quantitatively similar. Moreover, this 
+negative relation is largely reduced and becomes statistically insignificant once the IML factor is 
+controlled.  
+It is possible that HFT-intensive stocks provide lower FFC-4-adjusted returns merely 
+because they are more liquid. To disentangle the effect of HFT intensity from the effect of liquidity 
+level on stock returns, we repeat the above tests on quintiles of stocks sorted by their liquidity level 
+(inversely proxied by the RQS) in the prior three months, where the HFT quintiles are independent 
+of the illiquidity quintiles. As reported in Panel B of Table 4, the negative relation between HFT 
+intensity and FFC-4-adjusted stock returns are strong and significant or marginally significant in 
+four of the liquidity quintiles. More importantly, consistent with the prediction of the stylized 
+illustration in Section 2, this negative relation is generally stronger in quintiles with lower RQS 
+(higher liquidity). Therefore, the negative relation between HFT intensity and stock returns 
+reported in Panel A cannot be explained by the difference in liquidity levels. Overall, these results 
+are consistent with our hypothesis that HFT intensity may affect the illiquidity premium which in 
+turn affects expected returns for stocks with different levels of liquidity. 
+[Insert Table 4 here] 
+4.2 HFT intensity and fund performance 
+4.2.1 Baseline quintile portfolio analysis 
+At the beginning of each month, all funds in the sample are sorted into quintiles by the average 
+HFT intensity in either their trade portfolios (HFTT) or their holdings (HFTH) during the previous 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+18 
+ 
+calendar quarter. For example, HFTT and HFTH in the second quarter of 2013 are used to sort funds 
+in July, August, and September 2013. Equal-weighted returns are then calculated for each quintile 
+portfolio based on pre-fee or post-fee fund returns, and portfolios are rebalanced monthly.17 The 
+risk-adjusted returns are estimated by time-series regressions based on the FFC-4 model. As 
+reported in Panel A of Table 5, the four-factor alphas decrease by HFT intensity for all four 
+specifications. For example, when sorted by HFTT, funds in the top quintile significantly 
+underperform funds in the bottom quintile by a monthly pre-fee alpha of 0.21% (t-value = 2.34), 
+or roughly 2.52% annually; when sorted by HFTH, funds in the top quintile significantly 
+underperform funds in the bottom quintile by a monthly pre-fee alpha of 0.22% (t-value = 2.40), 
+or roughly 2.64% annually. The use of post-fee return makes little difference.  
+[Insert Table 5 here] 
+4.2.2 Robustness tests 
+We conduct robustness tests based on alternative specifications of the quintile portfolio analysis 
+and report the 5–1 return spread in Table A.3 of the Internet Appendix. The underperformance of 
+funds associated with more-intensive HFT is robust to the use of various factor models, the use of 
+value weighting of quintile portfolios, removing the financial crisis period (01/2008–06/2009), or 
+the use of the Ferson-Schadt (1996) conditional model. However, there is no underperformance of 
+stocks relative to HFT intensity during 1993–2002 when HFT was not intensive or nonexistent.  
+In addition, we also examine the relation between HFT and fund performance by estimating 
+Fama-MacBeth (1973) cross-sectional regressions of fund return or FFC-4-adjusted return (alpha) 
+on lagged HFT intensity: 
+𝑅𝑖,𝑡= 𝛼+ 𝛽𝐻𝐹𝑇𝑖,𝑡−1 + 𝜹𝑿𝑖,𝑡−1 + 𝜀𝑖,𝑡,                                             (8) 
+ 
+17 The use of equal weighting is to prevent a few very large funds from dominating the test results. Value weighting 
+is used in robustness tests and generates qualitatively and quantitatively similar results.  
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+19 
+ 
+where 𝑅𝑖,𝑡 is the return or alpha of fund i in month t, 𝐻𝐹𝑇𝑖,𝑡−1 is HFT intensity in trade portfolio 
+(HFTT) or holdings (HFTH) of a fund, and X is a vector of control variables including fund size 
+(TNA), turnover ratio (TO), age (Age), annual expense ratio (ExpRatio), monthly net flow ratio 
+(Flow), and lagged dependent variable (DV). Monthly alpha is estimated as the difference between 
+fund excess return in that month and the return predicted by factor models, which is the product 
+of fund factor loadings and the realizations of those factors in that month. Factor loadings are 
+estimated based on time-series regression using pre-fee returns in the previous 36 months. All 
+independent variables, except for Age and ExpRatio, are based on the previous month or calendar 
+quarter. As reported in Table A.4 of the Internet Appendix, intensive HFT is negatively and 
+significantly related to future fund performance in all specifications.  
+In sum, intensive HFT is related to significantly lower risk-adjusted returns of actively 
+managed mutual funds in both quintile portfolio analysis and Fama-MacBeth (1973) crosssectional regression analysis; this negative relation is robust to different factor models, weighting 
+methods, sorting methods, and the use of conditional models. This is consistent with the illiquidity 
+premium effect illustrated in Section 2. 
+ 
+4.3 Illiquidity premium as an explanation 
+4.3.1 Quintile portfolio analysis after controlling for illiquidity premium 
+As shown in Table A.2 and Figure A.2.A in the Internet Appendix and consistent with prior studies, 
+we find that level of stock liquidity (inversely measured by RQS or RES) indeed increases by HFT 
+intensity. To examine if the illiquidity premium channel proposed in the earlier section of this 
+paper could explain the negative relation between HFT intensity and fund performance, we repeat 
+the baseline quintile portfolio analysis by using the FFC-IML factor to control for the illiquidity 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+20 
+ 
+premium. As reported in Panel B of Table 5, after controlling for the illiquidity premium, the 5–1 
+return spread based on fund pre-fee returns is narrowed from –0.21% to –0.09% (from –0.22% to 
+–0.11%) and is no longer statistically significant (t-value = 1.25 or 1.36) when funds are sorted by 
+HFTT (HFTH). Moreover, loadings of the IML factor are highly significantly (not reported). 
+Therefore, the illiquidity premium explains about one-half of the negative relation between HFT 
+intensity and fund performance. Moreover, this result is robustness to many alternative 
+specifications (not reported): removing stocks with stock price below $5, IML factor constructed 
+using effective spread, and removing the financial crisis period (01/2008–06/2009).  
+4.3.2 Distinction between self-selection bias and causality 
+The above findings are consistent with our hypothesis, but the direction of causality is uncertain: 
+HFT-intensive stocks are likely to be liquid stocks, but lower risk-adjusted returns of these stocks 
+may not be caused by HFT. To preclude such a possibility, we examine whether HFT intensity is 
+related to the magnitude of illiquidity premium. In particular, we repeat estimation of the illiquidity 
+premium based on RQS and terciles of stocks presorted by HFT intensity, where the liquidity 
+deciles are independent from the HFT terciles. As reported in Table 6, there is a high illiquidity 
+premium of 0.63% per month (adjusted for the FFC-4 factors; t-value = 3.32) in U.S. common 
+stocks during 2003–2018, but it is concentrated in the HFT-intensive tercile of stocks and is weak 
+and not statistically significant in the other two terciles. This finding is robust to the use of relative 
+effective spread as alternative measures of liquidity or sorting liquidity deciles conditional on the 
+HFT terciles. Moreover, as reported in Table A.5 in the Internet Appendix and consistent with the 
+findings in Table 5, there is no significant illiquidity premium during 1993–2002 when HFT was 
+not intensive or nonexistent. Overall, these findings are consistent with the hypothesis that the 
+combination of cost per trade and trading frequency determines the illiquidity premium. In addition, 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+21 
+ 
+it clearly suggests a causality between intensive HFT and weaker fund performance: without the 
+presence of intensive HFT, a significant illiquidity premium would not exist. This is also consistent 
+with the finding of Ben-Rephael, Kadan, and Wohl (2015) that illiquidity premium has largely 
+diminished in the recent period due to improved market liquidity. 
+[Insert Table 6 here] 
+The above findings imply that the underperformance of mutual funds associated with 
+intensive HFT is not a reasonable compromise to obtain more liquidity. For HFTs who hold and 
+trade liquid assets, the lower required return on liquid assets can be offset by substantial savings 
+from lower trading costs. However, for most traditional institutional investors who trade much less 
+frequently, the gains from lower trading costs of liquid assets cannot offset the loss in expected 
+returns, consistent with the illustration in Section 2. Therefore, institutional investors should 
+reduce their investments in stocks where HFT intensity is high.  
+ 
+5 ALTERNATIVE EXPLANATIONS 
+In this section, we discuss possible alternative explanations for the negative relation between HFT 
+and fund performance reported in Section 4. First, we investigate the possibility that HFT increases 
+trading costs of mutual funds. Second, we examine whether this negative relation comes from 
+liquidity risk premium, the idiosyncratic volatility anomaly, or temporary overpricing. Finally, we 
+investigate if funds are forced to hold HFT-intensive stocks due to constraints imposed by their 
+activeness or size. 
+ 
+5.1 Institutional trading costs 
+5.1.1 Quintile portfolios using return of fund holdings 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+22 
+ 
+If the negative relation between HFT intensity and fund performance is due to higher trading costs, 
+then portfolios created by replicating the holdings of mutual funds and assuming zero trading cost 
+should not be negatively affected by HFT. To test this hypothesis, we redo the quintile portfolio 
+analysis using the return of holdings of funds instead of NAV-based returns.18 The return of 
+holdings of fund i in month t, 𝑅𝑖,𝑡
+𝐻, is estimated as 
+𝑅𝑖,𝑡
+𝐻= ∑𝑤𝑖,𝑘,𝑡−1𝑅𝑘,𝑡
+𝑁
+𝑘=1
+,                                                        (9) 
+where 𝑤𝑖,𝑘,𝑡−1 is the weight of stock k in fund i at the end of month t–1, and 𝑅𝑘,𝑡 is the return of 
+stock k in month t estimated from closing quote midpoint.19 In each month, we follow the same 
+approach in Table 5 to sort mutual funds into quintiles based on their HFTT or HFTH in the prior 
+calendar quarter. The equally weighted returns of each quintile as well as the 5–1 return spread are 
+calculated based on 𝑅𝐻 and are then regressed on the FFC-4 factors.  
+Table 7 reports the FFC-4-adjusted returns of quintile portfolios based on holdings. In 
+columns (1) and (3), funds are sorted by their lagged HFTT and HFTH, respectively, and trading 
+costs are ignored. The 5–1 return spreads are –0.19% per month (t-value = –2.35) in column (1) 
+and –0.21% per month (t-value = –2.31) in column (3), so they are of similar magnitudes as the 
+ones reported in Table 5. That is, funds associated with intensive HFT significantly underperform 
+other funds even if trading costs are assumed to be zero. Therefore, trading costs are not likely to 
+be the primary explanation for the negative relation between HFT and fund performance.  
+[Insert Table 7 here] 
+ 
+18 About one-half of funds in the sample report their holdings every quarter. For these funds, we assume that the 
+monthly trading volume of a stock is one-third of the net share change of that stock during that quarter. For example, 
+if fund i holds 100 shares of stock x at the end of March 2013 and holds 130 shares of that stock at the end of June 
+2013, then we assume that the share volume of stock x purchased by fund i is 10 in each of April, May, and June 2013, 
+and shares of x held by the fund at the end of April, May, and June is 110, 120, and 130, respectively. 
+19 The use of returns calculated by closing prices gives very similar results. 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+23 
+ 
+However, the above result does not preclude the possibility that HFT may still affect fund 
+performance to some extent through its impact on trading costs. In this part, we provide additional 
+evidence by estimating total trading costs including both direct trading costs and price impact costs 
+and then deducting them from fund returns to see if they make a noticeable difference. Specifically, 
+we assume that the direct cost to trade one share of a stock is one-half of its volume-weighted 
+average effective spread in that month, and we follow a similar approach as in Breen, Hodrick, 
+and Korajczyk (2002) and Korajczyk and Sadka (2004) to estimate the price impact cost.20 As 
+reported in columns (2) and (4) of Table 7, when funds are sorted by HFTT, the 5–1 return spread 
+is –0.19% per month (t-value = –2.34) after the deduction of trading costs, and this is similar to 
+the result reported in column (1) where trading costs are not deducted. Similar results can also be 
+found when sorting the funds by HFTH. Overall, these findings imply that HFT’s impact on 
+institutional trading costs is not the primary driver of our results. 
+5.1.2 Multivariate analysis on the return gap 
+To provide more reliable evidence regarding HFT’s impact on institutional trading costs at the 
+individual fund level, we estimate Fama-MacBeth (1973) cross-sectional regressions to examine 
+the impact of HFT on the “return gap” of mutual funds. Following Kacperczyk, Sialm, and Zheng 
+(2008), we define the return gap of fund i in month t, 𝑅𝐺𝑖,𝑡, as 
+𝑅𝐺𝑖,𝑡= 𝑅𝑖,𝑡−(𝑅𝑖,𝑡
+𝐻−𝐸𝑋𝑃𝑖,𝑡),                                                  (10) 
+where 𝑅𝑖,𝑡 is the NAV-based post-fee return, 𝑅𝑖,𝑡
+𝐻 is the return of holdings, and 𝐸𝑋𝑃𝑖,𝑡 is the 
+monthly expense ratio. As reported in Panel A of Table 8, the average of the return gap is –0.02%. 
+The return gap is then regressed on HFT intensity and other fund characteristics: 
+𝑅𝐺𝑖,𝑡= 𝛼+ 𝛽𝐻𝐹𝑇𝑖,𝑡−1 + 𝜹𝑿𝑖,𝑡−1 + 𝜀𝑖,𝑡,                                        (11) 
+ 
+20 Details of the estimation procedure are provided in Internet Appendix B. 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+24 
+ 
+where 𝐻𝐹𝑇𝑖,𝑡−1 is the HFT intensity in trade portfolio (HFTT) or holdings (HFTH) of a fund in the 
+prior calendar quarter, and X is a vector of control variables including fund size (TNA), turnover 
+ratio (TO), age (Age), monthly net flow ratio (Flow), and annual expense ratio (ExpRatio). As 
+reported in Panel B of Table 8, neither HFTT nor HFTH is significantly related to fund return gap. 
+Moreover, the use of NAV-based pre-fee return leads to similar results (not reported).  
+[Insert Table 8 here] 
+Overall, analyses on the fund return gap show no evidence that HFT increases trading costs 
+of mutual funds. This is consistent with the findings of Brogaard, Hendershott, and Riordan (2014) 
+that no increase in institutional trading costs has been found following technology upgrades that 
+lower the latency of the London Stock Exchange. Moreover, it indicates that the underperformance 
+of funds holding HFT-intensive stocks is caused by lower risk-adjusted returns of the stocks held 
+by those funds. Therefore, in the rest of this section we focus on HFT intensity in stocks held by 
+the funds (HFTH) rather than that in stocks traded by those funds (HFTT). 
+ 
+5.2 Risk premium and market anomalies 
+5.2.1 Liquidity risk premium 
+Recent studies generally find that HFT reduces liquidity risk (Hendershott & Riordan, 2013). As 
+stocks with high liquidity risk earn significant liquidity risk premium (Pástor & Stambaugh, 2003; 
+Acharya & Pedersen, 2005), HFT may reduce expected stock returns by reducing liquidity risk. 
+To control for this liquidity risk premium effect, we add the Pástor and Stambaugh (2003) liquidity 
+risk factor (PS) to the FFC-4 model and use this alternative five-factor model to evaluate the 
+performance of quintile portfolios formed by HFTH. As reported in columns (1) and (2) of Table 
+9, controlling for liquidity risk premium has no impact on the 5–1 return spread. Moreover, loading 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+25 
+ 
+of the PS factor is not statistically significant (not reported). Therefore, liquidity risk is unlikely to 
+explain the negative relation between HFT intensity and fund performance.  
+5.2.2 Idiosyncratic volatility anomaly 
+HFT has been found to increase stock price volatility (Boehmer, Fong, & Yu, 2021). As illustrated 
+in Figure A.2.B in the Internet Appendix, HFT intensity is strongly and positively correlated with 
+volatility. Therefore, it is possible that the main finding of this paper comes from the idiosyncratic 
+volatility (IVOL) anomaly—HFT reduces stock returns and fund performance because it increases 
+IVOL. To examine this possibility, we follow Ang et al. (2006) to create a zero-investment 
+portfolio to capture the IVOL anomaly and add the IVOL factor to the four-factor model to 
+evaluate performance of portfolios sorted by HFT intensity. The IVOL of a stock in a month is 
+estimated as the standard deviation of daily return residuals by the Fama-French three-factor model, 
+and the IVOL factor is constructed by an approach similar to that of the IML factor. During the 
+sample period, the IVOL factor is significantly negative at –0.73% per month (four-factor adjusted; 
+t-value = –2.59). As reported in columns (3) and (4) of Table 9, however, controlling for the IVOL 
+factor has little impact on the 5–1 return spread, and the loading on the IVOL factor is not 
+statistically significant when explaining the 5–1 return spread. Therefore, idiosyncratic volatility 
+is unlikely to explain the negative relation between HFT intensity and fund performance.  
+5.2.3 Temporary overpricing 
+HFTs deliberately select stocks for trading. If HFTs prefer to trade overpriced stocks, then the 
+negative relation between HFT intensity and fund performance merely reflects a selection bias. 
+Although plausible, this is an unlikely explanation for the following reasons. First, there is no 
+known reason to suspect that HFTs would prefer overpriced stocks.21 Second, after the initiation 
+ 
+21 The literature generally finds that HFT increases intraday price efficiency by trading in the direction of permanent 
+price changes and in the opposite direction of transitory pricing errors (Brogaard, Hendershott, & Riordan, 2014) and 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+26 
+ 
+of the 2008 short-sale ban, short-banned stocks generally experienced overpricing (Autore, 
+Billingsley, & Kovacs, 2011), but nonshort HFT volume declined rather than increased (Brogaard, 
+Hendershott, & Riordan, 2017).22 This contradicts the notion that HFTs prefer to trade overpriced 
+stocks. Nevertheless, we use short interest ratio (SIR), defined as the ratio of shares held in short 
+positions to total shares outstanding, as a proxy for overpricing to construct a factor capturing 
+future price correction of temporarily overpriced stocks. Many empirical studies, such as Asquith, 
+Pathak, and Ritter (2005), consider SIR to reflect investors’ perception about overpricing. The SIR 
+factor is constructed by an approach similar to that of the IML factor, and it is significantly negative 
+over the sample period (–0.77% per month with t-value of –4.45). As reported in columns (5) and 
+(6) of Table 9, controlling for the SIR factor has little impact on the 5–1 return spread, implying 
+that the negative relation between HFT intensity and fund performance is unlikely to be caused by 
+HFTs’ preference to overpriced stocks, if any. 
+[Insert Table 9 here] 
+5.3 Possible constraints faced by fund managers 
+Why are fund managers holding HFT-intensive stocks when these stocks deliver lower returns? 
+It’s possible that fund managers are not aware of the lower returns associated with these stocks, 
+but it’s also possible that certain constraints force fund managers to hold these stocks. For example, 
+some closet indexers may have to hold a large number of HFT-intensive stocks as such stocks 
+represent significant fractions of market indices tracked by these managers. An active manager 
+ 
+that intensive HFT is associated with intraday price series that is closer to random walk (Conrad, Wahal, & Xiang 
+2015). Thus, it is reasonable to believe that HFTs are interested in mispriced stocks and are actively involved in price 
+discovery by buying underpriced stocks and selling overpriced ones. However, like nHFTs, HFTs face short sale 
+constraints—it is easier to buy than to sell. Therefore, there is more reason to believe that HFTs prefer underpriced 
+stocks instead of overpriced ones if HFTs have a preference for mispricing at all. 
+22 As reported by Brogaard, Hendershott, and Riordan (2017), the average relative HFT volume declined from 23.91% 
+(of the total volume) to 15.53% for short-banned stocks, whereas average HFT short volume declined by only 5.63% 
+(of the total volume). Therefore, average nonshort HFT volume declined by 2.75% (of the total volume). 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+27 
+ 
+may also have to invest in many HFT-intensive stocks when managing a large portfolio due to the 
+heavy presence of HFTs in so many stocks. We examine these possibilities by repeating our 
+baseline quintile portfolio analysis on subsamples of more versus less active funds and large versus 
+small funds. In Panel A of Table 10, in each month all funds in the sample are sorted into quartiles 
+by the active shares measure of Cremers and Petajisto (2009) and the top (bottom) quartiles are 
+defined as more (less) active funds. In contrast to the hypothesis that less active funds may be 
+forced to hold HFT-intensive stocks, the negative relation between HFT intensity and fund 
+performance is actually stronger in more active funds. Similarly, results reported in Panel B do not 
+support the possibility that large funds may be forced to hold HFT-intensive stocks, as the negative 
+relation between HFT intensity and fund performance has roughly the same magnitude in large 
+and small funds. In sum, the above results do not support the constraint hypothesis. 
+[Insert Table 10 here] 
+ 
+6 CONCLUSION 
+HFT has experienced rapid growth over the past two decades, yet our understanding of its impact 
+on financial markets and on other market participants is limited. Even though several studies 
+suggest that HFT reduces trading costs and improves market efficiency, there is still widespread 
+concern regarding its potentially negative impact on the performance of traditional institutional 
+investors. The primary channel through which HFTs affect institutional investors is thought to be 
+due to predatory trading, which may increase institutional trading costs. Limited availability of 
+HFT data for U.S. markets also restricts comprehensive studies on HFT, leading to mixed and 
+inconclusive empirical findings. 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+28 
+ 
+This paper contributes to the literature by being the first to explore a new channel through 
+which HFTs may affect other investors: the illiquidity premium. Since HFTs prefer liquid stocks 
+due to their high trading frequency, they make those stocks expensive, thereby causing their returns 
+to be lower than those for illiquid stocks. Funds that hold stocks with high HFT intensity may 
+underperform other funds or the market. We illustrate this concept by a simple numerical example, 
+and we indeed find that intensive HFT in stocks traded or held by funds is related to significantly 
+lower risk-adjusted fund returns. Monthly four-factor-adjusted return spread between the top and 
+the bottom quintiles of funds sorted by HFT intensity in their holdings is –0.22%. Further analyses 
+show that one-half of this negative abnormal return can be explained by the illiquidity premium. 
+Among other contributions, we find no impact of HFTs on trading costs of mutual funds. 
+Our approach of measuring HFT intensity by quote messages is largely based on that of 
+Hendershott, Jones, and Menkveld (2011) and Conrad, Wahal, and Xiang (2015), but we refine 
+the methodology by adjusting for stock size. The HFT measure used in this paper has a high 
+correlation with actual HFT activity of the 120-stock NASDAQ sample. As our HFT measure can 
+be constructed based on the publicly available NYSE TAQ database, our empirical evidence is 
+based on the entire U.S. stock market over a 16-year period instead of the more limited samples 
+used in many studies. 
+Although the results of this paper ease concern about HFT’s negative impact on trading 
+costs of other institutional investors, they reveal other challenges faced by managers of traditional 
+investment companies. This paper finds that intensive HFT may be detrimental to the performance 
+of traditional institutional investors because it makes liquidity to be more “expensive” to these 
+investors. This finding suggests that money managers should be cautious when buying or holding 
+stocks that experience highly intensive HFT.  
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+29 
+ 
+REFERENCES 
+Acharya, V. V., & Pedersen, L. H. (2005). Asset pricing with liquidity risk. Journal of Financial 
+Economics, 77(2), 375–410. 
+Amihud, Y., Hameed, A., Kang, W., & Zhang, H. (2015). The illiquidity premium: International 
+evidence. Journal of Financial Economics, 117(2), 350–368. 
+Amihud, Y., & Mendelson, H. (1986). Asset pricing and the bid-ask spread. Journal of Financial 
+Economics, 17(2), 223–249. 
+Ang, A., Hodrick, R. J., Xing, Y., & Zhang, X. (2006). The cross-section of volatility and expected 
+returns. Journal of Finance, 61(1), 259–299. 
+Asquith, P., Pathak, P. A., & Ritter, J. R. (2005). Short interest, institutional ownership, and stock 
+returns. Journal of Financial Economics, 78(2), 243–276. 
+Autore, D. M., Billingsley, R. S., & Kovacs, T. (2011). The 2008 short sale ban: Liquidity, 
+dispersion of opinion, and the cross-section of returns of US financial stocks. Journal of 
+Banking & Finance, 35(9), 2252–2266. 
+Baldauf, M., & Mollner, J. (2020). High-frequency trading and market performance. Journal of 
+Finance, 75(3), 1495–1526. 
+Baron, M., Brogaard, J., Hagströmer, B., & Kirilenko, A. (2019). Risk and return in highfrequency trading. Journal of Financial and Quantitative Analysis, 54(3), 993–1024. 
+Ben-Rephael, A., Kadan, O., & Wohl, A. (2015). The diminishing liquidity premium. Journal of 
+Financial and Quantitative Analysis, 50(1/2), 197–229. 
+Biais, B., Foucault, T., & Moinas, S. (2015). Equilibrium fast trading. Journal of Financial 
+Economics, 116(2), 292–313. 
+Boehmer, E., Fong, K. Y., & Wu, J. J. (2021). Algorithmic trading and market quality: 
+International evidence. Journal of Financial and Quantitative Analysis, 56(8), 2659–2688. 
+Bongaerts, D., & Van Achter, M. (2021). Competition among liquidity providers with access to 
+high-frequency trading technology. Journal of Financial Economics, 140(1), 220–249.  
+Breen, W. J., Hodrick, L. S., & Korajczyk, R. A. (2002). Predicting equity liquidity. Management 
+Science, 48(4), 470–483. 
+Brogaard, J., & Garriott, C. (2019). High-frequency trading competition. Journal of Financial and 
+Quantitative Analysis, 54(4), 1469–1497. 
+Brogaard, J., Hendershott, T., Hunt, S., & Ysusi, C. (2014). High-frequency trading and the 
+execution costs of institutional investors. Financial Review, 49(2), 345–369. 
+Brogaard, J., Hendershott, T., & Riordan, R. (2014). High-frequency trading and price discovery. 
+Review of Financial Studies, 27(8), 2267–2306. 
+Brogaard, J., Hendershott, T., & Riordan, R. (2017). High-frequency trading and the 2008 shortsale ban. Journal of Financial Economics, 124(1), 22–42. 
+Carhart, M. M. (1997). On persistence in mutual fund performance. Journal of Finance, 52(1), 
+57–82. 
+Chalmers, J. M., & Kadlec, G. B. (1998). An empirical examination of the amortized 
+spread. Journal of Financial Economics, 48(2), 159–188. 
+Chen, X., Huang, J. Z., Sun, Z., Yao, T., & Yu, T. (2020). Liquidity premium in the eye of the 
+beholder: An analysis of the clientele effect in the corporate bond market. Management 
+Science, 66(2), 932–957. 
+Chen, Y., & Qin, N. (2017). The behavior of investor flows in corporate bond mutual funds. 
+Management Science, 63(5), 1365–1381. 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+30 
+ 
+Conrad, J., Wahal, S., & Xiang, J. (2015). High-frequency quoting, trading, and the efficiency of 
+prices. Journal of Financial Economics, 116(2), 271–291. 
+Cremers, K. M., & Petajisto, A. (2009). How active is your fund manager? A new measure that 
+predicts performance. Review of Financial Studies, 22(9), 3329–3365. 
+Evans, R. B. (2010). Mutual fund incubation. Journal of Finance, 65(4), 1581–1611. 
+Fama, E. F., & French, K. R. (1992). The cross-section of expected stock returns. Journal of 
+Finance, 47(2), 427–465. 
+Fama, E. F., & French, K. R. (1993). Common risk factors in the returns on stocks and bonds. 
+Journal of Financial Economics, 33(1), 3–56. 
+Fama, E. F., & MacBeth, J. D. (1973). Risk, return, and equilibrium: Empirical tests. Journal of 
+Political Economy, 81(3), 607–636. 
+Ferson, W. E., & Schadt, R. W. (1996). Measuring fund strategy and performance in changing 
+economic conditions. Journal of Finance, 51(2), 425–461. 
+Goldstein, M. A., Kumar, P., & Graves, F. C. (2014). Computerized and high-frequency 
+trading. Financial Review, 49(2), 177–202. 
+Hendershott, T., Jones, C. M., & Menkveld, A. J. (2011). Does algorithmic trading improve 
+liquidity? Journal of Finance, 66(1), 1–33. 
+Hendershott, T., & Riordan, R. (2013). Algorithmic trading and the market for liquidity. Journal 
+of Financial and Quantitative Analysis, 48(4), 1001–1024. 
+Hirschey, N. (2021). Do high-frequency traders anticipate buying and selling pressure? 
+Management Science, 67(6), 3321–3345.  
+Kacperczyk, M., Sialm, C., & Zheng, L. (2008). Unobserved actions of mutual funds. Review of 
+Financial Studies, 21(6), 2379–2416. 
+Karpoff, J. M., & Lou, X. (2010). Short sellers and financial misconduct. Journal of Finance, 65(5), 
+1879–1913. 
+Korajczyk, R. A., & Murphy, D. (2019). High-frequency market making to large institutional 
+trades. Review of Financial Studies, 32(3), 1034–1067. 
+Korajczyk, R. A., & Sadka, R. (2004). Are momentum profits robust to trading costs? Journal of 
+Finance, 59(3), 1039–1082. 
+Newey, W. K., & West, K. D. (1987). A simple, positive semi-definite, heteroskedasticity and 
+autocorrelation consistent covariance matrix. Econometrica, 55(3), 703–708. 
+Pástor, L., & Stambaugh, R. F. (2003). Liquidity risk and expected stock returns. Journal of 
+Political Economy, 111(3), 642–685. 
+Shkilko, A., & Sokolov, K. (2020). Every cloud has a silver lining: Fast trading, microwave 
+connectivity, and trading costs. Journal of Finance, 75(6), 2899–2927. 
+van Kervel, V., & Menkveld, A. J. (2019). High-frequency trading around large institutional orders. 
+Journal of Finance, 74(3), 1091–1137. 
+Yang, L., & Zhu, H. (2020). Back-running: Seeking and hiding fundamental information in order 
+flows. Review of Financial Studies, 33(4), 1484–1533. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+31 
+ 
+TABLE 1 Summary statistics of mutual fund characteristics 
+ 
+Panel A: Distribution of fund characteristics 
+  
+Mean 
+Min 
+P25 
+Median 
+P75 
+Max 
+Number of funds 
+3,536 
+Number of reported holdings 
+102 
+1 
+40 
+61 
+94 
+2,820 
+TNA ($ millions) 
+1,498 
+10 
+94 
+309 
+1,027 
+199,483 
+Monthly flow ratio (%) 
+–0.46 
+–49.95 
+–1.48 
+–0.59 
+0.39 
+49.86 
+Age (years) 
+16.66 
+3.00 
+8.52 
+13.83 
+20.26 
+94.53 
+Annual expense ratio (%) 
+1.30 
+–0.51 
+0.97 
+1.23 
+1.57 
+4.89 
+Annual turnover ratio (%) 
+74.76 
+0.00 
+31.10 
+57.00 
+95.00 
+3452.00 
+Monthly pre-fee return (%) 
+0.86 
+–89.86 
+–1.38 
+1.29 
+3.60 
+91.05 
+Monthly return of holdings (%) 
+0.90 
+–34.36 
+–1.46 
+1.27 
+3.77 
+32.62 
+Panel B: Average fund characteristics in each year 
+Year 
+Number 
+of funds 
+Number 
+of stocks 
+held by 
+funds 
+TNA 
+($ millions) 
+Monthly 
+net flow 
+ratio 
+(%) 
+Age 
+(years) 
+Annual 
+expense 
+ratio 
+(%) 
+Annual 
+turnover 
+ratio 
+(%) 
+Monthly 
+pre-fee 
+return 
+(%) 
+Monthly 
+return 
+of 
+holdings 
+(%) 
+2003 
+1,579 
+86 
+976 
+0.51 
+13.66 
+1.59 
+87.20 
+3.69 
+4.02 
+2004 
+1,682 
+88 
+1,244 
+–0.05 
+13.65 
+1.55 
+81.96 
+1.22 
+1.13 
+2005 
+1,701 
+88 
+1,323 
+–0.12 
+13.96 
+1.51 
+80.52 
+0.71 
+0.64 
+2006 
+1,727 
+89 
+1,528 
+–0.32 
+14.41 
+1.45 
+85.17 
+1.13 
+1.05 
+2007 
+1,743 
+90 
+1,674 
+–0.56 
+14.97 
+1.40 
+83.61 
+0.70 
+0.53 
+2008 
+1,844 
+99 
+1,428 
+–0.77 
+15.27 
+1.37 
+97.97 
+–3.72 
+–3.83 
+2009 
+1,838 
+105 
+1,041 
+–0.42 
+15.35 
+1.34 
+91.23 
+2.63 
+2.54 
+2010 
+2,214 
+108 
+1,149 
+–0.46 
+15.67 
+1.30 
+79.01 
+1.80 
+2.16 
+2011 
+2,249 
+106 
+1,193 
+–0.42 
+15.91 
+1.27 
+72.93 
+0.03 
+0.13 
+2012 
+2,137 
+104 
+1,227 
+–0.63 
+16.62 
+1.25 
+66.68 
+1.32 
+1.34 
+2013 
+2,103 
+105 
+1,451 
+–0.18 
+17.40 
+1.22 
+65.76 
+2.66 
+2.71 
+2014 
+2,059 
+105 
+1,733 
+–0.36 
+17.96 
+1.21 
+63.73 
+0.77 
+0.82 
+2015 
+2,096 
+104 
+1,776 
+–0.47 
+18.50 
+1.18 
+63.45 
+0.02 
+–0.01 
+2016 
+2,077 
+104 
+1,711 
+–0.93 
+19.04 
+1.16 
+62.15 
+1.07 
+1.25 
+2017 
+2,013 
+107 
+1,957 
+–0.84 
+19.58 
+1.12 
+60.44 
+1.58 
+1.60 
+2018 
+1,992 
+113 
+2,159 
+–0.66 
+20.04 
+1.09 
+60.05 
+–0.54 
+–0.47 
+Note: This table reports summary statistics of characteristics of 3,536 U.S. actively managed equity mutual funds 
+during the sample period of 2003–2018. Number of holdings is based on fund holdings reported by the CRSP 
+mutual fund database and the Thomson Reuters S12 database. Expense ratio is the ratio of total investment that 
+shareholders pay for the fund’s operating expenses, which include 12b-1 fees, possible waivers, and 
+reimbursements. Turnover ratio is the minimum of aggregated sales or aggregated purchases of securities divided by 
+the average 12-month TNA of the fund. To be included in the samples, a fund must have TNA no less than $10 
+million and be more than three years old at the beginning of each month. Panel A shows the distributions of fund 
+characteristics. Panel B reports the annual averages of fund characteristics. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+32 
+ 
+TABLE 2 Summary statistics of stock characteristics 
+ 
+Variables 
+Mean 
+Min 
+P25 
+P50 
+P75 
+Max 
+Panel A: Monthly stock characteristics over 2003–2018 
+  
+  
+  
+Number of stocks 
+8,150 
+Number of stock months 
+691,999 
+RET (%) 
+0.90 
+–97.22 
+–5.31 
+0.55 
+6.53 
+440.77 
+PRC ($) 
+71 
+2 
+8 
+18 
+35 
+326,000 
+MV ($ million) 
+4,529 
+10 
+141 
+512 
+2,033 
+896,472 
+B/M 
+0.74 
+0.00 
+0.31 
+0.54 
+0.87 
+94.33 
+TO (%) 
+17.40 
+0.00 
+4.96 
+11.51 
+21.57 
+7,100.02 
+Volatility (%) 
+2.61 
+0.00 
+1.45 
+2.14 
+3.20 
+46.19 
+IVOL (%) 
+2.08 
+0.00 
+1.07 
+1.65 
+2.57 
+44.38 
+RQS (%) 
+2.06 
+0.01 
+0.43 
+0.97 
+2.58 
+24.24 
+RES (%) 
+1.04 
+0.00 
+0.24 
+0.54 
+1.31 
+35.96 
+PIC 
+12.39 
+0.00 
+4.35 
+8.81 
+15.70 
+1,353.31 
+SIR (%) 
+4.61 
+0.00 
+0.92 
+2.69 
+6.14 
+90.22 
+IO (%) 
+57.62 
+0.00 
+30.30 
+63.77 
+84.83 
+120.00 
+ANLY 
+9 
+2 
+4 
+7 
+12 
+56 
+DISP (%) 
+18.78 
+0.00 
+1.59 
+3.67 
+10.09 
+27,675.00 
+Panel B: Monthly quote updates (×103) over 2003–2018 
+  
+  
+  
+All Stocks 
+733 
+0 
+43 
+159 
+517 
+66,452 
+1 (Small Stocks) 
+40 
+0 
+4 
+17 
+47 
+11,517 
+2 
+139 
+0 
+34 
+77 
+158 
+12,344 
+3 
+337 
+0 
+88 
+204 
+373 
+15,160 
+4 
+726 
+0 
+170 
+397 
+738 
+33,287 
+5 (Large Stocks) 
+2,422 
+0 
+355 
+1,000 
+2,704 
+66,452 
+Note: This table reports summary statistics of characteristics of 8,150 U.S. common stocks that were traded on the 
+NYSE, AMEX, and NASDAQ over 2003–2018. To be included in the sample, a stock month must have CRSP share 
+code 10 or 11, share price above $2 at the beginning of the month, and market capitalization of at least $10 million 
+at the end of the previous June. Panel A shows the distribution of monthly stock characteristics including monthly 
+return (RET), share price (PRC), market value (MV), book-to-market ratio (B/M), monthly turnover ratio (TO), 
+volatility based on daily returns (Volatility), idiosyncratic volatility by the approach of Ang et al. (2006) (IVOL), 
+time-weighted relative quoted spread (RQS), volume-weighted average relative effective spread (RES), five-minute 
+price impact cost (PIC) estimated by the approach of Breen, Hodrick, and Korajczyk (2002), short interest ratio 
+(SIR), institutional ownership (IO), number of analysts following (ANLY), and analyst forecast dispersion (DISP). 
+Panel B reports the average number of monthly quote messages (in thousands) for the whole sample and for each 
+size quintile. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+33 
+ 
+TABLE 3 Determinants of quote messages 
+ 
+  
+[1] 
+[2] 
+Intercept 
+9.25*** 
+1.14*** 
+(85.97) 
+(15.25) 
+Lag[DV] 
+0.87*** 
+(105.50) 
+Ln[MV] 
+0.60*** 
+0.08*** 
+(22.90) 
+(9.80) 
+BM 
+–0.02 
+–0.01*** 
+(–1.04) 
+(–3.23) 
+Lag[RET] 
+0.60*** 
+0.20*** 
+(19.40) 
+(13.40) 
+Ln[PRC] 
+–0.39*** 
+–0.06*** 
+(–10.19) 
+(–10.34) 
+TO 
+1.82*** 
+0.15*** 
+(34.76) 
+(6.51) 
+RQS 
+–25.27*** 
+–3.46*** 
+(–17.71) 
+(–9.53) 
+LIQBeta 
+–0.02 
+–0.00 
+ 
+(–1.29) 
+(–0.36) 
+IO 
+0.22*** 
+0.05*** 
+(9.40) 
+(7.61) 
+Ln[VOL] 
+0.04* 
+–0.03*** 
+(1.86) 
+(–9.81) 
+Ln[ANLY] 
+0.13*** 
+0.03*** 
+(9.53) 
+(13.24) 
+DISP 
+–0.02** 
+0.00 
+(–2.38) 
+(0.14) 
+R2 
+0.842 
+0.955 
+N 
+3,604 
+3,604 
+Note: This table reports the relations between quote messages and stock characteristics based on Fama-MacBeth 
+(1973) cross-sectional regressions. The sample consists of 8,150 U.S. common stocks that were traded on the NYSE, 
+AMEX, and NASDAQ over 2003–2018. To be included in the sample, a stock month must have CRSP share code 
+10 or 11, share price above $2 at the beginning of the month, and market capitalization of at least $10 million at the 
+end of the previous June. The dependent variable is the natural log of quote messages of a stock in a month. The 
+independent variables include market value of the stock at the previous June (MV), book-to-market ratio (BM), 
+lagged monthly stock return (RET), share price at the beginning of a month (PRC), lagged turnover ratio (TO), 
+lagged time-weighted relative quoted spread (RQS), the Pástor and Stambaugh (2003) liquidity beta (LIQBeta), 
+lagged institutional ownership (IO), lagged volatility based on daily returns (VOL), number of analysts following 
+(ANLY), lagged forecast dispersion (DISP), and the lagged dependent variable (DV, only in specification [2]). N is 
+the average number of stocks in each month. The significance level is based on the time-series variation in the 
+monthly regression coefficients over the sample period. The standard errors are adjusted for residual autocorrelation 
+and heteroskedasticity based on Newey and West (1987). ***, **, and ** indicate significance at the 1%, 5%, and 
+10% levels, respectively. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+34 
+ 
+TABLE 4 HFT intensity and stock returns 
+ 
+Panel A: Results are based on the entire stock sample 
+HFT quintiles 
+CAPM alpha 
+FF-3 alpha 
+FFC-4 alpha 
+FFC-IML alpha 
+5 (High) 
+–0.34*** 
+–0.31*** 
+–0.29** 
+–0.02 
+ 
+(–2.61) 
+(–2.65) 
+(–2.52) 
+(–0.21) 
+4 
+–0.15 
+–0.13 
+–0.13 
+0.01 
+(–1.20) 
+(–1.15) 
+(–1.11) 
+(0.04) 
+3 
+0.03 
+0.04 
+0.05 
+0.11 
+(0.32) 
+(0.46) 
+(0.53) 
+(1.25) 
+2 
+0.16 
+0.17* 
+0.19** 
+0.22** 
+(1.55) 
+(1.77) 
+(2.03) 
+(2.13) 
+1 (Low) 
+0.19* 
+0.19** 
+0.21** 
+0.15 
+ 
+(1.82) 
+(2.14) 
+(2.43) 
+(1.64) 
+5 – 1 
+–0.53*** 
+–0.50*** 
+–0.51*** 
+–0.18 
+  
+(–3.57) 
+(–3.43) 
+(–3.46) 
+(–1.28) 
+Panel B: Results are based on subsamples of stocks sorted by illiquidity 
+HFT quintiles 
+RQS quintiles                    
+5 (High) 
+4 
+3 
+2 
+1 (Low) 
+5 (High) 
+0.44* 
+–0.16 
+–0.34** 
+–0.13 
+–0.30** 
+(1.73) 
+(–1.02) 
+(–2.19) 
+(–0.86) 
+(–2.33) 
+4 
+0.02 
+0.09 
+0.07 
+–0.02 
+–0.16 
+ 
+(0.10) 
+(0.67) 
+(0.62) 
+(–0.15) 
+(–1.18) 
+3 
+0.01 
+0.21* 
+0.06 
+0.01 
+0.08 
+(0.04) 
+(1.84) 
+(0.52) 
+(0.06) 
+(0.51) 
+2 
+0.24 
+0.14 
+0.19** 
+0.14 
+0.42** 
+(1.53) 
+(1.17) 
+(2.10) 
+(1.03) 
+(2.48) 
+1 (Low) 
+0.23* 
+0.15 
+–0.02 
+0.53*** 
+0.29* 
+(1.77) 
+(1.15) 
+(–0.18) 
+(3.69) 
+(1.73) 
+5 – 1 
+0.21 
+–0.31* 
+–0.32** 
+–0.66*** 
+–0.60*** 
+  
+(0.96) 
+(–1.72) 
+(–2.13) 
+(–3.71) 
+(–2.84) 
+Note: This table reports risk-adjusted performance of quintile portfolios of stocks sorted by HFT intensity. The 
+sample consists of 8,150 U.S. common stocks that were traded on the NYSE, AMEX, and NASDAQ over 2003–
+2018. To be included in the sample, a stock month must have CRSP share code 10 or 11, share price above $2 at the 
+beginning of the month, and market capitalization of at least $10 million at the end of the previous June. In Panel A, 
+results are based on the entire stock sample. In each month t, stocks are sorted into quintiles based on the volatility 
+of daily returns over months t–3 to t–1. Within each volatility quintile, stocks are further sorted into quintiles based 
+on their HFT intensity over months t–3 to t–1. Value-weighted returns are then calculated for each of these 25 (5 × 
+5) portfolios over months t+1 to t+3, and return of each HFT-intensity quintile is calculated as the equal-weighted 
+average of the returns of the five volatility quintiles within this HFT-intensity quintile. Returns are adjusted by the 
+CAPM, Fama-French three-factor model (FF-3), Fama-French-Carhart four-factor model (FFC-4), or the FFC-IML 
+five-factor model. In Panel B, results are based on subsamples of stocks sorted by the time-weighted relative quoted 
+spreads (RQS) over months t–3 to t–1. The HFT quintiles are independent of the RQS quintiles, and FFC-4-adjusted 
+returns are reported. The t-statistics given in parentheses are based on Newey-West standard errors. ***, **, and * 
+indicate significance at the 1%, 5%, and 10% levels, respectively.  
+ 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+35 
+ 
+TABLE 5 HFT intensity and fund performance: Quintile portfolios  
+ 
+HFT quintiles 
+Funds are sorted by HFTT 
+  
+Funds are sorted by HFTH 
+Pre-fee return 
+Post-fee return 
+ 
+Pre-fee return 
+Post-fee return 
+[1] 
+[2] 
+ 
+[3] 
+[4] 
+Panel A: FFC-4 alphas are reported 
+  
+  
+  
+  
+5 (High) 
+–0.11* 
+–0.22*** 
+–0.13** 
+–0.23*** 
+ 
+(–1.97) 
+(–3.75) 
+ 
+(–2.13) 
+(–3.81) 
+4 
+–0.04 
+–0.15*** 
+–0.04 
+–0.15*** 
+ 
+(–1.17) 
+(–4.06) 
+ 
+(–1.27) 
+(–4.39) 
+3 
+–0.02 
+–0.12*** 
+–0.03 
+–0.14*** 
+(–0.62) 
+(–3.99) 
+(–0.78) 
+(–3.47) 
+2 
+0.03 
+–0.07 
+0.03 
+–0.08 
+(0.56) 
+(–1.55) 
+(0.52) 
+(–1.63) 
+1 (Low) 
+0.09* 
+–0.02 
+0.10* 
+–0.01 
+(1.70) 
+(–0.29) 
+(1.73) 
+(–0.17) 
+5 – 1 
+–0.21** 
+–0.20** 
+–0.22** 
+–0.22** 
+  
+(–2.34) 
+(–2.23) 
+  
+(–2.40) 
+(–2.30) 
+Panel B: FFC-IML alphas are reported 
+  
+  
+  
+5 (High) 
+–0.04 
+–0.14** 
+–0.04 
+–0.15*** 
+(–0.65) 
+(–2.58) 
+(–0.77) 
+(–2.64) 
+4 
+–0.00 
+–0.11*** 
+0.00 
+–0.10*** 
+ 
+(–0.09) 
+(–2.84) 
+ 
+(0.03) 
+(–2.98) 
+3 
+0.00 
+–0.10*** 
+–0.01 
+–0.12*** 
+(0.06) 
+(–3.07) 
+(–0.28) 
+(–2.80) 
+2 
+0.02 
+–0.09* 
+0.02 
+–0.09* 
+(0.31) 
+(–1.72) 
+(0.41) 
+(–1.74) 
+1 (Low) 
+0.06 
+–0.05 
+0.07 
+–0.04 
+(1.07) 
+(–0.89) 
+(1.16) 
+(–0.68) 
+5 – 1 
+–0.09 
+–0.09 
+–0.11 
+–0.11 
+  
+(–1.25) 
+(–1.17) 
+  
+(–1.36) 
+(–1.29) 
+Note: This table reports risk-adjusted performance of the quintile portfolios based on HFT intensity in the trade 
+portfolios or holdings of mutual funds over the previous calendar quarter. The sample includes 3,536 U.S. actively 
+managed equity mutual funds over 2003–2018 with greater than $10 million TNA and more than three years old at 
+the beginning of each month. Either the post-fee return or pre-fee return, calculated as post-fee return plus onetwelfth of annual expense ratio, is used to estimate portfolio return. All portfolios are equally weighted unless 
+otherwise noted. The FFC-4 model and the FFC-IML model are used to evaluate risk-adjusted performance in 
+Panels A and B, respectively. In columns (1) and (2), funds are sorted by HFT intensity in their trade portfolio 
+(HFTT) of the previous calendar quarter. In columns (3) and (4), funds are sorted by intensity of HFT in their 
+holdings (HFTH) of the previous calendar quarter. The t-statistics given in parentheses are based on Newey-West 
+standard errors. ***, **, and * indicate significance at the 1%, 5%, and 10% levels, respectively. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+36 
+ 
+TABLE 6 HFT intensity and illiquidity premium 
+ 
+Illiquidity 
+deciles 
+All stocks 
+  
+HFT terciles 
+ 
+High 
+Medium 
+Low 
+[1] 
+[2] 
+[3] 
+[4] 
+10 (High) 
+0.46*** 
+0.48* 
+0.18 
+0.49*** 
+ 
+(2.80) 
+ 
+(1.89) 
+(0.76) 
+(3.12) 
+9 
+0.08 
+0.25 
+0.07 
+0.03 
+ 
+(0.50) 
+ 
+(0.96) 
+(0.36) 
+(0.19) 
+8 
+0.14 
+0.22 
+0.14 
+0.15 
+(1.18) 
+(1.24) 
+(0.99) 
+(1.03) 
+7 
+0.02 
+–0.07 
+0.21* 
+–0.09 
+(0.20) 
+(–0.34) 
+(1.96) 
+(–0.74) 
+6 
+0.14 
+–0.13 
+0.13 
+0.21 
+(1.57) 
+(–0.71) 
+(1.34) 
+(1.56) 
+5 
+0.03 
+–0.02 
+0.04 
+0.13 
+(0.30) 
+(–0.14) 
+(0.34) 
+(0.81) 
+4 
+–0.01 
+–0.14 
+0.02 
+0.15 
+(–0.10) 
+(–0.87) 
+(0.17) 
+(1.04) 
+3 
+0.02 
+–0.11 
+0.08 
+0.17 
+(0.16) 
+(–0.85) 
+(0.82) 
+(1.17) 
+2 
+–0.05 
+–0.27* 
+0.15 
+0.17 
+ 
+(–0.51) 
+ 
+(–1.85) 
+(1.40) 
+(1.01) 
+1 (Low) 
+–0.17* 
+–0.21* 
+–0.03 
+0.38* 
+(–1.67) 
+(–1.84) 
+(–0.18) 
+(1.68) 
+10 – 1 
+0.63*** 
+0.68** 
+0.20 
+0.08 
+  
+(3.32) 
+  
+(2.45) 
+(0.70) 
+(0.24) 
+Note: This table reports the illiquidity premium in 8,150 U.S. common stocks that were traded on the NYSE, 
+AMEX, and NASDAQ over 2003–2018 and in subsamples sorted by HFT intensity. To be included in the sample, a 
+stock month must have CRSP share code 10 or 11, share price above $2 at the beginning of the month, and market 
+capitalization of at least $10 million at the end of the previous June. In each month t, stocks are sorted into quintiles 
+based on the volatility of daily returns over months t–3 to t–1. Within each volatility quintile, stocks are further 
+sorted into deciles based on their illiquidity, proxied by the time-weighted relative quoted spreads, over months t–3 
+to t–1. Value-weighted returns are then calculated for each of these 50 (5 × 10) portfolios over months t+1 to t+3, 
+and return of each illiquidity decile is calculated as the equal-weighted average of the returns of the five volatility 
+quintiles within this illiquidity decile. The illiquidity premium is estimated as the monthly return of the illiquidminus-liquid decile portfolio (10 – 1). Results in column (1) are based on the entire stock sample; results in columns 
+(2)–(4) are based on subsamples of stocks sorted by HFT intensity where illiquidity deciles are independent of the 
+HFT terciles. The t-statistics given in parentheses are based on Newey-West standard errors. ***, **, and * indicate 
+significance at the 1%, 5%, and 10% levels, respectively. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+37 
+ 
+TABLE 7 Performance of quintile portfolios constructed from holdings 
+ 
+HFT 
+quintiles 
+Funds are sorted by HFTT 
+  
+Funds are sorted by HFTH 
+TC is assumed to be 
+zero                  
+TC includes QS and 
+price impact           
+ 
+TC is assumed to be 
+zero                  
+TC includes QS and 
+price impact           
+[1] 
+[2] 
+ 
+[3] 
+[4] 
+5 (High) 
+–0.14** 
+–0.24*** 
+–0.17*** 
+–0.26*** 
+ 
+(–2.53) 
+(–3.89) 
+ 
+(–2.72) 
+(–3.93) 
+4 
+–0.06* 
+–0.15*** 
+–0.05* 
+–0.13*** 
+ 
+(–1.77) 
+(–4.22) 
+ 
+(–1.68) 
+(–4.26) 
+3 
+–0.04 
+–0.15*** 
+–0.05 
+–0.15*** 
+(–1.44) 
+(–4.52) 
+(–1.26) 
+(–3.55) 
+2 
+0.02 
+–0.09* 
+0.01 
+–0.11** 
+(0.36) 
+(–1.85) 
+(0.11) 
+(–2.37) 
+1 (Low) 
+0.08 
+–0.04 
+0.08 
+–0.05 
+(1.53) 
+(–0.70) 
+(1.38) 
+(–0.78) 
+5 – 1 
+–0.22** 
+–0.21** 
+–0.24** 
+–0.22** 
+  
+(–2.55) 
+(–2.33) 
+  
+(–2.54) 
+(–2.20) 
+Note: This table reports Fama-French-Carhart four-factor adjusted returns of the quintile portfolios based on HFT 
+intensity in the trade portfolios or holdings of mutual funds over the previous month. The sample includes 3,536 
+U.S. actively managed equity mutual funds over 2003–2018 with greater than $10 million TNA and more than three 
+years old at the beginning of each month. Hypothetical fund return in each month is based on the stock holdings at 
+the beginning of the month and the corresponding monthly stock returns. Funds are then sorted into equally 
+weighted quintiles by HFT intensity in their trade portfolio (HFTT, columns (1) and (2)) or HFT intensity in their 
+holdings (HFTH, columns (3) and (4)) of the previous calendar quarter. In columns (1) and (3), trading costs (TC) 
+are assumed to be zero. In columns (2) and (4), trading costs, estimated based on quoted spreads (QS) and price 
+impact costs of the stocks traded by the fund in that month, are deducted from portfolio returns. The t-statistics given 
+in parentheses are based on Newey-West standard errors. ***, **, and ** indicate significance at the 1%, 5%, and 
+10% levels, respectively. 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+38 
+ 
+TABLE 8 HFT intensity and fund return gap 
+ 
+Panel A: Descriptive statistics 
+  
+Mean 
+Std. dev. 
+P10 
+Median 
+P90 
+NAV-based return 
+0.71% 
+1.55% 
+–1.23% 
+0.70% 
+2.68% 
+Return of holdings 
+0.73% 
+1.72% 
+–1.41% 
+0.72% 
+2.90% 
+Return gap 
+–0.02% 
+0.94% 
+–1.12% 
+–0.01% 
+1.06% 
+Panel B: Cross-sectional regression 
+  
+  
+[1] 
+[2] 
+Intercept 
+–0.02 
+–0.02 
+ 
+(–0.69) 
+(–0.60) 
+HFTT 
+0.02 
+(0.50) 
+HFTH 
+0.00 
+(0.01) 
+Ln[TNA] 
+0.00* 
+0.00* 
+(1.69) 
+(1.76) 
+TO 
+–0.18*** 
+–0.18*** 
+(–6.28) 
+(–6.20) 
+Ln[Age] 
+0.01 
+0.01 
+(0.94) 
+(0.90) 
+Flow 
+0.03 
+0.02 
+ 
+(0.37) 
+(0.28) 
+ExpRatio 
+0.00 
+0.00 
+(0.45) 
+(0.42) 
+R2 
+0.032 
+0.037 
+N 
+1,304 
+1,307 
+Note: This table reports the results of Fama-MacBeth (1973) cross-sectional regressions of the fund return gaps on 
+HFT intensity in the trade portfolios (HFTT) or holdings (HFTH) of mutual funds over the previous calendar quarter. 
+The sample includes 3,536 U.S. actively managed equity mutual funds over 2003–2018 with greater than $10 
+million TNA and more than three years old at the beginning of each month. Following Kacperczyk, Sialm, and 
+Zheng (2008), return gap of a fund in a month is estimated as the difference between the fund post-fee return and the 
+post-fee return of a hypothetical portfolio based on fund holdings. Panel A reports the descriptive statistics of the 
+NAV-based fund post-fee return, post-fee return of holdings, and the return gap. Panel B reports the results of crosssectional regression. The dependent variable is monthly return gap. The independent variables include HFT intensity 
+in trade portfolios (HFTT) or holdings (HFTH), fund size (TNA), turnover ratio (TO), age (Age), monthly net flow 
+ratio (Flow), and annual expense ratio (ExpRatio). TO is defined as dollar value of net purchases and sales by a fund 
+during a quarter estimated from holdings reported by the CRSP mutual fund database and the Thomson Reuters S12 
+database. TNA and Age are log transformed. All independent variables are lagged by one quarter except for Age and 
+ExpRatio. N is the average number of funds in each month. The t-statistics given in parentheses are based on 
+Newey-West standard errors. ***, **, and ** indicate significance at the 1%, 5%, and 10% levels, respectively. 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+39 
+ 
+TABLE 9 Additional alternative explanations  
+ 
+HFT 
+quintiles 
+Controlling for the PS factor 
+  
+Controlling for the IVOL 
+factor 
+  
+Controlling for the SIR factor 
+Pre-fee 
+return 
+Post-fee 
+return 
+Pre-fee 
+return 
+Post-fee 
+return 
+Pre-fee 
+return 
+Post-fee 
+return 
+[1] 
+[2] 
+[3] 
+[4] 
+[5] 
+[6] 
+5 (High) 
+–0.13** 
+–0.23*** 
+–0.08* 
+–0.19*** 
+–0.13** 
+–0.23*** 
+ 
+(–2.27) 
+(–4.01) 
+ 
+(–1.69) 
+(–3.73) 
+ 
+(–2.16) 
+(–3.86) 
+4 
+–0.05 
+–0.15*** 
+–0.02 
+–0.12*** 
+–0.04 
+–0.14*** 
+ 
+(–1.50) 
+(–4.90) 
+ 
+(–0.51) 
+(–3.94) 
+ 
+(–1.12) 
+(–4.31) 
+3 
+–0.04 
+–0.14*** 
+–0.01 
+–0.12*** 
+–0.03 
+–0.13*** 
+(–1.22) 
+(–4.38) 
+(–0.34) 
+(–3.06) 
+(–0.57) 
+(–2.83) 
+2 
+0.01 
+–0.09** 
+0.03 
+–0.07 
+0.03 
+–0.07 
+(0.36) 
+(–2.22) 
+(0.72) 
+(–1.43) 
+(0.57) 
+(–1.28) 
+1 (Low) 
+0.09* 
+–0.02 
+0.11* 
+0.00 
+0.10 
+–0.00 
+(1.75) 
+(–0.41) 
+(1.92) 
+(0.05) 
+(1.63) 
+(–0.02) 
+5 – 1 
+–0.22** 
+–0.21** 
+–0.19** 
+–0.19** 
+–0.23** 
+–0.23** 
+  
+(–2.49) 
+(–2.38) 
+  
+(–2.26) 
+(–2.19) 
+  
+(–2.44) 
+(–2.40) 
+Note: This table reports risk-adjusted performance of equally weighted quintile portfolios constructed based on HFT 
+intensity in the holdings of mutual funds (HFTH) over the previous calendar quarter. The sample includes 3,536 U.S. 
+actively managed equity mutual funds over 2003–2018 with greater than $10 million TNA and more than three 
+years old at the beginning of each month. In columns (1) and (2), the Pástor and Stambaugh (2003) liquidity risk 
+factor (PS) is added to the four-factor model to control for liquidity risk premium. In columns (3) and (4), the 
+idiosyncratic volatility factor (IVOL) is added to the four-factor model to control for idiosyncratic volatility 
+anomaly. In columns (5) and (6), a short interest ratio factor (SIR) is added to the four-factor model to control for 
+the negative abnormal returns associated with heavily shorted stocks. The t-statistics given in parentheses are based 
+on Newey-West standard errors. ***, **, and ** indicate significance at the 1%, 5%, and 10% levels, respectively. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+40 
+ 
+TABLE 10 Possible constraints faced by fund managers  
+ 
+Panel A: Less active funds versus more active funds 
+  
+HFT quintiles 
+Less active funds 
+  
+More active funds 
+Pre-fee return 
+Post-fee return 
+ 
+Pre-fee return 
+Post-fee return 
+5 (High) 
+–0.09** 
+–0.19*** 
+–0.20** 
+–0.33*** 
+(–2.14) 
+(–4.24) 
+(–2.30) 
+(–3.74) 
+4 
+–0.05* 
+–0.14*** 
+ 
+–0.07 
+–0.19*** 
+(–1.91) 
+(–5.61) 
+(–1.28) 
+(–3.45) 
+3 
+–0.01 
+–0.10*** 
+0.01 
+–0.10** 
+ 
+(–0.53) 
+(–5.20) 
+ 
+(0.32) 
+(–2.31) 
+2 
+0.02 
+–0.07** 
+0.10** 
+–0.02 
+ 
+(0.70) 
+(–2.08) 
+ 
+(2.02) 
+(–0.36) 
+1 (Low) 
+0.09** 
+–0.00 
+0.13** 
+0.02 
+(2.08) 
+(–0.06) 
+(2.01) 
+(0.24) 
+5 – 1 
+–0.18** 
+–0.18** 
+–0.33*** 
+–0.34*** 
+  
+(–2.35) 
+(–2.33) 
+  
+(–3.01) 
+(–3.08) 
+Panel B: Large funds versus small funds 
+HFT quintiles 
+Large funds 
+  
+Small funds 
+Pre-fee return 
+Post-fee return 
+ 
+Pre-fee return 
+Post-fee return 
+5 (High) 
+–0.12** 
+–0.21*** 
+–0.13** 
+–0.25*** 
+(–2.22) 
+(–3.94) 
+(–2.01) 
+(–3.80) 
+4 
+–0.05 
+–0.14*** 
+–0.04 
+–0.16*** 
+(–1.51) 
+(–4.03) 
+(–1.13) 
+(–4.32) 
+3 
+–0.00 
+–0.09** 
+–0.05 
+–0.16*** 
+(–0.01) 
+(–2.27) 
+(–1.17) 
+(–4.17) 
+2 
+0.02 
+–0.07 
+0.03 
+–0.09* 
+(0.44) 
+(–1.45) 
+(0.68) 
+(–1.83) 
+1 (Low) 
+0.10 
+–0.01 
+0.10* 
+–0.02 
+(1.59) 
+(–0.10) 
+(1.86) 
+(–0.34) 
+5 – 1 
+–0.21** 
+–0.21** 
+–0.23** 
+–0.24** 
+  
+(–2.37) 
+(–2.29) 
+  
+(–2.35) 
+(–2.38) 
+Note: This table reports risk-adjusted performance of equally weighted quintile portfolios constructed based on HFT 
+intensity in holdings of mutual funds (HFTH) over the previous calendar quarter. The sample includes 3,536 U.S. 
+actively managed equity mutual funds over 2003–2018 with greater than $10 million TNA and more than three 
+years old at the beginning of each month. Either the post-fee return or pre-fee return, calculated as post-fee return 
+plus one-twelfth of annual expense ratio, of the funds is used to construct the portfolios. The Fama-French-Carhart 
+four-factor model is used to evaluate risk-adjusted performance. In Panel A, in each month all funds in the sample 
+are sorted into quartiles by the active shares measure of Cremers and Petajisto (2009), and the top (bottom) quartile 
+is defined as more (less) active funds. In Panel B, in each month all funds in the sample are sorted into quartiles their 
+TNA at the end of the prior month, and the top (bottom) quartile is defined as large (small) funds. The t-statistics 
+given in parentheses are based on Newey-West standard errors. ***, **, and ** indicate significance at the 1%, 5%, 
+and 10% levels, respectively. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+Internet Appendix to Accompany 
+Effect of High-Frequency Trading on Mutual Fund Performance  
+ 
+Nan Qin and Vijay Singal 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+1 
+ 
+Internet Appendix A. Additional Empirical Analysis 
+FIGURE A.1 Daily quote messages over 2000–2018 
+ 
+Note: This figure shows average monthly quote messages (×103) of 10,375 U.S. common stocks that were traded on 
+the NYSE, AMEX, and NASDAQ over 2000–2018. Stocks are categorized into five quintiles based on their market 
+capitalization. 
+ 
+ 
+ 
+ 
+1 (small)
+2
+3
+4
+5 (large)
+0
+1000
+2000
+3000
+4000
+5000
+6000
+2000
+2001
+2002
+2003
+2004
+2005
+2006
+2007
+2008
+2009
+2010
+2011
+2012
+2013
+2014
+2015
+2016
+2017
+2018
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+2 
+ 
+FIGURE A.2 Number of stocks across HFT and characteristics quintiles 
+ 
+Panel A: Number of stocks across HFT and liquidity quintiles 
+ 
+ 
+Panel B: Number of stocks across HFT and volatility quintiles 
+ 
+Note: This figure shows the number of stocks within each independently sorted HFT and liquidity or volatility quintile. 
+The sample includes 8,150 U.S. common stocks that were traded on the NYSE, AMEX, and NASDAQ over 2003–
+2018. In each month, stocks are sorted into quintiles by their HFT intensity (estimated by Formula (2)) and by their 
+time-weighted relative quoted spread (Panel A) or by their volatility estimated from daily returns (Panel B), 
+respectively, to obtain 25 (5 × 5) subsamples with potentially unequal number of stocks in each. Number of stocks in 
+each subsample is then averaged across the whole sample period and is plotted in the figure. 
+ 
+ 
+ 
+5 (High HFT)
+3
+1 (Low HFT)
+0
+50
+100
+150
+200
+250
+300
+5 (High HFT)
+4
+3
+2
+5 (Low HFT)
+0
+100
+200
+300
+400
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+3 
+ 
+TABLE A.1 Correlations between quote messages and actual HFT 
+ 
+Panel A: Correlation between quote updates and relative volume by HFT and nHFT 
+  
+  
+% of HFT volume 
+% of nHFT volume 
+  
+Spearman 
+Pearson 
+Spearman 
+Pearson 
+All stocks 
+88.63% 
+68.16% 
+–88.63% 
+–68.16% 
+5 (Large stocks) 
+57.58% 
+56.24% 
+–57.58% 
+–56.24% 
+4 
+74.24% 
+66.79% 
+–74.24% 
+–66.79% 
+3 
+54.78% 
+55.60% 
+–54.78% 
+–55.60% 
+2 
+53.02% 
+51.97% 
+–53.02% 
+–51.97% 
+1 (Small stocks) 
+63.21% 
+64.52% 
+–63.21% 
+–64.52% 
+Panel B: Correlation between quote updates and turnover ratios by HFT and nHFT 
+  
+  
+HFT volume as % of shr. out. 
+nHFT volume as % of shr. out. 
+  
+Spearman 
+Pearson 
+Spearman 
+Pearson 
+All stocks 
+66.22% 
+36.76% 
+–2.42% 
+–14.68% 
+5 (Large stocks) 
+10.03% 
+5.21% 
+–20.08% 
+–15.79% 
+4 
+44.93% 
+44.51% 
+–7.01% 
+–2.37% 
+3 
+54.82% 
+46.65% 
+21.00% 
+6.29% 
+2 
+55.47% 
+44.13% 
+35.18% 
+24.11% 
+1 (Small stocks) 
+56.76% 
+65.58% 
+35.03% 
+37.17% 
+ 
+Note: This table reports Spearman and Pearson correlations between monthly quote messages and actual HFT 
+activities in 120 stocks randomly selected by the NASDAQ in 2008 and 2009. In each of the 24 months in the 
+sample period, all the 120 stocks are sorted into quintiles based on their market values at the end of the previous 
+June. Fund months with market value less than $10 million at the end of the prior June or share price less than $2 at 
+the beginning of the month are removed. The cross-sectional correlations are then estimated for each size quintile in 
+each month and the time-series averages are reported. In Panel A, actual HFT activities of a stock are measured by 
+ratio of HFT share volume of this stock to total share volume of this stock. In Panel B, actual HFT activities of a 
+stock are measured by ratio of HFT share volume of this stock to total shares outstanding of this stock. Correlations 
+between quote messages and actual nHFT activities are also reported for comparison. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+4 
+ 
+TABLE A.2 Median stock characteristics by HFT quintiles 
+ 
+HFT quintiles 
+1 (Low) 
+2 
+3 
+4 
+5 (High) 
+RET (%) 
+0.54 
+0.74 
+0.62 
+0.43 
+0.03 
+PRC ($) 
+25 
+30 
+23 
+17 
+11 
+MV ($ million) 
+409 
+984 
+724 
+552 
+508 
+B/M 
+0.65 
+0.54 
+0.54 
+0.55 
+0.57 
+TO (%) 
+4.58 
+11.17 
+13.04 
+15.40 
+20.71 
+Volatility (%) 
+1.90 
+1.95 
+2.16 
+2.39 
+2.76 
+IVOL (%) 
+1.48 
+1.39 
+1.57 
+1.80 
+2.16 
+RQS (%) 
+2.34 
+0.95 
+0.89 
+0.81 
+0.68 
+RES (%) 
+1.05 
+0.50 
+0.50 
+0.49 
+0.44 
+PIC 
+9.26 
+8.23 
+8.40 
+9.20 
+10.17 
+SIR (%) 
+1.14 
+2.96 
+3.41 
+3.76 
+4.05 
+IO (%) 
+38.64 
+71.50 
+73.69 
+70.59 
+63.03 
+ANLY 
+6 
+7 
+7 
+7 
+8 
+DISP (%) 
+2.56 
+2.76 
+3.51 
+4.70 
+6.89 
+ 
+Note: This table reports the medians of characteristics of 8,150 U.S. common stocks that were traded on the NYSE, 
+AMEX, and NASDAQ over 2003–2018. To be included in the sample, a stock month must have CRSP share code 
+10 or 11, share price above $2 at the beginning of the month, and market capitalization of at least $10 million at the 
+end of the previous June. In each month, stocks are sorted into quintiles based on their HFT intensity over the prior 
+three months, and the median of a characteristic is calculated for each quintile. The time-series average of the 
+monthly median characteristic is then calculated and reported. Stock characteristics include monthly return (RET), 
+share price (PRC), market value (MV), book-to-market ratio (B/M), monthly turnover ratio (TO), volatility based on 
+daily returns (Volatility), idiosyncratic volatility by the approach of Ang et al. (2006) (IVOL), time-weighted 
+relative quoted spread (RQS), volume-weighted average relative effective spread (RES), five-minute price impact 
+cost (PIC) estimated by the approach of Breen, Hodrick, and Korajczyk (2002), short interest ratio (SIR), 
+institutional ownership (IO), number of analyst following (ANLY), and analyst forecast dispersion (DISP). 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+5 
+ 
+TABLE A.3 Robustness tests of quintile portfolio analysis 
+ 
+ 
+Funds are sorted by HFTT 
+  
+Funds are sorted by HFTH 
+Pre-fee return 
+Post-fee return 
+ 
+Pre-fee return 
+Post-fee return 
+[1] 
+[2] 
+ 
+[3] 
+[4] 
+Excess return 
+–0.20** 
+–0.20** 
+–0.24** 
+–0.24** 
+ 
+(–2.41) 
+(–2.32) 
+ 
+(–2.56) 
+(–2.48) 
+αCAPM 
+–0.20** 
+–0.20** 
+–0.23** 
+–0.22** 
+ 
+(–2.27) 
+(–2.18) 
+ 
+(–2.23) 
+(–2.15) 
+α3 
+–0.20** 
+–0.20** 
+–0.22** 
+–0.22** 
+(–2.32) 
+(–2.22) 
+(–2.40) 
+(–2.30) 
+VW α4 
+–0.14* 
+–0.13 
+–0.22** 
+–0.21** 
+(–1.74) 
+(–1.54) 
+(–2.53) 
+(–2.35) 
+α4 excluding crisis period 
+–0.21** 
+–0.20* 
+–0.24** 
+–0.24** 
+(–2.03) 
+(–1.91) 
+(–2.29) 
+(–2.19) 
+α4 1993–2002 
+–0.12 
+0.07 
+–0.10 
+0.09 
+  
+(–0.61) 
+(0.35) 
+  
+(–0.45) 
+(0.40) 
+ 
+Note: This table reports 5–1 return spread of the quintile portfolios based on HFT intensity in the trade portfolios or 
+holdings of mutual funds over the previous calendar quarter. The sample includes 3,536 U.S. actively managed 
+equity mutual funds over 2003–2018 with greater than $10 million TNA and more than three years old at the 
+beginning of each month. Either post-fee return or pre-fee return, calculated as post-fee return plus one-twelfth of 
+annual expense ratio, is used to estimate portfolio return. All portfolios are equally weighted unless otherwise noted. 
+Funds are sorted by HFTT (HFTH) in columns (1) and (2) ((3) and (4)). The 5–1 return spread based on the excess 
+return, the CAPM alpha (αCAMP), the FF-3 alpha (α3), FFC-4 alpha of value-weighted portfolios (VW α4), FFC-4 
+alpha based on a sample period excluding the financial crisis period of 01/2008–06/2009, or FFC-4 alpha based on 
+the sample period of 1993–2002 are reported. The t-statistics given in parentheses are based on Newey-West 
+standard errors. ***, **, and ** indicate significance at the 1%, 5%, and 10% levels, respectively. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+6 
+ 
+TABLE A.4 HFT intensity and fund performance: Multivariate analysis 
+ 
+Dependent 
+variable 
+Intensity of HFT is measured by HFTT 
+  
+Intensity of HFT is measured by HFTH 
+Pre-fee α4  
+Post-fee α4  
+Pre-fee 
+return 
+Post-fee 
+return 
+ 
+Pre-fee α4  
+Post-fee α4  
+Pre-fee 
+return 
+Post-fee 
+return 
+  
+[1] 
+[2] 
+[3] 
+[4] 
+ 
+[5] 
+[6] 
+[7] 
+[8] 
+Intercept 
+0.01 
+0.02 
+0.77** 
+0.78** 
+0.01 
+0.02 
+0.77** 
+0.78** 
+(0.40) 
+(0.46) 
+(2.53) 
+(2.53) 
+(0.37) 
+(0.42) 
+(2.53) 
+(2.53) 
+HFTT 
+–0.13** 
+–0.13** 
+–0.19** 
+–0.19** 
+(–2.29) 
+(–2.28) 
+(–2.04) 
+(–2.04) 
+HFTH 
+–0.15** 
+–0.15** 
+–0.25** 
+–0.25** 
+(–2.34) 
+(–2.33) 
+(–2.15) 
+(–2.15) 
+Lag[DV] 
+2.41* 
+2.39* 
+1.76 
+1.76 
+2.46* 
+2.45* 
+1.49 
+1.48 
+(1.79) 
+(1.77) 
+(0.61) 
+(0.61) 
+(1.85) 
+(1.84) 
+(0.52) 
+(0.52) 
+Ln[TNA] 
+–0.11** 
+–0.11** 
+–0.05 
+–0.05 
+–0.10** 
+–0.10** 
+–0.03 
+–0.02 
+(–2.17) 
+(–2.19) 
+(–0.77) 
+(–0.75) 
+(–1.99) 
+(–2.00) 
+(–0.39) 
+(–0.38) 
+TO 
+–0.00 
+–0.00 
+0.00 
+0.00 
+–0.00 
+–0.00 
+0.00 
+0.00 
+(–0.35) 
+(–0.32) 
+(0.40) 
+(0.44) 
+(–0.38) 
+(–0.34) 
+(0.32) 
+(0.36) 
+Ln[Age] 
+0.01 
+0.01 
+0.02 
+0.02 
+0.01 
+0.01 
+0.02* 
+0.02* 
+ 
+(0.84) 
+(0.78) 
+(1.46) 
+(1.42) 
+ 
+(1.10) 
+(1.03) 
+(1.91) 
+(1.86) 
+Flow 
+0.36** 
+0.36** 
+0.52** 
+0.52** 
+0.35** 
+0.35** 
+0.48** 
+0.48** 
+(2.15) 
+(2.15) 
+(2.27) 
+(2.27) 
+(2.08) 
+(2.09) 
+(2.16) 
+(2.16) 
+ExpRatio 
+0.01 
+–0.08*** 
+–0.00 
+–0.08*** 
+0.00 
+–0.08*** 
+–0.00 
+–0.09*** 
+(0.51) 
+(–5.79) 
+(–0.02) 
+(–3.78) 
+(0.29) 
+(–6.24) 
+(–0.15) 
+(–4.40) 
+R2 
+0.084 
+0.084 
+0.191 
+0.191 
+0.095 
+0.095 
+0.213 
+0.213 
+N 
+1,307 
+1,310 
+1,320 
+1,320 
+  
+1,310 
+1,314 
+1,324 
+1,324 
+ 
+Note: This table reports results from Fama-MacBeth (1973) cross-sectional regressions of fund return or risk-adjusted 
+return (alpha) on lagged HFT intensity and other fund characteristics. The sample includes 3,536 U.S. actively 
+managed equity mutual funds over 2003–2018 with greater than $10 million TNA and more than three years old at 
+the beginning of each month. Monthly alpha is estimated as the difference between fund excess return and the products 
+of fund factor loadings and the realizations of the factors, where factor loadings are estimated based on regression 
+using returns in the previous 36 months. The independent variables include HFT intensity in trade portfolios (HFTT, 
+in columns (1)–(4)) or holdings (HFTH, in columns (5)–(8)), fund size (TNA), turnover ratio (TO), age (Age), annual 
+expense ratio (ExpRatio), monthly net flow ratio (Flow), and lagged dependent variable (DV). TO is defined as dollar 
+value of net purchases and sales by a fund during a quarter estimated from holdings reported by the CRSP mutual 
+fund database and the Thomson Reuters S12 database. TNA and Age are log transformed. All independent variables 
+are lagged by one quarter except for Age and ExpRatio. N is the average number of funds in each month. The 
+significance level is based on the time-series variation in the monthly regression coefficients over the sample period. 
+The standard errors are adjusted for residual autocorrelation and heteroskedasticity based on Newey and West (1987). 
+***, **, and * indicate significance at the 1%, 5%, and 10% levels, respectively. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+7 
+ 
+TABLE A.5 HFT intensity and illiquidity premium, 1993–2002 
+ 
+Illiquidity 
+deciles 
+All stocks 
+  
+HFT terciles 
+ 
+High 
+Medium 
+Low 
+[1] 
+[2] 
+[3] 
+[4] 
+10 (High) 
+0.50** 
+0.77*** 
+0.37* 
+0.45* 
+ 
+(2.10) 
+ 
+(3.17) 
+(1.76) 
+(1.77) 
+9 
+0.45*** 
+0.39 
+0.60** 
+0.40*** 
+ 
+(2.84) 
+ 
+(1.11) 
+(2.49) 
+(2.68) 
+8 
+0.16 
+0.07 
+0.22 
+0.23 
+(0.89) 
+(0.31) 
+(0.81) 
+(1.28) 
+7 
+0.25 
+0.35 
+0.35 
+0.01 
+(1.21) 
+(1.44) 
+(1.21) 
+(0.04) 
+6 
+0.13 
+0.47** 
+0.20 
+–0.09 
+(0.73) 
+(2.10) 
+(0.83) 
+(–0.54) 
+5 
+0.19 
+0.04 
+0.24 
+0.45** 
+(1.04) 
+(0.20) 
+(1.11) 
+(2.23) 
+4 
+0.14 
+0.04 
+0.22 
+0.27 
+(0.72) 
+(0.16) 
+(1.03) 
+(1.45) 
+3 
+0.06 
+0.05 
+0.08 
+0.17 
+(0.44) 
+(0.27) 
+(0.45) 
+(0.70) 
+2 
+0.05 
+0.11 
+–0.00 
+0.33* 
+ 
+(0.37) 
+ 
+(0.55) 
+(–0.02) 
+(1.91) 
+1 (Low) 
+0.69*** 
+0.81*** 
+0.24 
+0.57** 
+(3.65) 
+(3.77) 
+(0.94) 
+(2.29) 
+10 – 1 
+–0.19 
+–0.03 
+0.12 
+–0.11 
+  
+(–0.50) 
+  
+(–0.09) 
+(0.33) 
+(–0.29) 
+ 
+Note: This table reports the illiquidity premium in 8,150 U.S. common stocks that were traded on the NYSE, 
+AMEX, and NASDAQ over 1993–2002, and in subsamples sorted by HFT intensity. To be included in the sample, a 
+stock month must have CRSP share code 10 or 11, share price above $2 at the beginning of the month, and market 
+capitalization of at least $10 million at the end of the previous June. In each month t, stocks are sorted into quintiles 
+based on the volatility of daily returns over months t–3 to t–1. Within each volatility quintile, stocks are further 
+sorted into deciles based on their illiquidity, proxied by the time-weighted relative quoted spreads, over months t–3 
+to t–1. Value-weighted returns are then calculated for each of these 50 (5 × 10) portfolios over months t+1 to t+3, 
+and return of each illiquidity decile is calculated as the equal-weighted average of the returns of the five volatility 
+quintiles within this illiquidity decile. The illiquidity premium is estimated as the monthly return of the illiquidminus-liquid decile portfolio (10 – 1). Results in column (1) are based on the entire stock sample; results in columns 
+(2)–(4) are based on subsamples of stocks sorted by HFT intensity where illiquidity deciles are independent of the 
+HFT terciles. The t-statistics given in parentheses are based on Newey-West standard errors. ***, **, and * indicate 
+significance at the 1%, 5%, and 10% levels, respectively. 
+  
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+8 
+ 
+Internet Appendix B. Estimation of the Total Trading Costs 
+We assume that the direct cost to trade one share of a stock is one-half of its volume-weighted 
+average effective spread in that month. Thus, trading q shares at price p with relative effective 
+spread of k incurs a direct cost of 𝑘𝑝𝑞. Following a similar approach as in Breen, Hodrick, and 
+Korajczyk (2002) and Korajczyk and Sadka (2004), we estimate price impact cost (PIC) as 
+𝑃𝐼𝐶= ∫𝑓(𝑝, 𝑞)𝑑𝑞
+𝑞
+0
+,                                                           (𝐵. 1) 
+where 𝑓(𝑝, 𝑞) is the price impact cost function, 𝑝 is the prevailing market price of a share, and q 
+is number of shares traded. Korajczyk and Sadka (2004) indicate that under the assumptions that 
+trade is divided into many infinitesimal trades and that no price reversion occurs over the trading 
+period, the Breen, Hodrick, and Korajczyk (2002) price impact cost function is 𝑓(𝑝, 𝑞) = 𝑝(𝑒
+𝜆𝑞
+𝑆−
+1), where 𝜆 is the price impact coefficient and S is the number of shares outstanding. Therefore, 
+the total trading cost (TC) is the sum of the direct cost and the price impact cost: 
+𝑇𝐶= 𝑘𝑝𝑞+ ∫𝑓(𝑝, 𝑞)𝑑𝑞
+𝑞
+0
+= 𝑘𝑝𝑞+ (𝑝𝑆
+𝜆(𝑒
+𝜆𝑞
+𝑆−1) −𝑝𝑞).                      (𝐵. 2) 
+Estimation of the price impact coefficient, 𝜆, is based on net trading volume and quotemidpoint return for each five-minute trading interval. First, all trades are classified as buyer 
+initiated or seller initiated based on whether the transaction price is higher or lower than the 
+prevailing quote midpoint. Then net turnover (NTO) for a five-minute interval is defined as the 
+ratio of net trading volume (buyer-initiated volume less seller-initiated volume times 1,000) to 
+shares outstanding, and quote-midpoint return in each five-minute interval is defined as the ratio 
+of quote-midpoint (Q) change over the interval to quote midpoint at the beginning of the interval. 
+For stock i in month t, we estimate the following regression based on a total of 𝜏𝑖(𝑡) five-minute 
+intervals to estimate the impact of its net trading volume on its midpoint return: 
+Electronic copy available at: https://ssrn.com/abstract=2726427
+
+9 
+ 
+𝑄𝑖,𝜏−𝑄𝑖,𝜏−1
+𝑄𝑖,𝜏−1
+= 𝛼𝑖𝑡+ 𝜆𝑖𝑡𝑁𝑇𝑂𝑖,𝜏+ 𝜖𝑖,𝜏.                                         (B. 3) 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2726427

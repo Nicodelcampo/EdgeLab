@@ -1,0 +1,1754 @@
+ Electronic copy available at: http://ssrn.com/abstract=2345668 
+Generalizations of Functionally Generated Portfolios with
+Applications to Statistical Arbitrage
+Winslow Strong∗
+ETH Z¨urich, Department of Mathematics
+CH-8092 Z¨urich, Switzerland
+winslow.strong@math.ethz.ch
+Abstract
+The theory of functionally generated portfolios (FGPs) is an aspect of the continuous-time, continuouspath Stochastic Portfolio Theory of Robert Fernholz. FGPs have been formulated to yield a master
+equation - a description of their return relative to a passive (buy-and-hold) benchmark portfolio serving
+as the num´eraire. This description has proven to be analytically very useful, as it is both pathwise and
+free of stochastic integrals. Here we generalize the class of FGPs in several ways: (1) the num´eraire may
+be any strictly positive wealth process, not necessarily the market portfolio or even a passive portfolio; (2)
+generating functions may be stochastically dynamic, adjusting to changing market conditions through an
+auxiliary continuous-path stochastic argument of ﬁnite variation. These generalizations do not forfeit the
+important tractability properties of the associated master equation. We show how these generalizations
+can be usefully applied to scenario analysis, statistical arbitrage, portfolio risk immunization, and the
+theory of mirror portfolios.
+Keywords: Stochastic Portfolio Theory, functionally generated portfolio, statistical arbitrage, portfolio
+theory, portfolio immunization, mirror portfolio, master equation
+Mathematics Subject Classiﬁcation: 91G10 · 60H30
+JEL Classiﬁcation: G11 · C60
+1
+Introduction and background
+Functionally generated portfolios (FGPs) were introduced by Robert Fernholz in [5,7], see also [8,10]. They
+have historically been constructed by selecting a deterministic generating function that takes the market
+∗The author gratefully acknowledges ﬁnancial support from the National Centre of Competence in Research “Financial
+Valuation and Risk Management” (NCCR FINRISK), project D1 (Mathematical Methods in Financial Risk Management), as
+well as from the ETH Foundation.
+1
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+ Electronic copy available at: http://ssrn.com/abstract=2345668 
+portfolio as its argument. They are notable for admitting a description of their performance, relative to a
+passive (buy-and-hold) num´eraire, that is both pathwise and free of stochastic integrals. This description is
+known as the master equation, and is a useful tool for portfolio analysis and optimization.
+In markets that are uniformly elliptic and diverse [11], and more generally those markets with suﬃcient
+intrinsic volatility [9], FGPs yield explicit portfolios that are arbitrages relative to the market portfolio
+(although see [18] for an alternative diverse market model that is compatible with no-arbitrage). In more
+general equity market models, FGPs are useful for exploiting certain statistical regularities, such as the
+stability of the distribution of capital over time [8,10], and the non-constancy of the rate of variance of logprices as a function of sampling interval [12]. These FGP-derived portfolios are best described as statistical
+arbitrages [12], since they exploit the aforementioned statistical regularities in the data to achieve favorable
+risk-return proﬁles. One of the main attractions of the techniques presented in this paper will undoubtedly
+be towards characterizing and optimizing such statistical arbitrage portfolios.
+This paper is organized as follows: Section 2 deﬁnes a market model typical of those used in Stochastic
+Portfolio Theory. Section 3 extends the class of FGPs from its historical deﬁnition by allowing an arbitrary
+wealth process to serve as num´eraire, rather than restricting it to be the market portfolio or a more general passive portfolio. Generating functions are also extended to accommodate continuous-path auxiliary
+stochastic arguments of ﬁnite variation. Section 3.2 highlights the usefulness of FGPs for scenario analysis.
+Sections 3.3 and 3.4 provide some characterization of equivalence classes of FGPs in general, and in the
+case of passive num´eraires, respectively. Section 4 explores two approaches of applying FGPs to statistical
+arbitrage: extending the original idea from [12] and using a new construction based on quadratic generating
+functions. Section 5 presents a method of immunizing a given FGP from certain market risks, while keeping
+it in the family of FGPs. Section 6 extends the notion of mirror portfolios introduced in [11] and analyzes
+their asymptotic behavior. Section 7 summarizes the results, and poses some remaining challenges to tackle
+for the theory of FGPs.
+2
+Setting and deﬁnitions
+The market consists of n processes with prices Xt = (X1,t, . . . , Xn,t)′, one of which may be a money market
+account. X lives on a ﬁltered probability space (Ω, F, F := {Ft}t≥0, P), which supports a d-dimensional
+Brownian motion Wt, where d ≥n. All processes introduced are assumed to be progressive with respect to
+F, which may be strictly bigger than the Brownian ﬁltration.
+Most of the analysis herein will take place on log prices Lt := log Xt. The dynamics of L are given by
+dLt = γtdt + σtdWt,
+where γ and σ are F-progressive and satisfy
+n
+X
+i=1
+ˆ t
+0
+(|γi,s| + aii,s) ds < ∞,
+∀t ≥0,
+where aij,t : = [σtσ′
+t]ij = d
+dt ⟨log Xi, log Xj⟩t ,
+1 ≤i, j ≤n,
+2
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+ Electronic copy available at: http://ssrn.com/abstract=2345668 
+and σt takes values in Rn×d, d ≥n, ∀t ≥0. Throughout, all equalities hold merely almost surely. The
+notation 1 := (1, . . . , 1) is used, where the dimensionality should be clear from the context.
+Deﬁnition 2.1. A portfolio π on X is an F-progressively measurable Rn-valued process satisfying
+ˆ t
+0
+(|bπ,s| + π′
+sasπs) ds < ∞,
+∀t ≥0,
+(2.1)
+and
+n
+X
+i=1
+πi,t = 1,
+∀t ≥0.
+The wealth process V v,π arising from investment according to π is given by
+d log V v,π
+t
+= γπ,tdt + σπ,tdWt,
+V v,π
+0
+= v ∈(0, ∞),
+where σπ : = π′σ,
+γπ,t : = π′
+tγt + γ∗
+π,t,
+and γ∗
+π,t : = 1
+2
+ n
+X
+i=1
+πi,taii,t −π′
+tatπt
+!
+.
+The process γ∗
+π is called the excess growth rate, and plays an important role in Stochastic Portfolio Theory
+[8,10]. To ease notation, we will use V π
+t := V 1,π
+t
+and often omit the subscript “t” when referring to processes.
+Remark 2.2. There is no need for X to be restricted to be the directly tradeable assets of a market. Some
+components may also be wealth processes of portfolios on the tradeable assets, e.g. Xi = V ν, where ν is
+a portfolio on the m < n tradeable assets. A weighting of πi in Xi is equivalent to (additional) weights
+of πi(ν1, . . . , νm) in the tradeable assets (beyond what π already explicitly speciﬁes for those assets). This
+ﬂexibility may seem needlessly confusing, but it is useful when portfolios are constructed with consideration
+to certain market segments - e.g. value, growth, large/small cap, sectors, countries, etc. It’s also used in
+Section 4 below. Distinguishing between the directly tradeable assets and portfolios assembled on them can
+be important if and when transaction costs and liquidity constraints are taken into consideration, as turnover
+and leverage may be vastly diﬀerent. Those issues are beyond the scope of this paper.
+The following notation will prove useful:
+Xρ : = X
+V ρ ,
+Lρ : = log Xρ,
+aρ
+ij : = [σσ′]ij = d
+dt
+
+Lρ
+i , Lρ
+j
+
+,
+= aij −[aρ]j −[aρ]i + aρρ,
+(2.2)
+aππ : = σπσ′
+π = π′aπ = d
+dt ⟨log V π, log V π⟩,
+aρ
+ππ : = π′aρπ = d
+dt
+
+log
+V π
+V ρ
+
+, log
+V π
+V ρ
+
+= aπ
+ρρ.
+3
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+The num´eraire invariance property of γ∗
+π holds for arbitrary portfolios π and ρ:
+γ∗
+π = 1
+2
+ n
+X
+i=1
+πiaρ
+ii −aρ
+ππ
+!
+,
+(2.3)
+((3.5) of [10]), and in particular, since aρ
+ρρ = 0 by (2.2),
+γ∗
+ρ = 1
+2
+n
+X
+i=1
+ρiaρ
+ii.
+(2.4)
+When ρ is exclusively invested in the money market, then discounted quantities will be denoted by ˆX := Xρ,
+ˆV π := V π/Xρ, etc. Note also that in this case aρ = a.
+3
+Generalizations of functionally generated portfolios
+Functionally generated portfolios were ﬁrst introduced in [5,7], see also [8,10], and the recent extension [15].
+There are two generalizations presented here:
+(i) The num´eraire in the master equation may be arbitrary. Previously, it had been taken to be the market
+portfolio or some other passive (buy-and-hold) portfolio.
+(ii) Generating functions may take stochastic arguments, which here we limit to ﬁnite-variation processes.
+3.1
+Stochastic generating functions and arbitrary num´eraires
+It is natural to adjust a portfolio based on changing market conditions. However, FGPs adjust their weights
+only as a deterministic function of the underlying discounted price process Xρ, which doesn’t allow for
+much ﬂexibility. Ideally, one would like to be able to modify the generating function stochastically while
+preserving a useful pathwise description of relative return that is free from stochastic integrals. As a step in
+this direction, time-dependent generating functions have already been introduced in [8]. In this section we
+extend that idea to allow a dependence on auxiliary stochastic processes of ﬁnite variation.
+With respect to the historical work on portfolio generating functions, we formulate them here in the log
+sense with logarithmic argument. Speciﬁcally, our generating function H is related to the previous notion of
+generating function G by H(y) = log G(ey). This makes the analysis cleaner for our purposes.
+For H : Rn × Rk →R, let ∇l be the gradient with respect to the ﬁrst (n-dim) argument of H, ∇f be
+the gradient with respect to the second (k-dim) argument, and D2
+lilj, D2
+i,j be the second-order diﬀerential
+operator with respect to components i and j of the ﬁrst argument of H, and generally, respectively.
+Theorem 3.1. Let H ∈C2,1(Rn × Rk, R) and let F be an Rk-valued, F-progressive, continuous-path process
+of ﬁnite variation. Then the portfolio
+π = λρ + ∇lH(Lρ, F),
+where λ = 1 −1′∇lH(Lρ, F),
+(3.1)
+4
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+satisﬁes the following master equation:
+log
+V π
+T
+V ρ
+T
+
+= H(Lρ
+T , FT ) −H(Lρ
+0, F0) −
+ˆ T
+0
+[∇fH(Lρ
+t , Ft)]′ dFt +
+ˆ T
+0
+htdt,
+(3.2)
+where h = γ∗
+π −λγ∗
+ρ −1
+2
+n
+X
+i,j=1
+D2
+liljH (Lρ, F) aρ
+ij.
+When the argument F is not present (or constant), then it may be suppressed. Hence
+π = λρ + ∇H(Lρ),
+where λ = 1 −1′∇H(Lρ),
+(3.3)
+satisﬁes the following master equation:
+log
+V π
+T
+V ρ
+T
+
+= H(Lρ
+T ) −H(Lρ
+0) +
+ˆ T
+0
+htdt,
+(3.4)
+where h = γ∗
+π −λγ∗
+ρ −1
+2
+n
+X
+i,j=1
+D2
+ijH (Lρ) aρ
+ij.
+(3.5)
+Remark 3.2. Except for the change to the log representation, the derivation proceeds analogously to the
+original master equation [5, Theorem 3.1], which can also be found in [7, 10]. The intermediate equations
+in the earlier derivations are each generalizable to our setting, shown here as Lemmas 3.3 and 3.4. In the
+special (original) case where X is the total capitalization (shares × price per share), then normalizing by the
+initial values so that the #shares of each asset is 1 and choosing ρ to be the market portfolio results in
+ρ = X/
+n
+X
+i=1
+Xi = Xρ.
+(3.6)
+Inserting L := log X and this ρ into (3.4) recovers the original master equation. However, in the general
+setting of this paper, ρ is arbitrary, making Xρ and ρ distinct.
+The following two lemmas will be used in the proof of Theorem 3.1.
+Lemma 3.3. For any two portfolios π and ρ, the following hold
+d log
+V π
+V ρ
+
+=
+n
+X
+i=1
+πidLρ
+i + γ∗
+πdt,
+(3.7)
+=
+n
+X
+i=1
+πi
+dXρ
+i
+Xρ
+i
+−1
+2aρ
+ππdt.
+(3.8)
+Proof. To prove (3.7), by deﬁnition
+dLρ
+i = dLi −d log V ρ,
+= γidt + σidWt −d log V ρ.
+5
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+Plugging this into the right-hand side of (3.7), we get
+n
+X
+i=1
+πidLρ
+i + γ∗
+πdt =
+n
+X
+i=1
+πi(γidt + σidWt) −d log V ρ + γ∗
+πdt,
+= d log V π −d log V ρ.
+To prove (3.8), use
+dLρ
+i = dXρ
+i
+Xρ
+i
+−1
+2
+d ⟨Xρ
+i , Xρ
+i ⟩
+(Xρ
+i )2
+,
+= dXρ
+i
+Xρ
+i
+−1
+2aρ
+ii.
+Plugging this into (3.7) and expanding γ∗
+π with the num´eraire invariance property (2.3) yields
+d log
+V π
+V ρ
+
+=
+n
+X
+i=1
+πi
+dXρ
+i
+Xρ
+i
+−1
+2aρ
+iidt
+
++ 1
+2
+ n
+X
+i=1
+πiaρ
+ii −aρ
+ππ
+!
+dt,
+=
+n
+X
+i=1
+πi
+dXρ
+i
+Xρ
+i
+−1
+2aρ
+ππdt.
+Lemma 3.4. For any portfolio ρ on X,
+n
+X
+i=1
+ρidLρ
+i = −γ∗
+ρdt,
+n
+X
+i=1
+ρi
+dXρ
+i
+Xρ
+i
+= 0.
+Proof. For the ﬁrst, use (3.7) with π = ρ, and for the second use (3.8) with π = ρ and aρ
+ρρ = 0 from (2.2).
+Now we prove Theorem 3.1.
+Proof of Theorem 3.1. Initially, consider the case where F ≡1, and hence the second argument to H may
+be suppressed. First plug in (3.3) for π into (3.7), and then get (3.9) by applying Lemma 3.4:
+d log
+V π
+V ρ
+
+=
+n
+X
+i=1
+(λρi + DiH(Lρ)) dLρ
+i + γ∗
+πdt,
+=
+n
+X
+i=1
+DiH(Lρ)dLρ
+i +
+ γ∗
+π −λγ∗
+ρ
+
+dt,
+(3.9)
+where Di is the ﬁrst derivative operator with respect to the ith component. Expanding dH(Lρ) gives
+dH(Lρ) =
+n
+X
+i=1
+DiH(Lρ)dLρ
+i + 1
+2
+n
+X
+i,j=1
+D2
+ijH(Lρ)d
+
+Lρ
+i , Lρ
+j
+
+,
+=
+n
+X
+i=1
+DiH(Lρ)dLρ
+i + 1
+2
+n
+X
+i,j=1
+aρ
+ijD2
+ijH(Lρ)dt.
+6
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+Plugging this into (3.9) yields
+d log
+V π
+V ρ
+
+= dH(Lρ) +
+
+γ∗
+π −λγ∗
+ρ −1
+2
+n
+X
+i,j=1
+aρ
+ijD2
+ijH(Lρ)
+
+dt,
+(3.10)
+proving the case when F ≡1. For a ﬁnite variation F with continuous paths, the Itˆo-Doeblin formula yields
+dH(Lρ, F) = (dLρ)′ ∇lH(Lρ, F) + (dF)′ ∇fH(Lρ, F) + 1
+2
+n
+X
+i,j=1
+dLρ
+i dLρ
+jD2
+liljH(Lρ, F),
+which when combined with (3.10) proves the theorem.
+While adding an auxiliary stochastic process F causes FGPs to lose some elegance and tractability (comparing
+(3.4) to (3.2)), the extra ﬂexibility gained can be useful in practice. For example, F may be factors that
+inform portfolio construction, such as those of Fama and French [3,4], fundamental economic data such as
+bond yields or stock market diversity [6,8,10,11], or information extracted from Twitter feeds [2].
+Remark 3.5 (Generalizations). It’s possible to remove the restrictions on F - that it’s ﬁnite variation and
+has continuous paths - to derive a more general master equation, but this would make the correction term
+´ T
+0 [∇fH(Lρ
+t , Ft)]′ dFt of (3.2) more complex. A continuous F of ﬁnite variation is suﬃcient for the applications that follow, so we do not pursue these extensions here.
+If a portfolio ν satisﬁes (3.4) in place of π, then V ν must be indistinguishable from V π. Hence, any diﬀerences
+between ν and π are not meaningful in the context of wealth-creation. However, there are portfolios obeying
+generalizations of the master equation for which H /∈C2, such as the class presented in Theorem 4.1 of [16].
+The following example looks at the strategy of switching from an initial FGP to a subsequent one at a
+stopping time. The overall portfolio is an example of a stochastic FGP.
+Example 3.6 (Stochastic switching between FGPs1). Let H1 and H2 be arbitrary generating functions and
+let H be
+H(y, i) : = iH1(y) + (1 −i)H2(y),
+y ∈Rn, i ∈R.
+For an arbitrary stopping time τ, H(·, 1t≤τ) is a stochastic generating function (i.e. a function H meeting
+the requirements of Theorem 3.1 with auxiliary F) which will generate an FGP that switches at τ from π(1)
+generated by H1 to π(2) generated by H2. This type of portfolio was used by Banner and D. Fernholz in [1]
+for constructing arbitrages relative to the market portfolio at arbitrarily short deterministic horizons T > 0
+in a class of market models including volatility-stabilized markets [9]. Those models have also been shown
+to admit functionally generated relative arbitrage over suﬃciently long time horizons [9]. However, there
+is a horizon before which functionally generated relative arbitrage is not possible, regardless of the choice
+of generating function [19]. This example shows that relative arbitrages exist on arbitrarily short horizons
+within the class of FGPs that have stochastic generating functions.
+1The author wishes to thank Radka Pickova for suggesting this idea.
+7
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+3.2
+Pathwise returns for scenario analysis
+One of the main analytical beneﬁts of the master equation is that it is free of stochastic integrals. When
+formulas for portfolio returns contain stochastic integrals, then correct analysis may be counterintuitive, and
+incorrect analysis may be intuitively appealing, as the following example demonstrates.
+Example 3.7. Consider two portfolios on horizons 0 ≤t ≤T: Let π be a long-only constant-weight portfolio
+so that πt = p, 0 ≤t ≤T, and let ˜π be a passive (buy-and-hold) portfolio starting from the same initial
+allocation ˜π0 = p. Consider the set Aε := {ω ∈Ω| ∥˜πt(ω) −πt(ω)∥< ε, 0 ≤t ≤T}. In some models for X,
+(e.g. geometric Brownian motion), P(Aε) > 0, ∀ε > 0. Recalling that the usual description of the wealth
+process of an arbitrary portfolio θ is
+log V θ
+T =
+ˆ T
+0
+γθ,tdt +
+ˆ T
+0
+θ′
+tσtdWt,
+(3.11)
+then we may write
+log V π
+T −log V ˜π
+T
+ ≤
+ˆ T
+0
+|γπ,t −γ˜π,t| dt +
+
+ˆ T
+0
+(πt −˜πt)′ σtdWt
+ .
+If γ and σ are bounded, then it is tempting to make the erroneous conclusion that
+lim
+ε→0 ess sup
+ω∈Aε
+log V π
+T (ω) −log V ˜π
+T (ω)
+ = 0.
+(3.12)
+The erroneous conclusion might be stated in words as:
+If two portfolios remain suﬃciently close to each other, then their returns must be close.
+The erroneous conclusion can be avoided by noting that π and ˜π are functionally generated by generating
+functions H(y) = Pn
+i=1 piyi, and ˜H(y) = log
+ Pn
+i=1 pieyi−li
+, respectively, where l = L0 ∈Rn. Comparing
+their wealth processes via their master equations gives the pathwise equation
+log V π
+T −log V ˜π
+T = H(LT ) −H(L0) −
+
+˜H(LT ) −˜H(L0)
+
++
+ˆ T
+0
+γ∗
+p,sds.
+(3.13)
+If the covariance a is uniformly elliptic (there exists u > 0 such that y′aty ≥u ∥y∥2 , for all y ∈Rn, t ≥0),
+and if pi > 0, ∀i, then γ∗
+p,t ≥u ∈(0, ∞), ∀t ≥0 [10, Lemma 3.4]. For all ξ > 0 there exists ε > 0 such that
+∥LT −L0∥< ξ on Aε. Hence, (3.13) and the continuity of H and ˜H imply that
+lim
+ε→0 ess inf
+Aε
+
+log V π
+T −log V ˜π
+T
+	
+= lim
+ε→0 ess inf
+Aε
+(ˆ T
+0
+γ∗
+p,sds
+)
+≥Tu,
+contradicting (3.12). This correct conclusion is simply obtainable from the pathwise representation of return
+given by the master equation, but is diﬃcult to arrive at from the traditional representation of return given
+in (3.11). The upshot is that
+Just because two portfolios remain arbitrarily close does not imply that their returns are close.
+8
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+More generally, the master-equation description of relative return (3.4) has advantages over the usual description (3.11) for scenario analysis, a technique currently popular in investment management (e.g. see [14]). In
+the short term, an FGP’s performance (particularly its potential for loss) is largely attributable to the ﬁrst
+term of (3.4), which is entirely determined by the terminal values of the underlying assets, which themselves
+are outputs of scenario analysis. Whereas the last term involves the quadratic variation of the path, and is
+usually easier to estimate with high precision. In contrast, knowledge of the terminal values of the assets is
+diﬃcult to use in the Itˆo-integral formulation (3.11).
+3.3
+Translation equivariance and num´eraire invariance
+Generating functions are overspeciﬁed in the following sense. Given a generating function H, each member
+of the equivalence class of generating functions
+[H] := {κ + H | κ ∈R}
+(3.14)
+yields the same function ∇H. Hence, given an arbitrary market X and num´eraire ρ, any member of [H]
+yields the same functionally generated portfolio (3.3).
+Deﬁnition 3.8. H : Rn →R is translation equivariant if
+H(y + 1κ) = κ + H(y),
+∀y ∈Rn.
+When H is translation equivariant, then H and hence its corresponding FGP depend only on the relative
+rather than absolute price level. An example of a class of translation-equivariant generating functions is the
+diversity-p family (see [8,10]):
+Hp(y) = 1
+p log
+ n
+X
+i=1
+exp{pyi}
+!
+,
+y ∈Rn.
+The following is an invariance property of the master equation when H is translation equivariant.
+Proposition 3.9. If H ∈C2(Rn, R) is translation-equivariant, then λ = 0 in (3.3), and (3.4) exhibits no
+sensitivity to num´eraire choice. Speciﬁcally, for arbitrary portfolios ρ, φ, η, and ν,
+log V π
+T
+V ρ
+T
+= H(Lρ
+T ) −H(Lρ
+0) +
+ˆ T
+0
+htdt,
+(3.15)
+where π = ∇log H(Lφ),
+and h = γπ −1
+2
+n
+X
+i,j=1
+D2
+ijH(Lη)aν
+ij.
+(3.16)
+Proof. Starting with (3.4), we show that when H is translation equivariant, then λ of (3.3) is identically 0:
+∂
+∂κH(y + 1κ) = ∂
+∂κ (H(y) + κ) = 1,
+∂
+∂κH(y + 1κ) =
+n
+X
+i=1
+∂(yi + κ)
+∂κ
+DiH(y + 1κ) =
+n
+X
+i=1
+DiH(y + 1κ) = 1 −λ.
+9
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+Next, we show that aρ may be formally replaced with aν in (3.5). We note that
+n
+X
+i=1
+D2
+ijH(y) = Dj
+n
+X
+i=1
+DiH(y) = Dj (1) = 0,
+∀y ∈Rn.
+Using this and the form (2.2) for aρ yields
+n
+X
+i,j=1
+D2
+ijHaρ
+ij =
+n
+X
+i,j=1
+(aij −[aρ]j −[aρ]i −aρρ) D2
+ijH,
+=
+n
+X
+i,j=1
+D2
+ijHaij −2
+X
+j
+[aρ]jDj
+n
+X
+i=1
+DiH −aρρ
+n
+X
+i,j=1
+D2
+ijH,
+=
+n
+X
+i,j=1
+D2
+ijHaij.
+Reversing the steps shows that a may be replaced with aν for arbitrary ν.
+It remains to show that Lρ may be replaced with Lη as the argument to D2H:
+D2
+ijH(y + 1κ) = D2
+ij (H(y) + κ) = D2
+ijH(y),
+∀y ∈Rn, ∀κ ∈R.
+Since Lρ = L −log V ρ, this implies that
+h = γ∗
+π −1
+2
+n
+X
+i,j=1
+D2
+ijH(Lρ)aν
+ij = γ∗
+π −1
+2
+n
+X
+i,j=1
+D2
+ijH(Lη)aν
+ij.
+Remark 3.10. An FGP can be thought of as a ∆-hedge for its generating function, as it eliminates stochastic
+integrals from dH(Lρ). Under this interpretation, λ is the position taken in the num´eraire with the leftover
+money in the portfolio. The num´eraire ρ sets a stochastic relative price level for V π and L in the master
+equation.
+When H is translation equivariant, then the corresponding FGP and wealth process have no
+sensitivity to the price level, as can be seen by Proposition 3.9 and
+H(Lρ) = H(L −1 log V ρ) = H(L) −log V ρ,
+which simpliﬁes (3.15) to
+log V π
+T = H(LT ) −H(L0) +
+ˆ T
+0
+htdt.
+(3.17)
+Generally, each choice of num´eraire results in a unique master equation. But when H is translation equivariant, then there’s no excess exposure to the num´eraire (beyond what’s needed to ∆-hedge H), making the
+master equations arising from diﬀerent num´eraire choices trivial translations of the same one equation (3.17).
+3.4
+Passive num´eraires and gauge freedom
+The historical work on FGPs [5, 7, 8, 10] takes X as the total capitalizations and the num´eraire ρ as the
+market portfolio, leading to ρ = Xρ (see 3.6), as in Remark 3.2. The important property of the market
+10
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+portfolio that was exploited in those works was its passivity on X (see Deﬁnition 3.11). In the traditional
+case, the equality of ρ and Xρ means that Pn
+i=1 Xρ
+i = 1, hence the generating function need not be deﬁned
+on all of Rn. In this section we explore more generally to what extent a passive num´eraire allows a reduction
+of the domain of the generating function.
+Deﬁnition 3.11. A portfolio ρ is passive if there exists a constant s ∈Rn, called the shares, such that
+V ρ = s′X
+and
+ρi = siXi
+s′X ,
+1 ≤i ≤n.
+Passive portfolios are untraded after the initial allocation, so are unaﬀected by transaction costs and other
+liquidity concerns. Generally, the Xi are unbounded from above, so in order that V ρ > 0 is guaranteed, we
+assume henceforth that any passive portfolio is long-only. That is, that s ∈[0, ∞)n \ {0}.
+When the num´eraire ρ is passive, then a generating function need not be deﬁned on all of Rn, as Xρ will be
+conﬁned to a hyperplane. Let s ∈[0, ∞)n \ {0} be the constant vector of shares such that V ρ = s′X. Then,
+s′Xρ = s′X
+V ρ =
+n
+X
+i=1
+ρi = 1.
+Thus, Xρ is conﬁned to a hyperplane of codimension 1, and it should be suﬃcient to deﬁne H on
+En
+s : = {y ∈Rn |
+n
+X
+i=1
+sieyi = 1}.
+However, Theorem 3.1 uses the Cartesian coordinate system, which is quite convenient, so we sacriﬁce some
+generality and require generating functions to be deﬁned on a neighborhood in Rn containing En
+s .
+Deﬁnition 3.12. Let s ∈[0, ∞)n \{0} and let the passive portfolio ρ be given by ρi = siXi/s′X, 1 ≤i ≤n.
+A ρ-generating function is a function H ∈C2(U, R), where U is a neighborhood in Rn containing En
+s .
+When ρ is the market portfolio and X is the total capitalization, then s ∝1. In [8, Proposition 3.1.14],
+where generating functions are speciﬁed as G(x) := exp{H(log x)}, the following equivalence is demonstrated:
+Generating functions H1 and H2 generate the same portfolio if and only if H1 −H2 is constant on En
+1. This
+generalizes to general passive portfolios as follows.
+Proposition 3.13. Let ρ be passive with corresponding shares s ∈[0, ∞)n \ {0}. Let H1 and H2 be two
+ρ-generating functions deﬁned on a neighborhood U containing En
+s . Then H1 and H2 generate the same
+portfolio for any realization of X if and only if H1 −H2 is constant on En
+s .
+Proof. Let πj be the portfolio generated by Hj, j ∈{1, 2}. The condition π1
+i = π2
+i , 1 ≤i ≤n for all
+realizations of X is equivalent by (3.3) to the following holding ∀y ∈En
+s :
+
+1 −
+n
+X
+j=1
+DjH1(y)
+
+ρi + DiH1(y) =
+
+1 −
+n
+X
+j=1
+DjH2(y)
+
+ρi + DiH2(y),
+1 ≤i ≤n,
+⇐⇒
+sieyi
+Pn
+k=1 skeyk
+n
+X
+j=1
+Dj (H1(y) −H2(y)) = Di(H1(y) −H2(y)),
+1 ≤i ≤n,
+⇒(s1ey1, . . . , sneyn) ∝∇(H1(y) −H2(y)) ,
+1 ≤i ≤n,
+(3.18)
+11
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+Diﬀerentiating the equation determining the surface En
+s shows that (3.18) is equivalent to ∇(H1 −H2) being
+orthogonal to En
+s , hence equivalent to H1 −H2 being constant on En
+s . Conversely, if H1 −H2 is constant
+on En
+s , then (3.18) holds. Since by deﬁnition ρ ∝(s1ey1, . . . , sneyn), then from (3.3) π1 −π2 ∝ρ. But ρ is
+long-only, and Pn
+i=1
+ π1
+i −π2
+i
+
+= 0. Thus π1 = π2.
+The gauge freedom implied by Proposition 3.13, speciﬁcally by (3.18), is that if H generates π, then
+Hf(y) : = f
+ n
+X
+i=1
+sieyi
+!
++ H(y),
+y ∈U ⊃En
+s ,
+also generates π, for any f ∈C2((0, ∞), R). This gauge freedom allows one to make any convenient choice
+for f in order to simplify calculations. The ρ-generating functions and general generating functions have
+their associated respective equivalence classes:
+[H]ρ := {f(s′e·) + H(·) | f ∈C2((0, ∞), R)},
+where si := ρi,0
+Xi,0
+, 1 ≤i ≤n,
+[H] := {H + κ | κ ∈R}.
+Each member of a given [H]ρ or [H] is equivalent for the purposes of ρ-FGPs, or generally FGPs, respectively.
+4
+Statistical arbitrage
+4.1
+Long-short statistical arbitrage with FGPs
+The paper [12] of R. Fernholz and C. Maguire introduces an idea for a statistical arbitrage strategy in
+markets where the realized rate of variance of log market prices depends on the sampling interval. The
+general idea is to take a long position in an FGP that is rebalanced over a time interval corresponding to a
+high variance rate, hedged with a short position in an FGP generated from the same generating function,
+but rebalanced over a diﬀerent time interval corresponding to a low variance rate.
+Statistical arbitrage
+proﬁts accrue from the diﬀerent rates of variance-capture (the h of (3.5)) - named so because these terms
+are directly proportional to the variance rate. Because the long and short FGPs have the same generating
+function, their corresponding H terms of (3.4) are identical, providing an eﬀective hedge for each other.
+The data presented in [12] indicate that for 2005, the variance rate was signiﬁcantly higher at higher sampling
+frequencies intradaily for large-cap US equities. The authors looked at rebalancing the long component at 90second intervals and rebalancing the short component once a day. These choices of rebalancing intervals were
+ad hoc, not the output of an optimization problem. In this section we develop general performance formulas
+for such long-short statistical arbitrages, creating a framework for optimizing the selection of generating
+function and rebalancing intervals.
+We will show that the growth rate of the statistical arbitrage portfolio always has the quadratic form
+γπ = Aκ −Bκ2,
+A, B > 0,
+(4.1)
+where κ is the leverage factor, that is, the weight invested in the long portfolio. Hence, there is a level
+12
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+of leverage ¯κ = A/B above which the portfolio tends to shrink in value rather than grow. The leverage
+ˇκ = A/(2B) = ¯κ/2 gives the maximal growth rate of ˇγπ = A2/(4B).
+To estimate the performance of the strategy described in [12], we use X = (X1, X2, X3, . . . , X3+m), where
+X3 is the money market, and X3+1, . . . , X3+m are the risky assets that are directly tradeable on the market
+(e.g. the equities). X1 and X2 are the values of long-only portfolios on (X4, . . . , X3+m). The statistical
+arbitrage portfolio is an FGP speciﬁed on the submarket (X1, X2, X3) (for more detail, see Remark 2.2).
+In [12] constant-weight FGPs are considered, where the overall portfolio π has π1 = −π2 = κ ∈(0, ∞), and
+π3 = 1. This portfolio is functionally generated by the generating function H(y) = κ (y1 −y2), so (3.4) yields
+log ˆV π
+T = κ
+
+ˆL1,T −ˆL1,0 −
+h
+ˆL2,T −ˆL2,0
+i
++
+ˆ T
+0
+hsds.
+The statistical arbitrage construction uses X1 and X2 as discretely-traded approximations to the same
+(continuously traded) FGP, starting from X1,0 = X2,0.
+The portfolios diﬀer only in their rebalancing
+interval.
+Their values are approximated with the master equation, as if they were continuously-traded.
+This approximation has been shown empirically to be accurate for diversity- and entropy-weighted FGP
+approximations that are rebalanced merely once a month [8, Chapter 6]. X1 and X2 have the same generating
+functions, H1 = H2, so under this approximation their values diﬀer only through their variance-capture terms,
+h1 and h2, which diﬀer only because rebalancing occurs at diﬀerent intervals, and hence diﬀerent eﬀective
+variance-rates may (and do in practice) apply. The resulting approximation is
+log ˆV π
+T ≈κ
+ 
+(((((((((
+H1 (LT ) −H1 (L0) +
+ˆ T
+0
+h1,sds −
+"
+(((((((((
+H2 (LT ) −H2 (L0) +
+ˆ T
+0
+h2,sds
+#!
++
+ˆ T
+0
+hsds.
+(4.2)
+The overall portfolio π is a constant-weight FGP, hence has h = γ∗
+π from (3.4). Therefore,
+log ˆV π
+T ≈
+ˆ T
+0
+
+κ
+
+h1,s −h2,s + a11 −a22
+2
+
+−κ2
+2 a(1,−1)(1,−1)
+
+ds.
+This has the quadratic form of (4.1). To estimate the parameters, we approximate the stochastic quantities
+as constants, and plug in the values of their sample estimators. We can identify
+A = h1 −h2 + 1
+2(a11 −a22),
+B = 1
+2a(1,−1)(1,−1).
+In [12] the FGP chosen to give the value processes X1 and X2 was the equal-weight portfolio on large cap
+US equities, speciﬁcally those in the S&P500 and/or Russell 1000 in 2005. The annualized sample averages
+for that year were a11 = .0683, a22 = .0423, a(1,−1)(1,−1) = 1.69 × 10−7, h1 = 0.0341, h2 = 0.0211.2 These
+result in A = 0.0260, B = 8.45 × 10−8, ˇκ =
+A
+2B = 1.54 × 105, and ˇγπ = 2.00 × 103 (base e).
+While ˇκ is not of the order of magnitude usually seen in portfolio construction, it must be remembered that
+it is not a weight for investment into equities, but rather into a long-short combination of two very diverse
+portfolios that are very similar nearly always. At the beginning of each day, the long and short portfolios
+2These are the numbers from [12], after transforming standard deviations to variances and annualizing all numbers: a11 =
+250 ∗0.000273, a22 = 250 ∗0.000169, a(1,−1)(1,−1) = 250 ∗
+  0.0026
+100
+2, h1 = 0.0341, h2 = 0.0211.
+13
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+are equal, so the net position in each equity starts at 0. Each FGP is an equal-weight portfolio in about
+1000 equities. If we approximate each initial weight as 10−3 and use a leverage factor of κ = 1.5 × 105, then
+an isolated 1% intraday price movement of a particular equity induces a change in net weight of 1.5 in that
+equity. While this is still an unrealistically leveraged portfolio, it is much closer to a reasonable order of
+magnitude considering that it would be oﬀset by similarly sized positions of opposite sign.
+Despite the above remark, the amount of leverage involved in the ˇκ portfolio is prohibitive due to the realities
+of equity markets that lie outside of the framework of this paper, such as price jumps, margin requirements,
+transaction costs, short-selling fees, liquidity constraints, etc. It is these factors then that become the limiting
+ones for the level of leverage to use in seeking proﬁtability from a statistical arbitrage portfolio of this type.
+A more plausible level of leverage of κ = 1 × 103 results in γπ = 26, still orders of magnitude outside the
+realm of documented performance.
+4.2
+Quadratic generating functions
+This section again considers a market whose log asset prices have a variance rate varying with the sampling
+interval (e.g. Figure 1). Taylor expanding the generating function term in the master equation (3.4) yields
+log
+V π
+T
+V ρ
+T
+
+= (∆T Lρ)′ ∇H(Lρ
+0) + 1
+2 (∆T Lρ)′ D2H(Lρ
+0)∆T Lρ + RT +
+ˆ T
+0
+htdt,
+(4.3)
+where ∆tL : = Lt −L0,
+and RT is the remainder term. For a given path ω, there is a suﬃciently short time horizon such that an
+FGP generated by an analytic H behaves nearly as if it were generated by a quadratic H:
+H(y) = −1
+2 (y −l)′ c (y −l) + p′y,
+y, l, p ∈Rn, c ∈Rn×n,
+(4.4)
+⇒∇H(y) = −c (y −l) + p,
+⇒D2H(y) = −c.
+Since statistical arbitrage portfolios are generally rebalanced quite frequently (intradaily), the above motivates consideration of FGPs having quadratic H for application in statistical arbitrage. We assume that the
+investor has no information, or at least does not wish to speculate, on the drifts of Lρ. If this is the case,
+then it makes no sense for him to take on unnecessary exposure to the (∆Lρ
+T )′ ∇H(Lρ
+0) term in (4.3). This
+term can be eliminated by selecting an H satisfying ∇H(Lρ
+0) = 0.
+To accomplish this initial hedge, take p = 0 and l = Lρ
+0 in (4.4). Then
+log
+V π
+T
+V ρ
+T
+
+= −1
+2 (∆T Lρ
+i )′ c (∆T Lρ
+i ) + 1
+2
+X
+i,j
+cij
+ˆ T
+0
+aρ
+ij,sds +
+ˆ T
+0
+ γ∗
+π,s −λγ∗
+ρ,s
+
+ds,
+π = λρ −c∆T Lρ.
+For simplicity in illustrating the idea, we restrict the investment to one risky asset (possibly a wealth process
+of a more general portfolio, as in the previous section) and one locally risk-free asset, i.e. a money market
+account, which will be the num´eraire. The procedure is readily generalizable to a bigger market, with the
+14
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+cost being solving and optimizing vector instead of scalar equations. In this setting γ∗
+ρ = 0, Lρ = ˆL, and
+π = λρ −c∆ˆL. Since the money market discounted with itself has value one for all time, then H only need
+be prescribed on the risky discounted asset’s log price, ˆL, and hence c is a scalar. The log wealth is
+log ˆV π
+T = 1
+2c
+ ˆ T
+0
+asds −
+
+∆T ˆL
+2
+!
++
+ˆ T
+0
+γ∗
+π,sds,
+= 1
+2
+"ˆ T
+0
+
+cas + as
+h
+c∆s ˆL
+i
+i −c2 h
+∆s ˆL
+i2
+as
+
+ds −c
+
+∆T ˆL
+2
+#
+.
+(4.5)
+To proceed, we take an expectation, assume Brownian integrals are martingales, and approximate some
+time-dependent parameters as constants. This simpliﬁes the model, allowing for easy ﬁtting to data:
+E[at] ≈: a
+E∆s ˆL = E
+ˆ s
+0
+ˆγudu
+
+≈: sˆγ,
+E
+
+∆s ˆL
+2
+=: As.
+Note: a is best interpreted as At/t at the t at which trading actually occurs. Using the above in (4.5) yields
+E log
+
+ˆV π
+T
+
+≈1
+2
+"
+acT + acˆγ
+ˆ T
+0
+sds −ac2
+ˆ T
+0
+Asds −cAT
+#
+,
+= Ta
+2
+
+c
+
+1 −AT
+Ta + ˆγT
+2
+
+−c2v(T)
+
+,
+(4.6)
+where v(T) : = 1
+T
+ˆ T
+0
+Asds.
+By assumption, At/at is not identically 1. If its deviation from 1 is not substantially greater than |ˆγt/2| for
+some t > 0, then our exposure to ˆγ results in large risk for little gain. In any case, we are ignorant of the
+drift, so we drop it and are left with
+1
+T E log
+
+ˆV π
+T
+
+≈a
+2
+
+c
+
+1 −AT
+Ta
+
+−c2v(T)
+
+.
+All that is needed is the variogram for ˆL , from which the other quantities are easily derived. The c that
+maximizes the expected log growth by horizon T is
+ˇcT =
+1
+2v(T)
+
+1 −AT
+Ta
+
+.
+This yields a maximal expected log-growth rate of
+1
+T E log
+
+ˆV π
+T
+
+=
+a
+8v(T)
+
+1 −AT
+Ta
+2
+.
+(4.7)
+Empirically, the quantity AT /T tends to a constant for large T, thus v(T) = O(T) for T →∞. This means
+that the growth rate tends to 0 as T →∞. The question then arises of what the optimal period ˇT is for
+restarting this strategy. This can be obtained by maximizing (4.7) as a function of T.
+15
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+5
+10
+50
+100
+0.040
+0.045
+0.050
+0.055
+0.060
+t HMinutesL
+At  t
+0.0409 +
+0.0419
+Ht + 0.363L0.648
+Figure 1: Our ﬁt to the annualized variogram of US-large cap stocks from [12, Figure 1].
+Conjecture 4.1. Rather than restarting the portfolio after a given time period, it may be better to solve an
+optimal control problem, restarting when the price of the risky asset wanders suﬃciently far from its origin.
+A positive feature of both the methodologies of Section 4 is that they are entirely data-driven, and depend
+only on variance measurements, which can be estimated in practice with high precision. Of course if the
+data suggests a parametric model, then the added structure could be additionally exploited.
+Example 4.2. We apply a quadratic generating function to the data from [12], i.e. of an equal-weight
+portfolio on large cap US equities in 2005. The variogram (Figure 1) is ﬁtted to
+At
+t = C +
+U
+(t + B)k .
+The form was chosen for ﬁtting fairly well and also because A has a closed-form antiderivative, yielding
+v(T) ≡1
+T
+ˆ T
+0
+Atdt = CT
+2
++ Uk (B + T)1−k ([1 −k] T −B) + B2−k
+T (2 −k) (1 −k)
+.
+Assuming, as in Section 4.1, that our (fastest) rebalancing frequency is 1.5 minutes, then eﬀectively a =
+A1.5/1.5 = .0683 (annualized). From (4.7) we numerically obtain ˇT = 7.13 minutes, leading to ˇc( ˇT) =
+5.8 × 104, and a maximal rate of log return of 244 (base e, per year). This is an order of magnitude lower
+than ˆγπ obtained from the same data via the methodology in Section 4.1. This may be explained by the
+approximation made in (4.2) breaking down under substantial leverage. Another factor may be that our
+16
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+5
+10
+15
+20
+100
+120
+140
+160
+180
+200
+220
+240
+T HMinutesL
+Rate of Log Return
+Figure 2: The optimal annualized rate of log-return as a function of horizon in Example 4.2.
+dropping the drift term ˆγT/2 of (4.6) underestimates the return of the quadratic FGP: Since AT /T < a,
+then conditioned on a price movement, a large drift in the opposite direction is typical, which the portfolio
+implicitly bets on.
+5
+Portfolio immunization
+Suppose that we have selected a generating function that is appealing, except that it produces a generated
+portfolio that is exposed, relative to the num´eraire, to risk factors that we would rather remain unexposed
+to. For example, we may wish to avoid taking on num´eraire risk by maintaining zero excess exposure to it.
+One way to remove unwanted risk exposure is to modify the initial generating function, only in so far as
+to make it invariant to changes in the argument along the direction of given risk factors.
+To be more
+concrete, suppose that H is the initial generating function, and that β1, . . . , βK are each continuous-path
+ﬁnite variation processes in Rn satisfying
+ βk
+t
+′ βj
+t = δkj,
+1 ≤k, j ≤K,
+∀t ≥0.
+The orthonormal set of random vectors {β1
+t , . . . , βK
+t } spans the subspace in Rn that we would like to immunize
+the generated portfolio’s performance to at time t. That is, we would like to ﬁnd a generating function ˜H,
+similar to H, except also obeying
+ βk
+t
+′ ∇˜Ht = 0,
+∀t ≥0.
+17
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+For this to hold, ˜H will need to be stochastic, via taking β := {βk
+i }1≤k≤K
+1≤i≤n as a second argument. Perhaps
+the most natural way to modify H in order to achieve this is to project ∇H onto the complement of the
+span of {β1, . . . , βK} and allow that to determine the new function ˜H. To that end, let P ⊥(y, b) be the
+projection operator that projects y onto the orthogonal complement of the span of vectors {bk}1≤k≤K. It is
+simplest to specify P ⊥in the case where {bk} are orthonormal:
+P ⊥(y, b) = y −
+K
+X
+k=1
+ y′bk
+bk,
+for
+ bk′ bj = δkj, 1 ≤k, j ≤K.
+Proposition 5.1. Let {β1, . . . , βK} be K ≤n ﬁnite variation processes in Rn that are mutually orthonormal
+at all times. The generating function H and generated portfolio
+π = λρ + P ⊥(∇H(P ⊥(Lρ, β)), β),
+where λ = 1 −1′P ⊥(∇H(P ⊥(Lρ, β)), β),
+satisfy the following master equation:
+log
+V π
+T
+V ρ
+T
+
+= H(P ⊥(Lρ
+T , βT )) −H(P ⊥(Lρ
+0, β0)) +
+ˆ T
+0
+htdt −
+K
+X
+k=1
+ˆ T
+0
+
+∇bkH(P ⊥(Lρ
+t , βt))
+′ dβk
+t ,
+where
+h = γ∗
+π −λγ∗
+ρ −1
+2
+
+n
+X
+i,j=1
+aρ
+ijD2
+ijH(P ⊥(Lρ, β)), β) −2
+K
+X
+k=1
+ bk′ aρD2H(P ⊥(Lρ, β))bk
++
+K
+X
+k=1
+K
+X
+k′=1
+
+bk′′
+aρbk 
+bk′′
+D2H(P ⊥(Lρ, β))bk
+
+,
+∇bkH(P ⊥(y, b)) = −
+h bk′ ∇H(P ⊥(y, b))
+i
+yi −
+h bk′ y
+i
+DiH(P ⊥(y, b)).
+Proof. Deﬁne
+˜H : Rn × RK×n →R,
+˜H(y, b) = H(P ⊥(y, b)),
+where P ⊥(y, b) = y −
+K
+X
+k=1
+ y′bk
+bk.
+The result is then obtained from a direct application of Theorem 3.1 to ˜H. The relevant derivatives are
+∇y ˜H(y, b) = ∇H(P ⊥(y, b)) −
+K
+X
+k=1
+h bk′ ∇H(P ⊥(y, b))
+i
+bk,
+= P ⊥(∇H(P ⊥(y, b)), b);
+∂2
+∂yi∂yj
+˜H(y, b) = D2
+ijH(P ⊥(y, b)) −
+K
+X
+k=1
+bk
+j
+h bk′ D2H(P ⊥(y, b))
+i
+i −
+K
+X
+k=1
+bk
+i
+h bk′ D2H(P ⊥(y, b))
+i
+j
++
+K
+X
+k=1
+K
+X
+k′=1
+bk
+i bk′
+j
+
+bk′′
+D2H(P ⊥(y, b))bk;
+18
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+∂
+∂bk
+i
+˜H(y, b) = −
+ bk′ ∇H(P ⊥(y, b))
+
+yi −
+ bk′ y
+
+DiH(P ⊥(y, b)).
+The characterization of the performance of the immunized FGP given by Proposition 5.1 is not so pretty, but
+the idea of what has changed from the non-immunized FGP is straightforward. The relative wealth process
+log (V π/V ρ) of the generated portfolio of Proposition 5.1 is locally not exposed to changes in Lρ along the
+linear span of {β1, . . . , βK}. This can be seen from
+ βk′ ∇yH(P ⊥(y, b)) |(Lρ,β) =
+ βk′ (π −λρ) ,
+=
+ βk′ P ⊥(∇H(P ⊥(Lρ, β)), β),
+= 0,
+1 ≤k ≤K.
+Example 5.2 (Num´eraire exposure). Consider the case where immunization is desired with respect to
+relative exposure to the num´eraire. The appropriate β to use to hedge against excess num´eraire exposure is
+1 less than the “CAPM β” (see e.g. [17]). The instantaneous version of this parameter is
+˜βi,t =
+d
+dt ⟨log V ρ, Lρ
+i ⟩t
+d
+dt ⟨log V ρ⟩t
+= [atrt]i −aρρ,t
+aρρ,t
+= [atρt]i
+aρρ,t
+−1,
+= β(CAPM)
+i,t
+−1.
+Although theoretically this instantaneous β may not be a continuous-path ﬁnite variation process, in practice
+the instantaneous β is not observable, and β is typically estimated by time-averaging over some historical
+time window. The practical and theoretical result of such a time-averaging procedure is a continuous-path
+ﬁnite variation process. For example, the estimator might have the theoretical form
+˜βi,t =
+1
+∆t
+´ t
+t−∆t[asρs]ids
+1
+∆t
+´ t
+t−∆t aρρ,sds
+−1,
+for some ∆t > 0. In practice the integrals are approximated by sums of discretely sampled values.
+Example 5.3 (Price level). Another possibly desirable immunization is to hedge out any exposure to a rise
+or fall in the overall price level. This can be done by choosing the constant vector β = n−1/21.
+6
+Mirror portfolios
+In this section we use generating functions to elaborate some of the properties of mirror portfolios, introduced
+in [11]. In that paper, mirror portfolios were used to construct arbitrages over arbitrarily short time horizons
+in markets that are both diverse and uniformly elliptic. A passive portfolio that is short any asset is typically
+inadmissible, due to each asset’s price usually being unbounded from above. Hence, ﬂipping the sign of the
+shares invested in assets (while adjusting the weight in the num´eraire so that weights sum to one) does not
+in general produce a suitable notion of a reﬂected portfolio. Mirror portfolios accomplish that task.
+Deﬁnition 6.1. If π and ρ are portfolios, then the portfolio
+˜π[q],ρ :=qπ + (1 −q)ρ,
+q ∈R,
+19
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+is called the q-mirror of π with respect to ρ. When ρ is fully invested in the money market, then ˜π[q],ρ =: ˜π[q],
+abbreviated the q-mirror of π. For q = −1, ˜π[−1],ρ =: ˜πρ, called simply the mirror of π with respect to ρ.
+For portfolios π and ρ, the q-mirror of π with respect to ρ satisﬁes (2.1), so is also a portfolio. As an example, if
+X1 is the money market, then the portfolio ei := (0, . . . , 0, 1, 0, . . .) has the mirror ˜ei = (2, 0, . . . , 0, −1, 0, . . .).
+Proposition 6.2. The q-mirror of π with respect to ρ is functionally generated from the market (X1, X2) :=
+(V ρ, V π) by the generating function H(y1, y2) := (1 −q) y1 + qy2, and thus satisﬁes
+log V ˜π[q],ρ = (1 −q) log V ρ + q log V π +
+ˆ
+hsds,
+log
+ 
+V ˜π[q],ρ
+V ρ
+!
+= q log
+V π
+V ρ
+
++
+ˆ
+hsds,
+where h = γ∗
+˜π[q],ρ = 1
+2
+
+(1 −q)a11 + qa22 −
+h
+(1 −q)2 a11 + 2q(1 −q)a12 + q2a22
+i
+.
+If, additionally, ρ is the money market, then
+log ˆV ˜π[q] = q log ˆV π + q(1 −q)
+2
+⟨log V π⟩.
+If, additionally, q = −1, then
+log ˆV ˜π = −log ˆV π −⟨log V π⟩,
+(6.1)
+Proof. H is translation equivariant and D2H = 0, so we may apply Proposition 3.9 to obtain the ﬁrst result.
+The others are easy consequences of plugging in a11 = a12 = 0 when ρ is the money market.
+The following corollary shows that under typical market conditions a given portfolio π or its mirror ˜π or
+both will lose all wealth, asymptotically.
+Corollary 6.3. Suppose that both of the following hold:
+(i)
+lim inf
+t→∞
+1
+t ⟨log V π⟩t > 0,
+a.s.
+(6.2)
+(ii)
+lim
+t→∞
+log log t
+t2
+⟨log V π⟩t = 0,
+a.s.
+(6.3)
+Then
+P
+n
+lim
+t→∞
+ˆV π
+t = 0
+o [ n
+lim
+t→∞
+ˆV ˜π
+t = 0
+o
+= 1.
+Proof. Under (6.3) the law of the iterated logarithm [13, p. 112] implies that
+lim
+t→∞
+1
+t
+
+log ˆV π
+t −
+ˆ t
+0
+γπ,sds
+
+= 0,
+a.s.,
+(6.4)
+20
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+since the process inside the parentheses is a continuous local martingale. From this (6.1) yields
+lim
+t→∞
+1
+t
+
+log ˆV ˜π
+t + ⟨log V π⟩t +
+ˆ t
+0
+γπ,sds
+
+= 0,
+a.s.,
+⇒lim
+t→∞
+1
+t
+
+log ˆV π
+t + log ˆV ˜π
+t + ⟨log V π⟩t
+
+= 0,
+a.s.,
+where the second line follows from adding (6.4) to the ﬁrst. Then by (6.2)
+lim sup
+t→∞
+1
+t
+
+log ˆV π
+t + log ˆV ˜π
+t
+
+< 0,
+a.s.,
+⇒P
+
+lim sup
+t→∞
+1
+t log ˆV π
+t < 0
+ [ 
+lim sup
+t→∞
+1
+t log ˆV ˜π
+t < 0
+
+= 1.
+Equation (6.1) shows that at least one and possibly both of log ˆV π and log ˆV ˜π have negative drift at any
+time when ⟨log V π⟩is increasing. The preceding corollary shows that a portfolio, its mirror, or possibly both,
+lose all wealth relative to the money market asymptotically, assuming that the asymptotic local variance
+rate does not approach 0. A portfolio whose wealth tends to 0 asymptotically would typically be considered
+a poor long-term investment. In this sense, “mirroring” a poor investment may still be a poor investment.
+A concrete example is a market with a risk-free rate of 0, and one risky asset whose price is a geometric
+Brownian motion with γ = −1
+2σ2. Then full investment in the risky asset loses all wealth asymptotically, as
+does its mirror, which also has drift ˜γ = −1
+2σ2 by (6.1).
+7
+Concluding remarks
+The key analytical beneﬁt of portfolios that are functionally generated is the representation of their return
+relative to a num´eraire via a pathwise master equation free of stochastic integrals. The generalizations of
+FGPs presented here expand the class of portfolio-num´eraire pairs that may be analyzed in this way. The
+dynamism of FGPs is enhanced by the freedom to incorporate processes having continuous, ﬁnite-variation
+paths as auxiliary arguments to generating functions. This allows FGPs to be sensitive to changing market
+conditions beyond the price changes of the assets. The main applications that we have shown are (1) direct,
+intuitive comparison of the performance of FGPs, useful for scenario analysis (Section 3.2), (2) statistical
+arbitrage based purely on variance data, (3) portfolio immunization, and (4) mirror portfolios analysis.
+It is a shortcoming of this work that transaction costs are ignored throughout. They are especially important
+to the performance of the statistical arbitrage portfolios examined in Section 4. The inclusion of transaction
+costs in a tractable way for FGPs in n-asset markets is a topic of ongoing research. Due to its complexity,
+it warrants a separate paper that the author hopes will be forthcoming in the future.
+References
+[1] Adrian Banner and D. Fernholz. Short-term relative arbitrage in volatility-stabilized markets. Annals
+of Finance, 4:445–454, 2008.
+21
+Electronic copy available at: https://ssrn.com/abstract=2345668
+
+[2] J. Bollen, H. Mao, and X. Zeng. Twitter mood predicts the stock market. Journal of Computational
+Science, 2(1):1–8, 2011.
+[3] F. Eugene and K. French. The cross-section of expected stock returns. Journal of Finance, 47(2):427–
+465, 1992.
+[4] E.F. Fama and K.R. French. Common risk factors in the returns on stocks and bonds. Journal of
+ﬁnancial economics, 33(1):3–56, 1993.
+[5] E. Robert Fernholz. Portfolio generating functions. Technical report, INTECH, 1995. https://ww3.
+intechjanus.com/Janus/Intech/intech?command=researchListing.
+[6] E. Robert Fernholz. On the diversity of equity markets. Journal of Mathematical Economics, 31:393–417,
+1999.
+[7] E. Robert Fernholz. Portfolio generating functions. In Marco Avellaneda, editor, Quantitative Analysis
+in Financial Markets, pages 344–364. World Scientiﬁc, Singapore, 1999.
+[8] E. Robert Fernholz. Stochastic Portfolio Theory. Springer, Berlin, ﬁrst edition, 2002.
+[9] E. Robert Fernholz and Ioannis Karatzas. Relative arbitrage in volatility-stabilized markets. Annals of
+Finance, 1:149–177, 2005.
+[10] E. Robert Fernholz and Ioannis Karatzas. Stochastic Portfolio Theory: an overview. In A. Bensoussan
+and Q. Zhang, editors, Handbook of Numerical Analysis: Volume XV: Mathematical Modeling and
+Numerical Methods in Finance, pages 89–167. North Holland, Oxford, 2009.
+[11] E. Robert Fernholz, Ioannis Karatzas, and Constantinos Kardaras. Diversity and relative arbitrage in
+equity markets. Finance and Stochastics, 9:1–27, 2005.
+[12] E.R. Fernholz and C Maguire. The statistics of statistical arbitrage. Financial Analysts Journal, 63:46–
+52, 2007.
+[13] Ioannis Karatzas and Steven E. Shreve. Brownian Motion and Stochastic Calculus. Springer, Berlin,
+second edition, 1991.
+[14] J. Mina, J.Y. Xiao, et al.
+Return to riskmetrics: the evolution of a standard, 2001.
+New York:
+RiskMetrics Group.
+[15] Soumik Pal and Ting-Kam Leonard Wong.
+Energy, entropy, and arbitrage.
+arXiv preprint
+arXiv:1308.5376, 2013.
+[16] Olivier Menoukeu Pamen. A general theorem for portfolio generating functions. Communication on
+Stochastic Analysis, 5(2):271–283, 2011.
+[17] William Sharpe. Portfolio Theory and Capital Markets. McGraw-Hill, 1970.
+[18] Winslow Strong and Jean-Pierre Fouque. Diversity and arbitrage in a regulatory breakup model. Annals
+of Finance, 7:349–374, 2011.
+[19] Phillip Whitman. Personal Communication.
+22
+Electronic copy available at: https://ssrn.com/abstract=2345668

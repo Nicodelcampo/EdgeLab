@@ -1,0 +1,96 @@
+{
+  "doc_id": 64,
+  "titulo": "Artificial Intelligence in Day Trading: An Intraday Trading Framework with Economic Indicators and Large Language Model Analysis",
+  "resumen_operativo": "Este paper propone una estrategia de trading intradiario de ruptura (breakout) en el índice Nasdaq 100 (USTEC) basada en la volatilidad generada por anuncios macroeconómicos. Integra un filtro a través de un análisis de sentimiento mediante un Large Language Model (DeepSeek) para refinar las señales, demostrando altos retornos ajustados al riesgo y explorando la sensibilidad de la estrategia al diseño de prompts y al sesgo retrospectivo.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Kalman filter",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo recursivo utilizado para estimar la tendencia subyacente del precio filtrando el ruido del mercado, aplicado en el Trading Indicator para identificar breakouts.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "breakout strategy"
+        }
+      ],
+      "cita_textual": "The Kalman filter estimates the underlying price trend bpt by filtering noise"
+    },
+    {
+      "nombre": "look-ahead bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo de modelado retrospectivo que ocurre al usar información o revisiones que no estaban disponibles al momento de la decisión de trading.",
+      "relaciones": [],
+      "cita_textual": "Look-ahead bias occurs when a backtest utilizes information that was not available at the time of the trading decision, potentially inflating the strategy’s perceived performance"
+    },
+    {
+      "nombre": "Large Language Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de inteligencia artificial generativa usado para analizar el sentimiento de noticias económicas y desviaciones respecto a previsiones, filtrando señales de trading.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "breakout strategy"
+        }
+      ],
+      "cita_textual": "The LLM serves as a filter, refining buy and sell signals by analyzing market sentiment and forecast deviations in real time."
+    },
+    {
+      "nombre": "hallucination",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Tendencia de los LLMs a generar resultados o niveles de confianza plausibles pero incorrectos, afectando la confiabilidad de las decisiones.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "Large Language Model"
+        }
+      ],
+      "cita_textual": "Hallucination, the generation of plausible but incorrect confidence scores, poses a risk to trading decisions"
+    },
+    {
+      "nombre": "breakout strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia que busca capturar movimientos significativos de precios después de la disipación del shock inicial post-anuncio económico.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Kalman filter"
+        }
+      ],
+      "cita_textual": "This strategy leverages market volatility triggered by high-impact US economic events, using a breakout approach to capture significant price movements post-announcement."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La integración de un filtro LLM mejora significativamente el rendimiento y gestión de riesgo frente a la estrategia base sin filtrar.",
+      "mercado": "USTEC CFD (Nasdaq 100)",
+      "periodo": "Enero 2018 - Mayo 2025",
+      "magnitud": "Retorno anualizado mejora de 33.53% a 38.46%, Sharpe ratio incrementa de 1.67 a 2.11.",
+      "condiciones": "Datos OHLC de 1 minuto, 120s de retardo post-noticia, LLM thresholds de 0.25 y 0.75.",
+      "robustez": "alta",
+      "cita_textual": "The LLM-integrated version achieves a total return of 982.93% and an annualized return of 38.46%, substantially outperforming the backbone strategy (730.59% and 33.53%)"
+    },
+    {
+      "afirmacion": "El diseño de prompts modifica determinísticamente la distribución de los puntajes de confianza del LLM y los retornos de la estrategia, afectando la interpretabilidad.",
+      "mercado": "USTEC CFD",
+      "periodo": "Enero 2018 - Mayo 2025",
+      "magnitud": "Prompts neutrales causan sesgo de 0.53 limitando Sharpe a ~1.5, frente a sesgo de 0.64 (Sharpe 2.11) del prompt objetivo.",
+      "condiciones": "Testing empírico de distintos estilos de system prompt.",
+      "robustez": "alta",
+      "cita_textual": "Prompt1 and Prompt2 exhibit a neutral stance, with mean confidence scores of approximately 0.53, whereas Prompt3 demonstrates a bullish bias, with a mean confidence of 0.64. This variation suggests that prompt wording significantly affects the LLM’s output."
+    },
+    {
+      "afirmacion": "A pesar de su naturaleza estocástica, los modelos LLM grandes exhiben estabilidad suficiente en la evaluación repetida de un mismo prompt para ser viables empíricamente.",
+      "mercado": "N/A",
+      "periodo": "N/A",
+      "magnitud": "Mínima variación inter-ejecución del backtest (Sharpe 2.11 vs 2.07).",
+      "condiciones": "Ejecuciones idénticas sobre el mismo set de datos de eventos.",
+      "robustez": "media",
+      "cita_textual": "The comparison between Prompt3 and Prompt3 Again reveals minor output variations, yet the performance metrics remain closely aligned (e.g., Sharpe ratios of 2.11 vs. 2.07)."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "Propone un framework de trading intradiario explícito, aplicable a derivados (CFDs o Futuros ES/NQ), explotando shocks direccionales post-noticias asistido por APIs de lenguaje."
+  }
+}

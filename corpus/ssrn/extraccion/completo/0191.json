@@ -1,0 +1,80 @@
+{
+  "doc_id": 191,
+  "titulo": "Integrated Global Asset Management: Quantitative Country ETF Trading Strategy",
+  "resumen_operativo": "El paper describe el proceso de construcción de una estrategia de trading sistemática con ETFs de países para superar los índices MSCI ACWI y ACWI ex US. La estrategia combina señales de factores técnicos, fundamentales, económicos, de sentimiento de mercado y alternativos para generar alphas por país, asignando dinámicamente pesos de sobreponderación e infraponderación. Se modela la exposición ponderada al mercado para asset allocation multi-país multi-período, con código disponible en GitHub. El trabajo es esencialmente descriptivo-metodológico, sin evaluación empírica rigurosa con métricas de rendimiento cuantificadas.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "Country ETF",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Exchange-Traded Fund que replica la exposición a un país específico, permitiendo implementar estrategias de asset allocation por país basadas en señales cuantitativas de equity y currency esperados.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "global asset management"},
+        {"tipo": "USA", "objeto": "factor models"}
+      ],
+      "cita_textual": "We created, developed and deployed a set of systematic strategies which produces impressive returns using country Exchange-Traded Funds (ETFs)."
+    },
+    {
+      "nombre": "Factor Modeling",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Paradigma de construcción de señales que usa descriptores técnicos, fundamentales, económicos, de market sentiment y alternativos para revelar la exposición ponderada al mercado por país en la asignación multi-step de activos.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "alpha generation"},
+        {"tipo": "APLICA_A", "objeto": "country ETF"}
+      ],
+      "cita_textual": "Factor modeling paradigms and developments could reveal the weighted market exposure for the dynamic multi-step asset allocation by country."
+    },
+    {
+      "nombre": "MSCI ACWI Index",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Índice de referencia que cubre large-cap y mid-cap de 23 mercados desarrollados y 26 emergentes con más de 3,000 constituyentes, representando ~85% del free float-adjusted market cap de cada mercado.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "benchmark"},
+        {"tipo": "MIDE", "objeto": "global equity performance"}
+      ],
+      "cita_textual": "The MSCI ACWI Index is designed to represent the performance of the full opportunity set of large-cap and mid-cap stocks across 23 developed and 26 emerging markets."
+    },
+    {
+      "nombre": "Alpha",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Señal predictiva de alta calidad que captura el rendimiento esperado de equity y moneda de cada país, generada mediante scoring metrics y factor models para alimentar la estrategia de asignación.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "factor modeling"},
+        {"tipo": "PREDICE", "objeto": "country returns"}
+      ],
+      "cita_textual": "There seems to be enough room to build a quantitative investment strategy that generates high-quality predictive signals (alphas) considering each countries' expected equity and currency performances."
+    },
+    {
+      "nombre": "Asset Allocation",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Proceso multi-país y multi-período de asignación dinámica de pesos entre ETFs de países basado en señales cuantitativas, buscando un balance informado entre posiciones sobreponderadas e infraponderadas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "country ETF"},
+        {"tipo": "REQUIERE", "objeto": "risk scoring metrics"}
+      ],
+      "cita_textual": "The dynamic multi-step asset allocation by country in a world of multi-period electronic trading and information."
+    },
+    {
+      "nombre": "Portfolio Diversification",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estrategia de reducción de riesgo mediante la inclusión de activos con correlaciones bajas. El crecimiento de activos bajo gestión activa ha agotado alpha y aumentado correlaciones entre activos de riesgo.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "alpha generation"},
+        {"tipo": "SE_OPONE_A", "objeto": "portfolio risk"}
+      ],
+      "cita_textual": "The task of reducing portfolio correlations, therefore, reducing portfolio risk, has become an equivalent reason for seeking new alpha opportunities."
+    },
+    {
+      "nombre": "Risk Scoring Metrics",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Conjunto de métricas técnicas, fundamentales, económicas, de market sentiment y alternativas usadas para puntuar y rankear países en el proceso de asset allocation cuantitativo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "factor modeling"},
+        {"tipo": "USA", "objeto": "alpha generation"}
+      ],
+      "cita_textual": "Risk and scoring metrics such as technical, fundamental, economic, market sentiment and alternative descriptors."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "La estrategia opera con rebalanceos multi-período para country ETFs; las señales podrían adaptarse a frecuencias intradía pero el paper no aborda explícitamente ejecución intraday."}
+}

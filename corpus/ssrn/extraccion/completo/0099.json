@@ -1,0 +1,125 @@
+{
+  "doc_id": 99,
+  "titulo": "DWH-RRFC: Artificial Intelligence in Finance for Predictive Analytics and Algorithmic Trading",
+  "resumen_operativo": "Propone un clasificador híbrido llamado Dynamic Wild Horse-mutated Resilient Random Forest Classifier (DWH-RRFC) que combina Random Forest resiliente con un optimizador bio-inspirado (Wild Horse optimizer) para predicción de tendencias de corto plazo en mercados de criptomonedas. Reporta 97.21% de accuracy, 98.03% de precisión, 98.53% de recall y F1-score de 97.11%, superando a XGBoost (92.4%), XAI (91.2%) y Reinforcement Learning (70%). El paper tiene serias debilidades: tono promocional, ausencia de validación OOS genuina, uso de un solo dataset de Kaggle, métricas sospechosamente altas que sugieren overfitting o data leakage, y redacción deficiente típica de paper mills.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "random forest",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Ensemble de árboles de decisión modificado con división de nodos adaptativa que combina criterios CART e ID3 (Resilient Random Forest Classifier). El paper añade un mecanismo de mutación inspirado en el modelo Wild Horse para reemplazar clasificadores débiles.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "DWH-RRFC"},
+        {"tipo": "USA", "objeto": "gradient boosting"}
+      ],
+      "cita_textual": "Resilient Random Forest uses decision trees to support resilience and stability during market impact"
+    },
+    {
+      "nombre": "PCA",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Principal Component Analysis usado para reducción de dimensionalidad en features financieras (precios, volumen, sentimiento, macro) preservando las direcciones de máxima varianza y eliminando ruido antes del modelo DWH-RRFC.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "DWH-RRFC"},
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "PCA is a linear transformation dimension reduction approach that optimally filters the most revealing structures from high-dimensional datasets"
+    },
+    {
+      "nombre": "Z-score normalization",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Normalización de features a media cero y desviación estándar uno, aplicada a precios históricos, volúmenes, scores de sentimiento e indicadores macroeconómicos como paso de preprocesamiento.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "DWH-RRFC"}
+      ],
+      "cita_textual": "Z-score normalization scales input features such as price, volume, and market-related features to all have a mean equal to zero and a standard deviation equal to one"
+    },
+    {
+      "nombre": "gradient boosting",
+      "tipo": "metodo",
+      "definicion_en_contexto": "XGBoost usado como baseline de comparación; el paper reporta 92.40% accuracy para XGBoost vs 97.21% del DWH-RRFC propuesto.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "random forest"}
+      ],
+      "cita_textual": "XG Boost: Accuracy 92.40%, Precision 89.17%, Recall 94.90%, F1 Score 91.95%"
+    },
+    {
+      "nombre": "reinforcement learning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Mencionado como baseline con desempeño pobre (70% accuracy) y problemas de convergencia en mercados volátiles; el paper lo descarta por costo computacional.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "DWH-RRFC"}
+      ],
+      "cita_textual": "Reinforcement learning suffers from poor convergence, and it was very computationally expensive"
+    },
+    {
+      "nombre": "LSTM",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Long Short-Term Memory usado como baseline para comparación de métricas de error (MAE, RMSE, MAPE); el DWH-RRFC reporta mejoras de 66%+ en MAE, 57%+ en RMSE y 71%+ en MAPE sobre LSTM.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "deep learning"},
+        {"tipo": "SE_OPONE_A", "objeto": "DWH-RRFC"}
+      ],
+      "cita_textual": "DWH-RRFC model demonstrated over 66% improvement in accuracy compared to LSTM"
+    },
+    {
+      "nombre": "RSI",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Relative Strength Index usado como feature técnica; el paper analiza su distribución (rango 10-90) para verificar variabilidad suficiente como input al modelo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "technical analysis"}
+      ],
+      "cita_textual": "The distribution of the Relative Strength Index (RSI), a crucial technical indicator for trend prediction"
+    },
+    {
+      "nombre": "Bollinger bands",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Bandas de Bollinger usadas como feature de entrada para detectar zonas de breakout y reversión; el modelo las utiliza para capturar cambios dinámicos de precio.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "technical analysis"}
+      ],
+      "cita_textual": "the Bollinger Bands are essential input properties that the DWH-RRFC model uses to identify price reversals and breakout zones"
+    },
+    {
+      "nombre": "sentiment analysis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Scores de sentimiento de mercado incluidos como feature multimodal junto con precios y volúmenes; el paper nota baja correlación con la variable objetivo, requiriendo modelos complejos para extraer señal.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "NLP"}
+      ],
+      "cita_textual": "The target variable is poorly correlated with interest rates, GDP growth, and mood score, highlighting their low capacity to predict outcomes independently"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de sobreajuste no abordado adecuadamente: las métricas de accuracy/precision/recall cercanas al 98% sobre un solo dataset de Kaggle sin validación OOS walk-forward sugieren data leakage o sobreajuste severo.",
+      "relaciones": [
+        {"tipo": "CONTRADICE_A", "objeto": "walk-forward validation"}
+      ],
+      "cita_textual": "The model worked impressively well with accuracy of 97.21%, F1-score of 97.1%, recall of 98.53%, and precision of 98.03%"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El modelo DWH-RRFC reporta 97.21% de accuracy en predicción de tendencias de corto plazo en criptomonedas, superando a XGBoost (92.40%), XAI (91.20%) y Reinforcement Learning (70%).",
+      "mercado": "Cryptocurrency markets (dataset de Kaggle: Stock Market Dataset for Financial Analysis)",
+      "periodo": "no especificado claramente",
+      "magnitud": "Accuracy 97.21% (DWH-RRFC) vs 92.40% (XGBoost) vs 91.20% (XAI) vs 70% (RL); Precision 98.03%; Recall 98.53%; F1 97.11%; MAE 0.32; RMSE 0.51; MAPE 1.21",
+      "condiciones": "Dataset único de Kaggle; sin split temporal IS/OOS reportado; sin mención de costos de transacción; sin validación cruzada temporal; métricas sospechosamente altas",
+      "robustez": "baja",
+      "cita_textual": "The DWH-RRFC model produced 97.21% accuracy, compared to Reinforcement Learning (70%), XGBoost (92.40%), and XAI (91.20%)"
+    },
+    {
+      "afirmacion": "El DWH-RRFC mejora el MAE en 66%, el RMSE en 57% y el MAPE en 71% respecto a LSTM como baseline.",
+      "mercado": "Cryptocurrency markets",
+      "periodo": "no especificado",
+      "magnitud": "MAE: 0.32 (DWH-RRFC) vs 0.95 (LSTM); RMSE: 0.51 vs 1.20; MAPE: 1.21 vs 4.2",
+      "condiciones": "Sin detalles de split train/test; sin OOS walk-forward; sin mención de look-ahead bias prevention",
+      "robustez": "baja",
+      "cita_textual": "The DWH-RRFC model demonstrated over 66% improvement in accuracy compared to LSTM, excelling in monitoring market volatility"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper no especifica frecuencia de datos ni horizonte de predicción concreto; las métricas infladas y la falta de validación temporal rigurosa hacen que el modelo no sea confiable para deployment en ES futures intradía. El concepto de ensemble bio-inspirado es interesante pero requiere replicación independiente."
+  }
+}

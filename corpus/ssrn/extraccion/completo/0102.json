@@ -1,0 +1,68 @@
+{
+ "doc_id": 102,
+ "titulo": "Dynamic Order Dispersion and Volatility Persistence in a Simple Limit Order Book Model",
+ "resumen_operativo": "El paper extiende el modelo básico de libro de órdenes límite (LOB) de Chiarella e Iori (2002) introduciendo una modificación al comportamiento de los agentes: el 'dynamic order shading' basado en volatilidad local. Al permitir que agentes de inteligencia mínima adapten la dispersión de sus órdenes según perciban mayor volatilidad reciente (alejándose del mercado), la simulación endógenamente logra reproducir hechos estilizados empíricos clave de la microestructura, tales como la persistencia de volatilidad a largo plazo y distribuciones de retornos leptocúrticas. Es un modelo parsimonioso útil como entorno de pruebas para estudiar dinámicas de liquidez.",
+ "calidad_paper": "media",
+ "conceptos": [
+  {
+   "nombre": "limit order book",
+   "tipo": "concepto",
+   "definicion_en_contexto": "Mecanismo de mercado básico donde las órdenes límite se apilan por precio y prioridad temporal, sirviendo como entorno principal para simular dinámicas de liquidez.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "zero intelligence agents"
+    }
+   ],
+   "cita_textual": "The limit order book is defined by a price range, (pmin, pmax), and a price tick size, pΔ. The order book accepts limit orders at the highest frequency time tick interval..."
+  },
+  {
+   "nombre": "zero intelligence (ZI) agents",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Agentes computacionales que toman decisiones utilizando reglas heurísticas mínimas, lo cual permite atribuir la complejidad emergente a la estructura del mercado.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "agent-based models"
+    }
+   ],
+   "cita_textual": "At the core of this approach is the principle that robust empirical features in socio-economic systems may be driven more by the structure of the institutions themselves than by specific details related to agent adaptive behavior."
+  },
+  {
+   "nombre": "dynamic order shading",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Estrategia donde los agentes ajustan (shade) sus precios de órdenes (bids/asks) alejándose del mercado en base a la volatilidad reciente.",
+   "relaciones": [
+    {
+     "tipo": "CAUSA",
+     "objeto": "volatility persistence"
+    }
+   ],
+   "cita_textual": "We assume that agents are aware of recent market volatility and adjust their strategies accordingly. Bidders now use ... ek = (σS / σL) * ki"
+  },
+  {
+   "nombre": "volatility persistence",
+   "tipo": "concepto",
+   "definicion_en_contexto": "Fenómeno empírico (clustering de volatilidad) donde periodos de alta/baja volatilidad se agrupan, recreado endógenamente en la simulación.",
+   "relaciones": [
+    {
+     "tipo": "CAUSADO_POR",
+     "objeto": "dynamic order shading"
+    }
+   ],
+   "cita_textual": "Our paper presents a relatively simple, yet completely endogenous mechanism for volatility persistence based on adaptive agent behavior."
+  }
+ ],
+ "hallazgos": [
+  {
+   "hallazgo": "La incorporación de shading de órdenes dinámico basado en volatilidad genera autocorrelación positiva persistente en retornos absolutos y exceso de curtosis comparables a series de tiempo financieras reales como el SPY."
+  },
+  {
+   "hallazgo": "Sin el shading dinámico, un LOB básico genera retornos con ruido blanco gaussiano, fallando en capturar el clustering de volatilidad que se observa empíricamente."
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "nula",
+  "nota": "El documento aporta un modelo de agentes y microestructura teórica. Si bien explica por qué la liquidez es variable endógenamente (por cambios en la dispersión de órdenes frente a cambios de volatilidad), no provee señales aplicables a estrategias directas en trading algorítmico o intradía del ES."
+ }
+}

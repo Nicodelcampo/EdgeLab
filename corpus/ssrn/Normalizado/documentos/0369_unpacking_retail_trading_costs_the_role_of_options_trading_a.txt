@@ -1,0 +1,3337 @@
+Unpacking Retail Trading Costs: the Role of Options
+Trading and Limit Order Usage
+Yashar H. Barardehi, Vincent Bogousslavsky, and Dmitriy Muravyev∗
+First draft: February 20, 2025
+Current draft: December 28, 2025
+Abstract
+Prior studies of retail trading costs focus on stock market orders, largely overlooking
+the role of limit orders and the boom in retail options trading. We show that these
+underexplored factors are critical for assessing overall retail trading costs. First, nonmarketable limit orders account for 17% of stock volume but more than 34% of option
+volume in Form 606 reports by retail brokers.
+Second, using trader-level data on
+451,299 option and 607,922 stock retail trades, we estimate effective spreads using
+actual trade direction to average 1.07% for options, much higher than 0.07% for stock
+trades. But these realized option costs are 60% lower than the 2.59% conventional
+effective spreads because retail investors commonly use limit orders to reduce trading
+costs. These patterns hold across trader styles. Finally, individual trader order choices
+rather than broker defaults drive execution quality, with trader execution performance
+persisting over time.
+JEL Classification Codes: G13, G14
+Keywords: trading costs, retail trading, options, bid-ask spread
+∗We are grateful for comments to Marc Lipson, Neil Pearson, Andriy Shkilko, Lai Xu, and seminar participants at the 2025 Derivatives and Asset Pricing Conference, NBER SI 2025 Big Data Conference, 2025
+CDI Derivatives Conference, Boston College, University of Illinois Urbana-Champaign, and University of
+Illinois Chicago. We also thank SpiderRock, and especially Craig Iseli and Kasia Kobylarz, for providing
+OPRA trade data. Barardehi (barardehi@chapman.edu) is with Chapman University, Argyros College of
+Business & Economics, Bogousslavsky (bogoussl@bc.edu) is with Boston College, Carroll School of Management, and Muravyev (dmuravy2@illinois.edu) is with University of Illinois Urbana-Champaign, Gies College
+of Business.
+
+1
+Introduction
+The recent surge in retail trading has been particularly pronounced in options. Using Form
+606 reports, we estimate that individual retail investors account for about 40% of total option
+volume and about a quarter of total equity volume. Although commission-free trading has
+slashed explicit costs, retail investors still pay implicit costs through bid-ask spreads. Option
+spreads often exceed several percent even for most active contracts (Muravyev and Pearson,
+2020). Thus, active investors who routinely cross these wide spreads can suffer substantial
+losses. Retail investors are most vulnerable because they often want to trade immediately
+and may not fully grasp trading costs.1
+Despite the practical importance of trading costs, particularly in options, little is known
+about retail investors’ actual costs and execution strategies. Investors can choose between
+market and limit order types.2
+A market order executes immediately but may pay the
+spread, whereas a limit order specifies a target price and may earn the spread but risks
+non-execution. Prior work has focused on retail investors’ marketable orders and neglected
+limit orders. Bryzgalova, Pavlova, and Sikorskaya (2023) identify option market orders that
+receive price improvement via option auctions (SLAN) but exclude other orders. Huang,
+Jorion, and Schwarz (2024) study execution costs across brokers by placing market orders
+and acknowledge that “other orders such as marketable and non-marketable limit orders
+may be treated differently.”3 We show that limit orders are prevalent, provide estimates of
+retail trading costs that reflect all order types, and explore trader-level execution.
+Although limit orders typically incur lower costs than market orders (e.g., Harris and Hasbrouck, 1996; Anand, Samadi, Sokobin, and Venkataraman, 2024), prior research assumed
+that retail investors rarely employ limit orders due to execution uncertainty, higher com1E.g., using the complete transaction history of all investors in Taiwan, Barber, Lee, Liu, and Odean
+(2009) estimate that individual investors’ losses, largely driven by aggressive orders, total 2.2% of GDP.
+2For brevity, we use “market orders” to refer to market orders and marketable limit orders, and “limit
+orders” to refer to nonmarketable limit orders.
+3Similarly, TAQ proxies for retail stock trading capture a subset of market trades (Boehmer, Jones,
+Zhang, and Zhang, 2021).
+1
+
+plexity, and monitoring costs. Our analysis of Form 606 reports challenges this assumption
+by showing that modern retail investors often use limit orders, especially in options. Form
+606 reports cover the entire retail trader population as every retail broker must disclose all
+trading in exchange-traded equity securities and listed options at the asset class level. Using
+payment for order flow (PFOF) reported in Forms 606, we estimate that non-marketable
+limit orders constitute 17% of stock share volume and more than 34% of option volume over
+2020-2025. The limit order share for options is high for every major broker. Furthermore,
+we underestimate the limit order share for options by assuming none of multi-leg (complex)
+option trades (21% of retail option volume) execute via limit orders. Excluding complex
+trades, limit orders account for 42.4% of option single-leg volume.
+We next study how this widespread use of limit orders, missing in prior studies, affects
+trading costs. A trader-level dataset from Bogousslavsky and Muravyev (2024) provides detailed records of verified retail trades across multiple brokers in both options and underlying
+stocks from 2020 to 2022. For each trade, the dataset includes trader ID, ticker, option
+parameters, timestamp, trade price, size, and direction. We merge these retail trades with
+public market data, including the pre-trade National Best Bid and Offer (NBBO), using
+OPRA for options and TAQ for stocks. This merge yields 451,299 uniquely matched option
+trades worth $477 million in premiums, and 607,922 stock trades worth about $4 billion. We
+extensively validate this merged dataset. For example, most option trades execute at the
+pre-trade NBBO, alleviating potential time-mismatch concerns. Most importantly, estimates
+of the limit order share from trader-level and Form 606 data match over time.
+While we focus on options, stock trades provide an important benchmark. The median
+quoted spread for stock trades is 0.16% in our sample. The realized costs can be lower than
+quoted spreads due to retail price improvement, hidden liquidity for market orders, or limit
+orders. Indeed, actual round-trip trading costs, measured by effective spreads that account
+for true trade direction, are much lower at 0.07%. For purchases we define the directionadjusted effective spread as twice the percentage difference between the retail execution
+2
+
+price and the pre-trade midquote. These estimates align with the 0.06% effective spreads
+that Dyhrberg, Shkilko, and Werner (2025) infer from Form 605 broker reports.
+Retail trading costs in options dwarf stock costs, and thus are crucial for understanding
+total retail costs. Options quoted spreads average 3.62% for our trade sample. Although
+conventional effective spreads are lower with a 2.59% average and 1.38% median, they still
+vastly exceed stock trading costs.4 Regularly paying such large spreads can result in large
+losses.
+To measure true option costs, correcting the conventional effective spread for true trade
+direction is not enough. Due to wide quoted spreads, aggressive retail limit orders set the
+NBBO and therefore the pre-trade midquote.
+When the midquote embeds the trader’s
+own quote, the conventional benchmark makes the trade appear artificially favorable and
+understates costs. We address this mechanical bias by computing a “true” effective spread
+that uses actual trade direction and, for trades that set the NBBO, excludes the trader’s own
+quote from the pre-trade midquote calculation.5 In options, multiple exchanges quote the
+same NBBO at any time. Thus, an aggressive limit order from a single exchange stands out,
+and the midquote typically reverts back once it executes. Market orders and non-aggressive
+limit orders, which account for 78% of all option trades, do not need this adjustment.
+Strikingly, true effective spreads for retail option trades are on average 1.07% (0.66%
+median), about 60% lower than the conventional effective spreads. The gap between conventional and true effective spreads arises from our ability to observe true trade direction.
+Conventional spread measures assume retail investors always take liquidity, inconsistent with
+4Our estimates of conventional effective spread are lower than in prior studies (e.g., Muravyev and Pearson
+(2020); Christoffersen, Goyenko, Jacobs, and Karoui (2018); Goyenko, Ornthanalai, and Tang (2015)) for
+two reasons. First, these studies use older data (2004-2015) when spreads were wider. Second, retail option
+trading concentrates in liquid underlying (Bogousslavsky and Muravyev (2024)). For example, Christoffersen
+et al. (2018) find effective spreads of 6.41% and 5.25% for calls and puts on S&P 500 stocks during 2004-2012.
+5E.g., an aggressive limit buy order arrives at $1.00 setting the NBBO, which was at $0.90 bid and $1.05
+ask before, with four exchanges quoting each price. We replace the $1.00 bid with the next best quote ($0.90)
+to compute the midquote, which is $0.975 after the adjustment. Specifically, we adjust the midquote if the
+trade executes at NBBO (or worse) and the trade exchange is the only one quoting the relevant NBBO
+price, which affects 22.2% of option trades in our sample. The $1.00 limit order can become aggressive either
+upon arrival or when market prices drift against it. We term this “mechanical” because the midquote would
+naturally revert to our adjusted value immediately after the trade.
+3
+
+our Form 606 findings that retail investors often supply liquidity using limit orders.6 Conventional realized spreads, which account for the true trade direction, are 1.03% on average,
+matching the true effective spread but with much higher variance due to high option price
+volatility. This result validates the true spread’s treatment of aggressive limit orders. Effective spreads adjusted for trade direction, but not for the mechanical effect of aggressive limit
+orders on the NBBO, are 0.6% on average, even lower than our preferred estimate. Overall,
+while options trading costs remain large, conventional effective spreads overstate retail costs.
+Trader heterogeneity helps separate trader- from broker-driven determinants of option
+execution quality and shows that our results generalize across trading styles.
+First, we
+regress the effective-to-quoted (E/Q) spread ratio, a popular measure of execution quality,
+on option characteristics and different combinations of trader, stock, broker, and date fixed
+effects.7 Trader fixed effects explain 71% of the E/Q ratio variation, while broker fixed effects
+explain less than 1%. Thus, individual trade choice and not broker attributes (e.g., trading
+application defaults) drive order type choice. Second, the gap between true and conventional
+effective spreads persists across trader types and trading styles, assigned based on holding
+period, trade size, and frequency.Seeing a similar gap across styles eases concerns that our
+sample is skewed toward unusually active or sophisticated traders.
+Execution skill persists. Investors who minimize costs early in their tenure, as measured
+by the E/Q ratio, tend to maintain this advantage, while investors who incur high costs early
+tend to keep incurring high costs. Among traders in the bottom quintile of execution costs in
+the first half of their tenure, 52% remain in this quintile in the second half, far above the 20%
+random baseline. This pattern holds across brokers and controlling for option characteristics,
+indicating that it is driven by investor behavior, rather than broker-specific practices.
+While our data do not explicitly report order type, we infer it by comparing trade prices
+to the pre-trade quote midpoints after adjusting for trade direction; e.g., buys below mid6E.g., Grauer, Schuster, and Uhrig-Homburg (2024) show that signing customer trades in public option
+data is problematic; thus, knowing true trade direction is essential.
+7The E/Q ratio measures execution quality by comparing actual trading costs (true effective spread) to
+available market prices (quoted spread).
+4
+
+quote indicate limit orders.Consistent with prior research on equities, market orders incur
+higher costs than limit orders. Market orders pay a 2.44% average spread, only slightly lower
+than a 2.61% conventional effective spread. While some retail market orders receive price
+improvement, 67.6% of market orders in our retail sample execute at the NBBO. In contrast,
+limit orders earn part of the spread, with a true effective spread of −1.01% on average. They
+do not earn full effective spread because 22% of options trades are aggressive limit orders
+that execute near the true midquote on average. Importantly, true effective spreads depend
+only on trade direction and price relative to the midquote, and thus our main findings do
+not depend on this limit-vs-market classification.
+We examine what drives retail investors’ choice between market and limit orders. In
+theory, investors strategically choose between them to balance the cost savings of limit
+orders against the execution risk. Retail investors in our sample behave consistent with this
+trade-off. For instance, they rely more on market orders when market depth is high, which
+aligns with theories of optimal order choice (e.g., Parlour, 1998).
+We focus on the realized costs of executed trades as our data do not include trade
+cancellations. Opportunity costs make limit orders less attractive because, as the market
+price moves away from a limit order’s price, a trader may have to cancel the order and trade at
+a worse price. Since liquidity taking is typically more expensive in options (wider spreads),
+traders may accept higher non-execution risk to avoid paying the spread via marketable
+orders. While opportunity costs are certainly relevant, they do not overturn our central
+results about the option limit orders shaping retail costs. Prior studies that observe and
+account for cancellations conclude that limit orders generally lower trading costs relative
+to market orders, even after accounting for opportunity costs (Harris and Hasbrouck, 1996;
+Anand et al., 2024). To bound the scope of non-execution, we estimate limit-order fill rates
+to be around 30% for retail option trades in Form 606 reports.
+We contribute to several strands of literature. A growing literature examines execution
+5
+
+quality for retail market orders in equities, focusing on routing and price improvement.8 A
+recent literature studies options focusing on market orders and finds that SLAN trades (a
+subset of retail market orders) pay a 6.7% effective spread (Bryzgalova et al., 2023). While
+these orders receive price improvement (Hendershott, Khan, and Riordan, 2022), orders
+routed to exchanges instead of SLAN are rarely price improved and thus pay the full spread
+(Ernst and Spatt, 2022). Anand and Muravyev (2024) further argue that internalization
+makes quotes less competitive. We expand this literature by showing that retail trading costs
+are much smaller than previously thought, as retail investors often take advantage of limit
+orders. Our trader-level data, while representing a small segment of the retail population,
+allow us to examine precise realized costs, persistence within traders, and consistency across
+trading styles. Form 606 data provide breadth, representing the entire retail universe and
+order type usage. The two datasets combined shed new light on retail execution.
+To our knowledge, only two papers explicitly study retail limit orders in modern markets.
+Anand et al. (2024) examine stock trading, finding that limit orders comprise 18% of executed
+shares and have lower costs than market orders for 300 stocks in May 2020. Our Form 606
+analysis, which covers all stocks from 2020 to 2025, matches their estimate. We extend their
+work by focusing on options, where retail trading costs are much larger. Battalio, Griffith,
+and Van Ness (2021) study how retail brokers route option limit orders to exchanges offering
+large rebates, comparing fees between maker-taker and PFOF exchanges. In contrast, we
+focus on estimating retail trading costs.
+Bogousslavsky and Muravyev (2024) use the parent trade version of the same retail
+dataset, while we use the child trades behind the parent trades and merge them with OPRA
+to estimate trading costs. They examine why retail investors trade options and find that
+investors lose 0.97% per trade on average. Compared with our 1.07% true effective spreads,
+this suggests that realized costs account for a large share of the average realized losses.
+We also contribute to the options literature by estimating trading costs for an important
+8E.g., (Anand, Samadi, Sokobin, and Venkataraman, 2021; Battalio and Jennings, 2023; Ernst, Malenko,
+Spatt, and Sun, 2023; Huang, Jorion, Lee, and Schwarz, 2024) study stock trades.
+6
+
+class of investors. This estimate can help assess the net performance of options trading
+strategies. While prior work establishes that option trading costs are substantial (Goyenko
+et al., 2015; Christoffersen et al., 2018; Muravyev and Pearson, 2020), quantifying these costs
+for specific investor types is challenging due to the lack of trader-level and trade direction
+data. We estimate that retail investors pay only 40% of conventional effective spreads, which
+may suggest that institutional execution algorithms pay even lower costs.
+Finally, we make a methodological contribution by arguing that the effective spread
+estimates should be adjusted for the mechanical effect of aggressive limit orders that set
+pre-trade NBBO. Simply put, a very aggressive limit order pays the spread, not earns it.
+Thus, conventional effective spreads may overstate the cost savings of providing liquidity
+using limit orders.
+The paper is organized as follows. Section 2 presents evidence on the use of limits order
+from Forms 606 reports. Section 3 describes the trader-level retail data, the merge process
+with public data, and the trading cost measures. Section 4 estimates retail option and stock
+trading costs. Section 5 concludes.
+2
+Retail Order Type Usage in Forms 606
+All retail brokers in the U.S. must submit monthly Form 606 reports to comply with SEC
+Rule 606 under the Security Exchange Act. We collected Form 606 reports for all major
+brokers over January 2020 to June 2025, which gives us comprehensive coverage over the
+entire retail trader population.9 These reports include monthly information on market orders,
+marketable limit orders, non-marketable limit orders, and other orders for S&P 500 stocks,
+other stocks, and options. Information is reported at the aggregate and not the security
+level. Figure 3 provides an example. The “summary” part of the form reports the fraction
+of trades by each order type received by the broker. The “venues” part reports the share of
+9Form 606 covers direct retail order flow but excludes indirect holdings through investment vehicles (e.g.,
+401(k) plans). Importantly, these vehicles rarely allocate capital to listed options. Form 606 also exclude
+option trades that exceed $50k in value, but these are extremely rare
+7
+
+executed volume by order type as well as the associated total and per-hundred-shares PFOF
+for each “execution venue,” e.g., Citadel Securities.
+The PFOF data let us compute executed volume for each order type by dividing the
+total PFOF received by the average PFOF received per 100 shares (Dyhrberg et al., 2025).
+Specifically, for each broker and asset class, we calculate monthly shares of PFOF-receiving
+trading volume associated with different order types as well as the broker’s market share
+in the overall PFOF-receiving volume. Some brokers do not take PFOF for stock trades—
+e.g., Fidelity, Vanguard, so we cannot estimate their total volume and order type shares.
+However, all brokers take PFOF for option trades. We then add executed volume across
+execution venues and brokers to obtain the total market volume by month.10
+We provide several insights about retail trading using Form 606 data. First, retail trading accounts for 39% and 23% of total trading volume in options and stocks, respectively,
+reported in Panel A of Figure 1. Specifically, for each month, we divide the aggregate trading
+volume in Form 606 reports across all brokers by total market volume reported by the Option Clearing Corporation (OCC) for options and Cboe Global Markets (Cboe) for stocks.11
+Thus, retail investors are important drivers of total market activity. Second, options become
+increasingly important part of retail trading. Options accounted for 22% of the combined
+notional volume in equities and options in early 2020, which increased to almost 40% by
+2022. Thus, options account for slightly less than half of all stock-option retail volume. In
+sum, options deserve more attention from academics and regulators.
+We next investigate order type choice by retail investors. Table 1 reports average order
+type shares of submitted trade count (Panel A) and executed trade volume (Panel B). We
+calculate the average percentage for each order type, asset class, and broker across months.
+The row “Total” reports the volume weighted averages calculated across all brokers and
+months in each asset class. For stocks, limit orders account for 36.9% of submitted orders
+10Some brokers merged during our sample period and started filling joint Form 606 (Schwab and TD) or
+changed ownership and thus name (E*Trade), which we account for in our calculations.
+11https://www.theocc.com/market-data/market-data-reports/volume-and-open-interest/
+historical-volume-statistics and https://www.cboe.com/us/equities/market_share/
+8
+
+but only 17.2% of executed volume, suggesting that some limit orders are canceled. Limit
+orders are prevalent for all brokers, with the lowest limit share for Robinhood at 13.3%.
+This result suggests that brokers are unlikely to force retail investors to use particular order
+types.
+For options, limit orders account for 46.8% of submitted orders and 33.5% of executed
+volume, much more than for stocks. The limit share of executed volume for the two largest
+option brokers, TD and Robinhood, are 34% and 41%, respectively. Thus, the estimates are
+robust across brokers. The much lower share of retail volume attributable to limit orders
+in stocks than in options likely reflects the much wider option bid-ask spreads, which make
+limit orders a crucial tool to reduce trading costs. Market and marketable limit volume
+account for 11.8% and 33.6% of executed option volume, respectively. Virtually all liquidity
+taking orders from Interactive Brokers and Robinhood appear as marketable limit rather
+than market.
+“Other” order category on Form 606 accounts for 21.1% of option volume and contains
+predominantly multi-leg (so-called complex) option trades.12 Robinhood and Webull have
+the lowest share of complex trades out of major option brokers, with 7.2% and 8.4%, respectively. This is consistent with customers of the new-generation brokers being younger, less
+experienced, and being likely to prefer simple option strategies. Prior studies estimate retail
+participation in complex option strategies, e.g., call spread or straddle, by guessing which of
+option trades with complex trade conditions in OPRA are retail. In contrast, our Form 606
+estimate covers all retail option trading and requires no speculation.
+Many complex trades are executed using limit orders in the complex order book. Thus,
+the 33.5% share of option limit orders provides a lower bound because it assumes none of
+complex trades use limit orders. If we focus on single-leg option trades by excluding complex
+trades, limit orders would account for 42.5% of all single-leg option volume.
+12See answer to Question 13.02 on Responses to Frequently Asked Questions Concerning Rule 606 of
+Regulation NMS:
+https://www.sec.gov/rules-regulations/staff-guidance/trading-markets-frequently-asked-questions/
+faq-rule-606-regulation
+9
+
+Figure 4 plots the time trends in the limit order share for option volume in Panel A
+and stock volume in Panel B the start of 2020 to the first quarter of 2025. The limit share
+of option trades remains stable except for a brief spike during the first month of COVID.
+It starts at 40% and then slowly drifts down to about 30%. The second line in the figure
+estimates the share of limit order in our trader-level dataset, and the two lines lie on top of
+each other. Panel B reports the limit order share for stock trades, which remains flat around
+20% for the entire sample period.
+We also estimate fill rates for retail limit orders as the ratio of executed to submitted
+share volume. Form 606 reports executed share volume (inferred from PFOF) as well as the
+fraction of submitted trades by order type. Assuming all market and marketable limit orders
+are filled, and all orders types have similar size on average, we can estimate submitted share
+volume by order type. We then take a ratio between PFOF-implied share volume and the
+submitted volume estimate from the last step. Table A.2 reports the results in aggregate
+and across brokers. The fill rate is around 30% for retail option trades and 39% for retail
+stock trades; the latter estimate is consistent with Lipson (1999). These numbers allign with
+the intuition that limit orders are akin to slightly out-of-the-money options, and thus their
+execution probability is less than 50%. Fill rates are lower on option limit orders than stock
+limit orders, because option limit orders are typically places more “out-of-the-money” due
+to wider option bid-ask spreads.
+Finally, Figure A.1 reports PFOF per hundred shares by order type as in Forms 606. As
+expected, option orders receive higher PFOF than stock orders (45 cents versus 15 cents per
+100 shares) because whole-sellers earn higher profits on option orders that cross wide option
+spreads.
+Remarkably, limit orders receive comparable PFOF to market and marketable
+limit orders (48 cents versus 44 cents) despite having lower costs and thus whole-sellers
+profit. Similarly, for retail stock trades, limit orders receive 21 cent PFOF versus about 12
+cents marketable orders. Thus, whole-sellers appear to cross-subsidize PFOF across order
+types. This cross-subsidization make affect the resutls in studies that focus on the trade off
+10
+
+between PFOF and price improvement of retail order but only consider one order type.
+Overall, comprehensive public data shows that non-marketable limit orders are economically important, especially in options markets. Prior literature focuses on retail market
+orders in options (Bryzgalova et al., 2023; Huang et al., 2024) and only few studies examine
+retail limit orders in stocks (e.g., Anand et al., 2024). Our main contribution is to use a
+dataset of retail stock and option trades that includes both market and limit orders to study
+retail execution costs.
+3
+Trade Data and Trading Cost Measures
+How does this widespread use of limit orders by retail investors affect their trading costs?
+This section describes our trader-level data as well as our approach to measure retail trading
+costs in stocks and options.
+3.1
+Trader-Level Retail Sample
+We construct a sample of retail trade execution costs using the retail stock and option trade
+data of Bogousslavsky and Muravyev (2024), which we refer at as trader-level data. Retail
+investors who wish to use advanced analytics can subscribe to a trading journal, which will
+automatically import and verify trades from their brokerage account. Bogousslavsky and
+Muravyev (2024) gather stock and option trading data from one trading journal for which
+trading information was publicly available by default. A typical option trade in this dataset
+is the purchase of an option on the S&P index or a high-price technology stock held for a few
+hours. We also observe which of the list of retail brokers supported by the journal investor
+trades through, with TD Ameritrade being a top option broker. We refer to Bogousslavsky
+and Muravyev (2024) for detailed information about the dataset.
+For about half of retail investors in the original dataset, we observe complete trade price,
+size, direction, and time information. We use this information to match journal trades to
+11
+
+option trade records in OPRA and stock trade records in TAQ.
+For option trades, we match journal trades data with OPRA trade and quote data provided by SpiderRock.13 Because the timestamps of retail trade data have one second resolution, we match option contract trades between the two databases using the following
+algorithm. We first match trades by underlying symbol; date; time (hour, minute, second);
+option parameters (call/put; strike price; expiration date); and transaction price. We remove
+a matched trade if its non-missing trade size in journal data differs from the OPRA trade
+size to which it is matched. This step results in matching of 746,661 option trades out of all
+the 795,899 journal option trades for which we have timestamps. The one-second timestamp
+resolution is sufficient because individual options contracts on a specific stock do not trade
+every second, even if all option contracts on that specific security are collectively are very
+active.
+Among these matched retail trades, 485,417 are one-to-one matches; i.e., cases where an
+individual journal trade matches an individual OPRA trade. For matched trades of this type
+with missing trade size in retail data, we use OPRA trade size and keep them in the sample.
+All such cases enter our final sample.
+One-to-many matches occur for 198,717 journal trades, where one journal trade is matched
+with multiple OPRA trades. 22,610 trades represent many-to-one matches, where multiple
+journal trades match a single OPRA trade; and lastly, 39,917 journal trades represent manyto-many matches, where multiple journal trades match multiple OPRA trades. Among these
+non-one-to-one matches we first remove rows where trades sizes reported by journal data and
+OPRA data do not match. From the remaining matches, we randomly draw a single row and
+discard the remaining rows associated with that particular case. This approach is sensible
+because we only need pre-trade best bid and ask prices from OPRA to estimate retail costs.
+13Speicifically, we use their Options Print Set dataset, “created on every option print along with the
+quote, surface, size, and trade volume at the print time plus all relevant options analytics. The print set
+also contains exchange published print types (single, complex, auction, block, sweep, etc.) and SpiderRock
+estimates of the trade side (buy, sell). Records also contain T+1M and T+10M forward mark details to
+support trade cost analysis (TCA).”
+12
+
+Table A.1 in the Appendix summarizes these steps, which result in a total of 614,980
+singular journal-OPRA matched trades. Last, we apply a minimal price filter by excluding
+option trades for which the second-best bid price is less than 10¢.
+The relative bid-ask
+spreads for these excluded options are not well-defined since option tick size is typically 5¢.
+Also, we exclude SPX index option trades, which are special in many ways. At the end, our
+final sample includes 451,299 retail option trades.
+For stock trades, we follow a slightly different approach because the one-second timestamp
+resolution becomes much more binding. Popular stocks tend to trade many times within one
+second, so we match them to the national best bid and ask price (NBBO) at the start of
+retail trade’s second rather than immediately pre-trade. First, out of the 2,275,555 journal
+stock trades, we focus on the 1,085,000 trades in the 100 most actively traded stocks in
+the journal data to manage computational resources devoted to an individual observation.
+We then use tickers, dates, and timestamps to match each journal trade to the prevailing
+NBBO at the end of the previous second in TAQ data, with NBBOs constructed following
+Holden and Jacobsen (2014). Our final sample contains 607,922 retail stock trades that occur
+within regular trading hours. We primarily focus on option trades and use stock trades for
+validation and benchmarking.
+While the journal dataset reports order direction, we do not observe order type. We
+classify buy (sell) orders executed below (above) the prevailing quote midpoint as limit.
+Panel A of Figure 4 shows that the estimated fraction of option limit order volume in the
+trader-level dataset is in the same range as the average fraction of such volume inferred from
+Forms 606 (Section 2). Also, both trader-level data and the Form 606 series exhibit a slight
+downward trend over the sample period. Thus, the estimated limit order volume in traderlevel data matches the representative number obtained from public reports. Importantly,
+this figure suggests that about 40% of executed option orders in the trader-level dataset are
+limit orders, which have been ignored by prior literature on retail trading costs.
+For a few of our analyses, we create a control sample of option trades. We match each of
+13
+
+the 451,299 retail option trades to “control” trades in OPRA data on the same underlying
+and day. We use them to compare known retail trades with similar trades that may or may
+not involve retail investors. From OPRA, we first exclude the two trades immediately before
+and after each retail trade in the same underlying symbol. We then select the five trades just
+before and five trades just after each retail trade, all with the same underlying symbol and
+on the same day, but not necessarily the same option contract. We apply the same filters as
+for the main sample. Our final control sample contains 4,178,910 control trades.
+Table 2 reports descriptive statistics for option and stock retail trades in Panels A and B,
+respectively. Retail investors primarily trade options on large technology stocks and major
+ETFs, and as a result the average underlying price is $408, much higher that average stock’s
+price. Most retail option trades are exactly one contract, i.e., one hundred underlying shares,
+consistent with small trade size being a proxy for retail trade. Nonetheless, there are also
+some large trades, e.g., 95th percetile is 10 contracts. The average option trade value is
+$1,056, consistent with us observing investor’s primarily trading accounts rather than play
+money accounts. Trade moneyness is on average close to at-the-money, thus retail investors
+do not pile into deep OTM options. While the average time to expiration is 10 days, the
+median is only 2 days, suggesting that retail investors prefer ultra short option expirations.
+21.8% of their trades are in 0DTE options that expire the same day. Bryzgalova et al. (2023)
+focus on orders executed in single-leg price improvement auctions (SLAN flag in OPRA).
+These represent 27% of trades in our sample. Retail investors prefer to trade in the morning
+as their median trade time in our sample is 10am.
+3.2
+Trading Cost Measures
+We measure retail trading costs using relative quoted, effective, and realized spreads. These
+measures are standard in the literature when the true trade direction (buy vs.
+sell) is
+unknown (Bryzgalova et al., 2023; Dyhrberg et al., 2025).
+We calculate these measures
+using the pre-trade NBBO midpoint, determined at the time of transaction for options and
+14
+
+at the end of the preceding second for stocks. The relative quoted spread is the bid-ask
+spread divided by this midpoint. The relative effective spread is calculated as twice the
+signed difference between the transaction price and the midpoint, scaled by the midpoint.
+The trade direction is signed as +1 for buys and −1 for sells, estimated using the Lee and
+Ready (1991) algorithm.
+The availability of true trade direction data allows for two additional cost measures.
+First, the signed unadjusted relative effective spread mirrors the standard effective spread but
+utilizes the true trade direction (+1 for buys, −1 for sells) instead of Lee and Ready (1991)
+estimates. Second, we compute the realized spread by replacing the pre-trade midquote in
+the effective spread calculation with the midquote one minute after the transaction. We also
+considered a 10-minute post-trade horizon. While results were robust, the 10-minute window
+introduces substantial noise due to the high volatility of option prices and the arrival of new
+public information.
+Our primary measure of trading costs is “true” effective spread, defined as a signed
+relative effective spread (from above) that adjusts for the mechanical effects of aggressive
+limit orders. Retail investors may post a limit order inside the prevailing NBBO. Such an
+order shifts the midpoint, causing the unadjusted measure to understate true trading costs.
+Figure 2 provides an example. Suppose the prevailing bid and ask prices are $2.40 and
+$2.60, respectively, resulting in a midpoint of $2.50. An investor posts a limit buy order
+at $2.55, which shifts the prevailing bid to $2.55 and the midpoint to $2.575. If filled, the
+signed unadjusted relative effective spread is +1 × (2.55 −2.575)/2.575 × 100 ≈−0.97%.
+However, the prevailing midpoint that shaped the investor’s decision was $2.50, implying
+a true trading cost of +1 × (2.55 −2.50)/2.50 × 100 = 2%. The unadjusted estimate thus
+understates the cost by about three percentage points.
+To compute the true effective spread, we undo this mechanical effect. We leverage SpiderRock OPRA data, which records both the first- and second-best pre-trade quotes. We
+identify trades that: (1) occur at the best bid or ask price; (2) occur when a single exchange
+15
+
+defines the top of the order book; and (3) execute on that same prevailing exchange. For
+these trades, we substitute the second-best bid (or ask) to calculate the adjusted reference
+midpoint. In principle, aggressive limit orders could be informed and permanently reset the
+NBBO. In practice, however, retail limit orders tend to be uninformed. We confirm this by
+showing that the adjusted pre-trade midquote aligns with the actual midquote one minute
+after the trade (accounting for trade direction). This indicates that the midquote typically
+reverts to its level prior to the placement of the aggressive limit order. This midquote reversal is consistent with aggressive limit orders being picked off by uninformed option market
+makers.
+To prevent extreme outliers from driving the estimates, all outcome spread variables are
+winsorized at the 0.1% and 99.9% levels each day. This is particularly important given that
+unadjusted spread measures can exhibit significant skewness. Our results remain qualitatively identical if this step is omitted; however, the inclusion of extreme values substantially
+increases the residual variance.
+4
+Retail Trading Costs
+This section documents retail trading costs for stock and option trades. We first estimate
+sample averages and then leverage trader heterogeneity to test whether trader choices or
+broker defaults drive retail costs.
+4.1
+True vs Conventional Spreads
+Figure 5 compares our measure of true retail trading costs against conventional spread measures.
+The conventional quoted spread is high at 3.62%, and the conventional effective
+spread, which assumes all trades demand liquidity, averages 2.59%. In sharp contrast, the
+true effective spread, which accounts for trade direction and aggressive limit orders, is significantly lower at 1.07%. This discrepancy indicates that conventional measures substantially
+16
+
+overstate retail trading costs: the true cost is approximately 60% lower than the conventional
+effective spread and 70% lower than the quoted spread.
+Table 3 details the distribution of trading costs, isolating the primary driver of the wedge
+between our measure and standard metrics. We find that the cost savings observed in the
+average are also present in the median trade. The median true effective spread is 0.66%,
+representing a savings of approximately 52% relative to the median conventional effective
+spread of 1.38%. Unlike conventional measures which are bounded at zero, the distribution
+of true effective spreads is shifted significantly to the left with 30.25% of negative values.
+This confirms that a substantial portion of retail option volume involves liquidity provision,
+resulting in negative execution costs that are obscured by conventional metrics.
+The table also quantifies the mechanical bias introduced when aggressive retail limit orders set the NBBO. The unadjusted true effective spread averages only 0.60%. Consequently,
+had we ignored the mechanical effect of limit orders on pre-trade NBBO, our results regarding the low cost of retail trading would be even stronger. However, we view the unadjusted
+metric as biased because it credits the retail investor for the temporary price impact of their
+own order. Our adjusted measure (1.07%) removes this effect, providing a more conservative and accurate assessment of execution quality. This result highlight our methodological
+contribution to measuring treading costs in the presence of limit orders.
+We validate this adjustment by examining realized spreads. The 1-minute conventional
+realized spread averages 1.03%, which is almost identical to our true effective spread. Extending the horizon to 10 minutes yields a similar mean (0.97%) but drastically increases the
+standard deviation (from 15.88% to 43.39%), as option price volatility is the main driver of
+realized spreads at longer horizons. Since the realized spread measures the effective spread
+net of price impact, this equivalence implies that retail trades have negligible permanent
+price impact and are largely uninformed. So are marketable orders that execute against
+the aggressive retail limit orders, which is consistent with uninformed option market makers
+picking off stale limit orders.
+17
+
+Finally, the table reports execution costs for a control sample of option trades in OPRA
+that are a mix of retail and non-retail—as we described in Section 3.1, control trades occur
+in the same underlying-day but possibly different option contracts. In terms of conventional
+measures, retail and non-retail executions appear remarkably similar. The average conventional effective spread for retail trades (2.59%) matches almost exactly that of the control
+group (2.68%). Furthermore, both groups achieve comparable price improvement relative to
+the quoted spread (1% for retail vs. 0.9% for control). While we cannot compute “true”
+effective spreads for the control sample because trade direction is unobserved, the alignment
+in conventional metrics suggests that retail investors face similar market conditions to other
+traders. This suggests that the substantial cost savings that we identify (1.07% vs. 2.59%)
+reflect limit-order placement strategies pursued by retail investors. Crucially, these strategies
+are invisible to standard metrics.
+We next compare retail trading costs in options to those in stocks. Figure 6 plots the
+signed effective and quoted spreads for both asset classes, revealing a stark disparity. Unsurprisingly, stock trading costs are an order of magnitude lower than option trading costs.
+While the average conventional quoted spread for stocks is 0.29%, the true effective spread,
+which accounts for retail liquidity provision, is negligible, averaging just 0.07%. This stands
+in sharp contrast to the 1.07% true effective spread observed in options.
+Table 4 details the distribution of the stock trading costs in our retail sample.
+The
+median true effective spread is nearly zero (0.05%), and the 25th percentile is negative. Our
+trader-level records do not report sub-penny increments, so we only capture full-penny price
+improvement. If the trader-level data rounds sub-penny executions to the nearest penny, we
+understate costs for marketable orders.
+These findings align with Bogousslavsky and Muravyev (2024), who use an expanded
+version of this dataset to show that investors are close to breaking even on their stock
+trades.
+They conjecture that minimal transaction costs in modern U.S. equity markets
+drive this result; our finding of a 7 basis point average effective spread lends direct support
+18
+
+to this view. Consequently, while the existing literature predominantly focuses on equity
+execution, our results suggest that the primary friction for retail investors lies elsewhere.
+Given the substantial increase in retail option volume, the large wedge between stock and
+option trading costs (0.07% vs 1.07%) suggests that future research and policy focus should
+shift toward the options market.
+Table 4 reports the distribution of estimated retail trading costs in stocks. For equity
+trades in top-10 option tickers, the average effective spread is about 0.
+The difference
+between quoted spread and signed effective spread reflects the use of limit orders, retail
+price improvement, and hidden liquidity. Using an expanded version of the dataset under
+consideration, Bogousslavsky and Muravyev (2024) find that investors are close to breaking
+even on their stock trades. They conjecture that minimal transaction costs for small retail
+trades in modern U.S. equity markets can explain this result. The results in Table 4 lend
+support to this conjecture. The large difference between retail option trading costs and stock
+trading costs is worth emphasizing given the substantial increase in retail option trading in
+recent years.
+We next interpret our main results. The Form 606 analysis in Section 2 establishes that
+limit orders are a primary tool for retail option investors. We confirm this in our transaction
+data: true effective spreads are substantially lower than conventional measures, driven by
+retail investors frequently posting competitive quotes. This implies that conventional execution quality metrics, which assume retail investors are solely liquidity takers, yield biased
+estimates of trading costs.
+These findings force a reassessment of the aggregate fees paid by the retail sector. Because
+option market makers (OMMs) are the counterparty to most retail trades, the effective spread
+represents the net compensation paid by retail investors for liquidity. Our estimate of 1.07%
+indicates that by using limit orders, retail investors capture a significant portion of the spread
+that would otherwise accrue to MMs.
+A caveat to our cost estimate is the unobserved opportunity cost of non-execution. While
+19
+
+the effective spread measures the cost of successful trades, it does not account for the risk that
+a limit order fails to fill. Theoretically, risk-neutral investors should be indifferent between
+the lower explicit costs of limit orders and the certainty of market orders (Hasbrouck, 2021).
+However, empirical evidence in equity markets suggests retail limit orders generate surplus
+even after adjusting for non-execution risk (Anand et al., 2024). Given the wider spreads
+in options, the economic incentive to bear non-execution risk via limit orders is likely even
+stronger than in equities.
+Finally, we connect our execution cost estimates directly to retail profitability. In Table 10, we formally show that every basis point of true effective spread paid passes directly
+through to reduce investor returns, further validating our spread measure. We regress the
+realized net return of retail option trades on our true effective spread. A trader’s net return
+is simply the asset’s gross return minus transaction costs. Therefore, if our “true” effective
+spread accurately captures the actual friction incurred by the trader, a 1% increase in the
+spread must reduce the net return by exactly 1%. Any deviation from a coefficient of −1
+would imply that our measure is biased or missing a component of the cost. The results
+strongly validate our measure. In the specification controlling for underlying fixed effects
+(Column 2), the coefficient on the effective spread is exactly −1.000 (standard error 0.092).
+This unit slope confirms that our adjusted effective spread is an unbiased proxy for the
+realized cost of trading.
+More broadly, Bogousslavsky and Muravyev (2024) analyze the parent-trade version of
+this dataset and document that retail investors lose 0.97% per trade on average. This figure
+aligns closely with our estimated true effective spread of 1.07%, suggesting that transaction
+costs, rather than poor market timing or stock selection, account for the vast majority of
+aggregate retail losses.
+20
+
+4.2
+Variation in Trading Costs
+Next, we regress two measures of trading costs on trade and contract characteristics to
+examine what drives variation in execution quality. Our first measure is the true effective
+spread, which captures the absolute trade cost. Our second measure is the effective-to-quoted
+(E/Q) ratio, which is a common measure of trade execution quality with lower E/Q reflecting
+better quality. In the contexts of our study, where traders chose between market and limit
+orders, the E/Q ratio also proxies execution skill as it captures a trader’s performance in
+minimizing costs relative to the prevailing market prices. E/Q ratio of zero means execution
+at the midquote (great execution), while E/Q ratio of one means no price improvement
+relative to the quoted spread. Unconditionally, the E/Q ratio is about 0.3 in our sample.
+We estimate five specifications, progressively adding fixed effects for the trading date,
+underlying stock, broker, and individual trader. Table 5 reports the results for effective
+spread in Panel A and the E/Q ratio in Panel B.
+We document several stylized facts about the drivers of retail costs. First, spreads vary
+with option moneyness, making it essential to control for this characteristic. At-the-money
+(ATM) options display lower effective spreads, while out-of-the-money (OTM) options incur
+higher costs. Trading activity concentrates around the current price (ATM), whereas OTM
+options are less active and pose higher inventory risks to market makers, resulting in wider
+spreads. Also, ATM options have a higher price than OTM options, which mechanically
+affects relative spreads.
+However, we note that the association between moneyness and
+execution quality (E/Q ratio) switches signs across fixed effect specifications. This suggests
+that while moneyness dictates the absolute cost level (spread), it does not drive execution
+skill.
+Second, effective spreads are higher for 0DTE contracts. Absent fixed effects, a 0DTE
+option is associated with a 0.67% higher effective spread (t-statistic of 6.54). This suggests
+that retail investors pay a premium for immediacy when trading ultra-short-term contracts,
+likely because market makers charge more to warehouse the high gamma risk associated with
+21
+
+expiring options. Importantly, however, this contract characteristic does not drive execution
+skill. While 0DTE contracts dictate higher absolute costs, they have little explanatory power
+for the E/Q ratio compared to trader identity. This confirms that execution performance
+primarily reflects trader attributes, e.g., ability to effectively employ different order types,
+rather than security attributes, e.g., time to expiration.
+Buy trades are associated with lower effective spreads and E/Q ratios compared to sell
+trades. In the baseline specification, a buy trade reduces the effective spread by 0.37% (tstatistic of 4.32). This asymmetry supports the hypothesis that retail investors are more
+likely to provide liquidity (use limit orders) when patiently opening a position (buying), but
+demand liquidity (use market orders) when urgently closing a position (selling).
+Fourth, we examine whether single-leg price improvement auctions (SLAN) reduce trading costs. Trades executed via SLAN have a much larger lower E/Q ratio (by −0.23 in
+column 5). This confirms that the auction mechanism functions as intended, generating
+competition that yields price improvement inside the NBBO. Similarly, complex (multi-leg)
+orders are associated with lower effective spreads (−0.26 in column 5). This likely occurs
+because market makers price the net risk of the package, which is often lower than the risk
+of the individual legs, and pass some of those savings to the investor.
+Finally, Panel B provides our most important finding regarding the source of execution
+quality. We rely on a variance decomposition of Model (5) to distinguish between structural,
+behavioral, and temporal drivers of trading costs. Conceptually, absolute costs (effective
+spreads) should be largely structural, determined by the liquidity and volatility of the underlying asset. In contrast, execution quality (E/Q ratio) should be behavioral, determined
+by the investor’s ability to capture the spread via limit orders. The results document a sharp
+dichotomy that validates this distinction. Absolute trading costs are driven by security attributes: underlying stock fixed effects explain 54% of the variation, while trader fixed effects
+explain only 34%. However, execution quality is driven by the investor attributes. Trader
+fixed effects explain 71% of the variation in the E/Q ratio, whereas stock characteristics
+22
+
+explain only 14%. Finally, date fixed effects explain less than 5% of the variation in both
+measures. This suggests that general market conditions and time trends play a secondary
+role in determining variations in retail execution outcomes relative to the specific asset and
+trader attributes.
+This result has a critical implication for the debate on retail market structure. If execution
+quality (E/Q) were primarily determined by how brokers route orders to wholesalers, we
+would expect broker fixed effects to have a high explanatory power. Instead, comparing
+Model (4) and Model (5) in Panel A reveals that broker fixed effects explain little variation,
+as reflected in the adjusted-R2 that is below 1%. In contrast, adding trader fixed effects
+dramatically increases explanatory power, elevating the adjusted-R2 to 5.1%. This evidence
+strongly indicates that individual investor choices, specifically the strategic decision to use
+limit orders, rather than broker defaults, drive retail trade execution performance.
+4.3
+Trader Types and Persistence in Trading Costs
+Our results so far suggest that retail investors achieve low trading costs by supplying liquidity.
+A potential concern with using trader-level data from a trading journal is selection bias:
+perhaps our sample is overrepresented by sophisticated power users who utilize limit orders,
+while the average retail investor relies on market orders. To address this, we examine how
+the gap between true and conventional effective spreads varies across distinct trader profiles.
+We categorize investors using three variables that proxy for trading style to address the
+concern that our results are driven solely by hyper-active, professionalized retail traders glued
+to their screens. To ensure our findings apply to the broader retail population, we verify that
+we have robust sample sizes for typical investors. First, we distinguish “Fast traders” from
+those with longer horizons; notably, traders with a median holding period of more than one
+day contribute 96,474 trades, confirming our sample is not limited to day-traders. Second,
+we stratify by investor sophistication proxied by average trade size, isolating “Low stakes”
+traders (median trade size < $200). This group accounts for 100,507 trades, allowing us to
+23
+
+examine behavior of smaller Robinhood-like traders and contrast it with the “High stake”
+(> $5, 000) group. Third, we proxy for experience using trade frequency, identifying a “Few
+trades” group (< 10 per month) that includes 31,973 trades and a “Many trades” group
+(> 30 per month) that includes 278,763 trades. This granular decomposition allows us to
+rule out the hypothesis that low trading costs are a privilege reserved only for the most
+active and sophisticated segment of the retail market.
+Table 6 reports the true and conventional effective spreads for these groups. Two critical
+insights emerge regarding the universality of limit order usage. First, the cost savings from
+limit orders are ubiquitous, extending well beyond professionalized traders. Across every
+trader type, regardless of size, frequency, or holding period, the true effective spread is less
+than half the conventional effective spread.
+The ratio of conventional to true spread is
+never lower than 2.31. This is particularly revealing for “Low stakes” traders, who serve
+as our proxy for the typical, less sophisticated retail investor. Their conventional effective
+spread is 3.17%, yet their true effective spread is only 1.37%. If these smaller investors relied
+exclusively on market orders, these two measures would be nearly identical. The substantial
+gap confirms that less sophisticated retail investor frequently employs limit orders to reduce
+trading costs.
+Second, while limit order usage is widespread, sophistication still generates superior execution. We observe a clear gradient based on capital commitment: “High stakes” traders
+achieve a true effective spread of just 0.58%, significantly lower than the 1.37% paid by Low
+stakes” traders. Furthermore, the wedge between conventional and true costs is widest for
+these sophisticated traders (a ratio of 3.97 compared to 2.32 for low-stakes traders). This
+suggests that while less sophisticated investors are capable of using limit orders to avoid
+paying the full spread, high-capital investors are more skillful in managing their orders to
+capture the spread.
+We next test whether this variation in execution quality reflects persistent skill or random luck. If execution depends on individual order placement strategy, performance should
+24
+
+persist. We split each trader’s history into two halves. We sort traders into quintiles based
+on their E/Q ratio in the first half and measure their performance in the second half.
+Table 7 documents strong persistence in execution skill. Panel A shows that performance
+in the second half aligns monotonically with performance in the first half. Traders in the
+best execution quintile (Quintile 1) start with an average E/Q ratio of −0.10 and maintain
+a low ratio of 0.13 in the second half. In contrast, traders in the worst quintile (Quintile 5)
+start at 0.88 and remain high at 0.60. This persistence is not random. If execution quality
+were a random walk, the probability of a trader remaining in their initial quintile would
+be 20%. Instead, we observe a distinct ∪-shaped pattern. The best traders have a 51%
+probability of remaining in the top quintile, and the worst traders have a 52% probability
+of remaining in the bottom quintile. This ∪-shape implies two distinct equilibria: “good”
+traders consistently utilize limit orders effectively to capture spreads, while “bad” traders
+consistently demand immediacy via market orders.
+Importantly, this persistence is driven by the trader, not the broker. Panels B and C
+replicate the analysis for trades executed through TD Ameritrade (the most represented
+broker in our dataset) and non-TD brokers, respectively. The ∪-shaped persistence pattern
+remains identical across broker subsamples. For example, bad traders on non-TD platforms
+have a 54% chance of remaining in the bottom quintile. This rules out the hypothesis that
+our results are driven by differences in routing algorithms between brokers. Instead, the data
+confirms that individual trader choices (specifically the strategic decision to provide rather
+than take liquidity) determine retail execution costs.
+4.4
+Order Type Choice: Market vs Limit
+In this section, we examine the mechanism behind retail cost savings by distinguishing
+between market and limit orders. This validates the hypothesis that retail investors are not
+merely passive price-takers, but active liquidity providers who strategically manage execution
+risk to capture the spread.
+25
+
+Since our dataset reports executed trades but not explicit order types, we infer the order
+type by comparing the trade price to the pre-trade quote midpoint. We classify a buy (sell)
+trade executed below (above) the midpoint as a limit order, and a buy (sell) trade executed
+above (below) as a market order. While this classification imperfectly separates aggressive
+limit orders from market orders, it captures the fundamental distinction between providing
+and taking liquidity. Importantly, our main findings in previous sections do not depend on
+this limit-vs-market classification. The calculation of true effective spreads (1.07%) relies
+solely on verified trade direction and the execution price relative to the pre-trade midquote.
+Thus, our headline estimates of retail trading costs are robust to any potential misclassification in this section. The purpose of this decomposition is solely to shed light on the drivers
+of those costs.
+Figure 7 validates our classification of order types by plotting the distribution of execution
+prices relative to the quoted spread. We normalize prices such that 0 represents the best bid
+and 1 represents the best ask. The resulting distribution is strictly bimodal, with volume
+concentrated almost exclusively at the NBBO bounds. Because very few trades execute near
+the quote midpoint, the mechanical cutoff we use to distinguish market from limit orders is
+highly robust. The sharp separation between trades at the bid and trades at the ask implies
+that ambiguity in assigning liquidity provision versus liquidity taking is relatively small.
+Table 8 decomposes retail trading costs by this inferred order type. Panel A restates
+our full-sample estimate of a 1.07% true effective spread. Panels B and C reveal the stark
+heterogeneity underlying this average. Market orders (Panel B) pay a substantial cost, with
+an average effective spread of 2.44%. This figure is close to the conventional effective spread
+of 2.61%, confirming that when retail investors demand immediacy, they pay nearly the full
+quoted half-spread.
+In contrast, limit orders (Panel C) effectively earn the spread. The average true effective
+spread for limit orders is −1.01%. The negative sign indicates that, on average, retail limit
+orders execute at prices better than the pre-trade midquote. Note that they do not capture
+26
+
+the full half-spread (which would imply a cost of roughly −1.8%) because many retail limit
+orders are aggressively priced to ensure execution, often setting the NBBO themselves. This
+result highlights the trade-off retail investors face: they can pay about 2.4% for certainty via
+market orders or earn about 1.0% by bearing execution risk via limit orders.
+We next examine the determinants of this choice. In Table 9, we regress an indicator
+variable for limit order usage on market conditions. This analysis has two limitations. First,
+our sample includes only executed orders and thus misses the unfilled limit orders. Second,
+causality may run in both directions; for instance, high volatility might induce limit order
+submission, or a lack of market orders might cause volatility. Nevertheless, we aim to assess
+whether retail order choice aligns with standard theoretical predictions.
+The results provide support for standard microstructure theories. First, market depth is
+negatively associated with limit order usage (t-statistic of −4.56). Consistent with Parlour
+(1998), when the book is thick (high depth), the probability of a new limit order reaching
+the front of the queue diminishes. Retail investors appear to internalize this execution risk,
+switching to market orders when depth is high to ensure their trades are filled.
+Second, volatility is positively associated with limit order usage (t-statistic of 3.40). This
+aligns with Foucault (1999), who argues that the option value of providing liquidity increases
+with volatility. In volatile markets, the spread widens and the probability of a limit order
+being picked off profitably increases, incentivizing patient traders to post limit orders rather
+than trade at unfavorable market quotes.
+We also document a significant asymmetry in trade direction. Buy trades are approximately 5.8% more likely to be executed via limit orders than sell trades (t-statistic of 6.14).
+This suggests that retail investors exhibit different patience levels depending on their trading
+motive. They are willing to wait for a favorable price when entering a position (buying), but
+prioritize execution certainty when exiting (selling).
+27
+
+5
+Conclusion
+This paper challenges conventional wisdom about retail trading behavior by providing a
+comprehensive assessment of execution costs in the options market. Leveraging Form 606
+reports, we document that retail investors extensively use limit orders in both stock and
+options markets. Non-marketable limit orders account for approximately 17% of stock retail
+volume and more than 33.5% of option volume. This finding contrasts with the traditional
+view that retail investors are predominantly liquidity takers. Instead, the wide spreads in
+options markets drive retail traders to often supply liquidity rather than pay the spread.
+Consequently, conventional spread measures substantially overstate actual retail trading
+costs. While quoted spreads average 3.67% and conventional effective spreads average 2.67%
+in our sample, the “true” effective spread is only 1.07% on average. This 60% reduction in
+estimated costs implies that retail investors are far more price-sensitive and strategic than
+previously documented.
+Our analysis relies on a novel synthesis of data sources that balances precision with representativeness. We combine granular trader-level data, which provide depth on realized
+costs and persistence, with Form 606 reports that offer breadth across the entire retail universe . This approach confirms that widespread limit order usage is a fundamental market
+characteristic rather than a sample artifact. Methodologically, we refine the measurement
+of execution quality by adjusting spreads for aggressive limit orders that set the pre-trade
+NBBO. Without this correction, conventional metrics erroneously classify these orders as
+earning the spread.
+Finally, we show that execution quality is driven by individual trader choice rather than
+broker routing defaults. Trader fixed effects explain the vast majority of the variation in
+execution performance, whereas broker fixed effects explain less than 1%.
+Furthermore,
+execution skill persists: traders who demonstrate superior execution ability early in the
+sample tend to maintain this advantage.
+These findings suggest that policy efforts should pivot from equity market structure to
+28
+
+the options market, where the primary frictions for household finance now reside. Moreover,
+because individual order choice drives execution quality, future regulation might focus more
+on investor education regarding order types rather than solely on broker-dealer conflicts.
+29
+
+References
+Anand, A. and D. Muravyev (2024). Does internalization impact quote competition? Journal
+of Finance, Forthcoming.
+Anand, A., M. Samadi, J. Sokobin, and K. Venkataraman (2021). Institutional order handling and broker-affiliated trading venues. The Review of Financial Studies 34(7), 3364–
+3402.
+Anand, A., M. Samadi, J. S. Sokobin, and K. Venkataraman (2024). Retail limit orders.
+Available at SSRN 4964266.
+Barber, B. M., Y.-T. Lee, Y.-J. Liu, and T. Odean (2009). Just how much do individual
+investors lose by trading? The Review of Financial Studies 22(2), 609–632.
+Battalio, R., T. Griffith, and R. Van Ness (2021). Do (should) brokers route limit orders
+to options exchanges that purchase order flow?
+Journal of Financial and Quantitative
+Analysis 56(1), 183–211.
+Battalio, R. H. and R. H. Jennings (2023). Wholesaler execution quality. Available at SSRN
+4304124.
+Boehmer, E., C. M. Jones, X. Zhang, and X. Zhang (2021). Tracking retail investor activity.
+Journal of Finance 76(5), 2249–2305.
+Bogousslavsky, V. and D. Muravyev (2024). An anatomy of retail option trading. Working
+Paper.
+Bryzgalova, S., A. Pavlova, and T. Sikorskaya (2023). Retail trading in options and the rise
+of the big three wholesalers. The Journal of Finance 78(6), 3465–3514.
+Christoffersen, P., R. Goyenko, K. Jacobs, and M. Karoui (2018). Illiquidity premia in the
+equity options market. The Review of Financial Studies 31(3), 811–851.
+Dyhrberg, A. H., A. Shkilko, and I. M. Werner (2025). The retail execution quality landscape.
+Journal of Financial Economics 168, 104051.
+Ernst, T., A. Malenko, C. Spatt, and J. Sun (2023). What does best execution look like?
+Technical report, Working paper, University of Maryland.
+Ernst, T. and C. S. Spatt (2022). Payment for order flow and asset choice. Technical report,
+National Bureau of Economic Research.
+Foucault, T. (1999). Order flow composition and trading costs in a dynamic limit order
+market. Journal of Financial markets 2(2), 99–134.
+Goyenko, R., C. Ornthanalai, and S. Tang (2015). Options illiquidity: Determinants and
+implications for stock returns. Rotman School of Management Working Paper (2492506).
+30
+
+Grauer, C., P. Schuster, and M. Uhrig-Homburg (2024). Option trade classification. Available
+at SSRN 4098475.
+Harris, L. and J. Hasbrouck (1996). Market vs. limit orders: the superdot evidence on order
+submission strategy. Journal of Financial and Quantitative analysis 31(2), 213–231.
+Hasbrouck, J. (2021). Securities trading: Principles and procedures. Joel Hasbrouck.
+Hendershott, T., S. Khan, and R. Riordan (2022). Option auctions. Available at SSRN
+4110516.
+Holden, C. W. and S. E. Jacobsen (2014). Liquidity measurement problems in fast, competitive markets: Expensive and cheap solutions. Journal of Finance 69, 1747–85.
+Huang, X., P. Jorion, J. Lee, and C. Schwarz (2024). Who is minding the store? order
+routing and competition in retail trade execution. Journal of Financial Economics 161,
+103923.
+Huang, X., P. Jorion, and C. Schwarz (2024). Some anonymous options trades are more
+equal than others. Available at SSRN 4951825.
+Lee, C. M. C. and M. J. Ready (1991). Inferring trade direction from intraday data. Journal
+of Finance 46(2), 733–746.
+Lipson, M. (1999). Stock splits, liquidity and limit orders.
+Muravyev, D. and N. D. Pearson (2020). Options trading costs are lower than you think.
+Review of Financial Studies 33(11), 4973–5014.
+Parlour, C. A. (1998). Price dynamics in limit order markets. The Review of Financial
+Studies 11(4), 789–816.
+31
+
+Figures and Tables
+Figure 1. Retail Option Trading Volume and Market Share Over Time.
+This figure illustrates the evolution of retail trading from January 2020 through March 2025.
+Panel A
+plots the 3-month moving average of three series: (i) retail option volume as a share of total market option
+volume (dark grey dashed line), (ii) retail stock volume as a share of total market stock volume (light grey
+dashed line), and (iii) the ratio of retail option volume to retail stock volume (black line). Panel B plots
+the evolution of the daily average option volume for each individual retail broker. For both panels, monthly
+retail volume estimates are derived from the 606 reports for Apex, Charles Schwab/E*TRADE, Morgan
+Stanley/TD Ameritrade/TD Clearing, Robinhood, and Webull—brokers that receive payment for order flow
+in both options and stocks. Total market volume data for options and stocks are from the OCC and CBOE,
+respectively.
+Panel A: Option Market Shares
+0
+20
+40
+60
+80
+100
+Ratio / Market Share (%)
+Apr,2020
+Sep,2020
+Apr,2021
+Sep,2021
+Apr,2022
+Sep,2022
+Apr,2023
+Sep,2023
+Apr,2024
+Sep,2024
+Apr,2025
+Retail market share (options)
+Retail market share (stocks)
+Retail option−to−stock
+Panel B: Option Volume by Broker
+0
+2
+4
+6
+8
+10
+Daily average options volume (millions)
+Apr,2020
+Sep,2020
+Apr,2021
+Sep,2021
+Apr,2022
+Sep,2022
+Apr,2023
+Sep,2023
+Apr,2024
+Sep,2024
+Apr,2025
+Apex
+Schwab/TD
+Morgan/E*TRADE
+Robinhood
+Webull
+32
+
+Figure 2. Example of Adjusting NBBO for Aggressive Limit Orders.
+This figure illustrates how we compute the “true” bid-ask spread by adjusting the midpoint for aggressive
+limit orders. The unadjusted midpoint ($2.575) is based on the prevailing NBBO, while the adjusted midpoint
+($2.50) replaces the aggressive quote with the next best quote on that side of the book. For example, a limit
+buy that establishes the new best bid ($2.55) is treated as aggressive because it executes at or within the
+NBBO and the submitting exchange is the only one quoting at that price. In such cases, the midpoint is
+mechanically adjusted downward, yielding a tighter estimate of the “true” trading spread. This correction
+removes transient quote distortions caused by order submission and reflects the midquote that would prevail
+immediately after the trade.
+ 
+$2.40 
+$2.45 
+$2.50 
+$2.55 
+$2.60 
+Aggressive 
+Buy 
+Buy 
+Sell 
+Adjusted 
+Midpoint 
+$2.50 
+Unadjusted 
+Midpoint 
+$2.575 
+33
+
+Figure 3. Form 606 Example.
+This figure summarizes Robinhood’s order routing activity for options during April 2025, as disclosed under SEC Rule 606. The top panel reports the
+composition of submitted non-directed orders by order type (market, marketable limit, non-marketable limit, and other orders) expressed as shares of
+total orders. The bottom panel details executed volume by venue and order type, including the relative shares of order flow directed to each wholesaler
+or market center. For each venue, the table also provides payment for order flow (PFOF) metrics, reported both in aggregate dollar amounts and in
+cents per hundred shares, separately for market, marketable limit, non-marketable limit, and other order categories. These data form the basis for
+our estimation of execution volume by order type. The Form 606 data are in XML and PDF formats, paper’s analysis uses the former.
+34
+
+Figure 4. Limit Order Share.
+This figure compares the estimated fraction of limit-order volume in our dataset to the fraction of limit order
+volume receiving PFOF as reported in 606 reports. Monthly estimates of retail volume handled in stocks
+and options are extracted from 606 reports of the following retail brokers from the first quarter of 2020
+through the first quarter of 2025: Apex, Charles Schwab/E*TRADE, Fidelity, Interactive Brokers, Morgan
+Stanley/TD Ameritrade/TD Clearing, Robinhood, Vanguard, Webull. These brokers account for 90.5% and
+89.6% of executed retail volume, respectively, in options and stocks. The monthly share of limit-order volume
+executed by these brokers are reported over time.
+Panel A: Options
+0
+20
+40
+60
+80
+100
+Share of Option Limit Orders (%)
+Apr,2020
+Sep,2020
+Apr,2021
+Sep,2021
+Apr,2022
+Sep,2022
+Apr,2023
+Sep,2023
+Apr,2024
+Sep,2024
+Apr,2025
+Our Data
+606 Reports
+Panel B: Stocks
+0
+20
+40
+60
+80
+100
+Share of Stock Limit Orders (%)
+Apr,2020
+Sep,2020
+Apr,2021
+Sep,2021
+Apr,2022
+Sep,2022
+Apr,2023
+Sep,2023
+Apr,2024
+Sep,2024
+Apr,2025
+606 Reports
+35
+
+Figure 5. Effective and Quoted Spreads of Retail Option Trades
+This figure compares alternative measures of trading costs for retail option trades. The true effective spread
+is true trade direction times twice the percentage difference between the retail execution price and the pretrade midquote, adjusted for the aggressive limit orders. Thus, the spread estimates round-trip costs and is
+usually positive but can be negative when retail investors supply liquidity. The conventional effective spread
+is twice the absolute difference between the trade price and the midpoint of the national best bid and offer
+at the time of the trade, divided by that midpoint. The conventional quoted spread is the difference between
+the national best ask and bid prices at the time of the trade, divided by their midpoint. Thus, conventional
+spreads are always positive and assume a trade takes liquidity. All spreads are expressed as percentages of
+the midpoint price at the time of the trade.
+1.07%
+2.59%
+3.62%
+0
+1
+2
+3
+4
+Effective and Quoted Spreads (%)
+True Effective
+Conventional Effective
+Conventional Quoted
+ 
+36
+
+Figure 6. True Effective and Quoted Spreads for Option and Stock Retail Trades
+This figure compares the relative magnitude of trading cost measures between retail option and stock trades.
+The true effective spread is the true trade direction times twice the percentage difference between the retail
+execution price and the pre-trade midquote, adjusted to remove the effect of aggressive limit orders that set
+the NBBO. The conventional quoted spread is the difference between the national best ask and bid prices at
+the time of the trade, divided by their midpoint. All spreads are expressed as percentages of the midpoint
+price.
+3.62%
+0.30%
+0.29%
+0.07%
+0
+1
+2
+3
+4
+Relative Effective & Quoted Spread (%)
+Option
+Stock
+Option
+Stock
+ 
+Effective Spread
+Quoted Spread
+37
+
+Figure 7. Trade Price Distribution Relative to Quoted Spread.
+The figure shows the distribution of trade prices of retail option trades relative to the quoted bid-ask spread.
+The normalized transaction price is defined as the actual transaction price minus the corresponding best bid
+price, divided by the bid-ask spread. I.e., zero (one) denotes trades at the bid (ask) price. Almost all option
+trades are expected at or within the NBBO.
+0
+10
+20
+30
+40
+Frequency (%)
+−0.5
+0
+0.5
+1
+1.5
+Standardized Trade Price
+38
+
+Table 1. Submitted and Executed Shares by Order Type.
+This table reports the distribution of submitted orders and executed volume by order type (Non-mkt limit,
+market, Mkt limit, and other) and retail brokers, based on Form 606 monthly reports from 2020 to 2025.
+Selected brokers account for 90.5% and 89.6% of executed retail volume on options and stocks, respectively.
+Non-mkt limit orders represent liquidity-providing orders, while market and Mkt limit orders represent
+liquidity-taking orders. The “Other” category includes order types such as immediate-or-cancel orders, stop
+orders, etc. (see SEC Rule 11Ac1-5 for details) that are not liquidity-providing. In Panel A, monthly shares
+of submitted orders associated with different order types are averaged at the broker level, before calculated
+weighted averages across brokers according to brokers’ shares of overall executed PFOF-receiving volume.
+In Panel B, for each broker, the total volume associated with a given order type is divided by that broker’s
+overall executed volume in an asset class. The tow “Total” aggregated order-type specific volume and the
+overall volums across all brokers.
+Panel A: Submitted Trade Count Shares
+Options
+Stocks
+Order type (%)
+Order type (%)
+Weight
+Non-mkt
+Mkt
+Weight
+Non-mkt
+Mkt
+Broker
+(%)
+limit
+Market
+limit
+Other
+(%)
+limit
+Market
+limit
+Other
+Apex
+2.8
+30.0
+2.3
+6.9
+60.8
+7.4
+39.7
+40.7
+9.3
+10.3
+Charles Schwab
+13.4
+48.9
+12.4
+7.1
+31.6
+22.1
+34.6
+49.0
+7.6
+8.9
+E*TRADE
+7.8
+39.2
+17.2
+7.6
+35.8
+8.5
+31.8
+49.9
+7.7
+10.6
+Fidelity
+10.1
+52.9
+21.1
+11.0
+15.0
+-
+-
+-
+-
+Interactive Brokers
+11.3
+49.9
+0.3
+9.8
+40.0
+-
+-
+-
+-
+Morgan Stanley
+4.4
+14.9
+10.3
+3.2
+71.6
+3.7
+20.9
+68.2
+4.9
+6.1
+Robinhood
+21.7
+56.6
+0.1
+26.6
+16.7
+13.4
+20.2
+28.9
+28.2
+22.7
+TD Ameritrade
+10.0
+30.0
+3.4
+7.4
+59.1
+8.8
+35.5
+18.0
+9.7
+36.7
+TD Clearing
+12.2
+57.8
+7.2
+12.5
+23.1
+27.5
+39.0
+22.9
+8.0
+30.1
+Vanguard
+0.1
+70.0
+0.2
+25.6
+4.2
+-
+-
+-
+-
+Webull
+6.1
+60.5
+3.5
+26.0
+10.0
+8.5
+62.5
+9.3
+15.7
+12.5
+Total
+100
+46.8
+7.2
+12.9
+33.1
+100
+36.9
+33.4
+12.1
+17.5
+Panel B: PFOF-Implied Executed Volume Shares
+Options
+Stocks
+Order type (%)
+Order type (%)
+Weight
+Non-mkt
+Mkt
+Weight
+Non-mkt
+Mkt
+Broker
+(%)
+limit
+Market
+limit
+Other
+(%)
+limit
+Market
+limit
+Other
+Apex
+2.8
+29.3
+5.3
+32.5
+32.9
+7.4
+17.4
+20.4
+48.4
+13.8
+Charles Schwab
+13.4
+30.4
+20.8
+24.4
+24.5
+22.1
+16.4
+54.7
+21.0
+7.9
+E*TRADE
+7.8
+26.1
+27.4
+22.0
+24.5
+8.5
+17.3
+40.5
+27.1
+15.0
+Fidelity
+10.1
+29.2
+26.6
+20.6
+23.6
+Interactive Brokers
+11.3
+35.2
+0.1
+32.1
+32.6
+Morgan Stanley
+4.4
+17.8
+18.4
+19.6
+44.2
+3.7
+17.6
+46.0
+25.9
+10.5
+Robinhood
+21.7
+41.3
+0.2
+51.3
+7.2
+13.4
+13.3
+35.6
+36.2
+15.0
+TD Ameritrade
+10.0
+30.9
+9.2
+29.1
+30.7
+8.8
+18.0
+35.8
+33.2
+13.1
+TD Clearing
+12.2
+37.0
+15.1
+32.9
+14.9
+27.5
+15.6
+52.0
+23.1
+9.2
+Vanguard
+0.1
+46.3
+12.2
+37.3
+4.2
+Webull
+6.1
+35.6
+6.8
+49.3
+8.4
+8.5
+29.5
+18.7
+31.0
+20.7
+Total
+100
+33.5
+11.8
+33.6
+21.1
+100
+17.2
+42.6
+28.3
+11.9
+39
+
+Table 2. Trade Summary Statistics.
+This table reports summary statistics for option and stock trades. Panel A summarizes 451,299 retail option
+trades. Panel B details 608,083 retail stock trades. Statistics include the total count of trades, mean, standard
+deviation, and percentiles (1st, 5th, 25th, 50th, 75th, 95th, 99th) to capture distributional characteristics.
+Key variables are defined as follows: Trade Price reflects the per-contract execution price (options) or pershare price (stocks), in dollars. Trade Size measures the number of contracts (options) or shares (stocks)
+per trade, while Trade Value calculates the total dollar value of the trade. SLAN is an indicator of whether
+the trade occurred in a single-leg price improvement auction. Exchanges at NBBO count the number of
+exchanges quoting the NBBO price when the trade is executed. Moneyness compares an option’s strike price
+to its underlying stock price: for calls, values below one indicate in-the-money (ITM) status, while for puts,
+values above one denote ITM. All outcome variables are winsorized at 0.1% and 99.9% each day. The sample
+period is form January 2020 to December 2022.
+Panel A: Option Retail Trades
+Percentiles
+Variable
+Count
+Mean
+St Dev.
+1
+5
+25
+50
+75
+95
+99
+Trade Price
+451,299
+4.20
+8.38
+0.15
+0.29
+0.89
+1.78
+3.66
+17.00
+43.45
+Underlying Price
+451,299
+407.68
+554.01
+6.79
+21.41
+127.58
+318.06
+422.29
+1033.74
+3352.34
+Trade Size (shares)
+451,299
+327.5
+1163.8
+100.0
+100
+100
+100
+200
+1000
+4000
+Trade Value ($)
+451,299
+1056.2
+4355.0
+18
+39
+120
+265
+700
+3700
+12675
+SLAN
+451,299
+0.27
+0.45
+0
+0
+0
+0
+1
+1
+1
+# Exchanges at NBBO
+451,299
+4.45
+4.29
+1
+1
+1
+2
+7
+14
+16
+Moneyness Call
+265,099
+0.938
+2.637
+0.631
+0.836
+0.962
+0.990
+0.999
+1.015
+1.116
+Moneyness Put
+186,193
+0.974
+0.078
+0.704
+0.871
+0.972
+0.992
+0.999
+1.009
+1.074
+Days to expiration
+451,299
+10.7
+42.9
+0
+0
+1
+2
+7
+38
+158
+Hour of Day
+451,294
+11.00
+1.94
+9
+9
+9
+10
+12
+15
+15
+Pabel B: Stock Retail Trades
+Percentiles
+Variable
+Count
+Mean
+St Dev.
+1
+5
+25
+50
+75
+95
+99
+Trade Price
+608,083
+75.6
+167.3
+1.25
+2.32
+5.46
+12.85
+58.79
+387.00
+847.00
+Trade Size
+403,599
+292.8
+838.0
+1
+2
+25
+100
+200
+1000
+3500
+Trade Value
+403,599
+6699.06
+18540.46
+11
+58
+405
+1472
+4999
+28995
+93540
+Hour of Day
+608,083
+11.3
+1.9
+9
+9
+10
+11
+13
+15
+15
+40
+
+Table 3. Retail Trading Costs in Options.
+This table reports relative bid-ask spreads for retail and control sample option trades. True effective spreads use verified trade direction and are
+computed as twice the percentage difference between the execution price and pre-trade midquote. The unadjusted version includes cases where retail
+limit orders set the NBBO, while the adjusted version removes this mechanical effect by using the next best quote. Conventional effective spreads follow
+standard methodology using inferred trade direction and are always non-negative. The realized spread uses the actual trade direction and midquotes
+one or ten minutes post-trade. For each spread measure, we report the number of observations, mean, standard deviation, and key percentiles of the
+distribution. All outcome variables are winsorized at 0.1% and 99.9% each day. The sample period is form January 2020 to December 2022.
+Percentiles
+Retail Sample Spreads (%)
+Observations
+Mean
+S.D.
+1
+5
+25
+50
+75
+95
+99
+True Effective
+451,299
+1.07
+4.88
+−8.81
+−3.28
+−0.38
+0.66
+1.88
+6.74
+16.62
+True Effective Unadjusted
+451,299
+0.60
+5.12
+−12.06
+−4.65
+−0.94
+0.57
+1.77
+6.45
+15.38
+Conventional Effective
+451,299
+2.59
+4.44
+0.00
+0.25
+0.72
+1.38
+2.82
+8.40
+20.00
+Conventional Quoted
+451,299
+3.62
+5.96
+0.26
+0.43
+1.02
+1.91
+3.92
+11.76
+28.35
+Conventional Realized (1 minute)
+451,299
+1.03
+15.88
+−43.90
+−22.22
+−4.88
+0.85
+6.78
+24.56
+47.93
+Conventional Realized (10 minutes)
+451,299
+0.97
+43.39
+−118.75
+−64.45
+−16.04
+0.77
+17.65
+66.97
+123.10
+Control Sample Spreads (%)
+Conventional Effective
+4,178,910
+2.68
+4.77
+0.00
+0.20
+0.66
+1.36
+2.90
+8.70
+21.69
+Conventional Quoted
+4,178,910
+3.59
+6.18
+0.20
+0.38
+0.96
+1.83
+3.87
+11.76
+28.57
+41
+
+Table 4. Retail Trading Costs in Stocks.
+This table reports relative bid-ask spreads for retail stock trades. True effective spreads use verified trade
+direction and are computed as twice the percentage difference between the execution price and pre-trade
+midquote. These can be negative when retail traders supply liquidity. Conventional effective spreads follow
+standard methodology using inferred trade direction and are always non-negative. For each spread measure,
+we report the number of observations, mean, standard deviation, and key percentiles of the distribution. The
+sample includes equity trades in the 100 stocks with most retail trades. All outcome variables are winsorized
+at 0.1% and 99.9%. The sample period is form January 2020 to December 2022.
+Percentiles
+Retail Sample Spreads (%)
+Observations
+Mean
+S.D.
+1
+5
+25
+50
+75
+95
+99
+True Effective
+603,259
+0.07
+1.22
+-2.26
+-1.43
+-0.26
+0.05
+0.38
+1.54
+2.47
+Conventional Quoted
+603,259
+0.29
+1.26
+0.00
+0.01
+0.04
+0.16
+0.36
+0.82
+1.48
+42
+
+Table 5. Determinants of Trading Costs and Execution Quality.
+This table reports on the cross-sectional variation in the trading costs and execution quality of retail option
+trades. Trading cost; i.e., true effective spread, on each retail trade is the product of the trade direction and
+the difference between execution price and the quote midpoint, divided by the quote midpoint, multiplied
+by 2 and scaled by 100. Execution quality, i.e., the effective-to-quoted spread (E/Q) ratio, divides the true
+effective spread by quoted spread. Following indicator variables are used as independent variables: “ATM”
+equals 1 if moneyness (defined as underlying price divided by strike price for call options and as strike price
+divided by underlying price for put options) is between 0.98 and 1.02 and equals 0 otherwise; “OTM” equals
+1 if moneyness is lass than 0.95 and equals 0 otherwise; “0DTE” equals 1 if the trade occurs on the contracts
+expiration date and equals 0 otherwise; ‘Buy trade” equals 1 if the trade is attributable to a retail buyer
+and equals 0 otherwise; “Call option” equals 1 if the contract is a call option and 0 if it is put; “SLAN”
+equals 1 if trade is executed as single-legged auction transaction and equals 0 otherwise; and “Complex”
+trade is executed as part of a multi-legged transaction and equals 0 otherwise. Specifications control for
+different combinations of underlying ticker, date, and trader fixed effects. Standard errors are clustered by
+underlying ticker and date, with t-statistics reported in brackets and symbols *, **, ***, reflecting statistical
+significance given 10%, 5%, and 1% type I error levels, respectively. All outcome variables are winsorized at
+0.1% and 99.9% each day. The sample period is form January 2020 to December 2022. Panel A presents panel
+regression estimation results, and Panel B decomposes explained variation in model (5), by its components:
+controls and each set of fixed effects.
+Panel A: Panel Regression Estimates
+Effective Spread
+E/Q Ratio
+(1)
+(2)
+(3)
+(4)
+(5)
+(1)
+(2)
+(3)
+(4)
+(5)
+ATM
+−0.51***
+−0.30***
+−0.51***
+−0.52***
+−0.36***
+0.0048
+−0.0071
+−0.033***
+0.0031
+−0.042***
+[−5.82]
+[−7.32]
+[−6.48]
+[−5.64]
+[−11.40]
+[0.62]
+[−1.08]
+[−3.53]
+[0.40]
+[−6.66]
+OTM
+0.69***
+0.62***
+0.66***
+0.70***
+0.64***
+0.017*
+0.029**
+0.026***
+0.018**
+0.039***
+[9.91]
+[9.82]
+[8.41]
+[9.70]
+[11.29]
+[1.73]
+[2.53]
+[4.13]
+[2.07]
+[5.80]
+0DTE
+0.54***
+0.74***
+0.43***
+0.52***
+0.60***
+−0.013
+−0.016
+−0.039***
+−0.019
+−0.033***
+[6.98]
+[5.87]
+[6.35]
+[6.92]
+[6.25]
+[−0.92]
+[−1.26]
+[−5.32]
+[−1.30]
+[−3.34]
+Call option
+0.089***
+−0.038
+0.058**
+0.092***
+−0.055*
+−0.023***
+−0.025***
+−0.017***
+−0.022***
+−0.022***
+[3.07]
+[−1.37]
+[2.31]
+[3.34]
+[−1.82]
+[−4.86]
+[−4.89]
+[−3.22]
+[−5.08]
+[−3.68]
+SLAN
+0.10
+0.081
+−0.12
+0.12
+−0.16*
+−0.15***
+−0.15***
+−0.23***
+−0.15***
+−0.23***
+[0.88]
+[0.61]
+[−1.43]
+[0.95]
+[−1.82]
+[−4.30]
+[−4.18]
+[−6.88]
+[−4.25]
+[−6.98]
+Complex
+−0.54***
+−0.54***
+−0.39***
+−0.48***
+−0.26***
+−0.23***
+−0.22***
+−0.17***
+−0.21***
+−0.16***
+[−5.57]
+[−6.43]
+[−4.67]
+[−5.48]
+[−2.98]
+[−7.96]
+[−8.07]
+[−5.53]
+[−7.29]
+[−5.37]
+Intercept
+1.09***
+1.01***
+1.19***
+1.09***
+1.13***
+0.45***
+0.46***
+0.49***
+0.45***
+0.50***
+[9.41]
+[12.54]
+[12.49]
+[9.40]
+[23.23]
+[22.47]
+[35.39]
+[29.64]
+[23.48]
+[46.43]
+Fixed Effects:
+Date
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Yes
+Stock
+No
+Yes
+No
+No
+Yes
+No
+Yes
+No
+No
+Yes
+Trader
+No
+No
+Yes
+No
+Yes
+No
+No
+Yes
+No
+Yes
+Broker
+No
+No
+No
+Yes
+No
+No
+No
+No
+Yes
+No
+Adi-R2
+0.013
+0.058
+0.046
+0.014
+0.088
+0.007
+0.013
+0.045
+0.009
+0.051
+Observations
+450,811
+450,811
+450,811
+450,811
+450811
+450,811
+450,811
+450,811
+450,811
+450,811
+Panel B: Model (5)’s Explained Variation Decomposed by Component Contribution
+Variation
+Effective Spread
+E/Q Ratio
+Explained by
+Controls
+Date FE
+Stock FE
+Trader FE
+Total (R2)
+Controls
+Date FE
+Stock FE
+Trader FE
+Total (R2)
+Total
+0.007
+0.004
+0.052
+0.032
+0.095
+0.005
+0.003
+0.008
+0.041
+0.057
+Explained
+0.07
+0.04
+0.54
+0.34
+1.00
+0.09
+0.05
+0.14
+0.71
+1.00
+43
+
+Table 6. Retail Trading Costs in Options across Trader Types.
+This table reports differences true and conventional effective spreads across trader types. We consider the following groups: traders with a median
+trade duration lower than one day (“Fast trader”); traders with a median trade size less than $200 (“Low stakes”); traders with a median trade size
+greater than $5,000 (“High stakes”); traders with a median number of trades per month lower than 10 (“Few trades”); and traders with a median
+number of trades per month greater than 30 (“Many trades”). Signed effective spread is the product of the trade direction and the difference between
+execution price and the quote midpoint, divided by the quote midpoint, scaled by 100. Unsigned effective spread does not involve the trade direction.
+Averages and 95% confidence intervals of both quantities are estimates in sub-samples of the following trader characteristics. Specifications control
+for date fixed effects, and standard errors are clustered by underlying ticker and date, with t-statistics reported in brackets and symbols *, **, ***,
+reflecting statistical significance given 10%, 5%, and 1% type I error levels, respectively. All outcome variables are winsorized at 0.1% and 99.9% each
+day. The sample period is form January 2020 to December 2022.
+Fast trader
+Low stakes
+High stakes
+Few trades
+Many trades
+No
+Yes
+No
+Yes
+No
+Yes
+No
+Yes
+No
+Yes
+True
+1.104
+1.056
+0.976
+1.371
+1.085
+0.577
+1.063
+1.108
+1.155
+1.014
+[0.914,1.294]
+[0.843,1.268]
+[0.779,1.173]
+[1.127,1.614]
+[0.873,1.297]
+[0.494,0.659]
+[0.863,1.262]
+[0.835,1.381]
+[0.914,1.395]
+[0.831,1.197]
+Conventional
+3.42
+2.379
+2.439
+3.174
+2.618
+2.291
+2.563
+3.16
+2.955
+2.402
+[2.849,3.990]
+[1.894,2.864]
+[1.932,2.946]
+[2.542,3.806]
+[2.077,3.159]
+[1.958,2.625]
+[2.044,3.082]
+[2.460,3.860]
+[2.354,3.556]
+[1.916,2.888]
+Conventional/True ratio
+3.10
+2.25
+2.50
+2.32
+2.41
+3.97
+2.41
+2.85
+2.56
+2.37
+Observations
+96,474
+345,549
+341,516
+100,507
+425,548
+16,466
+410,050
+31,973
+163,260
+278,763
+44
+
+Table 7. Trading Cost Persist within Traders.
+This table shows persistence in retail trading costs. For each investor, we split her trading history into two
+halves and computed EQ ratio for both periods. Low EQ ratio indicates low execution costs. We then sort
+traders into portfolios/groups based EQ ratio during the first half of their tenure and report their future
+EQ ratio and the probability of staying in the same portfolio. A low EQ ratio means low execution costs.
+Outcome variables underlying EQ ratio are winsorized at 0.1% and 99.9% each day. The sample period is
+form January 2020 to December 2022.
+Panel A: all trades
+Trader EQ
+Average EQ ratio,
+Average EQ ratio,
+Prob. of Staying in the
+Ratio Quintile
+1st half
+2nd half
+Same EQ Ratio Quintile
+1, Good
+−0.10
+0.13
+0.51
+2
+0.22
+0.29
+0.37
+3
+0.39
+0.40
+0.36
+4
+0.54
+0.49
+0.37
+5, Bad
+0.88
+0.60
+0.52
+Panel B: TD Ameritrade trades
+Trader EQ
+Average EQ ratio,
+Average EQ ratio,
+Prob. of Staying in the
+Ratio Quintile
+1st half
+2nd half
+Same EQ Ratio Quintile
+1, Good
+−0.08
+0.19
+0.55
+2
+0.22
+0.29
+0.38
+3
+0.39
+0.41
+0.37
+4
+0.53
+0.48
+0.35
+5, Bad
+0.78
+0.57
+0.51
+Panel C: non-TD Ameritrade trades
+Trader EQ
+Average EQ ratio,
+Average EQ ratio,
+Prob. of Staying in the
+Ratio Quintile
+1st half
+2nd half
+Same EQ Ratio Quintile
+1, Good
+−0.11
+0.09
+0.51
+2
+0.22
+0.28
+0.42
+3
+0.39
+0.39
+0.35
+4
+0.55
+0.50
+0.36
+5, Bad
+0.95
+0.63
+0.54
+45
+
+Table 8. Trading Costs by Order Type.
+This table reports summary statistics of signed relative effective spreads by order type, decomposing trades
+conditional on whether adjustment for the effect of aggressive limit orders applies. Panel A, B, and C report
+statistics for, respectively, all trades, trades reflecting retail marker orders, and trades reflecting retail limit
+orders. In each panel trades are decomposed based on whether the adjustment accounting for the effect of
+aggressive limit orders, as described in Subsection 3.2 applies. Trading-cost measures are winsorized at 0.1%
+and 99.9% each day. The sample period is form January 2020 to December 2022.
+Panel A: All Retail Trades
+Percentiles
+Trades/Spread Measure
+Observations
+Mean
+S.D.
+1
+5
+25
+50
+75
+95
+99
+True Effective
+451,299
+1.07
+4.88
+−8.81
+−3.28
+−0.38
+0.66
+1.88
+6.74
+16.62
+Conventional Realized
+451,299
+1.03
+15.88
+−43.90
+−22.22
+−4.88
+0.85
+6.78
+24.56
+47.93
+Panel B: Retail Trades - Market Orders
+Percentiles
+Trades/Spread Measure
+Observations
+Mean
+S.D.
+1
+5
+25
+50
+75
+95
+99
+True Effective
+271,342
+2.44
+4.60
+−0.46
+0.00
+0.66
+1.33
+2.74
+8.00
+19.18
+Conventional Realized
+271,342
+1.86
+15.85
+−42.77
+−21.33
+−4.21
+1.55
+7.62
+25.75
+49.18
+Panel C: Retail Trades - Limit Orders
+Percentiles
+Trades/Spread Measure
+Observations
+Mean
+S.D.
+1
+5
+25
+50
+75
+95
+99
+True Effective
+179,957
+−1.01
+4.54
+−14.08
+−5.88
+−1.70
+−0.68
+0.00
+2.67
+10.17
+Conventional Realized
+179,957
+−0.24
+15.86
+−45.61
+−23.49
+−5.76
+0.00
+5.29
+22.61
+45.38
+46
+
+Table 9. Determinants of Order Choice.
+This table reports on the cross-sectional determinants of the retail option order type choices. The limit order indicator equals 1 if a buy (sell)
+retail trade is executed below (above) the quote midpoint and equals 0 otherwise. Each dependent variable is regressed on the following variables:
+“Depth” measures the cumulative bid- and ask-side depth at the first two levels of order book at the time of trade, in 1,000 contracts; “Volume” is
+the same-day total option trade volume, in 1,000 contracts, in the underlying security; “Volatility” is the same-day absolute return of the underlying
+security; “0DTE” is an indicator variable that equals 1 if the trade occurs on the contracts expiration date and equals 0 otherwise; “Moneyness”
+is the underlying price divided by strike price for call options and as strike price divided by underlying price for put options; “Buy trade” is an
+indicator variable that equals 1 if the trade is attributable to a retail buyer and equals 0 otherwise. Specifications control for different combinations of
+underlying symbol, date, and trader fixed effects. Standard errors are clustered by underlying symbol and date, with t-statistics reported in brackets
+and symbols *, **, ***, reflecting statistical significance given 10%, 5%, and 1% type I error levels, respectively. All outcome variables are winsorized
+at 0.1% and 99.9% each day. The sample period is form January 2020 to December 2022.
+Effective Spread
+Limit-order indicator
+Ln(Volume)
+−0.38***
+−0.41***
+−0.29***
+−0.38***
+−0.027***
+−0.017***
+−0.014
+−0.026***
+[−11.98]
+[−11.72]
+[−5.34]
+[−12.04]
+[−11.83]
+[−8.40]
+[−1.42]
+[−8.54]
+Depth
+0.18***
+0.16***
+0.16***
+0.18***
+−0.016***
+−0.015***
+−0.014***
+−0.014***
+[10.39]
+[12.70]
+[13.83]
+[9.94]
+[−4.03]
+[−6.65]
+[−6.54]
+[−4.56]
+Volatility
+2.30***
+2.02***
+0.99*
+2.20***
+0.30***
+0.24***
+0.24***
+0.23***
+[4.18]
+[4.28]
+[1.86]
+[3.61]
+[4.84]
+[5.50]
+[3.64]
+[3.40]
+Buy trade
+−0.39***
+−0.37***
+−0.38***
+−0.39***
+0.059***
+0.054***
+0.058***
+0.058***
+[−4.15]
+[−4.14]
+[−4.20]
+[−4.18]
+[6.20]
+[5.74]
+[6.19]
+[6.14]
+0DTE
+0.67***
+0.59***
+0.62***
+0.69***
+0.014
+0.026***
+0.0086
+0.0063
+[5.72]
+[6.03]
+[5.65]
+[5.04]
+[1.51]
+[3.72]
+[1.00]
+[0.63]
+Moneyness
+−0.016***
+−0.014***
+−0.010
+−0.021***
+0.00088***
+0.00082***
+0.00065***
+0.0012***
+[−2.86]
+[−2.67]
+[−1.61]
+[−3.71]
+[10.71]
+[7.70]
+[4.19]
+[6.56]
+Intercept
+6.06***
+6.62***
+4.89***
+6.11***
+0.75***
+0.61***
+0.56***
+0.73***
+[13.66]
+[13.88]
+[6.56]
+[14.09]
+[21.19]
+[21.97]
+[4.14]
+[18.06]
+Fixed Effects:
+Trader
+No
+Yes
+No
+No
+No
+Yes
+No
+No
+Underlying
+No
+No
+Yes
+No
+No
+No
+Yes
+No
+Date
+No
+No
+No
+Yes
+No
+No
+No
+Yes
+Observations
+437,979
+437,979
+437,979
+437,979
+437,979
+437,979
+437,979
+437,979
+Adjusted R-squared
+0.021
+0.055
+0.055
+0.024
+0.022
+0.116
+0.033
+0.029
+47
+
+Table 10. Trading Costs and Profitability.
+This table regresses the net parent trade return on the effective spread. The effective spread on a parent trade
+is computed by dollar-weighting the effective spreads of associated child trades. Option trades that expire
+out of the money are excluded since their return saturates at 100% or −100%. Standard errors are clustered
+by underlying symbol and date, and are reported in parentheses. The sample period is from January 2020
+to December 2022.
+Net return
+Constant
+0.024
+(0.004)
+Effective spread
+-0.865
+-1.000
+-0.996
+(0.083)
+(0.092)
+(0.099)
+Effective spread (unadjusted)
+-0.860
+(0.099)
+Underlying symbol FE
+No
+Yes
+Yes
+Yes
+Trader FE
+No
+No
+Yes
+Yes
+Adj. R2
+0.0038
+0.0048
+0.0045
+0.0039
+Obs.
+213,982
+213,982
+213,982
+213,982
+48
+
+A
+Appendix
+Table A.1. Journal-OPRA Merge Summary.
+This table summarizes the number of trades with intraday timestamps matched between trading journal
+data and OPRA. The first column lists the number of journal trades that can be matched with at least one
+OPRA trade (by underlying symbol, date, timestamp, strike price, call vs. put indicator, transaction price,
+and expiration date) and the as well the number of journal trades that cannot be matched with OPRA.
+Matched trades with missing trade sizes in the journal data or those whose the trade size reported in the
+journal data differs from that in OPRA are excluded. Remaining journal-to-OPRA matched trades are split
+into one-to-one matches as well as one-to-many, many-to-one, and many-to-many matches, with the numbers
+of data rows for each category are reported in the middle column. Only one randomly selected row from
+each set of duplicates rows corresponding to any of the last three match categories are retained, and the
+resulting numbers of unique matches corresponding to each category are presented in last column.
+Description
+Journal data
+Raw journal-OPRA merge
+Sample without duplicates
+Trades matched with OPRA:
+746,661
+1,323,673
+614,980
+One journal to one OPRA trade
+485,417
+485,417
+485,417
+One journal to many OPRA trades
+198,717
+747,087
+124,701
+Many journal to one OPRA trade
+22,610
+22,612
+5,81
+Many journal to many OPRA trades
+39,917
+68,557
+4,862
+Trades not matched with OPRA
+49,238
+N/A
+N/A
+Total - no filter
+795,899
+1,323,673
+614,980
+SPX trades
+-
+-
+50,477
+Total - with price and other filters
+-
+-
+451,299
+49
+
+Table A.2. Estimated Fill Rates by Broker
+This table reports estimated limit-order fill rates by retail brokers in stocks and options. The row “Total”
+presents weighted averages where each broker is weighted by its PFOF-receiving executed volume. Data
+come form 606 monthly reports from the first quarter of 2020 to the first quarter of 2025. Selected brokers
+account for 90.5% and 89.6% of executed retail volume on options and stocks, respectively.
+Options
+Stocks
+Broker
+Weight (%)
+Fill rate (%)
+Weight (%)
+Fill rate (%)
+Apex
+2.8
+14.7
+7.4
+29.9
+Charles Schwab
+13.4
+26.3
+22.1
+40.8
+E*TRADE
+7.8
+36.8
+8.5
+45.5
+Fidelity
+10.1
+37.9
+Interactive Brokers
+11.3
+23.1
+Morgan Stanley
+4.4
+39.4
+3.7
+109.1
+Robinhood
+21.7
+37.3
+13.4
+63.2
+TD Ameritrade
+10.0
+29.8
+8.8
+19.9
+TD Clearing
+12.2
+26.8
+27.5
+17.9
+Vanguard
+0.1
+43.1
+Webull
+6.1
+31.2
+8.5
+21.9
+Total
+100
+29.7
+100
+39.0
+50
+
+Table A.3. Trade Summary Statistics: Control Option Trades.
+This table reports summary statistics for 4,178,910 control option trades. Statistics include the total count
+of trades, mean, standard deviation, and percentiles (1st, 5th, 25th, 50th, 75th, 95th, 99th) to capture
+distributional characteristics. Key variables are defined as follows: Trade Price reflects the per-contract
+execution price (options) or per-share price (stocks), in dollars. Trade Size measures the number of contracts
+(options) or shares (stocks) per trade, while Trade Value calculates the total dollar value of the trade. SLAN
+is an indicator of whether the trade occurred in a single-leg price improvement auction. Exchanges at NBBO
+count the number of exchanges quoting the NBBO price when the trade is executed. Moneyness compares
+an option’s strike price to its underlying stock price: for calls, values below one indicate in-the-money (ITM)
+status, while for puts, values above one denote ITM. All outcome variables are winsorized at 0.1% and 99.9%
+each day. The sample period is form January 2020 to December 2022.
+Percentiles
+Variable
+Count
+Mean
+S.D.
+1
+5
+25
+50
+75
+95
+99
+Trade Price
+4,178,910
+6.51
+21.14
+0.14
+0.25
+0.90
+2.05
+5.10
+24.40
+72.80
+Underlying Price
+4,178,910
+403.39
+537.85
+6.71
+21.42
+129.91
+323.19
+422.07
+1019.08
+3338.50
+Trade Size (shares)
+4,178,910
+538.4
+1635.2
+100.0
+100
+100
+100
+400
+2000
+6800
+Trade Value ($)
+4,178,910
+2445.6
+13291.9
+17
+39
+152
+420
+1400
+8650
+33315
+SLAN
+4,178,910
+0.22
+0.41
+0
+0
+0
+0
+0
+1
+1
+# Exchanges at NBBO
+4,178,910
+4.43
+4.32
+1
+1
+1
+2
+7
+14
+16
+Moneyness Call
+2,442,239
+0.941
+2.024
+0.545
+0.794
+0.951
+0.987
+0.999
+1.039
+1.257
+Moneyness Put
+1,736,628
+0.968
+0.117
+0.590
+0.816
+0.958
+0.989
+0.999
+1.028
+1.185
+Days to expiration
+4,178,910
+21.0
+68.6
+0
+0
+1
+3
+11
+86
+381
+Hour of Day
+4,178,863
+10.99
+1.93
+9
+9
+9
+10
+12
+15
+15
+51
+
+Table A.4. Retail Trading Costs in Options: Active Tickers and Brokers Other than TD.
+This table reports relative bid-ask spreads for retail and control sample option trades.True effective spreads
+use verified trade direction and are computed as twice the percentage difference between the execution price
+and pre-trade midquote. The unadjusted version includes cases where retail limit orders set the NBBO, while
+the adjusted version removes this mechanical effect by using the next best quote. Conventional effective
+spreads follow standard methodology using inferred trade direction and are always non-negative. For each
+spread measure, we report the number of observations, mean, standard deviation, and key percentiles of the
+distribution. Panel A focuses on trades in the ten most actively traded underlying securities, while Pnael
+B focuses on trades executed by brokers other than TD. All outcome variables are winsorized at 0.1% and
+99.9% each day. The sample period is form January 2020 to December 2022.
+Panel A: Option trades in top-10 active tickers
+Percentiles
+Retail Sample Spreads (%)
+Observations
+Mean
+S.D.
+1
+5
+25
+50
+75
+95
+99
+True Effective
+319,018
+0.77
+2.85
+−5.41
+−2.17
+−0.28
+0.61
+1.52
+4.37
+8.70
+True Effective Unadjusted
+319,018
+0.58
+3.02
+−6.40
+−2.71
+−0.66
+0.59
+1.50
+4.35
+8.70
+Conventional Effective
+319,018
+1.75
+2.53
+0.00
+0.23
+0.62
+1.12
+2.02
+5.17
+10.10
+Conventional Quoted
+319,018
+2.27
+3.23
+0.24
+0.39
+0.84
+1.46
+2.60
+6.45
+13.63
+Control Sample Spreads (%)
+Conventional Effective
+2,993,824
+1.80
+2.83
+0.00
+0.17
+0.55
+1.07
+2.06
+5.71
+11.11
+Conventional Quoted
+2,993,824
+2.30
+3.55
+0.18
+0.34
+0.78
+1.41
+2.60
+6.90
+14.69
+Panel B: Option trades executed by brokers other than TD
+Percentiles
+Retail Sample Spreads (%)
+Observations
+Mean
+S.D.
+1
+5
+25
+50
+75
+95
+99
+True Effective
+212,884
+1.07
+4.91
+−9.09
+−3.24
+−0.29
+0.68
+1.89
+6.70
+16.22
+True Effective Unadjusted
+212,884
+0.69
+5.13
+−11.94
+−4.51
+−0.83
+0.62
+1.81
+6.45
+15.38
+Conventional Effective
+212,884
+2.57
+4.44
+0.00
+0.23
+0.70
+1.36
+2.82
+8.40
+20.00
+Conventional Quoted
+212,884
+3.70
+6.08
+0.26
+0.43
+1.03
+1.94
+3.98
+12.30
+28.57
+Control Sample Spreads (%)
+Conventional Effective
+1,018,581
+2.69
+4.97
+0.00
+0.20
+0.67
+1.36
+2.94
+8.70
+21.84
+Conventional Quoted
+1,018,581
+3.60
+6.15
+0.20
+0.38
+0.96
+1.85
+3.91
+11.76
+28.57
+52
+
+Table A.5. Retail Trading Costs in Stocks: Active Tickers.
+This table reports relative bid-ask spreads for retail stock trades. True effective spreads use verified trade
+direction and are computed as twice the percentage difference between the execution price and pre-trade
+midquote. These can be negative when retail traders supply liquidity. Conventional effective spreads follow
+standard methodology using inferred trade direction and are always non-negative. For each spread measure,
+we report the number of observations, mean, standard deviation, and key percentiles of the distribution.
+The sample includes stocks with the most retail option activity. All outcome variables are winsorized at
+0.1% and 99.9% each day. The sample period is form January 2020 to December 2022.
+Percentiles
+Retail Sample Spreads (%)
+Observations
+Mean
+S.D.
+1
+5
+25
+50
+75
+95
+99
+True Effective
+156,060
+0.00
+0.72
+−1.84
+−1.20
+−0.21
+0.01
+0.22
+1.17
+1.85
+Conventional Quoted
+156,060
+0.05
+0.15
+0.00
+0.00
+0.01
+0.02
+0.05
+0.19
+0.55
+53
+
+Table A.6. Trading Cost Persistence: Regression Analysis.
+This table reports on the cross-sectional variation in the trading costs and execution quality of retail option
+trades. Execution quality, i.e., the effective-to-quoted spread (E/Q) ratio, divides the signed effective spread
+by quoted spread. E/Q ratio is regressed on its moving average of the respective investor’s E/Q ratio over
+her preceding 20 trades, denoted EQR MA20, along with the following indicator variables: “ATM” equals 1
+if moneyness (defined as underlying price divided by strike price for call options and as strike price divided
+by underlying price for put options) is between 0.98 and 1.02 and equals 0 otherwise; “OTM” equals 1 if
+moneyness is lass than 0.95 and equals 0 otherwise; “0DTE” equals 1 if the trade occurs on the contracts
+expiration date and equals 0 otherwise; ‘Buy trade” equals 1 if the trade is attributable to a retail buyer and
+equals 0 otherwise; “Call option” equals 1 if the contract is a call option and 0 if it is put; “SLAN” equals
+1 if trade is executed as single-legged auction transaction and equals 0 otherwise; and “Complex” trade is
+executed as part of a multi-legged transaction and equals 0 otherwise. Specifications control for different
+combinations of underlying ticker, date, and trader fixed effects. Standard errors are clustered by underlying
+ticker and date, with t-statistics reported in brackets and symbols *, **, ***, reflecting statistical significance
+given 10%, 5%, and 1% type I error levels, respectively. All outcome variables are winsorized at 0.1% and
+99.9% each day. The sample period is form January 2020 to December 2022, including traders that follow at
+least 20 trades by the same retail investor. Panel A presents panel regression estimation results, and Panel
+B decomposes explained variation in model (5), by its components: controls and each set of fixed effects.
+Panel A: Panel Regression Estimates
+(1)
+(2)
+(3)
+(4)
+(5)
+EQR MA20
+0.51***
+0.50***
+0.19***
+0.50***
+0.18***
+[20.67]
+[18.74]
+[15.37]
+[21.58]
+[13.98]
+ATM
+−0.0079
+−0.013**
+−0.031***
+−0.0085
+−0.039***
+[−1.12]
+[−2.50]
+[−3.42]
+[−1.18]
+[−6.30]
+OTM
+0.015**
+0.023***
+0.027***
+0.015**
+0.039***
+[2.36]
+[3.01]
+[4.12]
+[2.48]
+[5.90]
+0DTE
+−0.021*
+−0.021**
+−0.039***
+−0.024**
+−0.032***
+[−1.95]
+[−2.13]
+[−5.89]
+[−2.17]
+[−3.58]
+Call option
+−0.017***
+−0.020***
+−0.016***
+−0.017***
+−0.020***
+[−4.22]
+[−4.14]
+[−3.19]
+[−4.11]
+[−3.67]
+SLAN
+−0.19***
+−0.19***
+−0.24***
+−0.19***
+−0.24***
+[−5.49]
+[−5.29]
+[−6.92]
+[−5.48]
+[−6.99]
+Complex
+−0.18***
+−0.18***
+−0.16***
+−0.17***
+−0.15***
+[−6.71]
+[−6.69]
+[−5.48]
+[−6.52]
+[−5.29]
+Intercept
+0.27***
+0.28***
+0.42***
+0.28***
+0.43***
+[19.05]
+[28.37]
+[23.69]
+[19.04]
+[38.22]
+Fixed Effects:
+Date
+Yes
+Yes
+Yes
+Yes
+Yes
+Stock
+No
+Yes
+No
+No
+Yes
+Trader
+No
+No
+Yes
+No
+Yes
+Broker
+No
+No
+No
+Yes
+No
+Adj-R2
+0.033
+0.037
+0.049
+0.033
+0.053
+Observations
+429,921
+429,921
+429,921
+429,921
+429,921
+Panel B: Model (5)’s Explained Variation by Component
+Component
+Share in
+Controls
+Date FE
+Stock FE
+Trader FE
+Total (R2)
+Total Variation
+0.015
+0.003
+0.008
+0.034
+0.060
+Explained Variation
+0.25
+0.05
+0.13
+0.57
+1.00
+54
+
+Figure A.1. Average PFOF by Order Type.
+This figure presents average PFOF, in cents per 100 shares, across options and stocks. The values reflect
+volume weighted averages, based on PFOF-receiving trades, from 606 reports of the following retail brokers
+from the first quarter of 2020 through the first quarter of 2025: Apex, Charles Schwab/E*TRADE, Morgan
+Stanley/TD Ameritrade/TD Clearing, Robinhood, Webull, Fidelity, and Vanguard. These brokers make
+payment for order flow in both options and stocks—Fidelity and Vanguard do not do so in stocks.
+0
+10
+20
+30
+40
+50
+Average PFOF (cents per 100 shares)
+Non−mkt Limit
+Markt
+Mkt Limit
+Other
+Order Type
+Options
+Stocks
+55
+
+Figure A.2.
+Normalized Transaction Prices of Retail Option Trades: Conditional on the
+Number of Exchanges at NBBO.
+The figure presents the distribution of execution price within the quoted spread. Normalized transaction
+price is defined as the actual transaction price minus the corresponding best bid price, divided by the bid-ask
+spread.
+Panel A: Buy trades, one NBBO exchange
+Panel B: Sell trades, one NBBO exchange
+0
+.1
+.2
+.3
+Frequency (%)
+−0.5
+0
+0.5
+1
+1.5
+Stanrdized Trade Price
+0
+.1
+.2
+.3
+Frequency (%)
+−0.5
+0
+0.5
+1
+1.5
+Stanrdized Trade Price
+Panel C: Buy trades, multiple NBBO exchanges
+Panel D: Sell trades, multiple NBBO exchanges
+0
+.1
+.2
+.3
+.4
+.5
+Frequency (%)
+−0.5
+0
+0.5
+1
+1.5
+Stanrdized Trade Price
+0
+.1
+.2
+.3
+.4
+.5
+Frequency (%)
+−0.5
+0
+0.5
+1
+1.5
+Stanrdized Trade Price
+56
+
+Figure A.3. The Role of Options and Stocks in Generating PFOF and Trading Volume.
+This figure presented brokers’ PFOF revenue and PFOF-receiving trading volume dirstributions across options and stocks. A broker’s monthly PFOF revenue and its corresponding trading volume in each asset
+class are obtained from 606 reports of the following retail brokers from the second quarter of 2020 through
+the first quarter of 2025: Apex, Charles Schwab/E*TRADE, Morgan Stanley/TD Ameritrade/TD Clearing,
+Robinhood, Webull. These brokers make payment for order flow in both options and stocks.
+Panel A: Payment for Order Flow
+0
+20
+40
+60
+80
+100
+Option
+Stock
+Option
+Stock
+Option
+Stock
+Option
+Stock
+All
+Morgan Stanley/E*TRADE
+Robinhood
+Schwab/TD
+Share of Total PFOF (%)
+Panel B: PFOF-Receiving Trading Volume
+0
+20
+40
+60
+80
+100
+Option
+Stock
+Option
+Stock
+Option
+Stock
+Option
+Stock
+All
+Morgan Stanley/E*TRADE
+Robinhood
+Schwab/TD
+Share of PFOF−Receiving Volume (%)
+57

@@ -1,0 +1,1315 @@
+ Electronic copy available at: http://ssrn.com/abstract=2637883 
+Algorithmic Trading of Co-integrated Assets
+´Alvaro Carteaa, Sebastian Jaimungalb
+aDepartment of Mathematics, University of Oxford, Oxford, UK
+Oxford-Man Institute of Quantitative Finance, Oxford, UK
+bDepartment of Statistical Sciences, University of Toronto, Toronto, Canada
+Abstract
+We assume that the drift in the returns of asset prices consists of an idiosyncratic component
+and a common component given by a co-integration factor. We analyze the optimal investment
+strategy for an agent who maximizes expected utility of wealth by dynamically trading in these
+assets. The optimal solution is constructed explicitly in closed-form and is shown to be aﬃne
+in the co-integration factor. We calibrate the model to three assets traded on the Nasdaq
+exchange (Google, Facebook, and Amazon) and employ simulations to showcase the strategy’s
+performance.
+Keywords:
+Pairs trading, algorithmic trading, high-frequency trading, co-integration,
+short-term alpha, stochastic control.
+1. Introduction
+The success of many trading algorithms depends on the quality of the predictions of
+stock price movements. Predictions of the price of a single stock are generally less accurate
+than predictions of a portfolio of stocks. A classical strategy which makes the most of the
+predictability of the joint, rather than the individual, behavior of two assets is ‘pairs trading’
+where a portfolio consisting of a linear combination of two assets is traded. At the heart of
+the strategy is how the two assets co-move. As an example, take two assets whose spread,
+that is the diﬀerence between their prices, exhibits a marked pattern and deviations from it
+are temporary. Pairs trading algorithms proﬁt from betting on the empirical fact that spread
+deviations tend to return to their historical or predictable level.
+In this paper we derive the optimal trading strategy for an agent who takes positions in n
+Email addresses: a.cartea@ucl.ac.uk (´Alvaro Cartea), sebastian.jaimungal@utoronto.ca
+(Sebastian Jaimungal)
+Preprint submitted to IJTAF
+May 24, 2016
+Electronic copy available at: https://ssrn.com/abstract=2637883
+
+ Electronic copy available at: http://ssrn.com/abstract=2637883 
+co-integrated assets. At the core of the strategy is to proﬁt from the structural dependence
+in the assets’ price dynamics. We assume that the drifts of the assets are co-integrated and
+develop an algorithmic trading strategy where the investor maximizes expected utility of
+wealth. We provide an explicit closed-form expression for the optimal (dynamic) investment
+strategy and show that it is aﬃne in the co-integration factor. Furthermore, we use trading
+(ITCH) data from the Nasdaq exchange to calibrate the model and then use simulations to
+illustrate how the strategy performs when the investor takes positions in three assets: Google,
+Facebook, and Amazon.
+There is a large number of papers that study pairs trading strategies and their contribution
+is either on the statistical aspects and modelling of the relationship between pairs of assets,
+whilst few others look at how to dynamically take positions in the pairs. For example, Elliott
+et al. (2005) propose a mean-reverting Gaussian Markov chain model for the spread of a pair
+of assets. Duan and Pliska (2004) propose a model for co-integrated asset prices and focus
+on the valuation of options.
+One of the early papers which employs stochastic control techniques to trade pairs of
+co-integrated assets is that of Mudchanatongsuk et al. (2008). The authors model the logrelationship between a pair of stock prices as an Ornstein-Uhlenbeck process and use this to
+formulate a portfolio stochastic control problem. More recently, Leung and Li (2015) study the
+optimal timing strategies for trading a mean-reverting price spread. The authors formulate
+an optimal double stopping problem to analyze the timing to start and subsequently liquidate
+the position subject to transaction costs. Lei and Xu (2015) analyze a multiple entry-exit
+problem on a pair of co-integrated assets. The authors recast the sequence of optimal stopping
+problems as variational inequalities and perform extensive numerical simulations (as well as
+calibrate to a pair of dual-listed Chinese stocks) to illustrate how the optimal strategy behaves.
+The work of Ngo and Pham (2016) considers two correlated assets whose spread is modelled
+by a mean-reverting process with stochastic volatility and show how the investor switches
+between holding no stocks, long one short the other stock, and vice-versa.
+Our paper is closest to that of Tourin and Yan (2013) who develop an optimal portfolio
+strategy to invest in two risky assets and the money market account. Tourin and Yan assume
+that log-prices are co-integrated and ﬁnd, in closed-form, the dynamic trading strategy that
+maximizes the investor’s expected utility of wealth. In our model we generalize Tourin and
+Yan to allow the investor to trade in m co-integrated assets and provide an explicit closed-form
+solution of the dynamic trading strategy. We assume that the drift of asset returns consists
+of an idiosyncratic and a common drift component. The common component, which we label
+short-term alpha, is a zero-mean reverting process which is an essential source of proﬁts in
+the trading strategy – it determines how to beneﬁt from short-lived investment opportunities
+in the collection of assets.
+The remainder of this paper is organized as follows. In Section 2 we present the stock price
+2
+Electronic copy available at: https://ssrn.com/abstract=2637883
+
+dynamics of the co-integrated assets. Section 3 develops the investor’s dynamic optimization
+problem and derives in closed-form the optimal investment strategy. In Section 4 we employ
+high-frequency data from three stocks traded in Nasdaq to show the performance of the
+strategy. Section 5 concludes and we collect proofs in the Appendix.
+2. Co-integrated log prices with short-term Alpha
+We assume that the drift of asset returns consists of an idiosyncratic and a common
+component. The ﬁrm speciﬁc component is a result of factors that only aﬀect the individual
+ﬁrm, and the common component is the result of industry or sector speciﬁc factors which
+aﬀect a collection of assets. Thus, suppose that we have a collection of risky assets whose
+vector of prices Y = (Y 1
+t , . . . , Y n
+t )0≤t≤T satisfy the coupled system of SDEs
+dY k
+t
+Y k
+t
+= (νk + δk αt ) dt +
+n
+X
+i=1
+σki dW i
+t ,
+(1)
+where the idiosyncratic drift component νk is a constant, and the common drift component is
+αt =
+n
+X
+i=1
+ai log Y i
+t ,
+where ai are constants, and δk is a ﬁrm speciﬁc constant that scales how the common drift
+component aﬀects each individual asset.
+Furthermore, W i
+t are standard Brownian motions independent of each other, arranged in
+a vector W = (W 1
+t , . . . , W n
+t )0≤t≤T, and σki are non-negative constants. One can see that the
+instantaneous covariance, loosely interpreted as
+C
+"
+dY i
+t
+Y i
+t
+, dY j
+t
+Y j
+t
+ Ft
+#
+,
+(2)
+between assets i and j is given by
+Ωij =
+n
+X
+k=1
+σikσkj .
+(3)
+Thus, we denote by σ the matrix whose elements are σij which is the Cholesky decomposition
+of the instantaneous variance-covariance matrix Ωso that Ω= σσ′, where ′ denotes the
+transpose operator. We assume that there are no redundant degrees of freedom, so that σ is
+invertible.
+Now we show that αt acts as a co-integration factor. When αt = 0 all assets are correlated
+geometric Brownian motions with drift νk. In general, however, in equity markets, αt will be
+3
+Electronic copy available at: https://ssrn.com/abstract=2637883
+
+non-zero and deviations from its long-term or predictable level quickly subside. This behavior
+in the drift component is also referred to as short-term alpha because it represents short-term
+deviations from the assets’ expected return, see Cartea et al. (2014).
+We justify calling αt a co-integration factor by demonstrating that it is indeed a meanreverting process. First, note that the log-prices satisfy the SDEs
+d log Y k
+t =
+ νk + δk αt −1
+2Ωkk
+
+dt +
+n
+X
+i=1
+σki dW i
+t ,
+(4)
+which we use to compute the diﬀerential of αt:
+dαt =
+n
+X
+k=1
+ak
+ νk + δk αt −1
+2Ωkk
+
+dt +
+n
+X
+k=1
+ak
+n
+X
+i=1
+σki dW i
+t .
+Therefore, we can write the short-term alpha component as the mean-reverting process
+dαt = κ (θ −αt) dt + a′σ dW t ,
+(5)
+where
+a = (a1, . . . , an)′ ,
+(6)
+κ = −
+n
+X
+k=1
+ak δk = −δ′ a ,
+and
+(7)
+θ =
+Pn
+k=1 akΩkk
+2 Pn
+k=1 ak δk
+−
+Pn
+k=1 ak νk
+Pn
+k=1 ak δk
+= 1
+2
+Tr(AΩ)
+δ′ a
+−ν′ a
+δ′ a .
+(8)
+Here, the operator Tr(·) denotes the trace of the matrix in braces and A = diag(a) is a
+diagonal matrix whose diagonal entries are a. To ensure that the model does indeed describe
+a mean-reverting process, as opposed to a mean-repelling one, we assume that δ′ a < 0 –
+something that is also borne out by the results when the model is calibrated to Nasdaq data.
+By looking at the dynamics (5), we can see that α mean-reverts at a rate which depends
+on the various strengths of the impact that α has on each asset (through δ) as well as the
+strength of the log-asset price’s contribution to α itself (through a). The mean-reversion level
+θ depends on the ratio of the volatility relative to the impact each component has on the drift
+of the assets and on the idiosyncratic drift of the assets.
+Another alternative representation of the model stems from inserting the expression for
+αt directly into the SDE for log Yt. In this case, we have
+d log Y k
+t =
+ νk −1
+2Ωkk + δk
+Pn
+i=1 ai log Y i
+t
+
+dt + Pn
+i=1 σki dW i
+t ,
+(9)
+4
+Electronic copy available at: https://ssrn.com/abstract=2637883
+
+so that if we let Zt = log Y t, where the log is interpreted componentwise, then
+dZt = (c −B Zt) dt + σ dW t ,
+(10)
+with
+B = −
+
+
+
+δ1 a1
+δ1 a2
+. . .
+δ1 an
+...
+...
+...
+δn a1
+δn a2
+. . .
+δn an
+
+
+,
+and
+c =
+
+
+
+ν1 −1
+2 Ω11
+...
+νn −1
+2 Ωnn
+
+
+.
+(11)
+In this representation, we see that the log-prices are an order 1 vector-autoregressive model
+(VAR(1)). Although this representation is in some sense more compact, we ﬁnd in the next
+section that the short-term alpha version of the model is a preferable representation for solving
+the agent’s optimal investment problem. Note that here, B is singular and contains exactly
+one positive eigenvalue due to the singular co-integration factor that we incorporate into the
+model. If we have m ≤n co-integration factors then there will be in general m positive
+eigenvalues.
+3. Agent’s investment optimization problem
+The agent’s goal is to take positions in the assets to maximize the expected utility of
+wealth and these positions are constantly revised as time evolves to ensure that the strategy
+is dynamically optimal. We let π = (π0
+t , π1
+t , . . . , πn
+t )0≤t≤T denote the dollar value invested in
+the riskless (π0
+t ) and risky assets (π1
+t , . . . , πn
+t ), and let Xπ = (Xπ
+t )0≤t≤T denote the agent’s
+(controlled) wealth process. With this convention, the number of units mk
+t the agent holds in
+asset k is mk
+t = πk
+t /Y k
+t . Hence, the wealth process can be written as
+Xπ
+t =
+n
+X
+k=0
+πk
+t =
+n
+X
+k=0
+mk
+t Y k
+t ,
+(12)
+so that
+dXπ
+t
+=
+n
+X
+k=0
+d(mk
+t Y k
+t ) =
+n
+X
+k=0
+mk
+t dY k
+t =
+n
+X
+k=1
+πk
+t
+dY k
+t
+Y k
+t
+(13)
+=
+n
+X
+k=1
+πk
+t
+(
+(νk + δk αt ) dt +
+n
+X
+i=1
+σki dW i
+t
+)
+= π′
+t (ν + δ αt) dt + π′
+tσdW t ,
+(14)
+where the second equality in (13) follows from the usual self-ﬁnancing constraint – which can
+be interpreted as the change in the wealth process due to the change in each asset’s value,
+assuming the positions are held ﬁxed over a small interval of time. The third equality is
+obtained by assuming that the time horizon is short enough that interest rates are zero (so
+that dY 0
+t = 0), but long enough that the geometric model we employ is required. The last
+equality in (14) is a rewrite of the equations using vector/matrix notation.
+5
+Electronic copy available at: https://ssrn.com/abstract=2637883
+
+Next, the agent optimizes her dollar value in assets directly, rather than the rate of trading
+(as in many formulation of algorithmic trading problems involving liquidation, see, e.g., Cartea
+et al. (2015)), and has exponential utility u(x) = −e−γx. Hence, her performance criteria is
+given by
+Hπ(t, x, y) = Et,x,y [−exp (−γ Xπ
+T )] ,
+(15)
+where Et,x,y[·] represents expectation conditional on Xπ
+t
+= x and Y t = y, and T is the
+terminal date at which the agent liquidates her holdings and stops trading. The agent’s value
+function is
+H(t, x, y) = sup
+π∈A
+Hπ(t, x, y) ,
+(16)
+where the set of admissible strategies A are those for which
+E
+" n
+X
+k=0
+Z T
+0
+(πk
+u)2 du
+#
+< ∞.
+(17)
+Alternatively, we can enforce the condition that each component of π is P-a.s. bounded.
+Applying the dynamic programming principle leads to the dynamic programming equation
+(DPE) which the value function should satisfy:
+∂tH + (ν′ + α δ′) DyH + 1
+2DΩ
+yyH
++ sup
+π
+n
+π′ (ν + δ α) ∂xH + 1
+2(π′
+tΩπ) ∂xxH + π′ΩDxyH
+o
+= 0 ,
+(18)
+subject to the terminal condition H(T, x, y) = −e−γ x, and where α = a′ log y (the log
+being interpreted componentwise) represents the state of the co-integration process, and the
+following linear diﬀerential operators were introduced:
+DyH = (y1∂y1H, . . . , yn∂ynH)′ ,
+(19)
+DΩ
+yyH = Pn
+i,j=1 yiΩijyj∂yiyjH ,
+(20)
+DxyH = (y1∂xy1H, . . . , yn∂xynH)′ .
+(21)
+Proposition 1. Let the investor’s value function satisfy equation (18). Then the optimal
+investment strategy in feedback form is
+π∗= −Ω−1 (ν + δ α) ∂xH + DxyH
+∂xxH
+,
+(22)
+and the DPE reduces to the non-linear partial diﬀerential equation
+∂tH + (ν + α δ)′ DyH + 1
+2DΩ
+yyH −L′H Ω−1LH
+2 ∂xxH
+= 0 ,
+(23)
+where the second-order diﬀerential operator L acts as follows
+LH = (ν + δ α ) ∂xH + ΩDxyH .
+(24)
+6
+Electronic copy available at: https://ssrn.com/abstract=2637883
+
+Proof. Let us focus on the supremum term of the DPE (18) and perform a matrix completion
+of the square. Speciﬁcally, assuming that ∂xxH̸ = 0, we write
+M = π′ (ν + δ α) ∂xH + (π′Ωπ) ∂xxH + π′ΩDxyH
+=
+1
+2∂xxH
+
+π′Ωπ + 2 π′(ν + δ α) ∂xH + ΩDxyH
+∂xxH
+
+=
+1
+2∂xxH
+ π + Ω−1 LH
+′ Ω
+ π + Ω−1 LH
+
+−L′H Ω−1LH
+(∂xxH)2
+
+,
+(25)
+where the vector-valued linear operator L acts on H as follows:
+LH = (ν + δ α ) ∂xH + ΩDxyH ,
+(26)
+and we have used the fact that Ωis symmetric (since it is a variance-covariance matrix) so
+that (Ω−1)′ = (Ω′)−1 = Ω−1. From the above expression we can immediately identify the
+optimal investment in feedback control form as
+π∗= −Ω−1 (ν + δ α) ∂xH + DxyH
+∂xxH
+.
+(27)
+From the above matrix completion of the square, we also have the maximum term
+M∗= −1
+2
+L′H Ω−1LH
+∂xxH
+,
+(28)
+so that upon reinsertion into the DPE, we obtain the following non-linear partial diﬀerential
+equation (PDE) for the value function:
+∂tH + (ν + α δ)′ DyH + 1
+2DΩ
+yyH −L′H Ω−1LH
+2 ∂xxH
+= 0 .
+(29)
+3.1. Solving the DPE
+In the classical Merton problem, where asset prices are geometric Brownian motions, the
+value function for exponential utility has the form −e−γ(x+h(t)), where h is a deterministic
+function of time. Here, due to the presence of the co-integration factor we expect instead that
+the value function depends also on a combination of prices of all assets in the co-integration
+factor, i.e. depends on the short-term alpha component. Thus, we propose as trial solution
+to write the value function as
+H(t, x, y) = −exp
+n
+−γ
+h
+x + h (t, Pn
+i=1 ai log yi)
+io
+,
+(30)
+for some function h(t, α), with α = Pn
+i=1 ai log yi, and subject to the terminal condition
+h(T, α) = 0.
+7
+Electronic copy available at: https://ssrn.com/abstract=2637883
+
+Proposition 2. Using the ansatz (30) for the value function, the function h satisﬁes the
+linear PDE:
+∂th −1
+2 Tr(A Ω) ∂αh + 1
+2(a′ Ωa) ∂ααh + 1
+2γ(δ α + ν)′ Ω(δ α + ν) α2 = 0 ,
+(31)
+subject to h(T, α) = 0.
+Moreover, the optimal investment strategy, in feedback form, reduces
+π∗= 1
+γ Ω−1(δ α + ν) −a ∂αh .
+(32)
+Proof. First note that diﬀerentiation w.r.t yk acts simply on h, speciﬁcally
+∂ykh(t, α) = ak
+yk ∂αh(t, α) ,
+(33)
+so that
+∂yke−γ h(t,α) = −γ ak
+yk ∂αh(t, α) e−γ h(t,α) ,
+(34)
+∂yjykh(t, α) = −γ ∂yj
+ak
+yk ∂αh(t, α) e−γ h(t,α)
+
+.
+(35)
+Hence, for j̸ = k,
+∂yjyke−γ h(t,α) = −γ ak aj
+yk yj ∂α
+ ∂αh(t, α) e−γ h(t,α)
+= −γ ak aj
+yk yj
+ ∂ααh(t, α) −γ (∂αh(t, α))2
+e−γ h(t,α) ,
+(36)
+while for j = k,
+∂yjyje−γ h(t,α) = −γ
+
+−ak
+(yk)2 ∂αh(t, α) e−γ h(t,α) +
+a2
+k
+(yk)2∂α
+ ∂αh(t, α) e−γ h(t,α)
+= −γ
+ak
+(yk)2
+ −∂αh(t, α) + ak
+ ∂ααh(t, α) −γ (∂αh(t, α))2
+e−γ h(t,α) .
+(37)
+Putting these two results together we can write
+∂yjyke−γ h(t,α) = −γ ak aj
+yk yj
+ ∂ααh(t, α) −γ (∂αh(t, α))2
+e−γ h(t,α)
++ ςjk γ
+ak
+(yk)2 ∂αh(t, α) e−γ h(t,α) ,
+(38)
+where ςjk is the Kronecker delta which equals 1 if j = k and 0 otherwise.
+8
+Electronic copy available at: https://ssrn.com/abstract=2637883
+
+Armed with these results, the various linear diﬀerential operators which appear in the
+non-linear PDE (23) can be written as follows:
+DyH = (−γ H) a ∂αh ,
+(39)
+DΩ
+yyH = (−γ H) Pn
+i,j=1 Ωij ai aj (∂ααh −γ(∂αh)2) + (γ H) Pn
+j=1 aj Ωjj ∂αh
+= −(γ H) (a′Ωa)
+ ∂ααh −γ(∂αh)2
++ (γ H) Tr(A Ω) ∂αh .
+(40)
+Furthermore,
+DxyH = (γ2 H) a ∂αh ,
+(41)
+LH = (−γ H) (δ α + ν) + (γ2 H) Ωa ∂αh .
+(42)
+Inserting these expressions into the PDE (23), allows us to write
+0 = (−γH)∂th + (−γH) (δ α + ν)′ a ∂αh
++ 1
+2
+ (−γ H) (a′Ωa)
+ ∂ααh −γ(∂αh)2
++ (γ H) Tr(A Ω) ∂αh
+
+−
+1
+2γ2 H
+ (−γ H) (δα + ν) + (γ2 H) Ωa ∂αh
+′ Ω−1  (−γ H) (δα + ν) + (γ2 H) Ωa ∂αh
+
+.
+(43)
+At this point, there are three important simpliﬁcations. First, cancelling −γ H in all terms,
+we ﬁnd that
+0 = ∂th + (δ′a) α ∂αh
++ 1
+2
+ (a′Ωa)
+ ∂ααh −γ(∂αh)2
+−Tr(A Ω) ∂αh
+
++ 1
+2γ ((δα + ν) −γ Ωa ∂αh)′ Ω−1 ((δα + ν) −γ Ωa ∂αh) .
+(44)
+Next, expanding the third line, we have
+((δα + ν) −γ Ωa ∂αh)′ Ω−1 ((δα + ν) −γ Ωa ∂αh)
+= (δ α + ν)′ Ω−1 (δ α + ν) α2 −2γ (δ α + ν)′ a α ∂αh + γ2 a′ Ωa (∂αh)2 ,
+(45)
+so that upon substituting into the previous expression there are two important cancellations:
+1. the non-linear terms containing (∂αh)2 from the expansion above and the second line in
+(44) cancel one another;
+9
+Electronic copy available at: https://ssrn.com/abstract=2637883
+
+2. the terms δ′ a α ∂αh from the ﬁrst line in (44) and the above expansion also cancel.
+Putting these observations together we ﬁnd that h satisﬁes a very simple linear PDE:
+∂th −1
+2 Tr(A Ω) ∂αh + 1
+2(a′ Ωa) ∂ααh + 1
+2γ(δ α + ν)′ Ω(δ α + ν) α2 = 0 ,
+(46)
+subject to h(T, α) = 0.
+Returning to the optimal investment (22) in the assets, the ansatz for the value function
+H = −exp{−γ(x + h(t, α))} allows us to write
+π∗= −−γ H
+ Ω−1(δ α + ν)
+
++ (γ2 H) a ∂αh
+γ2 H
+= 1
+γ Ω−1(δ α + ν) −a ∂αh .
+(47)
+Let us recall that the optimal investment in the classical Merton problem (using discounted
+wealth) is 1
+γΩ−1(ν −r) where r is the risk-free rate and ν is (in the classical Merton problem)
+the drift of the GBMs that drives the asset prices. The ﬁrst term of the above expression
+is quite similar, since here r = 0, and the drift of the assets are δ αt + ν – here, however,
+the drift is stochastic and hence the Merton solution cannot be applied directly. The optimal
+investment responds to the level of the co-integration factor αt through the term 1
+γΩ−1 δ α.
+Moreover, the optimal investment is perturbed from the (na¨ıve modiﬁcation of the) Merton
+solution by the second term, i.e.
+−a ∂αh.
+To understand the exact contribution of this
+second term we require knowledge of h, so we now turn to ﬁnding an explicit solution for h.
+Remarkably, in subsection 3.1.1 we build an explicit solution of h by looking at a probabilistic
+interpretation of h, which requires a suitable measure change, and in subsection 3.1.2 we
+provide the explicit trading strategy. Before proceeding we also note a few features of h.
+First, from (31), we can see that the solution to h must be quadratic in α. Thus, we also see
+that the optimal dollar invested in each asset π∗will be linear in α. Therefore the optimal
+strategy depends on the co-integration factor in at most a linear fashion, but the size of the
+investment will vary with time.
+3.1.1. A Probabilistic Representation
+The PDE (31) admits an interesting probabilistic interpretation and one which allows
+us to write in closed-form the agent’s investment strategy. First, consider the probability
+measure change induced by a vector of market prices of risk λt, which induces a new measure
+P∗through the Radon-Nikodym derivative
+dP∗
+dP = exp
+n
+−1
+2
+R T
+0 ||λs||2 ds −
+R T
+0 λ′
+sdW s
+o
+.
+(48)
+10
+Electronic copy available at: https://ssrn.com/abstract=2637883
+
+Girsanov’s Theorem implies that the stochastic processes
+W ∗
+t = −
+R t
+0 λs ds + W t
+(49)
+are independent P∗-Brownian motions. Let us choose λt such that the drift of the traded
+assets Y t are martingales. To this end, rewrite the SDE satisﬁed by the prices of the assets:
+dY k
+t = (νk + δk αt + Pn
+i=1 σkiλi
+t) Y k
+t dt + Pn
+i=1 σki Y k
+t dW ∗i
+t .
+(50)
+The martingale condition requires that
+n
+X
+i=1
+σki λi
+t = −νk −δk αt,
+k = 1, . . . , n,
+⇐⇒
+σ λt = −δ αt −ν .
+(51)
+Therefore, since σ is invertible by assumption, we have
+λt = −σ−1 (δ αt + ν) .
+(52)
+At this point, we have found the probability measure P∗which renders the traded assets
+martingales. Next, we can ask what is the dynamics of the co-integration factor in terms of
+these new Brownian motions. To this end, from (5) we have
+dαt =
+ −1
+2 Tr(A Ω) + a′ν + (a′ δ)αt
+
+dt + a′σ (λt dt + dW ∗
+t)
+(53)
+so that
+dαt = −1
+2 Tr(A Ω) dt + a′σ dW ∗
+t .
+(54)
+The last equality follows from (52). Surprisingly, although αt is mean-reverting in the realworld P-measure, it is a Brownian motion under the risk-neutral P∗-measure.
+Let us now return to the PDE (31). It can be re-written in the form
+(∂t + L∗,α) h + 1
+2γ (δ α + ν)′ Ω(δ α + ν) = 0 ,
+(55)
+subject to h(T, α) = 0, where L∗,α is the P∗-inﬁnitesimal generator of αt and therefore, applying a Feynman-Kac formula we see that h(t, α) can be expressed as the following expectation:
+h(t, α) = E∗
+t,α
+
+1
+2γ
+Z T
+t
+(δ αs + ν)′ Ω(δ αs + ν) ds
+
+,
+(56)
+where E∗
+t,α denotes P∗-expectation given that αt = α. Putting this expression for h back into
+the value function we then have the following relationship:
+sup
+π∈A
+Et,x,y [−exp (−γ Xπ
+T )] = −exp
+n
+−γ x −1
+2 E∗
+t,x,y
+hR T
+t (δ αs + ν)′ Ω(δ αs + ν) ds
+io
+.
+(57)
+The future expectation of integrated quadratic form in αt determines the incremental value of
+trading on this co-integrated collection of assets. The strength of the contribution increases
+with volatility (through Ω) as well as through the strength that αt has on each asset (through
+the ﬁrm speciﬁc scaling factors δ).
+11
+Electronic copy available at: https://ssrn.com/abstract=2637883
+
+3.1.2. Explicit Construction of the Optimal Investment Strategy
+Based on the representation from the previous section, we can construct an explicit formula
+for h(t, α). In particular, we have that
+h(t, α) = E∗
+t,α
+
+1
+2γ
+Z T
+t
+(δ αs + ν)′ Ω(δ αs + ν) ds
+
+(58)
+= δ′Ωδ
+2γ E∗
+Z T
+t
+
+α −1
+2 Tr(A Ω)(s −t) +
+√
+a′Ωa (B∗
+s −B∗
+t )
+2
+ds
+
++ δ′Ων
+γ
+Z T
+t
+ α −1
+2 Tr(A Ω)(s −t)
+
+ds + 1
+2γ (T −t) ν′ Ων ,
+(59)
+where we have introduced the process B∗
+t =
+1
+√
+a′Ωaa′σ W ∗
+t which is a standard P∗-Brownian
+motion. Hence,
+h(t, α) = δ′Ωδ
+2γ E∗
+" Z T
+t
+(
+ α −1
+2 Tr(A Ω)(s −t)
+2
++ 2
+ α −1
+2 Tr(A Ω)(s −t)
+ √
+a′Ωa (B∗
+s −B∗
+t )
++ (a′Ωa) (B∗
+s −B∗
+t )2
+)
+ds
+#
++ δ′Ων
+γ
+ α τ −1
+4 Tr(A Ω)τ 2
++ 1
+2γ τ ν′ Ων ,
+(60)
+= δ′Ωδ
+2γ
+n
+−
+2
+3 Tr(A Ω)
+h α −1
+2 Tr(A Ω) τ
+3 −α3i
++ 1
+2 (a′Ωa) τ 2o
++ δ′Ων
+γ
+ α τ −1
+4 Tr(A Ω)τ 2
++ 1
+2γ τ ν′ Ων ,
+(61)
+where τ = T −t and we have used Fubini to interchange the integral and expectation, and
+used the fact that E∗[(B∗
+s −B∗
+t )2] = (s −t).
+In all, we see that h(t, α) is quadratic in α. Consequently, the optimal investment from
+(32) takes on the explicit form
+π∗= 1
+γ
+n
+Ω−1 (δ α + ν) +
+δ′Ωδ
+Tr(A Ω)
+1
+2 Tr(A Ω) τ α + 1
+4 (Tr(A Ω))2 τ 2
+a
+o
+−aδ′ Ων
+γ
+τ ,
+(62)
+so that
+π∗= 1
+γ
+
+Ω−1 (δ α + ν) + (δ′Ωδ)
+
+1
+2 τ
+
+α −2δ′ Ων
+δ′ Ωδ
+
++ 1
+4 Tr(A Ω) τ 2
+
+a
+
+.
+(63)
+As a reminder, the ﬁrst term is what you would expect from (a na¨ıve modiﬁcation of) the
+classical Merton problem since (δ α + ν) are the drifts of the assets. The second term proportional to a represents the correction due to co-integration. As the above expression shows,
+the perturbation around the ‘Merton’ portfolio decays as the terminal date approaches. In
+all, the optimal strategy is aﬃne in α even in this generalized problem of optimal investment
+in several co-integrated assets.
+12
+Electronic copy available at: https://ssrn.com/abstract=2637883
+
+The explicit solution constructed here shows that it is indeed classical. Moreover, the
+optimal strategy is admissible. For a complete veriﬁcation theorem, one needs to check the
+uniform integrability condition by checking that E[exp{−γXπ∗
+T }] is indeed ﬁnite. Requiring
+this imposes constraints on the model parameters. The proof is essentially straight forward
+and follows along the lines of Tourin and Yan (2013) and Benth and Karlsen (2005).
+4. Empirical performance of strategy
+In this section we showcase how the strategy behaves in a three-asset case. The agent
+trades in a portfolio consisting of shares in GOOGL, FB and AMZN (Google, Facebook, and
+Amazon) and we use Nasdaq ITCH data to estimate the parameters of the model. Speciﬁcally,
+we employ midprices sampled every minute of the day on Nov 3, 2014 (the ﬁrst trading day of
+November 2014) to estimate a VAR(1) model on the log-prices by performing the regression
+Zn = b + C Zn−1 + εn ,
+(64)
+where Zn = log(Y n), ε1, ε2, . . . are assumed to be i.i.d. tri-variate standard normal random
+variables (with covariance matrix Ω), and the 3×1 vector b and 3×3 matrix C are estimated
+from a multivariate regression. The residuals then provide the variance-covariance matrix of
+ε1. Table 1 shows the results and the variance-covariance of these estimators are shown in
+Table 2.
+Ticker
+bb
+bC
+bΩ(×10−7)
+GOOGL
+0.45
+0.092
+-0.021
+-0.008
+1.97
+0.78
+0.67
+FB
+0.08
+-0.011
+0.014
+0.016
+0.78
+3.57
+0.95
+AMZN
+0.35
+0.055
+-0.011
+0.009
+0.67
+0.95
+2.79
+Table 1: Calibrated VAR(1) model for GOOGL, FB and AMZN on Nov 3, 2014 using 1 minute data (Nasdaq
+ITCH).
+In Figure 1 we show the in-sample path of the co-integrating factor αt which, as expected,
+is a mean-reverting process. The dashed lines in the ﬁgure show the mean-reverting level
+(inner band), plus and minus two standard deviations of the co-integrating factor around
+the mean-reverting level (outer bands). Clearly, these short-lived deviations from the meanreverting level are the main driver of the proﬁts in the agent’s strategy which we discuss
+below.
+Next, we dimensionally reduce the problem to the case of a single co-integration factor by
+the following sequence of transformations:
+13
+Electronic copy available at: https://ssrn.com/abstract=2637883
+
+ˆb1
+ˆb2
+ˆb3
+ˆC11
+ˆC12
+ˆC13
+ˆC21
+ˆC22
+ˆC23
+ˆC31
+ˆC32
+ˆC33
+ˆb1
+1206.26
+480.57
+410.17
+-197.99
+33.57
+-16.89
+-78.88
+13.37
+-6.73
+-67.32
+11.42
+-5.74
+ˆb2
+480.57
+2188.79
+580.13
+-78.88
+13.37
+-6.73
+-359.26
+60.91
+-30.64
+-95.22
+16.15
+-8.12
+ˆb3
+410.17
+580.13
+1709.29
+-67.32
+11.42
+-5.74
+-95.22
+16.15
+-8.12
+-280.56
+47.57
+-23.93
+ˆC11
+-197.99
+-78.88
+-67.32
+40.02
+-8.62
+-3.22
+15.94
+-3.43
+-1.28
+13.61
+-2.93
+-1.09
+ˆC12
+33.57
+13.37
+11.42
+-8.62
+3.15
+1.30
+-3.43
+1.25
+0.52
+-2.93
+1.07
+0.44
+ˆC13
+-16.89
+-6.73
+-5.74
+-3.22
+1.30
+5.53
+-1.28
+0.52
+2.20
+-1.09
+0.44
+1.88
+ˆC21
+-78.88
+-359.26
+-95.22
+15.94
+-3.43
+-1.28
+72.62
+-15.63
+-5.84
+19.25
+-4.14
+-1.55
+ˆC22
+13.37
+60.91
+16.15
+-3.43
+1.25
+0.52
+-15.63
+5.71
+2.36
+-4.14
+1.51
+0.63
+ˆC23
+-6.73
+-30.64
+-8.12
+-1.28
+0.52
+2.20
+-5.84
+2.36
+10.04
+-1.55
+0.63
+2.66
+ˆC31
+-67.32
+-95.22
+-280.56
+13.61
+-2.93
+-1.09
+19.25
+-4.14
+-1.55
+56.71
+-12.21
+-4.56
+ˆC32
+11.42
+16.15
+47.57
+-2.93
+1.07
+0.44
+-4.14
+1.51
+0.63
+-12.21
+4.46
+1.84
+ˆC33
+-5.74
+-8.12
+-23.93
+-1.09
+0.44
+1.88
+-1.55
+0.63
+2.66
+-4.56
+1.84
+7.84
+Table 2: Variance-Covariance (×10−5) of the estimates ˆb and C appearing in (64).
+0
+100
+200
+300
+−0.4178
+−0.4176
+−0.4174
+−0.4172
+−0.417
+Time (min)
+αt
+Figure 1: The in-sample in-sample path of the cointegrating factor αt on Nov 3, 2014. The dashed
+lines show the mean reverting level (inner band)
+plus and minus two standard deviations of the cointegrating factor.
+1. Deﬁne κ = I −C – the mean-reversion matrix.
+2. Deﬁne Θ = κ−1 b – the mean-reversion level.
+3. Diagonalize κ by writing κ = U D U −1 where D is the matrix of eigenvalues ordered
+largest to smallest, U is the corresponding matrix of eigenvectors stacked columnwise.
+4. Deﬁne the dimensionally reduced matrix ˜κ = U ˜D U −1, where ˜D = diag(D11, 0, 0, . . . , 0).
+5. Then set ak = −˜κ1,k, δk = ˜κ1,k/˜κ1,1 and νk = (˜κ Θ)k + 1
+2Ωkk.
+The result of this is the set of parameters in the Table 3 below. Note that δ′ a < 0, so that
+the α process is indeed mean-reverting.
+To show the performance of the strategy we run 10,000 simulations and record the proﬁt
+& loss of each run. We use the parameters estimated above to simulate the short-term alpha
+component and co-integrated price paths (for every minute of the trading horizon) for Google,
+Facebook, and Amazon. For each run we assume that the agent starts with no asset holdings,
+all positions are liquidated at the end of the day, all transactions are at the midprice, and
+there are no transaction costs. In Figure 2 we show a single simulated sample path of αt, the
+corresponding optimal position in the assets, the agent’s wealth process for this path, and the
+14
+Electronic copy available at: https://ssrn.com/abstract=2637883
+
+Ticker
+a
+δ
+ν
+GOOGL
+-0.0974
+1.000
+0.417
+FB
+0.0259
+-0.004
+-0.002
+AMZN
+0.0153
+0.706
+0.295
+Table 3: The estimated model parameters as implied by the VAR(1) model estimated dimensionally reduced
+to one co-integration factor.
+0
+100
+200
+300
+400
+−0.4182
+−0.418
+−0.4178
+−0.4176
+−0.4174
+−0.4172
+−0.417
+Time
+αt
+0
+100
+200
+300
+400
+−8
+−6
+−4
+−2
+0
+2
+4
+Time
+Position
+ 
+ 
+GOOGL
+FB
+AMZN
+0
+100
+200
+300
+400
+−20
+0
+20
+40
+60
+80
+100
+Time
+Agent’s Wealth
+0
+50
+100
+150
+200
+0
+200
+400
+600
+800
+1000
+1200
+P&L
+Frequency
+Figure 2: A simulated sample path of αt (top left), the corresponding optimal position in the assets (top
+right), the agent’s wealth process for this path (bottom left), and the histogram of the proﬁt & loss over the
+10,000 runs (bottom right).
+histogram of the proﬁt & loss over the 10,000 runs. The mean of the P&L is 91.99 and its
+standard deviation is 20.27.
+For this particular run we observe that the agent’s positions are always between 4 (long
+shares) and 6 (short shares) and the proﬁt at the end of the trading horizon is $80 approximately. The asset holdings exhibit a similar pattern to that of the short-term alpha, both
+15
+Electronic copy available at: https://ssrn.com/abstract=2637883
+
+depicted on the top panel in the ﬁgure. Recall that αt enters (proportionally to δk) the drift
+of each asset, so times when αt is above its mean-reverting level is when the midprices are
+expected to increase faster so the optimal strategy is to acquire the assets. Similarly, when
+αt is below its mean-reverting level, is when growth in the midprices is slow (or could even
+be negative) so it is optimal to take short positions in the assets to beneﬁt from the shortterm drop in prices. Clearly, the eﬀect of short-term alpha can be seen in the ﬁrst term on
+the right-hand side of (63). In addition, recall that the structural dependence given by the
+co-integration factor, second term on the right-hand side of (63), is also playing a role in the
+optimal strategy.
+5. Conclusions
+We have shown how to optimally trade in and out of positions on a collection of cointegrated assets. Key to the strategy is how to model the structural dependence of asset
+prices through a common component in the drift of the asset returns. This common component
+is a co-integrating factor, which we label short-term alpha, and is the main source of proﬁts
+in the optimal investment strategy.
+In our model the investor takes positions in the assets to maximize expected utility of
+wealth. We have provided an explicit closed-form expression for the optimal (dynamic) investment strategy and have shown that it is aﬃne in the co-integration factor. Moreover, we
+have shown that as the terminal date of the strategy approaches, the strategy behaves similar to a na¨ıve modiﬁcation of the Merton strategy where the constant drift (in the classical
+Merton model) is replaced by short-term alpha.
+To illustrate the performance of the strategy we employ Nasdaq data to calibrate the
+model and use simulations to illustrate how the strategy performs when the investor takes
+positions in three assets: Google, Facebook, and Amazon.
+Extensions to our work could look at i) how the strategy performs out-of-sample using
+realisations of the stock prices (instead of simulations), ii) how the strategy performs when the
+portfolio consists of liquid and illiquid assets, and iii) how the optimal investment strategy
+changes if the investor is ambiguity averse – i.e. recognises that the co-integration model
+might be misspeciﬁed and proceeds as in the work of Cartea et al. (2016).
+References
+Benth, F. E. and K. H. Karlsen (2005). A note on Merton’s portfolio selection problem for
+the schwartz mean-reversion model. Stochastic analysis and applications 23(4), 687–704.
+16
+Electronic copy available at: https://ssrn.com/abstract=2637883
+
+Cartea, ´A., R. Donnelly, and S. Jaimungal (2016). Algorithmic trading with model uncertainty. SSRN: http://ssrn.com/abstract=2310645.
+Cartea, ´A., S. Jaimungal, and J. Penalva (2015). Algorithmic and High-Frequency Trading.
+Cambridge University Press.
+Cartea, ´A., S. Jaimungal, and J. Ricci (2014). Buy low, sell high: A high frequency trading
+perspective. SIAM Journal on Financial Mathematics 5(1), 415–444.
+Duan, J.-C. and S. R. Pliska (2004). Option valuation with co-integrated asset prices. Journal
+of Economic Dynamics and Control 28(4), 727 – 754.
+Elliott, R. J., J. Van Der Hoek, and W. P. Malcolm (2005). Pairs trading. Quantitative
+Finance 5(3), 271–276.
+Lei, Y. and J. Xu (2015).
+Costly arbitrage through pairs trading.
+Journal of Economic
+Dynamics and Control 56, 1–19.
+Leung, T. and X. Li (2015). Optimal mean reversion trading with transaction costs and
+stop-loss exit. International Journal of Theoretical and Applied Finance, 1550020.
+Mudchanatongsuk, S., J. A. Primbs, and W. Wong (2008, June). Optimal pairs trading: A
+stochastic control approach. In 2008 American Control Conference, pp. 1035–1039. IEEE.
+Ngo, M.-M. and H. Pham (2016).
+Optimal switching for pairs trading rule: a viscosity
+solutions approach. Journal of Mathematical Analysis and Applications 441(1), 403–425.
+Tourin, A. and R. Yan (2013). Dynamic pairs trading using the stochastic control approach.
+Journal of Economic Dynamics and Control 37(10), 1972 – 1981.
+Acknowledgments
+We would like to thank two anonymous referees and the Editor. SJ would also like to
+thank NSERC and GRI for partially funding this work. The authors would like to thank
+Agnes Tourin for useful comments on an earlier version of this article.
+17
+Electronic copy available at: https://ssrn.com/abstract=2637883

@@ -1,0 +1,279 @@
+Visualizing Fundamental Statistical Principles
+in Quantitative Finance
+Yifan Serena Guo∗
+August 1, 2025
+Abstract
+Many core ideas in mathematical statistics—such as the law of large numbers,
+central limit theorems, and dependence diagnostics—underpin standard tools in quantitative finance. Yet these principles are often presented in purely analytical form,
+detached from the visual and empirical diagnostics that practitioners routinely rely on.
+This paper develops a set of simple, simulation-based visualizations that illustrate
+how fundamental statistical principles manifest in stylized return data. We focus on
+three themes: (i) convergence of sample mean and realized volatility via the law of
+large numbers; (ii) approximate normality of aggregated portfolio returns via the central limit theorem; and (iii) the contrast between weak autocorrelation in raw returns
+and strong dependence in volatility proxies such as absolute returns. For each theme,
+we provide a concise theoretical statement, a short proof or proof sketch, and a corresponding graphical diagnostic.
+The goal is not to introduce new estimators, but to build a transparent bridge
+between formal probability results and the visual language of quantitative risk management. The resulting figures can be generated from simulated data and adapted
+to real data, making the framework suitable for teaching, exploratory analysis, and
+communication of model assumptions.
+Keywords: Quantitative finance; law of large numbers; central limit theorem; volatility
+clustering; visualization.
+∗The author is solely responsible for any remaining errors.
+1
+
+1
+Setup and Notation
+We consider a frictionless market over discrete trading dates t = 1, 2, . . . , n. Let Rt denote
+the (log-)return of a single asset or a portfolio between t −1 and t. We allow for both i.i.d.
+benchmark models and simple dependent structures.
+Throughout the paper, we use the following notation:
+• µ := E[Rt] and σ2 := Var(Rt) when these moments exist and are time invariant.
+• The sample mean of returns up to time n is
+¯Rn := 1
+n
+n
+X
+t=1
+Rt.
+• The (unbiased) sample variance is
+S2
+n :=
+1
+n −1
+n
+X
+t=1
+(Rt −¯Rn)2.
+• The standardized sum of returns is
+Zn :=
+√n( ¯Rn −µ)
+σ
+,
+whenever σ > 0 is well defined.
+We use simulated data to visualize the theoretical results. Figures are generic and can
+be regenerated with different random seeds without affecting the qualitative conclusions.
+2
+Convergence of Sample Mean: Law of Large Numbers
+2.1
+Theoretical Result
+We start from the classical law of large numbers (LLN), specialized to the case of i.i.d.
+returns with finite variance.
+Assumption 1 (i.i.d. Returns). The sequence (Rt)t≥1 is independent and identically distributed with
+E[Rt] = µ,
+Var(Rt) = σ2 < ∞.
+2
+
+Theorem 1 (Strong Law of Large Numbers for Returns). Under Assumption 1,
+¯Rn
+a.s.
+−−→µ
+as n →∞.
+Proof (Outline). Define the centered variables Xt := Rt −µ, which have zero mean and
+finite variance σ2. Consider the partial sums Sn :=
+Pn
+t=1 Xt. Then ¯Rn −µ = Sn/n. Kolmogorov’s strong law of large numbers states that if (Xt) are independent with E[Xt] = 0
+and P∞
+t=1 E[X2
+t ]/t2 < ∞, then Sn/n →0 almost surely. In our i.i.d. case,
+∞
+X
+t=1
+E[X2
+t ]
+t2
+= σ2
+∞
+X
+t=1
+1
+t2 < ∞,
+so the condition is satisfied, and ¯Rn →µ almost surely.
+2.2
+Risk Scaling and Realized Volatility
+The LLN has a direct implication for realized volatility. For i.i.d. returns with finite variance,
+the average squared return converges to σ2:
+1
+n
+n
+X
+t=1
+R2
+t
+a.s.
+−−→E[R2
+t] = σ2 + µ2.
+Under the common assumption that µ2 ≪σ2 at short horizons, the realized variance approximates σ2 and the n-period variance scales approximately as nσ2.
+Proposition 1 (Variance Scaling Under Independence). Under Assumption 1, the n-period
+cumulative return
+Cn :=
+n
+X
+t=1
+Rt
+satisfies
+Var(Cn) = nσ2,
+Var
+ Cn
+√n
+!
+= σ2.
+Proof. By independence and identical distribution,
+Var(Cn) = Var
+ n
+X
+t=1
+Rt
+!
+=
+n
+X
+t=1
+Var(Rt) = nσ2.
+The second identity follows by dividing by n:
+Var
+ Cn
+√n
+!
+= 1
+nVar(Cn) = 1
+n · nσ2 = σ2.
+3
+
+2.3
+Visualization: Cumulative Mean of Simulated Returns
+Figure 1 illustrates Theorem 1 for a simple Gaussian return model. We simulate i.i.d. daily
+returns from N(µ, σ2) and plot the running sample mean ¯Rn against n, along with the true
+mean µ.
+Figure 1: Convergence of the sample mean ¯Rn of simulated daily returns to the true mean
+µ. The plot shows strong fluctuations for small n and gradual stabilization around µ as n
+increases, illustrating the law of large numbers.
+In practice, similar plots can be produced for realized P&L or volatility estimates, providing a visual diagnostic of sample size adequacy.
+3
+Approximate Normality: Central Limit Theorem
+3.1
+Theoretical Result
+The central limit theorem (CLT) explains why aggregated portfolio returns are often close
+to normal, at least as a first approximation.
+Theorem 2 (Lindeberg–Lévy CLT for Returns). Under Assumption 1 with σ2 > 0,
+Zn =
+√n( ¯Rn −µ)
+σ
+d−→N(0, 1)
+as n →∞.
+4
+
+Equivalently,
+Cn −nµ
+√nσ
+d−→N(0, 1).
+Proof (Sketch). Define Xt := (Rt −µ)/σ, so that E[Xt] = 0 and Var(Xt) = 1. Then
+Zn =
+1
+√n
+n
+X
+t=1
+Xt.
+The classical Lindeberg–Lévy central limit theorem states that if (Xt) are i.i.d. with zero
+mean and unit variance, then n−1/2 Pn
+t=1 Xt converges in distribution to N(0, 1). This applies
+directly here. The second formulation follows by rewriting Cn = n ¯Rn.
+3.2
+Visualization: Histogram and Normal Approximation
+To visualize the CLT, we simulate many independent n-day cumulative returns Cn from the
+model in Section 3, normalize them, and plot a histogram together with the standard normal
+density.
+Figure 2: Histogram of standardized n-day cumulative returns (Cn −nµ)/(√nσ) from simulated data, overlaid with the standard normal density. As n increases, the empirical distribution becomes visually closer to the normal curve, illustrating the central limit theorem.
+In applied work, similar histograms are used to assess the adequacy of Gaussian assumptions for portfolio returns at different horizons.
+5
+
+4
+Dependence and Volatility Clustering
+4.1
+Returns vs Absolute Returns
+Empirical asset returns often display weak linear autocorrelation but strong dependence
+in volatility proxies such as squared or absolute returns. A simple way to visualize this
+phenomenon is through the sample autocorrelation function (ACF).
+For a mean-zero stationary time series (Yt), the lag-k autocovariance and autocorrelation
+are
+γ(k) := Cov(Yt, Yt+k),
+ρ(k) := γ(k)
+γ(0).
+In a pure i.i.d. setting as in Assumption 1, γ(k) = 0 and ρ(k) = 0 for all k ≥1. However,
+in more realistic GARCH-type models, returns may be uncorrelated while absolute returns
+are highly persistent.
+4.2
+Simple AR(1) Volatility Proxy
+As a toy model, consider returns of the form
+Rt = σtεt,
+where (εt) are i.i.d. with zero mean and unit variance, and the volatility σt follows a stationary
+AR(1) process
+σt = α + ϕσt−1 + ηt,
+with |ϕ| < 1 and (ηt) i.i.d. noise. Then Rt are uncorrelated but exhibit volatility clustering.
+Proposition 2 (Weak Autocorrelation of Returns). Under the model above, assume (εt),
+(ηt) are independent, centered, and independent of each other, and that σt is stationary.
+Then
+Cov(Rt, Rt+k) = 0
+for all k ≥1.
+Proof. For k ≥1,
+Cov(Rt, Rt+k) = E[RtRt+k] −E[Rt]E[Rt+k].
+Since εt and εt+k are independent with zero mean, and independent of (σs),
+E[RtRt+k] = E[σtσt+kεtεt+k] = E[σtσt+k] E[εt] E[εt+k] = 0.
+Similarly, E[Rt] = E[σt]E[εt] = 0, so the covariance is zero.
+6
+
+By contrast, the process (|Rt|) inherits persistence from (σt) and displays positive autocorrelation at low lags.
+4.3
+Visualization: Autocorrelation Functions
+Figure 3 shows empirical autocorrelation functions for simulated returns and absolute returns
+from the toy model described above.
+Figure 3: Sample autocorrelation functions for simulated returns Rt (left axis) and absolute
+returns |Rt| (right axis). The ACF of Rt is close to zero for all lags beyond sampling noise,
+while |Rt| exhibits slowly decaying positive autocorrelation, illustrating volatility clustering.
+Such plots are standard diagnostics in volatility modeling: they motivate the use of
+GARCH-type models and challenge the assumption of i.i.d. returns.
+5
+Heavy Tails and QQ-Plots
+5.1
+Gaussian vs Heavy-Tailed Models
+A common criticism of Gaussian return models is their inability to generate extreme events
+at observed frequencies. One elementary way to illustrate tail behavior is through quantile–
+quantile (QQ) plots, comparing empirical quantiles of standardized returns to those of a
+standard normal distribution.
+7
+
+As a stylized heavy-tailed alternative, consider i.i.d. returns drawn from a standardized
+Student-tν distribution with ν > 2 degrees of freedom. These returns have mean zero and
+variance ν/(ν −2), but exhibit heavier tails than the normal distribution.
+5.2
+Visualization: QQ-Plot of Heavy-Tailed Returns
+Figure 4 displays a QQ-plot of simulated standardized t-distributed returns against the
+standard normal quantiles. In the centre of the distribution, points lie near the 45-degree
+line, while in the tails they deviate systematically, bending away from the line.
+Figure 4: QQ-plot of simulated standardized Student-t returns against the standard normal
+distribution. Deviations from the 45-degree line in the tails highlight the presence of heavierthan-Gaussian tails, a common feature of financial returns.
+In empirical settings, similar QQ-plots are used to diagnose tail behavior and to motivate
+heavy-tailed models or extreme-value methods.
+6
+Conclusion
+This paper provides a compact set of visual diagnostics that connect fundamental results in
+mathematical statistics to stylized features of asset returns. By combining formal statements
+and short proofs with simulation-based figures, we aim to make the underlying statistical
+principles more tangible for practitioners and students of quantitative finance.
+The examples presented here can be extended in several directions, including multivariate
+settings, realistic microstructure noise, and empirical data from specific asset classes. The
+8
+
+key message is that rigorous statistical theorems and simple graphics are complementary
+tools: the former provide asymptotic guarantees, while the latter reveal how those guarantees
+manifest in finite samples and in the presence of model imperfections.
+9
+
+References
+Billingsley, P. (1995). Probability and Measure (3rd ed.). Wiley.
+Cont, R. (2001). Empirical properties of asset returns: stylized facts and statistical issues.
+Quantitative Finance, 1(2), 223–236.
+Hamilton, J. D. (1994). Time Series Analysis. Princeton University Press.
+Mandelbrot, B. (1963). The variation of certain speculative prices. Journal of Business,
+36(4), 394–419.
+10

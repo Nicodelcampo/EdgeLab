@@ -1,0 +1,3104 @@
+A MATHEMATICAL FRAMEWORK FOR MODELLING ORDER BOOK DYNAMICS
+RAMA CONT∗, PIERRE DEGOND†, AND LIFAN XUAN‡
+Abstract.
+We present a general framework for modelling the dynamics of limit order books, built on the combination
+of two modelling ingredients: the order ﬂow, modelled as a general spatial point process, and market clearing, modelled via
+a deterministic ‘mass transport’ operator acting on distributions of buy and sell orders.
+At the mathematical level, this
+corresponds to a natural decomposition of the inﬁnitesimal generator describing the evolution of the limit order book into two
+operators: the generator of the order ﬂow and the clearing operator. Our model provides a ﬂexible framework for modelling and
+simulating order book dynamics and studying various scaling limits of discrete order book models. We show that our framework
+includes previous models as special cases and yields insights into the interplay between order ﬂow and price dynamics.
+Key words. Limit order book, stochastic model, quantitative ﬁnance, market microstructure, measure-valued process.
+AMS subject classiﬁcations. 91-10, 91Gxx
+1. Introduction. In the last few decades major ﬁnancial markets have transitioned to electronic platforms where
+market participants may post buy and sell orders through a centralized limit order book (LOB) [5]. These orders are then
+matched and executed according to time and price priority rules. The state of the limit order book, which represents outstanding
+buy and sell orders, constantly evolves through the arrival, execution and cancellation of buy and sell orders. Figure 1 shows a
+typical shape of the order book.
+Fig. 1: MU(Micron) limit order book on 1st July 2019, with limit buy orders in blue and limit sell orders in red.
+A quantitative understanding of the dynamics of limit order books is therefore important both from a theoretical standpoint
+for understanding the dynamics of supply and demand in order-driven markets, and from the standpoint of applications to
+intraday market modeling and optimal trade execution.
+The empirical study of limit order book dynamics has revealed various empirical regularities [2, 3] across a range of diﬀerent
+time scales [5]. Faced with the challenge of accommodating these empirical features, many stochastic models for limit order
+book dynamics have been developed in the literature [6, 7, 9, 10, 16, 18, 19, 20]. Queueing models [7, 10, 16, 18] represent the
+limit order book as a system of interacting queues, driven by an order ﬂow described as a spatial point process. Another class
+of models represents the state of the order book as a (pair of) densities, solution of a (stochastic) partial diﬀerential equation
+(SPDE) [8, 13]. These two classes of models are connected by scaling limits such as ﬂuid limits [12, 14, 15] and diﬀusion limits
+[6, 7, 17] of discrete order book models under suitable assumptions.
+The sheer variety of stochastic models for limit order book dynamics makes it diﬃcult to perform a comparative analysis,
+especially since these models use diﬀerent representations and assumptions as starting points. In the present work we propose an
+approach which these models into a unifying overall framework, which can be useful for model comparison, model construction
+and also for investigating asymptotic behaviour under various scaling assumptions. Speciﬁcally, we propose to decompose the
+dynamics of the limit order book process into two separate ingredients:
+• the incoming order ﬂow, represented as a spatial point process, and
+• the market clearing procedure, represented as an operator acting of a pair of distributions of buy and sell orders.
+∗Mathematical Institute, University of Oxford, Oxford, UK https://www.maths.ox.ac.uk/people/rama.cont
+†Centre National de la Recherche Scientiﬁque (CNRS),Toulouse, France https://sites.google.com/site/degond/Home.
+‡Department of Mathematics, Imperial College London (xlﬂiza@gmail.com)
+1
+
+Current
+state:
+Xt ∈L
+Intermediate
+state:
+Xt +∆X ∈E
+State at time
+t + ∆t:
+Xt+∆t ∈L
+Order ﬂow
+Stochastic
+Clearing operator
+Deterministic
+Existing models
+Fig. 2: Decomposition of the order book dynamics.
+The dynamics of the order book is decomposed as shown in Figure 2: at time t, the current state of the order book is Xt
+belonging to an appropriate state space L. An order ﬂow ∆X arrives in the order book after time ∆t, changing the state of the
+order book from Xt into an intermediate state Xt +∆X, which is an element of a larger space E. This transient state Xt +∆X
+is then mapped to Xt+∆t in the state space L by a clearing operator. We remark that the order ﬂow in this framework can be
+any stochastic process. Since the order ﬂow and the market clearing processes are independent, this framework can be adjusted
+to many diﬀerent types of markets just by choosing the order ﬂows and the clearing operators properly. Furthermore, this
+decomposition permits a modular approach in simulating LOBs where algorithms to simulate the order ﬂow and the clearing
+operator can be developed independently. If the order ﬂow is assumed to be a Markov process, then as the market clearing
+operator and the order ﬂow are independent, the order book process is also Markovian. Therefore, the order book dynamics
+can be deﬁned by its inﬁnitesimal generator. Our framework allows us to write the inﬁnitesimal generator as the composition
+of the generator of the order ﬂow dynamics, which is simpler, and two operators, one related to the clearing operator, and one
+related to the embedding of the state space L of the LOB into the general space E of the intermediate state.
+Outline. The paper is organised as follows: Section 2 describes the building blocks involved in the dynamics of the limit
+order book: the order ﬂow, the market clearing process and the order book process itself. A detailed mathematical description
+of the clearing operator is given in Section 2.4. Section 3 describes the application of this framework to a Markovian order
+book process, described through its inﬁnitesimal generator and the associated backward Kolmogorov equation. Speciﬁcally,
+Section 3.3 uses this general framework to decompose the inﬁnitesimal generator into operators associated with order ﬂow and
+clearing. Section 4 adapts our framework to centred order books, i.e. order books with price coordinates centred at the midprice. In Section 5 we illustrate how this framework may be used to embed previous models from the literature. In Section 6,
+we show how the decomposition shown in Figure 2 translates into a modular approach to numerical simulations of limit order
+books. Section 7 provides a conclusion and some perspectives.
+2. Dynamics of a limit order book. The main idea of Figure 2 is that a limit order book evolves through
+successive events involving an incoming order, immediately followed by market clearing. We now describe these steps in more
+details.
+2.1. Notations and deﬁnitions. Let E := Nd × Nd, where d ∈N\{0} represents the maximum price of an order.
+Any element X = (X+, X−) ∈E represents a conﬁguration of limit orders: for j ∈{1, . . . , d}, X+
+j
+(resp. X−
+j
+) represents the
+number of buy (resp. sell) orders submitted at price j.
+To any Z ∈Nd we associate an integer-valued measure on {1, . . . , d} deﬁned as
+(2.1)
+νZ =
+d
+X
+k=1
+Zjδj
+and we deﬁne
+supp(Z) := supp(νZ) = {j ∈{1, 2, . . . , d}, Zj > 0}.
+Thus to any X ∈E, we associate a pair νX = (ν+
+X, ν−
+X) of integer-valued measures on {1, . . . , d}, where ν±
+X = νX±. We further
+deﬁne a truncation operator which will be used later to specify the clearing operator as follows: for Z ∈Nd and i ∈N we deﬁne
+τ i(Z) ∈Nd and τi(Z) ∈Nd such that ντi(Z) = νZ 1[i,∞) and ντi(Z) = νZ 1[0,i]. Then
+τi(z) :=
+
+
+
+
+
+(z1, . . . , zi, 0, . . . , 0)
+if
+1 ≤i ≤d,
+(0, 0, . . . , 0)
+if
+i ≤0,
+z
+if
+i ≥d + 1,
+τ i(z) :=
+
+
+
+
+
+(0, . . . , 0, zi, . . . , zd)
+if
+1 ≤i ≤d,
+(0, 0, . . . , 0)
+if
+i ≥d + 1,
+z
+if
+i ≤0.
+The state space of the LOB can be deﬁned as follows. For X ∈E, we deﬁne
+(2.2)
+a(X) := inf supp(ν−
+X),
+b(X) = sup supp(ν+
+X),
+which will later represent the ask (resp. the bid) prices. Here we use the convention
+(2.3)
+a(0) = ∞,
+b(0) = 0.
+The set of limit order book conﬁgurations is deﬁned as:
+(2.4)
+L := {X = (X+, X−) ∈E,
+a(X) > b(X)}.
+2
+
+X+ (resp. X−) then represent the buy (resp. sell) orders in the limit order book and the condition (2.4) is interpreted as
+requiring that any outstanding buy order has a lower price than any outstanding sell order. The set L will be referred to as
+the set of “admissible” LOB conﬁgurations by opposition to the set E which corresponds to ﬁctional order book conﬁgurations
+in which the constraint a(X) > b(X) is not enforced. Then a(X) (resp. b(X) ) is the ask (resp. bid) price associated with the
+order book conﬁguration X. Figure 3 shows an admissible conﬁguration of an order book.
+1
+2
+3
+4
+5
+6
+7
+8
+9
+1
+2
+3
+4
+5
+buy orders
+sell orders
+Fig. 3: An admissible conﬁguration of a limit order book, where the blue bars denote buy orders and the red bars denote sell
+orders. In this case, X+ = [1, 3, 2, 1, 0, 0, 0, 0, 0], and X−= [0, 0, 0, 0, 0, 1, 0, 3, 2]. Its ask price is 6 and bid price is 4.
+2.2. Order ﬂow. The state of the order book is modiﬁed through order arrivals, executions or cancellations.
+We distinguish four types of ’elementary’ events: limit buy and sell orders and cancellation of buy and sell orders. A limit
+buy/sell order is an order to buy/sell a speciﬁed amount of shares at a speciﬁed price and a cancellation of buy/sell order is an
+order to cancel a certain amount of standing buy/sell shares in an order book. Each event is speciﬁed by a price i ∈{1, . . . , d}
+and a size z ∈N\{0}. Let
+ei := (0, 0, . . . , 1, 0, . . . , 0) ∈Nd,
+where “1” is in the i−th position.
+Then an order book event of size z at price i maps a conﬁguration X ∈E to a new
+conﬁguration X + ∆X ∈E. This way X →X + ∆X is described as below:
+
+
+
+
+
+
+
+
+
+limit buy order of size z:
+(X+, X−) →(X+ + zei, X−),
+limit sell order of size z:
+(X+, X−) →(X+, X−+ zei),
+cancellation of a buy order of size z:
+(X+, X−) →(X+ −zei, X−) ∈E,
+cancellation of a sell order of size z:
+(X+, X−) →(X+, X−−zei) ∈E.
+(2.5)
+Note that our description of limit orders includes both passive orders (not subject to immediate execution) and executable
+limit orders. Market buy (resp. sell) orders which are orders to buy (resp. sell) certain amount of shares at the best price
+may be seen as a special case of limit buy (resp. sell) orders with price d (resp. 0). If several orders arrive simultaneously,
+then their eﬀects are additive. For example we may model a price modiﬁcation for a limit order of size z from i to i + 1 as the
+simultaneous cancellation of size z at price i and the posting of a new order of size z at i + 1. We further remark that there is
+no restriction on the size z ∈N\{0} and the price level i ∈{1, . . . , d} of incoming limit orders; for cancellations, only existing
+orders may be cancelled i.e. the size z ≤|X±
+i |.
+We model the arrival times and magnitudes of these order book events as a marked point process (Mt, t ≥0) on some
+probability space (Ω, F, P) taking values in Zd × Zd. The jump times t1, t2, .. of M represent the arrival times of orders and
+the jump amplitudes ∆M(tk) ∈Zd × Zd represent the event sizes at tk: the conﬁguration X(tk−) of the order book is then
+perturbed by the incoming orders ∆M(tk), resulting in a new transient conﬁguration
+X(tk−) ∈L
+→
+X(tk−) + ∆M(tk) ∈E.
+This process is what we call ”the order ﬂow”. Throughout the paper, we will make the following assumption that the
+process remains in E for all times, i.e. that
+(2.6)
+P (∀t ≥0,
+X(t−) + ∆M(t) ∈E) = 1.
+This condition is not restrictive: it simply means that sizes of cancellations cannot exceed existing queue sizes.
+Note that in general the (transient) state may not belong to L, i.e. X(tk−) + ∆M(tk) /∈L if, for instance, new orders can
+be executed with the outstanding orders. This is the case for example if we have an incoming limit sell order of size z at a price
+i < b(X), ∆M(tk) = (0, zei).
+2.3. Market clearing. Starting from an order book state X(t−) ∈L, the conﬁguration X(t−) + ∆M(t) ∈E
+immediately after an order ﬂow event may not be, in general, an admissible LOB conﬁguration, i.e. we may have X(t−) +
+∆M(t) /∈L. The execution of orders, i.e. the matching between the sell and buy orders with compatible prices then leads to
+an admissible state X(t) ∈L. This market clearing process may be mathematically described in terms of a map C : E 7→L
+which we call a clearing operator:
+Definition 2.1 (Clearing operator). A clearing operator is a map C : E →L whose set of invariant points is L:
+(2.7)
+∀X ∈E,
+X ∈L ⇐⇒C(X) = X.
+3
+
+Such a map then projects a general conﬁguration of orders onto the set L of admissible LOB conﬁgurations.
+The simplest example of such an operator is obtained from market clearing by order matching. Matching of buy and sell
+orders with compatible prices does not change the conﬁguration of orders if and only if there is no intersection between the buy
+and sell sides of the order book i.e. if X ∈L and reciprocally. So it satisﬁes this deﬁnition.
+The dynamics of the limit order book may then be described as a succession of order ﬂow events, deﬁned by the point
+process M, followed by market clearing. More speciﬁcally, we will assume continuous-time clearing, which means the market is
+cleared after each new order book event. The state of the order book X(t) = (X+(t), X−(t)) is piecewise constant on [tk−1, tk[.
+At the k-th event,
+• the conﬁguration X(tk−) = (X+(tk−), X−(tk−)) ∈L is perturbed by the incoming order ﬂow ∆M(tk), resulting in
+a new transient conﬁguration of orders X(tk−) + ∆M(tk) ∈E.
+• The market clearing operator acts on the perturbed/transient state X(tk−) + ∆M(tk) ∈E, leading to a new order
+book conﬁguration X(tk) = C(X(tk−) + ∆M(tk)) ∈L.
+So the evolution of the order book at each order ﬂow event may be pictured as follows:
+X(tk−) ∈L
+Order ﬂow
+−−−−−−−→
+X(tk−) + ∆M(tk) ∈E
+Clearing
+−−−−−−→
+X(tk) = C(X(tk−) + ∆M(tk)) ∈L.
+Remark 2.2. Our modeling framework allows to examine clearing mechanisms other than continuous clearing. For example,
+one may also consider frequent batch auctions [4], which correspond to batching the order ﬂow over regular intervals [Tk, Tk+1)
+where Tk = kδ and clearing the batch at the end of each interval, which may be pictured as follows:
+X(Tk) ∈L
+Order ﬂow
+−−−−−−−→
+X(Tk) + M(Tk+1) −M(Tk) ∈E
+Clearing
+−−−−−→
+X(Tk+1) = C(X(Tk) + M(Tk+1) −M(Tk)) ∈L.
+2.4. Market clearing via order matching. There are many ways to specify a market clearing operator. The
+simplest case corresponds to an order-matching method which pairs buy and sell orders with compatible price limits, in order
+to maximize the volume of transactions. This is how matching engines operate in many electronic exchanges.
+Let C be the clearing operator corresponding to order matching. The quantity Z(X) = X −C(X) corresponds to executed
+order. For Z ∈Nd, denote by |Z| = Pd
+i=1 Zi. Then, the order-matching clearing operator is deﬁned as an operator having the
+following properties.
+Definition 2.3. Let L : E →L be a map with the following properties.
+(i) The volume of executed orders is non-negative:
+(A1)
+Z(X) ∈E.
+(ii) The total volume of executed sell and buy orders are equal:
+(A2)
+|Z+(X)| = |Z−(X)|.
+(iii) Any matched buy order has a price larger than any matched sell order:
+(A3)
+sup supp (Z−(X)) ≤inf supp (Z+(X)).
+(iv) Buy orders with higher prices have priority, and sell orders with lower prices have priority, i.e. any executed buy
+(resp. sell) order has price higher (resp. lower) than any non-matched buy (resp. sell) orders:
+(A4)
+sup supp (Z−(X)) ≤inf supp (C(X)−)
+and
+inf supp (Z+(X)) ≥sup supp (C(X)+).
+Then C is called an order-matching clearing operator.
+Figure 4 shows an example of market clearing via order-matching, which we now deﬁne formally. For X ∈E and k ∈
+{1, 2, . . . , d}, deﬁne
+(2.8)
+BX(k) = ν+
+X([k, ∞) ) =
+X
+i≥k
+X+
+i
+and
+SX(k) = ν−
+X([0, k] ) =
+X
+i≤k
+X−
+i ,
+The function k →BX(k) (resp. k →SX(k)) is non-increasing (resp. non-decreasing) so we can deﬁne the right (resp. left)
+inverse as
+(2.9)
+B−1
+X (z) = sup{i ∈{1, . . . , d} : BX(i) ≥z}
+and
+S−1
+X (z) = inf{i ∈{1, . . . , d} : SX(i) ≥z}.
+Deﬁne
+(2.10)
+gX(k) = SX(k) −BX(k)
+for X ∈E and k ∈{1, . . . , d}. The function k →gX(k) is non-decreasing by deﬁnition. It is the diﬀerence between the total
+amount of sell orders at prices lower than k and that of buy orders at prices higher than k. For any X = (X+, X−) ∈E we
+deﬁne a unique pair (pB(X), pA(X)) ∈N × N such that
+(2.11)
+pA(X) = inf{k ∈{1, . . . , d}, gX(k) > 0}
+and
+pB(X) = sup{k ∈{1, . . . , d}, gX(k) < 0}.
+Note that
+(2.12)
+X ∈L ⇐⇒pB(X) = b(X) and pA(X) = a(X).
+Thus, if X ∈L, then pA(X) and pB(X) are the ask and bid prices of X respectively. Therefore, one can view pA(X) and
+pB(X) as extending the deﬁnition of a(X) and b(X) when X̸ ∈L. Now we have the following proposition, whose proof can be
+found in Appendix A.
+4
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+1
+2
+3
+4
+5
+new sell
+new buy
+buy orders
+sell orders
+clearing
+1
+2
+3
+4
+5
+6
+7
+8
+9
+1
+2
+3
+4
+5
+buy orders
+sell orders
+Fig. 4: Market clearing by order matching. Left: arrival of new orders. Right: state W = C(X) of the order book after clearing.
+Market clearing is processed as follows: sell orders with prices lower than 4 are matched with buy orders with prices higher
+than 4 to achieve the maximum volume of transaction. Then the executed orders at each price level are determined by the
+price priority rule: one sell order at price 3, another sell order at price 4 and two buy orders at price 7.
+Proposition 2.4 (Market clearing by order-matching). The map C : E →L deﬁned by C(X) = (C(X)+, C(X)−) where
+(2.13)
+C(X)+ =
+(
+τpB(X)(X+)
+if gX(pB(X)) ≤−X+
+pB(X),
+τpB(X)−1(X+) −min{0, gX(pB(X))}epB(X)
+if gX(pB(X)) > −X+
+pB(X),
+(2.14)
+C(X)−=
+(
+τ pA(X)(X−)
+if gX(pA(X)) ≥X−
+pA(X),
+τ pA(X)+1(X−) + max{0, gX(pA(X))}epA(X)
+if gX(pA(X)) < X−
+pA(X),
+is the unique order-matching clearing operator in Def 2.3.
+Remark 2.5. If C(X)+̸ = 0, it can be shown that gX(pB(X)) < 0. In this case, the min operator in (2.13) can be removed
+i.e.
+min{0, gX(pB(X))} = gX(pB(X)).
+A similar remark can be made when C(X)−̸ = 0: then gX(pA(X)) > 0 and the
+maximum operator in (2.14) can be removed. The cases where the min or max operators are needed correspond to cases where
+one side is wiped out after clearing.
+The rationale for formulas (2.13) and (2.14) is as follows. Take (2.13) for C(X)+ as an example. By deﬁnition, we have
+gX(pB(X) + 1) ≥0. This means that, i ≥pB(X) + 1, the number of sell orders SX(i) exceeds the number of buy orders BX(i).
+Thus, all buy orders at such prices will be executed. On the other hand, we have gX(pB(X) −1) < 0. So, at prices smaller or
+equal to pB(X) −1, the number of buy orders exceeds the number of sell orders, and hence all buy orders at such prices will
+remain unexecuted. The outstanding question is how many buy orders at price pB(X) do remain. For this, we examine the
+quantity
+Q =: gX(pB(X)) + X+
+pB(X) =
+X
+i≤pB(X)
+X−
+i −
+X
+i≥pB(X)+1
+X+
+i .
+This quantity represents the number of sell orders at prices less than or equal to pB(X) minus the number of buy orders at
+price larger than or equal to pB(X) + 1. So, we have the alternative:
+• either Q ≤0. Then, all sell orders at prices less than or equal to pB(X) can be executed against buy orders at price
+larger than or equal to pB(X) + 1. So, all buy orders at price pB(X) remain. Then, C(X)+ is just the truncation
+of X+ by 0 at prices larger than or equal to pB(X) + 1, i.e. C(X)+ = τpB(X)(X+), which is the ﬁrst alternative of
+(2.13);
+• or Q > 0. Then, we need to take some buy orders at price pB(X) to execute against the remaining sell orders at
+prices less than or equal to pB(X). This number of executed buy orders is exactly Q. In this case
+C(X)+ = τpB(X)(X+) −QepB(X) = τpB(X)−1(X+) + (X+
+pB(X) −Q)epB(X) = τpB(X)−1(X+) −gX(pB(X))epB(X),
+which is the second alternative of (2.13).
+Now, we consider an important example which will be central to the study of Markovian order ﬂow processes later. In the
+following proposition, we describe how market clearing by order matching operates in the case of elementary order ﬂow events.
+The proof can be found in Appendix B.
+Proposition 2.6. Let X = (X+, X−) ∈L ∩E+, where E+ := {X ∈E, such that X+̸ = 0 and X−̸ = 0}. An order ﬂow
+event of size z < min{BX(1), SX(d)} at price k leads, after market clearing, to a new state X′ ∈L described as follows:
+• Case 1: limit buy order with volume z at price k:
+– If k ≤b(X), then X′ = (X+ + zek, X−) and (b(X′), a(X′)) = (b(X), a(X)).
+– if b(X) < k < a(X), then X′ = (X+ + zek, X−) and (b(X′), a(X′)) = (k, a(X)).
+– if a(X) ≤k < S−1
+X (z), then X′ = (X+ + (z −SX(k))ek, τ k+1(X−)) and
+(b(X′), a(X′)) = (k, S−1
+X (SX(k) + 1)).
+– If S−1
+X (z) ≤k, then X′ = (X+, τ S−1
+X (z)+1(X−) + (SX(S−1
+X (z)) −z)eS−1
+X (z)) and
+(b(X′), a(X′)) = (b(X), S−1
+X (z + 1)).
+5
+
+• Case 2: limit sell order with volume z at price k:
+– If a(X) ≤k, then X′ = (X+, X−+ zek) and (b(X′), a(X′)) = (b(X), a(X)).
+– If b(X) < k < a(X), then X′ = (X+, X−+ zek) and (b(X′), a(X′)) = (b(X), k).
+– If B−1
+X (z) < k ≤b(X), then X′ = (τk−1(X+), X−+ (z −BX(k))ek) and
+(b(X′), a(X′)) = (B−1
+X (BX(k) + 1), k).
+– If k ≤B−1
+X (z), then X′ = (τB−1
+X (z)−1(X+) + (BX(B−1
+X (z)) −z)eB−1
+X (z), X−) and
+(b(X′), a(X′)) = (B−1
+X (z + 1), a(X)).
+• Case 3: cancellation of z buy orders at price k:
+– If k = b(X), z ≤X+
+k , then X′ = (X+ −zek, X−) and (b(X′), a(X′)) = (B−1
+X (z + 1), a(X)).
+– If k < b(X), z ≤X+
+k or k = b(X), z < X+
+k , then X′ = (X+ −zek, X−) and (b(X′), a(X′)) = (b(X), a(X).
+• Case 4: cancellation of z sell orders at price k:
+– If k = a(X), z ≤X−
+k , then X′ = (X+ −zek, X−) and (b(X′), a(X′)) = (b(X), S−1
+X (z + 1)).
+– If k > a(X), z ≤X−
+k or k = a(X), z < X−
+k , then X′ = (X+ −zek, X−) and (b(X′), a(X′)) = (b(X), a(X).
+Again, let us give the rationale for these formulas. We take Case 1 as an example and leave the other cases to the reader.
+Case 1 corresponds to the arrival of a limit buy order at price k and size z, i.e. the state before clearing is (X+ +zek, X−) ∈E.
+There are four outcomes corresponding to the following subcases:
+• Subcase 1: the price k of the new order is less than or equal to the bid price b(X). Then it cannot match any sell
+order and so, it cannot be executed. In other words, (X+ + zek, X−) ∈L and this clearing operator acts as the
+identity on this conﬁguration. Moreover, the new order does not change the bid price because its price is less than or
+equal to the bid price b(X). So, the ask and bid prices are unchanged as well.
+• Subcase 2: the price k is strictly larger than the bid price b(X) and strictly smaller than the ask price a(X). The
+situation is similar to the previous case because the order cannot be executed and the clearing operator acts as the
+identity on this conﬁguration. However, the bid price changes to k since the price of the new order is larger than
+b(X). The ask price is kept unchanged.
+• Subcase 3: the price k is larger than or equal to a(X) and strictly smaller than S−1
+X (z). Indeed, S−1
+X (z) is the smallest
+price such that the total number of sell orders of prices lower than or equal to this price is larger than or equal to z.
+If k is strictly less than this price, this means that the new buy order can only be partially matched with sell orders of
+price lower than or equal to k. The number of such sell orders is SX(k) and thus, after clearing, it remains z −SX(k)
+buy orders at price k. All sell orders at price lower than or equal to k are cleared. So the sell side of the order book
+after clearing is the truncation of the sell side before clearing with all sell orders at prices less or equal to k set to 0.
+The new bid price is k while the new ask price corresponds to the lowest price of the sell orders of price strictly larger
+than k. Such price can be computed as S−1
+X (SX(k) + 1)).
+• Subcase 4: the price k is larger than or equal to S−1
+X (z). In this case, the buy order is totally executed because there
+are more sell orders at price lower than k than the size z of the order. So, after clearing, the buy side of the order
+book is back to its value before the arrival of the new order. On the sell side all orders at prices larger than or equal
+to S−1
+X (z) + 1 remain. At price S−1
+X (z), sell orders are matched with z buy orders, so it remains (SX(S−1
+X (z)) −z)
+orders at this price. The bid price is unchanged compared with its value before the arrival of the new order. The new
+ask price corresponds to the lowest price of the remaining sell orders of price larger than or equal to S−1
+X (z). Such
+price can be computed as S−1
+X (z + 1)).
+We end with the following description of the set C−1({X}) of order conﬁgurations which are mapped into X ∈L through
+clearing (for a proof see Appendix C). The deﬁnition of C−1({X}) will be used when we describe the order book dynamics
+when the order ﬂow is Markovian.
+Proposition 2.7 (Pre-image of clearing operator).
+For X ∈L,
+C−1({X}) = {X + Z
+ Z ∈E, |Z+| = |Z−|,
+(2.15)
+sup supp (Z−) ≤inf supp (Z+),
+sup supp (Z−) ≤a(X), inf supp (Z+) ≥b(X)}.
+6
+
+3. Markovian order ﬂow. We now consider the case where the order ﬂow is described by a Markovian marked
+point process M, which corresponds to the case where the intensity of order arrivals and cancellations only depends on the
+current state of the order book. In this case the order book process X is a Markov process with state space L. The main result
+of this section is a decomposition of the inﬁnitesimal generator of X in terms of the inﬁnitesimal generator of M and of the
+clearing operator.
+3.1. Generator of the order ﬂow. We consider a description of the order ﬂow as a Markovian point process,
+described by a transition kernel po: E × E →R+. This transition kernel can be written in terms of the the intensities (or
+arrival rates) of buy orders, sell orders, cancellation of buy orders and cancellation of sell orders denoted by λ+, λ−, C+ and
+C−respectively. These are functions {1, ..., d} × E × N →R+ of the order price, current state and order size.
+We impose three additional conditions on the functions λ± and C±:
+(i) If the size z of the new order is too large, then one side of the order book might be wiped out. We want to discard
+this situation as we want to focus on a generic situation where the two sides of the order book are non-empty. Thus,
+we require z < min{BX(1), SX(d)}.
+(ii) We impose an upper bound M/(1 + z)α respectively on the four arrival rates and α > 1.
+(iii) Cancellation of orders will not be placed when there are fewer existing orders at the corresponding price than the size
+of the cancellation order. Therefore, C±(i, X, z) = 0 when z > X±
+i .
+We summarise these three conditions into the following assumption:
+Assumption 3.1. λ+, λ−, C+, C−satisfy the following two conditions:
+(i) ∀X ∈E, ∀i ∈{1, . . . , d}, λ±(i, X, z) = C±(i, X, z) = 0 if z ≥min{BX(1), SX(d)}.
+(ii) ∀X ∈E, ∀i ∈{1, . . . , d} and ∀z ∈N\{0}, λ±(i, X, z) ≤M/(1 + z)α and C±(i, X, z) ≤M/(1 + z)α, with α > 1.
+(iii.) ∀X ∈E, C±(i, X, z) = 0 when z > X±
+i .
+Under Assumption 3.1, we can now write the expression of the generator Lo of the order ﬂow: Lo is an operator acting on the
+space B(E) of bounded functions on the general state space E as follows: for any f ∈B(E) and X ∈E, Lo is deﬁned by:
+(3.1)
+Lof(X) = lim
+h→0
+E[f(Xh)|X0 = X] −f(X)
+h
+.
+From the standard theory of Markov process [11], Lo is given for any f ∈B(E) and X ∈E by
+(3.2)
+Lof(X) =
+X
+Y ∈E
+[f(Y ) −f(X)]po(X, Y ).
+If we insert the expression of po in terms of the order arrival rates, we end up with the following expression:
+Lof(X) =
+∞
+X
+z=1
+d
+X
+i=1
+n
+λ+(i, X, z)[f(X+ + zei, X−) −f(X)] + λ−(i, X, z)[f(X+, X−+ zei) −f(X)]
+(3.3)
++ C+(i, X, z)[f(X+ −zei, X−) −f(X)] + C−(i, X, z)[f(X+, X−−zei) −f(X)]
+o
+.
+We note that the sum over z contains a ﬁnite number of terms only thanks to Assumption 3.1.
+3.2. Generator of the order book process. We now deﬁne the order book process in the Markovian framework
+as follows:
+Definition 3.2. A limit order book (LOB) {Xt}t≥0, Xt : L →L is a Markovian point process deﬁned as follows: Suppose
+the sequence of event times t1, . . . , tk−1 and the corresponding states X1, . . . , Xk−1 are deﬁned where Xj is the state of the
+LOB during [tj−1, tj) and t0 = 0. Then tk and Xk are deﬁned as follows: (tk −tk−1) is distributed according to the exponential
+law of rate P
+Y ∈E po(Xk−1, Y ) and Xk ∈L is distributed according to the probability
+P
+Y ∈C−1({Xk}) po(Xk−1, Y )
+P
+Y ∈E po(Xk−1, Y )
+,
+where C is the clearing operator deﬁned in Prop. 2.4.
+Then we can write the generator L of the order book process as follows:
+Proposition 3.3. The generator of the order book process L (deﬁned by a similar formula as Eq. (3.1)) is given for any
+f ∈B(L) and X ∈L by
+(3.4)
+Lf(X) =
+X
+Y ∈L
+p(X, Y )[f(Y ) −f(X)]
+with
+p(X, Y ) =
+X
+Z∈C−1({Y })
+po(X, Z),
+∀X, Y ∈L.
+This proposition states that the jump rate p of the order book to a state Y ∈L is given in terms of the jump rate po of the
+order ﬂow and of the pre-image C−1({Y }) of {Y } by the clearing operator C .
+Proof. For any X, Y ∈L, the transition from X to Y through the LOB process occurs when the order ﬂow generates a
+transition from X to a transient state ˜
+X ∈E which is mapped by the clearing operator to Y . Then the transition probability
+from ˜
+X to Y is the sum of the transition probabilities of the transient order book process from X to ˜
+X over all ˜
+X ∈C−1({Y }).
+Therefore,
+(3.5)
+p(X, Y )
+P
+Z po(X, Z) =
+X
+W ∈C−1({Y })
+po(X, W)
+P
+Z po(X, Z) ,
+which leads to (3.4).
+7
+
+3.3. Decomposition of the inﬁnitesimal generator. To simplify the calculation of the generator L of the
+LOB process, we decompose it into the generator Lo of the order ﬂow, an operator ˜C related with the clearing operator C and
+a restriction operator Ξ. The general idea is pictured in Fig. 5. We then introduce the expressions of the operators ˜C and Ξ.
+B(E)
+B(E)
+B(L)
+B(L)
+Lo
+Ξ
+˜C
+L
+Fig. 5: Relation between the generator of the order ﬂow Lo and the generator of the order book process L using operators ˜C
+and Ξ. The diagram is commutative.
+We deﬁne the restriction operator Ξ which restricts a function on E to a function on L:
+Definition 3.4 (Restriction operator). Deﬁne Ξ : B(E) →B(L), f 7→Ξ(f) as follows: for any f ∈B(E),
+(3.6)
+Ξf = f|L.
+Definition 3.5 (Action of clearing operator on functions of the state). Deﬁne ˜C : B(L) →B(E), f 7→˜C(f) = f ◦C, i.e.
+for any f ∈B(L) and any X ∈E:
+(3.7)
+˜Cf(X) := f(C(X)).
+By ∥· ∥L(X,Y) we denote the operator norm of bounded operators from a Banach space X with norm ∥· ∥X to a Banach space
+Y with norm ∥· ∥Y, i.e. for any H ∈L(X, Y),
+(3.8)
+∥H∥L(X,Y) :=
+sup
+v∈X,v̸=0
+∥H(v)∥Y
+∥v∥X
+.
+For any f ∈B(E), let ∥f∥B(E) = supX∈E |f(X)| and for any g ∈B(L), let ∥g∥B(L) = supX∈L |g(X)|. Then B(E) and B(L)
+are Banach spaces. For any X ∈E, deﬁne ∥X∥= Pd
+i=1(|X+
+i | + |X−
+i |). Then E and L are discrete subspaces of Rd × Rd, which
+is normed by ∥X∥. The following lemma shows that Ξ, Lo and ˜C are bounded.
+Lemma 3.6. Ξ, Lo and ˜C are bounded linear operators. Moreover, Ξ ˜C = IB(L) where IB(L) is the identity of B(L).
+Proof. From the deﬁnition of Ξ, Lo and ˜C, it is easy to see that they are linear. Now, since C is surjective from E to L, we
+have
+(3.9)
+∥˜Cf∥B(E) = sup
+X∈E
+|f ◦C(X)| = sup
+X∈L
+|f(X)| = ∥f∥B(L) = 1,
+showing that ˜C is a bounded operator from B(L) to B(E) with norm 1: ∥˜C∥L(B(L),B(E)) = 1. Then, with Eq. (3.3) and
+Assumption 3.1, we have
+|Lof(X)| =
+d
+X
+i=1
+∞
+X
+z=1
+λ+(i, X, z)[|f(X+ + zei, X−)| + |f(X)|] + λ−(i, X, z)[|f(X+, X−+ zei)| + |f(X)|]
++C+(i, X, z)[|f(X+ −zei, X−)| + |f(X)|] + C−(i, X, z)[|f(X+, X−−zei)| + |f(X)|] ≤8dM∥f∥B(E),
+showing that Lo is bounded with ∥Lo∥L(B(E),B(E)) ≤8mMd, where M, m are deﬁned in Assumption 3.1. For Ξ, we have
+∥Ξf∥B(L) = sup
+X∈L
+|Ξf(X)| = sup
+X∈L
+|f(X)| ≤sup
+X∈E
+|f(X)| = ∥f∥B(E) = 1.
+So Ξ is bounded. Moreover, it is easy to show that ∥Ξ∥L(B(E),B(L)) = 1. Furthermore, for any f ∈B(L) and X ∈L, we have
+˜Cf(X) = f(CX) = f(X).
+So Ξ ˜Cf(X) = f(X). Therefore Ξ ˜C = IB(L), which ﬁnishes the proof.
+Proposition 3.7 (Decomposition of the generator of the order book).
+We have
+(3.10)
+L = ΞLo ˜C.
+Proof. Let f ∈B(L), and X ∈L. Thanks to Eqs. (3.4) and of the fact that C(X) = X, we have
+ΞLo ˜Cf(X) = Lo ˜Cf(X) = Lo( ˜Cf)(X) =
+X
+Y ∈E
+po(X, Y )[ ˜Cf(Y ) −˜Cf(X)] =
+X
+Y ∈E
+po(X, Y )[f(C(Y )) −f(C(X))]
+=
+X
+Y ∈E
+po(X, Y )[f(C(Y )) −f(X)] =
+X
+Z∈L
+[f(Z) −f(X)]
+X
+Y ∈C−1({Z})
+po(X, Y ) =
+X
+Z∈L
+[f(Z) −f(X)]p(X, Z) = Lf(X).
+8
+
+This proposition shows that the diagram in Figure 5 is commutative.
+This decomposition permits the mathematical
+determination of the generator of order book dynamics as shown in the following corollary.
+Corollary 3.8. For f ∈B(L) and X ∈L, we have
+Lf(X) = ΞLof(CX) =
+∞
+X
+z=1
+n a(X)−1
+X
+i=1
+λ+(i, X, z)[f(X+ + zei, X−) −f(X)]
+(3.11)
++
+S−1
+X (z)−1
+X
+i=a(X)
+λ+(i, X, z)[f(X+ + (z −SX(i))ei, τ i+1(X−)) −f(X)]
++
+d
+X
+i=S−1
+X (z)
+λ+(i, X, z)[f(X+, τ S−1
+X (z)+1(X−) + (SX(S−1
+X (z)) −z)eS−1
+X (z)) −f(X)]
++
+d
+X
+i=b(X)+1
+λ−(i, X, z)[f(X+, X−+ zei) −f(X)]
++
+b(X)
+X
+i=B−1
+X (z)+1
+λ−(i, X, z)[f(τi−1(X+), X−+ (z −BX(i))ei) −f(X)]
++
+B−1
+X (z)
+X
+i=1
+λ−(i, X, z)[f(τB−1
+X (z)−1(X+) + (BX(B−1
+X (z)) −z)eB−1
+X (z), X−) −f(X)]
++
+b(X)
+X
+i=1
+C+(i, X, z)[f(X+ −zei, X−) −f(X)] +
+d
+X
+i=a(X)
+C−(i, X, z)[f(X+, X−−zei) −f(X)]
+o
+.
+Proof. For any f ∈B(L) and X ∈L, by Proposition 3.7 we have Lf(X) = ΞLof(CX). This, together with Eq. (3.3) and
+Assumption 3.1 implies that
+Lf(X) =
+d
+X
+i=1
+∞
+X
+z=1
+n
+λ+(i, X, z)[f(C(X+ + zei, X−)) −f(X)] + λ−(i, X, z)[f(C(X+, X−+ zei)) −f(X)]
++ C+(i, X, z)[f(C(X+ −zei, X−)) −f(X)] + C−(i, X, z)[f(C(X+, X−−zei)) −f(X)]
+o
+.
+Now we calculate the ﬁrst term Pd
+i=1
+P∞
+z=1 λ+(i, X, z)[f(C(X++zei, X−))−f(X)] of the right-hand side of the above equation,
+leaving the other terms to the reader. We recall that, from Proposition 2.6, we have
+C(X+ + zei, X−) =
+
+
+
+
+
+
+
+(X+ + zei, X−)
+if i < a(X),
+(X+ + (z −SX(i))ei, τ i+1(X−))
+if a(X) ≤i < S−1
+X (z),
+(X+, τ S−1
+X (z)+1(X−) + (SX(S−1
+X (z)) −z)eS−1
+X (z))
+if S−1
+X (z) ≤i ≤d.
+Consequently, we have
+d
+X
+i=1
+∞
+X
+z=1
+λ+(i, X, z)[f(C(X+ + zei, X−)) −f(X)] =
+∞
+X
+z=1
+n a(X)−1
+X
+i=1
+λ+(i, X, z)[f(X+ + zei, X−) −f(X)]
++
+S−1
+X (z)−1
+X
+i=a(X)
+λ+(i, X, z)[f(X+ + (z −SX(i))ei, τ i+1(X−)) −f(X)]
++
+d
+X
+i=S−1
+X (z)
+λ+(i, X, z)[f(X+, τ S−1
+X (z)+1(X−) + (SX(S−1
+X (z)) −z)eS−1
+X (z)) −f(X)]
+o
+,
+which corresponds to the ﬁrst three lines of (3.8). Similar computation can be done and leads to the result.
+As a consequence of Prop. 3.7, we have the following obvious proposition:
+Proposition 3.9. L deﬁned in Eq. (3.4) is a bounded linear operator on B(L).
+Consequently, L is a generator of a
+continuous group etL on B(L).
+3.4. Decomposition of the Kolmogorov backward equation of the LOB process. The Kolmogorov backward equation for the order book is deﬁned as follows: Given f ∈B(L), X ∈L and T ∈R+ a ﬁxed constant, let
+u(t, X) := E[f(XT )|Xt = X] for t ≤T. Then u(t, X) is the solution of
+(3.12)
+∂u(t, X)
+∂t
+= −Lu(t, X),
+u(T, X) = f(X).
+9
+
+The solution of this equation is: u(t, ·) = e(T −t)Lu(T, ·). Now, introducing a discrete time step ∆t, then we have u(t+∆t, X) =
+e−∆tLu(t, X).
+The next proposition shows that u(t + ∆t, X) can be approximated by Ξe−∆tLo ˜Cu(t, X) when ∆t is small
+enough. In other words, the solution of the Kolmogorov backward equation of the LOB process on a small time step ∆t can be
+approximated by the composition of the operator ˜C, the solution of the Kolmogorov backward equation for the order ﬂow on the
+same time-step and the operator Ξ as pictured in Figure 6. The iteration of these operations in time provide an approximation
+of the solution of the Kolmogorov-backward equation for the LOB as shown in Eq. (3.13).
+B(E)
+B(E)
+B(L)
+B(L)
+e−∆tLo
+Ξ
+˜C
+e−∆tL
+Fig. 6: Relation between the solution of the Kolmogorov backward equation of the order ﬂow e−∆tLo and that of the LOB
+process e−∆tL. This diagram is not exactly commutative, but the commutator is of order O(δt) as shown in Eq. (3.13).
+Proposition 3.10. We have
+(3.13)
+lim
+∆t→0 ∥(e−∆tL)
+T
+∆t −(Ξe−∆tLo ˜C)
+T
+∆t ∥B(L) = 0
+for any ﬁxed constant T ∈R+.
+Proof. Suppose
+T
+∆t = N is an integer. Using Taylor expansion, we have
+e−∆tL = IB(L) −∆tL + ∆t2
+2 L2 + o(∆t2)
+and
+e−∆tLo = IB(E) −∆tLo + ∆t2
+2 L2
+o + o(∆t2).
+Therefore, together with Lemma 3.6 and Proposition 3.7 we deduce
+Ξe−∆tLo ˜C = ΞIB(E) ˜C −∆tΞLo ˜C + ∆t2
+2 ΞL2
+o ˜C + o(∆t2) = IB(L) −∆tL + ∆t2
+2 ΞL2
+o ˜C + o(∆t2).
+Consequently, we deﬁne a linear map G∆t : B(L) →B(L), f 7→G∆tf as follows:
+G∆t = Ξe−∆tLo ˜C −e−∆tL
+∆t2
+.
+By its deﬁnition, it is easy to see that G∆t is bounded. Furthermore,
+∥G∆t∥L(B(L)) =
+ Ξe−∆tLo ˜C −e−∆tL
+∆t2
+
+L(B(L)) =
+ ΞL2
+o ˜C −L2
+2
+
+L(B(L)) + o(1) < ∞,
+which implies that
+lim
+∆t→0 ∥G∆t∥L(B(L)) =
+ ΞL2
+o ˜C −L2
+2
+
+L(B(L)) := β.
+So ∃δ > 0 such that ∀∆t < δ, ∥G∆t∥L(B(L)) < 2β. From
+(3.14)
+Ξe−∆tLo ˜C = e−∆tL + ∆t2G∆t.
+we expand (Ξe−∆tLo ˜C)N as follows:
+(Ξe−∆tLo ˜C)N = (e−∆tL + ∆t2G∆t)N
+= (e−∆tL)N +
+X
+(p1,...,pN )∈{0,1}N ,
+(p1,...,pN )̸=(1,...,1)
+N
+Y
+i=1
+e−pi∆tL(∆t2G∆t)1−pi.
+Therefore, we have
+(3.15)
+∥(e−∆tL)N −(Ξe−∆tLo ˜C)N∥L(B(L)) =
+
+X
+(p1,...,pN )∈{0,1}N ,
+(p1,...,pN )̸=(1,...,1)
+N
+Y
+i=1
+e−pi∆tL(∆t2G∆t)1−pi
+
+L(B(L))
+≤
+X
+(p1,...,pN )∈{0,1}N ,
+(p1,...,pN )̸=(1,...,1)
+N
+Y
+i=1
+∥e−∆tL∥pi
+L(B(L)) ∥∆t2G∆t∥1−pi
+L(B(L))
+≤
+N
+X
+i=1
+N
+i
+
+∥∆t2G∆t∥i
+L(B(L)) ∥e−∆tL∥N−i
+L(B(L)).
+10
+
+Since ∥e−∆tL∥L(B(L)) ≤e∆t∥L∥L(B(L)), and e∆t∥L∥L(B(L)) ≥1, for any i ≤N, we have
+∥e−∆tL∥N−i
+L(B(L)) ≤e∆t(N−i)∥L∥L(B(L)) ≤e∆tN∥L∥L(B(L)) = eT ∥L∥L(B(L)) = αT ,
+where αT does not depend on ∆t and where we have used that N∆t = T. This implies that for each i ≤N:
+N
+i
+
+∥∆t2G∆t∥i
+L(B(L)) ∥e−∆tL∥N−i
+L(B(L)) ≤αT
+(N)i
+i!
+(∆t)2i∥G∆t∥i
+L(B(L)) = αT
+(∆tT∥G∆t∥L(B(L)))i
+i!
+.
+Consequently,
+(3.16)
+∥(e−∆tL)N −(Ξe−∆tLo ˜C)N∥L(B(L)) ≤αT
+∞
+X
+i=1
+(∆tT∥G∆t∥L(B(L)))i
+i!
+= αT (e∆tT ∥G∆t∥L(B(L)) −1).
+Since ∥G∆t∥L(B(L)) < 2β when ∆t < δ, letting ∆t →0, we have
+(3.17)
+lim
+∆t→0 ∥(e−∆tL)N −(Ξe−∆tLo ˜C)N∥L(B(L)) ≤αT
+lim
+∆t→0(e∆tT ∥G∆t∥L(B(L)) −1) = 0,
+which ﬁnishes the proof.
+3.5. Decomposition of the adjoint of the generator L. We may also obtain a similar decomposition for
+the adjoint L∗of L, which intervenes in the forward Kolmogorov equation for the state probability distribution. L∗can be
+written as the composition of the adjoint operators ˜C∗, L∗
+o and Ξ∗. We ﬁrst introduce the expressions of these three adjoint
+operators.
+Let P(E) and P(L) be the spaces of bounded measures on E and L, which are the duals of B(E) and B(L)
+respectively.
+Lemma 3.11. The adjoint Ξ∗: P(L) →P(E) of Ξ is such that for any ν ∈P(L) and any measurable subset A of E:
+(3.18)
+Ξ∗ν(A) := ν(A ∩L).
+The adjoint ˜C∗: P(E) →P(L) of ˜C is such that for any µ ∈P(E), and any measurable subset A of L:
+(3.19)
+˜C∗µ(A) := µ(C−1(A)) =
+X
+Z∈A
+µ(C−1({Z})).
+The adjoint L∗
+o : P(E) →P(E) of Lo is such that for any measure µ ∈P(E) and any measurable subset A of E,
+(3.20)
+L∗
+oµ(A) =
+X
+X∈A
+X
+Y ∈E
+[po(Y, X)µ({Y }) −po(X, Y )µ({X})].
+Proof. For any f ∈B(E) and ν ∈P(L), we have
+(3.21)
+⟨f, Ξ∗ν⟩= ⟨Ξf, ν⟩,
+where ⟨, ⟩is the duality between B(E) and P(E) for the left-hand side and between B(L) and P(L) for the right-hand side.
+Then we expand the right-hand side of the above equation as:
+(3.22)
+⟨Ξf, ν⟩=
+X
+X∈L
+Ξf(X)ν({X}) =
+X
+X∈E
+f(X)ν({X} ∩L).
+This together with Eq. (3.21) implies (3.18). Similarly, using that (C−1({X}))X∈L forms a partition of E, we have
+⟨˜Cf, µ⟩=
+X
+X∈E
+˜Cf(X)µ({X}) =
+X
+X∈E
+f ◦C(X)µ({X}) =
+X
+X∈L
+f(X)
+X
+X′∈C−1({X})
+µ({X′}) =
+X
+X∈L
+f(X)µ(C−1({X})),
+which implies (3.19). Finally, Eq. (3.20) is classical and is left to the reader. This ﬁnishes the proof.
+The relation between L∗and L∗
+o is as follows:
+Corollary 3.12. We have
+(3.23)
+L∗= ˜C∗L∗
+oΞ∗.
+Moreover, L∗is bounded on P(L) and consequently is the generator of the group etL∗for t ≥0. For any ﬁxed T ∈R+, we
+have:
+(3.24)
+lim
+∆t→0 ∥(e−∆tL∗)
+T
+∆t −( ˜C∗e−∆tL∗
+oΞ∗)
+T
+∆t ∥P(L) = 0.
+We leave the proof to the reader as it relies on the same argument as in Prop. 3.10. We remark that Eq. (3.23) can be expanded
+into an explicit expression for L∗. However, this expression is complex and not relatively enlightening so is not given here.
+Computing L∗directly from Eq. (3.23) is more convenient.
+11
+
+4. Dynamics of the centred order book. Traders are mostly interested in features of the LOB in the vicinity
+of the best available prices, such as the spread (i.e. the diﬀerence between the ask and bid prices) or the number of standing
+orders. In order to better focus on this region of the LOB, it is more convenient to use a moving frame with its origin at the
+mid-price, i.e., the arithmetic average of the ask and bid prices. This section describes the LOB in this moving frame, also
+called a centred order book. There are two main diﬀerences with the ﬁxed coordinates framework considered so far which make
+the description of the centred order book more complicated. One is the deﬁnition of the state space: since the mid-price is
+half-integer, we place the origin of the centred order book at the smallest larger integer to the mid-price (which is equal to the
+mid-price if the latter is an integer). A more detailed explanation can be found in the next section. The other diﬀerence is the
+need for an additional shift operator within the clearing operation, to make sure that the order book is always centred at the
+chosen reference price after clearing. In short, the clearing operator of the centred order book as a whole is a composition of a
+similar clearing operator to that used in the ﬁxed coordinates framework, and a shift operator.
+4.1. Centred limit order book. Our centred order book framework focuses on orders queuing within a distance
+±d′ of the mid-price, where d′ ∈N \ {0} is given. Indeed, in some markets, it is not possible to submit orders at a distance
+larger than d′ from the mid-price, where d′ is a given number of ticks. In other situations, one may assume that orders will be
+canceled if they move out of a window of size 2d′ centred at the mid-price. For this reason, we make the following assumption.
+Assumption 4.1. For an order book whose mid-price is pm, orders with prices lower than pm −d′ or higher than pm + d′
+are cancelled.
+Deﬁne
+Em := {X = (X+, X−) ∈N2d′+1 × N2d′+1
+such that X+̸ = 0 and X−̸ = 0}.
+The state space Lm for the centred order book is
+(4.1)
+Lm := {(X, p) ∈Em × Z,
+a(X) > b(X),
+a(X) + b(X) + ˆp = 0},
+where a(X) and b(X) are deﬁned by (2.2) and where, by the deﬁnition of the supremum and the inﬁmum of an empty set, we
+have inf supp(0) := d′ and sup supp(0) := −d′. Here, ˆp is the remainder of the Euclidean division of p by 2, i.e. ˆp = 0 if p is
+even and ˆp = 1 if p is odd. For (X, p) ∈Lm, X+ is the bid side of the centred order book, X−is the ask side, and p is the sum
+of the ask and bid prices, i.e. twice the value of the mid-price. The second condition in (4.1) is a centering condition. Denote
+by ⌈⌉: R →Z the round-oﬀoperator
+⌈q⌉:= min{i ∈Z, i ≥q},
+∀q ∈Z.
+Then, ⌈p
+2 ⌉is the origin of the centred coordinate system and Xi is the queue size at a distance i from the origin i.e. at price
+i + ⌈p
+2 ⌉. We stress again that the origin of the order book ⌈p
+2 ⌉is not exactly the mid-price p
+2 but the two coincide if p is even
+and only diﬀer by half a tick if p is odd. This is to avoid centering the order book at a non-integer mid-price. Figure 7 (resp. 8)
+shows the LOB in the absolute and centred coordinates when p is even (resp. odd). We also stress that twice the mid price p
+is now included in the state space, i.e. the state consists of (i) twice the mid price p and (ii) the vector X ∈Lm of queue sizes,
+and both will evolve in the course of the dynamics. As in the ﬁxed coordinate framework, this evolution will be decomposed
+into order ﬂow and clearing processes described below.
+1
+2
+3
+4
+5
+6
+7
+8
+9
+1
+2
+3
+4
+5
+buy orders
+sell orders
+Mid-price
+-3
+-2
+-1
+0
+1
+2
+3
+1
+2
+3
+4
+5
+Buy orders
+Sell orders
+p=10
+(mid-price=5)
+Fig. 7: Left: order book in the absolute coordinates. Right: same order book in centred coordinates with d′ = 3 levels on each
+side. The mid-price is 5, p = 10. b(X) = sup supp(X+) = −1 and a(X) = inf supp(X−) = 1. ˆp = 0 and a(X) + b(X) + ˆp = 0,
+so Eq. (4.1) is satisﬁed.
+12
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+1
+2
+3
+4
+5
+buy orders
+sell orders
+Mid-price
+-3
+-2
+-1
+0
+1
+2
+3
+1
+2
+3
+4
+5
+buy orders
+sell orders
+p=11
+(Mid-price=5.5)
+Fig. 8: Left: order book in absolute price coordinates. Right: Centred coordinates. d′ = 3, and the mid-price is 5.5, p = 11.
+a(X) = −2 and b(X) = 1. ˆp = 1. Therefore, a(X) + b(X) + ˆp = 0, which shows that the centering condition in Eq. (4.1) is
+satisﬁed.
+4.2. Order ﬂow process. The order ﬂow process in centred coordinates is similar to that in ﬁxed coordinates. The
+extra variable p in the centred framework is not changed by the order ﬂow. So, the order ﬂow for the queue size part of the
+state X is described exactly like in Section 2.2, with E replaced by Em and L by L0 deﬁned by
+(4.2)
+L0 := {X ∈Em,
+a(X) > b(X)},
+while the order ﬂow leaves the value p of the state unchanged. We assume that the order ﬂow cannot wipe out either side of
+the order book, which is expressed by
+Assumption 4.2. We assume that
+P
+
+X(tk−) + ∆ˆ
+M(tk) ∈Em, ∀k ∈N
+
+= 1,
+where ˆ
+M is the marked Poisson point process introduced in Section 2.2 expressed now in centred coordinates.
+4.3. Clearing process in centred coordinates. We now adapt the deﬁnitions of Section 2.3 to centred
+coordinates.
+Definition 4.3. A clearing operator in centred coordinates is a map Cm : Em × Z →Lm such that ∀(X, p) ∈Lm,
+Cm(X, p) = (X, p).
+We now describe how clearing via order matching operates in centred coordinates. Figure 9 gives an example of clearing of
+a centred order book following an incoming order. Orders are ﬁrst executed as they were in the ﬁxed coordinate framework.
+Then, a translation of the origin of the order book to match the updated mid-price is needed. Thus, market clearing of the
+centred order book is the composition of an order-matching operator identical to the operator C introduced in Eqs. (2.13) and
+(2.14), followed by a shift of the book to center it back to the smallest integer larger to the mid-price. We now describe these
+two steps successively.
+-3
+-2
+-1
+0
+1
+2
+3
+1
+2
+3
+4
+5
+new sell
+new buy
+buy orders
+sell orders
+-3
+-2
+-1
+0
+1
+2
+3
+1
+2
+3
+4
+5
+buy orders
+sell orders
+-3
+-2
+-1
+0
+1
+2
+3
+1
+2
+3
+4
+5
+buy orders
+sell orders
+Fig. 9: Left: Conﬁguration of a centred order book after the arrival of new orders: the initial state of the centred order book
+before the arrival of new orders is in plain blue and red for buy and sell orders respectively. Three sell orders (light red), and
+two buy orders (light blue) arrive. Initial mid-price is p
+2 = 5. Middle: conﬁguration X′ of the order book after execution of
+matched orders. We note that a(X′) + b(X′) = inf supp(X′−) + sup supp(X′+) = 1. Thus, p′ = p + a(X′) + b(X′) = 11 and
+ˆp′ = 1. So ˆp′ + a(X′) + b(X′) = 2̸ = 0 and the second condition of Eq. (4.1) is not satisﬁed. Right: The center of the order
+book is shifted to the right by one unit to restore the second condition of Eq. (4.1).
+Step 1: clearing process. In this step, we deﬁne a clearing operator C′: Em →L0. This operator is identical with the
+clearing operator C in the ﬁxed coordinate framework after E is changed into Em and L into L0. So, we refer the reader to
+Section 2.4 for details.
+13
+
+Step 2: centering process. In the deﬁnition of the centering operator, we will need to pay attention to the fact that
+because of Assumption 4.1, some orders at the boundary of the order book may drop outside its range after shifting and need
+to be cancelled. After the ﬁrst step, the state (X′, p) of the order book belongs to L0 × Z. So the centering operator J deﬁned
+below maps L0 × Z to Lm. For (p, p′) ∈Z2 deﬁne [p, p′] = ⌈p′
+2 ⌉−⌈p
+2 ⌉. Then the centering operator is deﬁned as follows:
+Definition 4.4 (Centering operator). Deﬁne J : L0 × Z →Lm by J(Y, p) = (X, p′) where
+(4.3)
+(
+p′ = p + ∆p
+with
+∆p = a(Y ) + b(Y ) + ˆp,
+X = σ[p,p′](Y ).
+and where the map σi : N2d′+1 × N2d′+1 →N2d′+1 × N2d′+1 is deﬁned by σi(Y ) = (σ+
+i (Y ), σ−
+i (Y )) with
+(4.4)
+(
+σ±
+i (Y )j = 0
+if j > min{d′, d′ −i} or j < max{−d′, −d′ −i},
+σ±
+i (Y )j = Y ±
+j+i
+otherwise.
+The centering operator J in the above deﬁnition consists of: (i) the computation of the new mid-price p′, and (ii) the corresponding shift of the coordinate system, σi being the shift operator. The next lemma, whose proof is given in Appendix D,
+shows that the image of J coincides with Lm:
+Lemma 4.5. Im(J) = Lm.
+Proposition 4.6. The clearing operator in centered coordinates is the composition of the order-matching operator C′ and
+the centering operator J: Cm : Em × Z →Lm deﬁned by
+(4.5)
+Cm(X, p) = J(C′(X), p).
+is a clearing operator satisfying Deﬁnition 4.3.
+Proof. From Lemma 4.5 we obtain that the operator Cm is a map from Em to Lm. Moreover, for any (X, p) ∈Lm, we
+claim that Cm(X, p) = (X, p). Indeed, deﬁne (Z, p′) =: Cm(X, p) = J(C′(X), p). Since (X, p) ∈Lm, we have C′(X) = X and
+a(X) + b(X) + ˆp = ∆p = 0. Therefore from Eq. (4.3), p′ = p + ∆p = p and hence Z = σ0(X) = X. This shows the claim and
+ends the proof.
+To sum up, like in the ﬁxed coordinate framework, the inﬁnitesimal evolution of the centred order book can be pictured as
+follows:
+(X(tk−), p(tk−)) ∈Lm
+Order ﬂow
+−−−−−−−→
+(X(tk−) + ∆ˆ
+M(tk), p(tk−)) ∈Em × Z
+Clearing
+−−−−−−→
+(X(tk), p(tk)) = Cm((X(tk−) + ∆ˆ
+M(tk), p(tk−))) ∈Lm.
+4.4. Markovian case: inﬁnitesimal generator for the centred order book. We further assume that
+the order ﬂow is a Markov point process. As a consequence, the LOB itself is a Markov process which can be described by its
+inﬁnitesimal generator. Let λm
++ (i, (X, p), z), λm
+−(i, (X, p), z), Cm
++ (i, (X, p), z), Cm
+−(i, (X, p), z) be respectively the rate of arrival
+of a buy order, a sell order, a cancellation of buy order and a cancellation of sell order of size z and price i given that the initial
+state of the order book is (X, p). We further assume that all intensities are bounded and that cancellations can only aﬀect
+existing orders, which is expressed by:
+Assumption 4.7. λm
++ , λm
+−, Cm
++ , Cm
+−are such that
+(i) ∀(X, p) ∈Em × Z, ∀i ∈{−d′, . . . , d′}, λm
+± (i, (X, p), z) = Cm
+± (i, (X, p), z) = 0 if z ≥min{Pd′
+i=0 X+
+i , P−1
+i=−d′ X−
+i }.
+(ii) There exists M > 0 such that ∀(X, p) ∈Em × Z, ∀i ∈{−d′, . . . , d′} and ∀z ∈N, λm
+± (i, (X, p), z) ≤M/(1 + z)α and
+Cm
+± (i, (X, p), z) ≤M/(1 + z)α with α > 1.
+(iii) ∀(X, p) ∈Em × Z, Cm
+± (i, (X, p), z) = 0 when z > X±
+i .
+Under Assumptions 4.1, 4.2 and 4.7, the centred order book process is Markovian and deﬁned as follows. Let pm
+o
+: Em ×
+Z →Em × Z be the transition kernel of the order ﬂow and deﬁne ˆρ(X, p) = P
+X′∈Em pm
+o ((X, p), (X′, p)).
+We recall that
+pm
+o ((X, p), (X′, p′)) = 0 if p̸ = p′.
+Definition 4.8. A centred order book {(Xt, pt)}t≥0, (Xt, pt) : Lm →Lm} is a Markovian point process deﬁned as follows:
+Suppose the sequence of event times t1, . . . , tk−1 and the corresponding states (X1, p1), . . . , (Xk−1, pk−1) are deﬁned where
+(Xj, pj) is the state of the centred order book during [tj−1, tj) and t0 = 0.
+Then tk and (Xk, pk) are deﬁned as follows.
+(tk −tk−1) is distributed according to the law ˆρ(Xk−1, pk−1) and (Xk, pk) is deﬁned by Cm(Y, p) where (Y, p) ∈Em × Z is
+distributed according to the probability pm
+o ((Y,p),(Xk−1,pk−1))
+ˆρ(Xk−1,pk−1)
+.
+Similarly to the case of absolute price coordinates, the generator Lm of the centred order book can be obtained as the
+composition of the generator of the order ﬂow process Lm
+o with an operator Cm related to the clearing operator and a restriction
+operator Ξm as shown in Figure 10:
+14
+
+B(Em × Z)
+B(Em × Z)
+B(Lm)
+B(Lm)
+Lm
+o
+Ξm
+˜Cm
+Lm
+Fig. 10: Relation between the generator of the order ﬂow Lm
+o
+and the generator of the order book process Lm in the centred
+coordinate framework. This ﬁgure is commutative.
+The generator Lm
+o of the order ﬂow in the centred coordinate framework can be written as follows: for any f ∈B(Em × Z)
+and any (X, p) ∈Em × Z,
+(4.6)
+Lm
+o f(X, p) =
+X
+Y ∈Em
+pm
+o ((X, p), (Y, p))[f(Y, p) −f(X, p)].
+The restriction operator Ξm : B(Em × Z) →B(Lm) is deﬁned for any f ∈B(Em × Z), by:
+(4.7)
+Ξ(f) = f|Lm,
+and ˜Cm : B(Lm) →B(Em × Z) is the operator deﬁned for any f ∈B(Lm), by:
+(4.8)
+˜Cm(f) = f ◦Cm.
+Then, we have the
+Proposition 4.9 (Generator of the centred order book). The following decomposition holds:
+(4.9)
+Lm = ΞmLm
+o ˜Cm.
+Consequently, Lm is a bounded operator and the generator of the group e−tLm. Moreover, for any ﬁxed constant T ∈R+, we
+have
+(4.10)
+lim
+∆t→0 ∥(e−∆tLm)
+T
+∆t −(Ξme−∆tLm
+o ˜Cm)
+T
+∆t ∥B(Lm) = 0.
+The proof of this proposition is similar to that of Prop. 3.7 and 3.10 and is ommitted.
+We can describe the formal adjoint Lm∗of Lm in terms of the adjoint of Lm
+o , ˜Cm and Ξm. Since we are not going to use
+the forward Kolmogorov equation in the paper, this development can be found in Appendix E.
+5. Examples. In this section, we show that our general framework of LOB dynamics applies to a variety of models
+previously proposed in the literature.
+The ﬁrst example (Model 1) deals with unit-size orders in the absolute coordinate
+framework. The second example (Model 2) extends it to order sizes belonging to a discrete set {1, . . . , m}. The last example
+(Model 3) considers the centred coordinate framework with a state-dependent window width.
+5.1. Model 1: Poisson order ﬂow with homogeneous order size. Cont et al. [9] proposed a continuoustime stochastic model of an order book in which the order ﬂow is a Poisson point process with six types of order book events,
+whose intensities are deterministic functions of the distance to the best (bid/ask) price. More precisely, letting X ∈L be the
+initial state of the order book, then a limit buy (resp. sell) order of unit size arrives at the order book at price p < a(X) with
+rate λ(a(X) −p) (resp. at price p > b(X) with rate λ(p −b(X))). A market buy (resp. sell) order of unit size arrives with rate
+µ. A cancellation of a buy (resp. sell) order of unit size arrives at price p < a(X) with rate θ(a(X) −p)|Xp| (resp. at price
+p > b(X) with rate θ(p −b(X))|Xp|). Here, λ is such that
+(5.1)
+λ(i) = β
+iα ,
+∀i ∈{1, . . . , d},
+while θ : N →R+, i 7→θ(i) is a function of the price i ∈{1, . . . , d} of an order, β, α and µ are constants and β and µ are
+positive. We now show that the model ﬁts in our general framework. Denote the order book process in this model as {X1}t≥0.
+Let new orders be only of unit size, i.e. the rate of arrival of new orders λ+(k, X, z), λ−(k, X, z), C+(k, X, z) and C−(k, X, z)
+are deﬁned for any X ∈E as follows:
+λ+(k, X, z) =
+
+
+
+
+
+β
+(a(X)−k)α
+if k < a(X), z = 1,
+µ
+if k = a(X), z = 1,
+0
+otherwise ,
+λ−(k, X, z) =
+
+
+
+
+
+β
+(k−b(X))α
+if k > b(X), z = 1,
+µ
+if k = b(X), z = 1,
+0
+otherwise,
+C+(k, X, z) =
+(
+θ(b(X) −k)X+
+k
+if k < b(X), z = 1,
+0
+otherwise,
+C−(k, X, z) =
+(
+θ(k −a(X))X−
+k
+if k > a(X), z = 1,
+0
+otherwise.
+15
+
+This model ﬁts in our framework. Thanks to it, we can easily ﬁnd the generator L1 of this LOB process. It is written for any
+X ∈L and f ∈B(L) as follows:
+L1f(X) =
+a(X)−1
+X
+i=1
+β
+(a(X) −i)α [f(X+ + ei, X−) −f(X)] + µ[f(X+, X−−ea(X)) −f(X)]
++
+d
+X
+i=b(X)+1
+β
+(i −b(X))α [f(X+, X−+ ei) −f(X)] + µ[f(X+ −eb(X), X−) −f(X)]
++
+b(X)−1
+X
+i=1
+θ(b(X) −i)X+
+k (t)[f(X+ −ei, X−) −f(X)]
++
+d
+X
+i=a(X)+1
+θ(i −a(X))X−
+k (t)[f(X+, X−−ei) −f(X)].
+5.2. Model 2: Poisson order ﬂow with orders of diﬀerent sizes. In real markets, orders do not always
+come with uniform size. In our framework, this situation can be described by choosing a proper order ﬂow. In this subsection,
+we consider a simple example in which orders can be placed with sizes z ∈{1, . . . , m}, where m ∈N is the maximum order size.
+Let λi
+± and Ci
+± be functions of k ∈N and X ∈L for i = 1, . . . , m. Then the rate of arrival of diﬀerent orders in the order
+ﬂow are deﬁned for k ∈{1, . . . , d}, z ∈N and X ∈L as follows:
+λ+(k, X, z) =
+(
+λz
++(k, X)
+if 1 ≤z ≤m,
+0
+otherwise,
+λ−(k, X, z) =
+(
+λz
+−(k, X)
+if 1 ≤z ≤m,
+0
+otherwise,
+(5.2)
+C+(k, X, z) =
+(
+Cz
++(k, X)
+if 1 ≤z ≤m,
+0
+otherwise,
+C−(k, X, z) =
+(
+Cz
+−(k, X)
+if 1 ≤z ≤m,
+0
+otherwise.
+(5.3)
+The generator Lo of the order ﬂow and that of the order book L can easily be deduced from (3.3) and (3.8) respectively, by
+restricting the sum over z to {1, . . . , m}. We will provide simulation results for this example in the next section.
+5.3. Model 3:
+Centred order book with state-dependent width. Abergel et al [1] modeled the
+dynamics of a centred order book up to a distance K ticks from the opposite price on each side: for an order book X ∈E, the ask
+side in the model is a = (a1, ..., aK) := (X−
+b(X)+1, ..., X−
+b(X)+K) and the bid side is b = (b1, ..., bK) := (X+
+a(X)−K, ..., X+
+a(X)−1).
+There are six types of order book events, namely limit buy (resp. sell) orders with intensity λL+
+i
+(resp. λL−
+i
+) at relative price
+level i, market buy (resp. sell) orders with intensity λM+ (resp. λM−), cancellation of buy (resp. sell) orders with intensity
+biλC+
+i
+(resp. aiλC−
+i
+) at relative price level i. Once a price level moves out of the coordinate, its depth is set to be a∞for the
+ask side and b∞for the bid side. While this model is centred at two reference prices - ask and bid prices, it is in fact centred
+to the mid-price with a state-dependent range of prices of the centred order book (which we refer to as the width). We can
+embed this model in our framework as follows.
+Let d > K be the width in the centred order book, i.e. (X+, X−, p) ∈Lm where X± = (X±
+−d, ..., X±
+d ). Then because of
+the assumption that every price level more than K ticks away from its opposite best available price is assigned with a default
+depth, we have X+
+i
+= b∞for i < a(X) −K and X−
+i
+= a∞for i > b(X) −K. This sets the relation between the state in our
+centred order book framework and the state deﬁned in the model of [1]. Therefore, we add an extra map ϱ : Lm 7→Lm to make
+sure that after clearing, the state is as deﬁned in [1]. This map is deﬁned by ϱ(X, p) = (Y, p), where
+Y +
+i
+=
+(
+b∞,
+if −d ≤i < a(X) −K,
+X+
+i ,
+if a(X) −K ≤i ≤d,
+Y −
+i
+=
+(
+X−
+i ,
+if −d ≤i ≤a(X) −K,
+a∞,
+if a(X) −K < i ≤d.
+The clearing operator for this model is thus ϱ ◦Cm. The intensity of the incoming order is as follows: for an order with price z
+and size k, we have
+λ+(k, (X, p), z) =
+
+
+
+
+
+λL+
+a(X)−i
+if a(X) −K ≤i < a(X),
+λM+,
+if i = d,
+0,
+otherwise ,
+λ−(k, (X, p), z) =
+
+
+
+
+
+λL−
+b(X)+i
+if b(X) < i ≤b(X) + K,
+λM−,
+if i = −d,
+0,
+otherwise ,
+C+(k, (X, p), z) =
+(
+λC+
+a(X)−iX+
+a(X)−i
+if a(X) −K ≤i < a(X),
+0,
+otherwise ,
+C−(k, (X, p), z) =
+(
+λ−+
+b(X)+iX−
+b(X)+i
+if b(X) < i ≤b(X) + K,
+0,
+otherwise .
+16
+
+The inﬁnitesimal generator of the order book process for this model can easily be deduced from the theory of Section 4.1.
+6. Numerical simulations. The decomposition of LOB dynamics as in 2 naturally lends itself to a modular approach where each of the components is implemented separately. In this section we show how this modularity and other features
+of our approach lead to a ﬂexible framework for numerical simulations.The decomposition of LOB dynamics as in 2 naturally
+lends itself to a modular approach where each of the components is implemented separately. In Sections 6.1 and 6.2, we apply
+this framework in association with a Monte Carlo simulation on the one hand and with the resolution of the Kolmogorov
+backward equation on the other hand, and compare the outcomes of these two simulations. We consider a test problem which
+consists of computing the probability of an ask price increase in two diﬀerent situations, corresponding to short and long-time
+intervals.
+6.1. Monte Carlo Simulation. In this subsection, we are interested in solving the following problem: conditioned
+on the initial state of the order book being (X+
+0 , X−
+0 ), ﬁnd the conditional probability that the ask price increases at the ﬁrst
+price movement. We use the ﬁxed coordinate framework and choose an order ﬂow according to Model 2 in Section 5.2 with
+intensities λ± and C± deﬁned in Eqs (5.2) and (5.3). As for the clearing operator, we choose the order-matching operator
+deﬁned in Eqs. (2.13) and (2.14). To validate our numerical simulations, we compare its outcome with data from the Lobster
+Database (https://lobsterdata.com). We use these data to calibrate the coeﬃcients of the model (such as the distribution of
+news orders as a function of their prices and sizes) as well as to estimate the targeted output, namely the conditional probability
+of an ask price increase at the ﬁrst price movement. The data concern the shares of the company Micron Technology (MU) on
+the day 2019/07/01. The order size distribution and the evolution of the ask and bid prices with respect to order book events
+are respectively shown in Figure 11 (a) and (b).
+(a) Distribution of limit sell orders w.r.t.
+sizes.
+(b) Evolution of the ask and bid prices.
+Fig. 11: (a): distribution of limit sell orders w.r.t. sizes up to 100500 shares. The value at 1000 is the percentage of orders with
+sizes more than 1000 shares. The horizontal axis is the size of an order and the vertical axis, the percentage of orders of that
+size. (b): evolution of the ask and bid prices before the 1000th order book event. The vertical axis is price in dollar times 10000
+while the horizontal axis is the event index (which is roughly proportional to time but not exactly because the time interval
+between two events is random).
+In Figure 11 (a), we see that most of the orders are of size 100 shares but with still a signiﬁcant number of orders of sizes 200
+shares or more. Consequently we will count order sizes in units of 100 shares, i.e., 4 units means 400 shares. In Figure 11 (b)
+we notice that the tick size is 100 (i.e. 0.01 dollar) and the diﬀerence between the ask and bid prices is one tick size most of
+the time (88% of the time). Therefore for the sake of simplicity, we initialise the state with an initial spread equal to 1 tick
+size. Moreover, as observed in the literature [2, 3], price inﬂuences the intensity of an order. Therefore we also investigate the
+relation between the relative price of an order to its best available price and the intensity of this order. Figure 12 (a) (resp.
+(b)) shows the intensities of sell orders (resp. cancellation of sell orders) at diﬀerent relative prices to the bid price (resp. ask
+price). In both ﬁgures, the diﬀerent curves corresponds to diﬀerent order sizes, from 1 to 6 units. From Figure 12 (a), we see
+that most sell orders arrive at a price one tick higher than the bid price and that the cancellation of sell orders arrive at prices
+equal to the ask price whatever order sizes.
+17
+
+(a) Sell order intensities
+(b) Cancellation of sell orders
+Fig. 12: (a): intensities of sell orders at diﬀerent prices relative to the bid price. (b): intensities of cancellation of sell orders at
+diﬀerent prices relative to the ask price. In the two ﬁgures, the diﬀerent curves corresponds to diﬀerent order sizes, from 1 to
+6 units. Units along the vertical axes are (second)−1.
+We let the dimension d of X+ and X−be 6, because the average size of the orders is around 3 units and B−1
+Xt (3) is less
+than or equal to 3 ticks, with an exception of 0.0006% and S−1
+Xt (3) is less than or equal to 3 ticks, with an exception of 0.08%.
+We take the initial states of the LOB to be X+
+0 = [b2, b1, z1, 0, 0, 0] and X−
+0 = [0, 0, 0, z2, a1, a2], and let zi range in {1, . . . , 6},
+and ai, bi range in the set extracted from the data of queue sizes (or depths) at prices 1 and 2 ticks from the ask and bid prices
+for i = 1, 2. We are interested in the dependence of the results on z1 and z2, which are respectively the volume of orders at
+the ask and bid prices and called the bid and ask depths. We consider two diﬀerent order ﬂow processes, respectively given by
+Model A and Model B as follows.
+In Model A, the intensity of orders, i.e. the rate of order arrival is null except for order sizes equal to 1 and for queue sizes
+below or above a certain threshold n according to the type of order. The intensity of each order type is calibrated from the
+data by equating it to the total number of this type of orders divided by the maximal price d = 6, and by the total time T.
+Given the set of data at hand, this calibration leads to
+λ+(k, X, z) =
+(
+11.6
+if X+
+k < n and z = 1,
+0
+otherwise,
+λ−(k, X, z) =
+(
+10.7
+if X−
+k < n and z = 1,
+0
+otherwise.
+C+(k, X, z) =
+(
+10.8
+if X+
+k ≥n and z = 1,
+0
+otherwise,
+C−(k, X, z) =
+(
+9.7
+if X−
+k ≥n and z = 1,
+0
+otherwise,
+where n = 300.
+In Model B, a more complex order ﬂow where the intensities of orders depend on order sizes ranging in {1, . . . , 6} and on
+the relative price to the ask or bid price according to the type of order is considered. The intensity of each type of orders is
+approximated by the total number of this type of orders at each relative price divided by the total time T. Again, calibration
+against data gives rise to the following formulas:
+λ+(k, X, z) =
+(
+βz,a(X)−k
+if X+
+k < n −z and 0 ≤a(X) −k ≤5,
+0
+otherwise,
+λ−(k, X, z) =
+(
+αz,k−b(X)
+if X−
+k < n −z and 0 ≤k −b(X) ≤5,
+0
+otherwise,
+C+(k, X, z) =
+(
+γz,b(X)−k
+if X+
+k > 0 and 0 ≤b(X) −k ≤5,
+0
+otherwise,
+C−(k, X, z) =
+(
+µz,k−a(X)
+if X−
+k > 0 and 0 ≤k −a(X) ≤5,
+0
+otherwise,
+with matrices α, µ, β, γ as follows:
+α =
+
+
+
+
+
+
+
+0.74
+4.23
+1.96
+0.53
+0.35
+0.28
+0.19
+2.68
+0.67
+0.05
+0.03
+0.05
+0.10
+1.79
+0.28
+0.02
+0.01
+0.01
+0.04
+0.49
+0.10
+0.01
+0.01
+0.02
+0.03
+0.31
+0.04
+0.01
+0.01
+0.05
+0.08
+1.55
+0.37
+0.06
+0.09
+0.15
+
+
+
+
+
+
+
+,
+µ =
+
+
+
+
+
+
+
+4.08
+1.76
+0.44
+0.32
+0.27
+0.28
+2.78
+0.44
+0.04
+0.04
+0.04
+0.04
+1.76
+0.18
+0.02
+0.01
+0.01
+0.04
+0.48
+0.09
+0.01
+0.01
+0.02
+0.15
+0.29
+0.03
+0.01
+0.01
+0.05
+0.003
+1.60
+0.26
+0.03
+0.11
+0.15
+0.28
+
+
+
+
+
+
+
+,
+18
+
+β =
+
+
+
+
+
+
+
+0.46
+3.95
+1.75
+0.35
+0.30
+0.39
+0.12
+2.65
+0.65
+0.07
+0.04
+0.05
+0.08
+1.48
+0.24
+0.02
+0.01
+0.01
+0.02
+0.49
+0.09
+0.01
+0.01
+0.01
+0.018
+0.30
+0.04
+0.01
+0.02
+0.04
+0.05
+1.26
+0.37
+0.09
+0.11
+0.15
+
+
+
+
+
+
+
+,
+γ =
+
+
+
+
+
+
+
+3.72
+1.49
+0.41
+0.28
+0.34
+0.42
+2.73
+0.44
+0.06
+0.05
+0.05
+0.05
+1.41
+0.17
+0.02
+0.01
+0.01
+0.02
+0.47
+0.08
+0.01
+0.01
+0.02
+0.16
+0.27
+0.03
+0.01
+0.01
+0.04
+0.002
+1.29
+0.28
+0.05
+0.12
+0.15
+0.28
+
+
+
+
+
+
+
+,
+and n = 300. To avoid confusion, here α1,1 = 0.74, α1,2 = 4.23 and α2,1 = 0.19. Details about the calibration of the coeﬃcients
+(using a kernel estimation method) and the implementation of the Monte-Carlo method can be found in [21]. The conditional
+probability of the ask price increase at the next price movement as a function of the ask and bid depths estimated from the
+data or computed by means of Model A and Model B using the Monte Carlo method are respectively shown in Figure 13 (a),
+(b) and (c).
+(a) Data
+(b) Model A
+(c) Model B
+Fig. 13: (a) conditional probability of an ask price increase as a function of the ask and bid depths: (a) estimated from the
+data; (b) simulated using Model A (uniform order sizes); (c) simulated using Model B (non-uniform order sizes).
+We see that the Monte Carlo simulations of both models agree qualitatively well with the experimental data. In particular,
+two main properties of the data are recovered in the simulation: when the ask depth increases, the conditional probability
+decreases; when the bid depth increases, the conditional probability increases. Secondly, we notice that Model B ﬁts the data
+better than Model A. The results of Model B also agree quantitatively well with the experimental data. This indicates that
+both the order size and the relative price of the orders inﬂuence the price dynamics, which agrees with other observations
+from the literature [2, 3]. In particular, comparisons between simulation results of a model where the order intensities are only
+dependent on the relative prices (which can be found in [21]) and the results of Model A and Model B show that large orders
+play a very important role in the evolution of the order book.
+19
+
+Fig. 14: Convergence of the forward Euler scheme for the backward Kolmogorov equation (3.12) using Method 1. We observe
+a superlinear convergence rate.
+The discrepancy between the simulations and the data can be attributed to several facts. First, the spread (i.e. the diﬀerence
+between the ask and bid prices) may have signiﬁcant inﬂuence on the conditional probability of the ask price increase at the
+next price movement. Indeed, if the spread is larger than 1, the probability of a limit sell order falling in the spread increases,
+which means that the probability of an ask price decrease gets larger. Since in the considered data, the spread is larger than
+1 about 10% of the time, this may explain why the conditional probability of an ask price increase is smaller in the data than
+with the model. Another reason could be that the sample size is still not large enough. Finally, more realistic simulations
+should involve more complex state-dependent intensities of new orders, taking into consideration the inﬂuence of the ask and
+bid depths of the order book on the trader’s choice of the order size.
+6.2. Kolmogorov backward equation. We now give an example of how the Kolmogorov backward equation
+(3.12) may be used to compute transition probabilities for price and order book dynamics. I Given the initial state of the
+order book being Y = (Y +, Y −), we seek to compute the conditional probability that the ask price at time T is larger than
+the initial ask price: P =: P[a(XT ) > a(Y )|X0 = Y ] = E[fY (XT )|X0 = Y ], where Xt denotes a trajectory of the LOB and
+fY (X) = 1{X∈L | a(X)>a(Y )} with 1S denoting the indicator function of the set S. We have P = wY (0, Y ) where wY (t, X) =
+E[fY (XT )|Xt = X] is the solution of the Kolmogorov backward equation (3.12) with terminal condition wY (T, X) = fY (X).
+We discretize the time interval [0, T] into NT =
+T
+∆t steps of length ∆t. Letting tn = n∆t where n = 0, . . . , NT with t0 = 0
+and tNT = T, we let the sequence {w(tn−1, X)}NT
+n=1 be such that w(tn−1, X) = e∆tLw(tn, X), where w(T, X) = fY (X). We
+present two methods for approximating w(tn−1, X).
+Method 1: we use a forward Euler discretization of e∆tL and write
+˜w(tn−1, X) = (IB(L) + ∆tL) ˜w(tn, X),
+where ˜w(tn, X) is the time discretized approximation of w(t, X) at time tn = n∆t.
+Method 2: we use the decomposition from Proposition 3.10 ﬁrst and write ˆw(tn−1, X) = Ξe∆tLo ˜C ˆw(tn, X). Then we apply a
+forward Euler discretization to e∆tLo and get:
+(6.1)
+ˆw(tn−1, X) = Ξ(IB(E) + ∆tLo) ˜C ˆw(tn, X).
+We note that, in view of the formula Ξ ˜C = IB(L), the two methods actually coincide. But this is a special feature resulting
+from the use of the forward Euler discretization. If, for instance, we used a second order approximation of the exponential,
+Method 1 would lead to
+˜w(tn−1, X) = (IB(L) + ∆tL + ∆t2L2
+2
+) ˜w(tn, X),
+whereas Method 2 would give
+ˆw(tn−1, X) = Ξ(IB(E) + ∆tLo + ∆t2L2
+o
+2
+) ˜C ˆw(tn, X).
+The two methods are diﬀerent because ΞL2
+o ˜C̸ = L2. Indeed L2 = ΞLo ˜CΞLo ˜C and ˜CΞ̸ = IB(E) ( ˜CΞ is a projection of B(E)
+on B(L) when B(L) is considered as a subspace of B(E)).
+In this work, we will restrict to the use of the forward Euler
+discretization, and will implement Eq. (6.1). We refer to [21] for the implementation details.
+20
+
+Ask
+Bid =1
+Bid =2
+Bid =3
+Bid =4
+Bid =5
+Bid =6
+1
+MC
+0.233 ± 0.009
+0.238 ± 0.009
+0.244 ± 0.009
+0.247 ± 0.009
+0.250 ± 0.009
+0.249 ± 0.009
+KBE
+0.226
+0.235
+0.242
+0.247
+0.250
+0.249
+2
+MC
+0.186 ± 0.009
+0.192 ± 0.009
+0.196 ± 0.009
+0.200 ± 0.009
+0.201 ± 0.009
+0.201 ± 0.009
+KBE
+0.183
+0.190
+0.197
+0.201
+0.204
+0.203
+3
+MC
+0.152 ± 0.008
+0.157 ± 0.008
+0.161 ± 0.008
+0.163 ± 0.008
+0.164 ± 0.009
+0.164 ± 0.008
+KBE
+0.151
+0.157
+0.163
+0.167
+0.169
+0.168
+4
+MC
+0.115 ± 0.007
+0.118 ± 0.007
+0.122 ± 0.008
+0.124 ± 0.007
+0.125 ± 0.007
+0.124 ± 0.008
+KBE
+0.120
+0.125
+0.130
+,0.134
+0.136
+0.135
+5
+MC
+0.193 ± 0.007
+0.097 ± 0.006
+0.099 ± 0.007
+0.100 ± 0.007
+0.102 ± 0.007
+0.102 ± 0.007
+KBE
+0.100
+0.105
+0.109
+0.112
+0.114
+0.113
+6
+MC
+0.099 ± 0.007
+0.101 ± 0.007
+0.104 ± 0.007
+0.105 ± 0.007
+0.107 ± 0.007
+0.106 ± 0.007
+KBE
+0.107
+0.112
+0.116
+0.119
+0.121
+0.120
+Table 1: Conditional probability of an ask price increase after 0.2s as a function of the bid and ask depths for Model B. Each
+box includes the results of the Monte Carlo simulation on the top line and that of the Kolmogorov equation on the bottom line.
+The results of the Monte Carlo simulation show the mean and the standard deviation over N∗= 500 experiments.
+Remark 6.1. In some cases where the operator e∆tLo can be explicitly computed, then the use of Method 2 would only
+involve the splitting error as quantiﬁed in Proposition 3.10.
+The intensities of the order ﬂow are the same as in Section 6.1 except that n = 10. For simplicity, the initial state X0
+is assumed to be X+
+0
+= [2, 4, z1, 0, 0, 0] and X−
+0
+= [0, 0, 0, z2, 4, 2]. We ﬁrst check that the numerical approximation of the
+conditional probability of an ask price increase in 0.2 s by means of the Kolmogorov equation of Model A solved by the forward
+Euler method (6.1) is of order 1, as it should. In Figure 14 (b), we plot the error in log scale between a numerical solution
+computed with a time step ∆t and a reference solution obtained by approximating the Kolmogorov equation with a very small
+time step ∆tmin = 1.25 × 10−4. The error is thus deﬁned by
+(6.2)
+Err(∆t) = | ˆw(0, X0, ∆t) −ˆw(0, X0, ∆tmin)|,
+where ˆw(0, X0, ∆t) is the numerical value of the conditional probability with time step ∆t. We can see by comparing the curve
+joining the simulation points with the line of slope 1 that the approximation is at least of order 1.
+Now, the simulations show that the depths at prices which are not the ask and bid prices have extremely small inﬂuence
+on the conditional probability of an ask price increase in 0.2 s. Then, for simplicity, we ﬁx these depths and compute this
+conditional probability for varying ask and bid depths, by means of the Kolmogorov equation (with time step ∆t ∼0.0005 s.)
+on the one hand and by Monte Carlo simulations on the other hand, in the conditions of Model B above. The results obtained
+by these two methods are shown side-by-side in Table 1. We notice the excellent agreement between the Kolmogorov and Monte
+Carlo simulations, as it should, because they are two approximations of the same process. To generate the whole table, the
+Monte Carlo method for 500 replications takes around 8 hours, while the Kolmogorov equation requires around 17 hours on our
+computer server. However, we notice that the time complexity of Monte Carlo simulations grows faster with time than that
+of the Kolmogorov equation. Indeed, suppose we have estimated the conditional probability of an ask price increase at time
+T. For any time T ′ > T, we only need to simulate the Kolmogorov equation from time T to T ′, which means that the time
+complexity of the Kolmogorov equation grows linearly. With the Monte Carlo method, we need to perform the simulation for
+the whole time interval [0, T ′] again. Therefore the time complexity of the Monte Carlo method grows quadratically with time.
+In conclusion, the Monte-Carlo method is faster if we need to evaluate the probability of an ask price incresase after a single
+time interval, while the Kolmogorov equation is preferable if we need to evaluate it sequencially for multiple times.
+The conditional probability of an ask price increase in 0.2 s observed from the data is shown in Figure 15 (a). Once again,
+it was estimated using a kernel estimation method the details of which can be found in [21]. From this ﬁgure, we see that there
+is no signiﬁcant dependence of the conditional probability on the bid depth. This feature can also be noticed on the results
+of Monte-Carlo simulations (using Model B for the data) (Figure 15, (b)) and on results of simulations of the Kolmogorov
+equation (Figure 15, (c)) (also using Model B). However, there is a discrepancy between the models and the data, namely the
+conditional probability is smaller in the model than in the data. We believe the reasons for this discrepancy can be explained
+in the same way as in the previous section.
+7. Conclusion and perspectives. We have introduced a general framework for limit order book processes using
+a decomposition method: the evolution of the order book is modelled as the composition of an order ﬂow and a market clearing
+process. The order ﬂow can be any stochastic process, making it possible to apply our framework to a large number of diﬀerent
+order book models. The market clearing and the order ﬂow processes are independent. If both are Markovian, the order book
+process is also Markovian. Then the inﬁnitesimal generator and Kolmogorov equations can be used to describe the dynamics
+of the order book.
+The determination of the generator L of the order book can be done by writing L as the composition
+of three simpler operators.
+This framework can also be applied when the order book is centred at the mid-price.
+Several
+examples of applications of this framework to order book models from the literature are then discussed to demonstrate the
+large applicability of out framework. Finally numerical simulations using a Monte Carlo method and a direct resolution of
+the Kolmogorov equation are provided. Future works involve, for instance, applying this framework to study the asymptotic
+behaviour of the order book.
+The analysis of the long-time behaviour of the order book can be achieved by time scaling.
+Another interesting research direction is to view the clearing operator as an optimal transport operator, so as to apply optimal
+transport theory to analyse order book dynamics.
+21
+
+(a) Data
+(b) Kolmogorov
+(c) Monte Carlo
+(d)
+Fig. 15: Conditional probability of an ask price increase after 0.2s as a function of the ask and bid depths. (a): estimation
+of the conditional probability from the data. (b) and (c): respectively simulation results of the Kolmogorov equation and the
+Monte Carlo method. The x-axis and y-axis are respectively the ask and bid depths ranged in {1, . . . , 6} ticks.
+REFERENCES
+[1] F. Abergel and A. Jedidi, A mathematical approach to order book modeling, International Journal of Theoretical and
+Applied Finance, 16 (2013), p. 1350025.
+[2] B. Biais, P. Hillion, and C. Spatt, An empirical analysis of the limit order book and the order ﬂow in the Paris Bourse,
+the Journal of Finance, 50 (1995), pp. 1655–1689.
+[3] J.-P. Bouchaud, M. M´ezard, M. Potters, et al., Statistical properties of stock order books: empirical results and
+models, Quantitative ﬁnance, 2 (2002), pp. 251–256.
+[4] E. Budish, P. Cramton, and J. Shim, Implementation details for frequent batch auctions: Slowing down markets to the
+blink of an eye, American Economic Review, 104 (2014), pp. 418–24.
+[5] R. Cont, Statistical modeling of high-frequency ﬁnancial data, IEEE Signal Processing Magazine, 28 (2011), pp. 16–25.
+[6] R. Cont and A. De Larrard, Order book dynamics in liquid markets: limit theorems and diﬀusion approximations,
+(2012).
+[7] R. Cont and A. De Larrard, Price dynamics in a markovian limit order market, SIAM Journal on Financial Mathematics, 4 (2013), pp. 1–25.
+[8] R. Cont and M. S. Mueller, A stochastic partial diﬀerential equation model for limit order book dynamics, working
+paper, 2019.
+[9] R. Cont, S. Stoikov, and R. Talreja, A stochastic model for order book dynamics, Operations research, 58 (2010),
+pp. 549–563.
+[10] M. G. Daniels, J. D. Farmer, L. Gillemot, G. Iori, and E. Smith, Quantitative model of price diﬀusion and market
+friction based on trading as a mechanistic random process, Physical review letters, 90 (2003), p. 108102.
+[11] S. N. Ethier and T. G. Kurtz, Markov processes: characterization and convergence, vol. 282, John Wiley & Sons, 2009.
+[12] X. Gao and S. Deng, Hydrodynamic limit of order-book dynamics, Probability in the Engineering and Informational
+Sciences, 32 (2018), pp. 96–125.
+[13] B. Hambly, J. Kalsi, and J. Newbury, Limit order books, diﬀusion approximations and reﬂected spdes: from microscopic
+to macroscopic models, Applied Mathematical Finance, (2020), pp. 1–39.
+[14] U. Horst and D. Kreher, A weak law of large numbers for a limit order book model with fully state dependent order
+dynamics, SIAM Journal on Financial Mathematics, 8 (2017), pp. 314–343.
+[15] U. Horst and M. Paulsen, A law of large numbers for limit order books, Mathematics of Operations Research, 42 (2017),
+pp. 1280–1312.
+[16] W. Huang, C.-A. Lehalle, and M. Rosenbaum, Simulating and analyzing order book data: The queue-reactive model,
+Journal of the American Statistical Association, 110 (2015), pp. 107–122.
+[17] P. Lakner, J. Reed, and S. Stoikov, High frequency asymptotics for the limit order book, Market Microstructure and
+Liquidity, 2 (2016), p. 1650004.
+[18] H. Luckock, A steady-state model of the continuous double auction, Quantitative Finance, 3 (2003), pp. 385–404.
+[19] M. Morariu-Patrichi and M. S. Pakkanen, State-dependent hawkes processes and their application to limit order book
+modelling, arXiv preprint arXiv:1809.08060, (2018).
+[20] E. Vinkovskaya, A point process model for the dynamics of limit order books, PhD thesis, Columbia University, 2014.
+[21] L. Xuan, A general framework for modelling limit order book dynamics, PhD thesis, Department of Mathematics, Imperial
+College London, 2021.
+Appendices: technical proofs
+22
+
+Appendix A. Proof of Proposition 2.4 (Clearing operator for the order-matching method).
+Existence. We ﬁrst show that the map C deﬁned in Prop.2.4 satisﬁes properties (i)–(iv). Notice that
+min{0, gX(pB(X))} ≤0 and max{0, gX(pA(X))} ≥0.
+Therefore, all entries of C(X)+ and C(X)−are non-negative so that Xcl ∈E. Moreover, b(C(X)) ≤pB(X) < pA(X) ≤a(C(X)).
+Therefore, Xcl ∈L. We ﬁrst check if C satisﬁes the deﬁnition of a clearing operator in Def. 2.1.
+If X ∈L, then pB(X) = b(X) and pA(X) = a(X). Since gX(pB(X)) + X+
+pB(X) = −BX(pB(X)) + X+
+pB(X) = 0 and
+gX(pA(X)) −X+
+pA(X) = SX(pB(X)) −X−
+pA(X) = 0, we have
+gX(pB(X)) ≤−X+
+pB(X)
+and
+gX(pA(X)) ≥X−
+pA(X).
+As we are in the ﬁrst case of Eqs. (2.13) and (2.14) for respectively C(X)+ and C(X)−, therefore C(X)+ = τpB(X)(X+). But
+because pB(X) = b(X), we have C(X)+ = τpB(X)(X+) = X+.
+The same reasoning holds for C(X)−= X−.
+Therefore,
+Xcl = X.
+Conversely, if C(X) = X, then X+ = C(X)+.
+This together with Eqs. (2.13) and (2.14) implies that ∀i ∈
+(pB(X), d], X+
+i
+= 0. Thus sup supp(X+) ≤pB(X). Using the same argument we have inf supp(X−) ≥pA(X). And so we get
+a(X) ≤pB(X) < pA(X) ≤b(X),
+which implies that X ∈L. Therefore, C is a clearing operator. Now we check conditions (i)-(iv):
+(i) Let X −Xcl = Z. Then from Eqs. (2.13) and (2.14) we have
+(A.1)
+
+
+
+
+
+
+
+
+
+
+
+Z+ =
+(
+τ pB(X)+1(X+)
+if gX(pB(X)) ≤−X+
+pB(X),
+τ pB(X)(X+) + min{0, gX(pB(X))}epB(X)
+if gX(pB(X)) > −X+
+pB(X),
+Z−=
+(
+τpA(X)−1(X−)
+if gX(pA(X)) ≥X−
+pA(X),
+τpA(X)(X−) −max{0, gX(pA(X))}epA(X)
+if gX(pA(X)) < X−
+pA(X).
+We check that all entries of Z+ and Z−are non-negative.
+For Z+, the only case where it may not be true
+is if gX(pB(X)) > −X+
+pB(X).
+But then Z+
+pB(X) = X+
+pB(X) + min{0, gX(pB(X))} = min{X+
+pB(X), X+
+pB(X) +
+gX(pB(X))} ≥0 and all other entries are non-negative.
+The same argument can be used for Z−.
+Therefore,
+Z ∈E and condition (i) is satisﬁed.
+(ii-iii) Conditions (ii) and (iii) can be checked together.
+If X ∈L, then Z = (0, 0).
+Therefore, |Z+| = |Z−| and
+sup supp(Z−) ≤inf supp(Z+) so that conditions (ii) and (iii) are satisﬁed. Now we assume that X̸ ∈L. Consequently, X ∈E+. Deﬁne
+(A.2)
+g+
+X(k) = gX(k) + X+
+k = SX(k) −BX(k + 1),
+and
+(A.3)
+g−
+X(k) = gX(k) −X−
+k = SX(k −1) −BX(k).
+Comparing g+
+X(pB(X)) and 0, we have the following two cases:
+Case 1:. g+
+X(pB(x)) > 0. We have
+gX(pA(X)) −X−
+pA(X) = SX(pA(X) −1) −BX(pA(X) −1) ≥SX(pA(X)) −BX(pA(X) −1) = g+
+X(pB(X)) > 0,
+which implies that
+Z+ = τ pB(X)(X+) + gX(pB(X))epB(X)
+and
+Z−= τpA(X)−1(X−).
+Moreover, notice that pA(X) = pB(X) + 1 as gX(pB(X + 1) = g+
+X(pB(X) + 1) + X−
+pB(X)+1. Therefore, we have
+|Z+| = SX(pB(X)) + BX(pB(X)) −BX(pB(X)) = SX(pB(X)) = SX(pA(X) −1) = |Z−|,
+and
+inf supp(Z+) ≥pB(X) = pA(X) −1 ≥sup supp(Z−),
+which shows that conditions (ii)-(iii) are satisﬁed.
+Case 2:. g+
+X(pB(x)) ≤0. If g−
+X(pA(X)) < 0, using the same argument as in Case 1, we can prove that conditions
+(ii)-(iii) are satisﬁed. Now suppose g−
+X(pA(X)) ≥0. Then we have
+Z+ = τ pB(X)+1(X+),
+and
+Z−= τpA(X)−1(X−).
+It is easy to see that condition (iii) is satisﬁed. For condition (ii), notice that |Z+| = BX(pB(X) + 1) and |Z−| =
+SX(pA(X)−1). Using the same reasoning as in Case 1 when proving pA(X) = pB(X)+1, we get pA(X) > pB(X)+1
+in this situation. Now if pA(X) −1 = pB(X) + 1, since gX(pA(X) −1) = 0 we have |Z+| = |Z−|. If pA(X) −1 >
+pB(X) + 1, we claim that X±
+i
+= 0 for any i ∈(pB(X) + 1, pA(X) −1).
+Indeed, w.l.o.g.
+suppose there exists
+i ∈(pB(X) + 1, pA(X) −1) such that X+
+i
+> 0. As gi(X) = 0, we have
+gX(pA(X) −1) = SX(pA(X) −1) −BX(pA(X) −1) ≥SX(i) −BX(i + 1) = gX(i) + X+
+i
+> 0,
+which contradicts the deﬁnition of pA. Therefore, for any i ∈(pB(X) + 1, pA(X) −1), X±
+i
+= 0 holds. Consequently,
+|Z+| = BX(pB(X) + 1) = BX(pA(X) −1) = SX(pA(X) −1) = |Z−|,
+implying that condition (ii) is satisﬁed.
+23
+
+(iv) This is a natural result from the fact that Xcl + Z = X, which ﬁnishes the proof.
+Uniqueness. Let C1 and C2 satisfy conditions (i) to (iv) in Prop. 2.4. Thus there exists X ∈E, such that W 1 := C1(X)̸ =
+C2(X) := W 2. We claim that X̸ ∈L. Indeed, suppose X ∈L, then from Def. 2.1, W 1 = C1(X) = X = C2(X) = W 2, which
+contradicts the assumption that W 1̸ = W 2. Let Z1 = X −W 1 and Z2 = X −W 2. Thus Z1̸ = Z2 and both |Zi+| and
+|Zi−| are non-zero for i = 1, 2. Consequently, Zi ∈E+ for i = 1, 2. We further claim that |Z1±|̸ = |Z2±|. Indeed, Suppose
+|Z1+| = |Z2+|, then naturally we also have |Z1−| = |Z2−|. Since Zi+ + W i+ = X+ and inf supp(Zi+) ≥sup supp(W i+) when
+i = 1, 2 letting inf supp(Zi+) = ki for i = 1, 2, we have
+Zi+ = τ ki(X+) + Zi+
+ki eki.
+We claim that k1 = k2. If not, w.l.o.g. suppose k1 < k2, then we get
+|Z1+| =
+d
+X
+j=k1+1
+X+
+j + Z1+
+k1 ≥
+d
+X
+j=k1
+X+
+j >
+d
+X
+j=k2
+X+
+j ≥
+d
+X
+j=k2+1
+X+
+j + X+
+k2 ≥|Z2+|,
+which contradicts the claim that |Z1+| = |Z2+| and thus k1 = k2. Now since |Z1+| = |Z2+|, we have
+|Z1+| =
+d
+X
+j=k1+1
+X+
+j + Z1+
+k1 = |Z2+| =
+d
+X
+j=k2+1
+X+
+j + Z2+
+k2 =
+d
+X
+j=k1+1
+X+
+j + Z2+
+k1 ,
+which implies that Z1+
+k1 = Z2+
+k2 and Z1+ = Z2+. Using the same argument we can also show that Z1−= Z2−, which contradicts
+that that Z1̸ = Z2. Therefore, |Z1±|̸ = |Z2±|.
+Now w.l.o.g. suppose |Z1±| > |Z2±|. Using the same reasoning as in the previous proof, it is easy to see that inf supp(Z1+) <
+inf supp(Z2+) and sup supp(Z1−) > sup supp(Z2−). Letting ji := sup supp(W i+), we have
+W 1+ + Z1+ =
+j1−1
+X
+l=1
+X+
+l el + W 1+
+j1 ej1 +
+d
+X
+l=k1+1
+X+
+l el + Z1+
+k1 ek1 = W 2 +
+d
+X
+l=k2+1
+X+
+l el + Z2+
+k2 ek2,
+which implies that
+W 2+ =
+j1−1
+X
+l=1
+X+
+l el + W 1+
+j1 ej1 +
+k2
+X
+l=k1+1
+X+
+l el −Z2+ek2
+and thus sup supp(W 2+) ≥inf supp(Z1+). Similarly, we get inf supp(W 2−) ≤sup supp(Z1−). Consequently, we have
+inf supp(Z1+) ≤sup supp(W 2+) < inf supp(W 2−) ≤sup supp(Z1−),
+which contradicts the property of the clearing operator that inf supp(Z1+) ≥sup supp(Z1−). This ﬁnishes our proof.
+Appendix B. Proof of Proposition 2.6 (order matching for elementary order ﬂow event).
+We start with a useful lemma:
+Lemma B.1. For any z ∈N\{0} and k ∈{1, . . . , d}, we have:
+(B.1)
+gX(k) ≤SX(k),
+(B.2)
+X−
+S−1
+X (z) > 0,
+(B.3)
+If k ∈(S−1
+X (z), S−1
+X (z + 1)), then X−
+k = 0, i.e. SX(S−1
+X (z)) = SX(k),
+(B.4)
+If S−1
+X (z) < S−1
+X (z + 1), then SX(S−1
+X (z)) = z.
+Proof. Eqs. (B.1) and (B.2) are just direct results from the deﬁnition of SX, gX and S−1
+X . For Eq. (B.3), suppose it is not
+the case. Then there exists i ∈(S−1
+X (z), S−1
+X (z + 1)) such that X−
+i
+> 0, which implies that
+SX(i) =
+i
+X
+j=1
+X−
+j ≥
+S−1
+X (z)
+X
+j=1
+X−
+j + X−
+i
+= SX(S−1
+X (z)) + X−
+i
+≥SX(S−1
+X (z)) + 1 ≥z + 1.
+Therefore, from the deﬁnition of S−1
+X , S−1
+X (z + 1) ≤i, which contradicts the fact that S−1
+X (z + 1) > i. Eq. (B.4) can be proved
+using the same argument and we leave it to the reader.
+Now we prove Proposition 2.6:
+The expressions of X′ and (pB(X′), pA(X′)) are derived from the expression of the clearing operator C. The proofs for
+the four cases in Proposition 2.6 are similar. Therefore, we only give the detailed proof for Case 1, leaving the other cases
+for the reader. For Case 1, since the new order is a limit buy order with size z at price k, the intermediate state X ∈E
+after the arrival of this new order is X = (X+ + zek, X−). Therefore, X′ = C(X). From the condition that X±̸ = 0 and
+z < min{BX(1), SX(d)}, we note that pA(X) > pB(X). There are four alternatives according to the position of the price k
+with respect to pB(X), pA(X) and S−1
+X (z) (if S−1
+X (z) > pA(X)).
+24
+
+• Alternative 1: k ≤pB(X). Since X = (X+ + zek, X−) then sup supp(X+) = pB(X) < pA(X) = inf supp(X−). So
+X ∈L. Therefore, from Prop. 2.4 (i) we have X′ = C(X) = (X+ + zek, X−). Moreover,
+(pB(X′), pA(X′)) = (sup supp(X′+), inf supp(X′−)) = (sup supp(X+), inf supp(X−)) = (pB(X), pA(X)).
+• Alternative 2: pB(X) < k < pA(X). Using the same argument as in Alternative 1, sup supp(X+) = k < pA(X) =
+inf supp(X−) and so X ∈L and X′ = X = (X+ + zek, X−).
+However, since pB(X) < k, sup supp(X′+) =
+sup supp(X+ + zek) = k. Therefore, (pB(X′), pA(X′)) = (k, pA(X′)).
+• Alternative 3: pA(X) ≤k < S−1
+X (z). From the deﬁnition of S−1
+X
+in Eq. (2.9), we have pA(X) = S−1
+X (1). Then
+since S−1
+X
+is non-decreasing and z > 0, we get S−1
+X (z) ≥pA(X). Also since SX is non-deceasing, k < S−1
+X (z) implies
+that SX(k) < z. Then the number of sell orders at prices lower than or equal to k is smaller than the volume z of the
+new buy order. In this alternative, our ﬁrst task will be to determine pB(X) and pA(X) from Eqs. (2.13) and (2.14)
+respectively. For this, we will need gX from Eq. (2.10) and so SX and BX from Eq. (2.8). From the deﬁnition of BX,
+we have
+BX(i) = BX′(i) + z if i ≤k
+and
+BX′(i) = BX(i) if i > k.
+Since X′−= X−, SX′(i) = SX(i) for 1 ≤i ≤d. Therefore, we get
+(B.5)
+gX′(i) = gX(i) −z if i ≤k
+and
+gX′(i) = gX(i) if i > k.
+Consequently,
+(B.6)
+gX(i) −z ≤gX′(i) ≤gX(i)
+∀i ∈{1, . . . , d}.
+Note that Eqs. (B.5) and (B.6) are not speciﬁc to Alternative 3 and are valid for all alternatives. Therefore with
+Eq. (B.5) and the fact that k ≥pA(X) > pB(X), we have BX(k) = BX(k + 1) = 0. Therefore, we get gX′(k) =
+gX(k) −z = SX(k) −z < 0 and gX′(k + 1) = gX(k + 1) = SX(k + 1) > 0, which implies that pB(X′) = k and
+pA(X′) = k + 1. For the same reason, X′+
+k
+= 0 and so X′+
+k
+= z. Also noting that BX(k) = 0 and so gX(k) > 0 since
+k ≥pA(X), we get
+gX′(pB(X′)) = gX(k) = gX(k) −z > −z = −X′+
+k
+and
+gX′(pA(X′)) = gX(k + 1) = gX(k + 1) = SX(k + 1) ≥X−
+k+1 = X′−
+k+1.
+So, this corresponds to the second case of Eq. (2.13) and to the ﬁrst case of Eq. (2.14). Therefore, we get
+(B.7)
+X′+ = τk−1(X+ + zek) −gX(k)ek = X+ + (z −SX(k))ek, X′−= τ k+1(X−) = τ k+1(X−).
+Since k > pB(X) and (z −SX(k)) > 0, pB(X′) = sup supp(X′+) = k. Recall that pA(X′) = S−1
+X′ (1). From the
+deﬁnition of SX′ and the expression of X′, for any i ∈{1, ..., d}, we have:
+SX′(i) = max{0, SX(i) −SX(k)}.
+Consequently, we get
+pA(X′) = S−1
+X′ (1) = S−1
+X′ (SX(k) + 1).
+Therefore in this alternative, X′ = (X+ + (z −SX(k))ek, X−) and (pB(X′), pA(X′)) = (k, S−1
+X (SX(k) + 1)).
+• Alternative 4: pA(X) ≤S−1
+X (z) ≤k. Note that this implies that SX(k) ≥z. On the one hand, for X′+, we are
+going to use Eqs. (B.5) and (B.6) which are valid for all alternatives. Since pB(X) ≤pA(X) −1 ≤S−1
+X (z) −1 < k,
+we get from Eqs. (B.5), (B.1) and the deﬁnition of S−1
+X :
+gX′(S−1
+X (z) −1) = gX(S−1
+X (z) −1) −z ≤SX(S−1
+X (z) −1) −z < 0,
+and
+gX′(S−1
+X (z)) = gX(S−1
+X (z)) −z ≥0.
+From this, we deduce that pB(X′) = S−1
+X (z)−1. Moreover, since S−1
+X (z)−1 < S−1
+X (z) ≤k, X′+
+S−1
+X (z)−1 = X+
+S−1
+X (z)−1.
+Consequently, we have
+gX′(S−1
+X (z) −1) = gX(S−1
+X (z) −1) −z = (SX(S−1
+X (z) −1) −z) −BX(S−1
+X (z) −1)
+< −BX(S−1
+X (z) −1) ≤−X+
+S−1
+X (z)−1 = −X′+
+S−1
+X (z)−1
+which can be written as gX′(pB(X′)) < −X′+
+pB(X′). Hence we are in the second case of Eq. (2.13). With the fact
+that k > S−1
+X (z) −1, we have
+X′+ = τS−1
+X (z)−1(X+) = τS−1
+X (z)−1(X+ + zek) = X+,
+and so pB(X′) = pB(X).
+On the other hand, from the deﬁnition of gX′, we have
+gX′(S−1
+X (z + 1)) ≥SX(S−1
+X (z + 1)) −z > 0,
+gX′(S−1
+X (z + 1) −1) < z + 1 −z = 1,
+25
+
+which implies that pA(X′) = S−1
+X (z + 1). Next we derive the expression for X′−. If S−1
+X (z) = S−1
+X (z + 1), then
+gX′(pA(X′)) −X′−
+pA(X′) = SX(S−1
+X (z) −1) −z < 0. This applies to the second line of Eq. (A.3) and thus we get
+X′−= τ S−1
+X +1(X−) + (SX(S−1
+X (z)) −z)eS−1
+X (z).
+Otherwise, if S−1
+X (z) < S−1
+X (z + 1), then we get
+gX′(pA(X′)) −X′−
+pA(X′) ≥SX(pA(X′−) −1) −z = SX(S−1
+X (z + 1) −1) −z ≥SX(S−1
+X (z)) −z = 0,
+which applies to the ﬁrst line of Eq. (A.3) and thus
+X′−= τ S−1
+X (z+1)(X−).
+With Eq. (B.4), we have SX(S−1
+X (z)) −z = 0. Consequently, X′−can also be written as follows:
+X′−= τ S−1
+X +1(X−) + (SX(S−1
+X (z)) −z)eS−1
+X (z).
+Again from the deﬁnition of SX′ and the expression of X′, for any i ∈{1, ..., d}, we have SX′(i) = max{0, SX(i) −z}.
+This implies that pA(X′) = S−1
+X′ (1) = S−1
+X (z + 1). To sum up, if k ≥S−1
+X (z), then we have
+X′ = (X+, τ S−1
+X (z)+1(X−) + (SX(S−1
+X (z)) −z)eS−1
+X (z)),
+and
+(pB(X′), pA(X′)) = (pB(X), S−1
+X (z + 1)).
+Using the same arguments, the transitions from X to X′ and from (PB(X), pA(X)) to (PB(X′), pA(X′)) can be derived when
+the new order is a limit sell order, a cancellation of a buy order or a cancellation of a sell order, which ﬁnishes our proof.
+Appendix C. Proof of Proposition 2.7 (Determination of C−1({X})).
+For X ∈L, denote by Γ(X) the right hand side of (2.15). We ﬁrst show the following lemma:
+Lemma C.1. For any X, X′ ∈L, X̸ = X′ =⇒Γ(X) ∩Γ(X′) = ∅. Moreover, for Y ∈E, we have Y ∈Γ(C(Y )) and so
+∪X∈LΓ(X) = E.
+Proof. We ﬁrst show that for any Y ∈E, we have Y ∈Γ(C(Y )) and ∪X∈LΓ(X) = E. Indeed, for any Y ∈E, Z := Y −C(Y )
+satisﬁes conditions (i) to (iv) in Def. 2.3 (with X replaced by Y ).
+Noting that C(Y ) ∈L and using Eq. (2.12), we have
+inf supp(C(Y ))−= pA(X) and sup supp(C(Y ))+ = pB(X). Therefore, conditions (i) to (iv) in Def. 2.3 are indeed the conditions
+for Y to belong to Γ(C(Y )) as deﬁned in Eq. (2.15) and so Y ∈Γ(C(Y )). Consequently, Y ∈∪X∈LΓ(X) and so ∪X∈LΓ(X) = E.
+Now we show for any X, X′ ∈L, X̸ = X′ =⇒Γ(X) ∩Γ(X′) = ∅. Suppose it is not the case. Then there exist X1 and
+X2 ∈L with X1̸ = X2 such that Γ(X1) ∩Γ(X2)̸ = ∅. Let Y ∈Γ(X1) ∩Γ(X2). Since C(Y ) ∈L and X1̸ = X2, C(Y ) must be
+diﬀerent from at least one of X1 or X2. Without loss of generality, suppose that C(Y )̸ = X1. If Y ∈L then Y = C(Y ) ∈Γ(X1).
+Let Z := Y −X1 = C(Y ) −X1̸ = 0. Since Y ∈Γ(X1), then we have sup supp(Z−) ≤pA(X1) so
+(C.1)
+a(Y ) = inf supp(X1−+ Z−) ≤inf supp(Z−) ≤sup supp(Z−).
+Similarly, since inf supp(Z+) ≤pB(X1), we have
+b(Y ) = sup supp(X1+ + Z+) ≥sup supp(Z+) ≥inf supp(Z+).
+This, together with Eq. (C.1) and the fact that inf supp(Z+) ≥sup supp(Z−) from Eq. (2.15) implies that
+b(Y ) ≥inf supp(Z+) ≥sup supp(Z−) ≥a(Y ),
+which contradicts Y ∈L. Therefore, Y̸ ∈L. Deﬁne B : E →L by
+(C.2)
+B(X) =
+(
+C(X)
+if X̸ = Y,
+X1
+if X = Y.
+Then B satisﬁes Def. 2.1 and conditions (i)-(iv) in Def. 2.3:
+• Suppose B(X) = X. Then by the deﬁnition of B, X ∈L. Conversely, for any X ∈L, since Y̸ ∈L, Y̸ = X. Therefore
+B(X) = C(X) = X, which shows that Deﬁnition 2.1 is satisﬁed.
+• Conditions (i)-(iv): Let W ∈E. First suppose that W̸ = Y , then B(W) = C(W). Therefore, Z′ = W −B(W)
+satisﬁes the conditions (i)-(iv) in Def. 2.3 (with X replaced by W). Now suppose that W = Y . Let Z := Y −X1.
+Since Y
+∈Γ(X1), we have Z ∈E, |Z+| = |Z−|, sup supp(Z−) ≤inf supp(Z+), sup supp(Z−) ≤a(X1) and
+inf supp(Z+) ≥b(X1). This, together with the fact that B(Y ) = X1, implies that Z satisﬁes the conditions (i)-(iv)
+in Def. 2.3 (with X replaced by Y and Z(X) replaced by Y −X1).
+Therefore B is a clearing operator diﬀerent from C deﬁned by Eqs. (2.13) and (2.14), which contradicts the uniqueness of the
+clearing operator as stated in Prop. 2.4 and ﬁnishes the proof.
+26
+
+Proof of Proposition 2.7. We ﬁrst show that C−1({X}) ⊂Γ(X). For any Y ∈C−1({C(Y )}) = C−1({X}), C(Y ) = X.
+Therefore, from Lemma C.1 we have Y ∈Γ(X). Consequently, C−1({X}) ⊂Γ(X).
+Conversely, suppose Y ∈Γ(X).
+Showing that Y ∈C−1({X}) is equivalent to showing that C(Y ) = X.
+Suppose it is
+not the case. Then C(Y ) = X′̸ = X. Therefore, Y ∈C−1({X′}) ⊂Γ(X′). And from the ﬁrst part of the proof, we have
+that C−1({X′}) ⊂Γ(X′). So Y ∈C−1({X′}), which implies that Γ(X) ∩Γ(X′)̸ = ∅and contradicts Lemma C.1. Therefore
+Y ∈C−1({X}).
+Appendix D. Proof of Lemma 4.5 (Image of the centering operator J).
+Since the centering
+operator involves deleting volume at the boundary, we need to ﬁrst check that the image is still in Em i.e. the bid and ask
+sides are non-empty:
+Lemma D.1. For any (Y, p) ∈L0 × Z, J(Y, p) ∈Lm.
+Proof. By Eq. (4.3), we have
+(
+p′ = p + ∆p
+with
+∆p = a(Y ) + b(Y ) + ˆp,
+X = σ[p,p′](Y ).
+We now prove that X+̸ = 0, and the same argument can be used to prove that X−̸ = 0.
+Case 1 : If [p, p′] = 0, then X+ = Y +. Using the fact that Y ∈L0, Y +̸ = 0. Therefore, X+̸ = 0.
+Case 2 : If [p, p′] < 0, then together with the deﬁnition of operator σ, we have
+(D.1)
+(
+X+
+j = 0
+if j < −d′ −([p, p′]),
+X+
+j = Y ±
+j+[p,p′]
+if j ≥−d′ −([p, p′]).
+From the second line of Eq. (D.1), we note that X+
+j̸ = 0 only when j ≥−d′ −([p, p′]), which corresponds to Y +
+j+[p,p′]
+when j + [p, p′] ≤d′ + [p, p′]. Therefore, showing that X+̸ = 0 is equivalent to showing that
+(D.2)
+inf supp(Y +) ≤d′ + [p, p′].
+Since
+(D.3)
+[p, p′] = ⌈p + a(Y ) + b(Y ) + ˆp
+2
+⌉−⌈p
+2 ⌉= ⌈a(Y ) + b(Y )
+2
+⌉,
+and letting k1 := b(Y ) and k2 := a(Y ), we get
+inf supp(Y +) −([p, p′]) = inf supp(Y +) −⌈k1 + k2
+2
+⌉.
+Since inf supp(Y +) ≤k1 < k2, we have
+inf supp(Y +) −⌈k1 + k2
+2
+⌉< 0 < d′,
+from which we get that X+̸ = 0.
+Case 3 : If [p, p′] > 0, then together with the deﬁnition of operator σ, we have
+(D.4)
+(
+X+
+j = 0
+if j > d′ −([p, p′]),
+X+
+j = Y ±
+j+[p,p′]
+if j ≤d′ −([p, p′]).
+Using the same argument as in Case 2, we are left to show that
+(D.5)
+b(Y ) ≥−d′ + [p, p′].
+Letting k1 := b(Y ) and k2 := a(Y ), then together with Eq. (D.3) we can re-write the above inequality as:
+(D.6)
+k1 ≥−d′ + ⌈k1 + k2
+2
+⌉.
+If k1 = −d′ and k2 = d′, then k1 −⌈k1+k2
+2
+⌉= −d′ and Eq. (D.6) is satisﬁed. Else if k2 −k1 ≤2d′ −1, then
+2(k1 −⌈k1 + k2
+2
+⌉) = 2k1 −(k1 + k2) −
+ˆ
+(k1 + k2) = (k1 −k2) −
+ˆ
+(k1 + k2).
+Since
+ˆ
+(k1 + k2) ≤1, we get 2(k1 −⌈k1+k2
+2
+⌉) ≥−(2d′ −1) −1 = −2d′. Therefore, Eq. (D.6) is satisﬁed and hence
+X+̸ = 0.
+We conclude that X+̸ = 0 and X−̸ = 0 in these three cases, which ﬁnishes the proof.
+The following lemma shows two properties of the centering operator J which will be used to prove Lemma 4.5:
+Lemma D.2. For any (Y, p) ∈Em × Z, letting (X, p′) := J(Y, p), then
+(i). inf supp(X−) = inf supp(Y −) −[p, p′], and sup supp(X+) = sup supp(Y +) −[p, p′].
+(ii). inf supp(X−) + sup supp(X−) + 2⌈p′
+2 ⌉= inf supp(Y −) + sup supp(Y +) + 2⌈p
+2 ⌉.
+Proof. These two properties of J can be derived directly from its deﬁnition and Lemma D.1.
+27
+
+Proof of Lemma 4.5. For any ( ˆ
+W, p) ∈L0×Z, let (Z, p′) := J( ˆ
+W, p). We now prove that (Z, p′) ∈Lm. Notice from Lemma D.2
+(i) that the relative order of a(Z) and b(Z) is the same as that of inf supp( ˆ
+W −) and sup supp( ˆ
+W +), which shows that the ﬁrst
+condition of Eq. (4.1) is satisﬁed. Then we are left to prove the second condition of Eq. (4.1), i.e. a(Z) + b(Z) + ˆp′ = 0. From
+Lemma D.2 (ii), we have
+a(Z) + b(Z) = inf supp( ˆ
+W −) + sup supp( ˆ
+W +) −2([p, p′]).
+Notice that for any a ∈Z, 2⌈a
+2 ⌉= a + ˆa. Therefore, by the deﬁnition in Eq. (4.3) of ∆p, we have
+a(Z) + b(Z) = inf supp( ˆ
+W −) + sup supp( ˆ
+W +) −[p′ + ˆp′ −p −ˆp]
+= (inf supp( ˆ
+W −) + sup supp( ˆ
+W +) + ˆp) −∆p −ˆp′ = −ˆp′,
+so that
+a(Z) + b(Z) + ˆp′ = 0,
+which shows that the second condition in Eq. (4.1) is also satisﬁed and ﬁnishes the proof.
+Appendix E. Adjoint operator and forward Kolmogorov equation.
+To describe the adjoint operator
+Lm∗of Lm, we ﬁrst describe the pre-image of a subset A ⊂Lm by the centred clearing operator Cm. Deﬁne the following sets:
+Definition E.1. For any (X, p) ∈Lm, deﬁne
+(E.1)
+Λ(X, p) :=
+(
+(Y, p′), with p′ s.t. sup supp(X−) −d′ ≤[p, p′] ≤d′ + inf supp(X+),
+and Y such that ∃(aj)d′
+j=d′−[p,p′]+1 ∈[0, m][p,p′], (bj)−d′−[p,p′]−1
+j=−d′
+∈[0, m]−[p,p′],
+with Y + = σ[p,p′](X)+ +
+−d′−[p,p′]−1
+X
+j=−d′
+bjˆej and Y −= σ[p,p′](X)−+
+d′
+X
+j=d′−[p,p′]+1
+ajˆej
+)
+.
+Moreover, for any X ∈L0, deﬁne Γm(X) as follows:
+(E.2)
+Γm(X) ={Y ∈Em, s.t. Y −X = Z ∈N2d′+1 × N2d′+1,
+|Z+| = |Z−|,
+sup supp(Z−) ≤inf supp(Z+),
+sup supp(Z−) ≤a(X),
+inf supp(Z+) ≥b(X)}.
+In Eq. (E.1) we assume that [0, m]k = ∅if k ≤0, meaning that if [p, p′] ≤0, the set of coeﬃcients aj is empty, and similarly for
+bj if [p, p′] ≥0. Λ(X, p) denotes the pre-image of the centring operator J. In other words, it is the set of (Y, p′) ∈Em × Z that
+(X, p) can shift back. Therefore the distance of shifting must be controlled, which is described the ﬁrst line in the deﬁnition, the
+value at positions within the current coordinate must be the same as in X, compromising the second line in the deﬁnition, and
+it is free to choose any value for positions outside the current coordinate, as shown in the third line. Γm denotes the pre-image
+of the operator related with clearing C′. It is easy to see it has a very similar expression to the pre-image of C the market
+clearing operator in the ﬁxed coordinate. The next lemma gives the precise expression for the pre-image of Cm:
+Lemma E.2. For any (X, p) ∈Lm, we have
+(E.3)
+(Cm)−1({(X, p)}) =
+[
+(Y,p′)∈Λ(X,p)
+[
+Z∈Γm(Y )
+{(Z, p′)}.
+Remark E.3. Notice that since J is not injective, the set Λ(X, p) in Eq. (E.1) may contain other elements besides (X, p).
+Therefore, the pre-image of {(X, p)} by Cm contains more elements than the pre-image of {X} ⊂L by C in the ﬁxed coordinate
+framework.
+To prove this lemma, we use the result of the following two lemmas. From Eq. (4.5) it is easy to see that for any A ⊂Lm,
+(Cm)−1(A) = {(Z, p′) ∈Em × Z : Z ∈(C′)−1({Y }), (Y, p′) ∈(J)−1(A)}.
+We ﬁrst show that J−1({(X, p)}) = Λ(X, p) for any (X, p) ∈Lm.
+Lemma E.4. Λ(X, p) ⊂L0 × Z. Moreover, for any (Y, p′) ∈Λ(X, p), we have b(Y ) = sup supp(σ[p,p′](X)+) and a(Y ) =
+inf supp(σ[p,p′](X)−).
+Proof. Let (Y, p′) ∈Λ(X, p). From (i) in Lemma D.2, we get sup supp(σ[p,p′](X)+) = b(X) −[p, p′]. Since b(X) ≥−d′, we
+have
+sup supp
+ −d′−[p,p′]−1
+X
+j=−d′
+bjˆej
+
+≤−d′ −[p, p′] −1 < −d′ −[p, p′] ≤b(X) −[p, p′] = sup supp(σ[p,p′](X)+),
+which implies that b(Y ) = sup supp(σ[p,p′](X)+). Using the same argument, we derive that a(Y ) = inf supp(σ[p,p′](X)−).
+Since (X, p) ∈Lm, a(X) > b(X). Consequently, again by Lemma D.2 (i), we get
+a(Y ) = a(X) −[p, p′] > b(X) −[p, p′] = b(Y ),
+which implies that (Y, p′) ∈L0 × Z and ﬁnishes the proof.
+28
+
+The next lemma shows that Λ(X, p) determines the pre-image of {(X, p)} by J for any (X, p) ∈Lm:
+Lemma E.5. For any (X, p) ∈Lm, we have
+(E.4)
+(J)−1({(X, p)}) = Λ(X, p).
+Proof. We ﬁrst prove that Λ(X, p) ⊂(J)−1({(X, p)}). For any (Y, p′) ∈Λ(X, p), let (Z, q) := J(Y, p′). We want to show
+that (Z, q) = (X, p). We ﬁrst prove that q = p. Suppose [p, p′] ≥0 (the same argument can be used to prove that (Z, q) = (X, p)
+when [p, p′] < 0). From Eq. (E.1) we obtain that
+(E.5)
+Y + = σ[p,p′](X)+ and Y −= σ[p,p′](X)−+
+d′
+X
+j=d′−[p,p′]+1
+ajˆej.
+From Lemma E.4 we have a(Y ) = a(X) −[p, p′] and b(Y ) = b(X) −[p, p′]. This together with the deﬁnition of J implies that
+∆p′ = q −p′ = a(Y ) + b(Y ) + ˆp′.
+Consequently, we get
+∆p′ = a(X) + b(X) + ˆp′ −2[p, p′] = a(X) + b(X) + ˆp′ −(p′ + ˆp′ −p −ˆp)
+= [a(X) + b(X) + ˆp] + (p −p′) = p −p′,
+where the last equality is due to the fact that (X, p) ∈Lm. Therefore,
+q = p′ + ∆p′ = p′ + (p −p′) = p.
+We are left to prove that Z = X. From the deﬁnition of J and the fact that [p, p′] = ⌈p′
+2 ⌉−⌈p
+2 ⌉= −[p′, p], Z = σ−[p,p′](Y ),
+which together with the fact that [p, p′] ≥0 implies that
+(E.6)
+(
+Z+
+j = 0
+if j < −d′ + [p, p′],
+Z+
+j = Y +
+j−[p,p′]
+if j ≥−d′ + [p, p′].
+We also have, because of Eqs. (4.4) and (E.5):
+(E.7)
+(
+Y +
+j
+= 0
+if j > d′ −[p, p′],
+Y +
+j
+= X+
+j+[p,p′]
+if j ≤d′ −[p, p′].
+Introducing j′ := j −[p, p′] ≤d′ −[p, p′] and using the second case of Eq. (E.7), we get for j ≥−d′ + [p, p′]: Z+
+j = Y +
+j−[p,p′] =
+Y +
+j′ = X+
+j′+[p,p′] = X+
+j . From the deﬁnition of the set Λ(X, p), inf supp(X+) ≥[p, p′] −d′. Note that from Eq. (E.6) we also
+have inf supp(Z+) ≥[p, p′] −d′. So X+
+j
+= Z+
+j
+= 0 for j < [p, p′] −d′. Consequently, we deduce that X+ = Z+. The same
+argument can be used to prove X−= Z−. Therefore, X = Z.
+We then prove that (J)−1({(X, p)}) ⊂Λ(X, p). For any (Y, p′) ∈(J)−1({(X, p)}), recalling that [p, p′] = −[p′, p] and using
+Eq. (4.3) to compute J(Y, p′) = (X, p), we have
+(
+p = p′ + ∆p′
+with
+∆p′ = a(Y ) + b(Y ) + ˆp′,
+X = σ[p′,p](Y ) = σ−[p,p′](Y ).
+Suppose [p, p′] > 0 (the same argument can be applied to the case when [p, p′] ≤0). Since X = σ−[p,p′](Y ), from Eq. (4.4) we
+get
+(E.8)
+(
+X±
+j = 0
+if j < −d′ + [p, p′],
+X±
+j = Y ±
+j−[p,p′]
+if j ≥−d′ + [p, p′].
+We ﬁrst prove that the condition for p′ in the deﬁnition of Λ is satisﬁed. On the one hand, from the ﬁrst case of Eq. (E.8)
+we get inf supp(X+) ≥−d′ + [p, p′], which implies that 0 < [p, p′] ≤d′ + inf supp(X+). On the other, since b(X) ≤d′, the
+condition that b(X) −d′ ≤[p, p′] is trivially satisﬁed. Consequently, the condition involved for p′ in Eq. (E.1) is satisﬁed.
+We now prove that Y also satisﬁes the condition involved in the deﬁnition of the set Λ(X, p). Let j′ := j−[p, p′] ≤d′−[p, p′].
+From the second line of Eq. (E.8) we have Y ±
+j′ = X±
+j′+[p,p′] when j′ ≤d′ −[p, p′]. This implies that
+Y ± =
+d′
+X
+j′=−d′
+Y ±
+j′ ˆej′ =
+d′−[p,p′]
+X
+j′=−d′
+X±
+j′+[p,p′]ˆej′+[p,p′] +
+d′
+X
+j′=d′−[p,p′]+1
+Y ±
+j′ ˆej′.
+From Eq. (4.4) we note that Pd′−[p,p′]
+j′=−d′
+X±
+j′+[p,p′]ˆej′+[p,p′] = σ[p,p′](X)± when [p, p′] > 0. Therefore,
+Y ± = σ[p,p′](X)± +
+d′
+X
+j′=d′−[p,p′]+1
+Y ±
+j′ ˆej′.
+29
+
+Moreover, from Lemma D.2 we get b(Y ) = b(X) −[p, p′] ≤d′ −[p, p′], which implies that Y −
+j′ = 0 when j′ > d′ −[p, p′].
+Consequently
+Y + = σ[p,p′](X)+ = σ[p,p′](X)+ +
+−d′−[p,p′]−1
+X
+j′=−d′
+Y +
+j′ ˆej′.
+Therefore (Y, p′) satisﬁes Eq. (E.1), which ﬁnishes the proof.
+Now we deduce the set (C′)−1({X}) for any X ∈L0. By a proof similar to that of Proposition 2.7, we can show that Γm(X)
+in (E.2) is the pre-image of {X} by the order-matching operator C′. More precisely, we state that:
+Lemma E.6. For any X ∈L0, the set (C′)−1({X}) is given by:
+(E.9)
+(C′)−1({X}) = Γm(X),
+where Γm(X) is deﬁned in Eq. (E.2).
+Now we prove Lemma E.2.
+Proof. Lemma E.2 is a natural result of Lemmas E.4-E.6.
+Now, as mentioned earlier, the adjoint operator of Lm exists and can be described as follows. Let Lm∗be the adjoint
+of Lm, the generator of the centred order book.
+Using Eq. (4.9), Lm∗can be written as the composition of the adjoint
+operators Ξm∗, Lm∗
+o
+and ˜Cm∗. Let P(Em × Z) and P(Lm) be the set of probability measures on Em × Z and on Lm. Then
+Ξm∗: P(Lm) →P(Em × Z), the adjoint operator of Ξm, is such that for any ν ∈P(Lm) and any measurable subset A of
+Em × Z:
+(E.10)
+Ξm∗ν(A) := ν(A ∩Lm);
+˜Cm∗: P(Em × Z) →P(Lm), the adjoint operator for ˜Cm, is such that for any µ ∈P(Em × Z), and any measurable subset A
+of Lm:
+(E.11)
+˜Cm∗µ(A) := µ((Cm)−1(A)) =
+X
+(Z,p)∈A
+µ((Cm)−1({(Z, p)}));
+Lm∗
+o
+: P(Em × Z) →P(Em × Z), the adjoint operator of Lm
+o , is such that for any measure µ ∈P(Em × Z) and any measurable
+subset A of Em × Z,
+(E.12)
+Lm∗
+o
+µ(A) =
+X
+(X,p)∈A
+X
+(Y,p′)∈Em×Z
+[pm
+o ((Y, p′), (X, p))µ({(Y, p′)}) −pm
+o ((X, p), (Y, p′))µ({(X, p))})].
+The adjoint operator of Lm can thus be deﬁned via the composition of the three operators Ξ∗, Lm∗
+o
+and ˜Cm∗:
+Proposition E.7. We have
+(E.13)
+Lm∗= ˜Cm∗Lm∗
+o
+Ξm∗.
+Moreover, Lm∗is bounded on P(Lm) and consequently is the generator of the group etLm∗for t ≥0. For any ﬁxed T ∈R+,
+we have:
+(E.14)
+lim
+∆t→0 ∥(e−∆tLm∗)
+T
+∆t −( ˜Cm∗e−∆tLm∗
+o
+Ξm∗)
+T
+∆t ∥P(Lm) = 0.
+Remark E.8. The decomposition of Lm∗through the adjoint of the restriction operator Ξm∗, the adjoint of the order ﬂow
+generator Lm∗
+o
+and the adjoint of the operator ˜Cm∗is similar to the decomposition of the operator L∗in the absolute coordinate
+framework. However, one should bear in mind that the expression of ˜Cm∗is diﬀerent from that of the operator ˜C∗.
+30

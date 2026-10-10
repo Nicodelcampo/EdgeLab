@@ -1,0 +1,4597 @@
+Hydrodynamic limit of order book dynamics∗
+Xuefeng Gao ∗∗, J. G. Dai †, A. B. Dieker ‡, and S. J. Deng §
+November 20, 2014
+Abstract
+Motivated by optimal trade execution, this paper studies the temporal evolution of
+the shape of a limit order book over a time horizon that is large compared with the
+length of time between order book events, with the aim of approximating the transient distribution of the shape. Relying on the stochastic order book model in Cont
+et al. (2010), we show that when the tick size approaches zero, a pair of measure-valued
+processes representing the “sell-side shape” and “buy-side shape” of an order book converges to a pair of deterministic measure-valued processes in a certain sense. Moreover,
+we describe the density proﬁle of the limiting processes through ordinary diﬀerential
+equations which can be solved explicitly. We also perform experiments to test our
+limiting model against data. The empirical results suggest that the approximation is
+eﬀective.
+∗We are greatful to Rama Cont, Xunyu Zhou, Xin Guo and Yu Gu for helpful discussions. Xuefeng
+Gao acknowledges support from CUHK Direct Grant for Research with project code 4055035. J. G. Dai is
+supported in part by NSF Grants CMMI-1030589 and CNS-1248117. A. B. Dieker is supported in part by
+NSF Grant CMMI-1252878. S.J. Deng is supported in part by a PSERC grant.
+∗∗Department of Systems Engineering and Engineering Management, The Chinese University of Hong
+Kong, Shatin, N.T. Hong Kong; xfgao@se.cuhk.edu.hk
+†School of Operations Research and Information Engineering, Cornell University, Ithaca, NY 14850;
+jd694@cornell.edu
+‡Department of Industrial Engineering and Operations Research, Columbia University, NY 10027;
+ton.dieker@ieor.columbia.edu; On leave from Georgia Institute of Technology
+§H. Milton Stewart School of Industrial and Systems Engineering, Georgia Institute of Technology,
+Atlanta, GA 30332; deng@isye.gatech.edu
+1
+
+1
+Introduction
+As a trading mechanism, limit order books have gained growing popularity in equity and
+derivative markets in the past two decades. Nowadays, the majority of the world’s ﬁnancial
+markets, such as Electronic Communication Networks in the United States, the Hong Kong
+Stock Exchange and the Toronto Stock Exchange, are organized as electronic limit-order
+books to match buyers and sellers. This has inspired intense research activities on limit
+order books. See, e.g., Parlour and Seppi (2008); Gould et al. (2013) for reviews.
+Our work is motivated by a body of literature on optimal trade execution. The task of
+optimal trade execution is to slice a large institutional size market order into a sequence of
+smaller trades so as to improve execution quality. The typical time horizon to fully execute
+such a large market order ranges from seconds to hours for liquidly traded assets and hours
+to days for illiquid ones. Such an execution horizon is relatively large compared with the
+time length between order book events, which is around milliseconds in high-frequency
+trading. The key factor to model in the optimal trade execution problem is price impact,
+i.e., how large trades aﬀect prices. Closely related with price impact is the shape of the
+order book that describes the number of awaiting limit orders at each price level. On the
+one hand, the shape of an order book can be used to derive the so-called virtual price
+impact (Weber and Rosenow (2005)). On the other hand, a body of literature on optimal
+trade execution takes the shape of the order book as input to determine price impact and
+derive optimal trading strategies, see for instance Obizhaeva and Wang (2012); Alfonsi
+et al. (2010); Predoiu et al. (2011); Fruth et al. (2013); Chen et al. (2013); Tsoukalas et al.
+(2013). Therefore, it is desirable to have an endogenous description of the evolution of
+the shape of a limit order book on “large” time scales where an institutional size order is
+executed. This is the goal of our paper.
+In order to characterize the evolution of the shape of the order book on a large time
+scale (low-frequency), we rely on microscopic order book models which describe the shortterm behavior of order book events (high-frequency). In doing so, we connect order book
+dynamics on diﬀerent time scales. There have been quite a few microscopic dynamical
+models of limit order books, see, e.g., Bak et al. (1997); Smith et al. (2003); Cont et al.
+(2010); Abergel and Jedidi (2011). Our work is based on Cont et al. (2010), where order
+book dynamics are described by a continuous-time Markov chain (CTMC). We pick this
+model mainly because the price as well as the shape in the model are both determined
+within the limit order book system based on order ﬂows. This is how a limit order book
+operates and how price moves, so such endogenous nature of price and shape dynamics is
+critical in order book modelling (see, e.g., Cont et al. (2013), Domowitz (1996)). In this
+model, there are a ﬁnite number of security price levels and the state of the order book is
+described by an order quantity at each price. Using Laplace transform analysis, Cont et al.
+(2010) eﬃciently compute conditional probabilities of various events of interest. However,
+it is computationally challenging to perform transient analysis (compute the transient
+distribution) of this multi-dimensional CTMC, in part due to its large state space and the
+2
+
+coupling between the order ﬂows of the buy-side and sell-side. While simulation is one
+viable way (potentially also costly) for understanding the transient behavior of the shape
+or the CTMC, we rely on the theory of hydrodynamic limits (see, e.g., Kipnis and Landim
+(1999)) to derive analytical approximations of the shape which could serve as input for
+optimal trade execution problems.
+1.1
+Contributions
+In this paper, we develop a deterministic dynamical model to approximate the highdimensional CTMC model of order book dynamics in Cont et al. (2010) by establishing a
+type of law of large numbers limit theorem. We do it by considering a time scale that is
+large compared to the length of time between order book events and a regime where the
+price tick size is very small. This regime is relevant, for example, for U.S. stock markets
+where the stock price tick size is only one penny. Such a regime has also been adopted in
+studies of order book models by researchers such as Smith et al. (2003). In this scaling
+regime, we develop a ﬂuid approximation for the transient behavior of the shape of a limit
+order book based on the interaction of order ﬂows.
+Mathematically, we prove in Theorem 3.1 that as the tick size 1/n approaches zero, a
+sequence of pairs of measure-valued processes {(ζn,+, ζn,−) : n ≥1}, representing the “sellside shape” and “buy-side shape” of the order book, converges to a pair of deterministic
+measure-valued processes in a certain sense. Moreover, the density proﬁle of the limiting
+processes can be described by Ordinary Diﬀerential Equations (ODEs) with coeﬃcients
+determined by order ﬂow intensities. Such a ﬂuid approximation is possible mainly because
+(a) we assume that there are large volumes of limit orders sitting at or near the best
+quotes and waiting for market transactions, hence the impact of an individual order is very
+small; (b) we assume that the magnitude of market order arrival rate (e.g., volume per
+second) is not very high compared to the volumes of limit orders in the vicinity of market
+price, speciﬁcally during the time periods of low price volatility. Both assumptions appear
+reasonable for liquidly traded stocks in our data; (c) the duration of order book events is
+short, so on the large time scale that we consider, the randomness in the cumulative order
+volumes on each price level is averaged out as a manifestation of the law of large numbers.
+Our result has several implications for optimal execution of orders. The limiting ODEs
+describing the “sell-side shape” and “buy-side shape” can be solved explicitly in terms of
+order arrival and cancellation rates (see (3.10) and (3.11)). The limiting best bid and best
+ask prices converge to the same constant, which leads to a zero-spread model (Proposition 3.1). Such models of the shape and the price are endogenous in the sense that they
+are derived from the interaction of order ﬂows. Thus, our models of the shape and price
+can be taken as input in optimal trade execution problems and our theory could provide
+theoretical guidance for ﬁnding optimal trading strategies.
+Besides the implication for
+trade execution using market orders, our result may be potentially useful for other trading
+problems as well. For example, one may integrate the limiting shape density and obtain the
+3
+
+virtual price impact as in Weber and Rosenow (2005). Such a price impact model could be
+used and provide insight into problems such as optimal execution using limit orders (see,
+e.g., Bayraktar and Ludkovski (2012); Gu´eant et al. (2012); Gu´eant and Lehalle (2013)).
+We also test our limiting deterministic model against historical order book data from
+the U.S. exchange NYSE Arca. Our empirical analysis demonstrates that our theory can
+be used to eﬀectively approximate the shape of an order book for stocks and time periods
+which satisfy our model assumptions (Section 4). To the best of our knowledge, this is the
+ﬁrst empirical result of this kind. The main goal of our empirical analysis is to illustrate the
+explanatory power of the endogenous modeling of the order-book shape evolution on large
+time scale rather than to make prediction about the future order-book shape, so no outof-sample prediction test is conducted. A predictive model of the order-book shape would
+require additional realistic features such as non-stationarity, time-clustering and mutual
+dependence of order ﬂows (see, e.g., Toke (2011), Abergel and Jedidi (2013)), which is left
+to future research.
+We now compare our work with some closely related alternatives which also study the
+scaling limits of the shape of limit order books in certain asymptotic regimes. These include Kruk (2012), Lakner et al. (2013), Lakner et al. (2014) and Horst and Paulsen (2013).
+Among them, only Horst and Paulsen (2013) incorporate order cancellations (modelling
+order cancellations is important: for example, more than 95% of limit orders at NASDAQ are cancelled without execution, see Hautsch and Huang (2011)). Horst and Paulsen
+(2013) prove a law of large numbers result for the dynamics of two-sided shape of an order
+book. In their limit, the best bid and best ask price dynamics can be described by two
+coupled ODEs and the relative buy and sell shape functions can be described by two linear
+ﬁrst-order hyperbolic partial diﬀerential equations. Our work diﬀers from theirs in three
+distinct aspects. First, unlike Horst and Paulsen (2013), which relies on a model assuming
+that market orders and placements of limit orders in the spread both cause one-tick price
+change, our limiting price and shape are endogenous in the sense that they are completely
+determined by order ﬂow interactions. This property is inherited from the framework of
+Cont et al. (2010). Second, we empirically test our limit theorem with order book data
+and illustrate the eﬀectiveness of our approximation. Finally, our approach is based on a
+martingale method while they use a certain averaging principle for Banach space-valued
+processes.
+The major mathematical challenges in establishing our limit theorem include (a) the
+state space of the CTMC model in Cont et al. (2010) is the n−dimensional integer lattice and it becomes inﬁnitely dimensional as n →∞(or the tick size 1/n →0). This
+is one of the key obstacles to applying standard limit theorems on the convergence of
+sequences of Markov chains (see, e.g. Kurtz (1971)); (b) one may instead study the occupation measure of the CTMC (see (3.3) in Section 3), but its state space is the space
+of signed measures. This space is ill-suited for studying weak convergence since the weak
+topology is not metrizable (see, e.g., Spiliopoulos et al. (2014)); (c) the total number of
+limit orders on the order book is stochastic and not ﬁxed, so there is no conservation law.
+4
+
+This contrasts with standard hydrodynamic limits of interacting particle systems which
+also derive macroscopic behavior from microscopic interaction of particles (see, e.g., Kipnis
+and Landim (1999)); (d) the price dynamics are determined by coupled order ﬂows, the
+intensity of which depends on the opposite best quotes. Therefore it is not clear what
+the limiting price dynamics would be. We overcome these challenges by (1) considering a
+pair of non-negative measure-valued processes with ﬁxed state space which is equivalent
+to the original CTMC and it still allows us to use a martingale approach; (2) establishing
+stochastic bounds on the total number of limit orders (Lemma B.1); (3) exploiting Massey’s
+stochastic comparison result (Massey (1987)) to show that the best bid and best ask prices
+converge to the same point in the limit, thus “decoupling” the dynamics of buy-side and
+sell-side shapes (Proposition 3.1).
+1.2
+Other Related Literature
+The research literature contains various studies on diﬀerent aspects of the shape of a limit
+order book besides the microscopic stochastic models of order books mentioned earlier.
+Empirical works (e.g., Bouchaud et al. (2002), Potters and Bouchaud (2003), Gu et al.
+(2008) and Biais et al. (2012)) typically focus on the steady-state properties of the shape
+of limit order books, rather than the transient distribution we study here. Equilibrium
+models (e.g., Glosten (1994), Ro¸su (2009)) have been proposed for analyzing the role of
+economic variables such as trade size and price volatility in determining the shape of the
+limit order book. These models provide insights into the determinants of the shape, but
+as pointed out in Cont et al. (2010), they have unobservable parameters so it is diﬃcult
+to estimate them or use them in practice. While our work focuses on the whole shape of
+an order book, there are also other scaling limits for the limit order volumes at only two
+price levels (best bid and best ask prices) (see, e.g., Cont and De Larrard (2011), Kirilenko
+et al. (2013) and Blanchet and Chen (2013)).
+1.3
+Organization
+The rest of the paper is organized as follows. Section 2 reviews a variant of the CTMC
+model in Cont et al. (2010) for limit order book dynamics and states the assumptions on
+order ﬂow rates and initial conditions. Section 3 summarizes our main result. Section 4
+discusses empirical analysis. Section 5 presents preliminaries for proving the main result.
+Section 6 is devoted to the proof of the result. Auxiliary results, their proofs and summary
+statistics of data are provided in the appendices.
+1.4
+Notation
+This subsection contains the notation used in this paper. All random elements are deﬁned
+on a common probability space (Ω, F, P) unless otherwise speciﬁed. Given x ∈R, we set
+x+ = max{x, 0} and x−= max{−x, 0}. We write ⌈x⌉for the smallest integer not less
+5
+
+than x, and ⌊x⌋for the largest integer not greater than x.
+Given x, y ∈R, we write
+x ∧y = min{x, y} and x ∨y = max{x, y}. For a positive integer n, Rn denotes the ndimensional Euclidean space, and Zn denotes the n-dimensional integer space. The set of
+continuous functions on [0, 1] is denoted by C([0, 1]). Given a Polish space E, the space of
+right-continuous functions f : [0, T] →E with left limits is denoted by D([0, T], E). The
+space D([0, T], E) is assumed to be endowed with the Skorohod J1-topology. For a sequence
+of random elements {Xn : n = 1, 2, . . .} taking values in a metric space, we write Xn ⇒X
+to denote the convergence of Xn to X in distribution. Each stochastic process with sample
+paths in D([0, T], E) is considered to be a D([0, T], E)-valued random element. For a Borel
+measure ν and function f, we set ⟨ν, f⟩=
+R
+f(u)ν(du) when the integration exists. The
+symbol δu represents the Dirac measure at location u ∈R, i.e., for a Borel set U,
+δu(U) =
+(
+1
+if u ∈U,
+0
+if u /∈U.
+The space of ﬁnite non-negative measures on [0, 1] is denoted by M+([0, 1]), and the space
+of ﬁnite signed measures on [0, 1] is denoted by M([0, 1]).
+2
+Model and Assumptions
+In this section we describe a variant of the order book model introduced in Cont et al.
+(2010) and state the assumptions. Throughout of this paper, we ﬁx the time T > 0.
+Fix n ≥1.
+Without loss of generality, we suppose that investors can submit their
+limit orders to n discrete equally-spaced price levels { 1
+n, 2
+n, · · · , n
+n} within the price range
+(0, 1]. Thus the parameter n also represents the inverse of tick size. The state of the limit
+order book at time t is given by a vector X n(t) ≡(X n
+1 (t), . . . , X n
+n (t)) ∈Zn, where for
+i ∈{1, . . . , n}, |X n
+i (t)| represents the number of outstanding limit orders at price i/n at
+time t. If X n
+i (t) > 0, then there are X n
+i (t) sell orders at price i/n, and if X n
+i (t) < 0, then
+there are −X n
+i (t) buy orders at price i/n.
+To deﬁne the best ask price (lowest price among limit sell orders) and best bid price
+(highest price among limit buy orders), we deﬁne two mappings Pn
+A and Pn
+B such that for
+a given state x = (x1, . . . , xn) ∈Zn
+Pn
+A(x)
+≡
+inf{i ∈{1, . . . , n} : xi > 0} ∧{n + 1},
+(2.1)
+Pn
+B(x)
+≡
+sup{i ∈{1, . . . , n} : xi < 0} ∨0,
+(2.2)
+where inf ∅= ∞and sup ∅= −∞by convention. For t ≥0, we write
+pn
+A(t)
+=
+Pn
+A(X n(t)),
+(2.3)
+pn
+B(t)
+=
+Pn
+A(X n(t)).
+(2.4)
+6
+
+Thus for order book X n(·) at time t, the best ask price is pn
+A(t)/n and best bid price is
+pn
+B(t)/n, where 1/n is the tick size.
+We assume
+(a) Limit buy (respectively sell) orders arrive at a distance of i ticks from the opposite
+best quote at independent, exponentially distributed times with rate Λn
+B(i) (respectively Λn
+A(i)),
+(b) Market buy (respectively sell) orders arrive at independent, exponentially distributed
+times with rate Υn
+B (respectively Υn
+A),
+(c) Each limit buy (respectively sell) order at a distance of i ticks from the opposite
+best quote is cancelled independently after exponentially distributed times with rate
+Θn
+B(i) (respectively Θn
+A(i) ) .
+(d) All the above events are mutually independent.
+(e) All the orders are of unit size, which is independent of n.
+Compared to the model in Cont et al. (2010), the extra feature is that we allow order
+ﬂow intensities to be side-dependent (buy orders or sell orders). This has been observed
+empirically and such feature will be useful in our empirical analysis in Section 4. Given
+these assumptions, the state process X n(·) is a n−dimensional CTMC with state space Zn.
+Deﬁne an operator Ln as follows: for any function H : Zn →R and each x ∈Zn
+LnH(x)
+=
+X
+k<Pn
+A(x)
+h
+H(xk+) −H(x)
+
+· Θn
+B(Pn
+A(x) −k) · |xk|
+i
++
+X
+k<Pn
+A(x)
+h
+H(xk−) −H(x)
+
+· Λn
+B(Pn
+A(x) −k)
+i
++
+X
+k>Pn
+B(x)
+h
+H(xk+) −H(x)
+
+· Λn
+A(k −Pn
+B(x))
+i
++
+X
+k>Pn
+B(x)
+h
+H(xk−) −H(x)
+
+· Θn
+A(k −Pn
+B(x)) · |xk|
+i
++
+
+H(xPn
+B(x)+) −H(x)
+
+· Υn
+A
++
+
+H(xPn
+A(x)−) −H(x)
+
+· Υn
+B,
+(2.5)
+where Pn
+A and Pn
+B are mappings given in (2.1) and (2.2), and for k ∈{1, . . . , n}
+(
+xk+ = (x1, . . . , xk−1, xk + 1, xk+1, . . . , xn),
+xk−= (x1, . . . , xk−1, xk −1, xk+1, . . . , xn),
+7
+
+and
+x0+ = x(n+1)−= x.
+The inﬁnitesimal generator of X n coincides with the operator Ln on the space of bounded
+functions from Zn to R.
+Throughout the paper, we make the following assumptions.
+Assumption 2.1. There exists a function ϱ from [0, 1] to R such that for ﬁxed n ≥1, the
+initial order book X n(0) is given by
+X n
+i (0) ≡n · ϱ( i
+n)
+for i ∈{1, 2, . . . , n}.
+(2.6)
+The initial proﬁle ϱ satisﬁes
+(a) For some p ∈(0, 1), ϱ(p) = 0 and
+sup{x ∈[0, 1] : ϱ(x) < 0} = inf{x ∈[0, 1] : ϱ(x) > 0} = p;
+(2.7)
+(b) the function |ϱ| is positive on (p −∆, p) and (p, p + ∆) for some small ∆> 0;
+(c) the function ϱ is continuous and bounded on [0, p) and (p, 1].
+Assumption 2.2. For each market side j ∈{A, B}, there exist positive continuous function Λj(x) and nonnegative continuous function Θj(x) on [0, 1], and constants κ < 1 and
+Υ ≥0 such that for each n and i ∈{1, 2, . . . , n},
+Λn
+j (i) = Λj( i
+n),
+Θn
+j (i) = 1
+nΘj( i
+n),
+and
+Υn
+j ≤nκ · Υ.
+(2.8)
+Assumption 2.1 concerns the initial shape of an order book. Empirically we ﬁnd that
+for certain liquidly traded stocks such as Bank of America, Ford Motor Co. and Dell Inc.,
+there are large volumes of limit orders sitting at or near the best quotes and waiting for
+executions. The number of outstanding limit orders on those price levels is approximately
+on the order of n = 100 (in the unit of unit order size), which matches the fact that the
+tick size is $1/n = $0.01 in the U.S. stock markets. See Table 1 in Appendix E.1 for an
+example. This provides empirical support for (2.6). For technical convenience, we also
+make three assumptions on the regularity of the initial proﬁle ϱ.
+Assumption 2.2 is also motivated by our data analysis. We note that the scaling of
+the limit order arrival rates and cancellation rates per order are diﬀerent. From our data
+we ﬁnd that for the aforementioned liquid stocks, typically the ratio of limit order arrival
+rate and cancel rate
+Λn
+j (i)
+Θn
+j (i) is of the order of n = 100 in the vicinity of the best quotes.
+In addition, we observe that the magnitude of market order arrival rate (e.g., volume per
+second) is not very high compared to the volumes of limit orders in the vicinity of market
+price, speciﬁcally during the time periods of low price volatility. These two facts motivate
+(2.8). We refer the readers to Tables 2-5 in Appendix E.1 for sample order ﬂow statistics
+and further details. The assumptions on the continuity of functions Λj, Θj and positivity
+of Λj are technical and they facilitate our analysis (see the proofs of Lemmas B.1 and D.2).
+8
+
+3
+The main result
+In this section we state our main result of this paper.
+We ﬁrst deﬁne three sequences
+of measure-valued process (see, e.g., Dawson (1993) for background on measure-valued
+processes). For ﬁxed n ≥1 and t ∈[0, T], we set
+ζn,+
+t
+=
+1
+n2
+n
+X
+i=1
+(X n
+i (nt))+ · δ i
+n = 1
+n2
+X
+i>pn
+B(nt)
+X n
+i (nt) · δ i
+n ,
+(3.1)
+ζn,−
+t
+=
+1
+n2
+n
+X
+i=1
+(X n
+i (nt))−· δ i
+n = 1
+n2
+X
+i<pn
+A(nt)
+−X n
+i (nt) · δ i
+n ,
+(3.2)
+ζn
+t
+=
+ζn,+
+t
+−ζn,−
+t
+= 1
+n2
+n
+X
+i=1
+X n
+i (nt) · δ i
+n ,
+(3.3)
+where X n is the n−dimensional CTMC with state space Zn and it describes the evolution
+of the limit order book, pn
+A, pn
+B are given in (2.3) and (2.4), and δu is the Dirac measure
+centered at u.
+The choice of space scaling n2 follows from the facts that there are n
+price levels in total and the number of limit orders on each price level is of the order n
+(Assumptions 2.1 and 2.2).
+For ﬁxed t, the pair (ζn,+
+t
+, ζn,−
+t
+) represents the “sell-side shape” and “buy-side shape”
+of the order book at some large time nt, and the measure ζn
+t represents the whole shape
+of the order book at large time nt. Note that the pair (ζn,+
+t
+, ζn,−
+t
+) lives in the product
+space M+([0, 1]) × M+([0, 1]). For the moment, we use M([0, 1]) to denote this product
+space equipped with an appropriate metric such that M([0, 1]) is complete and separable.
+A precise deﬁnition of the space M([0, 1]) is given in Section 5.2.
+We are interested in the limiting behavior of the Markov process (ζn,+, ζn,−) as n →∞.
+This corresponds to the limiting regime where price tick size
+1
+n approaches zero.
+This
+regime is particularly relevant for limit order markets where tick size is very small (e.g.,
+one penny in U.S. equity markets). It is worthwhile to note that ζn is also a Markov process
+which contains the same information as (ζn,+, ζn,−). However, for ﬁxed t, ζn
+t is a signed
+measure living in the space M([0, 1]) which is ill-suited for studying weak convergence
+since the weak topology is in general not metrizable (see, e.g., Spiliopoulos et al. (2014)).
+Thus we instead work with the sequence of pairs of non-negative measure-valued processes
+{(ζn,+, ζn,−) : n ≥1}.
+Now we state the main theorem of this paper. The proof is given in Section 6.
+Theorem 3.1. Suppose that Assumptions 2.1 and 2.2 hold. Then as n →∞,
+(ζn,+, ζn,−) ⇒(ζ+, ζ−)
+in D([0, T], M([0, 1])),
+where (ζ+, ζ−) is a pair of deterministic measure-valued process.
+In addition, for any
+t ∈[0, T], the nonnegative measures ζ+
+t
+and ζ−
+t
+are absolutely continuous with respect to
+9
+
+Lebesgue measure and have density functions ϕ+ = max{ϕ, 0} and ϕ−= max{−ϕ, 0}
+such that ζ+
+t (dx) = ϕ+(x, t)dx and ζ−
+t (dx) = ϕ−(x, t)dx for x ∈[0, 1]. The function ϕ is
+uniquely determined by the following set of equations: for x ∈[0, 1]
+ϕ(x, 0)
+=
+ϱ(x),
+(3.4)
+∂tϕ(x, t)
+=
+ΛA(x −p) −ΘA(x −p) · ϕ(x, t),
+x > p,
+(3.5)
+∂tϕ(x, t)
+=
+−ΛB(p −x) −ΘB(p −x) · ϕ(x, t),
+x < p .
+(3.6)
+ϕ(p, t)
+=
+0,
+t ∈[0, T],
+(3.7)
+where ϱ, p, ΛA, ΛB, ΘA and ΘB are given in Assumptions 2.1 and 2.2.
+The price dynamics is typically of interest in modeling order book dynamics. The next
+proposition says the “scaled” best bid and best ask prices converge to the same constant
+and the spread is zero in the n →∞limit. We leave the proof to Appendix A.
+Proposition 3.1. Suppose that Assumptions 2.1 and 2.2 hold. Then we have as n →∞
+sup
+0≤t≤T
+
+pn
+A(nt)
+n
+−p
+ ⇒0,
+(3.8)
+sup
+0≤t≤T
+
+pn
+B(nt)
+n
+−p
+ ⇒0,
+(3.9)
+where pn
+A(·) and pn
+B(·) are given in (2.3) and (2.4), and p is given in (2.7).
+The functions ϕ+(x, t) and ϕ−(x, t) in Theorem 3.1 represent the density proﬁle of the
+sell-side and buy-side shape of the order book on low-frequency time scale such as a few
+minutes. In addition, these two functions only rely on the limit order arrival rate and
+cancellation rate, but not on the market order arrival rate. This is because (a) all orders
+are of unit size, so market orders only consume limit orders sitting at the best bid and the
+best ask; (b) the magnitude of market order arrival rate is not very high compared to the
+volumes of limit orders in the vicinity of market price in Assumption 2.2. In fact, as the
+tick size goes to zero, the bid-ask spread shrinks to zero, and the best bid and best ask
+prices converge to the same point p as stated in Proposition 3.1.
+One readily veriﬁes from Theorem 3.1 and (2.7) that for each t ∈[0, T],
+ϕ+(x, t) = e−ΘA(x−p)t · ϱ(x)+ + ΛA(x −p)
+ΘA(x −p) ·
+
+1 −e−ΘA(x−p)t
+for p < x ≤1,
+(3.10)
+ϕ−(x, t) = e−ΘB(p−x)t · ϱ(x)−+ ΛB(p −x)
+ΘB(p −x) ·
+
+1 −e−ΘB(p−x)t
+for 0 ≤x < p.
+(3.11)
+When n is large, we obtain from Theorem 3.1 the following approximation for the transient
+10
+
+behavior of the shape of an order book: for interval I ⊂[0, 1] and t ∈[0, T]
+ζn,+
+t
+(I) ∆= 1
+n2
+X
+i>pn
+B(nt), i
+n∈I
+X n
+i (nt) ≈ζ+
+t (I) =
+Z
+I
+ϕ+(x, t)dx ≈1
+n
+X
+i
+n∈I
+ϕ+( i
+n, t),
+(3.12)
+ζn,−
+t
+(I) ∆= 1
+n2
+X
+i<pn
+A(nt), i
+n∈I
+−X n
+i (nt) ≈ζ−
+t (I) =
+Z
+I
+ϕ−(x, t)dx ≈1
+n
+X
+i
+n∈I
+ϕ−( i
+n, t),
+(3.13)
+where ϕ+ and ϕ+ are given in (3.10) and (3.11).
+4
+Empirical Analysis
+In this section we perform empirical analysis to illustrate the eﬀectiveness of Theorem 3.1
+in approximating the evolution of the shape of the order book on “large” time scale on the
+magnitude of a few minutes.
+4.1
+Data
+Our empirical analysis is based on one-month message-level order book data from NYSE
+Arca (in short, Arca) in August 2010.
+As of 2009, NYSE Arca is the second largest
+electronic communication network in U.S. in terms of shares traded (around 20% of market
+share for NASDAQ-listed securities and 10% of NYSE-listed securities).
+Two data sets are used. The ﬁrst data set consists of all limit order activities on Arca,
+including limit order submission, modiﬁcation and deletion. For each message in the data,
+it contains a time stamp down to millisecond, the price and order size, the buy or sell
+indicator, stock symbol, exchange, and an ID (identiﬁer).
+This data set enables us to
+recreate the limit order book at any give time for stocks traded on Arca. Our second data
+set records all the trades. Each message contains a time stamp down to second, the traded
+price and order size, the buy or sell indicator, the best bid/ask prices and standing limit
+order quantities on these two prices when trades occur, stock symbol, and an ID (identiﬁer).
+In conjunction with the ﬁrst data set, we can analyze the detailed order ﬂow properties
+such as limit order arrival rate, market order arrival rate and limit order cancellation rate.
+4.2
+Empirical analysis
+The goal of this section is to illustrate that our theoretical model can be used to eﬀectively
+approximate the evolution of the shape of an order book on time scale of minutes for stocks
+and time periods which satisfy our model assumptions.
+Our approach is to empirically test (3.12) and (3.13). For convenience we multiply both
+sides of these approximate equations by n2, i.e., we test the following approximations and
+11
+
+show that they are accurate:
+X
+i>pn
+B(nt), i
+n∈I
+X n
+i (nt) ≈n
+X
+i
+n∈I
+ϕ+( i
+n, t),
+(4.1)
+X
+i<pn
+A(nt), i
+n∈I
+−X n
+i (nt) ≈n
+X
+i
+n∈I
+ϕ−( i
+n, t).
+(4.2)
+The left-hand side of (4.1) (respectively (4.2)) represents the total number of limit sell
+(respectively buy) orders in price interval I ⊂[0, 1]. With an appropriate shift of the price
+levels, such quantities can be directly obtained from data since we have the full empirical
+order book information at each time instant. On the other hand, the quantities at the
+right-hand side involve the values of functions ϕ+ and ϕ−at discrete price levels i/n. We
+next discuss how to compute such values.
+First, we screen the data to identify stocks and time periods which satisfy Assumptions
+2.1 and 2.2. We ﬁnd that liquidly-traded stocks, such as Bank of America Corp. (BAC),
+General Electric Co. (GE), Ford Motor Co. (F), Pﬁzer Inc. (PFE) and Dell Inc. (DELL),
+typically have large volumes of limit orders sitting at or near the best quotes and waiting
+for market transactions. This is consistent with Assumption 2.1. Once a stock is chosen,
+we scan the intra-day order book data and look for time horizon (e.g., a few minutes) with
+low price volatility such that Assumption 2.2 is also satisﬁed. Such time intervals appear
+reasonably frequently in our analysis of the ﬁve stocks (BAC, GE, F, PFE and DELL). For
+illustration purposes, we focus on stock BAC during 12:45pm-13:05pm on August 5, 2010
+as a representative example.
+Second, we estimate and input the needed parameters to compute ϕ+ and ϕ−given in
+(3.10) and (3.11). Such parameters include the initial order book proﬁle ϱ, the number p,
+the time length nt, the limit order arrival rates and the limit order cancelation rates. We
+follow the four-step procedure described below to choose and compute these parameters.
+1. Normalize the calender time 12:45pm to be time 0. The initial order book is given
+by the ﬁrst snapshot of the order book after 12:45pm. Hence we obtain ϱ at each
+discrete price level.
+2. Set p to be the best bid price at 12:45pm when computing ϕ+ and the best ask when
+computing ϕ−. Best bid and ask prices at 12:45pm are $13.99 and $14, respectively.
+So the bid-ask spread is just one penny.
+3. Take snapshots of the order book at ﬁve-minute intervals till 13:05pm. More precisely, we consider four time intervals: 12:45pm-12:50pm, 12:45pm-12:55pm, 12:45pm13:00pm and 12:45pm-13:05pm. For each time interval, we ﬁnd the last snapshot of
+the order book. We do so because we are interested in the dynamics of the shape.
+4. For each of the aforementioned time intervals, estimate the order ﬂow intensities
+following Cont et al. (2010). See Appendix E.1 for detailed statistics.
+12
+
+Finally, we compute the right-hand side of (4.1) and (4.2) by plugging in the model
+parameters. We take interval I in (4.1) and (4.2) as 3-cent price bins, e.g., [$0.50, $0.53]. It
+turns out that varying the bin size yields similar empirical results, so we suppress further
+details.
+We now present our main empirical ﬁndings on in-sample tests of (4.1) and (4.2).
+Figure 1 plots the comparisons of the empirical sell-side shape of stock BAC and the theoretical sell-side shape obtained from applying our model at four diﬀerent time instants. For
+convenience, the aggregated order volume in each price bin is scaled by 363-shares, which
+is the average limit sell order size of BAC during 12:45pm-13:05pm. From Figure 1, we
+observe good agreement between the theoretical shapes computed from our model (Theorem 3.1) and the empirical shapes of stock BAC on Arca. See Tables 6-9 in Appendix E.2
+for detailed statistics and results on both buy-side and sell-side shapes. Thus, despite the
+simplifying assumptions, there is strong evidence that our limiting model can explain the
+evolution of the shape of an order book over a time horizon that is large compared with
+the length of time between order book events.
+13
+
+Figure 1: Comparisons of empirical sell-side shapes and theoretical sell-side shapes for
+BAC on August 5, 2010. Each blue bar corresponds to the total number of limit sell orders
+in each 3-cent price bin and it is obtained from data. Each magenta bar corresponds to
+the total number of limit sell orders in each price bin and it is obtained from our model.
+The best ask prices are the same ($14) at four time instants 12:50pm, 12:55pm, 13:00pm
+and 13:05pm.
+Comparision of empirical and theoretical shapes at 12:50pm
+Number of limit orders
+0
+200
+400
+600
+800
+1000
+$14−$14.03
+$14.01−$14.04
+$14.02−$14.05
+$14.03−$14.06
+$14.04−$14.07
+$14.05−$14.08
+$14.06−$14.09
+12:50 Arca
+12:50 Thm
+Comparision of empirical and theoretical shapes at 12:55pm
+Number of limit orders
+0
+200
+400
+600
+800
+1000
+$14−$14.03
+$14.01−$14.04
+$14.02−$14.05
+$14.03−$14.06
+$14.04−$14.07
+$14.05−$14.08
+$14.06−$14.09
+12:55 Arca
+12:55 Thm
+Comparision of empirical and theoretical shapes at 13:00pm
+Number of limit orders
+0
+200
+400
+600
+800
+1000
+$14−$14.03
+$14.01−$14.04
+$14.02−$14.05
+$14.03−$14.06
+$14.04−$14.07
+$14.05−$14.08
+$14.06−$14.09
+13:00 Arca
+13:00 Thm
+Comparision of empirical and theoretical shapes at 13:05pm
+Number of limit orders
+0
+200
+400
+600
+800
+1000
+$14−$14.03
+$14.01−$14.04
+$14.02−$14.05
+$14.03−$14.06
+$14.04−$14.07
+$14.05−$14.08
+$14.06−$14.09
+13:05 Arca
+13:05 Thm
+5
+Preliminaries
+This section presents preliminaries for proving the main result (Theorem 3.1).
+14
+
+5.1
+A technical lemma
+In this section we introduce a technical lemma. It connects the process (ζn,+, ζn,−) with
+the process ζn in (3.3). The latter, which is also Markovian, plays a fundamental role in
+the proof of Theorem 3.1.
+Note that for ﬁxed f ∈C[0, 1], one can construct a family of functions fγ ∈C[0, 1]
+indexed by γ ∈(0, p) such that {fγ} are uniformly bounded and
+fγ(x) =
+
+
+
+
+
+f(x)
+if p ≤x ≤1,
+0
+if 0 ≤x ≤p −γ,
+smooth
+if p −γ < x < p.
+(5.1)
+It is clear that
+lim
+γ→0+ fγ(x) = f(x) · 1[p,1](x)
+for each x ∈[0, 1].
+(5.2)
+The following lemma says that ⟨ζn,+
+t
+, f⟩is “close” to ⟨ζn
+t , fγ⟩and ⟨ζn,−
+t
+, f⟩is “close” to
+⟨ζn
+τ , fγ −f⟩when n is large and γ is small. The proof is given in Appendix B.
+Lemma 5.1. Fix a function f ∈C[0, 1]. There exists a positive constant C depending on
+T and two nonnegative sequences {˜an}, {ˆan} both depending on T and both approaching 0
+as n →∞, such that for each γ ∈(0, p) and n large, we have
+E
+h
+sup
+0≤t≤T
+⟨ζn,+
+t
+, f⟩−⟨ζn
+t , fγ⟩
+
+i
+≤˜an + Cγ,
+(5.3)
+E
+h
+sup
+0≤t≤T
+⟨ζn,−
+t
+, f⟩−⟨ζn
+t , fγ −f⟩
+
+i
+≤ˆan + Cγ.
+(5.4)
+5.2
+Tightness of {(ζn,+, ζn,−) : n ≥1}
+In this section, we deﬁne the Polish space D([0, T], M([0, 1])) on which the pair of measurevalued processes {(ζn,+, ζn,−) : n ≥1} lives and discuss the tightness of this sequence.
+Recall that the space of ﬁnite non-negative measures on [0, 1], denoted by M+([0, 1]),
+is a Polish space under the following metric d+:
+d+ (υα, υβ) =
+∞
+X
+k=1
+1
+2k
+|⟨υα, φk⟩−⟨υβ, φk⟩|
+1 + |⟨υα, φk⟩−⟨υβ, φk⟩|
+(5.5)
+where υα, υβ ∈M+([0, 1]), {φk : k ≥1} are chosen to be a dense subset of C([0, 1]) endowed
+with uniform topology, and ⟨υ, φk⟩≡
+R
+φk(x)υ(dx) for measure υ, see, e.g., (Kipnis and
+Landim, 1999, Section 4.1). Relying on the metric d+, we can deﬁne a metric d on the
+product space M+([0, 1]) × M+([0, 1]) such that
+d
+
+(υ+
+α , υ−
+α ), (υ+
+β , υ−
+β )
+ ∆=
+q
+d2
++(υ+
+α , υ+
+β ) + d2
++(υ−
+α , υ−
+β ),
+(5.6)
+15
+
+where (υ+
+α , υ−
+α ), (υ+
+β , υ−
+β ) ∈M+([0, 1]) × M+([0, 1]).
+The product space M+([0, 1]) ×
+M+([0, 1]) equipped with metric d deﬁned in (5.6) is denoted by M([0, 1]). One readily veriﬁes that M([0, 1]) is a Polish space (see, e.g. Kotelenez (2010)). Therefore, the
+Skorohod space D([0, T], M([0, 1])) on which (ζn,+, ζn,−) lives is also a Polish space with
+Skorohod J1 topology. See Billingsley (1999) for more details on the topology.
+We now state the main result of this section. The proof is given in Appendix C. Recall
+a sequence of random elements is called C–tight if it is tight, and if all the limit points of
+the sequence are concentrated on continuous paths. See, e.g., (Jacod and Shiryaev, 2003,
+Deﬁnition VI.3.25).
+Proposition 5.1. Fix a function f ∈C[0, 1]. Then {(⟨ζn,+, f⟩, ⟨ζn,−, f⟩) : n ≥1} is C–
+tight in D([0, T], R2), and {(ζn,+, ζn,−) : n ≥1} is C–tight in D([0, T], M([0, 1])).
+Proposition 5.1 together with Prohorov’s Theorem implies that the sequence {(ζn,+, ζn,−) :
+n ≥1} is relatively compact. Our next step is to characterize the limit points of this relatively compact sequence. Suppose (ζ+, ζ−) is a limit point, i.e., there is a subsequence
+{(ζnk,+, ζnk,−) : k = 1, 2 . . .} such that
+(ζnk,+, ζnk,−) ⇒(ζ+, ζ−)
+in D([0, T], M([0, 1]))
+as nk →∞.
+(5.7)
+To characterize the pair (ζ+, ζ−), we rely on an auxiliary process deﬁned by
+ζt
+∆= ζ+
+t −ζ−
+t
+for each t ∈[0, T],
+(5.8)
+Our next section is devoted to characterizing the process ζ.
+5.3
+Characterization of the process ζ
+In this section, we characterize the process ζ deﬁned in (5.8).
+It is straightforward to verify that for f ∈C[0, 1], the function from (π+, π−) ∈
+D([0, T], M([0, 1])) to (⟨π+, f⟩, ⟨π−, f⟩) ∈D([0, T], R2) is continuous with respect to Skorohod J1 topology (use (5.5)-(5.6) and Lemma A.24 in Sepp¨al¨ainen (2008)). Now (5.7)
+together with continuous mapping theorem implies that for an arbitrary ﬁxed function
+f ∈C([0, 1]) we have as nk →∞,
+ ⟨ζnk,+, f⟩, ⟨ζnk,−, f⟩
+
+⇒
+ ⟨ζ+, f⟩, ⟨ζ−, f⟩
+
+in D([0, T], R2).
+(5.9)
+Thus we deduce that
+⟨ζnk, f⟩⇒⟨ζ, f⟩
+in D([0, T], R),
+(5.10)
+where ζn is given in (3.3) and ζ is given in (5.8).
+16
+
+Next, for ﬁxed n ≥1, if we deﬁne a function F on Rn by
+F(x1, . . . , xn) = 1
+n2
+n
+X
+k=1
+f
+k
+n
+
+xk,
+(5.11)
+we obtain from (3.3) and Markov property of X n that for t ∈[0, T],
+⟨ζn
+t , f⟩
+=
+1
+n2
+n
+X
+i=1
+X n
+i (nt) · f
+ i
+n
+
+= F(X n(nt))
+=
+⟨ζn
+0 , f⟩+
+Z nt
+0
+LnF(X n(s))ds + Mn
+t .
+(5.12)
+Here Ln is operator given in (2.5) and Mn is a (local) martingale. The martingale representation (5.12) and the convergence in (5.10) are the keys to characterize ζ.
+To state the main result of this section, we recall the functions ΛA, ΛB, ΘA and ΘB
+given in Assumption 2.2 and p given in Assumption 2.1. For notational convenience, we
+let νΛ be a signed measure that is absolutely continuous with respect to Lebesgue measure
+such that for x ∈[0, 1]
+ν(dx)
+dx
+= ΛA(x −p) · 1x>p −ΛB(p −x) · 1x<p.
+(5.13)
+In addition, we let AΘ be a linear operator such that for f ∈C([0, 1]),
+AΘf(x) = f(x) ·
+
+ΘA(x −p) · 1x>p + ΘB(p −x) · 1x<p
+
+.
+(5.14)
+We now state the main result of this section which gives a characterization of ζ.
+Proposition 5.2. Let (ζ+, ζ−) be a limit point in (5.7) and let ζ be deﬁned in (5.8). Then
+ζ satisﬁes the following set of equations: for any f ∈C([0, 1]) and t ∈[0, T],
+⟨ζt, f⟩= ⟨ζ0, f⟩+ ⟨ν, f⟩· t −
+Z t
+0
+⟨ζs, AΘf⟩ds,
+(5.15)
+where ν and AΘ are given in (5.13) and (5.14). Moreover, ⟨ζ, f⟩has continuous trajectory and there is a unique deterministic measure-valued process solving Equations (5.15).
+Finally, for ﬁxed t ∈[0, T], ζt is a ﬁnite measure that is absolutely continuous with respect
+to Lebesgue measure, and it has bounded density function ϕ determined by (3.4)–(3.7).
+The main technical part of the proof of Proposition 5.2 consists of showing that in (5.12)
+as n →∞, the martingale term vanishes and the term involving the generator converges
+weakly. The proof relies on Proposition 3.1 and we leave the details to Appendix D.
+17
+
+6
+Proof of Theorem 1
+In this section we prove Theorem 1 and characterize the limit point (ζ+, ζ−) in (5.7).
+Proof of Theorem 3.1. Assume (ζ+, ζ−) is a limit point as in Proposition 5.2. In view of
+Proposition 5.2, to show that ζ+
+t
+(respectively ζ−
+t ) is absolutely continuous with density
+ϕ+(·, t) (respectively ϕ−(·, t)), it suﬃces to show that for any f ∈C([0, 1]) and t ∈[0, T],
+we have
+⟨ζ+
+t , f⟩=
+Z 1
+0
+f(x)ϕ+(x, t)dx,
+(6.1)
+⟨ζ−
+t , f⟩=
+Z 1
+0
+f(x)ϕ−(x, t)dx,
+(6.2)
+where ϕ+ = max{ϕ, 0}, ϕ−= max{−ϕ, 0} and ϕ is uniquely determined by (3.4)–(3.7).
+To this end, we ﬁrst note that ⟨ζnk,+
+t
+, f⟩⇒⟨ζ+
+t , f⟩as nk →∞for ﬁxed time t ∈[0, T].
+This is true because ⟨ζnk,+, f⟩⇒⟨ζ+, f⟩in (5.9) and almost every path of the limit point
+⟨ζ+, f⟩is continuous by Proposition 5.1. Similarly, we deduce from (5.10) that ⟨ζnk
+t , fγ⟩⇒
+⟨ζt, fγ⟩for fγ ∈C[0, 1] introduced in (5.1) and t ∈[0, T].
+Since ζ is deterministic by
+Proposition 5.2, we obtain that ⟨ζnk
+t , fγ⟩converges in probability to ⟨ζt, fγ⟩. Therefore, we
+have for ﬁxed γ > 0,
+⟨ζnk,+
+t
+, f⟩−⟨ζnk
+t , fγ⟩⇒⟨ζ+
+t , f⟩−⟨ζt, fγ⟩
+as nk →∞.
+Using Theorem 3.4 in Billingsley (1999), we obtain from Lemma 5.1 that there exists a
+constant C > 0 such that for each γ ∈(0, p) and t ∈[0, T]
+E
+⟨ζ+
+t , f⟩−⟨ζt, fγ⟩
+
+≤
+lim inf
+nk→∞E
+⟨ζnk,+
+t
+, f⟩−⟨ζnk
+t , fγ⟩
+
+≤
+lim inf
+nk→∞(˜ank + Cγ)
+=
+Cγ.
+(6.3)
+In addition, since ζt is a deterministic signed measure with bounded density function by
+Proposition 5.2 and {fγ : γ ∈(0, p)} is uniformly bounded on [0, 1], one infers from the
+dominated convergence theorem and (5.2) that
+lim
+γ→0+ ⟨ζt, fγ⟩= ⟨ζt, lim
+γ→0+ fγ⟩=
+Z 1
+p
+f(x)ϕ(x, t)dx.
+(6.4)
+Since ϕ satisﬁes (3.4)-(3.7), and ρ satisﬁes (2.7), we deduce that ϕ is non-negative on [p, 1]
+and non-positive on [0, p]. This implies
+Z 1
+p
+f(x)ϕ(x, t)dx =
+Z 1
+0
+f(x)ϕ+(x, t)dx.
+(6.5)
+18
+
+Therefore, we ﬁnd from (6.3) that
+E
+⟨ζ+
+t , f⟩−
+Z 1
+0
+f(x)ϕ+(x, t)dx
+
+≤
+E
+⟨ζ+
+t , f⟩−⟨ζt, fγ⟩
+ + |⟨ζt, fγ⟩−
+Z 1
+0
+f(x)ϕ+(x, t)dx|
+≤
+Cγ + |⟨ζt, fγ⟩−
+Z 1
+0
+f(x)ϕ+(x, t)dx|.
+(6.6)
+Let γ →0+ in inequality (6.6), we conclude from (6.4) and (6.5) that
+E
+⟨ζ+
+t , f⟩−
+Z 1
+0
+f(x)ϕ+(x, t)dx
+ = 0.
+Thus (6.1) holds with probability one.
+A similar argument yields (6.2).
+The proof is
+therefore complete.
+19
+
+A
+Proof of Proposition 3.1
+We prove Proposition 3.1 in this appendix.
+Proof. We prove (3.8) using a stochastic comparison method. The convergence in (3.9)
+follows from a similar argument and is thus omitted.
+We ﬁrst show that
+lim
+n→∞
+pn
+A(0)
+n
+= lim
+n→∞
+pn
+B(0)
+n
+= p.
+(A.1)
+This readily follows from the deﬁnition of best bid and best ask prices and the regularity
+condition (b) of ϱ in Assumption 2.1. In view of (A.1), in order to prove (3.8) it suﬃces to
+prove
+sup
+0≤t≤T
+
+pn
+A(nt)
+n
+−pn
+A(0)
+n
+ ⇒0,
+as n →∞.
+Given any ϵ > 0, we have
+P
+
+sup
+0≤t≤T
+
+pn
+A(nt)
+n
+−pn
+A(0)
+n
+ > ϵ
+
+≤P
+
+sup
+0≤t≤T
+pn
+A(nt) −pn
+A(0) > nϵ
+
++ P
+
+pn
+A(0) −
+inf
+0≤t≤T pn
+A(nt) > nϵ
+
+.
+(A.2)
+We next show that for any small δ > 0, there exists Nδ such that when n > Nδ,
+P
+
+sup
+0≤t≤T
+pn
+A(nt) −pn
+A(0) > nϵ
+
+≤δ.
+(A.3)
+Since pn
+A(·) is upper bounded by n + 1 by deﬁnition, we deduce that if pn
+A(0) ≥n + 1 −nϵ,
+then (A.3) follows trivially. Thus below we assume pn
+A(0) < n + 1 −nϵ, or equivalently,
+pn
+A(0) + ⌊nϵ⌋≤n. For a ﬁxed n and a given pn
+A(0), we ﬁrst deﬁne a map g from Zn to Z:
+g(x) =
+pn
+A(0)+⌊nϵ⌋
+X
+i=pn
+A(0)
+x+
+i .
+(A.4)
+We use the map g to further introduce an auxiliary process Zn to track the number of sell
+limit orders on price levels from pn
+A(0) to pn
+A(0) + ⌊nϵ⌋. That is, for each t ≥0,
+Zn(t) ∆= g(X n(nt)) =
+pn
+A(0)+⌊nϵ⌋
+X
+i=pn
+A(0)
+[X n
+i (nt)]+.
+(A.5)
+20
+
+Write
+σn
+Zn
+∆= inf{t ≥0 : Zn(t) = 0}.
+(A.6)
+Then σn
+Zn as the ﬁrst time that Zn reaches 0 starting from Zn(0) > 0, where Zn(0) > 0
+follows from the fact that pn
+A(0) ≤n. Thus in order to show (A.3), it suﬃces to prove
+P(σn
+Zn ≤T) ≤δ.
+(A.7)
+The key step for proving (A.7) is to construct a n−dimensional CTMC {Wn(t) : t ≥0}
+on Zn that is dominated by {X n(t) : t ≥0} in the sense of strong stochastic order for
+each n. That is, Er(Wn(t)) ≤Er(X n(t)) for all real-valued increasing functions r on Zn
+and all t ≥0. Here we use the usual componentwise partial order on Zn: x ≤y whenever
+x1 ≤y1, . . . , xn ≤yn. To proceed, we set Wn(0) = X n(0). For convenience, we deﬁne two
+constants:
+¯Λ
+∆=
+2 · [( max
+x∈[0,1] ΛA(x)) ∨( max
+x∈[0,1] ΛB(x))] < ∞,
+(A.8)
+¯Θ
+∆=
+( max
+x∈[0,1] ΘA(x)) ∨( max
+x∈[0,1] ΘB(x)) > 0.
+(A.9)
+Roughly speaking, the CTMC Wn is constructed as an artiﬁcial order book process which
+modiﬁes X n such that (a) no limit sell orders arrive at the order book; (b) no limit buy
+orders are removed from the book (due to cancellations or trades with market sell orders);
+(c) The rates of limit buy order arrivals, market buy order arrivals and limit sell order
+cancellations are set to some ‘large’ values which exceed those in X n. Mathematically,
+we construct Wn by modifying the transition parameters of the CTMC X n as follows.
+Corresponding to (a), we set the limit sell order arrival rate to zero; Corresponding to (b),
+we set the limit buy order cancellation rate and the market sell order arrival rate to zero;
+Corresponding to (c), we set the limit buy order arrival rate at each price level to ¯Λ given
+in (A.8), the market buy order arrival rate to nκ ·Υ given in Assumption 2.2, and the limit
+sell order cancellation rate per order to 1
+n ¯Θ where ¯Θ is given in (A.9).
+We next argue Wn is stochastically dominated by X n. We apply the result of Massey
+(1987), which provides characterization of strong stochastic comparison of two Markov
+processes in terms of the rates of the processes on increasing and decreasing sets of the
+state space (A set Γ ⊂Zn is said to be increasing if x ∈Γ implies {y ∈Zn : x ≤y} ⊂Γ
+where ≤is the partial order on Zn. A set Γ ⊂Zn is said to be decreasing if x ∈Γ implies
+{y ∈Zn : y ≤x} ⊂Γ). From the construction of Wn, we know that there are no limit sell
+order arrivals and limit buy order removals (due to cancellation or matches with market
+sell orders) in this artiﬁcial order book process. This implies that if Wn transits from one
+state w ∈Zn to another state w′ ∈Zn, then w′ ≤w with respect to the partial order ≤
+on Zn. Thus we deduce from (Massey, 1987, Theorem 5.3) that it suﬃces to show for all
+decreasing sets Γ ⊂Zn such that w /∈Γ
+X
+z∈Γ
+qWn(w, z) ≥
+X
+z∈Γ
+qX n(x, z)
+for all w ≤x,
+(A.10)
+21
+
+where qWn and qX n are transition rates for Wn and X n. One readily veriﬁes (A.10) from
+the construction of Wn and the fact that both Wn and X n have the property that only
+one component can change its value at each transition.
+Given that Wn is stochastically dominated by X n, we are ready to construct a process
+˜Zn that is stochastically dominated by Zn given in (A.5). We simply set for t ≥0
+˜Zn(t) ∆= g(Wn(nt)) =
+pn
+A(0)+⌊nϵ⌋
+X
+i=pn
+A(0)
+[Wn
+i (nt)]+ ≥0.
+(A.11)
+Then Zn dominates ˜Zn in strong stochastic order since g in (A.4) is an increasing function
+on Zn. Because ﬁrst passage time is a monotone functional, we then deduce that
+P(σn
+Zn ≤T) ≤P(σn
+˜
+Zn ≤T),
+where σn
+˜
+Zn is the ﬁrst time that ˜Zn reaches zero starting from ˜Zn(0) = Zn(0), i.e.,
+σn
+˜
+Zn
+∆= inf{t ≥0 : ˜Zn(t) = 0}.
+(A.12)
+Hence to show (A.7) it suﬃces to prove that given any δ > 0, there exists Nδ such that
+when n > Nδ
+P(σn
+˜
+Zn ≤T) ≤δ.
+(A.13)
+We now focus on proving (A.13). The key is that the process ˜Zn deﬁned in (A.11)
+turns out to be a pure-death process with absorbing barrier at zero. When ˜Zn(t) is in
+state k ∈{1, 2, . . .} at time t, it signiﬁes that there are k limit sell orders in total for
+i ∈[pn
+A(0), pn
+A(0) + ⌊nϵ⌋] in the modiﬁed order book Wn(nt). As pointed out earlier, if
+Wn transits from one state w ∈Zn to another state w′ ∈Zn, then w′ ≤w.
+Hence
+we deduce that the best ask price associated with the modiﬁed order book deﬁned by
+˜pn
+A(nt) = Pn
+A(Wn(nt)) is increasing with respect to time t. In addition, it follows that
+˜pn
+A(nt) ∈[pn
+A(0), pn
+A(0)+⌊nϵ⌋] as long as ˜Zn(t) > 0. Thus when ˜Zn is in state k ∈{1, 2, . . .},
+it will decrease by one if either there is cancellation of a limit sell order or there is a market
+buy order arrival which matchs with a limit sell order. This implies that ˜Zn is a pure death
+process with absorbing state zero. Given that the CTMC {Wn(t) : t ≥0} is speeded up
+by n in (A.11), we infer that the death rate of ˜Zn when it is in state k ∈{1, 2, . . .} is given
+by
+n ·
+ k ·
+¯Θ
+n + nκ · Υ
+
+.
+(A.14)
+Here for the process {Wn(t) : t ≥0}, the quantity ¯Θ
+n is the cancelation rate per limit sell
+order and nκ · Υ is the market buy order arrival rate. To prove (A.13), we next compute
+22
+
+˜Zn(0). We obtain from (A.5), (A.11), (2.6) and the fact X n(0) = Wn(0) that
+˜Zn(0) = Zn(0) =
+pn
+A(0)+⌊nϵ⌋
+X
+i=pn
+A(0)
+[X n
+i (0)]+ = n2 ·
+pn
+A(0)+⌊nϵ⌋
+X
+i=pn
+A(0)
+ϱ( i
+n) · 1
+n.
+(A.15)
+One then readily checks from Assumption 2.1 and (A.1) that
+lim
+n→∞
+˜Zn(0)
+n2
+=
+Z p+ϵ
+p
+ϱ(x)dx > 0.
+(A.16)
+Since ˜Zn is a pure death process with absorbing state zero, we obtain
+σn
+˜
+Zn =
+˜
+Zn(0)
+X
+k=1
+Dk,
+(A.17)
+where Dk represents the ﬁrst passage time that ˜Zn starts from state k and reaches k −1.
+It is clear that for each k, Dk is an exponential random variable with rate k · ¯Θ + n1+κΥ
+given in (A.14). In addition, all the Dk’s are mutually independent. Thus we deduce from
+(A.17) that
+E[σn
+˜
+Zn]
+=
+E
+h ˜
+Zn(0)
+X
+k=1
+Dk
+i
+=
+˜
+Zn(0)
+X
+k=1
+1
+k · ¯Θ + n1+κ · Υ,
+V ar(σn
+˜
+Zn)
+=
+˜
+Zn(0)
+X
+k=1
+V ar(Dk) =
+˜
+Zn(0)
+X
+k=1
+1
+(k · ¯Θ + n1+κ · Υ)2 .
+Since κ < 1, we deduce from (A.16) and the above equations that there are positive
+constants C independent of n such that
+lim
+n→∞
+1
+ln nE[σn
+˜
+Zn] = 1 −κ
+¯Θ
+> 0,
+and
+sup
+n V ar(σn
+˜
+Zn)
+≤
+C.
+(A.18)
+Thus for all n large enough, we obtain E[σn
+˜
+Zn] > T. It follows that
+V ar(σn
+˜
+Zn)
+≥
+E
+h E[σn
+˜
+Zn] −σn
+˜
+Zn
+2 : σn
+˜
+Zn ≤T
+i
+≥
+E
+h E[σn
+˜
+Zn] −T
+2 : σn
+˜
+Zn ≤T
+i
+=
+ E[σn
+˜
+Zn] −T
+2 · P(σn
+˜
+Zn ≤T).
+Therefore we deduce that when n is large,
+P(σn
+˜
+Zn ≤T)
+≤
+1
+
+E[σn
+˜
+Zn] −T
+2 V ar(σn
+˜
+Zn).
+23
+
+This yields (A.13) after applying (A.18). Thus we have completed the proof of (A.3).
+We next show that for n large,
+P
+
+pn
+A(0) −
+inf
+0≤t≤T pn
+A(nt) > nϵ
+
+≤δ.
+(A.19)
+Note that pn
+B(·) is smaller than pn
+A(·) at each time, we have
+pn
+A(0) −
+inf
+0≤t≤T pn
+A(nt)
+≤
+pn
+A(0) −
+inf
+0≤t≤T pn
+B(nt)
+=
+pn
+B(0) −
+inf
+0≤t≤T pn
+B(nt) + pn
+A(0) −pn
+B(0).
+Now (A.1) implies that for n large,
+P
+
+pn
+A(0) −pn
+B(0) > nϵ
+2
+
+≤δ
+2.
+Thus it suﬃces to prove that for n large
+P
+
+pn
+B(0) −
+inf
+0≤t≤T pn
+B(nt) > nϵ
+2
+
+≤δ
+2.
+This follows from a similar argument for (A.3). Thus we have (A.19). On combining (A.2),
+(A.3), and (A.19), we obtain (3.8). Therefore the proof is complete.
+B
+Proof of Lemma 5.1
+In this section we prove Lemma 5.1 in Section 5.1. To do so, we ﬁrst introduce a result
+on bounding the (scaled) total number of limit orders within a certain price range of the
+order book. The proof is deferred to the end of this appendix.
+Lemma B.1. Fix T > 0. There exists a positive constant C which depends on T but is
+independent of n such that for any ﬁxed interval [a, b] ⊂[0, 1], we have
+lim sup
+n→∞E
+
+sup
+0≤t≤T
+1
+n2
+X
+i: i
+n∈[a,b]
+|X n
+i (nt)|
+
+
+2
+≤C2(b −a)2,
+(B.1)
+and
+lim sup
+n→∞E
+
+sup
+0≤t≤T
+1
+n2
+X
+i: i
+n∈[a,b]
+|X n
+i (nt)|
+
+≤C(b −a).
+(B.2)
+In addition for any σ ∈[0, T] we have
+lim sup
+n→∞E
+"
+sup
+0≤s≤T−σ
+Z s+σ
+s
+1
+n2
+n
+X
+k=1
+|X n
+k (nu)|du
+#
+≤Cσ.
+(B.3)
+24
+
+We now prove Lemma 5.1.
+Proof of Lemma 5.1. We focus on proving (5.3). The proof for (5.4) follows similarly and
+hence is omitted. Throughout the proof, we use a generic constant C that may depend on
+T and may vary from line to line, but C is independent of n.
+From the deﬁnitions of ζn,+, ζn and fγ (see (3.1), (3.3) and (5.1)) we derive
+E
+h
+sup
+t∈[0,T]
+⟨ζn,+
+t
+, f⟩−⟨ζn
+t , fγ⟩
+
+i
+=
+1
+n2 E
+
+sup
+t∈[0,T]
+
+X
+i>pn
+B(nt)
+X n
+i (nt)f( i
+n) −
+n
+X
+i=1
+X n
+i (nt)fγ( i
+n)
+
+
+
+=
+1
+n2 E
+
+sup
+t∈[0,T]
+
+X
+i>pn
+B(nt)
+X n
+i (nt)f( i
+n) −
+X
+i≥np
+X n
+i (nt)f( i
+n) −
+X
+i∈(np−nγ,np)
+X n
+i (nt)fγ( i
+n)
+
+
+
+≤
+1
+n2 E
+
+sup
+t∈[0,T]
+
+X
+i>pn
+B(nt)
+X n
+i (nt)f( i
+n) −
+X
+i≥np
+X n
+i (nt)f( i
+n)
+
+
+
++ 1
+n2 E
+
+sup
+t∈[0,T]
+
+X
+i∈(np−nγ,np)
+X n
+i (nt)fγ( i
+n)
+
+
+.
+(B.4)
+We now bound the two terms after the inequality sign in (B.4). We ﬁrst bound the
+second term, i.e., the last display in (B.4). Since the family of functions fγ are constructed
+such that fγ are uniformly bounded by some constant C on [0, 1] for all γ ∈(0, p), the
+second term in (B.4) is bounded above by
+C
+n2 · E
+
+sup
+t∈[0,T]
+X
+i∈(np−nγ,np)
+|X n
+i (nt)|
+
+,
+which is further bounded above by Cγ for large n by (B.2).
+We next bound the ﬁrst term, which we denote by ˜an. It is clear that ˜an ≥0, so we only
+have to show that limn→∞˜an = 0. We split it into two parts and study them separately.
+Fix some δ > 0. Since f is continuous, it is bounded by some constant C on [0, 1]. We
+then deduce that
+1
+n2 E
+
+sup
+t∈[0,T]
+
+X
+i>pn
+B(nt)
+X n
+i (nt)f( i
+n) −
+X
+i≥np
+X n
+i (nt)f( i
+n)
+
+; sup
+t∈[0,T]
+
+pn
+B(nt)
+n
+−p
+ ≥δ
+
+
+≤
+2C · E
+"
+sup
+0≤s≤T
+n
+X
+i=1
+1
+n2 |X n
+i (ns)| ; sup
+t∈[0,T]
+
+pn
+B(nt)
+n
+−p
+ ≥δ
+#
+∆= bn,δ.
+(B.5)
+25
+
+Now (B.1) in Lemma B.1 implies that the sequence {sup0≤s≤T
+Pn
+k=1
+1
+n2 |X n
+k (ns)| : n ≥
+1} is uniformly bounded in L2, thus {sup0≤s≤T
+Pn
+k=1
+1
+n2 |X n
+k (ns)| : n ≥1} is uniformly
+integrable. Thus we obtain from Proposition 3.1 and (B.5) that for any δ > 0,
+lim
+n→∞bn,δ = 0.
+(B.6)
+We next proceed to bound
+1
+n2 E
+
+sup
+t∈[0,T]
+
+X
+i>pn
+B(nt)
+X n
+i (nt)f( i
+n) −
+X
+i≥np
+X n
+i (nt)f( i
+n)
+
+; sup
+t∈[0,T]
+
+pn
+B(nt)
+n
+−p
+ < δ
+
+.
+We can choose small δ > 0 such that (p−δ, p+δ) ⊂(0, 1). The above term is then bounded
+above by
+C
+n2 · E
+
+sup
+t∈[0,T]
+X
+i∈(np−nδ,np+nδ)
+|X n
+i (nt)|
+
+,
+which is bounded above by Cδ for n large using (B.2). Upon combining the two parts we
+ﬁnd for large n
+0 ≤˜an ≤bn,δ + Cδ
+for suﬃciently small δ > 0.
+Fix δ > 0 and let n →∞. We infer from (B.6) that
+0 ≤lim sup
+n→∞˜an ≤Cδ.
+Since {˜an} does not depend on δ, we can let δ →0+ and obtain limn→∞˜an = 0. Therefore
+the proof is complete.
+The rest of this appendix focuses on proving Lemma B.1.
+Proof of Lemma B.1. The key idea of the proof is to (stochastically) bound the limit order
+arrival processes. It suﬃces to prove (B.1) since it is clear that (B.1) implies (B.2) by the
+Jensen’s inequality. Inequality (B.2) further leads to (B.3) by observing that
+E
+"
+sup
+0≤s≤T−σ
+Z s+σ
+s
+1
+n2
+n
+X
+k=1
+|X n
+k (nu)|du
+#
+≤
+E
+"
+sup
+0≤s≤T−σ
+Z s+σ
+s
+sup
+u∈[s,s+σ]
+1
+n2
+n
+X
+k=1
+|X n
+k (nu)|du
+#
+≤
+σ · E
+"
+sup
+0≤s≤T−σ
+sup
+u∈[s,s+σ]
+1
+n2
+n
+X
+k=1
+|X n
+k (nu)|
+#
+=
+σ · E
+"
+sup
+u≤T
+1
+n2
+n
+X
+k=1
+|X n
+k (nu)|
+#
+.
+26
+
+Thus, the rest of the proof focus on establishing (B.1). For ﬁxed n and i ∈{1, . . . , n},
+we write An
+i (t) for the total number of new limit orders submitted at price level i/n by
+time t. Suppose we can construct independent Poisson processes ¯An
+1, . . . , ¯An
+n with rate ¯Λ
+given in (A.8) such that for each i, ¯An
+i is deﬁned on the probability space which An
+i lives
+in, and
+¯An
+i (t, ω) ≥An
+i (t, ω)
+for every sample path ω and every t ≥0.
+(B.7)
+Set
+¯En(t) ∆=
+X
+i: i
+n∈[a,b]
+¯An
+i (nt)
+and
+N n(t) =
+X
+i: i
+n∈[a,b]
+|X n
+i (nt)|.
+We immediately get that ¯En(·) is a Poisson process with rate rn where
+rn
+∆= n¯Λ · (⌊nb⌋−⌈na⌉+ 1) ≤n¯Λ · (nb −na + 1),
+(B.8)
+and
+sup
+0≤t≤T
+N n(t) ≤N n(0) + ¯En(T)
+for every sample path.
+This implies that
+E[ sup
+0≤t≤T
+N n(t)]2 ≤E[N n(0) + ¯En(T)]2 ≤2E[N n(0)]2 + 2E[ ¯En(T)]2.
+(B.9)
+One readily checks from Assumption 2.1 that
+1
+n4 E[N n(0)]2 = 1
+n4 E
+
+
+
+X
+i: i
+n∈[a,b]
+|X n
+i (0)|
+
+
+
+2
+=
+ 1
+n
+X
+i: i
+n∈[a,b]
+|ϱ(i/n)|
+2
+≤
+
+C
+
+(b −a) + 1
+n
+2
+(B.10)
+where we use the fact that ϱ is bounded by some constant C on [0, 1]. To bound E[ ¯En(T)]2
+in (B.9), we note that ¯En is a Poisson process with rate rn. Thus we have
+E[ ¯En(T)]2 = rnT + r2
+nT 2.
+(B.11)
+One readily veriﬁes from (B.8) and (B.11) that
+lim sup
+n→∞
+1
+n4 E[ ¯En(T)]2 = ¯Λ2 · (b −a)2T 2.
+(B.12)
+Now (B.1) follows from (B.9), (B.10) and (B.12).
+27
+
+It remains to construct the independent Poisson processes ¯An
+1, . . . , ¯An
+n with rate ¯Λ such
+that (B.7) holds for each ﬁxed n. The idea is to use the multivariate time change theorem
+for point processes by Meyer (1971). Write Gn for the natural ﬁltration generated by the
+CTMC X n, i.e., Gn
+t = σ(X n(s) : s ≤t). We ﬁrst show that for each ﬁxed i ∈{1, . . . , n},
+the point process {An
+i (t) : t ≥0} has a bounded Gn
+t –intensity (see, e.g., (Bremaud, 1981,
+Chapter II.3) for the deﬁnition of stochastic intensity of point processes). Write Q(t) for
+the total number of limit order arrivals to the order book (at all price levels including i/n)
+by time t. Then we have for all 0 ≤s ≤t,
+E[An
+i (t) −An
+i (s)|Gn
+s ]
+≤
+E[Q(t) −Q(s)|Gn
+s ]
+≤
+n
+X
+k=1
+(Λn
+A(k) + Λn
+B(k)) · (t −s).
+It then follows from the Ethier–Kurtz Criterion (see page 83 in Ethier and Kurtz (1986) or
+Theorem 2.1 in Janson et al. (2011)) that the compensator of An
+i has absolute continuous
+paths and that the Gn
+t –intensity λn
+i (t) of the point process An
+i exists. Moreover, we have
+E
+Z t
+s
+λn
+i (u)du|Gn
+s
+
+= E[An
+i (t) −An
+i (s)|Gn
+s ] ≤
+n
+X
+k=1
+(Λn
+A(k) + Λn
+B(k)) · (t −s).
+(B.13)
+Thus for each ﬁxed n, the Gn
+t –intensity λn
+i (t) is bounded above by Pn
+k=1 (Λn
+A(k) + Λn
+B(k)).
+This bound goes to inﬁnity when n is sent to inﬁnity. So we next provide a tighter bound
+that is independent of n for the intensity λn
+i (t). Since for the point process An
+i , the Gn
+t –
+intensity exists and it is bounded, we obtain from (Last and Brandt, 1995, Theorem 8.3.13)
+that
+λn
+i (t)
+=
+lim
+h→0+
+1
+hP[An
+i (t + h) −An
+i (t) > 0|Gn
+t ]
+=
+lim
+h→0+
+1
+hP[An
+i (t + h) −An
+i (t) = 1|Gn
+t ].
+(B.14)
+One readily veriﬁes from the CTMC model X n of the order book and (B.14) that
+λn
+i (t)
+=
+Λn
+A(i −pn
+B(t)) · 1i>pn
+B(t) + Λn
+B(pn
+A(t) −i) · 1i<pn
+A(t)
+=
+ΛA
+i −pn
+B(t)
+n
+
+· 1i>pn
+B(t) + ΛB
+pn
+A(t) −i
+n
+
+· 1i<pn
+A(t),
+(B.15)
+where pn
+A(t) and pn
+B(t) are given in (2.3) and (2.4), and the second equality follows from
+Assumption 2.2. Note that the two functions ΛA and ΛB are both continuous and positive
+on [0,1] by Assumption 2.2. In addition, both functions are bounded above by 1
+2 ¯Λ where
+¯Λ is given in (A.8). We then deduce from (B.15) that there exists a positive constant C
+such that for each t ≥0 and i ∈{1, . . . , n},
+0 < C ≤λn
+i (t) ≤¯Λ.
+(B.16)
+28
+
+Let ˜An
+i be the compensator of An
+i , which is given by,
+˜An
+i (t) =
+Z t
+0
+λn
+i (s)ds
+for t ≥0.
+We then deduce from (B.16) that ˜An
+i (∞) = ∞and ˜An
+i is strictly increasing. Since An ∆=
+(An
+1, . . . , An
+n) is a vector of point processes where no two An
+i have jumps in common, we
+obtain from the multivariate time change theorem by Meyer (1971) (see also (Brown and
+Nair, 1988, Theorem 1)) that there exist independent unit–rate Poisson processes Y1, . . . , Yn
+such that for each i and t ≥0,
+An
+i (t) = Yi( ˜An
+i (t)) = Yi
+Z t
+0
+λn
+i (s)ds
+
+.
+On combining with (B.16), we have
+An
+i (t) ≤Yi(¯Λt)
+for each sample path and each t ≥0.
+Deﬁning ¯An
+i (t) = Yi(¯Λt) for each i ∈{1, . . . , n}, we obtain that ¯An
+1, . . . , ¯An
+n are independent
+Poisson processes with rate ¯Λ such that (B.7) holds. The proof is therefore complete.
+C
+Proof of Proposition 5.1
+It is the goal of this appendix to establish the tightness of {(ζn,+, ζn,−) : n ≥1}, i.e., to
+prove Proposition 5.1. Our approach is to ﬁrst show the tightness of {ζn,+ : n ≥1} and
+{ζn,−: n ≥1} individually, and then obtain the joint tightness by proving the limit points
+of {ζn,+ : n ≥1} and {ζn,−: n ≥1} are concentrated on the set of continuous paths.
+Throughout the proofs in this section, we use a generic constant C which may vary from
+line to line, but C is independent of n.
+We start with several auxiliary lemmas. The next lemma says that in order to establish
+the tightness of {ζn,+ : n ≥1} and {ζn,−: n ≥1}, it is enough to show that, for every
+f ∈C[0, 1], the sequences of real-valued processes {⟨ζn,+, f⟩: n ≥1} and {⟨ζn,−, f⟩: n ≥
+1} are both tight in D([0, T]; R). This lemma can be found in (Kipnis and Landim, 1999,
+Chapter 4, Proposition 1.7).
+Lemma C.1. A family of nonnegative measure-valued processes {νn : n ≥1} is tight in
+D([0, T], M+[0, 1]) if {⟨νn, f⟩: n ≥1} is tight in D([0, T]; R) for every f ∈C[0, 1].
+The next lemma is Proposition VI.3.26 in Jacod and Shiryaev (2003). It provides a
+suﬃcient and necessary condition for proving C–tightness result.
+Recall a sequence of
+random elements {Xn : n ≥1} is called C–tight if it is tight and if all the limit points of
+the sequence are concentrated on continuous paths.
+29
+
+Lemma C.2. For ﬁxed T > 0, let {Xn : n ≥1} be a sequence of processes that take values
+in D([0, T], Rd) equipped with Skorokhod J1 topology. For each n ≥1, {Xn} is adapted to
+a ﬁltration (Fn
+t )t∈[0,T]. Then {Xn : n ≥1} is C–tight in D([0, T], Rd) if and only if the
+following two conditions hold:
+(a) For any t ∈[0, T] and ϵ > 0, there exists a compact set K(t, ϵ) ⊂Rd such that
+inf
+n P(Xn
+t ∈K(t, ϵ)) > 1 −ϵ.
+(C.1)
+(b) For every ϵ > 0,
+lim
+σ→0 lim sup
+n→∞P
+ 
+sup
+|s−t|≤σ,0≤s,t≤T
+|Xn
+t −Xn
+s | > ϵ
+!
+= 0.
+(C.2)
+For Lemma C.2 and its applications in this paper, we always take ﬁltration (Fn
+t )t∈[0,T]
+as the natural ﬁltration generated by {X n(nt) : t ∈[0, T]} for ﬁxed n ≥1. That is,
+Fn
+t
+∆= σ(X n(ns), s ≤t).
+(C.3)
+The next lemma is Corollary VI.3.33 in Jacod and Shiryaev (2003).
+Lemma C.3. Let {Xn : n ≥1} and {Yn : n ≥1} be two C–tight sequences of processes in
+D([0, T], Rd). Then {Xn + Yn : n ≥1} is C–tight in D([0, T], Rd) and {(Xn, Yn) : n ≥1}
+is C–tight in D([0, T], R2d).
+The next lemma states the C–tightness of the sequence of real-valued processes {⟨ζn, f⟩:
+n ≥1} for each f ∈C([0, 1]). The proof is lengthy so we defer it to the end of this appendix.
+Recall from (3.3) that we have for each n ≥1 and t ∈[0, T],
+⟨ζn
+t , f⟩= 1
+n2
+n
+X
+i=1
+X n
+i (nt) · f( i
+n).
+Lemma C.4. Fix any f ∈C([0, 1]).
+The sequence of real-valued stochastic processes
+{⟨ζn, f⟩: n ≥1} is C–tight in D([0, T], R).
+With Lemmas C.1–C.4 at our disposal, we are ready to prove Proposition 5.1.
+Proof of Proposition 5.1. We apply Lemma C.2 to establish the C–tightness of {⟨ζn,+, f⟩:
+n ≥1} in D([0, T], R) for ﬁxed f ∈C([0, 1]), where
+⟨ζn,+
+t
+, f⟩= 1
+n2
+n
+X
+i=1
+h
+X n
+i (nt)
+i+
+· f( i
+n).
+(C.4)
+30
+
+The C–tightness of {⟨ζn,−, f⟩: n ≥1} follows using a similar argument. The C–tightness
+of {(⟨ζn,+, f⟩, ⟨ζn,−, f⟩) : n ≥1} immediately follows after applying Lemma C.3.
+We ﬁrst show that {⟨ζn,+, f⟩: n ≥1} satisﬁes part (a) of Lemma C.2. We rely on the
+family of functions fγ ∈C[0, 1] introduced in (5.1). Note that for ﬁxed t ∈[0, T],
+sup
+n P(|⟨ζn,+
+t
+, f⟩| > L)
+≤
+sup
+n P(|⟨ζn,+
+t
+, f⟩−⟨ζn
+t , fγ⟩| > L
+2 ) + sup
+n P(|⟨ζn
+t , fγ⟩| > L
+2 )
+≤
+2
+L sup
+n (˜an + Cγ) + sup
+n P(|⟨ζn
+t , fγ⟩| > L
+2 ),
+where we use Markov inequality and (5.3) in the last inequality. Since {˜an} is a bounded
+sequence, we can choose L large such that 2
+L supn (˜an + Cγ) is arbitrarily small. In addition,
+for ﬁxed γ and t, {⟨ζn
+t , fγ⟩: n ≥1} is a tight sequence by Lemma C.4. Thus we can pick
+L large such that supn P(|⟨ζn,+
+t
+, f⟩| > L) is also arbitrarily small. These two facts imply
+that {⟨ζn,+
+t
+, f⟩: n ≥1} is a tight sequence for ﬁxed t ∈[0, T].
+We next verify that {⟨ζn,+, f⟩: n ≥1} also satisﬁes part (b) of Lemma C.2. Clearly
+from (C.4) we have for ﬁxed n ≥1, the process ⟨ζn,+, f⟩is adapted to the ﬁltration Fn
+given in (C.3). Given a real number c > 0, we obtain from (5.3) that for n large
+P
+ 
+sup
+|s−t|≤σ,0≤s,t≤T
+|⟨ζn,+
+t
+, f⟩−⟨ζn,+
+s
+, f⟩| > c
+!
+≤
+2 · P
+ 
+sup
+0≤t≤T
+|⟨ζn,+
+t
+, f⟩−⟨ζn
+t , fγ⟩| > c
+3
+!
++ P
+ 
+sup
+|s−t|≤σ,0≤s,t≤T
+|⟨ζn
+t , fγ⟩−⟨ζn
+s , fγ⟩| > c
+3
+!
+≤
+2 · 3
+c (˜an + Cγ) + P
+ 
+sup
+|s−t|≤σ,0≤s,t≤T
+|⟨ζn
+t , fγ⟩−⟨ζn
+s , fγ⟩| > c
+3
+!
+.
+(C.5)
+Since for ﬁxed γ > 0, the process ⟨ζn, fγ⟩is also adapted to Fn, we infer from Lemma C.4
+that
+lim
+σ→0 lim sup
+n→∞P
+ 
+sup
+|s−t|≤σ,0≤s,t≤T
+|⟨ζn
+t , fγ⟩−⟨ζn
+s , fγ⟩| > c
+3
+!
+= 0.
+In conjunction with (C.5), this implies for ﬁxed γ ∈(0, p) and c > 0,
+lim
+σ→0 lim sup
+n→∞P
+ 
+sup
+|s−t|≤σ,0≤s,t≤T
+|⟨ζn,+
+t
+, f⟩−⟨ζn,+
+s
+, f⟩| > c
+!
+≤6Cγ
+c
+.
+Since the left-hand side of the above inequality is independent of γ, we obtain
+lim
+σ→0 lim sup
+n→∞P
+ 
+sup
+|s−t|≤σ,0≤s,t≤T
+|⟨ζn,+
+t
+, f⟩−⟨ζn,+
+s
+, f⟩| > c
+!
+= 0,
+31
+
+after letting γ →0 + .
+Given the C–tightness of {⟨ζn,+, f⟩: n ≥1} and {⟨ζn,−, f⟩: n ≥1} for any ﬁxed
+function f ∈C[0, 1], we ﬁrst deduce from Lemma C.1 that both {ζn,+ : n ≥1} and
+{ζn,−: n ≥1} are tight in D([0, T], M+[0, 1]). We next argue that the limit points of
+{ζn,+ : n ≥1} and {ζn,−: n ≥1} have continuous sample paths. Suppose ζ+ is a limit
+point of {ζn,+ : n ≥1}, then we readily verify from continuous mapping theorem that
+⟨ζ+, f⟩is a limit point of {⟨ζn,+f⟩: n ≥1} for any function f ∈C[0, 1]. Since all the limit
+points of the C–tight sequence {⟨ζn,+, f⟩: n ≥1} are concentrated on the set of continuous
+paths, we deduce that for almost every ω we have: for ﬁxed t ∈[0, T],
+lim
+s→t d+
+ ζ+
+s (ω), ζ+
+t (ω)
+
+= lim
+s→t
+∞
+X
+k=1
+1
+2k
+|⟨ζ+
+s (ω), φk⟩−⟨ζ+
+t (ω), φk⟩|
+1 + |⟨ζ+
+s (ω), φk⟩−⟨ζ+
+t (ω), φk⟩| = 0,
+(C.6)
+where (φk) is a dense subset of C[0, 1] and the distant measure d+ is given in (5.5). Thus
+the limit point ζ+ has continuous sample paths. Similarly, almost every path of each limit
+point of {ζn,−: n ≥1} is continuous. Now the tightness of {(ζn,+, ζn,−) : n ≥1} in
+D([0, T], M([0, 1])) follows from Lemma 3.5 and Corollary 3.6 in Aldous (1981). The proof
+is therefore complete.
+We now prove Lemma C.4.
+Proof of Lemma C.4. We verify that the conditions (a) and (b) in Lemma C.2 are satisﬁed.
+For notational conveniences, we write for a ﬁxed function f ∈C[0, 1] and for t ≥0
+Yn
+t
+∆= ⟨ζn
+t , f⟩
+=
+1
+n2
+n
+X
+i=1
+X n
+i (nt) · f( i
+n).
+(C.7)
+We ﬁrst prove that Yn satisﬁes condition (a) from Lemma C.2. Since supx∈[0,1] |f(x)| ≤
+C for some constant C by the continuity of f, we deduce from (C.7) that
+|Yn
+t | ≤1
+n2
+n
+X
+i=1
+|X n
+i (nt)| · |f( i
+n)| ≤C
+n2
+n
+X
+i=1
+|X n
+i (nt)|.
+We now deduce from Lemma B.1 that
+sup
+n E
+h
+sup
+0≤t≤T
+|Yn
+t |2i
+≤C.
+(C.8)
+An application of Markov’s inequality immediately yields that Yn
+t satisﬁes (C.1).
+Next we show that Yn also satisﬁes condition (b) in Lemma C.2. Since X n is Markovian,
+we obtain
+Yn
+t = F(X n(nt)) = Yn
+0 +
+Z nt
+0
+LnF(X n(s))ds + Mn
+t ,
+(C.9)
+32
+
+where Ln is the operator given in (2.5), Mn is a (local) martingale with respect to ﬁltration
+Fn given in (C.3), and the function F is deﬁned in (5.11). Given ϵ > 0, σ > 0, we deduce
+from (C.9) that
+P
+ 
+sup
+|s−t|≤σ,0≤s,t≤T
+|Yn
+t −Yn
+s | > ϵ
+!
+≤
+P
+ 
+sup
+0≤t−s≤σ,0≤s,t≤T
+
+Z nt
+ns
+LnF(X n(u))du
+ > ϵ
+2
+!
++
+P
+ 
+sup
+|s−t|≤σ,0≤s,t≤T
+|Mn
+t −Mn
+s | > ϵ
+2
+!
+.
+(C.10)
+Our strategy is to show for large n, there is a positive constant C independent of n such
+that
+E
+"
+sup
+0≤t−s≤σ,0≤s,t≤T
+
+Z nt
+ns
+LnF(X n(u))du
+
+#
+≤
+Cσ,
+(C.11)
+E
+"
+sup
+|s−t|≤σ,0≤s,t≤T
+|Mn
+t −Mn
+s |2
+#
+≤
+CT
+n2 .
+(C.12)
+Applying Markov’s inequality and Chebyshev’s inequality, one ﬁnds
+lim
+σ→0 lim sup
+n→∞P
+ 
+sup
+0≤t−s≤σ,0≤s,t≤T
+
+Z nt
+ns
+LnF(X n(u))du
+ > ϵ
+2
+!
+= 0,
+and
+lim
+σ→0 lim sup
+n→∞P
+ 
+sup
+|s−t|≤σ,0≤s,t≤T
+|Mn
+t −Mn
+s | > ϵ
+2
+!
+= 0.
+On combining with (C.10), we obtain
+lim
+σ→0 lim sup
+n→∞P
+ 
+sup
+|s−t|≤σ,0≤s,t≤T
+|Yn
+t −Yn
+s | > ϵ
+!
+= 0.
+The rest of the proof focuses on establishing (C.11) and (C.12). We start with proving
+(C.11). For ﬁxed n, substituting the linear function F deﬁned in (5.11) into the operator
+33
+
+in (2.5), we obtain
+LnF(X n(u)) =
+X
+k<pn
+A(u)
+ 1
+n2 f(k
+n)Θn
+B(pn
+A(u) −k)|X n
+k (u)| −1
+n2 f(k
+n)Λn
+B(pn
+A(u) −k)
+
++
+X
+k>pn
+B(u)
+ 1
+n2 f(k
+n)Λn
+A(k −pn
+B(u)) −1
+n2 f(k
+n)Θn
+A(k −pn
+B(u))|X n
+k (u)|
+
++ 1
+n2
+
+f(pn
+B(u)
+n
+)Υn
+A −f(pn
+A(u)
+n
+)Υn
+B
+
+.
+(C.13)
+Since f is bounded on [0, 1], we deduce from Assumption 2.2 that
+|LnF(X n(u))|
+≤
+C
+n3
+n
+X
+k=1
+|X n
+k (u)| + C
+n .
+(C.14)
+This immediately yields that
+E
+"
+sup
+0≤t−s≤σ,0≤s,t≤T
+Z nt
+ns
+|LnF(X n(u))| du
+#
+≤C
+n2 E
+"
+sup
+0≤s≤T−σ
+Z s+σ
+s
+n
+X
+k=1
+|X n
+k (nu)|du
+#
++ Cσ,
+where in the last inequality we have used (C.14) and the change of variable formula. Upon
+combining (B.3), we obtain (C.11).
+We next show (C.12). To this end, we deﬁne for each u ≥0,
+ηn(u) = LnF 2(X n(u)) −2F(X n(u)) · LnF(X n(u)),
+where Ln is given in (2.5) and F is the linear function given in (5.11). One readily checks
+that
+ηn(u) =
+X
+k<pn
+A(u)
+ 1
+n4 f(k
+n)2 · Θn
+B(pn
+A(u) −k) · |X n
+k (u)| + 1
+n4 f(k
+n)2 · Λn
+B(pn
+A(u) −k)
+
++
+X
+k>pn
+B(u)
+ 1
+n4 f(k
+n)2 · Λn
+A(k −pn
+B(u)) + 1
+n4 f(k
+n)2 · Θn
+A(k −pn
+B(u)) · |X n
+k (u)|
+
++ 1
+n4
+
+f(pn
+A(u)
+n
+)2 · Υn
+B + f(pn
+B(u)
+n
+)2 · Υn
+A
+
+.
+Now for each ﬁxed n, one veriﬁes that {(Mn
+t )2 −
+R nt
+0 ηn(u)du : t ≥0} is a local martingale
+with respect to the ﬁltration Fn in (C.3) (see Lemma 5.1 in Appendix 1 of Kipnis and
+Landim (1999)). Suppose {(Mn
+t )2 −
+R nt
+0 ηn(u)du : t ≥0} and {Mn
+t : t ≥0} are indeed
+Fn−martingales. Then Doob’s maximal inequality for martingales yields that
+E
+"
+sup
+|s−t|≤σ,0≤s,t≤T
+|Mn
+t −Mn
+s |2
+#
+≤4E
+"
+sup
+0≤t≤T
+|Mn
+t |2
+#
+≤16E(|Mn
+T |2) = E
+h Z nT
+0
+ηn(u)du
+i
+(C.15)
+34
+
+Hence to establish (C.12), we proceed to bound ηn(u). Using Assumption 2.2 and the fact
+that f is bounded on [0, 1], there is a constant C > 0 such that
+0 ≤ηn(u) ≤1
+n4
+"
+C
+n
+n
+X
+k=1
+|X n
+k (u)| + Cn
+#
+.
+(C.16)
+Upon combining (B.3) and applying the change of variable formula we ﬁnd for n large
+E
+h Z nT
+0
+ηn(u)du
+i
+≤CT
+n2 .
+(C.17)
+We then obtain (C.12) from (C.15).
+The rest of the proof focuses on showing that the two local martingales {(Mn
+t )2 −
+R nt
+0 ηn(u)du : t ≥0} and {Mn
+t : t ≥0} are indeed Fn-martingale for each ﬁxed n. By
+(Protter, 2004, Theorem 51), it suﬃces to show for every t ≤T,
+E
+h
+sup
+0≤s≤t
+|Mn
+s |2i
+< ∞,
+(C.18)
+E
+h Z nt
+0
+ηn(u)du
+i
+< ∞.
+(C.19)
+Inequality (C.19) directly follows from (C.17). To prove (C.18), we use (C.9), which implies
+sup
+0≤s≤t
+|Mn
+s |2 ≤3 sup
+0≤s≤t
+(Yn
+s )2 + 3(Yn
+0 )2 + 3
+ Z nt
+0
+LnF(X n(s))
+ds
+2
+Inequality (C.18) then follows from (C.8), (C.14) and (B.1). The proof is thus complete.
+D
+Proof of Proposition 5.2
+In this section, we prove Proposition 5.2. We rely on the representation in (5.12), i.e.,
+⟨ζn
+t , f⟩
+=
+1
+n2
+n
+X
+i=1
+X n
+i (nt) · f
+ i
+n
+
+= F(X n(nt))
+=
+⟨ζn
+0 , f⟩+
+Z nt
+0
+LnF(X n(s))ds + Mn
+t
+=
+⟨ζn
+0 , f⟩+ n
+Z t
+0
+LnF(X n(ns))ds + Mn
+t .
+(D.1)
+Here Ln is operator given in (2.5), Mn is a martingale and F is given in (5.11). We ﬁx
+f ∈C([0, 1]) throughout this section.
+35
+
+It is clear from the initial condition of X n in (2.6) that
+lim
+n→∞⟨ζn
+0 , f⟩=
+Z 1
+0
+f(x)ϱ(x)dx = ⟨ζ0, f⟩,
+(D.2)
+where ζ0 is a deterministic signed measure with density ζ0(dx) = ϱ(x)dx for x ∈[0, 1].
+To prove Proposition 5.2, we now introduce two auxiliary lemmas. The next lemma
+implies that the martingale term in (D.1) vanishes (converges weakly to zero) as n →∞.
+The proof directly follows from (C.15) and (C.17).
+Lemma D.1. For T > 0, we have
+lim
+n→∞E
+"
+sup
+0≤t≤T
+|Mn
+t |2
+#
+= 0.
+(D.3)
+The next lemma concerns the weak convergence of the “scaled” generator. The proof
+is lengthy and thus deferred to the end of this appendix.
+Lemma D.2. For the subsequence {nk : k = 1, 2 . . .} in (5.7) we have for ﬁxed f ∈C([0, 1])
+sup
+0≤s≤T
+nk · LnkF(X nk(nks)) −⟨ν, f⟩+ ⟨ζs, AΘf⟩
+ ⇒0
+as nk →∞,
+(D.4)
+where ν is given in (5.13), AΘ is given in (5.14) and F is given in (5.11).
+We are now ready to prove Proposition 5.2.
+Proof of Proposition 5.2. Given (D.1)–(D.4) and that ⟨ζnk, f⟩⇒⟨ζ, f⟩as nk →∞, we
+deduce that the process ζ satisﬁes Equation (5.15). The continuity of the path of ⟨ζ, f⟩
+directly follows from Lemma C.4.
+Next we show that there is an unique measure-valued process satisfying (5.15). It is
+evident that ζ is deterministic since there is no source of randomness in Equation (5.15).
+Suppose for ﬁxed t ∈[0, T], ζt is absolutely continuous with respect to Lebesgue measure
+and it has a bounded density function ϕ such that ζt(dx) = ϕ(x, t)dx. After multiplying
+a smooth test function g(t) on both sides of Equation (5.15), integrating with respect to t
+on [0, T], substituting (5.13) and (5.14), and noting that f can be an arbitrary continuous
+function on [0, 1], we readily verify that for almost every x ∈(p, 1],
+Z T
+0
+ϕ(x, t)g(t)dt
+=
+ϱ(x)
+Z T
+0
+g(t)dt
++
+Z T
+0
+g(t)
+Z t
+0
+h
+ΛA(x −p) −ΘA(x −p)ϕ(x, s)
+i
+dsdt.
+That is, for ﬁxed x ∈(p, 1], ϕ(x, ·) is a weak solution for the ODE (Ordinary Diﬀerential
+Equation) given in (3.4) and (3.5), and thus ϕ(x, t) is measurable in the second argument t.
+36
+
+On the other hand, it is clear that there is an unique classical solution to the ODE (3.4) and
+(3.5) for ﬁxed x ∈(p, 1]. Therefore, we deduce from the equivalence of classical solution
+and weak solution for ODE (see, e.g. (Tao, 2006, Chapter 1, Lemma 1.3)) that the density
+function ϕ(x, ·) is the unique classical solution of (3.4) and (3.5) when x > p. A similar
+argument yields that ϕ(x, ·) is the unique classical solution for (3.4) and (3.6) when x < p.
+As a consequence, the solution for (5.15) is unique (we allow ourselves the ability to modify
+ϕ(x, t) on a set of measure zero including the point x = p. The modiﬁcation is independent
+of t).
+The rest of the proof focuses on showing that ζt is absolutely continuous and that it
+has a bounded density function. We prove that there exists some constant CT depending
+on T such that for all f ∈C([0, 1]) and t ∈[0, T],
+|⟨ζt, f⟩| ≤CT
+Z 1
+0
+|f(x)|dx.
+To this end, we ﬁrst deduce from Equation (5.10) and the continuous mapping theorem
+that for any f ∈C([0, 1]) and t ∈[0, T],
+|⟨ζnk
+t , f⟩| ⇒|⟨ζt, f⟩|
+as nk →∞.
+Applying Theorem 3.4 in Billingsley (1999) yields
+E |⟨ζt, f⟩| ≤lim infnk→∞E |⟨ζnk
+t , f⟩| .
+(D.5)
+We next focus on bounding E |⟨ζnk
+t , f⟩|. Recall the limit order arrival process An
+i and its
+pathwise upper bound ¯An
+i constructed in the proof of Lemma B.1 (see (B.7)). Then one
+infers that
+|⟨ζn
+t , f⟩|
+=
+
+1
+n2
+n
+X
+i=1
+X n
+i (nt) · f( i
+n)
+
+≤
+1
+n2
+n
+X
+i=1
+|X n
+i (0)| · |f( i
+n)| +
+
+1
+n2
+n
+X
+i=1
+An
+i (nt) · f( i
+n)
+
+≤
+1
+n
+n
+X
+i=1
+|ϱ( i
+n)| · |f( i
+n)| + 1
+n2
+n
+X
+i=1
+¯An
+i (nt) ·
+f( i
+n)
+ ,
+where in the last inequality we have used (2.6) and (B.7). Since ¯An
+i is a Poisson process
+with rate ¯Λ given in (A.8), we obtain
+E |⟨ζnk
+t , f⟩| ≤1
+nk
+nk
+X
+i=1
+|ϱ( i
+nk
+)| · |f( i
+nk
+)| + ¯Λt · 1
+nk
+nk
+X
+i=1
+|f( i
+nk
+)|.
+37
+
+In conjunction with (D.5) and the fact that ζt is a deterministic measure, we deduce
+|⟨ζt, f⟩| ≤
+Z 1
+0
+|ϱ(x)| · |f(x)|dx + ¯Λt ·
+Z 1
+0
+|f(x)|dx,
+(D.6)
+after letting nk →∞. Thus we have all f ∈C([0, 1]) and t ∈[0, T],
+|⟨ζt, f⟩|
+≤
+CT
+Z 1
+0
+|f(x)|dx,
+(D.7)
+where CT = maxx∈[0,1] |ϱ(x)| + ¯ΛT. Since continuous functions are dense in the space of
+Lebesgue-integrable functions L1([0, 1]), we deduce from the bounded linear transformation
+theorem that Equation (D.7) holds for all f ∈L1([0, 1]). We then conclude from (Driver,
+2003, Theorem 15.6) that ζt is a ﬁnite measure, absolutely continuous with respect to
+Lebesgue measure, and its density function ϕ(x, t) is bounded by CT uniformly with respect
+to x ∈[0, 1] and t ∈[0, T]. The proof is complete.
+We now prove Lemma D.2.
+Proof of Lemma D.2. Recall the generator given in (C.13). Throughout the proof, we ﬁx
+f ∈C([0, 1]) and we use {n : n ≥1} instead of its subsequence {nk : k ≥1} for notational
+simplicity. We also use a generic constant C which may vary from line to line but C is
+independent of n.
+We ﬁrst show for f ∈C[0, 1],
+sup
+0≤s≤T
+
+n ·
+X
+k>pn
+B(ns)
+ 1
+n2 f(k
+n) · Λn
+A(k −pn
+B(ns))
+
+−
+Z 1
+p
+f(x)ΛA(x −p)dx
+
+⇒0
+as n →∞.
+(D.8)
+To this end, we deﬁne for z ∈[0, 1] and n ≥1
+hn(z)
+=
+X
+k
+n>z
+ 1
+nf
+k
+n
+
+ΛA
+k
+n −z
+
+,
+(D.9)
+h(z)
+=
+Z 1
+z
+f(x)ΛA(x −z)dx.
+(D.10)
+Applying Assumption 2.2, we ﬁnd that (D.8) is equivalent to
+sup
+0≤s≤T
+hn
+pn
+B(ns)
+n
+
+−h(p)
+ ⇒0,
+as n →∞.
+(D.11)
+Proposition 3.1 implies that when n →∞, we have
+pn
+B(n·)
+n
+⇒p
+in D([0, T], R).
+38
+
+In addition, since f and ΛA are uniformly continuous and bounded on [0, 1], it is straightforward to verify that the function h is continuous, and the sequence {hn : n ≥1} converges
+uniformly to h. In particular, we obtain for any sequence of real numbers {zn : n ≥1},
+lim
+n→∞hn(zn) = h(p)
+if lim
+n→∞zn = p ∈(0, 1).
+(D.12)
+Then generalized continuous mapping theorem (Whitt, 2002, Theorem 3.4.4) yields that
+as n →∞
+hn
+pn
+B(n·)
+n
+
+⇒h(p)
+in D([0, T], R).
+Since the Skorohod J1 topology relativized to C([0, T], R) of continuous functions is equivalent to the uniform topology (Billingsley, 1999, Section 12), we obtain (D.11) and
+(D.8).
+Applying a similar argument, we ﬁnd
+sup
+0≤s≤T
+
+X
+k<pn
+A(ns)
+ 1
+nf(k
+n) · Λn
+B(pn
+A(ns) −k)
+
+−
+Z p
+0
+f(x)ΛB(p −x)dx
+
+⇒0
+as n →∞.
+(D.13)
+We next prove that when n →∞,
+sup
+0≤s≤T
+
+X
+k>pn
+B(ns)
+ 1
+nf
+k
+n
+
+· Θn
+A(k −pn
+B(ns)) · X n
+k (ns)
+
+−
+Z 1
+p
+f(x)ΘA(x −p)dζs(x)
+
+⇒0.
+(D.14)
+It suﬃces to show
+sup
+0≤s≤T
+
+Z 1
+p
+f(x)ΘA(x −p)dζn
+s (x) −
+Z 1
+p
+f(x)ΘA(x −p)dζs(x)
+ ⇒0,
+(D.15)
+and
+sup
+0≤s≤T
+
+X
+k>pn
+B(ns)
+ 1
+nf
+k
+n
+
+Θn
+A(k −pn
+B(ns)) · X n
+k (ns)
+
+−
+Z 1
+p
+f(x)ΘA(x −p)dζn
+s (x)
+
+⇒0.
+(D.16)
+First, we prove (D.15). Deﬁne a function G by setting
+G(x) =
+(
+f(x)ΘA(x −p)
+if p < x ≤1,
+0
+if 0 ≤x ≤p.
+(D.17)
+If G is continuous on [0, 1], (D.15) readily follows from (5.10) and the equivalence of Skorohod J1 topology and the uniform topology on the space of continuous functions. If G
+39
+
+is not continuous (only possible at point p since f and ΘA are both continuous), one can
+construct a family of continuous functions {Gϵ : ϵ > 0} such that for each small ϵ > 0, G
+and Gϵ are equal except on a small interval (p −ϵ, p]. For each ϵ, we can further use a
+continuous function ¯Gϵ ∈C[0, 1] which is zero outside the interval [p −ϵ, p + ϵ], such that
+|G(x) −Gϵ(x)| ≤¯Gϵ(x)
+for all x ∈[0, 1].
+(D.18)
+Moreover, the functions { ¯Gϵ : ϵ > 0} can be constructed to be uniformly bounded by some
+constant C on [0, 1], where C only depends on f and ΘA. Now for s ∈[0, T], we have
+|⟨ζn
+s , G⟩−⟨ζs, G⟩|
+≤
+|⟨ζn
+s , Gϵ⟩−⟨ζs, Gϵ⟩| + |⟨ζn
+s , G⟩−⟨ζn
+s , Gϵ⟩| + |⟨ζs, G⟩−⟨ζs, Gϵ⟩|
+≤
+|⟨ζn
+s , Gϵ⟩−⟨ζs, Gϵ⟩| + |⟨ζn,+
+s
++ ζn,−
+s
+, ¯Gϵ⟩| + |⟨ζ+
+s + ζ−
+s , ¯Gϵ⟩|.
+We obtain from (5.10) and the continuity of Gϵ that sup0≤s≤T |⟨ζn
+s , Gϵ⟩−⟨ζs, Gϵ⟩| ⇒0 for
+ﬁxed small positive ϵ. Thus in order to show (D.15), it is enough to show that
+lim sup
+n→∞E
+"
+sup
+0≤s≤T
+|⟨ζn,+
+s
++ ζn,−
+s
+, ¯Gϵ⟩|
+#
+≤Cϵ,
+(D.19)
+E
+"
+sup
+0≤s≤T
+|⟨ζ+
+s + ζ−
+s , ¯Gϵ⟩|
+#
+≤Cϵ.
+(D.20)
+Now Lemma B.1 immediately yields (D.19) since ¯Gϵ is zero outside the interval [p−ϵ, p+ϵ].
+To show (D.20), we note from the convergence (ζn,+, ζn,−) ⇒(ζ+, ζ−) and the continuous
+mapping theorem that ζn,++ζn,−⇒ζ++ζ−in D([0, T], M+([0, 1])) as n →∞. In addition,
+for ﬁxed f ∈C[0, 1], the mapping from π ∈D([0, T], M+([0, 1])) to sups∈[0,T] |⟨πs, f⟩| is
+continuous (see, e.g.,
+(Kipnis and Landim, 1999, Section 4.2)). Thus we conclude from
+(D.19), the continuous mapping theorem and Theorem 3.4 in Billingsley (1999) that (D.20)
+holds.
+Next, we prove (D.16). Using Assumption 2.2 and the deﬁnition of ζn in (3.3), it is
+equivalent to show as n →∞
+sup
+0≤s≤T
+
+X
+k
+n>
+pn
+B(ns)
+n
+ 1
+n2 f
+k
+n
+
+ΘA
+k
+n −pn
+B(ns)
+n
+
+· X n
+k (ns)
+
+−
+X
+k
+n>p
+ 1
+n2 f
+k
+n
+
+ΘA
+k
+n −p
+
+· X n
+k (ns)
+  ⇒0.
+(D.21)
+We rely on Proposition 3.1 and Lemma B.1 to establish (D.21). Deﬁne
+ˆΘ(x) =
+(
+ΘA(x)
+if x ∈[0, 1],
+ΘA(0)
+if x ∈[−1, 0).
+40
+
+Since ΘA is continuous on [0, 1] by Assumption 2.2, we deduce that the function ˆΘ is
+continuous and thus uniformly continuous on [−1, 1]. Now in order to show (D.21), it is
+suﬃcient to prove
+sup
+0≤s≤T
+
+n
+X
+k=1
+ 1
+n2 f
+k
+n
+
+·
+
+ˆΘ
+k
+n −pn
+B(ns)
+n
+
+−ˆΘ
+k
+n −p
+
+· X n
+k (ns)
+ ⇒0,
+(D.22)
+and
+sup
+0≤s≤T
+
+X
+k
+n≤
+pn
+B(ns)
+n
+ 1
+n2 f
+k
+n
+
+ΘA(0) · X n
+k (ns)
+
+−
+X
+k
+n≤p
+ 1
+n2 f
+k
+n
+
+ΘA(0) · X n
+k (ns)
+  ⇒0.
+(D.23)
+We ﬁrst establish (D.22). Indeed we show below when n →∞,
+E
+"
+sup
+0≤s≤T
+n
+X
+k=1
+1
+n2
+ˆΘ
+k
+n −pn
+B(ns)
+n
+
+−ˆΘ
+k
+n −p
+ · |X n
+k (ns)|
+#
+→0,
+(D.24)
+from which (D.22) follows by the boundedness of f on [0, 1] and an application of Markov’s
+inequality. Given any ¯ϵ > 0, to show (D.24), we split its left-hand side into two parts:
+E
+"
+sup
+0≤s≤T
+n
+X
+k=1
+1
+n2
+ˆΘ
+k
+n −pn
+B(ns)
+n
+
+−ˆΘ
+k
+n −p
+ · |X n
+k (ns)| ; sup
+0≤s≤T
+
+pn
+B(ns)
+n
+−p
+ < δ
+#
+,
+(D.25)
+and
+E
+"
+sup
+0≤s≤T
+n
+X
+k=1
+1
+n2
+ˆΘ
+k
+n −pn
+B(ns)
+n
+
+−ˆΘ
+k
+n −p
+ · |X n
+k (ns)| ; sup
+0≤s≤T
+
+pn
+B(ns)
+n
+−p
+ ≥δ
+#
+,
+(D.26)
+where δ > 0 is a small constant depending on ¯ϵ and ˆΘ. By the uniform continuity of the
+function ˆΘ, we can choose δ such that (D.25) is bounded above by
+¯ϵ · 1
+n2 E
+"
+sup
+0≤s≤T
+n
+X
+k=1
+|X n
+k (ns)|
+#
+,
+which is further bounded by ¯ϵC for some constant C uniformly for all n after applying
+Lemma B.1. To bound (D.26), we note that ˆΘ is uniformly bounded by some constant C
+on [−1, 1]. This implies (D.26) is bounded above by
+2C · E
+"
+sup
+0≤s≤T
+n
+X
+k=1
+1
+n2 |X n
+k (ns)| ; sup
+0≤s≤T
+
+pn
+B(ns)
+n
+−p
+ ≥δ
+#
+.
+(D.27)
+41
+
+Now (B.1) in Lemma B.1 implies that the sequence
+
+sup0≤s≤T
+Pn
+k=1
+1
+n2 |X n
+k (ns)| : n ≥1
+	
+is uniformly bounded in L2, thus {sup0≤s≤T
+Pn
+k=1
+1
+n2 |X n
+k (ns)| : n ≥1} is uniformly integrable. On combining this with Proposition 3.1 we deduce that (D.27) is bounded above
+by 2¯ϵC for all n large enough. Therefore, we have proved (D.24), and thus (D.22) follows.
+We next prove (D.23) using a similar argument for (D.22). We compute the expectation
+of the left-hand side of (D.23) and show that it approaches 0 as n →∞. To this end, we
+split the expectation into two parts. Given ϵ′ > 0, similar to (D.27), we can choose δ′ > 0
+such that the part involving
+sup
+0≤s≤T
+
+pn
+B(ns)
+n
+−p
+ ≥δ′
+is bounded above by Cϵ′ for some constant C. To bound the additional part with
+sup
+0≤s≤T
+
+pn
+B(ns)
+n
+−p
+ < δ′,
+it suﬃces to show
+E
+
+sup
+0≤s≤T
+X
+k∈[n(p−δ′),n(p+δ′)]
+1
+n2 |X n
+k (ns)|
+
+< ϵ′.
+(D.28)
+Using (B.2), we deduce that the left-hand side of (D.28) is bounded above by 2Cδ′ for
+some positive constant C. Set δ′ <
+ϵ′
+2C , we obtain (D.28). Thus we have proved (D.23).
+Therefore, the proof of (D.14) is complete.
+Similarly we can show as n →∞,
+sup
+0≤s≤T
+
+X
+k<pn
+A(ns)
+ 1
+nf
+k
+n
+
+Θn
+B(pn
+A(ns) −x) · X n
+k (ns)
+
+−
+Z p
+0
+f(x)ΘB(p −x)dζs(x)
+
+⇒0.
+(D.29)
+Finally, using Assumption 2.2 and the fact that f is bounded on [0, 1], we obtain that
+there exists some constant C such that
+sup
+0≤s≤T
+n
+
+1
+n2
+
+f(pn
+B(u)
+n
+)Υn
+A −f(pn
+A(u)
+n
+)Υn
+B
+ ≤
+C
+n1−κ ⇒0
+as n →∞.
+(D.30)
+On combining (D.8), (D.13), (D.14), (D.29), and (D.30), we obtain (D.4).
+E
+Summary statistics and empirical results
+In this section we present summary statistics for the representative example Bank of America (BAC) traded on NYSE Arca on August 5, 2010, and we summarize the empirical results
+on comparison of empirical and theoretical shapes of BAC during 12:45pm-13:05pm.
+42
+
+E.1
+Summary statistics
+In this section we present summary statistics for BAC traded on NYSE Arca on August 5,
+2010.
+We ﬁrst present some general summary statistics. During 12:45pm-13:05pm, the total
+number of BAC order book events on NYSE Arca is 14841. The average limit sell order size
+is 363 shares, which we use as unit order size. Using time format hh:mm:ss.milliseconds,
+the ﬁrst event during the 20-minute window occurs at 12:45:00.015. At this “initial” time,
+the best bid price is $13.99 and the best ask is $14.00. During this 20-minute window,
+the bid price changes are -1, +1, -1, +1 (in the unit of one cent/tick) at time instants
+13:03:18.184, 13:03:19.599, 13:03:42.011, 13:04:21.472; the ask price changes are -1, +1, -1,
++1, -1, +1 (in the unit of one cent/tick) at times 13:03:19.112, 13:03:19.597, 13:03:42.013,
+13:04:21.469, 13:04:21.470, 13:04:21.471. Hence the best bid ranges from $13.99 to $14.00
+and the best ask ranges from $14.00 to $14.01. They barely change during this 20-minute
+time period, which is consistent with our result Proposition 3.1.
+We next report in Table 1 the shape of the order book of BAC at 12:45pm, more
+precisely, the ﬁrst snapshot of the order book after 12:45pm. This shape is obtained at
+15 milliseconds after 12:45pm. From Table 1, we observe that for this initial shape, the
+number of limit orders on each price level is approximately on the order of n = 100 (in the
+unit of 363 shares). This is consistent with (2.6) in Assumption 2.1.
+Table 1: Number of BAC limit orders on Arca at 12:45pm, August 5, 2010. The quantities
+are computed from dividing outstanding limit order volume (shares) on each price level by
+unit order size (363 shares). In the table, level i represents i ticks away from the opposite
+best quote.
+Sell side
+Levels 1-10
+136
+184
+208
+194
+149
+156
+179
+94
+118
+102
+Levels 11-20
+83
+66
+73
+63
+66
+91
+52
+50
+40
+231
+Levels 21-30
+14
+19
+8
+9
+6
+61
+1
+6
+20
+43
+Buy side
+Levels 1-10
+223
+517
+256
+165
+202
+142
+93
+126
+141
+202
+Levels 11-20
+107
+75
+389
+22
+102
+1
+3
+21
+14
+374
+Levels 21-30
+10
+61
+34
+15
+97
+35
+7
+5
+10
+34
+We ﬁnally summarize in Tables 2-5 the order ﬂow rates for each of the four time windows
+discussed in Section 4.1. The estimation procedure follows Cont et al. (2010), but we allow
+for the dependence of order ﬂow intensities on the buy/sell side. For illustration, we present
+results for price levels 10 ticks above the best bid and 10 ticks below the best ask where
+most order activities concentrate. There are seven columns in each of the Tables 2-5. The
+43
+
+ﬁrst column i signiﬁes the number of price ticks away from the opposite best quote; the
+second column Λn
+A represents limit sell order arrival rate (number of orders per second); the
+third column Θn
+A is the limit sell order cancel rate (per second per order); the fourth column
+Nn
+A records the number of sell-side events (including limit sell order arrivals, limit sell order
+cancellations and market buy order arrivals); The ﬁfth to seventh columns correspond to
+limit buy order arrival rate, limit buy order cancellation rate, and the number of buy-side
+events. Market order arrival rate and the total number of events in each time period are
+recorded below each table.
+E.2
+Empirical results
+In this section we summarize the empirical results on the comparisons of empirical and
+theoretical shapes of BAC during 12:45pm-13:05pm using Tables 6-9. For the clarity of
+the presentation, we focus on price levels 10 ticks above the best bid and 10 ticks below
+the best ask.
+We now explain the entries in the tables and illustrate them using Table 6. For the
+sell side, each entry in the row “12:50 Arca” represents the total number of limit sell
+orders (in the unit of 363-shares) in each price bin at 12:50pm on NYSE Arca.
+Each
+quantity corresponds to left-hand side of (4.1). On the other hand, each entry in the row
+“12:50 Model” is computed from our limiting model ϕ+ given in (3.10). Each number
+corresponds to right-hand side of (4.1). “Error” for each price bin is deﬁned by (entry in
+row “12:50 Model”)/(entry in row “12:50 Arca”)−100%, which captures the accuracy of
+our approximation in (4.1). The buy-side entries can be interpreted similarly. In all the
+four tables, we observe good agreement between the theoretical shapes computed from our
+limiting model and the empirical shapes of stock BAC on Arca.
+44
+
+Table 2: Order ﬂow statistics of BAC during 12:45pm-12:50pm, August 5, 2010.
+i
+Λn
+A(i)
+Θn
+A(i)
+Nn
+A(i)
+Λn
+B(i)
+Θn
+B(i) )
+Nn
+B(i)
+1
+1.1
+0.731 · 10−2
+641
+0.86
+0.562 · 10−2
+495
+2
+0.25
+0.134 · 10−2
+143
+0.35
+0.1 · 10−2
+204
+3
+0.247
+0.129 · 10−2
+146
+0.236
+0.151 · 10−2
+154
+4
+0.247
+0.111 · 10−2
+139
+0.287
+0.207 · 10−2
+163
+5
+0.277
+0.196 · 10−2
+164
+0.287
+0.217 · 10−2
+171
+6
+0.083
+0.039 · 10−2
+44
+0.14
+0.11 · 10−2
+77
+7
+0.02
+0.01 · 10−2
+11
+0.003
+0
+1
+8
+0.017
+0.012 · 10−2
+8
+0.003
+0.004 · 10−2
+2
+9
+0.013
+0.013 · 10−2
+8
+0.003
+0.004 · 10−2
+2
+10
+0.003
+0.007 · 10−2
+3
+0.007
+0.003 · 10−2
+3
+Total number of order book events is 2628. Υn
+A = Υn
+B = 0.
+Table 3: Order ﬂow statistics of BAC during 12:45pm-12:55pm, August 5, 2010.
+i
+Λn
+A(i)
+Θn
+A(i)
+Nn
+A(i)
+Λn
+B(i)
+Θn
+B(i)
+Nn
+B(i)
+1
+0.962
+0.43 · 10−2
+1104
+0.878
+0.545 · 10−2
+1097
+2
+0.283
+0.132 · 10−2
+332
+0.378
+0.094 · 10−2
+445
+3
+0.508
+0.231 · 10−2
+614
+0.283
+0.138 · 10−2
+330
+4
+0.223
+0.091 · 10−2
+266
+0.275
+0.165 · 10−2
+315
+5
+0.26
+0.15 · 10−2
+310
+0.318
+0.201 · 10−2
+374
+6
+0.052
+0.021 · 10−2
+57
+0.165
+0.103 · 10−2
+182
+7
+0.013
+0.009 · 10−2
+18
+0.003
+0
+2
+8
+0.015
+0.013 · 10−2
+17
+0.003
+0.002 · 10−2
+3
+9
+0.007
+0.005 · 10−2
+8
+0.003
+0.002 · 10−2
+3
+10
+0.002
+0.003 · 10−2
+3
+0.005
+0.001 · 10−2
+4
+Total number of order book events is 5565. Υn
+A = 0.004, Υn
+B = 0.
+45
+
+Table 4: Order ﬂow statistics of BAC during 12:45pm-13:00pm, August 5, 2010.
+i
+Λn
+A(i)
+Θn
+A(i)
+Nn
+A(i)
+Λn
+B(i)
+Θn
+B(i)
+Nn
+B(i)
+1
+0.94
+0.31 · 10−2
+1622
+0.915
+0.668 · 10−2
+1720
+2
+0.3
+0.128 · 10−2
+541
+0.434
+0.111 · 10−2
+771
+3
+0.75
+0.303 · 10−2
+1351
+0.314
+0.16 · 10−2
+555
+4
+0.235
+0.085 · 10−2
+422
+0.3
+0.184 · 10−2
+522
+5
+0.27
+0.138 · 10−2
+484
+0.357
+0.225 · 10−2
+626
+6
+0.04
+0.014 · 10−2
+66
+0.187
+0.119 · 10−2
+316
+7
+0.009
+0.005 · 10−2
+19
+0.002
+0
+2
+8
+0.012
+0.01 · 10−2
+21
+0.002
+0.001 · 10−2
+3
+9
+0.004
+0.003 · 10−2
+8
+0.002
+0.001 · 10−2
+3
+10
+0.001
+0.002 · 10−2
+3
+0.003
+0.001 · 10−2
+4
+Total number of order book events is 9179. Υn
+A = 0.037, Υn
+B = 0.
+Table 5: Order ﬂow statistics of BAC during 12:45pm-13:05pm, August 5, 2010.
+i
+Λn
+A(i)
+Θn
+A(i)
+Nn
+A(i)
+Λn
+B(i)
+Θn
+B(i)
+Nn
+B(i)
+1
+1.16
+0.383 · 10−2
+2702
+1.06
+0.787 · 10−2
+2598
+2
+0.38
+0.177 · 10−2
+934
+0.535
+0.152 · 10−2
+1273
+3
+0.915
+0.408 · 10−2
+2193
+0.372
+0.2 · 10−2
+875
+4
+0.3
+0.112 · 10−2
+689
+0.352
+0.211 · 10−2
+805
+5
+0.353
+0.191 · 10−2
+843
+0.41
+0.26 · 10−2
+954
+6
+0.057
+0.039 · 10−2
+164
+0.192
+0.152 · 10−2
+466
+7
+0.009
+0.01 · 10−2
+35
+0.013
+0
+16
+8
+0.014
+0.012 · 10−2
+34
+0.005
+0.008 · 10−2
+15
+9
+0.005
+0.003 · 10−2
+10
+0.003
+0.002 · 10−2
+6
+10
+0.002
+0.001 · 10−2
+5
+0.007
+0.006 · 10−2
+18
+Total number of order book events is 14841. Υn
+A = 0.13, Υn
+B = 0.155.
+46
+
+Table 6: Comparison of the empirical shape and the theoretical shape for BAC at 12:50pm.
+Order ﬂow rates are estimated using data in the time interval 12:45pm-12:50pm.
+Sell side
+Price bins
+$14–
+$14.03
+$14.01–
+$14.04
+$14.02–
+$14.05
+$14.03–
+$14.06
+$14.04–
+$14.07
+$14.05–
+$14.08
+$14.06–
+$14.09
+12:50 Arca
+806
+801
+809
+780
+639
+596
+497
+12:50 Model
+826
+804
+771
+733
+611
+566
+499
+Error
+2.5%
+0.3%
+-4.6%
+-6%
+-4.3%
+-4.8%
+0.3%
+Buy side
+Price bins
+$13.96–
+$13.99
+$13.95–
+$13.98
+$13.94–
+$13.97
+$13.93–
+$13.96
+$13.92–
+$13.95
+$13.91–
+$13.94
+$13.90–
+$13.93
+12:50 Arca
+1263
+1173
+858
+692
+607
+544
+564
+12:50 Model
+1246
+1206
+835
+660
+591
+521
+563
+Error
+-1.2%
+2.9%
+-2.6%
+-4.5%
+-2.7%
+-4.2%
+-0.1%
+Table 7: Comparison of the empirical shape and the theoretical shape for BAC at 12:55pm.
+Order ﬂow rates are estimated using data in the time interval 12:45pm-12:55pm.
+Sell side
+Price bins
+$14–
+$14.03
+$14.01–
+$14.04
+$14.02–
+$14.05
+$14.03–
+$14.06
+$14.04–
+$14.07
+$14.05–
+$14.08
+$14.06–
+$14.09
+12:55 Arca
+856
+790
+791
+792
+656
+610
+515
+12:55 Model
+880
+822
+783
+735
+610
+561
+493
+Error
+2.8%
+4%
+-1%
+-7.1%
+-7%
+-8.1%
+-4.2%
+Buy side
+Price bins
+$13.96–
+$13.99
+$13.95–
+$13.98
+$13.94–
+$13.97
+$13.93–
+$13.96
+$13.92–
+$13.95
+$13.91–
+$13.94
+$13.90–
+$13.93
+12:55 Arca
+1199
+1239
+895
+726
+635
+567
+567
+12:55 Model
+1249
+1239
+882
+699
+617
+543
+567
+Error
+4.3%
+0%
+1.4%
+-3.6%
+-2.7%
+-4.4%
+0%
+47
+
+Table 8: Comparison of the empirical shape and the theoretical shape for BAC at 13:00pm.
+Order ﬂow rates are estimated using data in the time interval 12:45pm-13:00pm.
+Sell side
+Price bins
+$14–
+$14.03
+$14.01–
+$14.04
+$14.02–
+$14.05
+$14.03–
+$14.06
+$14.04–
+$14.07
+$14.05–
+$14.08
+$14.06–
+$14.09
+13:00 Arca
+971
+790
+792
+791
+655
+609
+513
+13:00 Model
+950
+846
+804
+750
+616
+561
+493
+Error
+-2.2%
+7.2%
+1.4%
+-5.1%
+-6%
+-7.9%
+-3.9%
+Buy side
+Price bins
+$13.96–
+$13.99
+$13.95–
+$13.98
+$13.94–
+$13.97
+$13.93–
+$13.96
+$13.92–
+$13.95
+$13.91–
+$13.94
+$13.90–
+$13.93
+13:00 Arca
+1063
+1210
+896
+747
+651
+572
+567
+13:00 Model
+1202
+1228
+889
+713
+626
+551
+567
+Error
+13%
+1.4%
+-0.8%
+-4.7%
+-3.8%
+-3.6%
+0%
+Table 9: Comparison of the empirical shape and the theoretical shape for BAC at 13:05pm.
+Order ﬂow rates are estimated using data in the time interval 12:45pm-13:05pm.
+Sell side
+Price bins
+$14–
+$14.03
+$14.01–
+$14.04
+$14.02–
+$14.05
+$14.03–
+$14.06
+$14.04–
+$14.07
+$14.05–
+$14.08
+$14.06–
+$14.09
+13:05 Arca
+930
+811
+776
+762
+621
+577
+518
+13:05 Model
+981
+862
+806
+751
+601
+540
+489
+Error
+5.5%
+6.3%
+3.9%
+-1.4%
+-3.3%
+-6.4%
+-5.5%
+Buy side
+Price bins
+$13.96–
+$13.99
+$13.95–
+$13.98
+$13.94–
+$13.97
+$13.93–
+$13.96
+$13.92–
+$13.95
+$13.91–
+$13.94
+$13.90–
+$13.93
+13:05 Arca
+1180
+1262
+945
+795
+669
+581
+574
+13:05 Model
+1239
+1272
+930
+747
+629
+536
+556
+Error
+5%
+0.8%
+-1.6%
+-5.9%
+-6%
+-7.7%
+-3%
+48
+
+References
+Abergel, F. and Jedidi, A. (2011). A mathematical approach to order book modelling.
+In Econophysics of Order-driven Markets. Springer, 93–107.
+Abergel, F. and Jedidi, A. (2013). On the stability and price scaling limit of a hawkes
+process-based order book model.
+Working Paper. Available at http: // ssrn. com/
+abstract= 2263162 .
+Aldous, D. (1981). Weak convergence and the general theory of processes. preprint.
+Alfonsi, A., Fruth, A. and Schied, A. (2010). Optimal execution strategies in limit
+order books with general shape functions. Quantitative Finance, 10 143–157.
+Bak, P., Paczuski, M. and Shubik, M. (1997). Price variations in a stock market with
+many agents. Physica A: Statistical Mechanics and its Applications, 246 430–453.
+Bayraktar, E. and Ludkovski, M. (2012). Liquidation in limit order books with controlled intensity. Mathematical Finance.
+Biais, B., Hillion, P. and Spatt, C. (2012). An empirical analysis of the limit order
+book and the order ﬂow in the paris bourse. Journal of Finance, 50 1655–1689.
+Billingsley, P. (1999). Convergence of Probability Measures. 2nd ed. Wiley, New York.
+Blanchet, J. and Chen, X. (2013). Continuous-time modeling of bid-ask spread and
+price dynamics in limit order books. arXiv preprint arXiv:1310.1103.
+Bouchaud, J.-P., M´ezard, M. and Potters, M. (2002). Statistical properties of stock
+order books: empirical results and models. Quantitative Finance, 2 251–256.
+Bremaud, P. (1981). Point Processes and Queues: Martingale Dynamics. Springer.
+Brown, T. C. and Nair, M. G. (1988). A simple proof of the multivariate random time
+change theorem for point processes. Journal of Applied Probability 210–214.
+Chen, N., Kou, S. G. and Wang, C. (2013). Limit order books with stochastic market
+depth. Working Paper. Available at http: // ssrn. com/ abstract= 2360552 .
+Cont, R. and De Larrard, A. (2011). Order book dynamics in liquid markets: limit
+theorems and diﬀusion approximations. Working Paper. Available at http: // ssrn.
+com/ abstract= 1757861 .
+Cont, R., Kukanov, A. and Stoikov, S. (2013). The price impact of order book events.
+Journal of Financial Econometrics.
+Cont, R., Stoikov, S. and Talreja, R. (2010). A stochastic model for order book
+dynamics. Oper. Res., 58 549–563.
+Dawson, D. (1993). Measure-valued Markov processes. Springer.
+Domowitz, I. (1996). An exchange is a many-splendored thing: The classiﬁcation and
+regulation of automated trading systems. In The industrial organization and regulation
+of the securities industry. University of Chicago Press, 93–124.
+Driver, K. (2003). Analysis tools with applications. Lecture Notes. Available at http:
+49
+
+// www. math. ucsd. edu/ ~ bdriver/ 240-01-02/ Lecture_ Notes/ anal2p. pdf .
+Ethier, S. N. and Kurtz, T. G. (1986). Markov Processes: Characterization and Convergence. Wiley, New York.
+Fruth, A., Sch¨oneborn, T. and Urusov, M. (2013). Optimal trade execution and
+price manipulation in order books with time-varying liquidity. Mathematical Finance.
+Glosten, L. R. (1994). Is the electronic open limit order book inevitable? The Journal
+of Finance, 49 1127–1161.
+Gould, M. D., Porter, M. A., Williams, S., McDonald, M., Fenn, D. J. and
+Howison, S. D. (2013). Limit order books. Quantitative Finance, 13 1709–1742.
+Gu, G.-F., Chen, W. and Zhou, W.-X. (2008). Empirical shape function of limit-order
+books in the chinese stock market. Physica A: Statistical Mechanics and its Applications,
+387 5182–5188.
+Gu´eant, O. and Lehalle, C.-A. (2013). General intensity shapes in optimal liquidation.
+Mathematical Finance.
+Gu´eant, O., Lehalle, C.-A. and Fernandez-Tapia, J. (2012).
+Optimal portfolio
+liquidation with limit orders. SIAM Journal on Financial Mathematics, 3 740–764.
+Hautsch, N. and Huang, R. (2011).
+Limit order ﬂow, market impact and optimal
+order sizes: Evidence from nasdaq totalview-itch data.
+Working Paper. Available at
+http: // ssrn. com/ abstract= 1914293 .
+Horst, U. and Paulsen, M. (2013).
+A law of large numbers for limit order books.
+Working Paper. Available at http: // horst. qfl-berlin. de/ files/ HP-mother. pdf .
+Jacod, J. and Shiryaev, A. N. (2003). Limit Theorems for stochastic processes. 2nd ed.
+Springer, Berlin.
+Janson, S., M’baye, S. and Protter, P. (2011). Absolutely continuous compensators.
+International Journal of Theoretical and Applied Finance, 14 335–351.
+Kipnis, C. and Landim, C. (1999). Scaling limits of interacting particle systems, vol. 320.
+Springer.
+Kirilenko, A., Sowers, R. B. and Meng, X. (2013).
+A multiscale model of highfrequency trading. Algorithmic Finance, 2 59–98.
+Kotelenez, P. (2010).
+Stochastic ﬂows and signed measure valued stochastic partial
+diﬀerential equations. Th. Stoch. Process, 16 86–105.
+Kruk, L. (2012). Limiting distribution for a simple model of order book dynamics. Central
+European Journal of Mathematics, 10 2283–2295.
+Kurtz, T. G. (1971). Limit theorems for sequences of jump Markov processes approximating ordinary diﬀerential processes. Journal of Applied Probability, 8 344–356.
+Lakner, P., Reed, J. and Simatos, F. (2014). Scaling limits for a limit order book
+model using the regenerative characterization of Levy trees. Working Paper. Available
+50
+
+at http: // people. stern. nyu. edu/ jreed/ Papers/ lakner-reed-simatos. pdf .
+Lakner, P., Reed, J. and Stoikov, S. (2013). High frequency asymptotics for the limit
+order book.
+Working Paper. Available at http: // people. stern. nyu. edu/ jreed/
+Papers/ LimitFinal. pdf .
+Last, G. and Brandt, A. (1995). Marked Point Processes on the real line: the dynamical
+approach. Springer.
+Massey, W. A. (1987). Stochastic orderings for Markov processes on partially ordered
+spaces. Mathematics of Operations Research, 12 350–367.
+Meyer, P.-A. (1971). Demonstration simpliﬁee d’un theoreme de knight. In S´eminaire
+de Probabilit´es V Universit´e de Strasbourg. Springer, 191–195.
+Obizhaeva, A. A. and Wang, J. (2012). Optimal trading strategy and supply/demand
+dynamics. Journal of Financial Markets.
+Parlour, C. and Seppi, D. (2008). Limit order markets: A survey. Handbook of Financial
+Intermediation and Banking, 5.
+Potters, M. and Bouchaud, J. (2003). More statistical properties of order books and
+price impact. Physica A: Statistical Mechanics and its Applications, 324 133–140.
+Predoiu, S., Shaikhet, G. and Shreve, S. (2011). Optimal execution in a general
+one-sided limit-order book. SIAM Journal on Financial Mathematics, 2 183–212.
+Protter, P. E. (2004). Stochastic Integration and Diﬀerential Equations: Version 2.1,
+vol. 21. Springer.
+Ros¸u, I. (2009). A dynamic model of the limit order book. Review of Financial Studies,
+22 4601–4641.
+Sepp¨al¨ainen, T. (2008). Translation invariant exclusion processes. Lecture Notes. Available at http: // www. math. wisc. edu/ ~ seppalai/ excl-book/ ajo. pdf .
+Smith, E., Farmer, J., Gillemot, L. and Krishnamurthy, S. (2003).
+Statistical
+theory of the continuous double auction. Quantitative ﬁnance, 3 481–514.
+Spiliopoulos, K., Sirignano, J. A. and Giesecke, K. (2014). Fluctuation analysis for
+the loss from default. Stochastic Processes and their Applications, 124 2322–2362.
+Tao, T. (2006). Nonlinear Dispersive and Wave Equations: Local and Global Analysis.
+106, American Mathematical Soc.
+Toke, I. M. (2011). “Market Making” in an order book model and its impact on the
+spread. In Econophysics of Order-driven Markets. Springer, 49–64.
+Tsoukalas, G., Wang, J. and Giesecke, K. (2013).
+Dynamic portfolio execution.
+Working paper. Available at http: // ssrn. com/ abstract= 2089837 .
+Weber, P. and Rosenow, B. (2005). Order book approach to price impact. Quantitative
+Finance, 5 357–364.
+Whitt, W. (2002). Stochastic-process limits. Springer, New York.
+51

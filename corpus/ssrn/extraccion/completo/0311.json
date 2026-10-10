@@ -1,0 +1,59 @@
+{
+  "doc_id": 311,
+  "titulo": "Statistical Arbitrage: Medium Frequency Portfolio Trading",
+  "resumen_operativo": "Presenta estrategias de arbitraje estadístico de frecuencia media para portafolios de acciones del S&P 500. Combina generación de señales mediante regresión sobre índices y componentes principales con optimización de ejecución multi-período incorporando modelos de impacto de mercado. Las señales se basan en residuos de regresiones de precios y retornos sobre SPY y sectores GICS. Reporta Sharpe ratios de 2.16 (regresión de precios) y 1.97 (regresión de retornos) con turnover de 33% y 159% respectivamente, mostrando que la frecuencia diaria es demasiado baja para mantener posiciones cuando la señal revierte.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Medium Frequency Statistical Arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia que no requiere análisis de microestructura pero sí depende significativamente del impacto de mercado. Permite analizar grandes volúmenes de datos con algoritmos complejos. Combina descubrimiento de alpha y ejecución óptima en scheduling de trading.",
+      "relaciones": [{"tipo": "SE_OPONE_A", "objeto": "High Frequency Trading"}, {"tipo": "REQUIERE", "objeto": "Market Impact Models"}],
+      "cita_textual": "Medium frequency trading strategies include all trading activities, that do not require market microstructure analysis on one side and significantly depend on market impact on the other side."
+    },
+    {
+      "nombre": "Residual-Based Trading Signal",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Señal α = -ε donde ε son los residuos de regresión lineal de retornos/precios sobre índices o componentes principales. Matriz Hat = X(X'X)^(-1)X' proyecta los datos; los residuos M = I-Hat capturan la desviación del equilibrio y se usan como señal de trading.",
+      "relaciones": [{"tipo": "USA", "objeto": "Principal Component Analysis"}, {"tipo": "APLICA_A", "objeto": "Mean-Reversion Trading"}],
+      "cita_textual": "The residuals of regression equations are our first candidates for trading strategy signals α: α = -ε."
+    },
+    {
+      "nombre": "Price-Based vs Return-Based Regression",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Comparación de dos enfoques: regresión de series de retorno (R = [1 R_ind]β + ε) y regresión de series de precio (S = [1 t S_ind]β + ε) incluyendo tendencia temporal. El enfoque de precios produce mayor retorno con menor turnover (33% vs 159%).",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Return-Based Regression"}],
+      "cita_textual": "The Sharpe ratios for return and price series based strategies are close, but the return with the second approach is much higher plus the first strategy has a turnover that is greater than 100%."
+    },
+    {
+      "nombre": "GICS Sector Principal Components",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Uso de eigenvectores correspondientes al mayor eigenvalue como regresores específicos para cada sector GICS del S&P 500. Proporciona benchmarks cuantitativos más precisos que usar solo el índice SPY.",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Single Index Regression"}, {"tipo": "USA", "objeto": "Eigenvalue Decomposition"}],
+      "cita_textual": "As a regressor we take the eigenvector that corresponds to the largest eigenvalue or the most principal component. S&P500 index we split to 10 Global Industry Classification Standard (GICS) sectors."
+    },
+    {
+      "nombre": "Multi-Period Portfolio Execution",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Optimización dinámica multi-período para ejecución de portafolio que incorpora modelos de impacto de mercado, gestión de inventario y restricciones terminales. El portfolio management es combinación dinámica de descubrimiento de alpha y ejecución óptima.",
+      "relaciones": [{"tipo": "REQUIERE", "objeto": "Market Impact Models"}, {"tipo": "USA", "objeto": "Inventory Management"}],
+      "cita_textual": "Portfolio management in this case is the dynamic process, combination of signal (alpha) discovery and optimal execution on the level of trading scheduling."
+    },
+    {
+      "nombre": "Turnover and Transaction Cost Sensitivity",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Turnover >100% en estrategia basada en retornos implica que con costos de transacción de 2 bps el retorno anualizado se reduce 5%. Señala que la frecuencia diaria es subóptima: se mantienen posiciones cuando la señal ya revirtió.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Performance Degradation"}, {"tipo": "MIDE", "objeto": "Strategy Efficiency"}],
+      "cita_textual": "Such a high turnover leads to high transaction cost. With 100% turnover and transaction cost of 2 basis points (bps) the annualized return would be reduced by 5%."
+    }
+  ],
+  "hallazgos": [
+    {"afirmacion": "Estrategia de regresión de precios sobre SPY: retorno anual 5.55%, Sharpe ratio 2.16, turnover 33%, max drawdown 2.49%.",
+      "mercado": "S&P 500", "periodo": "2008-2013",
+      "magnitud": "Retorno 5.55% anual, Sharpe 2.16, turnover 33%, maxDD 2.49%",
+      "condiciones": "Regresión de series de precio con tendencia temporal; backtest diario",
+      "robustez": "media",
+      "cita_textual": "Annual return equals to 5.55 %, Sharpe ratio - 2.16, turnover - 33%, max drawdown - 2.49%."}
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "Frecuencia media con datos diarios; metodología de señales por residuos y ejecución multi-período adaptable a frecuencias intradiarias."}
+}

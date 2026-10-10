@@ -1,0 +1,112 @@
+{
+ "doc_id": 90,
+ "titulo": "DiceStock: Emergent Market Microstructure from Stochastic Dice Mechanics",
+ "resumen_operativo": "El paper presenta DiceStock, un simulador de microestructura de mercado multi-agente en el cual el comportamiento es guiado puramente por un mecanismo estocástico (una matriz de 100x100 'dados' uniformes dividida en bandas funcionales). Demuestra que los hechos estilizados clave de los mercados financieros (como colas pesadas, agrupamiento de volatilidad, rebote bid-ask y ciclos de crash-recuperación endógenos) pueden emerger únicamente de la interacción de agentes heterogéneos operando en diferentes escalas temporales en un libro de órdenes compartido, sin necesidad de calibraciones complejas de comportamiento, modelos GARCH ni cambios exógenos de régimen.",
+ "calidad_paper": "alta",
+ "conceptos": [
+  {
+   "nombre": "DiceStock architecture",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Simulador de mercado basado en agentes donde todo comportamiento se deriva de una cuadrícula de dados de 100x100 lanzados de forma independiente cada tick, dividida en 10 bandas funcionales para generar señales estadísticas (dirección, volatilidad, liquidez, etc.).",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "continuous double auction"
+    },
+    {
+     "tipo": "APLICA_A",
+     "objeto": "market microstructure"
+    }
+   ],
+   "cita_textual": "All agent behavior derives from a single shared stochastic mechanism: a 100x100 grid of dice, each rolled independently every tick"
+  },
+  {
+   "nombre": "stylized facts",
+   "tipo": "concepto",
+   "definicion_en_contexto": "Regularidades estadísticas persistentes en los mercados financieros, como colas pesadas en retornos, agrupamiento de volatilidad, larga memoria y correlación volumen-volatilidad. El paper busca reproducirlos sintéticamente.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "emergent realism"
+    }
+   ],
+   "cita_textual": "Financial markets exhibit a remarkable set of statistical regularities—known as stylized facts—that persist across asset classes, time periods, and geographic regions"
+  },
+  {
+   "nombre": "fat-tailed return distributions",
+   "tipo": "fenomeno",
+   "definicion_en_contexto": "Retornos extremos mucho más probables que en una distribución normal. En la simulación se observa una curtosis excesiva de 11.07 y un índice de cola de Hill de 2.74, congruentes con los mercados reales.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "stylized facts"
+    }
+   ],
+   "cita_textual": "Excess kurtosis of 11.07 indicates extremely heavy tails. The Jarque-Bera test decisively rejects normality"
+  },
+  {
+   "nombre": "volatility clustering",
+   "tipo": "fenomeno",
+   "definicion_en_contexto": "Fenómeno de memoria larga en la volatilidad, donde períodos de alta o baja volatilidad tienden a agruparse. En DiceStock, esto emerge espontáneamente de la interacción a múltiples temporalidades.",
+   "relaciones": [
+    {
+     "tipo": "CAUSA",
+     "objeto": "multi-timescale agent interaction"
+    }
+   ],
+   "cita_textual": "The ACF decays slowly from 0.48 to 0.03 over 100 lags—characteristic 'long memory' in volatility"
+  },
+  {
+   "nombre": "bid-ask bounce",
+   "tipo": "fenomeno",
+   "definicion_en_contexto": "Autocorrelación fuertemente negativa en los retornos al primer lag generada por oscilaciones en los precios de ejecución entre la oferta (ask) y la demanda (bid) en mercados de alta frecuencia.",
+   "relaciones": [
+    {
+     "tipo": "CAUSA",
+     "objeto": "negative return autocorrelation"
+    }
+   ],
+   "cita_textual": "The strong negative lag-1 autocorrelation reflects bid-ask bounce (Roll, 1984)."
+  },
+  {
+   "nombre": "agent heterogeneity",
+   "tipo": "concepto",
+   "definicion_en_contexto": "La presencia de participantes en el mercado operando con distintas frecuencias y lógicas. El autor argumenta que esta multiplicidad de frecuencias de operación en un libro de órdenes compartido es el motor central de los hechos estilizados.",
+   "relaciones": [
+    {
+     "tipo": "CAUSA",
+     "objeto": "volatility clustering"
+    },
+    {
+     "tipo": "CAUSA",
+     "objeto": "fat-tailed return distributions"
+    }
+   ],
+   "cita_textual": "agent heterogeneity alone—operating at multiple timescales through a shared order book—is sufficient"
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "La simulación computacional basada en tiradas de dados aleatorias logra replicar 5 de 7 características estilizadas clave, incluyendo una curtosis excesiva de 11.07 y memoria prolongada de agrupamiento de volatilidad (ACF cayendo de 0.48 a 0.03 a 100 lags), sin requerir modelos GARCH o lógica compleja intrínseca en los agentes.",
+   "mercado": "Simulación Multi-Agente (DiceStock)",
+   "periodo": "3,600,000 ticks (~36.6 años simulados)",
+   "magnitud": "Curtosis 11.07; índice de Hill 2.74; ACF(lag1) = 0.48",
+   "condiciones": "Grid estocástico de 10,000 dados divididos en 10 bandas para parametrización temporal y funcional. Limit order book con prioridad de precio-tiempo.",
+   "robustez": "alta",
+   "cita_textual": "DiceStock reproduces fat tails (k = 11.07), volatility clustering (ACF = 0.48), and power-law tails (a = 2.74) without kt ever deviating from 1.0. Agent heterogeneity alone... is sufficient."
+  },
+  {
+   "afirmacion": "La interacción direccional de los agentes en múltiples marcos temporales puede agotar la liquidez del lado comprador, llevando endógenamente a ciclos de colapso extremo (crashes) y largas depresiones en los precios, seguidas de recuperaciones sostenidas, sin requerir shocks externos más allá del ruido estocástico subyacente.",
+   "mercado": "Simulación Multi-Agente (DiceStock)",
+   "periodo": "Años simulados 0-37 (con crash en años 0-2)",
+   "magnitud": "Crash de $100 a $1.43 endógeno",
+   "condiciones": "Multi-timescale order flow interaction y limit order book endógeno.",
+   "robustez": "media",
+   "cita_textual": "The simulation exhibits a remarkable trajectory: crash from $100 to $1.43 (years 0-2), depression at $2-$5 (years 2-9), recovery to $100+ (year 10)"
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "baja",
+  "nota": "El paper detalla un modelo de simulación de microestructura de mercado abstracto (artificial). Aunque no aporta métricas, alpha o datos empíricos aplicables directamente al mercado de futuros del S&P 500 (ES), sus resultados validan la premisa de que los fenómenos microestructurales de alto impacto (volatility clustering, bid-ask bounce, flash crashes) surgen del cruce mecánico y orgánico de operadores de distintas frecuencias operando sobre el order book."
+ }
+}

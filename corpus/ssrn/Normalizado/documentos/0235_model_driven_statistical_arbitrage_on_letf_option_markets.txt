@@ -1,0 +1,2411 @@
+September 21, 2020
+Quantitative Finance
+manuscript
+Published in Quantitative Finance, Vol. 19, No. 11, 2019, 1817–1837
+10.1080/14697688.2019.1605186
+Model-driven statistical arbitrage on LETF option
+markets
+S. NASEKIN∗† and W. K. HÄRDLE‡
+†Lancaster University Management School, Lancaster University, Lancaster, United Kingdom,
+LA14YX
+‡ C.A.S.E.- Center for Applied Statistics & Economics, Humboldt-Universität zu Berlin,
+Spandauer Str. 1, 10178 Berlin, Germany
+(This is a post-peer-review, pre-copyedit version of an article published in Quantitative Finance. The ﬁnal
+authenticated version is available online at: http://dx.doi.org/10.1080/14697688.2019.1605186)
+In this paper, we study the statistical properties of the moneyness scaling transformation by Leung and
+Sircar (2015). This transformation adjusts the moneyness coordinate of the implied volatility smile in
+an attempt to remove the discrepancy between the IV smiles for levered and unlevered ETF options.
+We construct bootstrap uniform conﬁdence bands which indicate that the implied volatility smiles are
+statistically diﬀerent after moneyness scaling has been performed. An empirical application shows that
+there are trading opportunities possible on the LETF market. A statistical arbitrage type strategy based
+on a dynamic semiparametric factor model is presented. This strategy presents a statistical decision
+algorithm which generates trade recommendations based on comparison of model and observed LETF
+implied volatility surface. It is shown to generate positive returns with a high probability. Extensive
+econometric analysis of LETF implied volatility process is performed including out-of-sample forecasting
+based on a semiparametric factor model and uniform conﬁdence bands’ study. It provides new insights
+into the latent dynamics of the implied volatility surface. We also incorporate Heston stochastic volatility
+into the moneyness scaling method for better tractability of the model.
+Keywords: exchange-traded funds; options; implied volatilities; moneyness scaling; bootstrap; dynamic
+factor models; trading strategies
+JEL Classiﬁcation: C00, C14, C50
+1.
+Introduction
+Exchange-traded funds (ETFs) are ﬁnancial products that track indices, commodities, bonds, baskets of assets. They have become increasingly popular due to diversiﬁcation beneﬁts as well as
+the investor’s ability to perform short-selling, buying on margin and lower expense ratios than, for
+∗Corresponding author. Email: sergey.nasekin@gmail.com
+1
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+instance, those of mutual funds.
+Leveraged ETFs (LETFs) are used to generate multiples or inverse multiples of returns on the
+underlying asset. For instance, the LETF ProShares Ultra S&P500 (SSO) with a leverage ratio
+β = +2 is supposed to grow 2% for every 1% daily gain in the price of the S&P500 index, minus
+an expense fee. An inverse leveraged ETF would invert the gain/loss of the underlying index and
+amplify it proportionally to the ratio: the ProShares UltraShort S&P500 (SDS) with leverage ratio
+β = −2 would generate a 2% gain for every 1% daily loss in the price of the underlying S&P500
+index. Selected ﬁnancial information on LETFs relevant for this study, is summarized in Table 1.
+Due to their growing popularity and the nature of ETF and LETF similar dynamics, recently there
+has been growing research on leveraged ETFs and their consistent pricing. Avellaneda and Zhang
+(2010) found that the terminal value of an option on a LETF depends on the integrated variance of
+the underlying LETF. Ahn et al. (2015) show that given Heston dynamics for the underlying ETF,
+the corresponding LETF also has Heston dynamics with diﬀerent parameters. Leung and Santoli
+(2016) give a broad overview of LETFs, LETF options, their pricing and implied volatility.
+Studies on LETF options’ implied volatility should be mentioned as most relevant for this work.
+Figueroa-Lopez et al. (2016) derived asymptotic equivalence of options on ETFs and LETFs under
+restricted conditions. Lee and Wang (2015) studied a direct relationship between volatility skews of
+leveraged and unlevered products, providing asymptotic error estimates. Leung et al. (2017) studied
+the relationship between the ETF and LETF implied volatility surfaces when the underlying ETF
+is modeled by a general class of local-stochastic volatility models.
+Various studies including Aït-Sahalia et al. (2001), Cont and da Fonseca (2002), Fengler et al.
+(2003), Fengler et al. (2007) apply non- and semiparametric approaches to model implied volatility
+surfaces (IVS). Some important issues of IVS estimation and modelling include choice between
+parametric and non-parametric methods, model selection, out-of-sample forecasting.
+Leung and Sircar (2015) introduced the so-called "moneyness scaling" technique which links implied
+volatilities (IV) between ETF and LETF in the way that the discrepancy between the implied
+volatility "smile" pattern is removed. The question arises whether the moneyness scaling method
+indeed removes discrepancies consistently in time. To answer this question, we need to verify whether
+IV deviations are signiﬁcant from the statistical point of view.
+In this study, we use an econometric approach to study the issue of errors describing the diﬀerence
+between leveraged and unleveraged volatility smiles. Unlike Lee and Wang (2015), who derive an
+asymptotic error estimate directly for implied volatilities, we investigate the indirect approach of
+Leung and Sircar (2015) further, invoking stochastic volatility framework. This approach allows to
+apply the moneyness scaling technique under more general assumptions.
+We consider the statistical properties of the moneyness scaling transformation which adjusts the
+moneyness coordinate of the implied volatility smile in an attempt to remove the discrepancy between
+the IV smiles for levered and unlevered ETF options. We construct bootstrap uniform conﬁdence
+bands which allow for more ﬂexible error analysis. The results indicate that the implied volatility
+smiles are statistically diﬀerent, even after moneyness scaling has been performed.
+Furthermore, we develop a trading strategy based on a dynamic semiparametric factor model.
+This strategy utilizes the dynamic structure of implied volatility surface allowing out-of-sample
+forecasting and information on unleveraged ETF options to construct theoretical one-step-ahead
+implied volatility surfaces. This strategy exploits statistical discrepancies on (L)ETF markets and
+falls within the class of model-driven statistical arbitrage described in Avellaneda and Lee (2010).
+2
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+2.
+Conﬁdence analysis of moneyness scaling
+2.1.
+Moneyness scaling
+We begin by introducing basic results on (L)ETF options and moneyness scaling. The dynamics of
+the underlying asset is assumed to follow a stochastic process under a risk-neutral measure Q:
+dSt
+St
+= (r −δ)dt + σtdWQ
+t ,
+(1)
+where r is the risk-free interest rate, δ the dividend yield, (σt)t≥0 is some stochastic volatility process.
+The moneyness scaling technique proposed by Leung and Sircar (2015) proposes a coordinate
+transformation for the LETF option implied volatility and potentially reﬂects the increase of risk in
+the underlying index.
+Figure 1 compares empirical implied volatilities for SSO, UPRO, SDS, SPXU before moneyness
+scaling has been applied and afterwards. In this example, the log-moneyness LM def
+= log(K/Lt) is
+used, where K is the strike of the LETF option and Lt the LETF price at time t. After re-scaling,
+there are still visible discrepancies between the implied volatilities for the SPY ETF and its leveraged
+counterparts. The moneyness scaling procedure yields a more coherent picture when the LETF and
+ETF implied volatilities overlap visually better.
+Based on the assumption that the distribution of the terminal price of the β-LETF depends
+on the leverage ratio β, the moneyness scaling formula includes an expectation of the β-LETF
+log-moneyness conditional on the terminal value of the unleveraged counterpart. For the LETF
+log-moneyness LM(β) (consider ETFs as LETFs with β = 1) the result linking the log-moneyness
+coordinates LM(β) and LM(1) of the leveraged and unleveraged ETF is written as follows:
+LM(β) = βLM (1) −{r(β −1) + c∗}T −β(β −1)
+2
+EQ
+(Z T
+0
+σ2
+t dt
+log
+ST
+S0
+
+= LM(1)
+)
+,
+(2)
+where T is the time to maturity/expiration (TTM), c∗= c+δ is the LETF expense ratio c corrected
+for dividend yield δ. The expense ratio c is expressed in percent and approximates an annual fee
+charged by the ETF from the shareholders to cover the fund’s operating expenses.
+More generally, for two LETFs with diﬀerent leverage ratios β1, β2 the expression (2) takes the
+form:
+LM(β1) = β1
+β2
+LM(β2) +
+β1
+β2
+(β2 −1) −(β1 −1)
+
+r + β1
+β2
+c∗
+2 −c∗
+1
+
+T+
+β1(β2 −1) −β1(β1 −1)
+2
+EQ
+(Z T
+0
+σ2
+t dt
+log
+ST
+S0
+
+= LM(1)
+)
+,
+(3)
+with c∗
+k = ck + δk, k = 1, 2.
+It is worth mentioning that declared leverage ratios are not always the same as the empirical ones.
+Leung and Santoli (2016) introduce a novel method to estimate the empirical leverage ratio realized
+by ETFs. Particularly for longer holding periods, return discrepancies between ETFs and LETFs
+3
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+increase. This can cause, e.g. for both long and short ETFs to have negative cumulative returns over
+a longer horizon. In this study we use declared leverage ratios. This is motivated by the use of short
+time horizons in the empirical study of LETF option portfolios’ returns in Section 5.
+2.2.
+Conﬁdence bands
+Cont and da Fonseca (2002), Fengler et al. (2007), Park et al. (2009) studied the implied volatility as
+a random process in time, so that the data generating process includes some non-parametric function
+m:
+Yt = m(Xt) + εt,
+t = 1, . . . , T,
+(4)
+or can be driven by a latent factor process Zt:
+Yt = Z⊤
+t m(Xt) + εt,
+t = 1, . . . , T,
+(5)
+where Yt stands for an implied volatility process, the covariates Xt can be one- or multi-dimensional,
+including, for instance, moneyness and time-to-maturity.
+The statistical properties of the estimators bm(Xt) and bZ⊤
+t bm(Xt) for the models (4) and (5) have
+been outlined, respectively, in, e.g., Härdle (1990), Ruppert and Wand (1994) and Park et al. (2009).
+To study the consistency of the implied volatility diﬀerence between the ETF and the moneynessscaled LETF case, one needs to consider statistical diﬀerences of the corresponding estimators.
+Conﬁdence band analysis may provide an insight into the matter. An important issue for smooth
+conﬁdence bands for functions is the correct probability of covering the "true" curve.
+The approach of Härdle et al. (2015) proposes a uniform bootstrap bands construction for a wide
+class of non-parametric M and L-estimates. It is logical to use a robust M-type smoother for the
+estimation of (4) for implied volatility, as IV data often suﬀer from outliers. The procedure runs
+as follows: considering the sample {Xt, Yt}T
+t=1, where Yt denotes the IV process, Xt is taken to be
+one-dimensional and includes the log-moneyness covariate LM(β), do the following:
+(i) compute the estimate bmh(Xt) by a local linear M-smoothing procedure (see Appendix 7.1)
+with some kernel function and bandwidth h chosen by, e.g., cross-validation, and obtain
+residuals bεt
+def
+= Yt −bmh(Xt),
+(ii) do bootstrap resampling from bεt: for each t = 1, . . . , T, generate random variables ε∗
+t,b ∼
+bFε|Xt(z) for b = 1, . . . , B according to the conditional edf
+bFε|x(z) def
+=
+PT
+t=1 Kh(x −Xt)1{bεt ≤z}
+PT
+t=1 Kh(x −Xt)
+,
+(6)
+which is further centered as shown in Härdle et al. (2015). Then construct the bootstrap
+sample Y ∗
+t,b as follows:
+Y ∗
+t,b = bmg(Xt) + ε∗
+t,b,
+(7)
+with an "oversmoothing" bandwidth g ≫h such as g = O(T −1/9) to allow for bias correction,
+(iii) for each bootstrap sample {Xt, Y ∗
+t,b}T
+t=1 compute bm∗
+h,g using the bandwidth h and construct
+4
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+the random variable
+db
+def
+= sup
+x∈J
+
+| bm∗
+h,g(x) −bmg(x)|
+q
+bfX(x) bfε|Xt(ε∗
+t)
+q
+bEY |x{ψ2(ε∗
+t)}
+
+,
+(8)
+where J is a ﬁnite compact support set of bfX and ψ(u) = ρ′(·) as described in Appendix 7.1;
+the conditional expectation bEY |x(·) is deﬁned with respect to the edf
+bFY |x(z) def
+=
+PT
+t=1 Kh(x −Xt)1{Yt ≤z}
+PT
+t=1 Kh(x −Xt)
+,
+(9)
+where bfε|Xt(·) and bfX(x) are consistent estimators of conditional density corresponding to
+(6) and the density fX(x), respectively; for more details, see Härdle et al. (2015),
+(iv) calculate the 1 −α quantile d∗
+α of d1, . . . , dB,
+(v) construct the bootstrap uniform conﬁdence band centered around bmh(x):
+bmh(x) ±
+
+
+q
+bEY |x{ψ2(ε∗
+t)}d∗
+α
+q
+bfX(x) bfε|Xt(ε∗
+t)
+
+.
+(10)
+Such an approach utilizes bootstrap conﬁdence bands while the distribution of the original data
+is "mimicked" via a pre-speciﬁed random mechanism achieving both uniformity and better coverage.
+Additionally, it performs better than asymptotic conﬁdence bands which generally tend to underestimate the true coverage probability, see Hall and Horowitz (2013). Compared to a Bonferroni
+approach, bootstrap uniform conﬁdence bands would be less conservative and make use of the substantial positive correlation of the curve estimates at nearby points, see Härdle (1990).
+3.
+Moneyness scaling under Heston stochastic volatility
+3.1.
+An analytical approach
+In the study of moneyness scaling, one needs to estimate the following conditional expectation:
+EQ
+(Z T
+0
+σ2
+t dt
+log
+ST
+S0
+
+= LM(1)
+)
+.
+(11)
+Taking σt = σ constant, one obtains σ2T. As empirical evidence shows, constant volatility is not
+a plausible assumption, therefore one needs to determine the measure Q for the case of random
+volatility under a model which allows random dynamics of σt. Second, one needs to estimate the
+integrated variance
+Z T
+0
+σ2
+t dt,
+(12)
+Stochastic volatility presents a viable alternative to the constant case. One could choose among
+5
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+diﬀerent speciﬁcations of stochastic volatility models. Popular special cases include speciﬁcations
+of Heston (1993), Hull and White (1987), Schöbel and Zhu (1999). An example of a more general
+stochastic volatility system is given in Leung and Sircar (2015). Simpler models tend to generate
+semi-closed-form solutions for return distributions. For instance, a solution for the Heston model by
+Heston (1993) was proposed by Dragulescu and Yakovenko (2002).
+We use the Heston model to compute the quantity in (11). As noticed in Leung and Santoli (2016),
+this approach allows for tractability and eﬃcient numerical pricing of options on LETFs. Stochastic
+volatility framework also allows to better assess volatility decay, i.e. value erosion due to the increase
+of the realized variance with the holding horizon.
+The Heston model with risk-neutral dynamics under a risk-neutral measure Q and zero volatility
+risk premium is described by a two-dimensional system of stochastic diﬀerential equations
+dSt = (r −c −0.5)Stdt +
+p
+VtStdWQ
+S,t,
+(13)
+dVt = κ(θ −Vt)dt + σdWQ
+V,t,
+(14)
+where we have put Vt = σ2
+t ; r −c are costs of carry on St, θ is the long-run variance level, κ is the
+rate of reversion to θ, σ is the "volatility of the volatility" parameter which determines the variance
+of Vt; WS,t, WV,t are correlated with parameter ρ. The tails of the Heston-implied densities for logreturns xt = log(St/St−1) are exponential and heavier than those of the normal distribution with
+the dispersion parameter equal to the long-term variance θ, see, i.e. Cizek et al. (2011).
+An analytical solution to (11) requires knowledge of the conditional distribution of the integrated
+variance (12) given the logarithm of terminal stock price log(ST). If we deﬁne:
+eV def
+=
+Z T
+0
+Vtdt,
+XT
+def
+= log(ST),
+then we can write
+EQ
+(Z T
+0
+Vtdt
+log
+ST
+S0
+
+= LM(1)
+)
+= EQ
+
+eV
+XT = g
+LM
+(1) 
+=
+Z ∞
+0
+feV |XT
+
+ev
+xT = g
+LM
+(1) 
+dev,
+(15)
+where feV |XT (ev|xT) is the conditional density of eV given XT under the measure Q and g
+LM
+(1) =
+log(S0) + LM(1).
+Unfortunately, feV |XT (ev|xT) does not assume a simple form and is ultimately expressed in terms
+of Fourier transforms of characteristic functions of these quantities. Technical details are given in
+Appendix 7.2. As follows from the details, four improper integrals have to be estimated. Numeric
+integration methods can be used to approximate (11).
+Additional complexity arises from the necessity to evaluate a modiﬁed Bessel function of the ﬁrst
+kind which takes a complex argument. Numerical approximation methods for such evaluations such
+as the trapezoidal rule are outlined in Broadie and Kaya (2006).
+6
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+Considering the complexity of the density estimation, we consider a Monte-Carlo approach to
+evaluate (11). This method is feasible and straightforward from a practical point of view.
+3.2.
+A Monte-Carlo approach
+Alternatively, the conditional expectation in (11) can be computed using Monte-Carlo simulations.
+The simulations are performed using the Heston model and the calibrated parameters obtained
+minimizing the squared diﬀerence between theoretical Heston prices CΘ(K, τ) obtained from the
+model and observed market prices CM(K, τ),
+min
+Θ∈R5
+N
+X
+i=1
+
+CΘ
+i (Ki, τi) −CM
+i (Ki, τi)
+
+(16)
+where Θ def
+= (κ, θ, σ, v0, ρ) Heston parameters, N number of options used for calibration, K strikes
+and τ times-to-maturity. Theoretical prices CΘ(K, τ) are obtained via numeric integration of the
+Heston characteristic function.
+The Monte-Carlo algorithm is motivated by van der Stoep et al. (2014) and can be formulated as
+follows:
+(i) Generate N pairs of observations (si, vi), i = 1, . . . , N.
+(ii) Order the realizations si: s1 ≤x2 ≤. . . ≤sN.
+(iii) Determine the boundaries of M bins (lk, lk+1], k = 1, . . . , M on an equidistant grid of values
+S∗def
+= S0eLM(1)
+(iv) For the kth bin approximate the conditional expectation (11) by
+EQ
+ Z T
+0
+σ2
+t dt |ST ∈(lk, lk+1]
+!
+≈
+h
+NQ(k)
+H
+X
+i=1
+X
+j∈Jk
+Vij,
+(17)
+where h is the discretization step for Vt, Jk the set of numbers j, for which the observations
+ST are in the kth bin and Q(k) is the probability of ST being in the kth bin.
+The results of the simulation are presented in Figure 5. Polynomial smoothing is applied to produce
+the smoothed version of SCO LETF realized variance. The generated expected realized variance has
+the form of a "smile" which conﬁrms the intuition behind using average square implied volatility in
+the case of constant-volatility moneyness scaling approach.
+We use the Monte-Carlo approach given Euler discretization scheme for the empirical application
+in later sections given its tractability and theoretical justiﬁcation. Both methods, analytical and
+Monte-Carlo, introduce errors into the calculation of (11). For the analytical method, discretization
+and truncation errors appear when the integral is estimated at discrete points and is truncated to
+be approximated as a ﬁnite sum. If the trapezoidal rule is used to approximate the integrals in the
+analytical method, then the discretization error is of order O(M−2) where M −1 is the number of
+discrete intervals. However, as the integral dimensionality d increases, the discretization error order
+increases to O(M−2/d) ("curse of dimensionality").
+For the current example, the discretization error order for (11) becomes O(M−1/2), which matches
+the convergence order of Monte-Carlo discretization bias. Additionally, analytical approximation of
+7
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+(11) eﬀects a truncation error which is potentially signiﬁcant due to the oscillatory nature of the
+integrand. Monte-Carlo approach inherently induces a statistical error of order O(N−1/2) which can
+be made suﬃciently small by taking a large number N of samples. As noted in Higham and Mao
+(2005), Lord et al. (2010), a simple discretization scheme such as the Euler scheme converges to the
+true process under certain conditions on the discretization size. This was shown to be true for the
+Heston in particular by Higham and Mao (2005).
+4.
+Dynamic semiparametric factor model
+4.1.
+Model description
+A generalized version of the model in (4) represented by (5) assumes the implied volatility Yt to be
+a stochastic process driven by a latent stochastic factor process Zt contaminated by noise εt. To be
+more speciﬁc, deﬁne J def
+= [κmin, κmax] × [τmin, τmax], Yt,j implied volatility, t = 1, . . . , T time index,
+j = 1, . . . , Jt option intraday numbering on day t, Xt,j
+def
+= (κt,j, τt,j)⊤, κt,j, τt,j are, respectively, a
+moneyness measure (log-, forward, etc.) and time-to-maturity at time point t for option j. Then the
+dynamic semiparametric factor model (DSFM) is deﬁned as follows: assume
+Yt,j = Z⊤
+t m(Xt,j) + εt,j,
+(18)
+where Zt = (1, Z⊤
+t ), Zt = (Zt,1, . . . , Zt,L)⊤unobservable L-dimensional stochastic process, m =
+(m0, . . . , mL)⊤, real-valued functions; ml, l = 1, . . . , L + 1 are deﬁned on a subset of Rd. One can
+estimate:
+bYt = bZ⊤
+t bm(Xt)
+(19)
+= bZ⊤
+t
+b
+Aψ(Xt),
+(20)
+with ψ(Xt) def
+= {ψ1(Xt), . . . , ψK(Xt)}⊤being a space basis such as a tensor B-spline basis, A is
+the (L + 1) × K coeﬃcient matrix. In this case K denotes the number of tensor B-spline sites: let
+(su)U
+u=1, (sv)V
+v=1 be the B-spline sites for moneyness and time-to-maturity coordinates, respectively,
+then K = U · V . Given some spline orders nκ and nτ for both coordinates and sets of knots (tκ
+i )M
+i=1,
+(tτ
+j )N
+j=1, one of the Schoenberg-Whitney conditions requires that U = M −nκ, V = N −nτ, see
+de Boor (2001). The usage of the parameter K is roughly analogous to the bandwidth choice in
+Fengler et al. (2003) and Fengler et al. (2007); however the results of Park et al. (2009) demonstrate
+insensitivity of DSFM estimation results to the choice of K, n.
+The estimates for the IV surfaces bml are re-calculated on a ﬁne 2-dimensional grid of tensor Bspline sites: the estimated coeﬃcient matrix
+b
+A is reshaped into a U × V × L + 1 array of L + 1
+matrices bA of dimension U × V . Factor functions ml can then be estimated as follows:
+bml;i,j =
+U
+X
+i
+V
+X
+j
+bAl;i,jψi,kκ(κi)ψj,kτ(τj),
+(21)
+where kκ, kτ are knot sequences for the moneyness and time-to-maturity coordinates, respectively.
+8
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+The estimated factor functions bml together with stochastic factor loadings bZt are combined into
+the dynamic estimator of the implied volatility surface:
+c
+IV t;i,j = bm0;i,j +
+L
+X
+l=1
+bZl,t bml;i,j,
+(22)
+where bZl,t can be modeled as a vector autoregressive process. It should be noted that bml and bZl,t
+are not uniquely deﬁned, so an orthonormalization procedure must be applied.
+An indication of possible mispricing of LETF options allows to test a trading strategy based on
+the comparison of the theoretical price obtained from the moneyness scaling correction as well as
+the application of the DSFM model and the market price. Such a strategy would mainly exploit
+the two essential elements of information from these two approaches. The ﬁrst element is obtaining
+evidence of statistical discrepancies resulting from the mismatch between ETF and LETF IVs. The
+moneyness scaling approach allows to estimate LETF IV using richer unleveraged ETF data which
+also would make the DSFM IV estimator more consistent. The second element is implied volatility
+forecasting. The DSFM model allows to forecast a whole IV surface via the dynamics of stochastic
+factor loadings Zt.
+4.2.
+Model estimation
+The DSFM model is estimated numerically. The number of factors has to be chosen in advance. One
+should also notice that for ml to be chosen as eigenfunctions of the covariance operator K(u, v) def
+=
+Cov{Y (u), Y (v)} in an L-dimensional approximating linear space, where Y is understood to be the
+random IV surface, they should be properly normalized, such that ∥ml(·)∥= 1 and ⟨ml, mk⟩= 0 for
+l̸ = k.
+The choice of L can be based on the explained variance by factors:
+EV (L) def
+= 1 −
+PT
+t=1
+PJt
+j=1
+n
+Yt,j −PL
+l=0 bZt,l bml(Xt,j)
+o2
+PT
+t=1
+PJt
+j=1(Yt,j −Y )2
+.
+(23)
+The model’s goodness-of-ﬁt is evaluated by the root mean squared error (RMSE) criterion:
+RMSE def
+=
+v
+u
+u
+u
+t
+1
+P
+t Jt
+T
+X
+t=1
+Jt
+X
+j=1
+(
+Yt,j −
+L
+X
+l=0
+bZt,l bml(Xt,j)
+)2
+.
+(24)
+The prediction quality at time point t + 1 is measured by the root mean squared prediction error
+(RMSPE) given by
+RMSPE def
+=
+v
+u
+u
+u
+t 1
+Jt+1
+Jt+1
+X
+j=1
+(
+Yt+1,j −
+L
+X
+l=0
+bZt+1,l bml(Xt+1,j)
+)2
+.
+(25)
+9
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+5.
+Empirical application
+5.1.
+Data description
+For the purpose of an empirical application, we use data on SPY, SSO, UPRO and SDS (L)ETF
+call options in the period Nov 2014 - June 2015. The data summary statistics are outlined in Table
+2 below. The data were taken from the Datastream database by Thomson Reuters.
+To give an impression of leveraged ETF option tradability, we give an illustration of the existing
+bid-ask spreads and actual trades of the SSO LETF, as these data will be used for the trading
+strategy example below. Figures 13 and 14 show variation of existing trade prices and volumes for
+various option contacts based on exercise price and time to expiration. We can see that shorter-term
+contracts are traded more broadly. It has been also found that trades predominantly occur at or
+near mid-quotes. In Figure 15 we show bid-ask spreads for the same range of option contracts, which
+tend to be quite high, but somewhat lower for longer-term contracts.
+The option data we use for the empirical application are trade-based data, i.e. each observation
+corresponds to an actual trade, not price quotes or settlement data. Implied volatility and option
+prices are taken from the database and computed in accordance with standard conventions used by
+market participants using the midpoint of the best closing bid price and best closing oﬀer price for
+the options, taking account of liquidity and dividends.
+Additionally, we remove data which may contain noise, potential misprints and other errors. Such
+data include anomalous and outlier data resulting, e.g., from artiﬁcial extrapolation of implied volatilities for non-traded options or feature lower liquidity for the out-of-the-money or options which are
+deeply in-the-money.
+5.2.
+Conﬁdence bands
+We use the data described above to construct bootstrap conﬁdence bands for the M-smoother of
+implied volatility Y given log-moneyness X, according to methodology described in Section 2.2.
+Accordingly, X is transformed using (3). The results are shown in Figures 2 and 3 for time-tomaturity 0.5 and 0.6 years, respectively. In Figure 4 combined bands are provided.
+We can observe clear discrepancy between the implied volatilities of leveraged ETFs and their
+unleveraged counterpart SPY. For all LETFs, non-overlapping conﬁdence bands imply that there
+is a statistically signiﬁcant diﬀerence between IV functions at the signiﬁcance level α = 0.05. It is
+more pronounced for in- and out-of-the-money options. This phenomenon may occur due to lower
+liquidity of in- and out-of-the-money options compared to at-the-money options. On the other hand,
+as shown, e.g. in Etling and Miller (2000), the relationship between option moneyness and liquidity
+is more complex than quadratic, maximized for at-the-money options. Therefore, liquidity need not
+be the only reason for this fact.
+We can see from Figure 4 that the bands for SSO demonstrate particularly strong deviation from
+those of SPY. This implies that discrepancies not removed by the moneyness scaling procedure are
+the largest for this LETF. Therefore we conclude this section with a trading strategy which is meant
+to exploit such statistical discrepancies on the market of SPY and SSO options.
+10
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+5.3.
+DSFM estimation and forecasting
+The EV , RMSE and RMSPE criteria are displayed in Table 3. The model order L = 3 is chosen
+for estimation. The data for the SPY ETF option are used with parameters nκ, nτ = 3; M = 9,
+N = 7, so that U = 6, V = 4, K = 6 × 4 = 24.
+Figure 6 shows the dynamics of bZt in time. Two largest "spikes" in the value of the third stochastic
+loading in the beginning of the period correspond to the period of relatively large values of the
+CBOE volatility index (VIX). The second of the "spikes" precedes in time an increase in the VIX
+value implying that the model has predictive value with respect to market instability dynamics. This
+shows that DSFM captures leading dynamic eﬀects as well as can explain eﬀects like skew or term
+structure changes.
+Theoretical and simulation results in Park et al. (2009) justify using vector autoregression (VAR)
+analysis to model bZt. To select a VAR model, we computed the Schwarz (SC), the Hannan-Quinn
+(HQ) and the Akaike (AIC) criteria, as shown in Table 4. All three criteria select the VAR(1) model.
+Furthermore, the roots of the characteristic polynomial all lie inside the unit circle, which shows that
+the speciﬁed model is stationary. Portmanteau and Breusch-Godfrey LM test results with 12 lags
+for the autocorrelations of the error term fail to reject residual autocorrelation at 10% signiﬁcance
+level.
+The degenerate nature of implied volatility data is reﬂected by the fact that empirical observations
+do not cover estimation grids at given time points. This is due to the fact that contracts at certain
+maturities or strikes are not always traded. The DSFM ﬁtting procedure introduces basis functions
+which approximate a high-dimensional space and depend on time. This allows to account for all
+information in the dataset simultaneously in one minimization procedure which runs over all bml and
+bZt and avoid bias problems which would inevitably occur if some kernel smoothing procedure such
+as Nadaraya-Watson were applied for this type of degenerate data.
+5.4.
+Option trading strategy
+5.4.1.
+Description. Ability to forecast the whole surface of implied volatility can be used in
+combination with the moneyness scaling technique to exploit potential discrepancies in ETF and
+LETF option prices or implied volatilities to build a trading strategy. A suitable strategy would
+be the so-called "trade-with-the-smile/skew" strategy adapted for the special case of ETF-LETF
+option IV discrepancy. It would use the ETF option data to estimate the model (theoretical) smile
+of the leveraged counterpart and the information from the IV surface forecast to recognize the future
+(one-period-ahead) possible IV discrepancy.
+Going back to the results in Section 5.2, we see that the largest statistical discrepancy between
+leveraged and unleveraged ETF implied volatilities is the one between SPY and SSO, so we consider
+these two options in the strategy setup. The strategy can be outlined as follows: choose a moving
+window width w; then for each t = w, . . . , T (T is the ﬁnal time point in the sample) do the following:
+(i) given two leverage ratios βSPY
+= 1, βSSO = 2, re-scale the log-moneyness coordinate
+LM(βSP Y ) according to the moneyness scaling formula (3) to obtain d
+LM
+(βSSO). This will
+be the "model" moneyness coordinate for DSFM estimation,
+(ii) map the space [ d
+LM
+(βSSO)
+min
+, d
+LM
+(βSSO)
+max
+] × [τ SPY
+min , τ SPY
+max ] to [0, 1] × [0, 1] using marginal transfor11
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+mation,
+(iii) estimate the DSFM model (18) on [0, 1] × [0, 1]. This will yield the IV surface estimates
+c
+IV
+SSO
+1
+, . . . , c
+IV
+SSO
+t
+,
+(iv) forecast the IV surface estimate c
+IV
+SSO
+t+1 using the VAR structure of the estimated stochastic
+loadings bZt and the factor functions bml,
+(v) choose a time-to-maturity τ ∗at time point t, take the corresponding real-world values of SSO
+log-moneyness LM(βSSO) and map them to [0, 1] using the marginal distribution of d
+LM
+(βSSO);
+denote the output as LM(βSSO)
+τ ∗;M ,
+(vi) using the marginally re-scaled grid [ d
+LM
+(βSSO)
+min
+, d
+LM
+(βSSO)
+max
+] × [τ ∗, τ ∗] and c
+IV
+SSO
+t+1 , obtain interpolated values c
+IV
+SSO
+t+1;LM
+(βSSO)
+τ∗;M
+,τ ∗corresponding to LM(βSSO)
+τ ∗;M , τ ∗,
+(vii) compare the "theoretical" values c
+IV
+SSO
+t+1;LM
+(βSSO)
+τ∗;M
+,τ ∗with known real-world implied volatilities
+IV SSO
+t;LM
+(βSSO)
+τ∗;M
+,τ ∗corresponding to LM(βSSO)
+τ ∗;M , and construct a delta-hedged option portfolio:
+• if c
+IV
+SSO
+t+1;LM
+(βSSO)
+τ∗;M
+,τ ∗> IV SSO
+t;LM
+(βSSO)
+τ∗;M
+,τ ∗for all LM(βSSO)
+τ ∗;M , then buy (long) options corresponding to the largest diﬀerence Dlong
+def
+= c
+IV
+SSO
+t+1;LM
+(βSSO)
+τ∗;M
+,τ ∗−IV SSO
+t;LM
+(βSSO)
+τ∗;M
+,τ ∗,
+• if c
+IV
+SSO
+t+1;LM
+(βSSO)
+τ∗;M
+,τ ∗< IV SSO
+t;LM
+(βSSO)
+τ∗;M
+,τ ∗for all LM(βSSO)
+τ ∗;M , then sell (short) options corresponding to the largest diﬀerence Dshort
+def
+= IV SSO
+t;LM
+(βSSO)
+τ∗;M
+,τ ∗−c
+IV
+SSO
+t+1;LM
+(βSSO)
+τ∗;M
+,τ ∗,
+• if it holds that both
+c
+IV
+SSO
+t+1;LM
+(βSSO)
+τ∗;M
+,τ ∗> IV SSO
+t;LM
+(βSSO)
+τ∗;M
+,τ ∗and
+c
+IV
+SSO
+t+1;LM
+(βSSO)
+τ∗;M
+,τ ∗<
+IV SSO
+t;LM
+(βSSO)
+τ∗;M
+,τ ∗for diﬀerent LM(βSSO)
+τ ∗;M , then buy (long) options with the largest Dlong
+and sell (short) options with the largest Dshort. In all three cases use the underlying
+SSO LETF asset to make the portfolio delta-neutral,
+(viii) at time point t+1, terminate the portfolio via an oﬀsetting sale/purchase, calculate proﬁt/loss
+and repeat until time T.
+The strategy described above aims to exploit the information from the statistical discrepancies
+between the forecast "theoretical" (model) SSO LETF implied volatilities and the historical ("true")
+ones. It protects the portfolio against unfavorable moves in the underlying asset Lt through deltahedging and aims to gain from forecast moves in another option risk factor, the implied volatility
+via its explicit estimation and forecasting.
+The key transformation d
+LM
+(βSSO) can be also perceived to drive a statistical equilibrium for IV SSO
+t+1
+through c
+IV
+SSO
+t+1 , deviations from which induce entry and exit points for trading. This reasoning is in
+line with that of Avellaneda and Lee (2010) who introduce a model-driven pairs-trading strategy in
+US equities.
+The real-world SSO implied volatility IV SSO
+t;LM
+(βSSO)
+τ∗;M
+,τ ∗at time step t is expected to converge to the
+forecast implied volatility c
+IV
+SSO
+t+1;LM
+(βSSO)
+τ∗;M
+,τ ∗, which has been constructed using scaled moneyness and
+implied volatility input from the unleveraged LETF, i.e., SPY.
+Such a strategy would fall into the class of model-driven statistical arbitrage in equities and equity
+options. It has the three characteristic features of statistical arbitrage described by Avellaneda and
+Lee (2010): (i) trading signals are systematic or rules-based, as opposed to driven by fundamentals,
+12
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+(ii) the trading portfolio is market-neutral, i.e. has zero sensitivity to the market, and (iii) the
+algorithm for generating excess returns is statistical. The market here is deﬁned by the SSO LETF
+and delta neutrality implies market neutrality.
+In the following section, we present the strategy’s performance as well as a numerical example.
+It occurs that the existing statistical discrepancies between implied volatilities of leveraged and
+unlevered ETF options together with predictive capacity of the DSFM model can provide nonnegative trading gains on the option market.
+5.4.2.
+Numerical example. For the purpose of the estimation of the strategy from the previous
+section, the DSFM model parameters are taken to be the same as in Section 5.3. The rolling window
+width is assumed to be w = 100 and the forecasting horizon is 1 day ahead.
+The dynamic strategy performance in the period April 2015 - June 2015 is displayed in Figure
+7. Out of 55 investment periods, in 30 cases long-only portfolios were constructed, the remaining
+25 cases short and long positions were taken; net portfolios were short portfolios in 42 cases, long
+portfolios in the remaining 13 cases.
+For the sake of illustration, let us go through one step from the outlined strategy in a numerical
+example. Assume that we are at the step t = 147 of the sample, which corresponds to June 18, 2015.
+At this point, we have a training sample of 100 days for DSFM estimation, encompassing 14,859
+observations of the option data for contracts with various strike prices and time-to-maturity. The
+histogram and density estimates for SPY log-moneyness LM(βSP Y ), "theoretical" SSO log-moneyness
+d
+LM
+(βSSO) (that is, rescaled LM(βSP Y )) and its marginally transformed version are given in Figure 8.
+Further we proceed as proposed in the strategy above:
+(i) estimate (18) and perform a forecast to obtain c
+IV
+SSO
+148
+on June 19, 2015 (day 148 in the
+sample),
+(ii) choose τ ∗= 0.6; we have 37 values of LM(βSSO) for τ ∗= 0.6. We use the marginal distribution
+of d
+LM
+(βSSO) shown in Figure 8 to calculate the corresponding "theoretical" values LM(βSSO)
+τ ∗;M
+implied by SPY data and the moneyness scaling procedure, both shown in Figure 9,
+(iii) using the forecast IVS c
+IV
+SSO
+148 , we can determine "theoretical" IV values corresponding to
+LM(βSSO)
+τ ∗;M
+∈[0, 1], c
+IV
+SSO
+148;LM
+(βSSO)
+τ∗;M
+,τ ∗and the real-world IV values IV SSO
+147;LM
+(βSSO)
+τ∗;M
+,τ ∗corresponding to the same LM(βSSO)
+τ ∗;M
+through the mapping of LM(βSSO), described above,
+(iv) the resulting c
+IV
+SSO
+148;LM
+(βSSO)
+τ∗;M
+,τ ∗and IV SSO
+147;LM
+(βSSO)
+τ∗;M
+,τ ∗are demonstrated in Figure 10. We buy
+an option corresponding to the largest Dlong = 0.052 at the closing price Clong;147 = $27.375
+and sell an option corresponding to the largest Dshort = 0.163 at the closing price Cshort;147 =
+$2.740,
+(v) additionally, we delta-hedge the resulting option portfolio using portfolio delta ∆Portf;147 =
+∆long;147 −∆short;147 = 0.859 −0.461 = 0.398 and the underlying SSO which has a closing
+price of L = $66.960; the total portfolio value on June 18, 2015 is: Clong;147 −Cshort;147 −
+∆Portf;147 × L147 = $27.375 −$2.740 −0.398 × $66.960 = −2.015,
+(vi) at the start of the next day, i.e., June 19, 2015, we check the prices of the options Clong;148
+and Cshort;148 as well as the price of the underlying L148. We ﬁnd that on June 19, 2015,
+Clong;148 = $28.450 and Cshort;148 = $0.320, L148 = $68.300. With the share of L148 still
+equal to the previous-day portfolio delta ∆Portf;147, the portfolio is now worth Clong;148 −
+Cshort;148 −∆Portf;147 × L148 = $28.450 −$0.320 −0.398 × $68.300 = 0.947. We sell that
+13
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+portfolio in an oﬀsetting trade and have secured a gain of $2.962. As expected, Clong gained
+in value while Cshort went down in value. The coupled gain was larger than an oﬀsetting loss
+of $0.533 from the delta hedge which resulted in the total gain.
+In the end, the cumulative gain of the strategy applied daily as shown in the illustrating example
+above, is 19.043 after 55 investment periods. It occurs that 39 out of 55 investment decisions correctly
+determined the direction of one-step-ahead implied volatility smile change. In the strategy, this smile
+change is anticipated according the relation between the "model" IVS computed using the moneyness
+scaling approach and the real-world IVS of a LETF option. There is a high positive chance of
+generating positive cumulative returns exploiting statistical deviations of leveraged and unlevered
+implied volatility smiles in the ETF option market.
+It should be mentioned that the sample period includes the day of an underlying SSO stock 2-for1 split which took place on May 20, 2015. The split was implemented to attract a wider range of
+buyers at the resulting lower price per share. It has been shown by many researchers, such as Ohlson
+and Penman (1985), Sheikh (1989), Desai et al. (1998) that stock splits result in post-split increases
+of implied stock volatilities. For instance, Ohlson and Penman (1985) show that stock splits cause
+short-term increases in volatility upon announcement and long-term increases in volatility after the
+date the split is eﬀective.
+In Figure 11, we show real-world and DSFM-forecast IVS on two diﬀerent dates: before (19 June,
+2015) and after the split (21 June, 2015). It can be seen that the model anticipates a signiﬁcant
+increase in implied volatilities after the split which indeed takes place.
+5.4.3.
+Robustness check. The performance of the option trading strategy obtained in Section
+5.4.2 above may seem to have occurred purely by chance. Therefore some sort of a robustness check
+is necessary.
+We perform a bootstrap resampling exercise on the time series of the underlying prices of SPY
+and SSO (L)ETFs and re-run the strategy on the resampled data. Overlapping block bootstrap
+approach proposed by Künsch (1989) is applied. It works as follows: given the data observations
+{Xi : i = 1, . . . , T}, a block size b is speciﬁed. With overlapping blocks of length b, block 1 is then
+observations {Xj : j = 1, . . . , b}, block 2 is {Xj+1 : j = 1, . . . , b} and so on. Random sampling is
+then performed on the level of blocks.
+Overlapping block bootstrap assumes the data to be stationary. However, in the current case
+we do not do inference on the resampled data, so this stringent assumption is less relevant here.
+Nevertheless, we run standard stationarity tests on SPY and SSO price series in the period from
+November 2014 to June 30, 2015 such as Phillips-Perron, augmented Dickey-Fuller and KPSS tests.
+The ﬁrst two tests have presence of unit root in the series as a null hypothesis, while the KPSS test
+tests trend stationarity as the null.
+We perform a series of tests for each approach using the number of lags from 1 to 10 in the NeweyWest estimator of the long-run variance. In Table 5 the results of stationarity tests are demonstrated.
+Most of this evidence does not reject the hypothesis of possible trend stationarity of price series of
+the (L)ETFs. Therefore we proceed with the bootstrap.
+We run 500 bootstrap iterations on 2-dimensional series of SPY and SSO prices in the period
+from November 2014 to June 30, 2015 and take the block size equal to 5. In Figure 12 cumulative
+performance of the strategy on bootstrapped time series is shown. At each of the 155 time steps
+14
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+the values of 2.5% and 97.5% empirical percentiles are found. We can see that at the end of the
+period, positive performance occurs with more than a 95% probability. Positive performance with
+this probability occurs from period 23 onwards until the end of of the test sample, which yields 32
+periods out of 55 in total.
+6.
+Conclusion
+In this paper, we provide statistical and econometric analysis of the moneyness scaling transformation for leveraged and unlevered exchange-traded funds’ options’ implied volatility smiles. This
+transformation adjusts the moneyness coordinate of the smile in an attempt to remove the discrepancy between the levered and unlevered counterparts.
+We incorporate stochastic volatility into the moneyness scaling method by explicit estimation of
+the conditional expectation of the realized variance. We present two approaches to implement this
+estimate: via an analytical approach and using a Monte-Carlo method.
+We construct bootstrap uniform conﬁdence bands which reveal a statistically signiﬁcant discrepancy between the implied volatility smiles, even after moneyness scaling has been performed. We ﬁnd
+that this discrepancy is stronger for in- and out-of-the-money options which, however, is unlikely to
+be explained by liquidity issues alone.
+This discrepancy allows to deﬁne a theoretical statistical equilibrium value of LETF moneyness.
+Based on deviations from this equilibrium, possible trading gain opportunities on the (L)ETF market
+which can be exploited. We construct a trading strategy based on a dynamic semiparametric factor
+model. This model-based statistical arbitrage strategy utilizes the dynamic structure of implied
+volatility surface allowing out-of-sample forecasting and information on unleveraged ETF options to
+construct theoretical one-step-ahead implied volatility surfaces.
+The proposed strategy has the potential to generate trading gains due to simultaneous use of the
+information from the discrepancies between the forecast "theoretical" (model) SSO LETF implied
+volatilities and the historical ("true") ones. It protects the portfolio against unfavorable moves in
+the underlying asset through delta-hedging and aims to gain from forecast moves in volatility. The
+strategy is shown via bootstrap technique to generate positive returns with a high probability.
+Funding
+This research was supported by the Deutsche Forschungsgemeinschaft under Grant "IRTG 1792".
+15
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+References
+A. Ahn, M. Haugh, and A. Jain.
+Consistent pricing of options on leveraged ETFs.
+SIAM Journal on
+Financial Mathematics, 6(1):559–593, 2015.
+Y. Aït-Sahalia, P. J. Bickel, and T. M. Stoker. Goodness-of-ﬁt tests for kernel regression with an application
+to option implied volatilities. Journal of Econometrics, 105(2):363–412, 2001.
+M. Avellaneda and J.-H. Lee. Statistical arbitrage in the US equities market. Quantitative Finance, 10(7):
+761–782, 2010.
+M. Avellaneda and S. Zhang. Path-dependence of leveraged ETF returns. SIAM Journal on Financial
+Mathematics, 1(1):586–603, 2010.
+M. Broadie and Ö. Kaya.
+Exact simulation of stochastic volatility and other aﬃne diﬀusion processes.
+Operations Research, 54(2):217–231, 2006.
+P. Cizek, W. Härdle, and R. Weron. Statistical Tools for Finance and Insurance. Springer, 2 edition, 2011.
+R. Cont and J. da Fonseca. Dynamics of implied volatility surfaces. Quantitative Finance, 2(1):45–60, 2002.
+J. C. Cox, J. E. Ingersoll, and S. A. Ross. A theory of the term structure of interest rates. Econometrica,
+53(2):385–407, 1985.
+C. de Boor. A Practical Guide to Splines. Revised Edition. Springer, 2001.
+A. S. Desai, M. Nimalendran, and S. Venkataraman. Changes in trading activity following stock splits
+and their eﬀect on volatility and the adverse-information component of the bid-ask spread. Journal of
+Financial Research, 21(2):159–183, 1998.
+A. Dragulescu and V. Yakovenko. Probability distribution of returns in the Heston model with stochastic
+volatility. Quantitative Finance, 2:443–453, 2002.
+C. Etling and T. W. Miller. The relationship between index option moneyness and relative liquidity. Journal
+of Futures Markets, 20(10):971–987, 2000.
+M. R. Fengler, W. K. Härdle, and C. Villa.
+The dynamics of implied volatilities: a common principal
+components approach. Review of Derivatives Research, 6:179–202, 2003.
+M. R. Fengler, W. K. Härdle, and E. Mammen. A semiparametric factor model for implied volatility surface
+dynamics. Journal of Financial Econometrics, 5(2):189–218, 2007.
+J. E. Figueroa-Lopez, R. Gong, and M. Lorig. Short-time expansions for call options on leveraged ETFs
+under exponential Lévy models with local volatility. Preprint, 2016.
+P. Glasserman and K-K. Kim. Gamma expansion of the Heston stochastic volatility model. Finance and
+Stochastics, 15(2):267–296, 2011.
+P. Hall and J. Horowitz. A simple bootstrap method for constructing nonparametric conﬁdence bands for
+functions. Annals of Statistics, 41(4):1892–1921, 2013.
+W. Härdle. Asymptotic maximal deviation of M-smoothers. Journal of Multivariate Analysis, 29:163–179,
+1989.
+W. Härdle. Applied Nonparametric Regression. Springer, 1990.
+W. Härdle, Y. Ritov, and W. Wang. Tie the straps: uniform bootstrap conﬁdence bands for semiparametric
+additive models. Journal of Multivariate Analysis, 134:129–145, 2015.
+S. L. Heston. A closed-form solution for options with stochastic volatility with applications to bond and
+currency options. Review of Financial Studies, 6:327–343, 1993.
+D. J. Higham and X. Mao. Convergence of Monte Carlo simulations involving the mean-reverting square
+root process. Journal of Computational Finance, 8(3):35–61, 2005.
+P. J. Huber. Robust estimation of a location parameter. Annals of Mathematical Statistics, 35(1):73–101,
+1964.
+J. C. Hull and A. White. The pricing of options on assets with stochastic volatilities. Journal of Finance,
+42:281–300, 1987.
+H. R. Künsch. The jackknife and the bootstrap for general stationary observations. The Annals of Statistics,
+17(3):1217–1241, 1989.
+R. Lee and R. Wang. How leverage shifts and scales a volatility skew: Asymptotics for continuous and jump
+dynamics. Preprint, 2015.
+T. Leung and M. Santoli.
+Leveraged Exchange-Traded Funds: Price Dynamics and Options Valuation.
+Springer, 2016.
+T. Leung and R. Sircar. Implied volatility of leveraged ETF options. Applied Mathematical Finance, 22(2):
+162–188, 2015.
+T. Leung, M. Lorig, and A. Pascucci. Leveraged ETF implied volatilities from ETF dynamics. Mathematical
+16
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+Finance, 27(4):1035–1068, 2017.
+R. Lord, R. Koekkoek, and D. Van Dijk. A comparison of biased simulation schemes for stochastic volatility
+models. Quantitative Finance, 10(2):177–194, 2010.
+J. A. Ohlson and S. H. Penman. Volatility increases subsequent to stock splits: An empirical aberration.
+Journal of Financial Economics, 14(2):251–266, 1985.
+B. U. Park, E. Mammen, W. Härdle, and S. Borak.
+Time series modelling with semiparametric factor
+dynamics. Journal of the American Statistical Association, 104(485):284–298, 2009.
+F. Rouah. The Heston model and its extensions in Matlab and C#. Wiley, 2013.
+D. Ruppert and M. P. Wand. Multivariate locally weighted least squares regression. Annals of Statistics,
+22(3):1346–1370, 1994.
+R. Schöbel and J. Zhu. Stochastic volatility with an Ornstein-Uhlenbeck process: An extension. European
+Finance Review, 3:24–46, 1999.
+A. Sheikh. Stock splits, volatility increases, and implied volatilities. Journal of Finance, 44(5):1361–1372,
+1989.
+A. W. van der Stoep, L. A. Grzelak, and C. W. Oosterlee. The Heston stochastic-local volatility model:
+eﬃcient Monte-Carlo simulation. International Journal of Theoretical and Applied Finance, 17(7):1–30,
+2014.
+17
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+7.
+Appendix
+7.1.
+The local linear M-smoothing estimator
+M-type smoothers apply a non-quadratic loss function ρ(·) to make estimation more robust. Given
+the model
+Yi = m(Xi) + εi,
+(26)
+where Yi ∈R, Xi ∈Rd, εi
+def
+= σ(Xi)ui, ui ∼(0, 1), i.i.d, X def
+= {(Xi, Yi); 1 ≤i ≤n}, the local linear
+M-smoothing estimator is obtained from:
+min
+α∈R,β∈Rp
+n
+X
+i=1
+ρ
+n
+Yi −α −β⊤(Xi −x)
+o
+Wih(x),
+(27)
+where
+Whi(x) def
+= h−2K
+′{(x −Xi)/h}
+bfh(x)
+−Kh(x −Xi) bf
+′
+h(x)
+bf 2
+h(x)
+(28)
+is a kernel weight sequence with bf
+′
+h(x) def
+= n−1 Pn
+i=1 K
+′
+h(x −Xi), h is the bandwidth, K is a kernel
+function;
+R K(u)du = 1, Kh(·) def
+= h−1K(·/h). The function ρ(·) is designed to provide more robustness than the quadratic loss. An example of such a function is given by Huber (1964), see also Härdle
+(1989):
+ρ(u) =
+0.5u2,
+if |u| ≤c;
+c|u| −0.5c2 if |u| > c. ,
+(29)
+with the constant c regulating the degree of resistance.
+7.2.
+Derivation of the conditional density of Heston integrated variance given
+terminal log-price
+As pointed out in (15), we require the conditional density f ˜V |XT (˜v|xT), under the measure Q, to
+analytically determine the expression (11). As noted by Broadie and Kaya (2006) and Glasserman
+and Kim (2011), the conditional distribution of XT is conditionally normal given eV and
+R T
+0
+√VtdWQ
+V,t:
+XT ∼N
+ 
+(r −c −0.5)T −0.5 eV + ρ
+Z T
+0
+p
+VtdWQ
+V,t,
+q
+1 −ρ2 eV
+!
+,
+∼N
+
+(r −c −0.5)T −0.5 eV + ρ
+σ(VT −V0 −κθT + κ eV ),
+q
+1 −ρ2 eV
+
+,
+(30)
+18
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+where (30) follows from
+Z T
+0
+p
+VtdWQ
+V,t = σ−1(VT −V0 −κθT + κ eV ),
+which, in turn, follows from (14).
+Expression (30) yields the conditional density fXT |eV ,VT given Heston parameters κ, θ, V0, σ and ρ.
+The joint density feV ,XT ,VT can then be obtained by simply multiplying fXT |eV ,VT by feV ,VT , the joint
+density of eV and VT given some starting Heston variance level V0.
+Broadie and Kaya (2006) have derived the characteristic function of the distribution of eV given
+variance endpoint values VT and V0. This function is quite complex and involves modiﬁed Bessel
+functions of a complex variable of the ﬁrst kind:
+ϕeV |VT (ω) = γ(ω)e−0.5(γ(ω)−κ)T(1 −e−κT)
+κ(1 −e−γ(ω)T)
+exp
+(
+VT + V0
+σ2
+κ(1 + e−κT)
+1 −e−κT
+−γ(ω)(1 + e−γ(ω)T)
+1 −e−γ(ω)T
+)
+×
+×
+B2κθσ−2−1
+√VTV0
+4γ(ω)e−0.5γ(ω)T
+σ2(1−e−γ(ω)T )
+
+B2κθσ−2−1
+√VTV0 4κe−0.5κT
+σ2(1−e−κT )
+ ,
+(31)
+where γ(ω) =
+√
+κ2 −2σ2iω, i = √−1 and Bν(z) is the modiﬁed Bessel function of the ﬁrst kind
+given by
+Bν(z) def
+= (z/2)ν
+∞
+X
+j=0
+(z2/4)j
+j!Γ(ν + j + 1),
+where Γ(x) def
+=
+R ∞
+0 tx−1e−tdt is the gamma function.
+Using the inversion formula for characteristic functions, we can compute the density feV |VT ,V0 as
+follows:
+feV |VT (ev|vT) = 1
+2π
+Z +∞
+−∞
+e−ievωϕeV |VT (ω)dω.
+To ﬁnd the joint density feV ,XT ,VT , the transitional density fVT |V0 is required. As noted by Cox
+et al. (1985) in the context of short interest rate process, VT given V0 follows a scaled non-central
+chi-squared distribution:
+VT = σ2(1 −e−κT)
+4κ
+eχ2
+d
+ 
+4κe−κTV0
+σ2(1 −e−κT)
+!
+,
+(32)
+where eχ2
+d(λ) stands for the non-central chi-squared random variable with d degrees of freedom and
+non-centrality parameter λ. The probability density function of eχ2
+d(λ) is deﬁned using Bν(z):
+feχ2
+d(λ)(x) = 0.5e−0.5(x+λ)(xλ−1)0.25d−0.5B0.5d−1(
+√
+λx)
+19
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+Using a change-of-variables technique, it is straightforward to show that the density fVT |V0 takes
+the form:
+fVT |V0(vT|V0) =
+2κ
+σ2(1 −e−κT) exp
+(
+κ2θT
+σ2
+−0.5κT −2κ(vT + e−κTV0)
+σ2(1 −e−κT)
+)
+×
+×
+vT
+V0
+κθσ−2−0.5
+B2κθσ−2−1
+ 
+4κe−0.5κT
+σ2(1 −e−κT)
+p
+V0vT
+!
+.
+Using known rules for computing joint densities via conditional and marginal densities, it follows
+that
+feV ,XT ,VT (ev, xT, vT) = fXT |eV ,VT (xT|ev, vT)feV |VT (ev|vT)fVT |V0(vT|V0)
+feV ,XT (ev, xT) =
+Z ∞
+0
+feV ,XT ,VT (ev, xT, vT)dvT
+Therefore we have for feV ,XT estimated at ev, xT, given the Heston parameters:
+feV ,XT (ev, xT) =
+2κ
+(2π)3/2p(1 −ρ2)evσ2(1 −e−κT)
+Z ∞
+0
+exp
+(
+κ2θT
+σ2
+−0.5κT −2κ(vT + e−κTV0)
+σ2(1 −e−κT)
++(vT + V0)κ(1 + e−κT)
+σ2(1 −e−κT)
+−
+ xT −log(S0) −(r −c −0.5)T + 0.5ev −ρ
+σ(vT −V0 −κθT + κev)
+2
+2(1 −ρ2)ev
+)
+×
+vT
+V0
+κθσ−2−0.5 Z +∞
+−∞
+e−ievω
+"
+γ(ω)e−0.5(γ(ω)−κ)T(1 −e−κT)
+κ(1 −e−γ(ω)T)
+exp
+(
+−γ(ω)(1 + e−γ(ω)T)(vT + V0)
+σ2(1 −e−γ(ω)T)
+)
+×B2κθσ−2−1
+ p
+vTV0
+4γ(ω)e−0.5γ(ω)T
+σ2(1 −e−γ(ω)T)
+!#
+dωdvT
+Finally, the density feV |XT (ev|xT) is found as
+feV |XT (ev|xT) =
+feV ,XT (ev, xT)
+fXT (xT)
+,
+where fXT (xT) is the probability density of XT estimated at xT. This marginal density under the
+risk-neutral measure Q is again found via inversion of the characteristic function, see Rouah (2013):
+ϕ(ω)XT = exp {C(ω) + D(ω)V0 + iω log(S0)} ,
+20
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+where
+C(ω) = riωT + κθ
+σ2
+(
+(κ −ρσiω + d(ω))T −2 log
+ 
+1 −g(ω)e−d(ω)T
+1 −g(ω)
+!)
+,
+D(ω) = (κ −ρσiω + d(ω))
+σ2
+ 
+1 −e−d(ω)T
+1 −g(ω)e−d(ω)T
+!
+,
+g(ω) = κ −ρσiω + d(ω)
+κ −ρσiω −d(ω),
+d(ω) =
+q
+(ρσiω −κ)2 + σ2(iω −ω2).
+21
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+8.
+Tables
+(L)ETF
+Ticker
+Lev. ratio
+Exp. ratio (%)
+Div. yield (%)
+SPDR S&P 500
+SPY
++1
+0.090
+1.867
+ProShares Ultra S&P500
+SSO
++2
+0.900
+0.440
+ProShares UltraPro S&P500
+UPRO
++3
+0.950
+0.263
+ProShares UltraShort S&P500
+SDS
+−2
+0.890
+0.000
+ProShares UltraPro Short S&P500
+SPXU
+−3
+0.900
+0.000
+Table 1. Summary ﬁnancial information on (leveraged) ETFs on S&P 500 underlying index
+22
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+Min.
+Max.
+Mean
+Stdd.
+Skewn.
+Kurt.
+SPY
+τ
+0.258
+2.364
+1.202
+0.515
+0.421
+2.316
+LM
+−3.061
+0.477
+−0.381
+0.574
+−1.513
+5.871
+σI
+0.086
+2.677
+0.271
+0.195
+3.228
+18.522
+SSO
+τ
+0.208
+2.236
+1.239
+0.585
+−0.044
+1.795
+LM
+−1.704
+0.558
+−0.484
+0.461
+−0.089
+2.264
+σI
+0.154
+1.340
+0.363
+0.091
+1.774
+12.224
+UPRO
+τ
+0.208
+2.236
+1.205
+0.585
+0.043
+1.795
+LM
+−1.182
+0.665
+−0.168
+0.331
+−0.360
+2.719
+σI
+0.250
+1.669
+0.503
+0.099
+1.335
+9.080
+SDS
+τ
+0.208
+2.236
+1.146
+0.581
+0.196
+1.852
+LM
+−0.738
+0.858
+0.187
+0.344
+−0.276
+2.226
+σI
+0.107
+1.262
+0.424
+0.129
+0.792
+4.830
+Table 2.
+Summary statistics on (L)ETF options data (τ is time to maturity, LM log-moneyness, σI implied
+volatility)
+23
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+Criterion
+L = 2
+L = 3
+L = 4
+L = 5
+EV
+0.915
+0.921
+0.925
+0.930
+RMSE
+0.090
+0.088
+0.087
+0.082
+RMSPE
+0.095
+0.096
+0.099
+0.102
+Table 3.
+EV , RMSE and RMSPE criteria for diﬀerent model order sizes
+24
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+Model order n
+AIC(n)
+HQ(n)
+SC(n)
+1
+−4.20∗
+−4.10∗
+−3.96∗
+2
+−4.13
+−3.96
+−3.72
+3
+−4.07
+−3.83
+−3.48
+4
+−4.03
+−3.72
+−3.27
+5
+−3.97
+−3.59
+−3.03
+Table 4. The VAR model selection criteria. The smallest value is marked by an asterisk
+25
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+Table 5. Stationarity tests’ statistics for SPY, SSO price series
+Lags
+SPY
+SSO
+PP
+ADF
+KPSS
+PP
+ADF
+KPSS
+1
+−3.621∗∗
+−3.505∗∗
+0.216∗∗
+−3.685∗∗
+−3.578∗∗
+0.200∗∗
+2
+−3.693∗∗
+−3.593∗∗
+0.157∗∗
+−3.784∗∗
+−3.779∗∗
+0.145∗
+3
+−3.752∗∗
+−3.725∗∗
+0.127∗
+−3.855∗∗
+−3.940∗∗
+0.118
+4
+−3.730∗∗
+−3.402∗
+0.110
+−3.837∗∗
+−3.601∗∗
+0.102
+5
+−3.716∗∗
+−3.400∗
+0.098
+−3.824∗∗
+−3.622∗∗
+0.092
+6
+−3.664∗∗
+−3.133
+0.091
+−3.770∗∗
+−3.360∗
+0.085
+7
+−3.610∗∗
+−2.970
+0.085
+−3.706∗∗
+−3.152∗
+0.081
+8
+−3.575∗∗
+−2.908
+0.081
+−3.660∗∗
+−3.094
+0.077
+9
+−3.537∗∗
+−2.897
+0.078
+−3.613∗∗
+−3.103
+0.074
+10
+−3.513∗∗
+−3.003
+0.075
+−3.572∗∗
+−3.125
+0.072
+PP: Phillips-Perron test; ADF: augmented Dickey-Fuller test; KPSS: KPSS test for trend stationarity
+∗∗∗, ∗∗, ∗: signiﬁcant on 1%, 5%, 10% level, respectively
+26
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+9.
+Figures
+LM
+-0.5
+-0.4
+-0.3
+-0.2
+-0.1
+0
+0.1
+0.2
+0.3
+0.4
+Implied Vol
+0.08
+0.1
+0.12
+0.14
+0.16
+0.18
+0.2
+0.22
+0.24
+0.26
+SSO, 207 days to maturity: before scaling
+LM
+-0.5
+-0.4
+-0.3
+-0.2
+-0.1
+0
+0.1
+0.2
+0.3
+Implied Vol
+0.08
+0.1
+0.12
+0.14
+0.16
+0.18
+0.2
+0.22
+0.24
+0.26
+SSO: 207 days to maturity: after scaling
+LM
+-0.5
+-0.4
+-0.3
+-0.2
+-0.1
+0
+0.1
+0.2
+0.3
+0.4
+Implied Vol
+0.08
+0.1
+0.12
+0.14
+0.16
+0.18
+0.2
+0.22
+0.24
+0.26
+UPRO, 207 days to maturity: before scaling
+LM
+-0.5
+-0.4
+-0.3
+-0.2
+-0.1
+0
+0.1
+0.2
+0.3
+Implied Vol
+0.08
+0.1
+0.12
+0.14
+0.16
+0.18
+0.2
+0.22
+0.24
+0.26
+UPRO: 207 days to maturity: after scaling
+LM
+-0.5
+0
+0.5
+1
+Implied Vol
+0.05
+0.1
+0.15
+0.2
+0.25
+0.3
+0.35
+0.4
+SDS, 207 days to maturity: before scaling
+LM
+-0.5
+-0.4
+-0.3
+-0.2
+-0.1
+0
+0.1
+0.2
+0.3
+Implied Vol
+0.05
+0.1
+0.15
+0.2
+0.25
+0.3
+0.35
+0.4
+SDS: 207 days to maturity: after scaling
+LM
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+Implied Vol
+0.05
+0.1
+0.15
+0.2
+0.25
+0.3
+0.35
+SPXU, 207 days to maturity: before scaling
+LM
+-0.5
+-0.4
+-0.3
+-0.2
+-0.1
+0
+0.1
+0.2
+0.3
+Implied Vol
+0.05
+0.1
+0.15
+0.2
+0.25
+0.3
+0.35
+SPXU: 207 days to maturity: after scaling
+Figure 1. SPY (blue) and LETFs (red) implied volatilities before (left column) and after scaling (right column) on
+June 23, 2015 with 207 days to maturity, plotted against log-moneyness
+27
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+0.1
+0.2
+0.3
+0.4
+0.5
+−0.6
+−0.4
+−0.2
+0.0
+0.2
+moneyness
+impvol
+SPY
+0.1
+0.2
+0.3
+−0.6
+−0.4
+−0.2
+0.0
+0.2
+moneyness
+impvol
+SSO
+0.05
+0.10
+0.15
+0.20
+0.25
+−0.1
+0.0
+0.1
+moneyness
+impvol
+UPRO
+0.10
+0.15
+0.20
+0.25
+−0.1
+0.0
+0.1
+moneyness
+impvol
+SDS
+Figure 2. Fitted implied volatility and bootstrap uniform conﬁdence bands for 4 (L)ETFs on S&P500; τ: 0.5 years
+28
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+0.1
+0.2
+0.3
+0.4
+−0.6
+−0.4
+−0.2
+0.0
+0.2
+moneyness
+impvol
+SPY
+0.1
+0.2
+0.3
+0.4
+−0.4
+−0.2
+0.0
+0.2
+moneyness
+impvol
+SSO
+0.10
+0.15
+0.20
+0.25
+0.30
+−0.3
+−0.2
+−0.1
+0.0
+0.1
+moneyness
+impvol
+UPRO
+0.1
+0.2
+0.3
+0.4
+−0.4
+−0.2
+0.0
+moneyness
+impvol
+SDS
+Figure 3. Fitted implied volatility and bootstrap uniform conﬁdence bands for 4 (L)ETFs on S&P500; τ: 0.6 years
+29
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+0.1
+0.2
+0.3
+0.4
+−0.6
+−0.4
+−0.2
+0.0
+0.2
+moneyness
+impvol
+0.1
+0.2
+0.3
+0.4
+−0.6
+−0.4
+−0.2
+0.0
+0.2
+moneyness
+impvol
+Figure 4. Combined uniform bootstrap conﬁdence bands for SPY, SSO, UPRO and SDS after moneyness scaling
+(τ = 0.5 (top) and τ = 0.6 years (bottom), respectively)
+30
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+0.082
+0.084
+0.086
+0.088
+0.09
+0.092
+0.094
+0.096
+0.098
+0.1
+Expected conditional IV
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+0.082
+0.084
+0.086
+0.088
+0.09
+0.092
+0.094
+0.096
+0.098
+0.1
+Expected conditional IV
+Original IV
+Smoothed IV
+Figure 5. Upper panel: estimated value of EQ(R T
+0 σ2
+t dt| log(ST /S0) = LM (1)); lower panel: smoothed estimate
+31
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+Sep14
+Nov14
+Dec14
+Feb15
+Apr15
+May15
+Jul15
+-0.25
+-0.2
+-0.15
+-0.1
+-0.05
+0
+0.05
+0.1
+0.15
+0.2
+0.25
+10
+12
+14
+16
+18
+20
+22
+24
+26
+Figure 6. Time dynamics of b
+Zt,1, b
+Zt,2, b
+Zt,3, VIX index
+32
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+04/12
+04/19
+04/26
+05/03
+05/10
+05/17
+05/24
+05/31
+06/07
+06/14
+06/21
+06/28
+07/05
+-5
+0
+5
+10
+15
+20
+Portfolio Wealth
+Figure 7. Cumulative performance of the trading strategy
+33
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+Figure 8. LM (βSP Y ) (top panel), d
+LM
+(βSSO) (middle panel), d
+LM
+(βSSO) after marginal transformation (bottom panel)
+34
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+0
+5
+10
+15
+20
+25
+30
+35
+40
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+LM (βSSO), LM (βSSO)
+τ∗;M
+Values of LM (βSSO), LM (βSSO)
+τ∗;M
+LM (βSSO)
+LM (βSSO)
+τ ∗;M
+Figure 9. Values of LM (βSSO) and LM (βSSO)
+τ∗;M
+35
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+Moneyness
+0.2
+0.25
+0.3
+0.35
+0.4
+0.45
+0.5
+0.55
+IV
+Values of IV SSO
+147;LM
+(βSSO)
+τ∗;M
+,τ ∗, c
+IV
+SSO
+148;LM
+(βSSO)
+τ∗;M
+,τ ∗on 20150618
+c
+IV
+SSO
+148;LM (βSSO)
+τ∗;M
+,τ ∗
+IV SSO
+147;LM (βSSO)
+τ∗;M
+,τ ∗
+SELL
+BUY
+Figure 10. Values of real-world IV SSO
+147;LM(βSSO)
+τ∗;M
+,τ∗and predicted c
+IV
+SSO
+148;LM(βSSO)
+τ∗;M
+,τ∗; the IV points at which long and short trades are done, are indicated by arrows
+36
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+0.25
+0.3
+0.35
+0.4
+Moneyness
+0.15
+0.2
+0.25
+0.3
+0.35
+0.4
+0.45
+0.5
+0.55
+IV
+Values of IV SSO
+t;LM
+(βSSO)
+τ∗;M
+,τ ∗, c
+IV
+SSO
+t+1;LM
+(βSSO)
+τ∗;M
+,τ ∗on 20150519
+c
+IV
+SSO
+t+1;LM (βSSO)
+τ∗;M
+,τ ∗
+IV SSO
+t;LM (βSSO)
+τ∗;M
+,τ ∗
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+Moneyness
+0.15
+0.2
+0.25
+0.3
+0.35
+0.4
+0.45
+0.5
+0.55
+IV
+Values of IV SSO
+t;LM
+(βSSO)
+τ∗;M
+,τ ∗, c
+IV
+SSO
+t+1;LM
+(βSSO)
+τ∗;M
+,τ ∗on 20150521
+c
+IV
+SSO
+t+1;LM (βSSO)
+τ∗;M
+,τ ∗
+IV SSO
+t;LM (βSSO)
+τ∗;M
+,τ ∗
+Figure 11. Model and real-world IVs before (top panel) and after (bottom panel) the split on May 20, 2015
+37
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+04/12
+04/19
+04/26
+05/03
+05/10
+05/17
+05/24
+05/31
+06/07
+06/14
+06/21
+06/28
+07/05
+Time
+-10
+0
+10
+20
+30
+40
+50
+60
+70
+80
+Portfolio Wealth
+Figure 12. Bootstrapped performance of the strategy; in red: 2.5% and 97.5% empirical percentiles of the cumulative performance; in blue: median of the cumulative
+performance
+38
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+Figure 13. Intraday trade prices for various option contracts on SSO on 6 Jan, 2015; data source: Option Price
+Reporting Authority
+39
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+Figure 14. Intraday trade volumes for various option contracts on SSO on 6 Jan, 2015; data source: Option Price
+Reporting Authority
+40
+Electronic copy available at: https://ssrn.com/abstract=3702188
+
+September 21, 2020
+Quantitative Finance
+manuscript
+Figure 15. Intraday bid-ask spreads (percentage of the ask price) for various option contracts on SSO on 6 Jan,
+2015; data source: Option Price Reporting Authority
+41
+Electronic copy available at: https://ssrn.com/abstract=3702188
