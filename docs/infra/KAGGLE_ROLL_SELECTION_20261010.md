@@ -49,3 +49,29 @@ reescritura, clipping, deduplicación ni outcomes económicos.
    y resolver también máscaras retrospectivas/conflictos NQ.
 4. Publicar nuevo resolver y agregados versionados, repetir QA y obtener evidencia
    revisada. Conservar v15/aggregate v1 como historia técnica, no como research listo.
+
+## Rastreo adicional hasta el evento crudo
+
+La inspección dirigida de los dos archivos fijados confirma **un evento por
+contrato** en 2025-10-05, domingo al mediodía Chicago, anterior a 17:00. Los
+volúmenes suman exactamente 1 y 2; el escaneo histórico del catálogo confirma
+independientemente los mismos conteos y cantidades. Se leyeron únicamente
+timestamps, volumen e identidad de origen en los row groups que intersectan la
+ventana, tras verificar SHA, footer y ausencia de holdout en TODO el archivo.
+No se calcularon precios ni outcomes. Identidades/horas exactas quedan privadas.
+
+La referencia oficial cargada de CME para S&P 500/Nasdaq-100 dice 17:00–16:00 CT,
+con pausa 16:00–17:00: https://www.cmegroup.com/markets/equities/sp-500-and-nasdaq-100-futures.html
+Es evidencia de horario regular, **no el calendario histórico completo ni prueba
+de eventos fabricados**. No se sustituye Globex por ClearPort, BrokerTec, trading
+floor o settlement schedules. La extracción de la página de feriados no entregó
+la tabla histórica específica de Equity Globex; ese vacío sigue declarado.
+
+No se elimina ni desplaza ese evento para forzar el roll correcto. Primero se
+necesitan los originales NT8, el conversor/exportador realmente usado, definición
+de zona horaria, logs y trazabilidad de `source_row`. Las búsquedas dirigidas en
+Box no encontraron originales relevantes; no se afirma que no existan.
+
+[Pedido de reparación y evidencia faltante](KAGGLE_UPSTREAM_REPAIR_20261010.json).
+El detalle privado permite ubicar los originales sin publicar ticks ni rutas
+locales del usuario. Resolver/aggregate actuales permanecen históricos y BLOCKED.
