@@ -7,8 +7,9 @@ so partial-file authorization must fail rather than read then filter.
 """
 from __future__ import annotations
 import json
+import re
 from pathlib import Path
-from datetime import date
+from datetime import date, timedelta
 from edgelab.data.research_data_gate import DataEligibilityError, require_research_eligibility
 from edgelab.kaggle.aggregate_audit import digest
 
@@ -60,6 +61,55 @@ def require_research_store(*, store, resolver, instrument, expected_manifest_sha
     return decisions
 
 
+def require_requested_coverage(*, certificate, instrument, start, end, materialized_dates):
+    """Validate complete daily declarations INSIDE an externally pinned certificate.
+
+    Call only after require_research_store pins the entire certificate. This is a
+    consistency guard, NOT calendar verification or authentication. Diagnostics
+    from coverage_inventory can NEVER substitute for independently reviewed data.
+    Includes every calendar date: no silent missing holiday/weekend/session.
+    """
+    a, b = date.fromisoformat(start), date.fromisoformat(end)
+    if a > b or b >= date(2026, 10, 1):
+        raise DataEligibilityError('invalid/reserved coverage window')
+    review = certificate.get('coverage_review')
+    if not isinstance(review, dict) or review.get('schema') != 'edgelab_reviewed_daily_coverage_v1':
+        raise DataEligibilityError('missing independently reviewed daily coverage')
+    for field in ('calendar_sha256', 'interval_evidence_sha256'):
+        if not isinstance(review.get(field), str) or not re.fullmatch('[0-9a-f]{64}', review[field]):
+            raise DataEligibilityError('missing reviewed calendar/interval evidence reference')
+    records = review.get('dates')
+    if not isinstance(records, list):
+        raise DataEligibilityError('coverage dates must be explicit records')
+    by_key = {}
+    for row in records:
+        if not isinstance(row, dict) or not isinstance(row.get('instrument'), str) or not isinstance(row.get('date'), str):
+            raise DataEligibilityError('invalid coverage identity')
+        try: date.fromisoformat(row['date'])
+        except ValueError: raise DataEligibilityError('invalid coverage date') from None
+        key = (row['instrument'], row['date'])
+        if key in by_key: raise DataEligibilityError('duplicate daily coverage')
+        by_key[key] = row
+    reviewed = []
+    while a <= b:
+        d = a.isoformat(); row = by_key.get((instrument, d))
+        if row is None: raise DataEligibilityError('undeclared date in requested coverage: ' + d)
+        ref = row.get('evidence_sha256')
+        if not isinstance(ref, str) or not re.fullmatch('[0-9a-f]{64}', ref):
+            raise DataEligibilityError('missing daily coverage evidence reference')
+        status = row.get('status')
+        if status == 'VERIFIED_SCHEDULED_CLOSED':
+            if d in materialized_dates: raise DataEligibilityError('observations conflict with declared closure')
+        elif status == 'VERIFIED_OPEN_COMPLETE':
+            if d not in materialized_dates: raise DataEligibilityError('expected open session is missing')
+            if row.get('interval_review') != 'PASS' or type(row.get('unresolved_intervals')) is not int or row['unresolved_intervals'] != 0:
+                raise DataEligibilityError('unresolved observation intervals')
+        else:
+            raise DataEligibilityError('unverified/excluded coverage cannot be silently removed')
+        reviewed.append(d); a += timedelta(days=1)
+    return reviewed
+
+
 def load_research_bars(*, start, end, seconds, **evidence):
     """Guarded consumer. All source-file sessions require authority, not just window.
 
@@ -77,7 +127,7 @@ def load_research_bars(*, start, end, seconds, **evidence):
     instrument=evidence['instrument']
     if seconds not in (1,30,60):raise DataEligibilityError('invalid frequency')
     name=f'{instrument}__{seconds}s.parquet'
-    for n in (name,'results.json','attestation.json'):
+    for n in ('results.json','attestation.json'):
         if n not in listed or digest(root/n)!=listed[n]:
             raise DataEligibilityError('reviewed artifact file hash mismatch')
     result=json.loads((root/'results.json').read_text());attest=json.loads((root/'attestation.json').read_text())
@@ -91,6 +141,11 @@ def load_research_bars(*, start, end, seconds, **evidence):
     expected={(r['date'],r['contract']) for s in plan['shards'] for r in s['sessions'] if r['instrument']==instrument}
     wanted={(d,c) for d,c in expected if start<=d<=end}
     if not wanted:raise DataEligibilityError('no approved session in requested window')
+    require_requested_coverage(certificate=evidence['certificate'], instrument=instrument,
+        start=start, end=end, materialized_dates={d for d,c in expected})
+    # Only now hash/deserialize the price artifact, after full window coverage.
+    if name not in listed or digest(root/name)!=listed[name]:
+        raise DataEligibilityError('reviewed artifact file hash mismatch')
     table=pd.read_parquet(root/name)
     if set(zip(table.session_date,table.contract))!=expected or table.duplicated(['session_date','contract','bucket_utc_ns']).any():
         raise DataEligibilityError('artifact coverage/uniqueness changed')

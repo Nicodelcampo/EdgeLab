@@ -103,7 +103,12 @@ def research_args(store):
     c={'status':'SANITIZED_VERIFIED','checks':dict.fromkeys(REQUIRED_CHECKS,'PASS'),
        'source_identity':r['source_identity'],'holdout_first_trade_date':20261001,
        'allowed_trade_dates':[20260105],'aggregate_store_manifest_sha256':digest(out/'manifest.json'),
-       'aggregate_structural_status':'PASS','sessions':{
+       'aggregate_structural_status':'PASS',
+       'coverage_review':{'schema':'edgelab_reviewed_daily_coverage_v1',
+          'calendar_sha256':'a'*64,'interval_evidence_sha256':'b'*64,
+          'dates':[{'instrument':'ES','date':'2026-01-05','status':'VERIFIED_OPEN_COMPLETE',
+                    'evidence_sha256':'c'*64,'interval_review':'PASS','unresolved_intervals':0}]},
+       'sessions':{
        'ES|ES_03-26|20260102':{'status':'PASS','complete_session':True,'trade_quantity':20,'spread_p99_ticks':1},
        'ES|ES_03-26|20260105':{'status':'PASS','complete_session':True}}}
     return {'store':out,'resolver':resolver,'instrument':'ES',

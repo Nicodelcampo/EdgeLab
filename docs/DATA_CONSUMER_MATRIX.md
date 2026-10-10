@@ -12,7 +12,9 @@ Esta matriz describe wiring de código, no certificación de datos ni permisos d
 | `databuild` / scripts MGC | No | Builders históricos; no aprobar por presencia o por tests del lector nuevo |
 | `tools/kaggle_spec_v2.py` | No gate de research | Infra técnica local; agregados/conservación no certifican calidad ni liquidez |
 | `kaggle.aggregate_audit` | Pins/footer antes de filas | QA sobre archivos preholdout aprobados; no saneamiento de ticks ni outcomes |
-| `kaggle.research_access` | Sí, opt-in | Política causal + evidencia/liq externa; v15 bloqueado; todas las sesiones del archivo autorizadas antes de precios |
+| `kaggle.research_access` | Sí, opt-in | Política causal + evidencia/liq externa + cobertura diaria de toda la ventana; v15 bloqueado; todas las sesiones del archivo autorizadas antes de precios |
+| `kaggle.coverage_inventory` | QA, no research | Toda fecha solicitada y ausencia de observación declaradas; sólo payload identidad/timestamp; calendario no certificado |
+| `kaggle.raw_tick_audit` | QA, no research | Ticks canonical v1 con hash/footer y bitmap exacto de identidad; continuidad upstream/calendario/liquidez NO certificados |
 
 ## Responsabilidades
 

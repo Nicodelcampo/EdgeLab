@@ -39,10 +39,11 @@ jobs:
           "$RUNNER_TEMP/wheel-env/bin/python" -m pip install --require-hashes -r requirements/cpu-dev-py312.lock
           "$RUNNER_TEMP/wheel-env/bin/python" -m pip install --no-deps dist/*.whl
           mkdir -p "$RUNNER_TEMP/installed-smoke"
-          cp tools/check_installed_runtime.py "$RUNNER_TEMP/installed-smoke/"
+          cp tools/check_installed_runtime.py tools/check_installed_kaggle_quality.py "$RUNNER_TEMP/installed-smoke/"
           cd "$RUNNER_TEMP/installed-smoke"
           unset PYTHONPATH
           "$RUNNER_TEMP/wheel-env/bin/python" check_installed_runtime.py
+          "$RUNNER_TEMP/wheel-env/bin/python" check_installed_kaggle_quality.py
       - name: Verify core API without optional dependencies
         shell: bash
         run: |
