@@ -28,6 +28,7 @@ Fuente de esta tabla: [registro JSON](../config/component_registry.json). Para c
 
 - [Datos: contrato, parser e identidad](COMPONENT_DATA.md).
 - [Memoria: persistencia, consulta y controles](COMPONENT_MEMORY.md).
+- [Resultados: trazabilidad, revisión histórica y límites de reutilización](RESULTS_START_HERE.md).
 
 - [Funnel: aislamiento CPU, split y autoridad](COMPONENT_FUNNEL.md).
 - [Kaggle: agregado técnico, QA y restricciones](COMPONENT_KAGGLE.md).

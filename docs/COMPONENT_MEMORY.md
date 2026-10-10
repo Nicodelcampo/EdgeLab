@@ -8,6 +8,7 @@
 - `typed_registry.py`: relaciones tipadas, append validado y proyecciones. Arrow se carga sólo al solicitar Parquet.
 - `schema_validator.py` + `schemas/`: 35 contratos JSON empaquetados. Tener un schema de atlas o skill **no** implementa ese módulo ni configura un agente.
 - `triangulation.py`, `model_policy.py`, `control_guard.py`: controles con alcance propio. No equivalen al controlador del servidor autónomo.
+- `result_lineage.py`: revisión read-only/opt-in del envelope de resultados. No verifica bytes/autoridad, no muta el ledger ni decide sesgo o promoción. [Entrada y pendientes](RESULTS_START_HERE.md).
 
 ## Ejemplo mínimo: memoria operativa sintética
 

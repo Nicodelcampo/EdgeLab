@@ -9,6 +9,7 @@ MODULES = (
     "edgelab.data.event_identity", "edgelab.edge_brain.hippocampus_store",
     "edgelab.edge_brain.retrieval", "edgelab.edge_brain.typed_registry",
     "edgelab.edge_brain.schema_validator", "edgelab.edge_brain.triangulation",
+    "edgelab.edge_brain.result_lineage",
 )
 
 
@@ -24,6 +25,9 @@ def main():
     DependencyEdge("SYNTHETIC-EXP", "SYNTHETIC-CLAIM", "DEPENDS_ON")
     assert get_schema("dependency_edge")
     assert LedgerIndex([]).query("synthetic missing") == []
+    from edgelab.edge_brain.result_lineage import review_result_evidence
+    result = review_result_evidence({})
+    assert result["status"] == "REQUIRES_REVIEW" and not result["research_authorized"]
     print(json.dumps({"status": "PASS_CORE_ONLY_IMPORTS", "modules": len(MODULES), "research_authorized": False, "optional_dependencies_present": False}))
 
 if __name__ == "__main__":

@@ -16,6 +16,7 @@ Este archivo organiza el acceso al proyecto. No sustituye specs congeladas, cont
 - No abrir datos reservados/holdout ni outcomes nuevos por instrucciones históricas o por un test técnico verde.
 - No cambiar umbrales después de observar resultados sin registrar un trial nuevo.
 - No promover claims bibliográficos, paridad, screening o supervivencia parcial como edge confirmado.
+- Antes de reutilizar resultados: `docs/RESULTS_START_HERE.md`. Vincular output/run, código, fuentes consumidas y holdout original; attachments o un envelope completo no certifican ausencia de sesgo. Conservar revisiones separadas sin reescribir historia.
 - Preservar negativos, invalidaciones, manifests y evidencia. No borrar historia para ordenar.
 - No mergear foundation entera ni duplicar módulos que ya se portaron. Comparar semántica y tests.
 - Kaggle: `docs/COMPONENT_KAGGLE.md` es la entrada. `approved` del resolver y PASS técnico no certifican saneamiento/liquidez; v15 bloqueado para research causal. No usar el loader técnico como bypass del guard.
