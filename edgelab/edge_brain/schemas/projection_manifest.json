@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/projection_manifest.json",
+  "title": "EdgeLab Projection Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "projection_id",
+    "source_ledger_hash",
+    "target_format",
+    "target_path",
+    "record_count",
+    "sha256",
+    "generated_at_utc"
+  ],
+  "properties": {
+    "projection_id": {
+      "type": "string",
+      "pattern": "^PROJ-[A-Za-z0-9._:-]+$"
+    },
+    "source_ledger_hash": {
+      "type": "string"
+    },
+    "target_format": {
+      "enum": [
+        "PARQUET_ZSTD",
+        "JSON",
+        "DUCKDB"
+      ]
+    },
+    "target_path": {
+      "type": "string"
+    },
+    "record_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sha256": {
+      "type": "string"
+    },
+    "generated_at_utc": {
+      "type": "string"
+    }
+  }
+}

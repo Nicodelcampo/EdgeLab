@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/learning_rule.json",
+  "title": "EdgeLab Learning Rule",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "rule_id",
+    "statement",
+    "rule_type",
+    "active",
+    "graduated_from_lesson_id",
+    "independent_reviewer",
+    "required_tests",
+    "status",
+    "created_at_utc"
+  ],
+  "properties": {
+    "rule_id": {
+      "type": "string",
+      "pattern": "^RULE-[A-Za-z0-9._:-]+$"
+    },
+    "statement": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rule_type": {
+      "enum": [
+        "METHODOLOGICAL",
+        "EXECUTION",
+        "STATISTICAL",
+        "RISK_CONTROL"
+      ]
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "graduated_from_lesson_id": {
+      "type": "string"
+    },
+    "independent_reviewer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "required_tests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "enum": [
+        "DRAFT",
+        "ACTIVE_GUARDRAIL",
+        "REVISED",
+        "DEPRECATED"
+      ]
+    },
+    "created_at_utc": {
+      "type": "string"
+    }
+  }
+}

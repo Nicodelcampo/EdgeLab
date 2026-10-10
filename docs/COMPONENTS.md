@@ -7,12 +7,12 @@ Fuente de esta tabla: [registro JSON](../config/component_registry.json). Para c
 | ID | Propósito | Categoría | Ubicación | Rutas / referencias |
 |---|---|---|---|---|
 | `engine` | Simular fills, costos y salidas en una implementación compartida. | core | local | [edgelab/engine.py](../edgelab/engine.py), [CONTRATO_LLM.md](../CONTRATO_LLM.md) |
-| `data` | Definir contratos, régimen y procedencia de datos antes de consumirlos. | core | local | [edgelab/data](../edgelab/data), [edgelab/bridge/session_preflight.py](../edgelab/bridge/session_preflight.py) · [PR 65](https://github.com/Nicodelcampo/EdgeLab/pull/65) |
+| `data` | Definir contratos, régimen y procedencia de datos antes de consumirlos. | core | local | [edgelab/data](../edgelab/data), [edgelab/bridge/session_preflight.py](../edgelab/bridge/session_preflight.py), [nt8_reader](../edgelab/data/nt8_reader.py), [nt8_timezone](../edgelab/data/nt8_timezone.py), [event_identity](../edgelab/data/event_identity.py), [config](../edgelab/config.py) · [PR 65](https://github.com/Nicodelcampo/EdgeLab/pull/65) |
 | `bridge` | Producir barras/indicadores y verificar paridad contra oráculos. | core | local | [edgelab/bridge](../edgelab/bridge) · [PR 17](https://github.com/Nicodelcampo/EdgeLab/pull/17), [PR 22](https://github.com/Nicodelcampo/EdgeLab/pull/22), [PR 34](https://github.com/Nicodelcampo/EdgeLab/pull/34) |
 | `validation` | Auditar causalidad, simetría, ejecución y contrastes registrados. | core | local | [validation/harness.py](../validation/harness.py), [validation/verify.py](../validation/verify.py), [validation/mcpt.py](../validation/mcpt.py), [validation/pbo.py](../validation/pbo.py), [validation/spa.py](../validation/spa.py) |
 | `funnel` | Realizar screening por lotes y registrar selección de candidatos. | experimental | local | [edgelab/funnel](../edgelab/funnel), [tools/run_funnel_arrays.py](../tools/run_funnel_arrays.py), [requirements-funnel.txt](../requirements-funnel.txt), [requirements-funnel-gpu.txt](../requirements-funnel-gpu.txt) · [PR 63](https://github.com/Nicodelcampo/EdgeLab/pull/63), [PR 64](https://github.com/Nicodelcampo/EdgeLab/pull/64) |
-| `memory` | Persistir episodios, evidencia, lecciones e invalidaciones. | core | local | [edgelab/edge_brain/hippocampus.py](../edgelab/edge_brain/hippocampus.py), [edgelab/edge_brain/hippocampus_store.py](../edgelab/edge_brain/hippocampus_store.py) · [PR 56](https://github.com/Nicodelcampo/EdgeLab/pull/56), [PR 58](https://github.com/Nicodelcampo/EdgeLab/pull/58) |
-| `brain-controls` | Aplicar elegibilidad, políticas y trazabilidad a episodios. | experimental | local | [edgelab/edge_brain](../edgelab/edge_brain) · [PR 43](https://github.com/Nicodelcampo/EdgeLab/pull/43), [PR 46](https://github.com/Nicodelcampo/EdgeLab/pull/46), [PR 58](https://github.com/Nicodelcampo/EdgeLab/pull/58) |
+| `memory` | Persistir episodios, evidencia, lecciones e invalidaciones. | core | local | [edgelab/edge_brain/hippocampus.py](../edgelab/edge_brain/hippocampus.py), [edgelab/edge_brain/hippocampus_store.py](../edgelab/edge_brain/hippocampus_store.py), [retrieval](../edgelab/edge_brain/retrieval.py) · [PR 56](https://github.com/Nicodelcampo/EdgeLab/pull/56), [PR 58](https://github.com/Nicodelcampo/EdgeLab/pull/58) |
+| `brain-controls` | Aplicar elegibilidad, políticas y trazabilidad a episodios. | experimental | local | [edgelab/edge_brain](../edgelab/edge_brain), [typed registry](../edgelab/edge_brain/typed_registry.py), [schemas](../edgelab/edge_brain/schemas) · [PR 43](https://github.com/Nicodelcampo/EdgeLab/pull/43), [PR 46](https://github.com/Nicodelcampo/EdgeLab/pull/46), [PR 58](https://github.com/Nicodelcampo/EdgeLab/pull/58) |
 | `campaigns` | Conservar hipótesis, preregistros, negativos y artefactos por familia. | campaign | local | [docs/research](../docs/research), [strategies](../strategies), [edgelab/research](../edgelab/research) |
 | `builders` | Construir productos de datos con trazabilidad contractual. | experimental | local | [databuild](../databuild) · [PR 65](https://github.com/Nicodelcampo/EdgeLab/pull/65) |
 | `kaggle-execution` | Resolver spec, datasets y shards por contrato; verificar evidencia. | integration_pending | other_branch | `edgelab/kaggle` · [PR 68](https://github.com/Nicodelcampo/EdgeLab/pull/68), [PR 24](https://github.com/Nicodelcampo/EdgeLab/pull/24) · [foundation](https://github.com/Nicodelcampo/EdgeLab/tree/foundation/f0b-compatibility-probe) |
@@ -23,6 +23,11 @@ Fuente de esta tabla: [registro JSON](../config/component_registry.json). Para c
 | `context` | Representar información contextual y propuestas de regímenes. | experimental | other_branch | `edgelab/context`, `edgelab/gex`, `edgelab/regimes` · [foundation](https://github.com/Nicodelcampo/EdgeLab/tree/foundation/f0b-compatibility-probe) |
 | `history` | Preservar procedencia y versiones retiradas sin activarlas. | historical | other_branch | `archive` · [foundation](https://github.com/Nicodelcampo/EdgeLab/tree/foundation/f0b-compatibility-probe) |
 | `agent-coordination` | Reservar el límite de integración para agentes interactivos y futuros procesos autónomos. | planned | not_pushed | Pendiente de push; fuera de alcance actual |
+
+## Interfaces disponibles
+
+- [Datos: contrato, parser e identidad](COMPONENT_DATA.md).
+- [Memoria: persistencia, consulta y controles](COMPONENT_MEMORY.md).
 
 ## Fronteras que no deben mezclarse
 

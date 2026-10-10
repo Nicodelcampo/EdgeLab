@@ -1,9 +1,9 @@
 name: CPU base and installed wheel (no research)
 on:
   push:
-    paths: ['edgelab/**', 'validation/**', 'tests/**', 'pyproject.toml', 'requirements/cpu-dev-py312.lock', 'tools/check_installed_runtime.py', 'config/component_registry.json', 'docs/COMPONENTS.md', '.github/workflows/cpu-runtime.yml']
+    paths: ['edgelab/**', 'validation/**', 'tests/**', 'pyproject.toml', 'requirements/cpu-dev-py312.lock', 'requirements/core-py312.lock', 'tools/check_installed_runtime.py', 'tools/check_installed_core.py', 'config/component_registry.json', 'docs/COMPONENTS.md', '.github/workflows/cpu-runtime.yml']
   pull_request:
-    paths: ['edgelab/**', 'validation/**', 'tests/**', 'pyproject.toml', 'requirements/cpu-dev-py312.lock', 'tools/check_installed_runtime.py', 'config/component_registry.json', 'docs/COMPONENTS.md', '.github/workflows/cpu-runtime.yml']
+    paths: ['edgelab/**', 'validation/**', 'tests/**', 'pyproject.toml', 'requirements/cpu-dev-py312.lock', 'requirements/core-py312.lock', 'tools/check_installed_runtime.py', 'tools/check_installed_core.py', 'config/component_registry.json', 'docs/COMPONENTS.md', '.github/workflows/cpu-runtime.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -37,3 +37,14 @@ jobs:
           cd "$RUNNER_TEMP/installed-smoke"
           unset PYTHONPATH
           "$RUNNER_TEMP/wheel-env/bin/python" check_installed_runtime.py
+      - name: Verify core API without optional dependencies
+        shell: bash
+        run: |
+          python -m venv "$RUNNER_TEMP/core-env"
+          "$RUNNER_TEMP/core-env/bin/python" -m pip install --require-hashes -r requirements/core-py312.lock
+          "$RUNNER_TEMP/core-env/bin/python" -m pip install --no-deps dist/*.whl
+          mkdir -p "$RUNNER_TEMP/core-smoke"
+          cp tools/check_installed_core.py "$RUNNER_TEMP/core-smoke/"
+          cd "$RUNNER_TEMP/core-smoke"
+          unset PYTHONPATH
+          "$RUNNER_TEMP/core-env/bin/python" check_installed_core.py

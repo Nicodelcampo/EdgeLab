@@ -44,7 +44,11 @@
       "location": "local",
       "paths": [
         "edgelab/data",
-        "edgelab/bridge/session_preflight.py"
+        "edgelab/bridge/session_preflight.py",
+        "edgelab/data/nt8_reader.py",
+        "edgelab/data/nt8_timezone.py",
+        "edgelab/data/event_identity.py",
+        "edgelab/config.py"
       ],
       "inputs": [
         "datos versionados",
@@ -57,7 +61,8 @@
         "fuentes privadas cuando corresponda"
       ],
       "limitations": [
-        "Presencia no acredita completitud/liquidez. Gate 65 aún necesita wiring."
+        "Presencia no acredita completitud/liquidez. Gate 65 aún necesita wiring.",
+        "Parser e identidad portados con fixtures sintéticos; no certifican dataset real, liderazgo o continuidad upstream."
       ],
       "entrypoint": null,
       "related_prs": [
@@ -172,14 +177,16 @@
       "location": "local",
       "paths": [
         "edgelab/edge_brain/hippocampus.py",
-        "edgelab/edge_brain/hippocampus_store.py"
+        "edgelab/edge_brain/hippocampus_store.py",
+        "edgelab/edge_brain/retrieval.py"
       ],
       "inputs": [
         "episodios y evidencia validada",
         "anchors y autorizaciones"
       ],
       "outputs": [
-        "ledger encadenado y replay"
+        "ledger encadenado y replay",
+        "consulta léxica determinista del ledger verificado"
       ],
       "dependencies": [
         "esquemas/contratos de memoria"
@@ -201,7 +208,10 @@
       "category": "experimental",
       "location": "local",
       "paths": [
-        "edgelab/edge_brain"
+        "edgelab/edge_brain",
+        "edgelab/edge_brain/typed_registry.py",
+        "edgelab/edge_brain/schema_validator.py",
+        "edgelab/edge_brain/schemas"
       ],
       "inputs": [
         "propuestas",
@@ -216,7 +226,8 @@
         "memory"
       ],
       "limitations": [
-        "No equivale a orquestación autónoma completa; reconstrucción y governor tienen linajes adicionales."
+        "No equivale a orquestación autónoma completa; reconstrucción y governor tienen linajes adicionales.",
+        "Esquemas empaquetados son contratos, no implementación del atlas o corpus bibliográfico."
       ],
       "entrypoint": null,
       "related_prs": [

@@ -1,8 +1,8 @@
 """Target-free Edge Brain governance primitives recovered from the 2026-09-28 snapshot.
 
-This main-branch subset intentionally excludes schema-dependent atlas modules whose
-JSON schemas were not present in the snapshot. It provides append-only memory,
-invalidation, eligibility, independent-review and promotion gates.
+This product subset provides append-only memory, packaged schema validation,
+lexical retrieval, invalidation, eligibility and independent-review gates. Atlas
+and bibliographic orchestration are still separate integration work.
 """
 from .hippocampus import *
 from .hippocampus_store import DurableHippocampus

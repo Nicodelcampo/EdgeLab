@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/lesson_candidate.json",
+  "title": "EdgeLab Lesson Candidate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "lesson_id",
+    "episode_id",
+    "statement",
+    "evidence_record_ids",
+    "confidence",
+    "status",
+    "scope",
+    "created_at_utc"
+  ],
+  "properties": {
+    "lesson_id": {
+      "type": "string",
+      "pattern": "^LESSON-[A-Za-z0-9._:-]+$"
+    },
+    "episode_id": {
+      "type": "string"
+    },
+    "statement": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_record_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "confidence": {
+      "enum": [
+        "LOW",
+        "MEDIUM",
+        "HIGH"
+      ]
+    },
+    "status": {
+      "enum": [
+        "PROPOSED",
+        "VALIDATED",
+        "REJECTED",
+        "GRADUATED_TO_RULE"
+      ]
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at_utc": {
+      "type": "string"
+    }
+  }
+}

@@ -21,6 +21,12 @@ Reproducir issue 37 en Python 3.12/Ubuntu; corregir rutas locales, datos faltant
 
 Se agrega empaquetado de subpaquetes, lock CPU, configuración de rutas sin efectos de import, tests sintéticos y workflow CPU/wheel. La suite de main pasa antes de este lote (19 tests en Python 3.12), pero eso no prueba ni arregla la suite de foundation. La reconciliación sigue pendiente y no se abre ninguna reserva de datos.
 
+### Primer port selectivo de foundation
+
+Se recuperan configuración typed/precedencia y parser NT8, timezone e identidad de eventos con sus tests. Se incorporan pruebas sintéticas para los módulos que ya eran byte-idénticos: contratos/regímenes, continuo, memoria, controles y preflight. Se recuperan además typed_registry, schema_validator y retrieval, dependencias ausentes detectadas por tests de relaciones/consulta. Los 35 esquemas se empaquetan como recursos; esto no implementa el atlas ni SSRN. Los tests de historia real/anchors y los dos checks de oráculo real no se arrastran.
+
+La [matriz de comparación](../config/module_reconciliation_20261009.json) describe los snapshots originales: 49 archivos edgelab idénticos, 16 diferentes, 98 sólo-foundation y 10 sólo-main; 28 archivos validation idénticos. Es comparación de blobs, no equivalencia semántica ni estado live.
+
 ## Fase 3 — Datos y ejecución
 
 Revisar PR 65 (gate no conectado a todos los consumidores), 63 (aislamiento de arrays y parity), y la infraestructura de 64 separada de campañas. Adaptar PR 68 a la base elegida, con preflight, shards por contrato, merge fijo y evidencia verificable. El título/body de 68 está desactualizado respecto de su evidencia final: reconciliarlo antes de usarlo como estado.
