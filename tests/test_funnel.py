@@ -20,8 +20,9 @@ def test_cpu_screen_known_paths():
     assert dev.backend=='cpu' and out.shape==(2,1)
     batches=list(iter_screen_batches(np.array([0,2]),np.array([1,-1],np.int8),h,l,bo,ao,
                                      np.array([10,10,10]),np.array([10,11,12]),
-                                     backend='cpu',max_matrix_bytes=8))
+                                     backend='cpu',max_matrix_bytes=16))
     assert [(a,b) for a,b,_,_ in batches]==[(0,1),(1,2),(2,3)]
+    assert all(matrix.nbytes <= 16 for _,_,matrix,_ in batches)
 def test_hash_chain_detects_tamper(tmp_path):
     p=tmp_path/'ledger.jsonl';x=FunnelLedger(p);x.append('trial_recorded','a',{'asserts_edge':False});assert x.verify()['valid']
     rows=p.read_text().splitlines();r=json.loads(rows[0]);r['payload']['asserts_edge']=True;p.write_text(json.dumps(r)+'\n');assert not x.verify()['valid']

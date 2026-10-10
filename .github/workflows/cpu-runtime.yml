@@ -1,9 +1,9 @@
 name: CPU base and installed wheel (no research)
 on:
   push:
-    paths: ['edgelab/**', 'validation/**', 'tests/**', 'pyproject.toml', 'requirements/cpu-dev-py312.lock', 'requirements/core-py312.lock', 'tools/check_installed_runtime.py', 'tools/check_installed_core.py', 'config/component_registry.json', 'docs/COMPONENTS.md', '.github/workflows/cpu-runtime.yml']
+    paths: ['edgelab/**', 'validation/**', 'tests/**', 'pyproject.toml', 'requirements/cpu-dev-py312.lock', 'requirements/core-py312.lock', 'tools/check_installed_runtime.py', 'tools/check_installed_core.py', 'tools/run_funnel_arrays.py', 'tools/verify_funnel_cpu_gpu.py', 'config/component_registry.json', 'docs/COMPONENTS.md', '.github/workflows/cpu-runtime.yml']
   pull_request:
-    paths: ['edgelab/**', 'validation/**', 'tests/**', 'pyproject.toml', 'requirements/cpu-dev-py312.lock', 'requirements/core-py312.lock', 'tools/check_installed_runtime.py', 'tools/check_installed_core.py', 'config/component_registry.json', 'docs/COMPONENTS.md', '.github/workflows/cpu-runtime.yml']
+    paths: ['edgelab/**', 'validation/**', 'tests/**', 'pyproject.toml', 'requirements/cpu-dev-py312.lock', 'requirements/core-py312.lock', 'tools/check_installed_runtime.py', 'tools/check_installed_core.py', 'tools/run_funnel_arrays.py', 'tools/verify_funnel_cpu_gpu.py', 'config/component_registry.json', 'docs/COMPONENTS.md', '.github/workflows/cpu-runtime.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -22,6 +22,12 @@ jobs:
         run: python -m pip install --require-hashes -r requirements/cpu-dev-py312.lock
       - name: Build wheel without data or credentials
         run: python -m build --wheel --no-isolation
+      - name: Check independent CPU oracle (never CUDA PASS)
+        run: python tools/verify_funnel_cpu_gpu.py --cpu-only --out cpu_oracle.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: funnel-cpu-oracle
+          path: cpu_oracle.json
       - name: Install and run current-base synthetic suite
         run: |
           python -m pip install --no-deps dist/*.whl

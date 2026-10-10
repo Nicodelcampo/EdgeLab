@@ -136,14 +136,16 @@
     {
       "id": "funnel",
       "name": "Embudo CPU/GPU",
-      "purpose": "Realizar screening por lotes y registrar selección de candidatos.",
+      "purpose": "Screening CPU exploratorio con kernels de outcomes separados por D0/D1.",
       "category": "experimental",
       "location": "local",
       "paths": [
         "edgelab/funnel",
         "tools/run_funnel_arrays.py",
         "requirements-funnel.txt",
-        "requirements-funnel-gpu.txt"
+        "requirements-funnel-gpu.txt",
+        "edgelab/funnel/isolation.py",
+        "docs/COMPONENT_FUNNEL.md"
       ],
       "inputs": [
         "arrays",
@@ -151,16 +153,19 @@
         "split y política de campaña"
       ],
       "outputs": [
-        "survivors",
-        "summary",
-        "ledger"
+        "trials/survivors Parquet",
+        "summary v2 no confirmatorio",
+        "ledger local de corrida (no hipocampo canónico)"
       ],
       "dependencies": [
         "NumPy/Numba",
-        "CuPy/CUDA para GPU"
+        "PyArrow para artefactos",
+        "split original y manifiesto aprobado para mercado"
       ],
       "limitations": [
-        "Fixes de aislamiento y presupuesto pendientes en 63/64; no asumir que el README anterior prueba ausencia de lectura D2."
+        "Aislamiento probado sólo para kernels de outcomes CPU; features/input-file firewall fuera de scope.",
+        "Runner auto/GPU bloqueado hasta validación end-to-end nueva; low-level CUDA experimental.",
+        "Split y hashes no conceden autorización; multiplicidad completa y promoción siguen pendientes."
       ],
       "entrypoint": "python tools/run_funnel_arrays.py --help",
       "related_prs": [
