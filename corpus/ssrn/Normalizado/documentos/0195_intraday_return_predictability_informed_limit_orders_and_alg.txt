@@ -1,0 +1,3246 @@
+Algorithmic Trading and Market Efficiency around the
+Introduction of the NYSE Hybrid Market
+DARYA YUFEROVA∗
+October 29, 2023
+ABSTRACT
+I study the effect of algorithmic trading on market efficiency, taking into account past market
+and limit order flows alike. I find that an exogenous increase in algorithmic trading around
+the introduction of the NYSE Hybrid Market leads to a significant decrease in the predictive
+power of surprises in market order imbalance and limit order book imbalances, especially at
+the outer levels of the limit order book. However, the predictive power of past returns remains
+largely unchanged. This suggests that algorithmic trading improves market efficiency by
+facilitating the incorporation of information embedded in both market and limit order flows.
+JEL classification: G12, G14.
+Keywords: Market Efficiency, Limit Order Book, Algorithmic Trading.
+∗Norwegian School of Economics (NHH); e-mail address: darya.yuferova@nhh.no. I am grateful to Dion
+Bongaerts, Mathijs Cosemans, Sarah Draus, Thierry Foucault, Wenqian Huang, Lingtian Kong, Albert
+Menkveld, Nils Friewald, Marco Pagano, Christine Parlour, Loriana Pelizzon, Dominik R¨osch, Stephen Rush,
+Asani Sarkar, Elvira Sojli, Mark van Achter, Mathijs van Dijk, Wolf Wagner, Jun Uno, Marius Zoican,
+participants of the FMA 2018, the FMA Europe 2018, the SGF conference 2018, the NFN 2016 Young
+Scholars Finance Workshop, the FMA 2015 Doctoral Consortium, the PhD course on “Market Liquidity”
+in Brussels, and seminar participants at Gothenburg University, Goethe University, Norwegian School of
+Economics, Norwegian Business School, Paris Dauphine University, Erasmus University, NYU Stern, and the
+Tinbergen Institute for helpful comments. I gratefully acknowledge financial support from the Vereniging
+Trustfonds Erasmus Universiteit Rotterdam. I am also grateful to NYU Stern and Rotterdam School of
+Management, Erasmus University, where some work on this paper was done. This work was carried out on
+the National e-infrastructure with the support of the SURF Foundation. I thank OneMarket Data for the
+use of their OneTick software.
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Market efficiency is a crucial characteristic of a well-functioning financial system.
+In
+recent decades, several changes have taken place that have influenced the speed of information
+incorporation in equity markets. In particular, (i) recent technological developments gave
+rise to a new class of market participants, namely, algorithmic traders;1 and (ii) a shift
+from floor trading to electronic limit order book market took place.2 There exists prominent
+literature investigating the role of automation and resultant algorithmic trading activity on
+market efficiency (see, e.g., Hendershott and Moulton (2011), and Boehmer, Fong, and Wu
+(2021)). However, this literature tends to focus on market efficiency measures that take into
+account only past returns and market order flow,3 thus neglecting the speed of information
+incorporation embedded in the past limit order flow. I aim to fill this void by studying how
+an exogenous shock to algorithmic trading affects market efficiency, taking into consideration
+past market and limit order flows alike.
+On the one hand, algorithmic traders have a natural advantage in facilitating market
+efficiency in limit order book markets for the following reasons. First, algorithmic traders
+can execute their trading strategies at a much higher speed than human beings. Second,
+algorithmic traders are well-equipped to use limit orders, since they can monitor the market
+conditions continuously, and thus efficiently manage pick-off risk (i.e., being able to adjust
+their limit orders quickly to incorporate new information, and thus avoid execution under
+1For example, Carrion (2013) reports that 68% of trading volume on NASDAQ (sample period: January
+2008 – December 2009 and February 22, 2010 – February 26, 2010) stems from high-frequency traders (an
+important subset of algorithmic traders).
+2According to Swan and Westerholm (2006), around 90% of the largest equity markets are organized as
+pure limit order book markets or limit order books with designated market makers as of the beginning of
+2000.
+3The conventional wisdom in the microstructure literature used to be that informed traders use only
+market orders, while uninformed traders use both market and limit orders (see Glosten and Milgrom (1985),
+Kyle (1985), Glosten (1994), and Seppi (1997)). Thus, under the traditional view, only the market order flow
+contains information. However, recent theoretical studies provide a more nuanced view on the price discovery
+process in limit order book markets by allowing informed traders to choose between market and limit orders
+(see Kaniel and Liu (2006), Goettler, Parlour, and Rajan (2009), and Ro¸su (2020)). Recent empirical and
+experimental studies confirm that informed traders actively use both order types (among others, Bloomfield,
+O’Hara, and Saar (2005), Collin-Dufresne and Fos (2015), Baruch, Panayides, and Venkataraman (2017),
+and Brogaard, Hendershott, and Riordan (2019)).
+1
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+unfavorable conditions). Third, sophisticated algorithms can quickly collect and process information, both from the footprints of traders that possess private fundamental information,
+and also from press releases, social media posts, and so on.
+On the other hand, algorithmic trading might also hinder the speed of information incorporation in the limit order book markets for the following reasons. First, algorithmic traders
+tend to slice and dice their orders and submit them across different exchanges and alternative trading venues, thus exacerbating market (and information) fragmentation. Second,
+algorithmic traders might use their speed advantage to adversely select other market participants, which in turn might decrease the willingness of other market participants to trade in
+the first place and thus deter information incorporation. To sum up, the resulting effect of
+algorithmic trading on market efficiency in the limit order book markets is not ex-ante clear
+and is worth a thorough investigation.
+To establish a causal effect of algorithmic trading on market efficiency, I extend the approach of Hendershott, Jones, and Menkveld (2011) and use the introduction of the NYSE
+Hybrid Market as an instrumental variable (IV) for algorithmic trading in the stacked IV
+regression approach.4 The introduction of the NYSE Hybrid Market was a permanent technological change in market design that resulted in increased automation and trading speed
+(see Hendershott and Moulton (2011)). Stocks had a staggered rollout to the NYSE Hybrid
+Market from October 2006 through January 2007, which allows for a causal effect identification.
+I use the quote-to-trade ratio as a proxy for algorithmic trading that can be easily computed from the U.S. consolidated tape, which spans all stocks and exchanges in the U.S.
+This is important since it allows for the establishment of a causal inference in a large sample
+study. I proxy for market efficiency by extending the approach of Chordia, Roll, and Subrahmanyam (2005, 2008) to incorporate the role of the market and limit order flows alike. In
+4Recent advances in econometrics literature question reliability of two-way fixed effects estimator using a
+regular IV based on staggered events (see Baker, Larcker, and Wang (2022), and Roth, Sant’Anna, Bilinski,
+and Poe (2023)).
+2
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+particular, I use intraday return predictability arising from past returns, surprises in market
+order imbalance (based on market and marketable limit orders alike) and limit order book
+imbalances using tick-by-tick consolidated trade and quote data and data on the first 10
+best levels of the NYSE limit order book from the Thomson Reuters Tick History (TRTH)
+database.5
+My main results can be summarized as follows. First, I show that the exogenous shock
+to algorithmic trading improves market efficiency, which is evident from decreased R2 from
+the intraday predictive regressions. To be more precise, with one within standard deviation
+increase in the proxy for algorithmic trading, market efficiency improves by 17.5% relative
+to the whole sample average. This finding confirms that algorithmic traders indeed facilitate
+the speed of information incorporation.
+Second, I show that improvement in market efficiency comes from the decreased predictive power of the surprises in both market and limit order book imbalances. In particular,
+with one within standard deviation increase in the proxy for algorithmic trading activity,
+the partial R2 of the surprises in market order imbalance decreases significantly, by 36.53%,
+relative to the sample average. At the same time, the partial R2 of the surprises in depth imbalances at the inner, middle, and outer levels of the limit order book decreases significantly,
+by 12.41%, 10.87%, and 36.36%, respectively, relative to the sample average, respectively.
+Finally, the predictive power of past returns remains unchanged with an exogenous shock
+to algorithmic trading.
+Thus, if one uses measures of market efficiency based solely on
+mid-quote returns, one might conclude that an increase in algorithmic trading due to the
+introduction of the NYSE Hybrid Market has no effect on market efficiency in the short-run
+(which echoes the findings of Hendershott and Moulton (2011) for a 40-day event window).
+In addition, I show that market efficiency improves consistently across all market capitalization terciles with the effect primarily driven by increased speed of the information
+5I use surprises in market order imbalance and limit order book imbalances following, e.g., Huang and
+Stoll (1997), Madhavan, Richardson, and Roomans (1997), and Sadka (2006), as only unexpected changes
+in the order flow contain information.
+3
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+incorporation embedded in surprises in market order imbalance and limit order imbalance
+at the outer levels of the limit order book. My results are also robust to alternative proxies
+for algorithmic trading and different event window sizes.
+To date, there is no evidence that algorithmic traders bring new information to the
+market. Rather they are able to process and act on the existing pool of information faster
+than other traders.6 Thus, an increase in algorithmic trading activity could affect the speed
+of price discovery through competition among algorithmic trading for the same information
+(either by processing the same news releases or by analyzing past order flow patterns).
+Increased competition should lead to a decrease in profits algorithmic traders could make
+by, e.g., arbitraging stale limit orders away (and thus, adversely selecting other market
+participants). Though I cannot directly measure the profits of such arbitrageurs, I use outof-sample R2 based on the one-step ahead forecasts from predictive regressions to provide
+indirect evidence on this matter. I document that the probability of observing non-negative
+out-of-sample R2 (in other words, the probability of making profits from trading strategies
+based on such forecasts) decreases significantly with one within standard deviation increase
+in the proxy for algorithmic trading, by 5.18%. This is economically meaningful given that
+the respective average probability of the whole sample is 31.50%. These results are consistent
+with Hendershott and Moulton (2011), who document that the increase in market efficiency
+after the introduction of the NYSE Hybrid Market has come at the expense of increased
+adverse selection costs – a likely result of the increased competition between algorithmic
+traders.
+I contribute to two streams of literature on (i) algorithmic trading and market efficiency;
+and (ii) intraday return predictability. First, my paper contributes to the ongoing debate on
+the effect of algorithmic trading on market efficiency.7 Hendershott and Moulton (2011) show
+6In this paper, I am agnostic on whether the increased algorithmic trading is impeding or promoting the
+incentives for fundamental information production in the market (see, e.g., Dugast and Foucault (2018) and
+Weller (2018)).
+7This debate has recently intensified with the focus on high-frequency traders (an important subset
+4
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+that market efficiency improves after the introduction of the NYSE Hybrid Market in the
+long-run, while in the short-run return autocorrelation and variance ratio remain unaffected.
+Chaboud, Chiquoine, Hjalmarsson, and Vega (2014) show for the foreign exchange market
+that algorithmic trading causes a decrease in the number of triangular arbitrage opportunities
+and in the autocorrelation of returns. Boehmer, Fong, and Wu (2021) provide evidence for
+the international equity markets that algorithmic trading improves market liquidity and
+market efficiency, but increases short-term volatility.
+All these papers focus on market
+efficiency measures that neglect past limit order flow. Thus, my main contribution to this
+stream of literature lies in considering both market and limit order flows while investigating
+the effect of algorithmic trading on market efficiency.
+Second, there is a stream of literature on intraday return predictability: from market
+order flow (see Chordia, Roll, and Subrahmanyam (2005, 2008)); from limit order flow (see
+Kavajecz and Odders-White (2001), Harris and Panchapagesan (2005), Cao, Hansch, and
+Wang (2009), and Cenesizoglu, Dionne, and Zhou (2022)). I note that papers investigating
+intraday return predictability from the limit order book often focus on the limited amount
+of stocks (mainly the largest and most actively traded stocks on the market). I contribute
+to this literature not only by analyzing a large cross-section of stocks but, most importantly,
+by developing new measures to summarize the limit order book’s informational content.
+The paper is structured as follows. Section I discusses the data and methodology used
+in the paper. Section II provides the main empirical results. Section III contains additional
+analysis. Section IV concludes.
+of algorithmic traders). I refer to Biais and Foucault (2014), O’Hara (2015), and Menkveld (2016) for a
+comprehensive review of papers on high-frequency trading activity and market quality.
+5
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+I.
+Data and method
+In this section, I describe my data and variables (see Section I.A) and the methodology
+used to identify the causal effects of algorithmic trading on market efficiency, taking into
+account market and limit order flows alike (see Section I.B).
+A.
+Data and variables
+I obtain intraday data on trades and best bid-offer quotes, as well as the 10 best levels
+of the limit order book for the U.S. market from the TRTH database for the period from
+June 2006 to May 2007. The TRTH database is provided by the Securities Industry Research
+Centre of Asia-Pacific (SIRCA). The limit order book data provided by TRTH do not include
+order-level information (e.g., they do not contain order submission, revision, or cancellation
+details), only the 10 best price levels and the depth on bid and ask sides of the book that
+are visible to the public. The data for the limit order book come from the NYSE. The data
+for trades and best bid-offer quotes come from the consolidated tape. In other words, the
+best bid-offer reported in the data is the best bid-offer for any exchange in the U.S.
+TRTH data are organized by Reuters Instrumental Codes (RICs), which are identical
+to TICKERs provided by the Center for Research in Security Prices (CRSP). Merging data
+from CRSP and TRTH allows me to identify common shares that indicate the NYSE as their
+primary exchange and to use company-specific information (e.g., market capitalization and
+turnover). This study is limited to NYSE-listed stocks only due to limit order book data
+availability. I require all stocks to be present in the CRSP database for the whole sample
+period. I discard stocks with an average monthly price bigger than USD 1,000 and smaller
+than USD 5. I winsorize all the variables at the 0.5% and 99.5% levels.8
+For further analysis, I aggregate intraday data from TRTH in the following way.
+I
+8In the Internet Appendix IA 1, I repeat the analysis with the variables winsorized at the 2.5% and
+97.5% levels. The findings are robust to alternative winsorization thresholds.
+6
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+compute one-minute mid-quote returns and market order imbalances and take snapshots
+of the limit order book at the end of each one-minute interval. I filter the intraday data
+following R¨osch, Subrahmanyam, and Van Dijk (2016). First, I discard trades, quotes, and
+limit order book data that are not part of the continuous trading session. Continuous trading
+session hours for the NYSE are 9:30-16:00 ET, and they remain unchanged during the sample
+period. In addition, to attenuate a concern about the strong intraday patterns in volatility
+and trading activity (e.g., Andersen and Bollerslev (1997)), I discard the first and last 30
+minutes of the continuous trading session.
+Second, I discard block trades (i.e., trades with a trade size greater than 10,000 shares)
+because these trades are likely to receive special treatment. Third, I discard data entries that
+are likely to be faulty. Faulty entries include entries with negative or zero prices or quotes;
+entries with a negative bid-ask spread; entries with a proportional bid-ask spread bigger than
+25%; and entries that have a trade price, bid price, or ask price that deviates from the 10
+surrounding ticks by more than 10%. In addition, I require that at least five levels of the
+limit order book be available at the end of each one-minute interval. For a stock-day to enter
+my sample, at least 100 valid one-minute intervals with at least one trade are required. If
+there are less than 200 days in my sample period for a particular stock, I exclude this stock
+from the analysis. Overall, I am left with 950 NYSE-listed common stocks.9
+INSERT TABLE I HERE
+Table I shows the summary statistics of my sample. In particular, I report average market
+capitalization in billions of USD, closing quoted spread, volatility, annualized turnover, and
+price for the whole sample, as well as for market capitalization terciles as of the beginning of
+June 2006. The average market capitalization in my sample is USD 10.40 billion, with small
+9As a comparison, Hendershott, Jones, and Menkveld (2011) use 943 NYSE-listed common stocks around
+Autoquote introduction. In a closely related paper, Hendershott and Moulton (2011) use 400 NYSE-listed
+common stocks randomly selected from the top eight market capitalization deciles and compare them to the
+matched sample of NASDAQ-listed common stocks around the introduction of the NYSE Hybrid Market.
+7
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+companies having a market capitalization slightly below USD 1 billion and large companies
+having a market capitalization of more than USD 27 billion. My sample is in line with the
+sample used by Hendershott, Jones, and Menkveld (2011), who have a market capitalization
+ranging from USD 0.41 billion (quintile 1) to USD 28.99 billion (quintile 5) around Autoquote
+introduction. It is also in line with the sample used by Hendershott and Moulton (2011),
+who have a market capitalization ranging from USD 1.05 billion (quartile 1) to USD 29.94
+billion (quartile 4) for NYSE-listed common stocks around the introduction of the NYSE
+Hybrid Market. The average price in my sample ranges from USD 26.07 for small stocks to
+USD 52.02 for large stocks as compared to a range of USD 29.59 to USD 51.41 for the NYSE
+sample used by Hendershott and Moulton (2011). The average quoted spread in my sample
+ranges from 6.25 bps for large stocks to 14.03 bps for small stocks as compared to a range
+of 4.70 bps to 14.20 bps for the sample used by Hendershott and Moulton (2011).
+A.1.
+Proxies for algorithmic trading
+The TRTH data do not allow for directly identifying transactions and orders coming from
+algorithmic traders. Therefore, in this study, I proxy for algorithmic trading by means of
+the quote-to-trade ratio. The quote-to-trade ratio can be easily computed from consolidated
+tape for a large sample of U.S. stocks based on the data from all U.S. exchanges. The quoteto-trade ratio is often used by academics and regulators as either a proxy for algorithmic
+trading (Hendershott, Jones, and Menkveld (2011) and Boehmer, Fong, and Wu (2021)) or,
+in more recent studies, as a proxy for an important subset of algorithmic trading, namely,
+high-frequency trading (Conrad, Wahal, and Xiang (2015), SEC (2010), and ASIC (2013)).
+More specifically, I consider the following proxies for algorithmic trading in the spirit of
+Hendershott, Jones, and Menkveld (2011), Conrad, Wahal, and Xiang (2015), and Boehmer,
+Fong, and Wu (2021): QTE/DV OL, the daily number of best bid-offer quote updates
+relative to daily trading volume (in USD 10,000) and QTE/TRD, the daily number of best
+bid-offer quote updates relative to the daily number of transactions. I use the QTE/DV OL
+8
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+in a baseline analysis, while QTE/TRD is used for a robustness check. In addition, since
+algorithmic traders are known to slice and dice their orders, I use the average trade size as
+another alternative proxy for algorithmic trading (see Section III.C).
+A.2.
+Proxy for market efficiency
+I follow Chordia, Roll, and Subrahmanyam (2005, 2008), Wuyts (2008), and Cao, Hansch,
+and Wang (2009) and estimate intraday predictive regressions to quantify predictive power
+not only of the market order flow but also of the limit order flow. I construct intraday data
+on returns, market order imbalances (Moib),10 and limit order book imbalances (Loib) at a
+one-minute frequency. For all the variables, I discard overnight observations.
+I follow Chordia, Roll, and Subrahmanyam (2008) and compute one-minute log returns
+(Ret) based on the prevailing mid-quotes (the average of the bid and ask prices) at the end of
+the one-minute interval, rather than the transaction prices or mid-quotes matched with the
+last transaction price. In this way, I avoid the bid-ask bounce and ensure that the returns
+for every stock are indeed computed over a one-minute interval. I implicitly assume that
+there are no stale best bid-offer quotes in the sample, and thus I consider a quote to be valid
+until a new quote arrives or until a new trading day starts.
+To calculate a one-minute Moib, I match trades with quotes and sign trades using the
+Lee and Ready (1991) algorithm. TRTH data are stamped to the millisecond, therefore the
+Lee and Ready (1991) algorithm is quite accurate. In particular, a trade is considered to be
+buyer initiated (seller initiated) if it is closer to the ask price (bid price) of the prevailing
+quote. For each one-minute interval, I aggregate the trading volume in USD 10,000 for buyerand seller-initiated trades separately at the stock level. Thereafter, I subtract seller-initiated
+dollar volume from buyer-initiated dollar volume to obtain Moib. For stock i on date d at
+one-minute interval t,
+10Market order imbalance is based on both market and marketable limit orders.
+9
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Moibi,d,t = Buyer initiated volumei,d,t −Seller inititated volumei,d,t
+(1)
+There are multiple ways to describe the limit order book. Most of the papers that study
+intraday return predictability either focus on different levels of the limit order book or on the
+corresponding ratios of these levels between the ask and bid sides of the limit order book.
+For instance, Wuyts (2008), Cao, Hansch, and Wang (2009), and Cenesizoglu, Dionne, and
+Zhou (2022) use slopes and depth at different levels of the limit order book to summarize
+its shape. However, due to variations in the shape of the limit order book as well as in the
+number of available levels of the limit order book, I believe that definition of inner, middle,
+and outer levels by means of a relative threshold is more suitable than definition by means
+of the number of levels in the limit order book (e.g., levels from 1 to 3 are inner levels, levels
+from 4 to 6 are middle levels, and levels from 7 to 10 are outer levels).
+Some examples of a relative approach to limit order book description are found in Cao,
+Hansch, and Wang (2009), who also use volume-weighted average price for different order
+sizes to describe the limit order book, and in Kavajecz and Odders-White (2004), who use a
+so-called “near-depth” measure, which is a proportion of the depth close to the best bid-offer
+level relative to the cumulative depth within a certain price range.
+I focus on the ratios of depth concentrated at the inner, middle, and outer levels of the
+limit order book between the ask and bid sides. I use a modification of the “near-depth”
+measure introduced by Kavajecz and Odders-White (2004). First, I compute a snapshot of
+the ask and bid sides of the limit order book at the end of each one-minute interval. Then, I
+define the inner levels as price levels between the mid-quote and one-third of the minimum
+across the bid and ask sides of the total distance between the 10th available limit price and
+the mid-quote. Outer levels are defined as price levels above two-thirds of the minimum
+across the bid and ask sides of the total distance between the 10th available limit price and
+the mid-quote. I refer to the remaining levels as the middle levels of the limit order book.
+For stock i on date d at one-minute interval t,
+10
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Heighti,d,t = min[(P Ask,10
+i,d,t
+−MidQuotei,d,t), (MidQuotei,d,t −P Bid,10
+i,d,t
+)]
+(2)
+Inneri,d,t =
+P10
+k=1 DepthBid,k
+i,d,t ∗1(|P Bid,k
+i,d,t
+−MidQuotei,d,t| <= 1
+3Heighti,d,t)−
+P10
+k=1 DepthBid,k
+i,d,t ∗1(|P Bid,k
+i,d,t
+−MidQuotei,d,t| <= 1
+3Heighti,d,t)+
+−DepthAsk,k
+i,d,t
+∗1(|P Ask,k
+i,d,t
+−MidQuotei,d,t| <= 1
+3Heighti,d,t)
++DepthAsk,k
+i,d,t
+∗1(|P Ask,k
+i,d,t
+−MidQuotei,d,t| <= 1
+3Heighti,d,t)
+(3)
+Middlei,d,t =
+P10
+k=1 DepthBid,k
+i,d,t ∗1(1
+3Heighti,d,t < |P Bid,k
+i,d,t
+−MidQuotei,d,t| <= 2
+3Heighti,d,t)−
+P10
+k=1 DepthBid,k
+i,d,t ∗1(1
+3Heighti,d,t < |P Bid,k
+i,d,t
+−MidQuotei,d,t| <= 2
+3Heighti,d,t)+
+−DepthAsk,k
+i,d,t
+∗1(1
+3Heighti,d,t) < |P Ask,k
+i,d,t
+−MidQuotei,d,t| <= 2
+3Heighti,d,t)
++DepthAsk,k
+i,d,t
+∗1(1
+3Heighti,d,t) < |P Ask,k
+i,d,t
+−MidQuotei,d,t| <= 2
+3Heighti,d,t)
+(4)
+Outeri,d,t =
+P10
+k=1 DepthBid,k
+i,d,t ∗1(|P Bid,k
+i,d,t
+−MidQuotei,d,t| > 2
+3Heighti,d,t)−
+P10
+k=1 DepthBid,k
+i,d,t ∗1(|P Bid,k
+i,d,t
+−MidQuotei,d,t| > 2
+3Heighti,d,t)+
+−DepthAsk,k
+i,d,t
+∗1(|P Ask,k
+i,d,t
+−MidQuotei,d,t| > 2
+3Heighti,d,t)
++DepthAsk,k
+i,d,t
+∗1(|P Ask,k
+i,d,t
+−MidQuotei,d,t| > 2
+3Heighti,d,t)
+(5)
+My relative approach allows me to define in a unified fashion the levels that are close to
+the best bid-offer level, as well as the levels that are far away from the best bid-offer level
+across stocks and through time.11
+As a next step, I run the following regression using lagged returns, lagged total market
+and limit order flows to predict returns one-minute ahead:
+Reti,d,t = α + β1Reti,d,t−1 + β2Moibi,d,t−1+
++ β3Inneri,d,t−1 + β4Middlei,d,t−1 + β5Outeri,d,t−1 + ϵt
+(6)
+For each stock-day, I compute the partial R2 of each of the variables in the predictive
+11I note that the definition of inner, middle, and outer levels is sensitive to the price of the stock. For
+example, the limit price range of the outer levels could comprise, e.g., 10% of the trading price for stock
+traded at USD 10 and only 1% of the trading price for stock traded at USD 100. Therefore, in all my
+analyses, I control for the inverse of price, thus elevating the aforementioned concern.
+11
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+regressions averaged across all possible orderings of the variables (as in Lindeman, Merenda,
+and Gold (1980))12 to proxy for market efficiency.
+The predictive power stemming from market and limit order flows can be a result of
+persistence in the order flow (which in turn can increase market makers’ inventory concerns)
+or of slow incorporation of the new information.
+Hasbrouck (1991) and Chordia, Roll,
+and Subrahmanyam (2005) show that Moib is positively auto-correlated. Moreover, Biais,
+Hillion, and Spatt (1995) and Ellul, Holden, Jain, and Jennings (2007) show that order flow
+is also persistent for limit orders. Previous empirical studies (e.g., Huang and Stoll (1997),
+Madhavan, Richardson, and Roomans (1997), and Sadka (2006)) use unexpected changes in
+the market order flow to isolate the information-related component. I extend this approach
+one step further and apply it to both market and limit order flows. I argue that it is an
+appropriate extension as both market and limit order flows are persistent. Therefore, I use
+surprises in the order flow for both market and limit orders to isolate the predictive power
+stemming from the slow incorporation of the new information in the prices.
+I obtain the surprises in returns, Moib, and Loib by estimating stock-day V AR(k) regression (the number of lags, k, can take values from 1 to 5 and is selected by AIC criteria)
+and keeping the residual values:
+Xt = α +
+l=k
+X
+l=1
+βXt−l + ϵt
+(7)
+where Xt is a vector that includes Rett, Moibt, Innert, Middlet, and Outert measured at the
+t-th one-minute interval; ϵt is a vector of residuals that includes the RetU
+t , MoibU
+t , InnerU
+t ,
+MiddleU
+t , and OuterU
+t .
+12Decomposition of the R2 is sensitive to the order of the explanatory variables. The same variable will be
+assigned higher explanatory power when it is the first variable in the decomposition than when it is the last
+variable in the decomposition. In Internet Appendix IA 2, I repeat the main analysis using the partial R2
+of each of the variables under the assumption that the variable is added last in the model, which represents
+the conservative lower bound of its predictive power. The results remain largely unchanged.
+12
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Afterward, I run predictive regressions using one-minute mid-quote returns as the dependent variable. As explanatory variables, I use lagged surprises in market order imbalance and
+lagged surprises in depth imbalances at the inner, middle, and outer levels of the limit order
+book. I note that misspecification of the V AR(k) model may lead to some inventory effects
+ending up in surprises. To address this issue, I also include lagged returns as an explanatory
+variable in the predictive regressions to capture return reversal, which is a distinct feature
+of inventory management. The regression equation for each stock i on day d is given by:
+Reti,d,t = α + β1Reti,d,t−1 + β2MoibU
+i,d,t−1+
++ β3InnerU
+i,d,t−1 + β4MiddleU
+i,d,t−1 + β5OuterU
+i,d,t−1 + ϵt
+(8)
+For each stock-day, I compute the partial R2 of each of the variables in the predictive
+regression to proxy for market efficiency in the same manner as for Eq. (6).
+B.
+Instrumental variable approach
+In this paper, I argue that it is important to take limit order flow into account while
+evaluating the effect of algorithmic trading on market efficiency since algorithmic traders
+are well-equipped to actively use limit orders in their trading strategies. More sophisticated
+algorithms can read information from the market and limit order flows and, thus facilitate
+its incorporation into prices. Identifying the causal effect of algorithmic trading on market
+efficiency is not a trivial task, as the degree of activity in each stock on each day is an
+endogenous choice made by the algorithmic trader. Therefore, I adopt an IV regression
+approach following Hendershott, Jones, and Menkveld (2011) to establish causality.
+As an instrumental variable, I use the introduction of the NYSE Hybrid Market (see
+Hendershott and Moulton (2011)). On March 22, 2006, the SEC approved the NYSE Hybrid
+Market proposal (see SEC (2006)). According to the SEC, there were three main changes:
+expanding automatic execution; automating floor members’ participation, enabling them
+to create liquidity electronically; and allowing specialists to use algorithms to fulfill their
+13
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+obligations.13 Automatic execution was present at the NYSE before the introduction of the
+NYSE Hybrid Market; however, orders could be executed automatically only for the quantity
+available at the best bid-offer level. Best bid-offer quotes were also updated automatically
+rather than manually entered by the specialist since Autoquote introduction in 2003. After
+the introduction of the NYSE Hybrid Market, orders were not only automatically executed
+for the quantity available at the best bid-offer level, but were allowed to “walk” automatically
+through the limit order book, therefore consuming liquidity from the deeper levels of the limit
+order book.
+The Hybrid Market was introduced by the NYSE to qualify as a fast market under
+Reg NMS and thus maintain its market share going forward. Put differently, before the
+introduction of the NYSE Hybrid Market, the NYSE was still a largely human-based and slow
+market, which made it a less attractive trading venue for algorithmic traders as compared
+to other U.S. trading venues. Therefore, the Hybrid Market introduction can be viewed as
+an exogenous trigger that boosted algorithmic trading activity on the NYSE.
+The rollout of stocks to the NYSE Hybrid Market was implemented in a staggered way
+from October 2006 through January 2007 (see Figure 1).14 Though the NYSE had been
+testing new systems beforehand, the actual increase in automation and speed took place after
+October 2006. For example, NYSE Chief Technology Officer Steve Rubinow has commented
+on the tremendous execution speed increase achieved by the introduction of the NYSE Hybrid
+Market: “The Hybrid Market launch has been very successful. With trade execution times
+[for Hybrid Market] decreasing from an average of nine seconds to less than 0.3 seconds, our
+customers and the trading-floor community are using the system effectively throughout the
+day.”15
+INSERT FIGURE 1 HERE
+13See SEC Approves NYSE Hybrid Market Proposal, FOR IMMEDIATE RELEASE 2006-41.
+14I obtain data on the NYSE Hybrid Market’s rollout, which was when the actual increase in the degree
+of automated execution and speed took place, from Terrence Hendershott’s website.
+15See Eric Lai, “NYSE Launches New Hybrid Trading,” Computerworld, October 16, 2006.
+14
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Though the introduction of both the NYSE Hybrid Market and Autoquote led to an
+increase in automation and speed, I prefer the introduction of the NYSE Hybrid Market to
+the introduction of Autoquote used in Hendershott, Jones, and Menkveld (2011) because
+the effects of Autoquote’s introduction are likely to be contaminated by the recent effects of
+making the NYSE limit order book publicly available as of January 24, 2002.16 I focus on
+the period surrounding the introduction of the NYSE Hybrid Market – an exogenous change
+in market design that led to increased speed and automation of the NYSE – from June 2006
+until May 2007 (following Hendershott and Moulton (2011)).17 The staggered nature of the
+rollout to the NYSE Hybrid Market allows for causal effect identification.
+I improve on the methodology used by Hendershott, Jones, and Menkveld (2011) and
+estimate the stacked IV regression, since recent advances in the econometrics literature
+question the reliability of two-way fixed effects estimator using staggered events in regular
+IV setup (see Baker, Larcker, and Wang (2022) and Roth, Sant’Anna, Bilinski, and Poe
+(2023)). To address this concern, I follow the approach used by Cengiz, Dube, Lindner, and
+Zipperer (2019) and create a stacked dataset for each cohort (where the cohort is defined
+as stocks being rolled out to the NYSE Hybrid Market on a particular date) for an event
+window of [-5;+5] trading days around the rollout date to the NYSE Hybrid Market. As a
+control group for each cohort, I use those stocks that have not been rolled out to the NYSE
+Hybrid Market before and during the respective event window.18 Afterward, I estimate the
+following stacked IV regression saturated with stock-cohort and day-cohort fixed effects using
+16It is crucial for my analysis since I examine changes in predictive power of past limit order book
+imbalances, and therefore it is necessary that this information is publicly available to all market participants,
+and that they are accustomed to it.
+17I acknowledge that the compliance date for Reg NMS Rules 610 and 611 is included in the sample
+period. According to SEC (2005), p. 307, the compliance date for the aforementioned rules was August 31,
+2006: “As of that date, trading centers must begin trading all NMS stocks pursuant to the requirements of
+Rules 610 and 611.” I note that the first stocks were rolled out to the NYSE Hybrid Market in October
+2006, well after the compliance date of Reg NMS rules; thus, my results are unlikely to be contaminated
+by Reg NMS implementation. In the Internet Appendix IA 3, I confirm that my results are robust to the
+exclusion of the period affected by Reg NMS.
+18In Section III.D, I use alternative event windows of [-10;+10] and [-15;+15] trading days. The results
+remain largely unchanged.
+15
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+the constructed stacked dataset with standard errors clustered by stock-cohort.
+Yc,i,d = αc,i + γc,d + β1 \
+ATc,i,d + β2MCAPc,i,m−1 + β3(1/PRCc,i,m−1)+
++ β4Turnoverc,i,m−1 + β5PQSPRc,i,m−1 + β6Rangec,i,m−1 + ϵc,i,d
+(9)
+where Yc,i,d is the partial R2 of each of the variables in the predictive regressions (see Eq. (6)
+and (8)) averaged across all possible orderings of the variables for cohort c and stock i on
+day d, and αc,i and γc,d are stock-cohort and day-cohort fixed effects, respectively. \
+ATc,i,d is
+a proxy for algorithmic trading for cohort c and stock i on day d (the daily number of quotes
+relative to daily trading volume in USD 10,000, QTE/DV OL), which is instrumented out
+using the introduction of the NYSE Hybrid Market. In addition, I control for the daily log of
+market capitalization in billions (MCAPc,i,m−1), inverse of price (1/PRCc,i,m−1), annualized
+turnover (Turnoverc,i,m−1), closing quoted spread (PQSPRc,i,m−1), and the square root of
+high minus low range (Rangec,i,m−1) averaged over the previous month, m −1. As a set
+of instruments, I use all explanatory variables with [
+ATi,d replaced by Hybridi,d, a dummy
+variable that equals one if the stock i on day d is rolled out to the NYSE Hybrid Market
+and zero otherwise.
+II.
+Empirical results
+In this section, I discuss my empirical results. First, I provide summary statistics of
+the proxies for algorithmic trading in my sample (see Section II.A). Second, I document
+intraday return predictability from past returns and market and limit order flows (see Section
+II.B). Finally, I analyze the effect of an exogenous increase in algorithmic trading on market
+efficiency proxied by intraday return predictability from past returns and market and limit
+order flows (see Section II.C).
+16
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+A.
+Summary of proxies for algorithmic trading
+I present the average proxies for algorithmic trading (averaged across stock-days) in
+Table II for the whole sample of 950 stocks and for different market capitalization terciles
+(based on market capitalization at the beginning of June 2006). I show that the amounts
+of the best bid-offer quote updates, trades, trading volume, and trade size increase from
+small-cap stocks to large-cap stocks from 6,471 to 22,467 quote updates, from 1,369 to
+8,826 trades, from USD 9,260,000 to USD 138,760,000, and from 242.80 to 315.90 shares,
+respectively.
+On average, in my sample, for each USD 10,000 of daily trading volume,
+I observe 6.79 best bid-offer quote updates, and for each trade, I observe 4.56 best bidoffer quote updates.
+For instance, Hendershott, Jones, and Menkveld (2011) document
+5.42 electronic messages for each USD 10,000 of daily trading volume for the largest stocks
+quantile, while the corresponding statistic of the largest tercile in my data is 2.51. I note
+that my measure is different from the one used in Hendershott, Jones, and Menkveld (2011)
+because I do not have access to the whole order history (i.e., submission, modification, and
+cancellation) and I use only updates at the best bid-offer level. In other words, the number of
+electronic messages for each USD 10,000 must be by definition higher than the number of the
+best bid-offer quote updates. I also note that the changes in the algorithmic trading proxies
+from large-cap stocks to small-cap stocks are in line with those documented by Hendershott,
+Jones, and Menkveld (2011).
+INSERT TABLE II HERE
+B.
+Summary of proxies for market efficiency
+To proxy for market efficiency, I estimate predictive regressions from total order flow
+(see Eq. (6)) and surprises in the order flow (see Eq. (8)). Table III presents the average
+coefficients together with the proportion of the regressions that have significant individual tstatistics of the predictive stock-day regressions from total order flow (Panel A) and surprises
+17
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+in the order flow (Panel B). I focus my discussion on Panel A only, since the results reported
+in Panel B are qualitatively similar. I discuss results for the whole sample only as the results
+for different market capitalization terciles are in line with the results of the whole sample.
+INSERT TABLE III HERE
+Panel A of Table III shows that Moib is positively related to future stock returns (in
+line with, e.g., Chordia, Roll, and Subrahmanyam (2005, 2008)). In particular, the Moib
+coefficient is 0.21 and is positive and significant in 29.6% of the stock-day regressions.19
+Depth imbalances at the inner and middle levels of the limit order book (Inner and Middle,
+respectively) are positively and significantly related to the future price movements in 54.8%
+and 12.8%, respectively, while depth imbalances at the outer levels of the limit order book
+(Outer) have, on average, negative effects; however, the proportion of positive and negative
+significant stock-days is almost the same. The latter could be due to the fact that outer
+levels are used for informed trading if and only if an informed trader receives a relatively
+strong signal, which is unlikely to happen regularly on the market.
+Table IV presents the proxy for market efficiency used in this paper. In particular, Panel
+A of Table IV presents the partial R2 of each of the variables (averaged across all possible
+orderings of the variables as in Lindeman, Merenda, and Gold (1980)) in the predictive stockday regressions from total order flow as defined by Eq. (6) for the whole sample and market
+capitalization terciles. The partial R2 of Moib is 0.84%, while the partial R2 of limit order
+book imbalances, Loib, is 2.49%. The largest predictive power comes from depth imbalances
+at the inner levels of the limit order book (1.57%). As a comparison, Chordia, Roll, and
+Subrahmanyam (2008) document an adjusted R2 of 0.51% for predictive regressions using
+only the lagged dollar market order imbalance as a predictive variable for the 1993 – 2002
+period. My results are also consistent with Cao, Hansch, and Wang (2009), who document
+19As a comparison, R¨osch, Subrahmanyam, and Van Dijk (2016) document that the coefficient of Moib
+is positive and significant in 30.07% of the predictive regressions, using only lagged dollar market order
+imbalance as a predictive variable over the period between 1996 and 2010 for NYSE common stocks.
+18
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+an increase in adjusted R2 after the inclusion of additional levels of the limit order book
+with a monotonic decrease of the added value for each additional level.
+INSERT TABLE IV HERE
+Panel B of Table IV presents the partial R2 of each of the variables (averaged across
+all possible orderings of the variables as in Lindeman, Merenda, and Gold (1980)) in the
+predictive stock-day regressions from the surprises in the order flow as defined by Eq. (8) for
+the whole sample and market capitalization terciles. Using surprises instead of total market
+and limit order flows allows me to remove the effect stemming from order flow persistence
+and isolate the pure effect of the slow incorporation of information. The results show that
+the majority of predictive power comes from the surprises in the order flow and thus is
+attributable to slow information incorporation rather than inventory concerns due to the
+persistence of market and limit order flows. In particular, overall R2 decreases only slightly
+from 4.33% (Panel A) to 4.15% (Panel B); the partial R2 of MoibU is 0.78% (as compared
+to the partial R2 of Moib of 0.84%); the partial R2 of LoibU is 2.35% (as compared to the
+partial R2 of Loib of 2.49%).
+C.
+Algorithmic trading and market efficiency
+In this section, I examine the causal effect of algorithmic trading on the predictive power
+of past returns, market and limit order flows. Table V reports the results of the first-stage
+of stacked IV regression (see Eq. (9)) for an event window of [-5;+5] trading days around
+the rollout date to the NYSE Hybrid Market, with the introduction of the NYSE Hybrid
+Market used as an instrument for algorithmic trading.20
+INSERT TABLE V HERE
+20In the Internet Appendix IA 4, I visualize the first stage of the stacked IV regression for an event
+window of [-5;+5] trading days around the rollout date to the NYSE Hybrid Market.
+19
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+I document that algorithmic trading, as proxied by the number of best bid-offer quote
+updates relative to daily trading volume in USD 10,000 (QTE/DV OL) increases significantly
+for the whole sample as well as for different market capitalization terciles. In particular,
+algorithmic trading increases by 1.07 best bid-offer quote updates per USD 10,000 trading
+volume or 15.76% (1.07
+6.79) relative to its average value for the whole sample period or by 41.31%
+(1.07
+2.59) of its within standard deviation.21 Interestingly, I observe a monotonic decrease in the
+changes in algorithmic trading activity due to the NYSE Hybrid Market’s introduction,
+moving from small to large stocks.
+INSERT TABLE VI HERE
+The results for the second-stage of stacked IV regression for the whole sample are presented in Table VI. In particular, I report the effect of algorithmic trading, instrumented
+out using the introduction of the NYSE Hybrid Market, on the partial R2 of each of the
+variables in the predictive regressions using total order flow (see Eq. (6)) and surprises in
+the order flow (see Eq. (8)) in Panels A and B, respectively.
+Panel A of Table VI shows that one within standard deviation increase in the proxy for
+algorithmic trading decreases the partial R2 of market order imbalance (Moib) and limit
+order imbalance at the outer levels of the limit order book (Outer) by 0.29% (2.59 × -0.11)
+and 0.16% (2.59 × -0.06), respectively. These effects remain of the same magnitude and
+maintain their statistical significance at the 1% level if I use surprises in the order flow
+instead of the total order flow (see Panel B of Table VI).
+Panel A of Table VI also shows that the partial R2 of limit order imbalances at the inner
+and middle levels of the limit order book (Inner and Middle) decreases slightly; however,
+this decrease is not statistically significant. Panel B of Table VI shows that the predictive
+power of the surprises in depth imbalances at the inner and middle levels of the limit order
+21In the stacked dataset, one within standard deviation of QTE/DV OL is equal to 2.59.
+20
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+book decreases significantly with an increase in algorithmic trading.22,23
+I note that it is important to distinguish between predictability from total order flow
+and surprises in the order flow.
+In this paper, I would like to estimate a causal effect
+of algorithmic trading on the speed of the incorporation of new information, rather than
+capture the effects resulting from order flow persistence. For the remainder of the paper, I
+focus on the predictive power of surprises in the order flow.
+In a closely related paper, Hendershott and Moulton (2011) show, for an 8-month event
+window, that various measures of market efficiency (based on mid-quotes and/or market
+order flow) increase after the introduction of the NYSE Hybrid Market, while for a 40-day
+event window return autocorrelation and variance ratio remained largely unchanged and
+only pricing error decreases by 7% relative to the pre-Hybrid average. I add to their findings
+by showing that, though in the short-run, the predictive power of past mid-quote returns
+indeed remains unchanged (I observe an insignificant decrease in the predictive power of
+lagged returns), the predictive power of the surprises in the market order imbalance and
+depth imbalances at various levels of the limit order book decreases significantly due to an
+exogenous increase in algorithmic trading. In particular, Panel B of Table VI shows that one
+within standard deviation increase in the proxy for algorithmic trading leads to a decrease
+in the predictive power of the surprises in depth imbalances at the inner (InnerU), middle
+(MiddleU), and outer (OuterU) levels of the limit order book: by 0.18% (2.59 × -0.07),
+0.05% (2.59 × -0.02), and 0.16% (2.59 × -0.06), respectively. It is equivalent to a respective
+decrease of 12.41% (0.18
+1.45), 10.87% (0.05
+0.46), and 36.36% (0.16
+0.44) relative to the sample average.
+Total R2 decreases by 0.73% (2.59 × -0.28) with one within standard deviation increase in
+the proxy for algorithmic trading. This is equivalent to an improvement of overall market
+22Naturally, market makers manage their inventory positions by adjusting best bid-offer quotes (which
+are part of depth imbalance at the inner levels of the limit order book, Inner) in response to persistent
+buying or selling pressure captured by market order imbalance, Moib.
+23In the Internet Appendix IA 4, I visualize the second stage of the stacked IV regression for an event
+window of [-5;+5] trading days around the rollout date to the NYSE Hybrid Market.
+21
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+efficiency of 17.5% (0.73
+4.15) relative to the whole sample average.
+To sum up, an exogenous shock to algorithmic trading leads to an overall improvement in
+market efficiency via faster incorporation of information embedded in the market and limit
+order flows alike.
+III.
+Additional analysis
+In this section, I provide additional results to support the baseline analysis discussed
+in Section II.C. First, I repeat the main analysis for market capitalization terciles (Section
+III.A). Second, I analyze the out-of-sample performance of intraday predictive regressions
+(Section III.B). Third, I show that my results are robust to using alternative proxies of
+algorithmic trading (Section III.C). Finally, I show that my results are robust for alternative
+event windows (Section III.D).
+A.
+Algorithmic trading and market efficiency: Market capitalization terciles
+In this section, I repeat the main analysis for different market capitalization terciles.24
+Table VII presents the second-stage of stacked IV regression for different market capitalization terciles based on the partial R2 of each of the variables in the predictive regressions
+using surprises in the order flow (see Eq. (8)).
+INSERT TABLE VII HERE
+Improvements in market efficiency due to the decreased predictive power of surprises
+in market order imbalance (MoibU) and depth imbalance at the outer levels of the limit
+order book (OuterU) are persistent across all three terciles.
+Namely, an increase of one
+within standard deviation in the proxy for algorithmic trading leads to a decrease in the
+24I refer to Table V for the results of the first-stage of stacked IV regression for market capitalization
+terciles.
+22
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+partial R2 of MoibU by 0.28% (3.98×-0.07), 0.23% (1.76×-0.13), and 0.12% (0.62×-0.20) for
+small stocks, medium-sized stocks, and large stocks, respectively. An increase of one within
+standard deviation in the proxy for algorithmic trading leads to a decrease in the partial
+R2 of OuterU by 0.16% (3.98×-0.04), 0.09% (1.76×-0.05), and 0.07% (0.62×-0.12) for small
+stocks, medium-sized stocks, and large stocks, respectively.25 The partial R2 of the surprises
+in depth imbalance at the inner levels of the limit order book, InnerU, decreases significantly
+for medium-sized stocks only. Overall, market efficiency improves consistently across terciles
+as a result of an exogenous shock to algorithmic trading.
+B.
+Algorithmic trading and out-of-sample performance
+In this section, I provide evidence on one channel through which market efficiency might
+improve due to increased algorithmic trading activity. In particular, the introduction of
+the NYSE Hybrid Market allowed market orders to automatically “walk” through the limit
+order book, thus making it easier for algorithmic trading to arbitrage stale limit orders away.
+Given that algorithmic traders are likely to compete for the same information, the resulting
+profits from trading strategies based on the signals derived from the past order flow should
+decrease with an exogenous increase in algorithmic trading activity. In the absence of trader
+identification, I cannot directly measure the profits of algorithmic arbitrageurs, however, I
+can evaluate the out-of-sample performance of the intraday predictive regressions. I build on
+Campbell and Thompson (2008) and adapt their methodology to predict returns one minute
+ahead using past surprises in the market and limit order flows using an expanding window to
+ensure there is no look-ahead bias. An important difference is that my predictive regressions
+are contained within a single stock-day. Given that I have five predictive variables, I require
+100 one-minute intervals before I make a first forecast. In particular, I construct out-ofsample R2 (OOSR2) as follows:
+25In the stacked dataset, one within standard deviation of QTE/DV OL is equal to 0.62, 1.76, and 3.98
+for the large stocks, medium-sized stocks, and small stocks, respectively.
+23
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+OOSR2
+i,d = 1 −ΣT
+t=101(Reti,d,t −
+\
+Reti,d,t|1:t−1)
+ΣT
+t=101(Reti,d,t −Reti,d,1:t−1)
+(10)
+where Reti,d,t is a one-minute return for stock i, day d, and one-minute interval t,
+\
+Reti,d,t|1:t−1 is a one-minute ahead forecast based on the expanding window until interval
+t −1 from the predictive regression using surprises in market and limit order flows (see Eq.
+(8)) for stock i and day d,26 Reti,d,1:t−1 is the historical average return based on the expanding
+window until interval t −1 for stock i and day d.
+INSERT TABLE VIII HERE
+I report summary statistics for OOSR2
+i,d for the 950 NYSE-listed common stocks from
+June 2006 to May 2007 in Table VIII. The results show that it is extremely hard to predict
+intraday returns out-of-sample. The average OOSR2 is -1.75%, meaning that the historical
+average of intraday returns is a better predictor than the forecast based on the expanding
+window estimation of Eq. (8). I also note that large stocks exhibit a lower average OOSR2
+(-2.01%) than small stocks (-1.67%) consistent with the intuition of large stocks benefiting
+from more efficient prices. In the 75th percentile of the distribution, OOSR2 becomes slightly
+positive, reaching 5.00% in the 95th percentile of the distribution for all stock-days.
+INSERT TABLE IX HERE
+As a next step, Campbell and Thompson (2008) consider a framework with a singleperiod horizon and mean-variance preferences to quantify investors’ profits, provided they
+use the forecast from the predictive regressions as a trade signal.
+They show that the
+proportional increase in the expected returns of such a strategy is close to the ratio of
+OOSR2 and Sharpe ratio. However, this method is well defined only if OOSR2 is positive,
+which is not the case for my analysis. Though I cannot quantify the profits of arbitrageurs,
+26Note that surprises in market and limit order flows are also obtained from the V AR(k) model (see Eq.
+7) using information until interval t −1 only.
+24
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+I can check whether OOSR2 and the probability of observing a non-negative OOSR2 are
+affected by the increased algorithmic trading activity due to the rollout to the NYSE Hybrid
+market via stacked IV regression. In Table IX, I show that OOSR2 decreases significantly
+with an increase in algorithmic trading activity for the whole sample, as well as for every
+market capitalization tercile. The probability of observing a non-negative OOSR2 decreases
+significantly for the whole sample.27 In particular, one within standard deviation increase in
+the proxy for algorithmic trading decreases the likelihood of observing non-negative OOSR2
+by 5.18% (2.59 × -0.02). This is economically meaningful given that the respective average
+probability of the whole sample is 31.50%.
+Overall, I provide indirect evidence that market efficiency improves via competition between algorithmic arbitrageurs, which is evident from the decreased probability of making
+profits from a trading strategy based on the return forecasts from past market and limit
+order flows.
+C.
+Algorithmic trading and market efficiency: Alternative proxies
+In this section, instead of using QTE/DV OL, the daily number of best bid-offer quote
+updates relative to daily trading volume (in USD 10,000), as a proxy for algorithmic trading,
+I use QTE/TRD, the daily number of best bid-offer quote updates relative to the daily
+number of transactions, and TRD SIZE, the trade size in 10,000 of shares. An increase in
+algorithmic trading should result in larger QTE/TRD and smaller TRD SIZE.
+The results of the first-stage of stacked IV regression are reported in Table X for QTE/TRD
+(Panel A) and TRD SIZE (Panel B), respectively. I show that following the NYSE Hybrid
+introduction QTE/TRD (TRD SIZE) has significantly increased (decreased) in line with
+expectations.
+INSERT TABLES X – XI HERE
+27The respective coefficient remains negative though not significant for market capitalization terciles.
+25
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+The results for the second-stage of stacked IV regression (see Eq. (9)) for the whole
+sample are presented in Table XI. Overall, the results are consistent with my findings in the
+main analysis. In particular, the predictive power of the surprises in market order imbalance
+and depth imbalances at the various levels of the limit order book decreases significantly
+with exogenous shock to algorithmic trading, while the predictive power of lagged returns
+remains unchanged.
+Panel A of Table XI shows that one within standard deviation increase in QTE/TRD
+decreases overall R2 by 0.84% (1.05×-0.80). Panel B of Table XI shows that one within
+standard deviation decrease in TRD SIZE decreases overall R2 by 0.55% (-0.005×109.16).28
+D.
+Algorithmic trading and market efficiency: Alternative event windows
+In this section, I repeat the main analysis using alternative event windows of [-10;+10]
+and [-15;+15] trading days instead of an event window of [-5;+5] trading days around the
+rollout date to the NYSE Hybrid Market to construct the stacked dataset. Table XII reports
+the first-stage of stacked IV regression. The results are in line with the main analysis.
+INSERT TABLES XII – XIII HERE
+Table XIII shows that results are robust to alternative window length, with surprises in
+market order imbalance and depth imbalances at the middle and outer levels of the limit order
+book consistently decreasing their predictive power due to an exogenous shock to algorithmic
+trading. For the event window of [-15;+15], I observe an increase in the predictive power
+for the lagged returns and no significant effect of the surprises in the limit order imbalance
+at the inner levels of the limit order book. However, I note that the stacked IV approach
+requires to use as a control group only those stocks that have not been treated before or
+during the event window. This implies that by increasing the length of the event window, one
+28In the stacked dataset, one within standard deviation of QTE/TRD (TRD SIZE) is equal to 1.05
+(0.005).
+26
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+inevitably decreases the number of cohorts to be used in the analysis (especially if staggered
+events occur close to each other). To be more specific, my sample includes 950 NYSE-listed
+common stocks. Using the baseline event window of [-5;+5] trading days, I can use 875 stocks
+as treated stocks in one of the cohorts. Using an event window of [-10;+10] trading days
+leaves me with 715 stocks as treated stocks in one of the cohorts. Using an event window
+of [-15;+15] trading days leaves me with 598 stocks as treated stocks in one of the cohorts.
+Stocks that were rolled out to the NYSE Hybrid Market first might experience different
+patterns in market efficiency as compared to stocks that were rolled out last. To that extent,
+longer event windows seem to be less reliable for drawing generalized conclusions.
+IV.
+Conclusion
+The recent changes in the equity markets’ landscape, namely, the emergence of algorithmic traders and the shift from floor trading to open electronic limit order book markets,
+call for examining potential resultant changes in the speed of information incorporation.
+Motivated by this, I investigate the intraday return predictability from past returns, market
+and limit order flows (used as a proxy for market efficiency) around the introduction of the
+NYSE Hybrid Market – a change in market design that I use as an instrumental variable for
+algorithmic trading activity.
+To the best of my knowledge, I am the first to establish a large sample causal relation
+between algorithmic trading and market efficiency, taking into consideration past market
+and limit order flows alike. In the short run, an exogenous shock to algorithmic trading
+leads to a significant decrease in the predictive power of surprises in both market imbalance
+and depth imbalances incorporated at the various levels of the limit order book, while the
+predictive power of past returns remains unchanged. This suggests that algorithmic trading
+facilitates the speed of information incorporation embedded in the market and limit order
+flows alike.
+27
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+One important implication of my analysis concerns measures of market efficiency solely
+based on mid-quote returns and/or market order flow (e.g., return autocorrelation, pricing
+error based on mid-quote returns and trade direction, etc.), that have been widely used in
+studies evaluating market efficiency. These measures neglect information embedded in the
+past limit order flow, which in turn can lead to erroneous conclusions with regard to market
+efficiency.
+28
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+References
+Andersen, T. G. and T. Bollerslev (1997). Intraday periodicity and volatility persistence in
+financial markets. Journal of Empirical Finance 4(2), 115–158.
+ASIC (2013). Dark liquidity and high-frequency trading. Report 331.
+Baker, A. C., D. F. Larcker, and C. C. Wang (2022). How much should we trust staggered
+differences-in-differences estimates? Journal of Financial Economics 144(2), 370–395.
+Baruch, S., M. Panayides, and K. Venkataraman (2017). Informed trading before corporate
+events: Theory and evidence. Journal of Financial Economics 125(3), 561–588.
+Biais, B. and T. Foucault (2014).
+HFT and market quality.
+Bankers, Markets and Investors 128, 5–19.
+Biais, B., P. Hillion, and C. Spatt (1995). An empirical analysis of the limit order book and
+the order flow in the Paris Bourse. Journal of Finance 50(5), 1655–1689.
+Bloomfield, R., M. O’Hara, and G. Saar (2005). The “make or take” decision in an electronic
+market: Evidence on the evolution of liquidity. Journal of Financial Economics 75(1),
+165–199.
+Boehmer, E., K. Fong, and J. J. Wu (2021).
+Algorithmic trading and market quality:
+International evidence. Journal of Financial and Quantitative Analysis 56(8), 2659–2688.
+Brogaard, J., T. Hendershott, and R. Riordan (2019).
+Price discovery without trading:
+Evidence from limit orders. Journal of Finance 74(4), 1621–1658.
+Campbell, J. Y. and S. B. Thompson (2008). Predicting excess stock returns out of sample:
+Can anything beat the historical average? Review of Financial Studies 21(4), 1509–1531.
+29
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Cao, C., O. Hansch, and X. Wang (2009). The information content of an open limit-order
+book. Journal of Futures Markets 29(1), 16–41.
+Carrion, A. (2013). Very fast money: High-frequency trading on the NASDAQ. Journal of
+Financial Markets 16(4), 680–711.
+Cenesizoglu, T., G. Dionne, and X. Zhou (2022). Asymmetric effects of the limit order book
+on price dynamics. Journal of Empirical Finance 65, 77–98.
+Cengiz, D., A. Dube, A. Lindner, and B. Zipperer (2019). The effect of minimum wages on
+low-wage jobs. Quarterly Journal of Economics 134(3), 1405–1454.
+Chaboud, A. P., B. Chiquoine, E. Hjalmarsson, and C. Vega (2014). Rise of the machines:
+Algorithmic trading in the foreign exchange market. Journal of Finance 69(5), 2045–2084.
+Chordia, T., R. Roll, and A. Subrahmanyam (2005). Evidence on the speed of convergence
+to market efficiency. Journal of Financial Economics 76(2), 271–292.
+Chordia, T., R. Roll, and A. Subrahmanyam (2008). Liquidity and market efficiency. Journal
+of Financial Economics 87(2), 249–268.
+Collin-Dufresne, P. and V. Fos (2015). Do prices reveal the presence of informed trading?
+Journal of Finance 70(4), 1555–1582.
+Conrad, J., S. Wahal, and J. Xiang (2015). High-frequency quoting, trading, and the efficiency of prices. Journal of Financial Economics 116(2), 271–291.
+Dugast, J. and T. Foucault (2018). Data abundance and asset price informativeness. Journal
+of Financial Economics 130(2), 367–391.
+Ellul, A., C. W. Holden, P. Jain, and R. Jennings (2007). Order dynamics: Recent evidence
+from the NYSE. Journal of Empirical Finance 14(5), 636–661.
+30
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Glosten, L. R. (1994).
+Is the electronic open limit order book inevitable?
+Journal of
+Finance 49(4), 1127–1161.
+Glosten, L. R. and P. R. Milgrom (1985). Bid, ask and transaction prices in a specialist
+market with heterogeneously informed traders. Journal of Financial Economics 14(1),
+71–100.
+Goettler, R. L., C. A. Parlour, and U. Rajan (2009).
+Informed traders and limit order
+markets. Journal of Financial Economics 93(1), 67–87.
+Harris, L. E. and V. Panchapagesan (2005). The information content of the limit order book:
+Evidence from NYSE specialist trading decisions. Journal of Financial Markets 8(1), 25–
+67.
+Hasbrouck, J. (1991). Measuring the information content of stock trades. Journal of Finance 46(1), 179–207.
+Hendershott, T., C. M. Jones, and A. J. Menkveld (2011). Does algorithmic trading improve
+liquidity? Journal of Finance 66(1), 1–33.
+Hendershott, T. and P. C. Moulton (2011). Automation, speed, and stock market quality:
+The NYSE’s Hybrid. Journal of Financial Markets 14(4), 568–604.
+Huang, R. D. and H. R. Stoll (1997). The components of the bid-ask spread: A general
+approach. Review of Financial Studies 10(4), 995–1034.
+Kaniel, R. and H. Liu (2006). So what orders do informed traders use?
+Journal of Business 79(4), 1867–1913.
+Kavajecz, K. A. and E. R. Odders-White (2001). An examination of changes in specialists’
+posted price schedules. Review of Financial Studies 14(3), 681–704.
+31
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Kavajecz, K. A. and E. R. Odders-White (2004). Technical analysis and liquidity provision.
+Review of Financial Studies 17(4), 1043–1071.
+Kyle, A. S. (1985). Continuous auctions and insider trading. Econometrica 53(6), 1315–1335.
+Lee, C. and M. J. Ready (1991). Inferring trade direction from intraday data. Journal of
+Finance 46(2), 733–746.
+Lindeman, R. H., P. F. Merenda, and R. Z. Gold (1980).
+Introduction to bivariate and
+multivariate analysis. Scott, Foresman, Glenview.
+Madhavan, A., M. Richardson, and M. Roomans (1997). Why do security prices change? A
+transaction-level analysis of NYSE stocks. Review of Financial Studies 10(4), 1035–1064.
+Menkveld, A. J. (2016). The economics of high-frequency trading: Taking stock. Annual
+Review of Financial Economics 8, 1–24.
+O’Hara, M. (2015).
+High frequency market microstructure.
+Journal of Financial Economics 116(2), 257–270.
+R¨osch, D. M., A. Subrahmanyam, and M. A. Van Dijk (2016). The dynamics of market
+efficiency. Review of Financial Studies 30(4), 1151–1187.
+Ro¸su, I. (2020). Liquidity and information in limit order markets. Journal of Financial and
+Quantitative Analysis 55(6), 1792–1839.
+Roth, J., P. H. C. Sant’Anna, A. Bilinski, and J. Poe (2023). What’s trending in differencein-differences? A synthesis of the recent econometrics literature. Journal of Econometrics 235(2), 2218–2244.
+Sadka, R. (2006). Momentum and post-earnings-announcement drift anomalies: The role of
+liquidity risk. Journal of Financial Economics 80(2), 309–349.
+32
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+SEC (2005). Regulation NMS. Release No. 34-51808, File No. S7-10-04.
+SEC (2006). Release No. 34-53539. File No. SR-NYSE-2004-05.
+SEC (2010). Concept release on equity market structure. Release No. 34-61358, File No.
+S7-02-10.
+Seppi, D. J. (1997). Liquidity provision with limit orders and a strategic specialist. Review
+of Financial Studies 10(1), 103–150.
+Swan, P. and P. J. Westerholm (2006). Market architecture and global exchange efficiency:
+One design need not fit all stock sizes. Working paper.
+Weller, B. M. (2018). Does algorithmic trading reduce information acquisition? Review of
+Financial Studies 31(6), 2184–2226.
+Wuyts, G. (2008). The impact of liquidity shocks through the limit order book. Working
+paper.
+33
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Table I Summary statistics
+This table provides summary statistics for the 950 NYSE-listed common stocks from June
+2006 to May 2007. This period covers the rollout to the NYSE Hybrid Market used as
+an instrument in the instrumental variable analysis. The results are reported for all stocks
+and for three terciles based on market capitalization as of the beginning of June 2006.
+The data on the average of market capitalization, MCAP (in billions of USD), the quoted
+closing spread, PQSPR (in basis points), volatility, Range (high minus low range), turnover,
+Turnover (annualized), and price (in USD) come from CRSP. All variables are 0.5% and
+99.5% winsorized.
+All
+Small Cap
+Mid Cap
+Large Cap
+MCAP
+10.40
+0.93
+2.89
+27.52
+PQSPR
+9.87
+14.03
+9.33
+6.25
+Range
+0.01
+0.02
+0.01
+0.01
+Turnover
+2.29
+2.39
+2.45
+2.03
+PRC
+38.73
+26.07
+38.17
+52.02
+# of stocks
+950
+317
+317
+316
+Observations
+234,255
+77,968
+78,662
+77,625
+34
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Table II Proxies for algorithmic trading
+This table provides summary statistics for algorithmic trading for the 950 NYSE-listed common stocks from June 2006 to May 2007. This period covers the rollout to the NYSE Hybrid
+Market used as an instrument in the instrumental variable analysis. The results are reported
+for all stocks and for three terciles based on market capitalization as of the beginning of June
+2006. The data on the daily number of best bid-offer quote updates (QTE), the daily number of trades (TRD), the daily trading volume in USD 10,000 (DV OL), and the average
+trade size in the number of shares (TRD SIZE) come from TRTH. All variables are 0.5%
+and 99.5% winsorized.
+All
+Small Cap
+Mid Cap
+Large Cap
+QTE/DV OL
+6.79
+12.03
+5.82
+2.51
+QTE/TRD
+4.56
+5.73
+4.67
+3.28
+TRD SIZE
+274.40
+242.80
+264.80
+315.90
+TRD
+4,259
+1,369
+2,616
+8,826
+QTE
+13,039
+6,471
+10,247
+22,467
+DV OL
+5,760
+926
+2,542
+13,876
+# of stocks
+950
+317
+317
+316
+Observations
+234,255
+77,968
+78,662
+77,625
+35
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Table III Intraday return predictability: coefficients
+This table provides the average coefficients together with the proportion of the regressions that have significant individual tstatistics of the predictive stock-day regressions from total order flow (Panel A) and from surprises in the order flow (Panel
+B) for the 950 NYSE-listed common stocks from June 2006 to May 2007. This period covers the rollout to the NYSE Hybrid
+Market used as an instrument in the instrumental variable analysis. The results are reported for all stocks and for three terciles
+based on market capitalization as of the beginning of June 2006. Data on trades, best bid-offer quotes, and NYSE limit order
+book snapshots come from TRTH. All variables are 0.5% and 99.5% winsorized.
+All
+% significant
+Small Cap
+% significant
+Mid Cap
+% significant
+Large Cap
+% significant
+Pos
+Neg
+Pos
+Neg
+Pos
+Neg
+Pos
+Neg
+Panel A: Coefficients (total order flow)
+Ret
+-0.01
+14.7%
+18.8%
+-0.03
+10.6%
+24.9%
+0.00
+15.6%
+17.4%
+0.01
+17.9%
+14.1%
+Moib
+0.21
+29.6%
+1.9%
+0.49
+32.8%
+1.8%
+0.12
+29.5%
+1.9%
+0.03
+26.5%
+2.0%
+Inner
+1.71
+54.8%
+0.6%
+2.45
+61.1%
+0.5%
+1.67
+59.4%
+0.6%
+1.01
+43.9%
+0.8%
+Middle
+0.27
+12.8%
+5.9%
+0.38
+14.0%
+4.8%
+0.24
+12.9%
+6.0%
+0.18
+11.5%
+6.9%
+Outer
+-0.14
+6.3%
+9.1%
+-0.15
+6.4%
+8.7%
+-0.18
+5.7%
+9.6%
+-0.09
+6.7%
+9.0%
+Panel B: Coefficients (surprises in the order flow)
+Ret
+0.01
+18.6%
+15.5%
+-0.01
+14.2%
+20.4%
+0.01
+20.0%
+14.1%
+0.02
+21.5%
+11.9%
+MoibU
+0.20
+25.9%
+2.1%
+0.46
+28.5%
+2.0%
+0.11
+25.9%
+2.1%
+0.02
+23.4%
+2.1%
+InnerU
+2.03
+51.9%
+0.7%
+2.97
+55.1%
+0.6%
+1.94
+56.5%
+0.6%
+1.18
+44.1%
+0.9%
+MiddleU
+0.42
+13.8%
+5.0%
+0.54
+14.3%
+4.1%
+0.39
+13.9%
+5.0%
+0.32
+13.3%
+5.8%
+OuterU
+-0.11
+6.4%
+8.3%
+-0.14
+6.3%
+8.2%
+-0.16
+5.9%
+8.7%
+-0.05
+7.0%
+8.1%
+# of stocks
+950
+317
+317
+316
+Observations
+234,255
+77,968
+78,662
+77,625
+36
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Table IV Intraday return predictability: the partial R2
+This table shows the average partial R2 of each of the variables in the predictive stock-day regressions from total order flow
+(Panel A) and from surprises in the order flow (Panel B) for the 950 NYSE-listed common stocks from June 2006 to May 2007.
+This period covers the rollout to the NYSE Hybrid Market used as an instrument in the instrumental variable analysis. The
+results are reported for all stocks and for three terciles based on market capitalization as of the beginning of June 2006. Data
+on trades, best bid-offer quotes, and NYSE limit order book snapshots come from TRTH. All variables are 0.5% and 99.5%
+winsorized.
+All
+Small Cap
+Mid Cap
+Large Cap
+Panel A: R2 decomposition (total order flow)
+R2
+4.33%
+4.54%
+4.56%
+3.90%
+Ret
+0.97%
+0.98%
+0.96%
+0.96%
+Moib
+0.84%
+0.87%
+0.85%
+0.81%
+LOIB
+2.49%
+2.65%
+2.71%
+2.10%
+Inner
+1.57%
+1.76%
+1.77%
+1.17%
+Middle
+0.46%
+0.45%
+0.47%
+0.47%
+Outer
+0.45%
+0.45%
+0.46%
+0.45%
+Panel B: R2 decomposition (surprises in the order flow)
+R2
+4.15%
+4.23%
+4.35%
+3.86%
+Ret
+0.99%
+0.98%
+1.00%
+1.00%
+MoibU
+0.78%
+0.80%
+0.78%
+0.75%
+LOIBU
+2.35%
+2.43%
+2.53%
+2.08%
+InnerU
+1.45%
+1.55%
+1.64%
+1.17%
+Middle
+U
+0.46%
+0.44%
+0.46%
+0.47%
+OuterU
+0.44%
+0.43%
+0.44%
+0.44%
+# of stocks
+950
+317
+317
+316
+Observations
+234,255
+77,968
+78,662
+77,625
+37
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Table V First-stage of stacked IV regression
+This table provides the results of the first-stage of stacked IV regression with a proxy for
+algorithmic trading activity as dependent variable and the rollout to the NYSE Hybrid
+Market used as an instrument (see Eq. (9)). The stacked dataset is created for each cohort
+(where the cohort is defined as stocks being rolled out to the NYSE Hybrid market on a
+particular date) for an event window of [-5;+5] trading days around the rollout date. As a
+control group for each cohort, stocks that have not yet been rolled out to the NYSE Hybrid
+Market before and during the respective event window are used. Algorithmic trading is
+proxied by the number of best bid-offer quote updates relative to trading volume in USD
+10,000, QTE/DV OL. The results are reported for all stocks and for three terciles based on
+market capitalization as of the beginning of June 2006. All regressions include stock-cohort
+and day-cohort fixed effects. Standard errors are clustered by stock-cohort. ***, **, and *
+denote significance at the 1%, 5%, and 10% level, respectively. Data on trades, best bid-offer
+quotes, and NYSE limit order book snapshots come from TRTH. Data on control variables
+come from CRSP. Data on the introduction of the NYSE Hybrid Market come from Terrence
+Hendershott’s website. All variables are 0.5% and 99.5% winsorized.
+All
+Small Cap
+Mid Cap
+Large Cap
+Hybrid
+1.07***
+1.68***
+1.04***
+0.57***
+(11.30)
+(6.95)
+(7.82)
+(15.29)
+ln(MCAP)
+1.29***
+2.42*
+0.54
+0.05
+(2.83)
+(1.80)
+(1.29)
+(0.21)
+1/PRICE
+10.72
+23.81
+-20.67
+-21.37
+(0.74)
+(1.03)
+(-1.21)
+(-1.59)
+Turnover
+0.17***
+0.24***
+0.10***
+0.09***
+(4.99)
+(3.81)
+(3.17)
+(4.95)
+PQSPR
+0.00
+-0.02
+0.02***
+0.01**
+(0.55)
+(-1.13)
+(2.60)
+(2.54)
+Range
+7.24
+-0.41
+29.57**
+2.49
+(0.48)
+(-0.02)
+(2.07)
+(0.34)
+Stock-Cohort FE
+Yes
+Day-Cohort FE
+Yes
+Clustered SE
+By Stock-Cohort
+Window
+[-5;+5]
+F-stat
+127.8
+48.35
+61.13
+233.7
+# of stock-cohort
+26,629
+9,278
+9,185
+8,166
+Observations
+274,726
+95,478
+95,449
+83,799
+38
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Table VI Second-stage of stacked IV regression
+This table provides the results of the second-stage of stacked IV regression with the partial R2 of each of the variables in the
+predictive regressions using total order flow (Panel A) and surprises in the order flow (Panel B) as dependent variables and the
+rollout to the NYSE Hybrid Market used as an instrument for algorithmic trading activity (see Eq. (9)). The stacked dataset
+is created for each cohort (where the cohort is defined as stocks being rolled out to the NYSE Hybrid market on a particular
+date) for an event window of [-5;+5] trading days around the rollout date. As a control group for each cohort, stocks that
+have not yet been rolled out to the NYSE Hybrid Market before and during the respective event window are used. Algorithmic
+trading is proxied by the number of best bid-offer quote updates relative to trading volume in USD 10,000, QTE/DV OL. All
+regressions include stock-cohort and day-cohort fixed effects. Standard errors are clustered by stock-cohort. ***, **, and *
+denote significance at the 1%, 5%, and 10% level, respectively. Data on trades, best bid-offer quotes, and NYSE limit order
+book snapshots come from TRTH. Data on control variables come from CRSP. Data on the introduction of the NYSE Hybrid
+Market come from Terrence Hendershott’s website. All variables are 0.5% and 99.5% winsorized.
+Panel A: R2 decomposition (total order flow)
+Panel B: R2 decomposition (surprises in the order flow)
+R2
+Ret
+Moib
+Inner
+Middle
+Outer
+R2
+Ret
+MoibU
+InnerU
+MiddleU
+OuterU
+\
+QTE
+DV OL
+-0.27***
+-0.03
+-0.11***
+-0.05
+-0.02
+-0.06***
+-0.28***
+-0.02
+-0.11***
+-0.07**
+-0.02*
+-0.06***
+(-4.21)
+(-0.99)
+(-4.36)
+(-1.29)
+(-1.32)
+(-4.48)
+(-4.58)
+(-0.70)
+(-4.64)
+(-2.15)
+(-1.79)
+(-4.43)
+ln(MCAP)
+-0.19
+0.30
+-0.35**
+-0.40*
+0.12
+0.29***
+-0.32
+0.29
+-0.18
+-0.55***
+-0.04
+0.18
+(-0.49)
+(1.54)
+(-2.33)
+(-1.91)
+(1.18)
+(2.66)
+(-0.89)
+(1.50)
+(-1.30)
+(-2.65)
+(-0.43)
+(1.62)
+1/PRICE
+-4.60
+7.89
+-16.81***
+0.51
+2.96
+5.62***
+-5.72
+7.55
+-13.73***
+-5.00
+1.17
+5.96***
+(-0.49)
+(1.46)
+(-4.38)
+(0.11)
+(1.36)
+(2.65)
+(-0.66)
+(1.46)
+(-3.93)
+(-1.05)
+(0.61)
+(3.09)
+Turnover
+0.13***
+0.01
+0.05***
+0.04**
+0.01
+0.03***
+0.12***
+0.00
+0.05***
+0.04**
+0.01
+0.02***
+(4.56)
+(0.43)
+(4.13)
+(2.40)
+(1.29)
+(3.65)
+(4.28)
+(0.25)
+(4.32)
+(2.35)
+(1.56)
+(3.36)
+PQSPR
+0.00
+0.00*
+0.00
+-0.00
+-0.00
+-0.00
+0.00
+0.00
+0.00
+-0.00
+-0.00***
+-0.00
+(0.02)
+(1.68)
+(0.83)
+(-1.01)
+(-1.35)
+(-1.23)
+(0.23)
+(1.40)
+(0.87)
+(-0.18)
+(-2.85)
+(-0.68)
+Range
+12.03
+1.23
+-2.10
+9.30*
+6.80***
+-2.46
+5.64
+3.81
+-1.89
+2.75
+5.25***
+-4.31**
+(1.24)
+(0.26)
+(-0.53)
+(1.74)
+(3.29)
+(-1.09)
+(0.62)
+(0.79)
+(-0.51)
+(0.55)
+(2.68)
+(-2.07)
+Stock-Cohort FE
+Yes
+Yes
+Day-Cohort FE
+Yes
+Yes
+Clustered SE
+By Stock-Cohort
+By Stock-Cohort
+Window
+[-5;+5]
+[-5;+5]
+# of stock-cohort
+26,629
+26,629
+Observations
+274,726
+274,726
+39
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Table VII Second-stage of stacked IV regression: Market capitalization terciles
+This table provides the results of the second-stage of stacked IV regression with the partial R2 of each of the variables in the
+predictive regressions using surprises in the order flow as dependent variables and the rollout to the NYSE Hybrid Market
+used as an instrument for algorithmic trading activity (see Eq. (9)) for three terciles based on market capitalization as of the
+beginning of June 2006. The stacked dataset is created for each cohort (where the cohort is defined as stocks being rolled out
+to the NYSE Hybrid market on a particular date) for an event window of [-5;+5] trading days around the rollout date. As
+a control group for each cohort, stocks that have not yet been rolled out to the NYSE Hybrid Market before and during the
+respective event window are used. Algorithmic trading is proxied by the number of best bid-offer quote updates relative to
+trading volume in USD 10,000, QTE/DV OL. For brevity, I report only the coefficients in front of the algorithmic trading
+proxy. All regressions include stock-cohort and day-cohort fixed effects. Standard errors are clustered by stock-cohort. ***, **,
+and * denote significance at the 1%, 5%, and 10% level, respectively. Data on trades, best bid-offer quotes, and NYSE limit
+order book snapshots come from TRTH. Data on control variables come from CRSP. Data on the introduction of the NYSE
+Hybrid Market come from Terrence Hendershott’s website. All variables are 0.5% and 99.5% winsorized.
+R2 decomposition
+# of stock-cohort
+Observations
+R2
+Ret
+MoibU
+InnerU
+MiddleU
+OuterU
+Small Cap
+-0.17***
+0.01
+-0.07**
+-0.06
+-0.01
+-0.04***
+9,278
+95,478
+(-2.75)
+(0.27)
+(-2.37)
+(-1.58)
+(-0.83)
+(-2.76)
+Mid Cap
+-0.33***
+-0.03
+-0.13***
+-0.14**
+-0.01
+-0.05**
+9,185
+95,449
+(-2.88)
+(-0.50)
+(-3.00)
+(-2.24)
+(-0.34)
+(-2.47)
+Large cap
+-0.48***
+-0.09
+-0.20***
+-0.00
+-0.07
+-0.12***
+8,166
+83,799
+(-2.65)
+(-0.90)
+(-2.95)
+(-0.03)
+(-1.61)
+(-2.80)
+Controls
+Yes
+Stock-Cohort FE
+Yes
+Day-Cohort FE
+Yes
+Clustered SE
+By Stock-Cohort
+Window
+[-5;+5]
+40
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Table VIII Summary statistics for out-of-sample R2
+This table provides summary statistics for out-of-sample R2 as defined in Eq. (10) for the
+950 NYSE-listed common stocks from June 2006 to May 2007. This period covers the rollout
+to the NYSE Hybrid Market used as an instrument in the instrumental variable analysis.
+The results are reported for all stocks and for three terciles based on market capitalization
+as of the beginning of June 2006. Data on trades, best bid-offer quotes, and NYSE limit
+order book snapshots come from TRTH. Data on control variables come from CRSP. All
+variables are 0.5% and 99.5% winsorized. All variables are 0.5% and 99.5% winsorized.
+Observations
+Mean
+P5
+P25
+P50
+P75
+P95
+All
+234,251
+-1.75
+-8.75
+-4.02
+-1.68
+0.73
+5.00
+Small Cap
+77,964
+-1.67
+-8.64
+-3.90
+-1.56
+0.80
+4.98
+Mid Cap
+78,662
+-1.57
+-8.81
+-3.93
+-1.51
+1.02
+5.40
+Large Cap
+77,625
+-2.01
+-8.79
+-4.20
+-1.97
+0.35
+4.58
+41
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Table IX Second-stage of stacked IV regression for out-of-sample R2
+This table provides the results of the second-stage of stacked IV regression with out-of-sample R2 as defined in Eq. (10) (Panel
+A) and the probability of observing non-negative out-of-sample R2 (Panel B) as dependent variables and the rollout to the
+NYSE Hybrid Market used as an instrument for algorithmic trading activity (see Eq. (9)). The stacked dataset is created for
+each cohort (where the cohort is defined as stocks being rolled out to the NYSE Hybrid Market on a particular date) for an
+event window of [-5;+5] trading days around the rollout date. As a control group for each cohort, stocks that have not yet been
+rolled out to the NYSE Hybrid Market before and during the respective event window are used. Algorithmic trading is proxied
+by the number of best bid-offer quote updates relative to trading volume in USD 10,000, QTE/DV OL. All regressions include
+stock-cohort and day-cohort fixed effects. Standard errors are clustered by stock-cohort. ***, **, and * denote significance at
+the 1%, 5%, and 10% level, respectively. Data on trades, best bid-offer quotes, and NYSE limit order book snapshots come from
+TRTH. Data on control variables come from CRSP. Data on the introduction of the NYSE Hybrid Market come from Terrence
+Hendershott’s website. All variables are 0.5% and 99.5% winsorized.
+Panel A: OOSR2
+Panel B: Prob(OOSR2 ≥0)
+All
+Small Cap
+Mid Cap
+Large Cap
+All
+Small Cap
+Mid Cap
+Large Cap
+\
+QTE
+DV OL
+-0.31***
+-0.19*
+-0.35*
+-0.57*
+-0.02*
+-0.01
+-0.01
+-0.04
+(-3.05)
+(-1.74)
+(-1.85)
+(-1.77)
+(-1.79)
+(-1.13)
+(-0.61)
+(-1.36)
+ln(MCAP)
+1.67**
+5.95***
+0.37
+0.03
+-0.02
+0.58***
+-0.24*
+-0.16
+(2.43)
+(4.15)
+(0.41)
+(0.02)
+(-0.31)
+(3.40)
+(-1.75)
+(-0.95)
+1/PRICE
+8.12
+67.58***
+-86.61**
+138.76**
+-2.98**
+3.50
+-9.01***
+6.57
+(0.49)
+(3.11)
+(-2.34)
+(2.07)
+(-1.97)
+(1.48)
+(-2.77)
+(0.87)
+Turnover
+0.13***
+0.17**
+0.05
+-0.04
+0.02***
+0.02**
+0.01
+0.00
+(2.61)
+(2.42)
+(0.56)
+(-0.41)
+(2.86)
+(2.36)
+(0.78)
+(0.25)
+PQSPR
+-0.00
+-0.03**
+0.04*
+0.03
+-0.00*
+-0.00**
+0.00
+0.00
+(-0.43)
+(-2.40)
+(1.90)
+(1.36)
+(-1.67)
+(-2.41)
+(0.13)
+(1.10)
+Range
+-6.22
+-38.10*
+25.93
+68.65**
+-1.71
+-4.49**
+2.35
+2.48
+(-0.40)
+(-1.89)
+(0.83)
+(1.96)
+(-1.03)
+(-2.00)
+(0.74)
+(0.66)
+Stock-Cohort FE
+Yes
+Yes
+Day-Cohort FE
+Yes
+Yes
+Clustered SE
+By Stock-Cohort
+By Stock-Cohort
+Window
+[-5;+5]
+[-5;+5]
+# of stock-cohort
+274,722
+95,474
+95,449
+83,799
+274,722
+95,474
+95,449
+83,799
+Observations
+26,629
+9,278
+9,185
+8,166
+26,629
+9,278
+9,185
+8,166
+42
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Table X First-stage of stacked IV regression: Alternative proxies for AT
+This table provides the results of the first-stage of stacked IV regression with proxies for algorithmic trading activity as dependent
+variable and the rollout to the NYSE Hybrid Market used as an instrument (see Eq. (9)). The stacked dataset is created for
+each cohort (where the cohort is defined as stocks being rolled out to the NYSE Hybrid Market on a particular date) for an
+event window of [-5;+5] trading days around the rollout date. As a control group for each cohort, stocks that have not yet
+been rolled out to the NYSE Hybrid Market before and during the respective event window are used. Algorithmic trading is
+proxied by the number of best bid-offer quote updates relative to the number of transactions, QTE/TRD (Panel A), and by the
+average trade size in 10,000 shares, TRD SIZE (Panel B). The results are reported for all stocks and for three terciles based
+on market capitalization as of the beginning of June 2006. All regressions include stock-cohort and day-cohort fixed effects.
+Standard errors are clustered by stock-cohort. ***, **, and * denote significance at the 1%, 5%, and 10% level, respectively.
+Data on trades, best bid-offer quotes, and NYSE limit order book snapshots come from TRTH. Data on control variables come
+from CRSP. Data on the introduction of the NYSE Hybrid Market come from Terrence Hendershott’s website. All variables are
+0.5% and 99.5% winsorized.
+Panel A: QTE/TRD
+Panel B: TRD SIZE
+All
+Small Cap
+Mid Cap
+Large Cap
+All
+Small Cap
+Mid Cap
+Large Cap
+Hybrid
+0.37***
+0.46***
+0.37***
+0.29***
+-26.91***
+-21.65***
+-21.03***
+-36.51***
+(9.02)
+(5.09)
+(4.76)
+(9.31)
+(-16.87)
+(-6.99)
+(-7.66)
+(-15.17)
+ln(MCAP)
+0.88***
+1.60***
+0.50
+0.08
+17.94
+76.35***
+13.46
+41.02
+(4.30)
+(3.41)
+(1.19)
+(0.41)
+(1.41)
+(2.93)
+(0.78)
+(1.39)
+1/PRICE
+9.65**
+15.49***
+-2.52
+-21.87**
+623.83**
+1,114.60***
+1,177.51**
+4,768.11***
+(2.57)
+(2.61)
+(-0.30)
+(-2.57)
+(2.11)
+(2.67)
+(2.04)
+(3.84)
+Turnover
+0.07***
+0.07***
+0.06***
+0.08***
+-6.75***
+-7.41***
+-6.09***
+-7.15***
+(4.93)
+(2.92)
+(3.14)
+(4.70)
+(-8.79)
+(-6.18)
+(-5.26)
+(-4.35)
+PQSPR
+0.00
+-0.01
+0.01*
+0.01
+-0.07
+0.11
+0.07
+-0.70**
+(0.95)
+(-1.07)
+(1.94)
+(1.32)
+(-0.48)
+(0.61)
+(0.26)
+(-2.19)
+Range
+15.67***
+16.16*
+17.01**
+8.21
+503.33**
+1,161.09***
+-23.42
+-311.92
+(3.09)
+(1.90)
+(2.29)
+(1.52)
+(2.00)
+(3.14)
+(-0.05)
+(-0.64)
+Stock-Cohort FE
+Yes
+Yes
+Day-Cohort FE
+Yes
+Yes
+Clustered SE
+By Stock-Cohort
+By Stock-Cohort
+Window
+[-5;+5]
+[-5;+5]
+F-stat
+81.35
+25.91
+22.69
+86.66
+284.5
+48.92
+58.61
+230.00
+# of stock-cohort
+26,629
+9,278
+9,185
+8,166
+26,629
+9,278
+9,185
+8,166
+Observations
+274,726
+95,478
+95,449
+83,799
+274,726
+95,478
+95,449
+83,799
+43
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Table XI Second-stage of stacked IV regression: Alternative proxies for AT
+This table provides the results of the second-stage of stacked IV regression with the partial R2 of each of the variables in the
+predictive regressions using surprises in the order flow as dependent variables and the rollout to the NYSE Hybrid Market used
+as an instrument for algorithmic trading activity (see Eq. (9)). The stacked dataset is created for each cohort (where the cohort
+is defined as stocks being rolled out to the NYSE Hybrid Market on a particular date) for an event window of [-5;+5] trading
+days around the rollout date. As a control group for each cohort, stocks that have not yet been rolled out to the NYSE Hybrid
+Market before and during the respective event window are used. Algorithmic trading is proxied by the number of best bid-offer
+quote updates relative to the number of transactions, QTE/TRD (Panel A), and by the average trade size in 10,000 shares,
+TRD SIZE (Panel B). All regressions include stock-cohort and day-cohort fixed effects. Standard errors are clustered by stockcohort. ***, **, and * denote significance at the 1%, 5%, and 10% level, respectively. Data on trades, best bid-offer quotes, and
+NYSE limit order book snapshots come from TRTH. Data on control variables come from CRSP. Data on the introduction of
+the NYSE Hybrid Market come from Terrence Hendershott’s website. All variables are 0.5% and 99.5% winsorized.
+Panel A: QTE/TRD
+Panel B: TRD SIZE
+R2 decomposition
+R2 decomposition
+R2
+Ret
+MoibU
+InnerU
+MiddleU
+OuterU
+R2
+Ret
+MoibU
+InnerU
+MiddleU
+OuterU
+d
+QTE
+TRD
+-0.80***
+-0.06
+-0.33***
+-0.20**
+-0.07*
+-0.18***
+\
+TRD SIZE
+109.16***
+8.13
+44.54***
+27.53**
+9.36*
+23.77***
+(-4.38)
+(-0.70)
+(-4.41)
+(-2.12)
+(-1.78)
+(-4.24)
+(4.71)
+(0.70)
+(4.86)
+(2.15)
+(1.80)
+(4.55)
+ln(MCAP)
+0.03
+0.32
+-0.03
+-0.46**
+-0.01
+0.25**
+ln(MCAP)
+-0.87**
+0.25
+-0.40***
+-0.69***
+-0.09
+0.06
+(0.08)
+(1.55)
+(-0.20)
+(-2.12)
+(-0.09)
+(2.18)
+(-2.44)
+(1.30)
+(-2.79)
+(-3.53)
+(-0.93)
+(0.54)
+1/PRICE
+-0.92
+7.91
+-11.77***
+-3.79
+1.58
+7.00***
+1/PRICE
+-15.49*
+6.82
+-17.71***
+-7.46
+0.33
+3.83**
+(-0.11)
+(1.52)
+(-3.36)
+(-0.80)
+(0.81)
+(3.62)
+(-1.74)
+(1.31)
+(-4.95)
+(-1.60)
+(0.17)
+(2.03)
+Turnover
+0.13***
+0.00
+0.05***
+0.04**
+0.01
+0.03***
+Turnover
+0.14***
+0.01
+0.06***
+0.04**
+0.01*
+0.03***
+(4.25)
+(0.29)
+(4.33)
+(2.42)
+(1.63)
+(3.46)
+(4.73)
+(0.35)
+(4.93)
+(2.53)
+(1.75)
+(3.92)
+PQSPR
+0.00
+0.00
+0.00
+-0.00
+-0.00***
+-0.00
+PQSPR
+0.00
+0.00
+0.00
+-0.00
+-0.00***
+-0.00
+(0.44)
+(1.42)
+(1.07)
+(-0.08)
+(-2.70)
+(-0.43)
+(0.13)
+(1.38)
+(0.83)
+(-0.24)
+(-2.95)
+(-0.85)
+Range
+16.25*
+4.60
+2.43
+5.42
+6.16***
+-2.00
+Range
+-1.84
+3.25
+-4.95
+0.86
+4.60**
+-5.94***
+(1.68)
+(0.92)
+(0.63)
+(1.04)
+(2.99)
+(-0.90)
+(-0.21)
+(0.67)
+(-1.40)
+(0.17)
+(2.34)
+(-2.93)
+Stock-Cohort FE
+Yes
+Yes
+Day-Cohort FE
+Yes
+Yes
+Clustered SE
+By Stock-Cohort
+By Stock-Cohort
+Window
+[-5;+5]
+[-5;+5]
+# of stock-cohort
+26,629
+26,629
+Observations
+274,726
+274,726
+44
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Table XII First-stage of stacked IV regression: Alternative event windows
+This table provides the results of the first-stage of stacked IV regression with proxy for algorithmic trading activity as dependent
+variable and the rollout to the NYSE Hybrid Market used as an instrument (see Eq. (9)). The stacked dataset is created for
+each cohort (where the cohort is defined as stocks being rolled out to the NYSE Hybrid Market on a particular date) for event
+windows of [-5;+5], [-10,+10], and [-15,+15] trading days around the rollout date. As a control group for each cohort, stocks that
+have not yet been rolled out to the NYSE Hybrid Market before and during the respective event window are used. Algorithmic
+trading is proxied by the number of best bid-offer quote updates relative to trading volume in USD 10,000, QTE/DV OL. All
+regressions include stock-cohort and day-cohort fixed effects. Standard errors are clustered by stock-cohort. ***, **, and *
+denote significance at the 1%, 5%, and 10% level, respectively. Data on trades, best bid-offer quotes, and NYSE limit order
+book snapshots come from TRTH. Data on control variables come from CRSP. Data on the introduction of the NYSE Hybrid
+Market come from Terrence Hendershott’s website. All variables are 0.5% and 99.5% winsorized.
+[-5;+5]
+[-10;+10]
+[-15;+15]
+Hybrid
+1.07***
+1.13***
+1.17***
+(11.30)
+(12.11)
+(12.60)
+ln(MCAP)
+1.29***
+2.07***
+2.25***
+(2.83)
+(5.79)
+(7.71)
+1/PRICE
+10.72
+20.43**
+37.70***
+(0.74)
+(2.24)
+(5.08)
+Turnover
+0.17***
+0.27***
+0.29***
+(4.99)
+(13.31)
+(18.12)
+PQSPR
+0.00
+0.01*
+0.01**
+(0.55)
+(1.75)
+(2.46)
+Range
+7.24
+-10.43
+-16.28**
+(0.48)
+(-1.19)
+(-2.35)
+Stock-Cohort FE
+Yes
+Day-Cohort FE
+Yes
+Clustered SE
+By Stock-Cohort
+F-stat
+127.8
+146.7
+158.7
+# of stock-cohort
+26,629
+24,623
+22,170
+Observations
+274,726
+483,892
+643,432
+45
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Table XIII Second-stage of stacked IV regression: Alternative event windows
+This table provides the results of the stacked second-stage regression with the partial R2 of each of the variables in the predictive
+regressions using surprises in the order flow as dependent variables and the rollout to the NYSE Hybrid Market used as an
+instrument for algorithmic trading activity (see Eq. (9)). The stacked dataset is created for each cohort (where the cohort is
+defined as stocks being rolled out to the NYSE Hybrid Market on a particular date) for event windows of [-5;+5], [-10,+10],
+and [-15,+15] trading days around the rollout date. As a control group for each cohort, stocks that have not yet been rolled
+out to the NYSE Hybrid Market before and during the respective event window are used. Algorithmic trading is proxied by the
+number of best bid-offer quote updates relative to trading volume in USD 10,000, QTE/DV OL. For brevity, I report only the
+coefficients in front of the algorithmic trading proxy for the different event windows. All regressions include stock-cohort and
+day-cohort fixed effects. Standard errors are clustered by stock-cohort. ***, **, and * denote significance at the 1%, 5%, and
+10% level, respectively. Data on trades, best bid-offer quotes, and NYSE limit order book snapshots come from TRTH. Data
+on control variables come from CRSP. Data on the introduction of the NYSE Hybrid Market come from Terrence Hendershott’s
+website. All variables are 0.5% and 99.5% winsorized.
+R2 decomposition
+# of stock-cohort
+Observations
+R2
+Ret
+MoibU
+InnerU
+MiddleU
+OuterU
+[-5;+5]
+-0.28***
+-0.02
+-0.11***
+-0.07**
+-0.02*
+-0.06***
+26,629
+274,726
+(-4.58)
+(-0.70)
+(-4.64)
+(-2.15)
+(-1.79)
+(-4.43)
+[-10;+10]
+-0.15***
+0.03
+-0.07***
+-0.05**
+-0.03**
+-0.04***
+24,623
+483,892
+(-3.13)
+(1.31)
+(-4.01)
+(-2.09)
+(-2.36)
+(-3.67)
+[-15;+15]
+-0.11***
+0.04**
+-0.08***
+-0.03
+-0.02*
+-0.03***
+22,170
+643,432
+(-2.73)
+(1.99)
+(-5.35)
+(-1.23)
+(-1.84)
+(-3.19)
+Controls
+Yes
+Stock-Cohort FE
+Yes
+Day-Cohort FE
+Yes
+Clustered SE
+By Stock-Cohort
+46
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Figure 1.
+Introduction of the NYSE Hybrid Market
+This figure shows the staggered introduction to the NYSE Hybrid Market for the 950 NYSElisted common stocks in my sample from June 2006 to May 2007. Data on the introduction
+of the NYSE Hybrid Market come from Terrence Hendershott’s website.
+47
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Internet Appendix for
+“Algorithmic Trading and Market Efficiency around
+the Introduction of the NYSE Hybrid Market”
+Darya Yuferova, Norwegian School of Economics - NHH
+This supplemental internet appendix presents additional results for the partial R2 of each
+of the variables in the predictive regressions using surprises in the order flow with 2.5% and
+97.5% winsorization (see Section IA 1), results for the partial R2 of each of the variables in
+the predictive regressions using surprises in the order flow under the assumption that each
+variable is added last in the model (see Section IA 2), results for the partial R2 of each of the
+variables in the predictive regressions using surprises in the order flow excluding the period
+affected by the compliance with Reg NMS (see Section IA 3), and graphical representation
+of the first-stage and second-stage of the stacked IV regression (see Section IA 4).
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+IA 1. Alternative winsorization thresholds
+In this section, I repeat the main analysis with all the variables winsorized at 2.5% and
+97.5% levels, while I use 0.5% and 99.5% winsorization thresholds in the main paper. Tables
+IA.1 and IA.2 (the equivalent of Tables V and VI) report the results of the first-stage and
+second-stage of stacked IV regression using 2.5% and 97.5% winsorization. The results remain
+largely unchanged.
+IA 2. Alternative R2 decomposition
+In the main analysis, I use the partial R2 of each of the variables in the the predictive
+regressions averaged across all possible orderings of the variables (as in Lindeman, Merenda,
+and Gold (1980)). However, the decomposition of the R2, as well as variance decomposition for vector-autoregressions, is sensitive to the order of the explanatory variables. The
+same variable will be assigned higher explanatory power when it is the first variable in the
+decomposition than when it is the last variable in the decomposition. In this section, I repeat the analysis using the partial R2 of each of the variables under the assumption that
+the variable is added last in the model, which represents the conservative lower bound of its
+predictive power. Table IA.3 (the equivalent of Table VI) reports the second-stage of stacked
+IV regression. The results remain largely unchanged.
+IA 3. Exclusion of the the period affected by compliance with Reg NMS
+According to SEC (2005), p. 307, the compliance date for the Reg NMS Rules 610 and
+611 was August 31, 2006: “As of that date, trading centers must begin trading all NMS stocks
+pursuant to the requirements of Rules 610 and 611.”
+Therefore, I skip one month after the
+compliance date and change my sample period to October 2006 till May 2007 (while I use
+June 2006 till May 2007 in the baseline analysis). In addition, I exclude those stocks whose
+rollout date to the NYSE Hybrid Market is before October 15, 2006 (8 stocks).
+Table IA.4 (the equivalent of Table V) presents the results of the first-stage of stacked IV
+regression, while Table IA.5 (the equivalent of Table VI) report the results of the second-stage
+of stacked IV regression, excluding the period affected by the compliance with Reg NMS.
+The results remain largely unchanged.
+1
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+IA 4. Graphical representation of the first and second stages of the stacked IV
+regression
+In this section, I visualize the first-stage and second-stage of the stacked IV regression
+by plotting various proxies of algorithmic trading (see Figure IA.1) and the partial R2 (see
+Figure IA.2) for treated and control stocks from the stacked dataset. The stacked dataset is
+created for each cohort (where the cohort is defined as stocks being rolled out to the NYSE
+Hybrid market on a particular date) for an event window of [-5;+5] trading days around the
+rollout date. As a control group for each cohort, stocks that have not yet been rolled out to
+the NYSE Hybrid Market before and during the respective event window are used.
+References
+References
+Lindeman, R. H., P. F. Merenda, and R. Z. Gold (1980).
+Introduction to bivariate and
+multivariate analysis. Scott, Foresman, Glenview.
+SEC (2005). Regulation NMS. Release No. 34-51808, File No. S7-10-04.
+2
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Table IA.1 First-stage of stacked IV regression: 2.5% and 97.5% winsorization
+This table provides the results of the first-stage of stacked IV regression with the proxy
+for algorithmic trading activity as dependent variable and the rollout to the NYSE Hybrid
+Market used as an instrument (see Eq. (9)). The stacked dataset is created for each cohort
+(where the cohort is defined as stocks being rolled out to the NYSE Hybrid market on a
+particular date) for an event window of [-5;+5] trading days around the rollout date. As a
+control group for each cohort, stocks that have not yet been rolled out to the NYSE Hybrid
+Market before and during the respective event window are used.
+Algorithmic trading is
+proxied by the number of best bid-offer quote updates relative to trading volume in USD
+10,000, QTE/DV OL. The results are reported for all stocks and for three terciles based on
+market capitalization as of the beginning of June 2006. All regressions include stock-cohort
+and day-cohort fixed effects. Standard errors are clustered by stock-cohort. ***, **, and *
+denote significance at the 1%, 5%, and 10% level, respectively. Data on trades, best bid-offer
+quotes, and NYSE limit order book snapshots come from TRTH. Data on control variables
+come from CRSP. Data on the introduction of the NYSE Hybrid Market come from Terrence
+Hendershott’s website. All variables are 2.5% and 97.5% winsorized.
+All
+Small Cap
+Mid Cap
+Large Cap
+Hybrid
+0.98***
+1.45***
+1.02***
+0.55***
+(11.96)
+(7.20)
+(7.79)
+(14.81)
+ln(MCAP)
+0.86**
+1.14
+0.48
+0.11
+(2.15)
+(1.04)
+(1.18)
+(0.52)
+1/PRICE
+-0.12
+1.59
+-24.00
+-17.63
+(-0.01)
+(0.08)
+(-1.19)
+(-1.43)
+Turnover
+0.17***
+0.24***
+0.10***
+0.09***
+(4.91)
+(3.68)
+(2.90)
+(4.69)
+PQSPR
+0.00
+-0.02
+0.02**
+0.01**
+(0.42)
+(-1.49)
+(2.16)
+(2.56)
+Range
+15.32
+9.19
+36.23**
+4.87
+(1.22)
+(0.41)
+(2.46)
+(0.66)
+Stock-Cohort FE
+Yes
+Day-Cohort FE
+Yes
+Clustered SE
+By Stock-Cohort
+Window
+[-5;+5]
+F-stat
+143.1
+51.77
+60.69
+219.3
+# of stock-cohort
+26,629
+9,278
+9,185
+8,166
+Observations
+274,726
+95,478
+95,449
+83,799
+3
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Table IA.2 Second-stage of stacked IV regression: 2.5% and 97.5% winsorization
+This table provides the results of the second-stage of stacked IV regression with the partial
+R2 of each of the variables in the predictive regressions using surprises in the order flow
+as dependent variables and the rollout to the NYSE Hybrid Market used as an instrument
+for algorithmic trading activity (see Eq. (9)). The stacked dataset is created for each cohort (where the cohort is defined as stocks being rolled out to the NYSE Hybrid market
+on a particular date) for an event window of [-5;+5] trading days around the rollout date.
+As a control group for each cohort, stocks that have not yet been rolled out to the NYSE
+Hybrid Market before and during the respective event window are used. Algorithmic trading is proxied by the number of best bid-offer quote updates relative to trading volume in
+USD 10,000, QTE/DV OL. All regressions include stock-cohort and day-cohort fixed effects.
+Standard errors are clustered by stock-cohort. ***, **, and * denote significance at the 1%,
+5%, and 10% level, respectively. Data on trades, best bid-offer quotes, and NYSE limit order
+book snapshots come from TRTH. Data on control variables come from CRSP. Data on the
+introduction of the NYSE Hybrid Market come from Terrence Hendershott’s website. All
+variables are 2.5% and 97.5% winsorized.
+R2 decomposition
+R2
+Ret
+MoibU
+InnerU
+MiddleU
+OuterU
+\
+QTE
+DV OL
+-0.28***
+-0.01
+-0.11***
+-0.07**
+-0.02
+-0.06***
+(-4.61)
+(-0.53)
+(-4.82)
+(-2.05)
+(-1.61)
+(-4.56)
+ln(MCAP)
+-0.58*
+0.00
+-0.10
+-0.59***
+0.00
+0.16*
+(-1.70)
+(0.00)
+(-0.81)
+(-2.97)
+(0.01)
+(1.78)
+1/PRICE
+-9.39
+-0.36
+-11.72***
+-5.10
+1.46
+4.87**
+(-0.99)
+(-0.07)
+(-3.38)
+(-1.01)
+(0.77)
+(2.42)
+Turnover
+0.10***
+-0.01
+0.04***
+0.04**
+0.01
+0.03***
+(3.65)
+(-0.44)
+(3.27)
+(2.36)
+(1.01)
+(4.27)
+PQSPR
+-0.00
+0.00
+0.00
+-0.00
+-0.00***
+-0.00
+(-0.33)
+(0.97)
+(0.60)
+(-0.47)
+(-3.32)
+(-0.43)
+Range
+11.40
+2.50
+1.06
+5.89
+5.29***
+-5.77***
+(1.30)
+(0.56)
+(0.31)
+(1.19)
+(2.85)
+(-3.00)
+Stock-Cohort FE
+Yes
+Day-Cohort FE
+Yes
+Clustered SE
+By Stock-Cohort
+Window
+[-5;+5]
+# of stock-cohort
+26,629
+Observations
+274,726
+4
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Table IA.3 Second-stage of stacked IV regression: LMG vs. LAST
+This table provides the results of the second-stage of stacked IV regression with the partial R2 of each of the variables using
+Lindeman, Merenda, and Gold (1980) methodology, LMG (Panel A) and the partial R2 of each of the variables under the
+assumption that each variable is added last in the model, LAST (Panel B) in the predictive regressions using surprises in the
+order flow as dependent variables and the rollout to the NYSE Hybrid Market used as an instrument for algorithmic trading
+activity (see Eq. (9)). The stacked dataset is created for each cohort (where the cohort is defined as stocks being rolled out
+to the NYSE Hybrid market on a particular date) for an event window of [-5;+5] trading days around the rollout date. As
+a control group for each cohort, stocks that have not yet been rolled out to the NYSE Hybrid Market before and during the
+respective event window are used. Algorithmic trading is proxied by the number of best bid-offer quote updates relative to
+trading volume in USD 10,000, QTE/DV OL. All regressions include stock-cohort and day-cohort fixed effects. Standard errors
+are clustered by stock-cohort. ***, **, and * denote significance at the 1%, 5%, and 10% level, respectively. Data on trades,
+best bid-offer quotes, and NYSE limit order book snapshots come from TRTH. Data on control variables come from CRSP.
+Data on the introduction of the NYSE Hybrid Market come from Terrence Hendershott’s website. All variables are 0.5% and
+99.5% winsorized.
+Panel A:R2 decomposition (LMG)
+Panel A:R2 decomposition (LAST)
+Ret
+MoibU
+InnerU
+MiddleU
+OuterU
+Ret
+MoibU
+InnerU
+MiddleU
+OuterU
+\
+QTE
+DV OL
+-0.02
+-0.11***
+-0.07**
+-0.02*
+-0.06***
+-0.00
+-0.10***
+-0.05
+-0.00
+-0.04***
+(-0.70)
+(-4.64)
+(-2.15)
+(-1.79)
+(-4.43)
+(-0.10)
+(-4.65)
+(-1.46)
+(-0.16)
+(-2.95)
+ln(MCAP)
+0.29
+-0.18
+-0.55***
+-0.04
+0.18
+0.11
+-0.20
+-0.60***
+-0.11
+0.02
+(1.50)
+(-1.30)
+(-2.65)
+(-0.43)
+(1.62)
+(0.59)
+(-1.54)
+(-3.05)
+(-1.20)
+(0.28)
+1/PRICE
+7.55
+-13.73***
+-5.00
+1.17
+5.96***
+6.28
+-13.41***
+-5.36
+-2.88
+2.91*
+(1.46)
+(-3.93)
+(-1.05)
+(0.61)
+(3.09)
+(1.19)
+(-4.00)
+(-1.19)
+(-1.39)
+(1.75)
+Turnover
+0.00
+0.05***
+0.04**
+0.01
+0.02***
+-0.01
+0.04***
+0.04**
+0.00
+0.02***
+(0.25)
+(4.32)
+(2.35)
+(1.56)
+(3.36)
+(-0.82)
+(3.81)
+(2.30)
+(0.13)
+(2.69)
+PQSPR
+0.00
+0.00
+-0.00
+-0.00***
+-0.00
+0.00
+0.00
+-0.00
+-0.00**
+-0.00
+(1.40)
+(0.87)
+(-0.18)
+(-2.85)
+(-0.68)
+(1.15)
+(1.16)
+(-0.00)
+(-2.08)
+(-0.04)
+Range
+3.81
+-1.89
+2.75
+5.25***
+-4.31**
+5.94
+0.35
+3.52
+4.69**
+-2.79
+(0.79)
+(-0.51)
+(0.55)
+(2.68)
+(-2.07)
+(1.25)
+(0.10)
+(0.72)
+(2.19)
+(-1.48)
+Stock-Cohort FE
+Yes
+Yes
+Day-Cohort FE
+Yes
+Yes
+Clustered SE
+By Stock-Cohort
+By Stock-Cohort
+Window
+[-5;+5]
+[-5;+5]
+# of stock-cohort
+26,629
+26,629
+Observations
+274,726
+274,726
+5
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Table IA.4 First-stage of stacked IV regression: Exclusion of the period affected by Reg NMS
+This table provides the results of the first-stage of stacked IV regression with the proxy
+for algorithmic trading activity as dependent variable and the rollout to the NYSE Hybrid
+Market used as an instrument (see Eq. (9)). The sample excludes the period affected by Reg
+NMS. The stacked dataset is created for each cohort (where the cohort is defined as stocks
+being rolled out to the NYSE Hybrid market on a particular date) for an event window of
+[-5;+5] trading days around the rollout date. As a control group for each cohort, stocks that
+have not yet been rolled out to the NYSE Hybrid Market before and during the respective
+event window are used. Algorithmic trading is proxied by the number of best bid-offer quote
+updates relative to trading volume in USD 10,000, QTE/DV OL. The results are reported
+for all stocks and for three terciles based on market capitalization as of the beginning of June
+2006. All regressions include stock-cohort and day-cohort fixed effects. Standard errors are
+clustered by stock-cohort. ***, **, and * denote significance at the 1%, 5%, and 10% level,
+respectively. Data on trades, best bid-offer quotes, and NYSE limit order book snapshots
+come from TRTH. Data on control variables come from CRSP. Data on the introduction of
+the NYSE Hybrid Market come from Terrence Hendershott’s website. All variables are 0.5%
+and 99.5% winsorized.
+All
+Small Cap
+Mid Cap
+Large Cap
+Hybrid
+1.06***
+1.53***
+1.17***
+0.59***
+(10.99)
+(5.89)
+(9.31)
+(13.84)
+ln(MCAP)
+1.45***
+3.07*
+0.66
+0.34
+(2.66)
+(1.95)
+(1.60)
+(1.29)
+1/PRICE
+14.71
+26.28
+-12.73
+9.13
+(0.86)
+(0.94)
+(-0.70)
+(0.62)
+Turnover
+0.20***
+0.26***
+0.19***
+0.04**
+(5.28)
+(3.74)
+(5.76)
+(2.16)
+PQSPR
+0.00
+-0.01
+0.02**
+0.01**
+(0.27)
+(-0.77)
+(1.97)
+(2.02)
+Range
+11.26
+5.95
+0.62
+23.14***
+(0.70)
+(0.21)
+(0.04)
+(2.66)
+Stock-Cohort FE
+Yes
+Day-Cohort FE
+Yes
+Clustered SE
+By Stock-Cohort
+Window
+[-5;+5]
+F-stat
+120.9
+34.68
+86.60
+191.5
+# of stock-cohort
+24,384
+8,510
+8,300
+7,574
+Observations
+247,857
+85,211
+85,697
+76,949
+6
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Table IA.5 Second-stage of stacked IV regression: Exclusion of the period affected by Reg
+NMS
+This table provides the results of the second-stage of stacked IV regression with the partial
+R2 of each of the variables in the predictive regressions using surprises in the order flow as
+dependent variables and the rollout to the NYSE Hybrid Market used as an instrument for
+algorithmic trading activity (see Eq. (9)). The sample excludes the period affected by Reg
+NMS. The stacked dataset is created for each cohort (where the cohort is defined as stocks
+being rolled out to the NYSE Hybrid market on a particular date) for an event window of
+[-5;+5] trading days around the rollout date. As a control group for each cohort, stocks that
+have not yet been rolled out to the NYSE Hybrid Market before and during the respective
+event window are used. Algorithmic trading is proxied by the number of best bid-offer quote
+updates relative to trading volume in USD 10,000, QTE/DV OL. All regressions include
+stock-cohort and day-cohort fixed effects.
+Standard errors are clustered by stock-cohort.
+***, **, and * denote significance at the 1%, 5%, and 10% level, respectively.
+Data on
+trades, best bid-offer quotes, and NYSE limit order book snapshots come from TRTH. Data
+on control variables come from CRSP. Data on the introduction of the NYSE Hybrid Market
+come from Terrence Hendershott’s website. All variables are 0.5% and 99.5% winsorized.
+R2 decomposition
+R2
+Ret
+MoibU
+InnerU
+MiddleU
+OuterU
+\
+QTE
+DV OL
+-0.27***
+-0.01
+-0.12***
+-0.07**
+-0.03*
+-0.06***
+(-4.52)
+(-0.46)
+(-4.78)
+(-2.08)
+(-1.93)
+(-4.39)
+ln(MCAP)
+-0.48
+0.24
+-0.29*
+-0.65***
+0.03
+0.19*
+(-1.29)
+(1.20)
+(-1.95)
+(-3.12)
+(0.33)
+(1.73)
+1/PRICE
+-12.99
+6.81
+-16.52***
+-9.22**
+1.64
+5.94***
+(-1.44)
+(1.30)
+(-4.34)
+(-1.98)
+(0.86)
+(2.88)
+Turnover
+0.14***
+0.01
+0.06***
+0.04***
+0.01
+0.02***
+(4.98)
+(0.67)
+(4.63)
+(2.72)
+(1.19)
+(3.48)
+PQSPR
+0.00
+0.00
+0.00
+-0.00
+-0.00***
+-0.00
+(0.11)
+(1.18)
+(1.24)
+(-0.26)
+(-2.68)
+(-0.84)
+Range
+5.94
+-0.73
+-1.14
+5.01
+6.77***
+-3.66*
+(0.64)
+(-0.15)
+(-0.30)
+(1.00)
+(3.40)
+(-1.75)
+Stock-Cohort FE
+Yes
+Day-Cohort FE
+Yes
+Clustered SE
+By Stock-Cohort
+Window
+[-5;+5]
+# of stock-cohort
+24,368
+Observations
+247,841
+7
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Figure IA.1. Algorithmic trading around the introduction of the NYSE Hybrid Market
+This figure shows average proxies for algorithmic trading activity for an event window of [-5;+5] trading days around the rollout
+date to the NYSE Hybrid Market for for treated and control stocks from the stacked dataset. The stacked dataset is created
+for each cohort (where the cohort is defined as stocks being rolled out to the NYSE Hybrid market on a particular date) for
+an event window of [-5;+5] trading days around the rollout date. As a control group for each cohort, stocks that have not yet
+been rolled out to the NYSE Hybrid Market before and during the respective event window are used. In particular, I plot the
+number of best bid-offer quote updates relative to trading volume in USD 10,000 (QTE/DV OL), the number of best bid-offer
+quote updates relative to the number of transactions (QTE/TRD), and the trade size in the number of shares (TRD SIZE).
+To facilitate readability, I use three-day moving averages and normalize variables at the start of the event window. The sample
+includes 875 NYSE-listed common stocks. Data on trades, best bid-offer quotes, and NYSE limit order book snapshots come
+from TRTH. Data on the introduction of the NYSE Hybrid Market come from Terrence Hendershott’s website.
+8
+Electronic copy available at: https://ssrn.com/abstract=2686082
+
+Figure IA.2. The partial R2 around the introduction of the NYSE Hybrid Market
+This figure shows the average partial R2 of each of the variable included in the predictive regressions using surprises in the order
+flow (see Eq. (8)) for an event window of [-5;+5] trading days around the rollout date to the NYSE Hybrid Market for treated
+and control stocks from the stacked dataset. The stacked dataset is created for each cohort (where the cohort is defined as
+stocks being rolled out to the NYSE Hybrid market on a particular date) for an event window of [-5;+5] trading days around
+the rollout date. As a control group for each cohort, stocks that have not yet been rolled out to the NYSE Hybrid Market
+before and during the respective event window are used. To facilitate readability, I use three-day moving averages and normalize
+variables at the start of the event window. The sample includes 875 NYSE-listed common stocks. Data on trades, best bid-offer
+quotes, and NYSE limit order book snapshots come from TRTH. Data on the introduction of the NYSE Hybrid Market come
+from Terrence Hendershott’s website.
+9
+Electronic copy available at: https://ssrn.com/abstract=2686082

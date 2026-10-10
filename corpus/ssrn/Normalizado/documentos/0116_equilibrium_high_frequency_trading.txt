@@ -1,0 +1,2164 @@
+Equilibrium Fast Trading∗
+Bruno Biais†, Thierry Foucault‡, and Sophie Moinas§
+August 2014
+Abstract
+High–speed market connections improve investors’ ability to search for attractive quotes
+in fragmented markets, raising gains from trade. They also enable fast traders to observe
+market information before slow traders, generating adverse selection, and thus negative
+externalities. When investing in fast trading technologies, institutions do not internalize
+these externalities. Accordingly, they overinvest in equilibrium. Completely banning fast
+trading is dominated by oﬀering two types of markets: one accepting fast traders, the
+other banning them.
+However, utilitarian welfare is maximized by having i) a single
+market type on which fast and slow traders coexist and ii) Pigovian taxes on investment
+in the fast trading technology.
+JEL classiﬁcation: D4, D62, G1, G20, L1.
+Keywords: high–frequency trading, externalities, welfare.
+∗Many thanks for helpful comments to the referee, Alex Guembel, Terry Hendershott, Carolina Manzano,
+Albert Menkveld, Anna Obizhaeva, Emiliano Pagnotta, Rafael Repullo, Ailsa Ro¨ell, Xavier Vives and participants in the High Frequency Conference (Madrid, 2012), the 2012 SFS Cavalcade, the 2013 AFA meeting, and
+the 2014 SED meeting. Moinas acknowledges the support of the ANR (Grant 09 - JCJC - 0139 - 01.) Biais
+acknowledges the support of the ERC (Grant 295484 – TAP.)
+†Corresponding author. Toulouse School of Economics (CNRS-CRM and FBF IDEI Chair on Investment
+Banking and Financial markets.)
+Adress: Manufacture des Tabacs, 21 all´ees de Brienne, 31000 Toulouse,
+France. Tel: (33) 5 61 12 85 98. E-mail: bruno.biais@ut-capitole.fr
+‡HEC, Paris, GREGHEC, and CEPR. Adress: 1 rue de la Liberation, 78351 Jouy en Josas, France. Tel:
+(33) 1 39 67 95 69. E-mail: foucault@hec.fr
+§Toulouse School of Economics (University of Toulouse 1 Capitole and FBF IDEI Chair on Investment
+Banking and Financial markets.)
+Adress: Manufacture des Tabacs, 21 all´ees de Brienne, 31000 Toulouse,
+France. Tel: (33) 5 61 12 85 73. E-mail: sophie.moinas@ut-capitole.fr
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+1.
+Introduction
+Investors must process very large amounts of information, in particular about trades and
+quotes, which are relevant both for the valuation of securities and the identiﬁcation of trading
+opportunities. Timely collection of this information has become increasingly diﬃcult due to
+the fragmentation of the markets, e.g., for U.S. equities, there are now more than 50 trading
+venues: 13 registered exchanges and 44 so called Alternative Trading Systems.1
+In fragmented markets, investors must search for quotes across markets. This can result in
+delayed or partial execution, which is costly. Chiyachantana and Jain (2009) ﬁnd that delays in
+execution account for about 1/3 of total costs borne by institutional investors in their sample.2
+To reduce these costs, traders can invest in fast trading technologies. For instance, they can
+use smart routers that instantaneously compare quotes across trading venues and allocate their
+orders accordingly. Furthermore, to better inform their routing decisions, they can buy fast
+access to exchange data feed, using colocation rights (the placement of their computers next to
+the exchange’s servers), or high-speed connections via ﬁber optic cables or microwave signals.
+By the same token, however, fast trading technologies also accelerate access to value relevant
+information for an asset, conveyed by recent transaction prices and quote changes for this asset
+or related ones.
+Numerous empirical studies document that orders placed by fast traders
+reﬂect advance information.3 This informational advantage generates adverse selection costs
+for other market participants. For example, Baron, Brogaard, and Kirilenko (2014) observe that
+aggressive, liquidity–taking, high–frequency traders earn short–term proﬁts at the expense of
+other market participants, and Brogaard, Hendershott, and Riordan (2014) write: “Our results
+are consistent with ... high–frequency traders imposing adverse selection on other investors”.
+Thus, ﬁrms investing in fast trading technologies generate adverse–selection costs for the other
+market participants.
+1See, for instance, O’Hara and Ye (2011), or, http://fragmentation.ﬁdessa.com/ which provides statistics on
+market fragmentation in the U.S. and Europe.
+2In practice, delay costs stem from (i) a worsening of price conditions between an order arrival and its
+completion and (ii) opportunity costs due to partial execution. Margin constraints could also make delayed
+execution costly (see Zhu (2014)).
+3For instance, Brogaard, Hagstr¨omer, Norden, and Riordan (2014), Brogaard, Hendershott, and Riordan
+(2014), Hendershott and Riordan (2013), Zhang (2013), and Kirilenko, Kyle, Samadi, and Tuzun (2011).
+1
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+Fast trading ﬁrms have no incentives to internalize these costs when making their investment
+decisions, which can generate a wedge between privately and socially optimal investment in fast
+trading technologies.4 In this paper, we analyze equilibrium investment decisions in fast trading
+technologies, their consequences for welfare, and possible policy interventions (taxation and slow
+markets) to achieve the socially optimal level of investment in fast trading technologies.
+To examine these issues, we consider a simple model suitable for welfare and policy analysis.
+Financial institutions have i) heterogeneous private valuations, e.g., due to diﬀerences in tax
+or regulatory status, and ii) private information about common values. The latter is a source
+of adverse selection, whereas the former creates gains from trade.5 Before trading, institutions
+decide to invest or not in a fast trading technology.
+Then, institutions seek to trade in a
+fragmented market. At each round of trade, a fraction λ of the trading venues oﬀer attractive
+quotes, while the others do not. Fast institutions can instantaneously search across all markets,
+and consequently always ﬁnd attractive quotes. Slow institutions cannot do so. For simplicity
+we assume they can visit only one market venue per period. Correspondingly, at each period,
+they execute their desired trade with probability λ. Otherwise they must continue to search
+for quotes, and ﬁnd this delay costly. Moreover, in addition to speeding up execution, fast
+institutions’ ability to scan markets ultra rapidly enables them to obtain advance information
+(e.g., from observing prices of other correlated assets), generating adverse selection costs for
+the other market participants.
+First, we analyze equilibrium allocations and prices for a given fraction (α) of fast institutions. The larger α, the greater the information content, and hence the price impact, of
+trades. Now, institutions prefer to abstain from trading when their price impact exceeds their
+private gain from trade. Hence, an increase in α lowers gains from trade for all market participants. Thus, fast institutions exert a negative externality upon the others, by increasing
+adverse selection in the marketplace.
+4As written by Hirshleifer (1971), “the distributive aspect of access to superior information... provides a
+motivation for the acquisition of private information that is quite apart from any social usefulness of that information... There is an incentive for individuals to expend resources in a socially wasteful way in the generation
+of such information.”
+5The diﬀerences in private values in our setting are similar to those in Duﬃe, Garleanu, and Pedersen (2005).
+Our assumption is also in line with Bessembinder, Hao, and Zheng (2013), in which private valuation shocks
+induce gains from trade and hence transactions between rational agents.
+2
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+Second, we study equilibrium investment in fast trading technologies, i.e., we endogenize
+α.
+Financial institutions invest only if the cost of the fast technology is smaller than the
+relative value of being fast, i.e., the diﬀerence between the expected proﬁt of a fast and a slow
+institution. Now, the relative value of being fast depends on the fraction of institutions who
+choose to be fast. Hence, the equilibrium level of investment in the fast trading technology is the
+solution of a ﬁxed point problem: if institutions expect the level of fast trading to be α∗, then
+exactly this fraction ﬁnd it optimal to be fast. When the relative value of being fast declines
+with the level of fast trading (i.e., if institutions’ decisions are substitutes), the equilibrium is
+unique. Otherwise, there can be multiple equilibria. This happens when entry of a new fast
+institution reduces the proﬁt of slow institutions more than that of fast institutions. In this
+case, institutions’ investment decisions are complements: they reinforce each other, because
+the technology becomes increasingly attractive as more institutions invest in it. As a result, all
+institutions can end up investing in the fast technology, even though other equilibria with less
+or no investment in fast trading exist as well. This outcome has the ﬂavour of an arms’ race,
+as in Glode, Green, and Lowery (2012).
+Third, we show that, because of the negative externality induced by fast traders, equilibrium investment in the fast trading technology exceeds its utilitarian–welfare maximizing
+counterpart.6 This problem arises whether institutions’ investment decisions are substitutes or
+complements. However, complementarities in investment decisions tend to worsen overinvestment because institutions can be trapped in an investment race, even if the socially optimal
+level of investment is low.
+Fourth, we analyze various possible policy interventions to mitigate this ineﬃciency. A ban
+on fast trading precludes reaping the beneﬁts of the technology. This approach is too harsh
+because the socially optimal level of investment is not necessarily zero. We therefore focus on
+less heavy-handed approaches.
+The ﬁrst approach is to let “slow markets”(on which fast trading is banned) coexist with fast
+markets. This approach always dominates a complete ban on fast trading or “laissez-faire”.
+6In practice, trading ﬁrms invest signiﬁcant amounts to obtain fast access to markets. For example, the
+cost of Project Express, which drew a new and faster ﬁber optic cable across the Atlantic, to connect Wall
+Street to the City, was $300 million. For 2013 alone, the Tabb Group estimates the investment in fast trading
+technologies at $1.5 billion, twice the amount invested in 2012.
+3
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+However, it can lead to underinvestment in the fast trading technology.
+Slow institutions
+migrate to slow markets where there is no adverse selection, and this reduces the expected
+proﬁts of fast institutions. In this context, there are only two possible equilibrium outcomes:
+either all institutions trade in slow markets, or all of them are fast. The “All-Slow”equilibrium
+naturally arises when the technological cost is higher than a threshold. However, this threshold
+is lower than the threshold below which investment in the fast trading technology is socially
+desirable. When the technological cost is between the two thresholds, the introduction of a slow
+platform lowers investment in the fast trading technology relative to the utilitarian optimum.
+The second approach is to have only fast markets with Pigovian taxation of the fast trading
+technology.
+This approach Pareto dominates the former.
+Indeed, equating the tax to the
+negative externality generated by fast trading leads to the level of investment that maximizes
+utilitarian welfare. Redistribution of this tax among all institutions (fast and slow) enables
+them to share the social gains.
+Our theoretical analysis has several empirical implications. Trades become more informative
+when the level of fast trading increases. Hence, a reduction in the cost of fast trading raises
+the informational content of trades. This has an ambiguous eﬀect on trading volume, however.
+Indeed, investment in fast trading technologies increases the chances that institutions are able
+to carry out desired trades, which tends to increase volume, but it also raises price impact,
+which tends to reduce trading volume. Consequently, trading volume can be non monotonic in
+the level of fast trading. The model also implies that an increase in market fragmentation lowers
+the proﬁtability of fast institutions, because it increases the price impact of trades. Yet, for
+a high cost of fast trading, increased market fragmentation might stimulate investment in fast
+trading because market fragmentation hurts slow institutions even more than fast institutions,
+so that the relative value of being fast increases. For a low cost of fast trading, this prediction
+is reversed.
+The next section discusses the relation between our analysis and the theoretical literature.
+Section 3 presents the model and Section 4 derives equilibrium prices and trades, for a given
+level of investment in the fast trading technology. This level is endogenized in Section 5. We
+then show that the equilibrium level of investment in fast trading technologies is excessive and
+study policy responses in Section 6. Section 7 describes empirical implications of the model
+4
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+and Section 8 concludes.
+2.
+Related theoretical literature
+2.1.
+Equilibrium information acquisition
+Our paper is in line with the seminal analysis of private information acquisition in ﬁnancial
+markets by Grossman and Stiglitz (1980). One major diﬀerence is that, while in Grossman and
+Stiglitz (1980) trading occurs because of noise traders, in our framework all agents optimize, so
+that trading endogenously responds to gains from trade, adverse selection, and information acquisition. This is necessary to perform a welfare analysis of information acquisition in ﬁnancial
+markets. We are not aware of any other welfare analysis of information acquisition in ﬁnancial
+markets, in the absence of noise traders. Moreover, since all trades are optimally chosen by
+investors, we can study how uninformed investors’ trading reacts to an increase in the fraction
+of informed traders, which enables us to to characterize equilibrium trading volume. Finally,
+while in Grossman and Stiglitz (1980) investments in information acquisition are always strategic substitutes, in our model they can also be strategic complements. In Ganguli and Yang
+(2009) and Breon–Drish (2013), complementarity in information acquisition arises when prices
+become less informative as the number of informed investors increases. This interesting mechanism is completely diﬀerent from that at play in our model, whereby ﬁnancial institutions can
+decide to be fast because they anticipate many others to also be fast, and thus fear to obtain
+very low proﬁts if they remain slow.
+Llosa and Venkateswaran (2012) and Colombo, Femminis, and Pavan (2014) study the wedge
+between social and private optimality of information acquisition. These models, however, do
+not apply to trading in ﬁnancial markets. For instance, Colombo, Femminis, and Pavan (2014)
+rely on exogenous technological externalities, negative as in the case of pollution, or positive
+if agents have a taste for conformity.
+This diﬀers from our analysis in which the negative
+externality, induced by information acquisition, arises because of endogenous adverse selection
+costs for ﬁnancial market participants.
+Hu and Qin (2013) show that investors’ ex-ante expected utility declines with the number
+5
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+of informed investors in Grossman (1976)’s model. In their set-up, prices are fully revealing.
+Hence, investors are equally informed, whether or not they acquire information, and information
+has therefore no private value. In contrast, in our model, information has both private and
+social value and investors’ average welfare is not necessarily maximized when all investors are
+uninformed. This is indeed the reason why banning fast trading is in general ineﬃcient in our
+model.
+2.2.
+Market microstructure
+Budish, Cramton, and Shim (2014) develop a model in which market makers invest in speed
+to be ﬁrst to react to, and proﬁt from, public information arrival. In their analysis, however,
+investors are noise traders and gains from trade are not modelled. Fast trading simply generates
+transfers of resources from investors to market makers, without bringing any social beneﬁt.
+From a utilitarian point of view, the cost of fast trading is just the cost of investing in the fast
+technology. In this context, trading slowly (e.g., in periodic batch auctions) is always socially
+optimal. In contrast, our analysis emphasizes the dual role of fast trading technologies, which
+facilitate the search for quotes at the same time as they generate adverse selection. Thus, we
+show that the socially optimal level of investment in fast trading technology is in general not
+zero, and we analyze the tradeoﬀgiving rise to the socially optimal level of that investment.
+Du and Zhu (2013) study the welfare consequences of changing the frequency of uniform
+price auctions for a risky asset.
+In their model, trading is faster when auctions are more
+frequent. Investors are strategic with interdependent and decreasing marginal valuations for
+owning a risky asset. They privately observe their inventory and signals about their valuations
+before trading. In this context, as in Vayanos (1999), slowing trading can be beneﬁcial, because
+it reduces the scope for strategic behavior. Yet, with stochastic news arrivals, fast trading can
+be socially useful because it reduces the delay until the asset can be reallocated in response to
+news. This is in line with the ﬁnding, by Pagnotta and Phillipon (2013), that in faster markets,
+investors can realize gains from trade more rapidly.
+In our analysis, each investor chooses the speed at which it operates on a given market. This
+contrasts with Pagnotta and Phillipon (2013) and Du and Zhu (2013), in which the frequency of
+trades is determined, for all investors, at the market level. Excessive market investment in speed
+6
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+can arise in Pagnotta and Phillipon (2013) because competing markets seek to diﬀerentiate
+from one another. In contrast, in our model, excessive investment arises because investors do
+not internalize the adverse selection cost they inﬂict on others. This problem arises even when
+there is no competition between markets – a case in which investment in speed is always socially
+optimal in Pagnotta and Phillipon (2013).
+Our analysis of investors’ choices between fast and slow markets echoes the analysis by Zhu
+(2014) of investors’ choices between lit exchanges and dark pools. In both models, one market
+segment (dark pools in Zhu (2014) or slow markets in our case) is relatively more attractive
+for uninformed traders. However, the two papers focus on diﬀerent economic mechanisms and
+diﬀerent issues. A key driving force in Zhu (2014) is that the price formation mechanism is
+diﬀerent in the dark–pool and the lit venue. In contrast, a key driving force in our model is
+the dual role of fast trading technologies (improving traders’ ability to ﬁnd attractive quotes
+and obtaining advance information about asset payoﬀs). In this context, Zhu (2014) focuses on
+price discovery, while we focus on gains from trade and welfare.
+3.
+Model
+Asset:
+Consider a risky asset trading at dates τ = 1, 2, ..., t, ..., ∞. At the end of each
+trading round τ, the asset pays oﬀcash-ﬂow θτ, equal to +σ > 0 or −σ.7 Across periods,
+cash-ﬂows are i.i.d. For simplicity, we normalize to zero the unconditionally expected stream
+of cash-ﬂows by setting Pr(θτ = +σ ) = 1
+2.
+Markets:
+To capture the fragmentation of the market, we assume there is a size–one
+continuum of trading venues, distributed on a circle and indexed clockwise from 0 to 1. Moreover, to model variations in liquidity conditions across trading venues, we assume that, at each
+period, only a fraction λ < 1 of the trading venues are liquid, in the sense that they oﬀer
+7Alternatively, one can assume that the asset pays oﬀVT = Pτ=T
+τ=1 θτ at some random date ˜T and that
+θτ is publicly observed by all participants at date τ + 1. With this interpretation, the θτs are innovations in
+the expected payoﬀof the asset due to the arrival of information over time. Results are identical with this
+speciﬁcation but notations are slightly more complex because the expected payoﬀof the asset varies over time
+(it is Pτ=t
+τ=1 θτ at date t).
+7
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+attractive quotes. The other venues are illiquid, i.e., they post spreads that are too large to
+warrant trades, which, for simplicity, we model as lack of quotes. The set of venues oﬀering
+attractive quotes varies from one period to the other. At date τ, the liquid venues are located
+on the circle in the interval of size λ, starting at xτ; xτ is uniformly distributed on the [0, 1]
+circle, and i.i.d across periods. If xτ + λ ≤1 then the set of trading venues oﬀering attractive quotes is [xτ, xτ + λ]. If xτ + λ > 1 then the set of venues oﬀering attractive quotes is
+[xτ, 1] ∪[0, λ −(1 −xτ)].
+Investors:
+In each period, a continuum of institutions enter the market.
+All are risk
+neutral and discount the future at rate r. For simplicity, each institution can only i) buy one
+unit of the asset, or ii) sell one unit of the asset, or iii) refrain from trading. To execute its
+desired trade, an institution must ﬁnd a trading venue posting attractive quotes. When they
+enter the market, institutions are uncertain about which venues are liquid, i.e., they do not
+know xτ. There are two types of institutions: fast and slow, with diﬀerent abilities to search
+for quotes.
+Fast institutions have extremely rapid connections with the markets. Thus, they can inspect
+all trading venues instantaneously and ﬁnd a liquid one with certainty upon arrival. Rapid
+connections with markets also enable a fast institution to simultaneously observe prices of
+other assets with payoﬀs correlated with θτ [e.g., futures as suggested by Zhang (2013)]. These
+prices provide a signal on θτ, which, for simplicity, we assume to be perfect.
+Slow institutions are less eﬃcient at receiving price information from markets and searching
+for quotes. Hence, unlike fast institutions, they do not observe recent value relevant prices
+from other market, i.e., they do not observe signals about θτ. Moreover, it takes them longer
+to detect liquid trading venues. To capture this we assume that, within one period, a slow
+institution can inspect only one of the trading venues in the circle. Since it does not know xτ, a
+slow institution randomly sends its orders to one of the trading venues, uniformly drawn from
+the unit circle. With probability λ, this trading venue is liquid, and the slow institution can
+trade. With the complementary probability, it is illiquid and the slow institution cannot trade
+during this period.
+If a slow institution does not ﬁnd a liquid trading venue during the period, then, with
+8
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+probability π, it can wait until the next period to search again for quotes. With the complementary probability, 1 −π, the institution exits the market and obtains a zero payoﬀ. Thus,
+the likelihood, λs, that a slow institution eventually ﬁnds a liquid market is:
+λs(λ, π) =
+t=∞
+X
+t=τ
+((1 −λ)π)t−τ λ = λ(1 −(1 −λ)π)−1.
+(1)
+λs increases in π and λ and is equal to one when π or λ equal one.
+Once an institution has found a liquid market, it decides optimally whether to trade or
+not. Then it leaves the market. Denote by α (resp. 1 −α) the mass of new fast (resp. slow)
+institutions entering the market at each period and let Iτ be the mass of slow institutions that
+entered the market before date τ and are still in the market, searching for quotes at date τ.
+Given our assumptions, the law of motion for Iτ is:
+Iτ+1 = F(Iτ) ≡(1 −α)(1 −λ)π + Iτ(1 −λ)π.
+(2)
+The stationary level of Iτ, is the ﬁxed point, I∗, of F(·), i.e.,
+I∗= (1 −α)(1 −λ)π
+(1 −(1 −λ)π) .
+(3)
+We hereafter focus on the stationary regime, in which, at each period, a mass
+((1 −α) + I∗)λ = (1 −α)λs
+(4)
+of slow institutions ﬁnd quotes (where the equality follows from Eq. (3)).8
+Valuations:
+We assume institutions’ preferences are linear in common and private values.
+Formally, an institution with position y ∈{−1, 0, 1} and private value δ obtains utility ﬂow
+8The process by which slow institutions search for quotes in our model has the ﬂavor of Duﬃe, Garleanu,
+and Pedersen (2005)’s model of search in over the counter (OTC) markets. The reason is that ﬁnding a good
+quote takes time both in fragmented lit markets or in OTC markets.
+9
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+y × (θτ + r(1 + r)−1δ) in period τ.9 The common value, θτ, reﬂects the stream of cash ﬂows.
+In addition, as in Duﬃe, Garleanu, and Pedersen (2005), each institution is endowed with its
+own private valuation, δ.10 Diﬀerences in δ, across institutions capture in a simple way that
+other considerations than expected cash–ﬂows aﬀect investors’ willingness to hold assets. For
+example, regulation can make it costly or attractive for certain investors, such as insurance
+companies, pension funds, or banks to hold certain asset classes. Diﬀerences in tax regimes can
+also induce diﬀerences in private values.
+Denote by v(δ, iθτ) the total valuation for the asset of an institution at date τ, with i = 0
+if the institution is slow and i = 1 if it is fast. For a slow institution,
+v(δ, 0) = E(Σt=∞
+t=τ (1 + r)−(t−τ)(θt + r(1 + r)−1δ)) = δ,
+(5)
+and for a fast institution,
+v(δ, θτ) = E(Σt=∞
+t=τ (1 + r)−(t−τ)(θt + r(1 + r)−1δ) |θτ) = δ + θτ.
+(6)
+We assume private valuations, δ, are i.i.d. across institutions and continuously distributed
+on [−δ, δ] with cumulative distribution function G(·) and density g(·); g(.) is symmetric around
+zero so that G(0) = 1
+2, E(δ) = 0, and G(δ) = Pr(δτ ≤δ) = Pr(δτ ≥−δ). Furthermore, we
+assume
+δ ≥2σ.
+(7)
+As shown below, Condition (7) implies that institutions with large valuations are always willing
+to trade at the equilibrium bid or ask price. This feature simpliﬁes the exposition without
+qualitatively aﬀecting results. In several examples, we shall consider the limit case in which
+δ →∞and private valuations are normally distributed with standard deviation σδ.
+9The scaling factor r(1 + r)−1 is just a convenient way to simplify computations. Removing it would not
+change any qualitative result.
+10For simplicity, unlike in Duﬃe, Garleanu, and Pedersen (2005), the private valuation of an institution (δ)
+does not evolve stochastically through time.
+10
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+Trading:
+We focus on stationary symmetric equilibria. In these equilibria, quotes are the
+same across all periods and all liquid trading venues and are symmetrically positioned around
+the unconditional expected payoﬀof the asset (zero).
+This is natural since all probability
+distributions are symmetric around zero and constant over time in our model. Hence, in each
+liquid venue, the institutions buy the asset at the ask price S and sell it at the bid price, −S,
+i.e., S is the half–spread or eﬀective spread.
+Since equilibrium quotes are the same in all liquid venues, fast institutions are indiﬀerent
+between all of them. Correspondingly, we assume fast institutions are uniformly distributed
+across all liquid venues. Similarly, we assume that slow institutions who ﬁnd liquid venues are
+distributed uniformly across these venues. Thus, each liquid venue is contacted by a mass α of
+fast institutions and a mass (1 −α)λs of slow institutions.
+Denote by ωa(S, θτ) (resp. ωb(S, θτ)) the mass of institutions buying (resp. selling) the asset
+at date τ in each liquid venue. An institution that ﬁnds a liquid market optimally chooses to
+buy the asset if its valuation is greater than the ask price (v(δ, iθτ) ≥S), to sell if its valuation
+is smaller than the bid price (v(δ, iθτ) ≤−S), and to refrain from trading otherwise. Hence, if
+θτ = σ, we have:
+ωa(S, σ)
+=
+α Pr(v(δ, σ) ≥S) + (1 −α)λs Pr(v(δ, 0) ≥S)
+=
+αG(S −σ) + (1 −α)λsG(S),
+(8)
+ωb(S, σ)
+=
+α Pr(v(δ, σ) ≤−S) + (1 −α)λs Pr(v(δ, 0) ≤−S)
+=
+αG(S + σ) + (1 −α)λsG(S),
+(9)
+where G(x) = 1−G(x). By symmetry, we have ωb(S, −σ) = ωa(S, σ ) and ωa(S, −σ) = ωb(S, σ).
+Our modeling of the trading process in each liquid market is similar to Zhu (2014). At the
+beginning of each period, in each liquid venue, quotes are posted by risk neutral competitive
+market makers, with zero private valuation for the asset. Then institutions’ market orders arrive
+simultaneously and, in each venue, all buy orders are executed at the ask price, S, while all sell
+orders are executed at the bid price, −S. The equilibrium condition is that the competitive
+market makers break even in expectation.11 Thus, the equilibrium (break–even) half–spread,
+11This is slightly diﬀerent from Glosten and Milgrom (1985) in which orders arrive one at a time and dealers
+11
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+S∗, solves:
+E
+ ωa(S∗, θτ)(S∗−Σt=∞
+t=τ (1 + r)t−τθt) + ωb(S∗, θτ)(Σt=∞
+t=τ (1 + r)t−τθt + S∗)
+
+= 0,
+(10)
+where the expectation is taken over θt, t ≥τ.
+That fast institutions send informed market orders is in line with stylized facts. For example, Brogaard, Hendershott, and Riordan (2014) ﬁnd that high–frequency traders trade in the
+direction of permanent price changes with market orders, and Baron, Brogaard, and Kirilenko
+(2014) that most of high–frequency traders’ proﬁts are generated by aggressive, liquidity–taking,
+trades.
+Investment in the fast trading technology:
+All institutions entering the market at a
+given date simultaneously decide whether to be fast or slow, before observing their valuation for
+the asset. This choice determines the level of fast trading in the market, i.e., α (see Section 5).
+To be fast, an institution must invest in a fast trading technology, at cost C. This is the cost of
+the investment in infrastructures (computers, colocation, etc.) and intellectual capital (skilled
+traders, codes, etc.) required for quickly receiving information from markets, processing this
+information, and acting upon it.
+Fig. 1 summarizes the description of the model by showing the sequence of play within one
+period.
+[Insert Fig. 1 About Here]
+4.
+Trading with fast and slow investors
+In this section, we analyze equilibrium prices and trading decisions in a given trading round,
+for a given α. This sets the stage for studying the equilibrium level of fast trading, which is
+the focus of Section 5.
+expect zero–proﬁt on each order. As in Zhu (2014), while simplifying, this modeling choice is innocuous. In a
+previous version of this paper, trading was modeled as in Glosten and Milgrom (1985) and results were identical
+to those presented here.
+12
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+4.1.
+Equilibrium Bid-Ask Spread: Existence, and Uniqueness
+As (i) ωb(S, −σ) = ωa(S, σ), (ii) ωa(S, −σ) = ωb(S, σ), and (iii) cash-ﬂows are i.i.d with
+mean zero, Eq. (10) is equivalent to:
+
+ωa(S∗, σ) + ωb(S∗, σ)
+
+S∗=
+
+ωa(S∗, σ) −ωb(S∗, σ)
+
+σ.
+(11)
+The left–hand–side is the gross proﬁt of a market maker, which is strictly positive whenever the
+spread is. The right–hand–side is the adverse selection cost borne by the market maker, which
+is strictly positive, as soon as α > 0 and σ > 0. This adverse selection cost reﬂects that the net
+order ﬂow in period τ (ωa(S∗, θτ) −ωb(S∗, θτ)) is positively correlated with the innovation in
+the cash–ﬂow process (θτ). That is, there are more buyers than sellers (ωa(S∗, σ) > ωb(S∗, σ))
+when the period cash–ﬂow is high (and, symmetrically, fewer buyers than sellers when it is low:
+ωa(S∗, −σ) < ωb(S∗, −σ)).
+In our trading environment, an equilibrium is a spread S∗, such that Eq. (11) holds. In
+equilibrium, market makers must charge a bid-ask spread (S∗> 0) to cover the adverse selection
+cost. Thus, institutions with valuations in [−S∗, S∗] choose not to trade because their expected
+gain from trade is smaller than their trading cost, S∗. This generates a welfare loss because,
+for all δ̸ = 0, gains from trade exist between market makers and institutions.
+As shown in the appendix, Eq. (11) always has at least one solution, 0 ≤S∗≤σ. Hence,
+we can state the following lemma.
+Lemma 1. Equilibrium exists. When α = 0 or σ = 0, the unique equilibrium is S∗= 0.
+Otherwise, equilibrium is not necessarily unique but in all equilibria 0 < S∗< σ.
+The equilibrium bid-ask spread is not necessarily unique because an increase in the spread
+can generate an increase in both the revenue and the adverse selection cost for the market
+maker.
+For instance, suppose that fast institutions receive a good signal.
+An increase in
+the spread, S, decreases the fraction of fast institutions who buy and sell the asset but the
+eﬀect can be stronger for those who decide to sell. In this case, the adverse selection cost
+((ωa(S, σ) −ωb(S, σ)) increases with S.
+When this happens, market makers’ net expected
+proﬁt (the diﬀerence between the left and right hand sides of Eq.
+(11)) is not necessarily
+13
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+monotonic in the half spread and, for this reason, there might be multiple spreads for which
+market makers break even, i.e., for which Eq. (11) holds.12 The next example illustrates this
+point.
+Example 1.
+Suppose that institutions’ private valuations are normally distributed with
+standard deviation σδ. Fig. 2 plots market makers’ net expected proﬁt when α = 0.1, σ = 3,
+λ = 0.8, and π = 1, for σδ = 0.9 or σδ = 2. Equilibrium bid-ask spreads are those for which
+market makers’ net expected proﬁt is zero. When σδ = 0.9, the market makers’ net expected
+proﬁt is non monotonic in S. For this reason, there are several values of S∗such that Eq. (11)
+holds: S∗= 0.47, S∗= 1.37, and S∗= 2.96. In contrast, when σδ = 2, market makers’ net
+expected proﬁt decreases in S everywhere and, as a result, there is a unique equilibrium spread,
+S∗= 0.29.■
+[Insert Fig. 2 about here]
+When there exist multiple solutions to Eq.
+(11), economic reasoning suggests to select
+spreads that cannot be proﬁtably undercut, as other spreads would attract competition. Consider Fig. 2 again. Bid-ask spreads S∗= 1.37 and S∗= 2.96 satisfy the zero net proﬁt condition
+(i.e., they solve Eq. (11)) but they can be proﬁtably undercut because any spread suﬃciently
+close to and above S∗= 0.47 yields a strictly positive expected proﬁt. This is a more general principle: When several bid-ask spreads solve Eq. (11), only the smallest one cannot be
+proﬁtably undercut.
+Lemma 2. Let S∗
+min(α) be the smallest solution to Eq. (11). This equilibrium bid-ask spread is
+the only one that cannot be proﬁtably undercut.
+Hence, if one adds the natural economic requirement that an equilibrium spread should not
+be proﬁtably undercut, then equilibrium is always unique. Therefore we hereafter focus on
+12Glosten and Milgrom (1985) and Dow (2005) underscore the possibility of multiple equilibria in ﬁnancial
+markets because of virtuous circles (traders anticipate the market will be liquid, hence they submit lots of
+orders, hence the market is liquid) or vicious circles (where illiquidity is a self–fulﬁlling prophecy). The same
+phenomenon is at play here.
+14
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+S∗
+min(α), to which we refer when we write “the equilibrium spread”. For our purpose, focusing
+on S∗
+min(α) is conservative because we analyze welfare losses generated by excessive investment
+in the fast trading technology. Larger spreads would increase these losses.
+4.2.
+Bid-ask spreads, Trading Volume, and Fast Trading
+The next proposition spells out how the level of fast trading, α, aﬀects the spread and
+trading volume.
+Proposition 1. The equilibrium bid-ask spread increases in the level of fast trading, α, and
+the volatility of the asset fundamental value, σ. It (weakly) decreases with the likelihood that a
+slow institution ﬁnds a trading opportunity, λ.
+When α increases or λ decreases, orders are more likely to come from fast institutions.
+Hence, the adverse selection cost is higher for market makers. Thus, the bid-ask spread increases. Fig. 3 illustrates this testable implication when the distribution of traders’ private
+valuation is normal.
+[Insert Fig. 3 about here]
+Denote by ∆Vol(S∗(α), α) the diﬀerence between the likelihood of a trade by a fast and a
+slow institution. As institutions buy the asset if their valuation is higher than S∗(α) and sell
+it if their valuation is lower than −S∗(α), we have:
+∆Vol(S∗(α), α)
+=
+[Pr(v(δ, θτ) ≥S∗(α)) −λs Pr(v(δ, 0) ≥S∗(α))]
++
+[Pr(v(δ, θτ) ≤−S∗(α)) −λs Pr(v(δ, 0) ≤−S∗(α))].
+(12)
+Because of the symmetry of institutions’ private valuations around zero, we have
+∆Vol(S∗(α), α) = 2 [(Pr(v(δ, θτ) ≥S∗(α)) −λs Pr(v(δ, 0) ≥S∗(α))] .
+(13)
+15
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+∆Vol(S∗(α), α) reﬂects the diﬀerence between the respective contributions of fast and slow
+institutions to trading volume. As such it oﬀers a measure of the toxicity of the order ﬂow.
+Moreover, since the gains from trade of each of the two categories of institutions are related to
+their trading volume, ∆Vol(S∗(α), α) is also related to the diﬀerence between the gains from
+trade of fast and slow institutions. Because of the important role played by ∆Vol(S∗(α), α) in
+our analysis (see, e.g., Eq. (24)), it is useful to analyze its economic determinants.
+Straightforward manipulations of Eq. (13) yield
+∆Vol(S∗(α), α) = 2(1 −λs)(1 −G(S∗)) + (G(S∗) −G(S∗−σ)) + (G(S∗) −G(S∗+ σ)). (14)
+The ﬁrst two terms in Eq. (14) are positive while the latter is negative. Thus, the sign of ∆Vol
+is ambiguous. To explain why, we now discuss the economic interpretation of Eq. (14).
+Consider an institution with private valuation δ and without advance information on the
+period cash ﬂow. This institution is willing to trade if |δ| > S∗, which happens with probability
+2(1−G(S∗)). The institution is able to trade if it ﬁnds a liquid venue before leaving the market.
+The probability of this event is one if the institution is fast and λs if it is slow. Thus, the ﬁrst
+term in Eq. (14), 2(1 −λs)(1 −G(S∗)), reﬂects the increase in the likelihood of a trade for an
+institution due to more eﬃcient search for quotes.
+Now, the fast trading technology also provides advanced information on cash-ﬂows, which
+aﬀects an institution’s valuation for the asset. This eﬀect cuts both ways in term of incentives
+to trade for a fast institution. First, cash–ﬂow news can trigger trading by an institution that
+would not have traded without information. This eﬀect plays out when |δ| ∈[S∗−σ, S∗] and
+corresponds to the second term in Eq. (14). On the other hand, cash–ﬂow news can prevent
+trading by an institution that would have traded without information. This happens when
+|δ| ∈[S∗, S∗+ σ ] and corresponds to the third, negative, term in Eq. (14).13
+There exist speciﬁcations of G, the distribution of institutions’ private valuations (see Ex13For instance, consider an institution with S∗< δ < S∗+ σ. If it is slow, this institution buys the asset.
+However, if it is fast and learns that the cash-ﬂow of the asset is low, this institution does not trade because
+its valuation, δ −σ, is then within the bid-ask spread. The same eﬀect happens when the asset cash ﬂow is
+high and −(S∗+ σ) < δ < −S∗. Thus this eﬀect reduces the likelihood of trading for a fast institution by the
+probability that |δ| ∈[S∗, S∗+ σ ], which is G(S∗+ σ) −G(S∗).
+16
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+ample 2 in Section 5.2) such that, for some values of α, the third (negative) term in Eq. (14)
+dominates the two other (positive) ones. In these cases, ∆Vol(S∗(α), α) < 0. That is, in spite of
+their eﬃcacy at searching for quotes, fast institutions trade less than slow ones in equilibrium.
+This is because they are often conﬂicted between a positive (resp. negative) private valuation
+and a negative (resp. positive) cash–ﬂow signal. As a result, their valuation is neither large,
+nor small enough to overcome the cost of trading, S∗.
+The next lemma provides a suﬃcient condition on the distribution of institutions’ private valuations such that fast institutions are more likely to trade than slow institutions (i.e.,
+∆Vol(S∗(α), α) > 0) for all values of α. Let hg(.) be the hazard rate of the distribution of
+institutions’ private valuations, that is, hg(δ) = g(δ)/(1 −G(δ)).
+Lemma 3. In equilibrium ∆Vol(S∗(α), α) > 0, ∀α, i.e., fast institutions are more likely to
+trade than slow institutions, if one of the following conditions is satisﬁed:
+1. hg(δ) decreases in δ.
+2. hg(δ) increases in δ , and either (i) λs ≤1
+2, or (ii) λs > 1
+2 and
+2G(σ) +
+1 −G(2σ)
+1 −G(σ)
+
+≥2λs.
+(15)
+The second case in Lemma 3 is maybe more relevant because, for a large class of probability
+distributions (e.g., all log concave distributions such as the normal distribution or the uniform
+distribution), the hazard rate is increasing [see Bagnoli and Bergstrom (2005)]. Condition (15)
+is satisﬁed if σ ≥Max{G−1(λs), 0}, i.e., when the asset volatility is suﬃciently high.
+Equilibrium trading volume is
+Vol(S∗(α), α)
+=
+ωa(S∗(α), σ) + ωb(S∗(α), σ)
+(16)
+=
+α(2 −(G(S∗(α) −σ) + G(S∗(α) + σ)) + λs(1 −α)(1 −G(S∗(α)),
+17
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+where the second equality comes from Eq. (8) and (9). We deduce that:
+dVol(S∗, α)
+dα
+= ∂Vol(S∗, α)
+∂α
++ ∂Vol(S∗, α)
+∂S∗
+∂S∗
+∂α = ∆Vol(S∗(α), α) + ∂Vol(S∗, α)
+∂S∗
+∂S∗
+∂α
+|
+{z
+}
+<0
+.
+(17)
+An increase in the level of fast trading, α, has two eﬀects. First, it shifts some institutions
+from the pool of slow to the pool of fast investors.
+This increases trading volume iﬀfast
+institutions are more likely to trade than slow institutions (i.e., ∆Vol(S∗(α), α) > 0). Second,
+the increase in the level of fast trading raises the bid-ask spread (∂S∗
+∂α > 0). This eﬀect leads a
+larger fraction of institutions to abstain from trading, which reduces trading volume. Thus, the
+eﬀect of an increase in the level of fast trading on volume is ambiguous, and, for this reason,
+trading volume is in general non monotonic in this level.
+[Insert Fig. 4 about here]
+Fig. 4 illustrates this point when investors’ private valuations are normally distributed.
+It depicts equilibrium trading volume (Vol(S∗(α), α)) as a function of α for various values of
+λ. The possibility of a negative eﬀect of fast trading on the volume of trade is in line with
+Jovanovic and Menkveld (2011), who ﬁnd that, for Dutch stocks, the entry of a fast trader on
+Chi-X led to a drop in volume.14
+5.
+Equilibrium investment in fast trading technologies
+We now turn to the equilibrium determination of α. To do so, we ﬁrst analyze the gains of
+fast and slow institutions, which are then compared to determine investment decisions.
+14Anecdotal evidence also suggests that, as high–speed trading expands, trading volume can increase or
+decrease. For example, an article entitled “Electronic trading slowdown alert” published in the Financial Times
+on September 24, 2010 (page 14) describes a sharp drop in trading volume in 2010 from a high of about $7,000
+billions in April 2010 to a low of $4,000 billions in August 2010. The article explicitly points to changes in
+market structures as a cause for this reversal in trading volume.
+18
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+5.1.
+Comparing the gains of fast and slow institutions
+Denote the ex-ante expected gains of slow and fast institutions by ψ(α) and φ(α), respectively.15 Let ω(δ, iθτ) be the market order of an institution with private valuation δ and type
+i ∈{1, 0} (i = 1 if the institution is fast and i = 0 if slow), in equilibrium. Thus, for fast
+traders,
+φ(α) = E((v(δ, θτ) −S∗(α))ω(δ, θτ)).
+(18)
+Recall that ω(δ, iθτ) = 1 if v(δ, iθτ) ≥S∗, ω(δ, iθτ) = −1 if v(δ, iθτ) ≤−S∗, and ω(δ, iθτ) = 0,
+otherwise. Hence, using the symmetry of the distribution of institutions’ private valuations
+around zero,
+φ(α) =
+Z δ
+S∗(α)−σ
+(δ + σ −S∗(α))g(δ)dδ +
+Z δ
+S∗(α)+σ
+(δ −σ −S∗(α))g(δ)dδ.
+(19)
+The ﬁrst term in Eq. (19) is the gain of fast institutions when they trade in the direction
+of the asset cash-ﬂow (e.g., buy it when its cash-ﬂow is high). The second term is their gain
+when they trade against the asset cash ﬂow. For instance, they might buy the asset even when
+its cash-ﬂow is low when v(δ, −σ) ≥S∗(α). The mass of such institutions is never zero when
+Condition (7) holds, that is, when δ ≥2σ, because S∗(α) + σ ≤2σ.
+In a given period, a slow institution ﬁnds a liquid venue with probability λ. With probability
+(1 −λ), it does not. In that case, with probability π, it keeps searching for quotes at the next
+period. The discounted expected gains from trade of a slow institution are therefore:
+ψ(α) =
+t=∞
+X
+t=τ
+(1 −λ)π
+1 + r
+t−τ
+λE((v(δ, 0) −S∗(α))ω(δ, 0)).
+(20)
+Using the symmetry of the distribution of institutions’ private valuations around zero and
+15Ex-ante means just before institutions learn their private valuations and enter the market. Alternatively, all
+institutions could choose to be fast or slow at date τ = 0. In this case, one must discount their expected payoﬀ
+at arrival date, ψ(α) and φ(α), appropriately. As the discount factor is identical for all institutions, results
+in this case are identical to those obtained when institutions decide to be slow or fast just before entering the
+market.
+19
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+simplifying, we obtain:
+ψ(α) = 2µ(λ, π, r)
+Z δ
+S∗(α)
+(δ −S∗(α))g(δ)dδ,
+(21)
+where
+µ(λ, π, r) = λs(π, λ)(1 −(1 −λ)π)
+(1 −(1 −λ)π(1 + r)−1).
+(22)
+The integral in Eq. (21) accounts for the gains from trade of the institution when it ﬁnds a
+liquid venue. The scaling term, µ(λ, π, r), reﬂects the cost of delayed execution induced by the
+search for quotes in fragmented markets. This cost is large (µ is small) when the discount rate,
+r, is high or when the risk of exiting the market without trading is high (i.e., π is small). In
+contrast, an increase in λ reduces the cost of delayed execution because it increases the speed
+(λs) at which an institution ﬁnds a counterparty.
+It is clear from Eq. (21) that the risk free rate, r, aﬀects institutions’ payoﬀs only through
+its eﬀect on µ. This is the only eﬀect of r on the variables of interest in the model. Thus,
+the economic eﬀect of a decrease in r is similar to that of an increase in π: it makes delays in
+execution less costly for institutions. For simplicity, from now on, we assume r = 0. In this
+case, the expression for µ(λ, π, r) simpliﬁes to µ(λ, π, 0) = λs(π, λ). This lightens the exposition
+without aﬀecting any ﬁndings (see the on-line appendix).
+Fast institutions obtain higher expected gains than slow institutions because (i) they have
+zero delay costs and (ii) they obtain speculative proﬁts by trading on advance information.
+These speculative proﬁts, however, generate adverse selection costs for other market participants. Thus, fast traders generate a negative externality for the other market participants. The
+larger the level of fast trading, α, the larger this negative externality. The next proposition
+summarizes the above discussion.
+Proposition 2. In equilibrium, the expected proﬁt of fast institutions, gross of the technological
+cost, is always higher than the expected proﬁt of slow institutions: φ(α) > ψ(α). Moreover, an
+increase in the level of fast trading, α, reduces the expected gains of slow and fast institutions.
+20
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+5.2.
+Strategic substitutability or complementarity
+For a given level of α, the net expected proﬁts of fast and slow institutions are φ(α) −C
+and ψ(α), respectively. Thus, an institution is better oﬀinvesting if and only if:
+φ(α) −ψ(α) ≥C.
+(23)
+As φ and ψ vary with α, the proﬁtability of investment for one institution depends on other
+institutions’ decisions. Thus, investment choices are interdependent. If φ −ψ decreases in α,
+then fast institutions loose more than slow ones when α goes up. In this case, institutions’
+investment decisions are strategic substitutes: the greater the level of fast trading, the lower
+the relative value of fast trading. In contrast, if φ −ψ increases in α, slow institutions are hurt
+more than fast ones by an increase in α. Institutions’ investment decisions are then strategic
+complements and mutually reinforcing: the greater the level of investment in the fast trading
+technology, the more proﬁtable it is to invest in it.
+Let ∆(α) = φ(α) −ψ(α) denote the relative value of being fast. Institutions’ decision to be
+fast are substitutes if ∂∆(α)
+∂α
+< 0 and complements if ∂∆(α)
+∂α
+> 0. Using Eq. (19) and (21), we
+obtain after some algebra (see the on-line appendix) that:
+∂∆(α)
+∂α
+= −∂S∗
+∂α × ∆Vol(S∗(α), α),
+(24)
+where ∆Vol(S∗(α), α) (given in Eq. (14) ) is the diﬀerence between the likelihood of a trade
+for a fast and a slow institution in equilibrium.
+The equilibrium bid-ask spread increases with α (Proposition 1).
+Hence, by Eq.
+(24),
+institutions’ decisions are locally substitutes if ∆Vol(S∗(α), α) > 0 and locally complements
+if ∆Vol(S∗(α), α) < 0. This is intuitive: the increase in the cost of trading (S∗(α)) due to
+an increase in the level of fast trading hurts more those institutions that trade more. If the
+distribution of institutions’ private valuations satisﬁes one of the conditions in Lemma 3 then
+∆Vol(S∗(α), α) > 0 for all values of α. Thus, we obtain the following result.
+21
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+Corollary 1. Under the conditions of Lemma 3, ∆Vol(S∗(α), α) > 0, ∀α. In this case, the
+relative value of being fast (∆(α)) decreases in α for all values of α:
+∂∆(α)
+∂α
+< 0, ∀α.
+Hence, under fairly general conditions (given in Lemma 3), institutions’ decisions to invest
+in the fast trading technology are globally (i.e., for all values of α) substitutes. In contrast,
+institutions’ investment decisions are never globally complements because they are always substitutes for α suﬃciently close to zero.16 Yet, when the conditions of Lemma 3 are not satisﬁed,
+institutions’ decisions can be complements for some range of α, as illustrated by the next
+example.
+Example 2. Deﬁne γ =
+ δ −ϕ
+ δ −σ
+
+/σ with ϕ ∈[1,
+δ
+δ−σ]. Assume g(δ) = ϕ(2δ)−1 if
+−δ ≤δ ≤−σ , g(δ) = γ(2δ)−1 if −σ ≤δ ≤σ , and g(δ) = ϕ(2δ)−1 if σ ≤δ ≤δ. The conditions
+on γ and ϕ guarantee that the cumulative probability distribution of δ is symmetric around
+zero and that it is equal to one when δ = δ. If ϕ = 1 then γ = 1 and private valuations are
+uniformly distributed. If ϕ > 1 then γ < 1. In this case, the mass of institutions with extreme
+valuations (between [−δ, −σ] or [σ, δ]) is greater than the mass of traders with intermediate
+private valuations (in [−σ, σ]). In this context we obtain the following corollary.
+Corollary 2. Suppose the distribution of institutions’ private valuations is as deﬁned in example 2. If λs(λ, π) >Min{1, 2δ−(γ+ϕ)S∗(1)
+2(δ−γS∗(1)) } then there exists a threshold α0, such that ∆Vol(S∗(α), α) <
+0 iﬀα > α0, i.e., institutions’ investment decisions are substitutes for α ≤α0 and complements
+for α > α0. If λs(λ, π) ≤Min{1, 2δ−(γ+ϕ)S∗(1)
+2(δ−γS∗(1)) } then ∆Vol(S∗(α), α) > 0 for all α and, therefore,
+institutions investment decisions are substitutes for any level of fast trading.
+Fig. 5 illustrates the corollary when ϕ = 1.5, σ = 3, δ = 7, λ = 0.5, and π = 0.99 (so that
+λs ≈0.99). In this case, α0 ≈0.25. Thus, institutions’ decisions are complements for α > 0.25
+and substitutes when α ≤0.25.■
+[Insert Fig. 5 about here]
+16Eq. (14) yields ∆Vol(S∗(0), 0) = (1−λs) > 0 because S∗(0) = 0. Thus, at least at α = 0 (and by continuity
+for values of α close to zero), a small increase in fast trading always reduces the relative value of being fast.
+22
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+5.3.
+Equilibrium fast trading
+If
+φ(1) −ψ(1) > C,
+(25)
+then institutions prefer to invest when they expect all the others to do so. Hence, α∗= 1 is an
+equilibrium if Condition (25) holds. Symmetrically, if
+φ(0) −ψ(0) < C,
+(26)
+then institutions prefer not to invest when they expect the others also will not. Hence, α∗= 0 is
+an equilibrium if Condition (26) holds. Finally, α∗is an interior equilibrium if, when institutions
+expect that a fraction α∗of institutions will invest, they are indiﬀerent between investing and
+not investing:
+φ(α∗) −ψ(α∗) = C.
+(27)
+As φ(α)−ψ(α) is continuous in α, at least one of these three equilibrium conditions must hold.
+Thus, an equilibrium level of fast trading always exists. Furthermore, if ∆(0) = φ(0)−ψ(0) > C,
+then each institution is better oﬀbeing fast if it expects others to be slow.
+Thus, in this
+case, it cannot be an equilibrium that all institutions prefer to be slow. The next proposition
+summarizes the above discussion.
+Proposition 3. An equilibrium level of fast trading exists. Moreover, there is some investment
+in the fast trading technology (α∗> 0) if ∆(0) > C.
+To gain insights into the economics of the decision to be fast, it is useful to write ∆(0)
+explicity:
+∆(0) = (1 −µ(λ, π, 0))E(|δ|) + 2(2G(σ) −1)(σ −E(|δ| |δ| ≤σ)).
+(28)
+Hence, the increase in expected proﬁt for an institution that becomes fast when all others are
+slow, ∆(0), is the sum of two terms, which can be interpreted as the “search value” and the
+“speculative value” of the fast trading technology, respectively (the formal derivation of Eq.
+(28) is given in the on-line appendix for brevity).
+23
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+First consider the “search value”. When α = 0, the bid-ask spread is zero (S∗(0) = 0).
+Thus, expected gains from trade are E(|δ|) for all institutions ﬁnding a trading venue because
+the spread is zero in this case. Slow institutions, however, can only appropriate a fraction
+µ of this gain because of delayed execution.
+In contrast, fast institutions obtain 100% of
+the expected gains from trade because they bear no delay costs. Thus, adoption of the fast
+trading–technology generates an increase in expected proﬁt due to more eﬃcient search equal
+to (1−µ)E(|δ|) for the ﬁrst adopter. Hence, the ﬁrst term in (28) measures the “search value”of
+the trading technology (when α = 0).
+Now turn to the “speculative value”of the fast trading technology, which arises when σ > 0
+and is given by the second term in Eq. (28). To grasp the economic intuition of that term, ﬁrst
+observe that the technology has speculative value only when it leads an institution to trade
+diﬀerently than if it were slow. Suppose that a fast institution learns that the asset cash ﬂow is
+high (θτ = σ). As α = 0, it buys the asset iﬀδ + σ −S∗(0) > 0, i.e., iﬀδ ≥−σ. However, the
+institution would have purchased the asset anyway if slow when δ ≥0. Thus, the technology has
+speculative value only when −σ ≤δ < 0. In this case, if fast, the institution buys the asset and
+earns δ +σ whereas if slow it sells the asset and earns −(δ +σ). Thus, the net speculative gain
+of the technology is δ +σ −(−(δ +σ)) = 2(δ +σ), conditional on −σ ≤δ < 0 and θτ = σ. This
+generates an average speculative gain of 2(G(0) −G(−σ)) (σ −E(|δ| ||δ| ≤σ)) when θτ = σ.17
+By symmetry, this is also the average speculative gain when θτ = −σ. Thus, the total average
+speculative value of the fast trading technology is 2(G(0) −G(−σ)) (σ −E(|δ| ||δ| ≤σ)) =
+(2G(σ) −1)(σ −E(|δ| ||δ| ≤σ)) because G(.) is symmetric around 0.
+The previous calculations hold for α = 0 (i.e., for very ﬁrst adopters of the fast trading
+technology). More generally, for any value of α, the gain of being fast, ∆(α) = φ(α)−ψ(α), has a
+search value and a speculative value component. Closed-form expressions for these components,
+however, cannot be obtained for α > 0 because they depend on the equilibrium spread, S∗(α),
+which in general cannot be computed in closed-form for α > 0. However, if one of the conditions
+of Lemma 3 holds, then ∂∆(α)/∂α < 0, ∀α and we have the following proposition.
+Proposition 4. When ∆(α) decreases for all values of α, then there exists a unique equilibrium
+17Indeed, E(θτ + δ |θτ = σ, −σ ≤δ < 0) = σ −E(|δ| ||δ| ≤σ) because of the symmetry of institutions’ private
+valuations.
+24
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+level of fast trading. This level is such that: if (a) C ≥∆(0), α∗= 0, if (b) ∆(1) < C < ∆(0),
+0 < α∗< 1, and if (c) C ≤∆(1), α∗= 1. Furthermore, as C increases, the level of fast trading
+declines in equilibrium.
+Fig. 6 illustrates the determination of α∗when institutions’ private valuations are normally
+distributed. This level is obtained at the intersection of i) the horizontal line that gives the
+value of C and ii) the downward sloping curve reprsenting ∆(α). In this example, ∆(0) = 3.64
+and ∆(1) = 1.42. Thus, for C = 3, there is an interior equilibrium, α∗≈0.26. As the cost of
+fast trading increases (the horizontal line shifts up in Fig. 6), the level of fast trading declines.
+[Insert Fig. 6 about here]
+Now consider the case in which, at least for some ranges of α, institutions’ decisions are
+complements. In that case, ∆(α) does not decrease everywhere and, for this reason, there
+might be multiple equilibrium levels of fast trading. This is particularly striking when ∆(0) ≤
+C < ∆(1). In this case, there are at least two equilibria: one in which no institution ﬁnds it
+optimal to invest because each expects others not to invest and one in which all institutions
+ﬁnd it optimal to invest because each expects others to invest. In each of the two equilibria,
+institutions’ beliefs about other institutions’ decisions are self-fulﬁlling. Yet, all institutions
+would prefer to coordinate on not being fast because their expected proﬁt (ψ(0)) in the “AllSlow” equilibrium is larger than their expected proﬁt (φ(1) −C) in the “All-Fast” equilibrium
+when ∆(0) ≤C. Indeed, this condition implies that: ψ(0) ≥φ(0) −C, which is strictly larger
+than φ(1) −C since φ(.) is decreasing. Thus, the All-Slow equilibrium Pareto dominates the
+All-Fast equilibrium. The All-Fast equilibrium can be interpreted as the outcome of an arms
+race, similar to Glode, Green, and Lowery (2012): every institution chooses to invest in the
+fast trading technology in the fear that others do so. This belief is indeed self-fulﬁlling.
+Fig. 5 illustrates these points. In this case, ∆(α) is a U-shape function of α with a minimum
+in αmin = 25% and a maximum in αmax = 1.
+Institutions’ decisions are complements for
+α ∈[αmin, 1]. Furthermore, ∆(0) = 0.25 and ∆(1) = 0.27. Thus, for any C, in (0.25, 0.27),
+there are three equilibria: the two corner equilibria and one interior equilibrium. For instance,
+as Fig. 5 shows, when C = 0.264, there are three possible equilibrium levels of fast trading: (i)
+25
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+All Slow (α∗= 0), (ii) All Fast (α∗= 1), and (iii) α∗
+3 = 83.5%. Following Manzano and Vives
+(2012), we say that an equilibrium α∗is stable if when one slightly perturbates α around α∗
+and, at this point, (i) reduces α if ∆(α) < C or (ii) increases α if ∆(α) > C then one is brought
+back to α∗. Inspecting Fig. 5, one can immediately see that the interior equilibrium, α∗
+3, is not
+stable: a small increase in the fraction of fast institutions at this point triggers a domino eﬀect
+that leads all institutions to be fast. This would appear as an investment wave in fast trading
+technologies, as if fast trading were contagious. In contrast, the corner equilibria are stable.18
+6.
+Social Optimum and Policy Intervention
+As explained in the previous section, the decision to become fast by one institution exerts a
+negative externality on other institutions (see Proposition 2). As institutions do not internalize
+this externality in making their investment decision, one expects the equilibrium level of fast
+trading to be too high relative to the level that maximizes social welfare. We show that this
+is indeed the case in Section 6.1. We then analyze possible policy responses to this problem in
+Section 6.2.19
+6.1.
+Excessive Fast Trading
+Utilitarian welfare is equal to20
+W(α) = α (φ(α) −C) + (1 −α)ψ(α).
+(29)
+18When an interior equilibrium, α∗, is stable, ∆(α) must necessarily be decreasing at α = α∗.
+This is
+consistent with Manzano and Vives (2012), who ﬁnd that only equilibria in which agents’ actions are strategic
+substitutes are stable. This principle, however, does not apply for corner equilibria. For instance, in Fig. 6,
+∆(α) is increasing at α = 1. Yet, α∗= 1 is a stable equilibrium.
+19All institutions optimally decide to trade or not (see Section 3). Hence, there are no noise traders in our
+setting and all investors optimally adjust their trading strategies when the market structure (e.g., the fraction
+of fast institutions) changes. We can therefore conduct welfare and policy analyses because all investors’ welfare
+and responses to changes in market structure are well deﬁned.
+20Market makers are risk neutral and obtain zero–expected proﬁts. Hence, their contribution to utilitarian
+welfare is equal to zero.
+26
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+Thus, a marginal increase in the level of fast trading has the following eﬀect on welfare:
+∂W(α)
+∂α
+= ∆(α) −C −
+
+−α∂φ(α)
+∂α
+−(1 −α)∂ψ(α)
+∂α
+
+.
+(30)
+The term within brackets is positive because an increase in α reduces fast and slow institutions’
+expected gains (∂φ(α)
+∂α
+≤0 and ∂ψ(α)
+∂α
+≤0; see Proposition 2). It measures the externality cost
+incurred by all institutions when α increases. Denoting this cost by Cext(α), we have
+∂W(α)
+∂α
+=
+∆(α)
+| {z }
+Social Value of Fast Trading
+−
+(C + Cext(α))
+|
+{z
+}
+Social Cost of Fast Trading
+.
+(31)
+Thus, a marginal increase in α has two opposite eﬀects on social welfare. On the one hand,
+institutions who become fast are better oﬀ. This beneﬁt is captured by the ﬁrst term in Eq.
+(31). On the other hand, institutions who become fast pay a cost C and exert a negative
+externality on all institutions.
+The socially optimal level of fast trading, αSO, (i.e., the value of α maximizing W(α)) trades
+oﬀthe social beneﬁt of fast trading (∆(α)) and its social cost (C + Cext(α)). This level is not
+necessarily zero because, at α = 0, the social value of the fast trading technology can exceed
+its social cost (see Proposition 6 below). Yet, when σ > 0, the socially optimal level of fast
+trading is always smaller (and in most cases strictly smaller) than the equilibrium level of fast
+trading, as stated in the next proposition.
+Proposition 5. When σ > 0, the socially optimal level of fast trading is smaller than the
+equilibrium one (αSO ≤α∗), with a strict inequality when equilibrium is interior (0 < α∗< 1).
+When C ≥∆(0), the socially optimal level of fast trading is zero and this level is also an
+equilibrium (but not necessarily the unique equilibrium).
+When C ≤∆(1), α∗= 1 is an
+equilibrium and the socially optimal level of fast trading is either lower than or equal to the
+equilibrium level.
+Thus, in general, there is overinvestment in the fast trading technology in equilibrium.
+27
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+Fig. 7 illustrates this result. It depicts social welfare when σ = 5 and institutions’ private
+valuations are normally distributed with σδ = 10 for C = 4.77 or 5 (π = 0.9 and λ = 0.0356 so
+that λs = 0.27). For C = 4.77, the social optimum is strictly positive and equal to αSO ≈25%
+whereas for C = 5, the social optimum is zero. In either case, however, the unique equilibrium
+is such that all institutions ineﬃciently choose to be fast (α∗= 1).
+[Insert Fig. 7 about here]
+Overinvestment in the fast trading technology arises as soon as α∗∈(0, 1), whether institutions’ decisions are substitutes or complements. Complementarity in institutions’ decisions,
+however, aggravates the overinvestment problem because it tends to disconnect investment decisions from the technological cost. For instance, suppose that ∆(0) ≤C < ∆(1), which can
+occur when there is complementarity in institutions’ decisions. In this case, the socially optimal
+level of fast trading is αSO = 0 because C ≥∆(0) (Proposition 5). Yet there are two possible
+stable equilibria in this case: α∗= 0 and α∗= 1. There is no overinvestment in the former
+but maximal overinvestment in the latter. This happens because each institution anticipates
+that if it remains slow when others are fast then it will obtain a very low proﬁt. This makes
+the value of being fast relatively high, despite the fact that the technological cost is so large
+(∆(0) ≤C) that any investment in the fast trading technology is ineﬃcient.
+Overinvestment in the fast trading technology does not mean that one should necessarily
+bar institutions from using it. In fact a necessary and suﬃcient condition for αSO > 0 is:
+∂W(0)
+∂α
+= ∆(0) −Csoc(0) > 0.
+(32)
+Using the expression for ∆(0) in Eq. (28), we deduce the following result.
+Proposition 6. The socially optimal level of investment in fast trading technologies is strictly
+larger than zero if and only if λ < bλ(σ, C, π) where bλ(σ, C, π) is a threshold strictly smaller than
+one (the expression of this threshold is given in the proof of the proposition). This threshold
+decreases with C, σ, and π. It is zero when σ or C are large enough or when π = 1.
+28
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+The social value of the fast trading technology comes from its search value, i.e., the reduction
+in the cost of delayed execution for those using the technology. As explained previously, at
+α = 0, this eﬃciency gain is equal to (1 −µ(λ, π, 0))E(|δ|). Investment in the fast trading
+technology is socially optimal only if this gain is large enough relative to the social cost of
+the technology. As slow institutions’ delay cost decreases in λ, the socially optimal level of
+investment is strictly positive only if λ is smaller than a threshold bλ. This threshold decreases
+in π because an increase in π reduces delay costs, other things equal.21
+The threshold bλ
+also decreases with σ because a higher σ enlarges the range of private valuations for which
+institutions make socially ineﬃcient trading decisions (i.e., do not trade or sell when they
+should buy and vice versa). Last, it decreases in C because the reduction in delay costs due to
+the fast trading technology must at least exceed its cost for investment in this technology to
+be socially optimal.
+Interestingly, bλ(σ, 0, π) < 1. Hence, overinvestment can arise even when the fast trading
+technology costs nothing (C = 0). Indeed, when C = 0, the only equilibrium is α∗= 1. Yet, if
+λ > bλ(σ, 0, π) then αSO = 0 and even when λ < bλ(σ, 0, π), αSO will be positive but strictly less
+than one. The reason is that the social cost of fast trading includes the negative externality
+generated by fast trading, not just real resources invested in the technology.
+Proposition 5 focuses on σ > 0. For completeness, the next corollary considers the particular
+case in which the fast trading technology has no speculative value because there is no uncertainty
+about the cash ﬂow of the asset (σ = 0).
+Corollary 3. (Benchmark: no adverse selection): When σ = 0, the socially optimal level of
+fast trading is αSO = 1 if λ < bλ(0, C, π) and αSO = 0 if λ ≥bλ(0, C, π). Furthermore, in this
+case, the equilibrium level of fast trading is unique and it coincides with the socially optimal
+level of fast trading.
+In the absence of adverse selection, the cost of fast trading is just the technological cost,
+C. As this cost is independent of the level of fast trading, the socially optimal level of fast
+21If π = 1 then bλ = 0 when r = 0 because there is then no cost of delaying execution (µ(λ, 1, 0) = 1).
+However, if r > 0, the cost of delayed execution is strictly positive even if π = 1 (µ(λ, 1, r) < 1) for r > 0).
+Hence, in general, bλ can be strictly positive even when π = 1 (see the on-line appendix).
+29
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+trading is either zero or one, depending on whether the social value of fast trading (i.e., (1 −
+µ(λ, π, 0))E(|δ|)) is less than or higher than the technological cost. This comparison is exactly
+that made by institutions in choosing to invest or not and as a result there is no divorce between
+institutions’ investment decisions and social optimality.
+6.2.
+Policy Responses
+The previous section shows that investment in fast trading is in general too high relative to
+the eﬃcient level. In this section, we analyze two possible responses: (i) Pigovian taxes, and
+(ii) “slow markets”.22
+6.2.1.
+Pigovian taxation
+Suppose that the social planner can levy a lump sum tax T on fast institutions. This tax
+raises the total cost of being fast to C + T. Thus, for a tax T, let α∗∗(T) be the equilibrium
+level of fast trading, determined as in Section 5 with C + T replacing C. The central planner
+wants to set T so that α∗∗(T) = αSO.
+When 0 < αSO < 1, the socially optimal level of fast trading solves:
+∂W(αSO)
+∂αSO
+= φ(αSO) −ψ(αSO) −C + (αSO ∂φ(αSO)
+∂αSO
++ (1 −αSO)∂ψ(αSO)
+∂αSO
+)
+|
+{z
+}
+−Cext(αSO)
+= 0.
+(33)
+Set T ∗= Cext(αSO). Using Eq. (33), we have:
+φ(αSO) −ψ(αSO) = C + T ∗.
+(34)
+Thus, with the tax T ∗, there is an equilibrium in which the fraction of institutions choosing to
+be fast is α∗∗(T ∗) = αSO.23 This tax is such that fast institutions bear the cost they impose on
+22Another policy response would be to ban fast trading altogether. This approach can be implemented by
+setting suﬃciently high taxes for using the fast trading technology. In Section 6.2.1, we show that this is optimal
+only when λ ≥bλ(σ, C, π). See Proposition 7.
+23If institutions’ decisions are substitutes everywhere, this is the unique equilibrium whereas if institutions’
+30
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+other institutions, Cext(αSO), when the level of fast trading is αSO. Thus, institutions internalize
+this cost, which aligns private incentives with social optimality.
+When αSO = 1, ∂W(1)
+∂αSO > 1. Hence, using Eq. (33), φ(1) −ψ(1) > C + Cext(1). For this
+reason, if αSO = 1 then α∗∗(T ∗) = 1 is the unique equilibrium when the tax is T ∗= Cext(1).
+In sum, the tax T ∗= Cext(αSO) implements the socially optimal level of fast trading when
+αSO > 0, i.e., when λ < bλ(σ, C, π) (see Proposition 6). When λ ≥bλ(σ, C, π), αSO = 0. Thus,
+the social planner wants to prevent any investment in the fast trading technology. This can be
+achieved either with a ban on fast trading or equivalently with a tax that exceeds the largest
+possible value of ∆(α). The next proposition summarizes these results.
+Proposition 7. When λ < bλ(σ, C, π), a tax equal to T ∗= Cext(αSO), implements the socially
+optimal level of fast trading, which, in this case, is strictly positive. When λ ≥bλ(σ, C, π), a
+tax that exceeds the largest possible value of ∆(α) implements the socially optimal level of fast
+trading, which in this case is zero.
+Proposition 7 provides an economic rationale for recent proposals to tax fast traders.24 Calibrating the optimal tax is diﬃcult, however, as it requires estimating the negative externality
+generated by fast institutions at the socially optimal level of fast trading. Yet, our analysis
+provides some insights on what optimal taxes should look like: the tax should be higher for
+assets in which the negative externality of fast trading is higher, that is, more volatile assets
+(σ higher) or assets in which gains from trade are smaller, i.e., assets for which the dispersion
+of traders’ private valuations is smaller. Interestingly, this suggests that taxes on fast traders
+should be asset speciﬁc.
+decisions are complements for some range of α, there might be other equilibria.
+However, in these other
+equilibria, the level of fast trading must be greater than αSO because, in any equilibrium, the level of fast trading
+either coincides with or exceeds the socially optimal level (Proposition 5). This implies that the equilibrium
+in which α∗∗= αSO is Pareto dominant. Indeed, in any interior equilibrium α∗∗, the expected proﬁt of fast
+institutions net of the cost of being fast (including a tax if any) is ψ(α∗∗), which is also the expected proﬁt of
+slow institutions. When α∗∗> αSO, we have ψ(α∗∗) < ψ(αSO). Hence, all institutions prefer the equilibrium
+in which the level of fast trading is α∗∗= αSO. If α∗∗= 1, all institutions obtain φ(1) −C −T ∗= W(1) −T ∗.
+In contrast, in the equilibrium in which α∗∗= αSO, institutions obtain: W(αSO) −T ∗. This is stricly larger
+than W(1) −T ∗by deﬁnition of αSO when αSO < 1.
+24See “Robin Hood Tax: A Long Shot,” Financial Times, May 2013 and “Italy introduces tax on high speed
+traders in equity derivatives,” Financial Times, September 1, 2013.
+31
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+Furthermore, a per trade tax is unlikely to be optimal, even if it aﬀects fast traders only.
+Indeed, a per trade tax is similar to an increase in the bid-ask spread. Thus, it widens the
+range of private valuations for which fast institutions decide not to trade. This eﬀect results in a
+welfare loss (unrealized gains from trade) that does not arise with a lump sum tax. Thus, taxing
+investment in fast trading technology is more eﬃcient than taxing fast institutions’ trades.
+Finally, observe that tax proceeds can be redistributed among all institutions so that they
+all eventually share the welfare gain associated with fast trading (even if they remain slow).
+Indeed, suppose that 0 < αSO < 1 and that the tax proceeds are redistributed equally among
+all institutions, so that slow institutions receive in aggregate (1 −αSO)T ∗. Slow institutions’
+aggregate welfare is therefore:
+(1 −αSO)ψ(αSO) + (1 −αSO)αSOT ∗= (1 −αSO)W(αSO),
+(35)
+where the second equality follows from the deﬁnition of W(.) and Eq. (34). Using the same
+reasoning, fast institutions obtain αSOW(αSO). Thus, per capita, both fast and slow institution
+obtain the same expected proﬁt, W(αSO), after redistribution. They therefore equally beneﬁt
+from the improvement in welfare relative to the case in which fast trading is forbidden.
+6.2.2.
+Slow and Fast Markets
+Another way to alleviate the negative externality of fast trading is to create “slow–friendly”
+markets. There are several ways in which trading venues can be “slow-friendly,” i.e., limit the
+ability of fast traders to adversely select slower ones. For instance, they could batch incoming
+orders (see “High-frequency traders face speed limits,” Financial Times, April 28, 2013), delay
+the execution of market orders, provide no-colocation services, or simply deny entry to fast
+traders.25
+In this section, we show that introduction of slow-friendly markets can lead to
+underinvestment in fast trading.
+To this end, consider the following extension of our baseline model. A continuum of slow
+25For instance, the Investors Exchange (IEX) (see http://www.iextrading.com/about/) is an electronic limit
+order book market that delays execution of incoming market orders by 350 microseconds and oﬀers no-colocation
+services. According to IEX’s CEO, this is suﬃcient to deter “predatory” behavior by high frequency trading
+ﬁrms. See “How IEX Is Combating Predatory Types Of High-Frequency Traders,” Forbes, April 23, 2014.
+32
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+markets (the “slow segment”) coexist with fast markets (“the fast segment”). In either segment,
+a slow institution has a probability λ to execute its trade in a given period. Fast institutions
+cannot access slow markets. In the context of our model this means that, in slow markets,
+participants do not have private information. Before entering the market, institutions decide:
+(i) whether to be fast or slow and (ii) if they are slow, whether to trade in the fast segment or
+the slow segment.
+Let β denote the fraction of slow institutions trading on slow markets and let S∗
+Fast(α, β)
+be the equilibrium spread in fast markets. As in the baseline model, S∗
+Fast(α, β) is the smallest
+spread for which market makers in the fast segment break even. The only diﬀerence with the
+baseline model is that market makers receive fewer buy and sell orders from slow institutions
+because a fraction β of these institutions trade in the slow market. Thus, market makers in
+fast markets bear a higher adverse selection cost than without slow markets and must therefore
+charge a larger bid-ask spread to break-even, as the next lemma shows.
+Lemma 4. When a fraction β of slow institutions trade in slow markets, the equilibrium bid-ask
+spread in fast markets is:
+S∗
+Fast(α, β) = S∗(αFast(α, β)),
+(36)
+where S∗(·) is the equilibrium bid-ask spread in the baseline model and
+αFast(α, β) =
+α
+α + (1 −β)(1 −α).
+(37)
+The equilibrium bid-ask spread on fast markets increases with α and β.
+The bid-ask spread on slow markets is zero because they only attract uninformed institutions.
+Institutions’ expected gain on the fast market are obtained by replacing S∗(α) by S∗(αFast)
+in Eq. (19) and (21). Thus:
+φFast(α, β) = φ(αFast) and ψFast(α, β) = ψ(αFast),
+(38)
+33
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+where (i) αFast is deﬁned in Lemma 4 and (ii) φFast(α, β) and ψFast(α, β) are respectively fast
+and slow institutions’ expected gains when they trade on fast markets. Institutions’ expected
+gain on the slow market, ψSlow, is identical to that obtained on the fast market when all
+investors are slow in the baseline model. That is:
+ψSlow(α, β) = ψ(0).
+(39)
+Institutions’ expected gains on the fast market, φ(αFast) or ψ(αFast), decrease with αFast and
+therefore β. Hence, slow institutions migrating to the slow market exert a negative externality
+on those who remain on the fast market. Indeed, an increase in β results in a larger bid-ask
+spread on the fast market because it increases the likelihood (αFast) that trades on this market
+come from fast informed traders. This is stated in the next corollary.
+Corollary 4. In equilibrium, an increase in β or α reduces the expected gain of fast and slow
+institutions on fast markets and has no eﬀect on the expected gain of slow institutions on slow
+markets.
+Now, consider institutions’ decisions to trade in fast or slow markets. For simplicity, and
+because this is not key for our conclusions, we assume that there is no cost of joining a market.26
+Slow institutions trade at the same speed in either type of markets but there is no adverse
+selection on slow markets. Thus, trading exclusively on the slow market is a dominant strategy
+for slow institutions. This implies that β = 1 in equilibrium.27 Hence, in any equilibrium with
+α∗> 0, fast institutions cannot make speculative proﬁts at the expense of slow institutions,
+which considerably reduces their expected gain from trade. Indeed, for any α, they obtain:
+φFast(α, 1) −C = φ(1) −C,
+(40)
+26In reality, markets compete in trading fees and diﬀerentiation in speed is a way to sustain non competitive
+fees [see Pagnotta and Phillipon (2013)]. Analyzing this competition is beyond the scope of our paper. Furthermore, by assuming zero fee on the slow market, we bias the model against ﬁnding that slow markets are
+ineﬃcient, which is the main ﬁnding of this section.
+27When α = 0, institutions are indiﬀerent between slow and fast markets because they obtain an expected
+gain of ψ(0) in either case. In this case, any β is an equilibrium.
+34
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+which is the lowest possible expected gain for fast institutions because φ is minimal in α = 1.
+Thus, the choice between being fast and slow boils down to a comparison between φFast(α, 1)−
+C and ψSlow(α, 1), that is, φ(1) −C and ψ(0). If φ(1) −C > ψ(0), each institution is better
+oﬀinvesting in the fast technology and exploiting it on the fast market, independently of other
+institutions’ choices (because, in this case, φFast(α, β) > φFast(α, 1) > ψ(0)). Thus, all institutions choose to be fast in equilibrium. If instead φ(1) −C ≤ψ(0), all institutions are better oﬀ
+being slow and trading on slow markets only, for all values of α.
+Proposition 8. If φ(1) −ψ(0) ≤C no institution becomes fast and all trade on slow markets
+(α∗= 0 and β∗= 1), while if C < φ(1) −ψ(0) all institutions are fast and only trade on fast
+markets (α∗= 1 and β∗= 0).
+Thus, the introduction of slow markets signiﬁcantly aﬀects equilibrium investment decisions.
+In particular, equilibria in which an interior fraction of institutions invest in the fast technology
+unravel and one ends up with only two corner equilibria: (i) the “All Fast” equilibrium with
+no activity in slow markets or (ii) the “All Slow” equilibrium with no activity in fast markets.
+For given values of α and β, utilitarian welfare is:
+W(α, β)
+=
+β(1 −α)ψSlow(α, β) + (1 −β)(1 −α)ψFast(α, β) + α(φFast(α, β) −C)
+=
+β(1 −α)ψ(0) + (1 −β)(1 −α)ψ(αFast) + α(φ(αFast) −C).
+(41)
+Using Proposition 8, we deduce that with slow and fast markets, utilitarian welfare in equilibrium is either:
+W(0, 1) = ψ(0), when φ(1) −ψ(0) ≤C,
+(42)
+or
+W(1, 0) = φ(1) −C, when φ(1) −ψ(0) > C.
+(43)
+When there is no slow market, β = 0 and the equilibrium level of fast trading is α∗.
+Social welfare in equilibrium is therefore W(α∗, 0). We have W(α∗, 0) = ψ(0) when α∗= 0,
+W(α∗, 0) = φ(1)−C when α∗= 1, and W(α∗, 0) = ψ(α∗) when 0 < α∗< 1 because in this case
+φ(α∗) −ψ(α∗) = C. When φ(1) −ψ(0) < C, equilibrium social welfare without slow markets is
+35
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+always less than or equal to equilibrium social welfare with slow markets (ψ(0)) because ψ(α)
+is maximal at α = 0. When φ(1) −ψ(0) ≥C, we have φ(α) −ψ(α) > C for all α because φ
+and ψ decrease with α. Thus, with or without slow markets, all institutions choose to be fast
+(α∗= 1) and social welfare is φ(1) −C. This yields the following result.
+Corollary 5. In equilibrium, social welfare with slow and fast markets is greater than social
+welfare with fast markets only.
+Thus, if one cannot tax fast institutions, opening slow markets improves welfare. However,
+this market structure does not necessarily maximize social welfare.
+In fact, in general, it
+does not, because it induces too many (all) institutions to remain slow, relative to the social
+optimum.
+To analyze this point, suppose that λ ≤bλ(σ, C, π) and φ(1) −ψ(0) < C. As bλ(σ, C, π)
+decreases with C, these two conditions are satisﬁed when C is small enough for investment
+in the fast trading technology to be socially optimal but large enough for each institution to
+prefer trading on slow markets (see Proposition 8).
+Thus, in equilibrium, social welfare is
+W(0, 1) = W(0, 0). It is not maximal. Indeed, without slow markets, the socially optimal level
+of fast trading, αSO, is strictly between zero and one (Proposition 6). Hence:
+W(0, 0) < W(αSO, 0).
+(44)
+This means that, if regulators could pick α and β, they could improve social welfare by imposing
+β = 0 and setting the level of fast trading at αSO. Intuitively, in equilibrium, there is “too much”
+trading on slow markets (β = 1) because institutions joining the slow market exert a negative
+externality on those on the fast market.28
+Thus, regulators are between a rock and a hard place: with only fast markets, there is
+overinvestment in the fast trading technology in equilibrium, whereas with slow markets, there
+can be underinvestment in the fast trading technology. To solve this conundrum, one should
+tax both investment in the fast technology and access to the slow market. The next proposition
+states that optimal taxation should preclude trading on the slow market.
+28In other cases (λ > bλ(σ, C, π) or C ≤φ(1) −ψ(0)), the equilibrium outcome with slow markets coincide
+with the outcome maximizing social welfare in the absence of slow markets.
+36
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+Proposition 9. If the regulator can use Pigovian taxes, it should choose (i) a tax larger than
+ψ(0) for institutions trading on the slow market to preclude trading on this market and (ii) a
+tax chosen as explained in Proposition 7 for fast institutions.
+The next example illustrates the results obtained in this section.
+Example 3: Consider the same parameters as in Fig. 7 with C = 4.77, so that αSO = 25%.
+Without slow markets, all institutions choose to be fast in equilibrium. Utilitarian welfare is
+W(1, 0) = φ(1) −C = 2.142. With slow markets, this equilibrium unravels and all institutions
+choose to be slow. Investors’ welfare improves and becomes W(0, 1) = ψ(0) = 2.15. Yet, social
+welfare is not maximal. As implied by Proposition 9, it can be improved by charging a tax
+larger than 2.15 for trading in slow markets (so that no trader chooses to do so) and a tax
+equal to T ∗= 2.03 for investing in the fast trading technology. With this tax, α∗= αSO = 25%
+and social welfare is W(αSO, 0) = 2.16. If the tax is equally redistributed among all institutions
+they all obtain an expected proﬁt of 2.16 > ψ(0) after redistribution (see Section 6.2.1).■
+7.
+Empirical implications
+Our model implies that the informational content of trades should be inversely related to
+the cost of fast trading (e.g., colocation fees). Indeed, at any stable equilibrium, an increase
+in C triggers a drop in the level of fast trading (α) and hence in the informational content
+of trades. In contrast, an increase in the cost of fast trading can have ambiguous eﬀects on
+trading volume (see the analysis in Section 4.2).
+Anecdotal evidence suggests that the proﬁtability of high frequency traders decreased in
+recent years. For instance, the proﬁts of GETCO, one of the early adopter of fast trading
+technologies have constantly declined since 2007 (see “GETCO proﬁt drops 82% on weak US
+market” Financial Times, February 13, 2013). One simple explanation for this evolution is
+that as the number of fast institutions increases, the proﬁtability of fast trading declines.
+Another possibility is that the cost of fast trading has increased. Anecdotal evidence suggests
+that this is indeed the case (see “High-Speed Trading no Longer Hurtling Forward,” New-York
+Times, October 14, 2012 and “High-speed stock traders turn to laser beams”, WSJ, March 10,
+37
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+2014). Both explanations are consistent with our model in which the net expected proﬁt of fast
+institutions, φ(α) −C decreases in the level of fast trading, α, and the cost of fast trading, C.
+In addition, the model suggests two other, less obvious, explanations, highligted in Implications
+1 and 2 below.
+Implication 1: Holding the level of fast trading (α) constant, the expected gains of fast
+institutions decrease in market fragmentation and in the fraction of trading that takes place on
+slow markets.
+As market fragmentation increases (i.e., λ goes down), it is more diﬃcult for slow institutions
+to quickly ﬁnd attractive quotes. This hurts fast traders in our model because it increases the
+spread. Accordingly, fast and slow institutions’ expected gains decline (see Eq. (19) and (21)).
+Similarly, an increase in the fraction of institutions trading on slow markets (β) raises the
+spread on the fast market, which lowers the proﬁtability of fast trading.
+Over the counter and dark markets are, by design, slower than centralized electronic limit
+order book markets. The trading volume on these markets has grown in recent years and,
+in line with the logic behind Proposition 8, this growth is in part driven by slow investors’
+desire to insulate themselves from high frequency traders.
+For instance, a 2013 New-York
+times article (“As markets heat up, trading slips into shadows”) notes that: “Investors also
+have said that they have moved more of their trading into the dark because they have grown
+more distrustful of the big exchanges like the NYSE and the Nasdaq. Those exchanges have
+been hit by technological mishaps and become dominated by so-called high-frequency traders.”
+Consistent with Implication 1, this evolution might also be responsible for the drop in fast
+trading proﬁtability in recent years.
+Implication 2: The expected proﬁt of fast institutions increases in the volatility of the
+asset when the level of fast trading is low. However, it can decrease with volatility when the
+level of fast trading is large.
+In our model, the volatility of the asset payoﬀis σ.29 Its eﬀect on the proﬁtability of fast
+29In reality high frequency traders seem to obtain information on short term price movements. Hence, for
+empirical tests, σ should be proxied by the volatility of short term changes in asset fair values [see Hasbrouck
+(2005) for various methods to estimate this volatility].
+38
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+trading are ambiguous. On the one hand, holding the bid and ask prices constant, an increase in
+volatility raises the speculative value of fast trading. On the other hand, an increase in volatility
+raises the spread, which lowers fast institutions’ expected gains. The former eﬀect dominates
+the latter when α is small but not necessarily when α is large (see the on-line appendix for an
+example).
+Now consider the eﬀects of variations in market fragmentation (λ) and volatility (σ) on the
+equilibrium level of fast trading, α∗. The model suggests that analyzing the eﬀects of these
+factors on the (net) expected proﬁt of fast institutions is not suﬃcient to predict entry or exit
+of fast institutions. Indeed, the decision to become fast is determined by the diﬀerence between
+the proﬁt of being fast and the proﬁt of being slow rather than just the proﬁt of being fast.
+As a result, the eﬀect of a parameter that negatively aﬀects the proﬁtability of fast traders
+can, counterintuitively, increase the equilibrium level of fast trading if its negative impact on
+slow institutions is stronger. Consider, for example, an increase in market fragmentation, i.e.,
+a decrease in λ. For low levels of fast trading, an increase in market fragmentation reduces the
+expected proﬁt of fast and slow institutions, but the negative impact is more severe for slow
+institutions. This follows directly from Eq. (28) and the continuity of ∆(α) with respect to
+λ. Accordingly, for α∗close enough to zero (i.e., C high), an increase in market fragmentation
+should trigger entry of new fast institutions, even though it decreases fast institutions’ expected
+proﬁt. Similarly, for high values of C, an increase in volatility should raise the level of fast
+trading in this asset.
+Implication 3: For high values of the cost of trading fast, C, equilibrium investment in fast
+trading should increase when (a) trading becomes more fragmented or (b) volatility increases.
+This implication ﬁts well with the idea that market fragmentation and volatility fostered the
+development of fast trading technologies. However, as the level of fast trading grows, further
+increases in market fragmentation or volatility can lower the proﬁtability of fast trading and
+force some fast trading ﬁrms to exit. This highlights the importance of controlling for the cost
+and the level of fast trading in empirical studies considering the eﬀects of market fragmentation
+or volatility on fast trading. To illustrate this point, consider the following example: Private
+valuations are normally distributed with σδ = 4; other ﬁxed parameters are σ = 7; and π = 0.9.
+39
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+For a large cost of fast trading, C = 4, an increase in λ (from λ = 0.6 to λ = 0.3), generates an
+increase in α∗, from 15.5% to 17.5%. In contrast, for a lower cost of fast trading, C = 3, the
+same increase in fragmentation generates a decrease in α∗, from 32% to 28.2%.
+8.
+Conclusion
+Investment in fast trading technology helps ﬁnancial institutions cope with market fragmentation. To the extent that this technology enhances their ability to reap mutual gains from
+trade, it improves social welfare. However, fast trading technology also provide advance access
+to value relevant information, which creates adverse selection, lowering welfare. Thus, fast
+trading generates a negative externality. Because ﬁnancial institutions do not internalize this
+negative externality, equilibrium investment in fast trading technologies is in general excessive.
+We show that, for some parameter values, institutions’ investment decisions can be strategic
+complements. In this case, the overinvestment problem is particularly acute because the value
+of being fast relative to remaining slow becomes increasingly large as the amount invested in
+fast trading escalates. This leads to an arms’ race in which all institutions end up investing in
+the fast technology, in the same spirit as in Glode, Green, and Lowery (2012).
+One way to mitigate the adverse consequences of fast traders is to create “slow–only” markets. Yet, we show that this market structure can lower equilibrium investment in fast trading
+technologies below its socially optimal level. On the other hand, if the regulator can impose
+Pigovian taxes on investments in fast trading technology (equal to the externalities they generate), the socially optimal level of investment in fast trading technology can be implemented. To
+the extent that institutions can game taxes on fast trading, the eﬃcacy of Pigovian taxes will
+be reduced. Some investments in fast trading (such as ﬁber–optic cables, microwave signals, or
+colocation) are easily observable, however. To reduce the scope for gaming, the tax base could
+be contingent on such easily observable investments.30
+30Fast institutions could be tempted to collude with tax–exempt slow institutions by sharing their signals
+with them. The attractiveness of this strategy, however, would be greatly reduced by the time it would take to
+disseminate the signals to slow institutions.
+40
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+Appendix A.
+Proofs
+Propositions 3, 7, 8, and Corollaries 1, 4, 5 follow directly from the arguments in the text.
+Proof of Lemma 1.
+Let Π(S; α, λ, σ) denote a market maker’s net expected proﬁt, i.e.,
+the diﬀerence be the Right Hand Side (R.H.S) and the Left Hand Side (L.H.S) of Eq. (11).
+Using Eq. (8) and (9), we obtain the expected proﬁt of a market maker:
+Π(S; α, λ, σ)
+=
+
+α(G(S −σ) + G(S + σ)) + 2λs(1 −α)G(S))
+
+S
+−
+
+α(G(S −σ) −G(S + σ))
+
+σ.
+(45)
+Equilibrium spreads solve Eq. (11), i.e., they are such that Π(S∗; α, λ, σ) = 0. When α > 0 and
+σ > 0, we have Π(0; α, λ, σ) < 0 and Π(σ; α, λ, σ) = [2α(1 −G(2σ)) + 2λs(1 −α)(1 −G(σ))] σ >
+0. Therefore, as Π(·) is continuous in S, there always exists at least one S∗∈(0, σ), such that
+Π(S∗; α, λ, σ) = 0. When α = 0 or σ = 0, Π(0; α, λ, σ) = 0 and, for S > 0, Π(S; α, λ, σ) > 0.
+Hence, in these cases, S∗= 0 is the unique equilibrium.
+Proof of Lemma 2.
+By deﬁnition, S∗
+min(α) is the smallest positive spread, S∗, such
+that Π(S∗; α, λ, σ) = 0 where Π(.) is deﬁned in (45). Therefore, as Π(0; α, λ, σ) ≤0, we have
+Π(S; α, λ, σ) < 0 for all S < S∗
+min(α), which in turn implies (i) that S∗
+min(α) cannot be proﬁtably
+undercut and (ii) that:
+∂Π
+∂S
+S=S∗
+min(α) > 0.
+(46)
+Hence, by continuity of Π(·), there is always a bid-ask spread S0 arbitrarily close to but larger
+than S∗
+min(α) such that market makers’ net expected proﬁt when they charge S0 is strictly
+positive. Thus, any equilibrium spread above S∗
+min(α) can be proﬁtably undercut.
+Proof of Proposition 1.
+Remember that the equilibrium spread is the smallest S∗such
+that market makers break even, i.e., such that Π(S∗; α, λ, σ) = 0. Using the deﬁnition of Π(·)
+41
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+in Eq. (45) and the implicit function theorem, we obtain
+S∗′(α) = −
+∂Π
+∂α
+S=S∗(α)
+∂Π
+∂S
+S=S∗(α)
+,
+(47)
+where S∗′(α) denotes the ﬁrst derivative of S∗(α) with respect to α. We know from Eq. (46)
+that ∂Π
+∂S
+S=S∗(α) > 0. From Eq. (45), we have that Π(.) is linear in α with an intercept equal
+to 2λsG(S)S. Thus:
+Π(S; α, λ, σ) = ∂Π
+∂α × α + 2λsG(S)S.
+(48)
+At equilibrium, S = S∗, and Π(S∗; α, λ, σ) = 0. Thus, Eq. (48) implies that ∂Π
+∂α
+S=S∗(α) ≤0
+for α > 0 since S∗≥0 and therefore 2λsG(S∗)S∗≥0. When α = 0, S∗= 0 and partial
+diﬀerentiation of Eq. (45) with respect to α yields
+∂Π
+∂α
+S=S∗(0) = −(G(−σ) −G(σ))σ = (2G(σ) −1)σ ≤0.
+(49)
+Thus, ∂Π
+∂α
+S=S∗(α) ≤0 for all α. Hence, ∂S∗
+∂α > 0. Proceeding in a similar way, we also obtain
+(i) ∂S∗
+∂λ < 0 if π < 1 because then ∂Π
+∂λ
+S=S∗(α) > 0 and (ii) ∂S∗
+∂σ > 0 because ∂Π
+∂σ
+S=S∗(α) < 0.
+When π = 1, λs = 1 and therefore the bid-ask spread does not depend on λ. Thus, the bid-ask
+spread weakly decreases with λ.
+Proof of Lemma 3.
+Deﬁne f(x, y) = 1−G(x+y)
+1−G(x) . Using Eq. (13), ∆Vol(S∗(α), α) > 0 iﬀ:
+1−G(S∗−σ)
+1−G(S∗)
++ 1−G(S∗+σ)
+1−G(S∗)
+≥2λs, that is, iﬀ:
+f(S∗, −σ) + f(S∗, σ) ≥2λs.
+(50)
+We have:
+∂f(x, y)
+∂x
+= −g(x + y)(1 −G(x)) + g(x)(1 −G(x + y))
+(1 −G(x))2
+.
+(51)
+Thus, f(x, y) increases with x iﬀ
+g(x)
+1−G(x) ≥
+g(x+y)
+1−G(x+y), that is, iﬀhg(x) ≥hg(x + y). Suppose ﬁrst
+that hg(.) decreases with x. Thus, hg(x + σ) < hg(x) < hg(x −σ). Hence, setting y = −σ,
+42
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+f(S, −σ) decreases with S and is therefore minimal in S = σ. Symmetrically for y = +σ,
+f(S, σ) increases with S and is therefore minimal in S = 0. Thus, Condition (50) is satisﬁed if
+f(σ, −σ) + f(0, σ) ≥2λ, that is:
+1 −G(0)
+1 −G(σ) +
+ 1 −G(0)
+1 −G(σ)
+−1
+≥2λs.
+(52)
+This condition is always satisﬁed if λs ≤1
+2 because the ﬁrst term in the L.H.S of this equation
+is larger than 1 and the second term is positive. It is also satisﬁed when λs > 1
+2 because the
+L.H.S of the previous equation reaches its minimum for σ = 0, for which it is equal to 2. This
+proves the ﬁrst part of the proposition.
+Now suppose that hg(.) increases with x. Thus, hg(x + σ) > hg(x) > hg(x −σ). Hence,
+setting y = −σ, we deduce that f(S, −σ) increases with S and is therefore minimal in S = 0.
+Symmetrically, f(S, σ) decreases with S and is therefore minimal in S = σ. Thus, Condition
+(50) is satisﬁed if f(0, −σ) + f(σ, σ) ≥2λs, that is, using the symmetry of g(.):
+2G(σ) +
+1 −G(2σ)
+1 −G(σ)
+
+≥2λs.
+(53)
+As G(σ) ≥1
+2, this condition is always satisﬁed for λs ≤1
+2. This proves the second part of the
+proposition.
+Proof of Proposition 2.
+As S∗(α) increases with α, it is immediate from Eq. (19) and
+Eq. (21) that fast and slow institutions’ expected proﬁts decrease with α. This is the second
+part of the proposition. For the ﬁrst part, observe that:
+φ −ψ
+=
+Z δ
+S∗(α)−σ
+(δ + σ −S∗(α))g(δ)dδ +
+Z δ
+S∗(α)+σ
+(δ −σ −S∗(α))g(δ)dδ
+−
+2µ
+Z δ
+S∗(α)
+(δ −S∗(α))g(δ)dδ.
+(54)
+43
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+Thus:
+φ −ψ
+=
+Z δ
+S(α)−σ
+(δ + σ −S∗(α))g(δ)dδ +
+Z δ
+S∗(α)+σ
+(δ −σ −S∗(α))g(δ)dδ
+−2µ
+"
+1
+2
+Z δ
+S∗(α)
+(δ + σ −S∗(α))g(δ)dδ + 1
+2
+Z δ
+S∗(α)
+(δ −σ −S∗(α))g(δ)dδ
+#
+,
+(55)
+and therefore
+φ −ψ
+=
+(1 −µ)
+Z δ
+S∗(α)−σ
+(δ + σ −S∗(α))g(δ)dδ + (1 −µ)
+Z δ
+S∗(α)+σ
+(δ −σ −S∗(α))g(δ)dδ
++µ
+Z S∗(α)
+S∗(α)−σ
+(δ + σ −S∗(α))g(δ)dδ −µ
+Z S∗(α)+σ
+S∗(α)
+(δ −σ −S∗(α))g(δ)dδ.
+(56)
+The two ﬁrst terms on the R.H.S of the previous equation are clearly positive. The last two
+terms are strictly positive as well because
+R S∗(α)+σ
+S∗(α)
+(δ −σ −S∗(α))g(δ)dδ < 0 and
+R S∗(α)
+S∗(α)−σ(δ +
+σ −S∗(α))g(δ)dδ > 0. Thus, φ −ψ > 0.
+Proof of Corollary 2.
+Using the deﬁnition of g(.) in Example 2, we have G(S∗+ σ) =
+ δ + γσ + ϕS∗
+/(2δ), G(S∗−σ) =
+ γS∗+ ϕ(δ −σ)
+
+/(2δ), and G(S∗) = 1
+2 + γ
+2δS∗. Hence,
+using Eq. (14) and
+ γσ + ϕ
+ δ −σ
+
+/2δ = 1/2, we obtain:
+∆Vol(S∗(α), α) = (1 −λs) −(ϕ + γ(1 −2λs)) S∗(α)
+2δ
+.
+(57)
+As S∗(0) = 0, ∆Vol(S∗(0), 0) = 1 −λs ≥0. Furthermore ∆Vol(S∗(α), α) decreases with α because S∗increases with α and ϕ ≥γ. Thus, there are two cases to consider. If λs <Min{1, 2δ−(γ+ϕ)S∗(1)
+2(δ−γS∗(1)) }
+then ∆Vol(S∗(1), 1) > 0.
+In this case, ∆Vol(S∗(α), α) > 0 for all α and institutions’ decisions are globally substitutes (∂∆(α)
+∂α
+< 0, ∀α).31 If instead, λs >Min{1, 2δ−(γ+ϕ)S∗(1)
+2(δ−γS∗(1)) } then
+∆Vol(S∗(1), 1) < 0. Therefore, by continuity of ∆Vol(S∗(α), α), there is one value of α, denoted
+α0, such that ∆Vol(S∗(α), α) < 0 iﬀα > α0.
+31This is always the case if γ = ϕ = 1, that is, if the distribution of institutions’ private valuation is uniform.
+44
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+Proof of Proposition 4.
+When institutions’ decisions are substitutes everywhere, ∆(α)
+is decreasing for all α. Thus, if ∆(0) −C ≤0 then ∆(α) −C < 0 for all α and α∗= 0 is the
+unique equilibrium. If ∆(1) −C ≥0 then ∆(α) −C > 0 for all α. Thus, α∗= 1 is the unique
+equilibrium. If C ∈(∆(0), ∆(1)), ∆(0) −C > 0 and ∆(1) −C < 0. As ∆(α) −C is continuous
+and decreasing, there is a unique α∗∈(0, 1) such that ∆(α∗) −C = 0.
+Proof of Proposition 5.
+Consider ﬁrst an interior equilibrium (0 < α∗< 1). If σ > 0,
+then such an equilibrium is never a social optimum because the social cost of fast trading
+necessarily exceeds the beneﬁt of fast trading. Indeed, such an equilibrium is characterized by
+∆(α∗) = C (see Eq. (27)). Thus, ∆(α∗) < C + Cext(α∗) when σ > 0, because Cext(α∗) > 0
+in this case. Hence, at equilibrium, the social cost of fast trading strictly exceeds the social
+beneﬁt, which implies αSO̸ = α∗.32 Furthermore, as φ(α∗) −ψ(α∗) = C, Eq. (29) yields:
+W(αSO) −W(α∗)
+=
+αSO  φ(αSO) −C
+
++ (1 −αSO)ψ(αSO) −ψ(α∗),
+=
+αSO  φ(αSO) −φ(α∗)
+
++ (1 −αSO)(ψ(αSO) −ψ(α∗)) > 0,
+(58)
+where the inequality is strict because αSO̸ = α∗and αSO maximizes W(.) by deﬁnition. As φ(·)
+and ψ(·) decrease with α, this implies that αSO < α∗when 0 < α∗< 1.
+Now, let us analyze the corner equilibria. Suppose that there is an equilibrium level of
+fast trading such that α∗= 0. This implies that ∆(0) < C and therefore, given that ∆(0) =
+φ(0) −ψ(0): 0 ≤W(αSO) −W(0) ≤αSO  φ(αSO) −φ(0)
+
++ (1 −αSO)(ψ(αSO) −ψ(0)). As φ(·)
+and ψ(·) decrease with α, the terms in parentheses on the R.H.S of the second inequality are
+strictly less than zero if αSO > 0, which is impossible since the ﬁrst inequality imply that the
+sum of the terms in the second inequality is positive. Thus, the only possibility in this case
+is that αSO = 0. In other words, if there is at least one equilibrium such that α∗= 0 then
+αSO = 0, so that αSO ≤α∗. Finally, if there is an equilibrium in which α∗= 1 (which requires
+C ≤∆(1)), we obviously have αSO ≤α∗.
+32When ∆(α) < C + Cext(α∗), a small decrease in α makes social welfare larger because ∂W (α)
+∂α
+< 0 in this
+case (see Eq. (31)).
+45
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+Proof of Proposition 6.
+We ﬁrst show that Cext(0) = (2G(σ) −1).
+By deﬁnition
+Cext(0) = ψ′(0). Hence, using Eq. (21)
+Cext(0) = −2µ(λ, π, 0)S∗′(0)(1 −G(S∗(0)) = −µ(λ, π, 0)S∗′(0),
+(59)
+because G(S∗(0)) = G(0) = 1
+2 (S∗′(α) denotes the ﬁrst derivative of S∗(α) with respect to α).
+Furthermore, using Eq. (45), we have:
+∂Π
+∂S
+S=S∗(0) = λs(λ, π).
+(60)
+Thus, using Eq. (47) and (49),
+S∗′(0) = −
+∂Π
+∂α
+S=S∗(0)
+∂Π
+∂S
+S=S∗(0)
+= (2G(σ) −1)σ
+λs(λ, π)
+.
+(61)
+Finally, using Eq. (59),
+Cext(0) = (2G(σ) −1)σ,
+(62)
+because µ(λ, π, 0) = λs(λ, π). Using Eq. (62) and the expression of ∆(0) in Eq. (28), Eq. (32)
+is equivalent to:
+E(|δ|) −C −(2G(σ) −1)E(|δ| ||δ| ≤σ)
+E(|δ|)
+> µ(λ, π, 0).
+(63)
+As µ(λ, π, 0) = λs(λ, π), we deduce from Eq. (1) that Eq. (63) is equivalent to: λ < bλ(σ, C, π),
+where:
+bλ(σ, C, π) = Max{ (1 −π)(E(|δ|) −C −(2G(σ) −1)E(|δ| ||δ| ≤σ))
+E(|δ|) −π (E(|δ|) −C −(2G(σ) −1)E(|δ| ||δ| ≤σ)), 0}.
+(64)
+Thus, αSO > 0 iﬀλ < bλ(σ, C, π). Clearly, bλ(σ, C, π) decreases with C and π. Furthermore, it
+decreases with σ because (2G(σ) −1)E(|δ| ||δ| ≤σ) increases with σ.
+46
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+Proof of Corollary 3.
+Using Eq. (64) for σ = 0,
+bλ(0, C, π) = Max{(1 −π)(E(|δ|) −C)
+E(|δ|)(1 −π) + πC , 0}.
+(65)
+When σ = 0, the bid-ask spread is zero for all values of α. Hence, S∗′(α) = 0 and therefore
+Cext(α) = 0 for all α. Moreover, Eq. (24) and (28) yield ∆(α) = ∆(0) = (1 −µ(λ, π, 0))E(|δ|),
+for all α. Hence, ∆(α) −(C + Cext(α)) = ∆(0) −C = (1 −µ(λ, π, 0))E(|δ|) −C, ∀α. Thus,
+using Eq. (31), the fact that µ(λ, π, 0) = λs(λ, π), and the expression of λs(λ, π) in Eq. (1), we
+deduce that
+∂W
+∂α = ∆(0) −C = (1 −λs(λ, π))E(|δ|) −C > 0, ∀α,
+(66)
+iﬀλ < bλ(0, C, π). This implies that αSO = 1 if λ < bλ(0, C, π) and αSO = 0 if λ ≥bλ(0, C, π).
+Now consider an institution’s investment decision. For any level of α, an institution invests
+in the fast trading technology if ∆(α) −C = ∆(0) −C > 0 and does not invest otherwise.
+Thus, in equilibrium, α∗= 1 when λ < bλ(0, C, π) and α∗= 0 if λ ≥bλ(0, C, π). This proves the
+second part of the corollary.
+Proof of Lemma 4.
+Proceeding as in the baseline model, in each period, there is a mass
+(1 −α)(1 −β)λs of slow institutions trading in liquid fast markets.
+Hence, the masses of
+institutions buying and selling the asset in fast markets at date τ when θτ = σ are:
+ωa(S, σ)
+=
+αG(S −σ) + (1 −α)(1 −β)λsG(S),
+(67)
+ωb(S, σ)
+=
+αG(S + σ) + (1 −α)(1 −β)λsG(S).
+(68)
+Also as in the baseline model, ωa(S, −σ) = ωb(S, σ) and ωb(S, −σ) = ωa(S, σ) and the equilibrium spread in fast markets solves:
+Π(S∗; α, λ) =
+
+ωa(S∗, σ) + ωb(S∗, σ)
+
+S∗−
+
+ωa(S∗, σ) −ωb(S∗, σ)
+
+σ = 0.
+(69)
+47
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+Therefore, replacing ωa(S∗, σ) and ωb(S∗, σ) by their expressions given by Eq.(67) and (68) in
+Eq.(69), we deduce that S∗(α, β) is the smallest positive root of
+αFast(G(x −σ) + G(x −σ)) + (1 −αFast)λsG(x)x −αFast(G(x −σ) −G(x + σ)) = 0,
+(70)
+where αFast(α, β) =
+α
+α+(1−α)(1−β). When there is no slow market and the level of fast trading
+is αFast, the equilibrium spread solves the same equation (see Eq. (45)). Thus, S∗(α, β) =
+S∗(αFast). Hence S∗(α, β) increases in α and β because (i) αFast(α, β) increases in α and (ii) β
+and S∗(α) increases in α.
+Proof of Proposition 9.
+First, consider the case in which λ ≤bλ(σ, C, π). In this case,
+αSO > 0. Now suppose that there exists a pair (α0, β0) such that 0 < α0 < 1 and 0 < β0 < 1
+with W(α0, β0) > W(αSO, 0) (to be contradicted). In this case, the FOCs of the optimization
+problem: Maxα,βW(α, β) must be satisﬁed for (α0, β0). This implies:
+∂W
+∂β
+=
+(1 −α0)(ψ(0) −ψ(αFast
+0
+))
++
+∂αFast
+∂β
+
+α0
+∂φ(αFast)
+∂α
++ (1 −α0)(1 −β0)∂ψ(αFast
+0
+)
+∂α
+
+= 0,
+(71)
+∂W
+∂α
+=
+φ(αFast
+0
+) −C −(1 −β0)ψ(αFast
+0
+) −β0ψ(0)
++
+∂αFast
+∂α
+
+α0
+∂φ(αFast)
+∂α
++ (1 −α0)(1 −β0)∂ψ(αFast
+0
+)
+∂α
+
+= 0.
+(72)
+where αFast
+0
+= αFast(α0, β0). At (α0, β0), ∂αF ast
+∂α
+=
+(1−β0)
+(α0+(1−α0)(1−β0))2 and ∂αF ast
+∂β
+=
+α0(1−α0)
+(α0+(1−α0)(1−β0))2.
+Using this and the fact that the expressions in large parentheses in Eq. (71) and Eq. (72) are
+equal, (α0, β0) must satisfy the following condition:
+(ψ(0) −ψ(αFast
+0
+))(α0β0 + (1 −β0)) = α0(φ(αFast
+0
+) −C −ψ(αFast
+0
+)).
+(73)
+48
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+Moreover, if W(α0, β0) > W(αSO, 0) then W(α0, β0) > ψ(0). Thus, Eq. (41) implies
+(1 −α0)β0(ψ(0) −ψ(αFast
+0
+)) + α0(φ(αFast
+0
+) −C −ψ(αFast
+0
+)) > ψ(0) −ψ(αFast
+0
+).
+(74)
+Using Eq. (73), this implies: (ψ(0) −ψ(αFast
+0
+) > ψ(0) −ψ(αFast
+0
+), which is impossible.
+The remaining possibility is that (α0, β0) = (0, 1) yields a larger social welfare than (αSO, 0).
+However, as explained in the text, we have: W(0, 1) = W(0, 0) = ψ(0). Moreover, if λ ≤
+ˆλ(σ, C, π), we have W(αSO, 0) > W(0, 0). Hence, we deduce that W(αSO, 0) > W(0, 1).
+Thus, we have shown that W(α, β) ≤W(αSO, 0) for all 0 ≤α ≤1 and β ≥0 when
+λ ≤bλ(σ, C, π). When λ > bλ(σ, C, π), αSO = 0. Thus, W(αSO, 0) = W(0, β), ∀β. In sum,
+the allocation (α, β) = (αSO, 0) dominates (at least weakly and sometimes strictly) any other
+allocations (α, β). The allocation (αSO, 0) can be implemented with (i) a tax larger than ψ(0)
+imposed to institutions joining the slow market and (ii) a tax T ∗on institutions investing in
+the fast trading technology chosen as described in Proposition 7. Indeed, the ﬁrst tax is larger
+than institutions’ expected proﬁt, ψ(0), on the slow market. Hence, it deters all institutions to
+join the slow market. Furthermore, as Proposition 7 shows, the second tax induces a level of
+fast trading just equal to αSO when there is no slow market or equivalently when β = 0.
+49
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+Bibliography
+Baron, M., Brogaard, J., Kirilenko, A., 2014.
+Risk and return in high frequency trading.
+Unpublished working paper, Princeton University.
+Bagnoli, M., Bergstrom, T., 2005. Log-concave probability and its applications. Economic
+Theory 26, 445-469.
+Bessembinder, H., Hao, J., Zheng, K., 2013.
+Market Making Obligations and Firm Value.
+Unpublished working paper, David Eccles School of Business.
+Breon–Drish, B., 2013. On Existence and Uniqueness of Equilibrium in Noisy Rational Expectations Economies. Unpublished working paper, Stanford University.
+Brogaard, J., Hendershott, T., Riordan, R., 2014. High frequency trading and price discovery.
+Review of Financial Studies 27, 2267-2306.
+Brogaard, J., Hagstr¨omer, B. , Norden, L., Riordan, R., 2014. Trading fast and slow: colocation
+and market quality. Unpublished working paper, University of Stockholm.
+Budish, E., Cramton, P., Shim, J., 2014. The High-Frequency Trading Arms Race: Frequent
+Batch Auctions as a Market Design Response.
+Unpublished working paper, University of
+Chicago.
+Chiyachantana, C., Jain, P., 2009. Institutional Trading Frictions. Unpublished working paper,
+University of Memphis.
+Colombo, L., Femminis, G., Pavan, A., 2014. Information acquisition and welfare. Forthcoming
+Review of Economic Studies.
+Dow, J., 2005. Is liquidity self-fulﬁlling. Journal of Business 77, 895-908.
+Du, S., Zhu, H., 2013. Dynamic ex–post equilibrium, welfare and optimal trading frequency in
+double auctions. Unpublished working paper, MIT.
+Duﬃe, D., Garleanu, N., Pedersen, L. H., 2005. Over-the-Counter Markets. Econometrica 73,
+1815-1847.
+Ganguli, J., Yang, L., 2009. Complementarities, multiplicity, and supply information. Journal
+of the European Economic Association 7, 90-115.
+50
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+Glode, V., Green, R., Lowery, R., 2012. Financial Expertise as an Arms Race. Journal of
+Finance 67, 1723-1759.
+Glosten, L., Milgrom, P., 1985. Bid, ask and transaction prices in a specialist market with
+heterogeneously informed traders. Journal of Financial Economics 14, 71-100.
+Grossman, S., Stiglitz, J., 1980.
+On the Impossibility of Informationaly Eﬃcient Markets.
+American Economic Review 70, 393-408.
+Grossman, S., 1976. On the eﬃciency of competitive stock markets where traders have diverse
+information. Journal of Finance 31, 573-585.
+Hasbrouck, J., 2005. Empirical market Microstructure. Oxford University Press, Inc. NewYork.
+Hendershott, T., Riordan R., 2013. Algorithmic Trading and the Market for Liquidity. Journal
+of Financial and Quantitative Analysis 48, 1001-1024.
+Hirshleifer, J., 1971. The Private and Social Value of Information and the Reward to Inventive
+Activity. American Economic Review 61, 561-574.
+Hu, X., Qin, C. 2013. Information acquisition in ﬁnancial markets and welfare eﬀects in a
+model of competitive ﬁnancial markets. Economic Theory 54, 199-210.
+Jovanovic, B., Menkveld, A., 2011. Middlemen in limit order markets.Unpublished working
+paper, New York University.
+Kirilenko, A., Kyle, P., Samadi, M., Tuzun, T., 2011. The Flash Crash: The impact of highfrequency trading on an electronic market. Unpublished working paper, University of Maryland.
+Llosa, L.G., Venkateswaran, V., 2012. Eﬃciency with endogenous information choice. Unpublished working paper. University of California at Los Angeles.
+Manzano, C., Vives, X., 2012. Public and private learning from prices, strategic substitutability
+and complementarity, and equilibrium multiplicity. Journal of Mathematical Economics 47,
+346-369.
+O’Hara, M., Ye, M., 2011. Is market fragmentation harming market quality. Journal of Financial Economics 100, 459-474.
+Pagnotta, E., Phillipon, T., 2013. Competing on Speed. Unpublished working paper, Stern
+Business School, New-York University and NBER.
+51
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+Vayanos, D., 1999. Strategic trading and welfare in a dynamic market. Review of Economic
+Studies 66, 219-254.
+Zhang, S., 2013. Need for speed: an empirical analysis of high and soft information in a high
+frequency world. Unpublished working paper, University of Manchester.
+Zhu, H., 2014. Do dark pools harm price discovery? Review of Financial Studies 27, 748-789.
+52
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 1: Timing of Institutions’ decisions. This figure shows the sequence of play within one 
+period, say, .  
+ 
+ 
+Figure 2: Equilibrium Uniqueness of the Bid-Ask Spread. This figure shows market makers’ 
+expected profit (the difference between the left hand side and the right hand side of Eq. (11)) as a 
+function of their bid-ask spread (S) when the distribution of traders’ private valuation is normal 
+with standard deviation, =0.9 (plain line) and =2 (dashed line). Other parameter values are =0.1, 
+=3,  = 0.8 and =1. Dots are values of zero profits bid-ask spreads.   
+ 
+ 
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+3.0
+-0.2
+0.0
+0.2
+0.4
+Bid -Ask Spread S
+Market makers' Net Expected Profit
+x drawn from [0,1] determining 
+which venues are liquid. 
+Competitive market makers post 
+quotes on liquid venues. 
+Mass 1 continuum of 
+new institutions enter.  
+Fraction  of them 
+decides to be fast, 
+fraction 1‐ to be 
+slow. 
+All new institutions observe 
+their private valuation, . 
+Fast institutions observe the 
+asset cash flow  and find liquid 
+venues. Each slow institution 
+present in market finds a liquid 
+venue with probability  . 
+Trading.
+Cash flow  realized 
+and distributed. 
+Fraction 1‐ of slow 
+institutions who 
+have not found a 
+liquid venue exit the 
+market. 
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+ 
+Figure 3: Bid-Ask Spreads and Fast Trading. This figure shows the equilibrium bid-ask 
+spread (S*) as a function of the level of fast trading () when the distribution of traders’ private 
+valuation is normal. Parameter values: =0.2 (plain line),  =0.5 (small dashed line),  =0.9 
+(large dashed line) for =5,   = 4, and =0.9.  
+ 
+ 
+ 
+ 
+ 
+Figure 4: Trading Volume and Fast Trading. This figure shows equilibrium trading volume 
+as a function of the level of fast trading () for different values of : 0.5 (large dashed line), 0.8 
+(dotted line), and 1 (plain line) when  has a normal distribution with =3.5, =5, and =1. 
+ 
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+0
+1
+2
+3
+4
+Alpha
+Bid-Ask Spread
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+0.5
+0.6
+0.7
+0.8
+0.9
+1.0
+Alpha
+Trading Volume
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+ 
+ 
+ 
+Figure 5: Equilibrium Fast Trading When Institutions’ Decisions are Complements. The 
+distribution of institutions’ private valuation is as in Example 2, with =1.5, C=0.264, =3, =7, 
+=0.5, =0.99, and r=0. In this case, s=0.99. Equilibrium levels of fast trading are indicated by large 
+dots.  
+ 
+ 
+ 
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+0.260
+0.262
+0.264
+0.266
+0.268
+0.270
+Level of Fast Trading
+Difference Between Fast and Slow Institutions' Expected Profits
+Electronic copy available at: https://ssrn.com/abstract=2024360
+
+ 
+Figure 6: Equilibrium Fast Trading When Institutions’ Decisions are Substitutes. 
+Institutions’ private valuations have a normal distribution with standard deviation =4. Other 
+parameters are =0.3, =0.9, =6, r=0, and C=3. In this case, s =0.8 and the equilibrium level 
+of fast trading is indicated by the large dot (*=0.26). 
+ 
+ 
+ 
+Figure 7: Social Welfare and Fast Trading. This figure shows social welfare as a function of the 
+level of fast trading for C=4.77 (dashed line) and C =5 (plain line) when institutions' private valuations 
+are normally distributed with  =10. Other parameters are =5, =0.9, r=0, and =0.0356 (so that 
+s=0.27). 
+ 
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+1.5
+2.0
+2.5
+3.0
+3.5
+Level of Fast Trading
+Difference Between Fast and Slow Institutions' Expected Profits
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+1.95
+2.00
+2.05
+2.10
+2.15
+Level of Fast Trading
+Social Welfare
+Electronic copy available at: https://ssrn.com/abstract=2024360

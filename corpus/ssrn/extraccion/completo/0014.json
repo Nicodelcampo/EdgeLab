@@ -1,0 +1,242 @@
+{
+  "doc_id": 14,
+  "titulo": "A Mathematical Framework for Modelling Order Book Dynamics",
+  "resumen_operativo": "Propone un marco matemático unificado para modelar la dinámica del limit order book (LOB) descomponiendo la evolución en dos operadores independientes: el flujo de órdenes (proceso puntual estocástico) y un operador de market clearing determinista. Permite escribir el generador infinitesimal del proceso del LOB como composición de operadores más simples, embeber modelos previos de la literatura (Cont-Stoikov-Talreja, Abergel-Jedidi) como casos particulares, y da un método numérico modular (Monte Carlo vs. ecuación de Kolmogorov backward) validado contra datos reales de Lobster (Micron Technology, 1 julio 2019). Es un aporte de fundamentación teórica/computacional más que una estrategia operable, útil para diseñar o auditar simuladores de LOB.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "limit order book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Sistema centralizado donde participantes publican órdenes de compra y venta que se emparejan y ejecutan según reglas de prioridad tiempo-precio; su estado evoluciona con la llegada, ejecución y cancelación de órdenes.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order flow"},
+        {"tipo": "USA", "objeto": "market clearing operator"}
+      ],
+      "cita_textual": "market participants may post buy and sell orders through a centralized limit order book (LOB)"
+    },
+    {
+      "nombre": "order flow",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Ingrediente estocástico del modelo: proceso puntual marcado que representa la llegada de órdenes límite de compra/venta y cancelaciones, modelado como cualquier proceso estocástico general.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "USA", "objeto": "Poisson process"}
+      ],
+      "cita_textual": "the order ﬂow, modelled as a general spatial point process"
+    },
+    {
+      "nombre": "market clearing operator",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Operador determinista que mapea un estado transitorio del libro (posiblemente no admisible, con bid>=ask) a un estado admisible, ejecutando el emparejamiento de órdenes compatibles por precio y prioridad.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "MITIGA", "objeto": "order book state inconsistency"}
+      ],
+      "cita_textual": "the market clearing procedure, represented as an operator acting of a pair of distributions of buy and sell orders"
+    },
+    {
+      "nombre": "infinitesimal generator decomposition",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica central del paper: el generador infinitesimal del proceso Markoviano del LOB se escribe como composición L = Ξ Lo C~ del generador del flujo de órdenes con un operador de restricción y uno asociado al clearing, simplificando el cálculo de la dinámica.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order flow"},
+        {"tipo": "USA", "objeto": "market clearing operator"},
+        {"tipo": "MEJORA_A", "objeto": "direct generator computation"}
+      ],
+      "cita_textual": "Our framework allows us to write the inﬁnitesimal generator as the composition of the generator of the order ﬂow dynamics"
+    },
+    {
+      "nombre": "backward Kolmogorov equation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Ecuación que gobierna la probabilidad de transición del estado del LOB; el paper la resuelve numéricamente mediante discretización de Euler para calcular probabilidades condicionales de movimientos de precio.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "infinitesimal generator decomposition"},
+        {"tipo": "SE_OPONE_A", "objeto": "Monte Carlo simulation"}
+      ],
+      "cita_textual": "The Kolmogorov backward equation for the order book is deﬁned as follows"
+    },
+    {
+      "nombre": "Monte Carlo simulation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método numérico alternativo para estimar probabilidades condicionales del LOB simulando trayectorias del proceso; el paper lo compara con la resolución directa de la ecuación de Kolmogorov en costo computacional y precisión.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "backward Kolmogorov equation"},
+        {"tipo": "APLICA_A", "objeto": "limit order book"}
+      ],
+      "cita_textual": "we apply this framework in association with a Monte Carlo simulation on the one hand and with the resolution of the Kolmogorov backward equation on the other hand"
+    },
+    {
+      "nombre": "centred order book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Representación del LOB en un marco móvil centrado en el mid-price en lugar de coordenadas de precio fijas, útil porque los traders se interesan en la región cercana a los mejores precios (spread, profundidad).",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "USA", "objeto": "midpoint"}
+      ],
+      "cita_textual": "it is more convenient to use a moving frame with its origin at the mid-price"
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Diferencia entre el precio ask y bid; en los datos analizados (MU, Lobster) el spread es de un tick el 88% del tiempo, motivando la simplificación de inicializar el modelo con spread de un tick.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "limit order book"},
+        {"tipo": "CAUSA", "objeto": "ask price increase probability"}
+      ],
+      "cita_textual": "the diﬀerence between the ask and bid prices is one tick size most of the time (88% of the time)"
+    },
+    {
+      "nombre": "order book depth",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Volumen de órdenes en cola a un precio dado (bid depth, ask depth); el paper muestra empíricamente que es la variable clave que condiciona la probabilidad de que el próximo movimiento de precio sea alcista.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "ask price increase probability"},
+        {"tipo": "PARTE_DE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "we are interested in the dependence of the results on z1 and z2, which are respectively the volume of orders at the ask and bid prices and called the bid and ask depths"
+    },
+    {
+      "nombre": "ask price increase probability",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Probabilidad condicional de que el próximo movimiento del precio ask sea al alza, condicionada al estado (profundidades bid/ask) del libro; métrica objetivo usada para validar el modelo contra datos reales.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "order book depth"}
+      ],
+      "cita_textual": "ﬁnd the conditional probability that the ask price increases at the ﬁrst price movement"
+    },
+    {
+      "nombre": "queue-reactive model",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Familia de modelos citada (Huang-Lehalle-Rosenbaum) donde las intensidades de las órdenes dependen del estado de la cola en cada nivel de precio; referenciada como parte de la literatura de modelos de LOB que el framework busca unificar.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "W. Huang, C.-A. Lehalle, and M. Rosenbaum, Simulating and analyzing order book data: The queue-reactive model"
+    },
+    {
+      "nombre": "order size distribution",
+      "tipo": "dato",
+      "definicion_en_contexto": "Distribución empírica de tamaños de órdenes límite de venta observada en los datos de Micron Technology; la mayoría de órdenes son de tamaño 100 acciones (una unidad), con cola de órdenes más grandes.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order flow"}
+      ],
+      "cita_textual": "most of the orders are of size 100 shares but with still a signiﬁcant number of orders of sizes 200 shares or more"
+    },
+    {
+      "nombre": "price-dependent order intensity",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Regularidad empírica según la cual la tasa de llegada de órdenes depende de la distancia relativa del precio de la orden al mejor bid/ask; el paper la calibra con datos reales (matrices alpha, mu, beta, gamma) y confirma que mejora el ajuste frente a intensidades homogéneas.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "ask price increase probability"},
+        {"tipo": "MEJORA_A", "objeto": "homogeneous order size model"}
+      ],
+      "cita_textual": "price inﬂuences the intensity of an order"
+    },
+    {
+      "nombre": "homogeneous order size model",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Modelo A del paper: flujo de órdenes de tamaño unitario con intensidades constantes por umbral de cola; usado como benchmark más simple frente al modelo con tamaños heterogéneos (Modelo B), resultando en peor ajuste a los datos.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "price-dependent order intensity"}
+      ],
+      "cita_textual": "the intensity of orders, i.e. the rate of order arrival is null except for order sizes equal to 1 and for queue sizes below or above a certain threshold n"
+    },
+    {
+      "nombre": "Lobster database",
+      "tipo": "dato",
+      "definicion_en_contexto": "Base de datos de order book utilizada para calibrar y validar empíricamente el modelo, con datos de nivel de libro de la acción Micron Technology (MU) del 1 de julio de 2019.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order flow"}
+      ],
+      "cita_textual": "To validate our numerical simulations, we compare its outcome with data from the Lobster Database"
+    },
+    {
+      "nombre": "tick size",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Incremento mínimo de precio permitido; en los datos de MU corresponde a 100 unidades de precio (0.01 dólar).",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "the tick size is 100 (i.e. 0.01 dollar)"
+    },
+    {
+      "nombre": "market matching priority rules",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Reglas de prioridad tiempo-precio bajo las cuales se emparejan y ejecutan las órdenes en un mercado electrónico; fundamento del operador de clearing por order-matching definido formalmente en el paper.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "market clearing operator"}
+      ],
+      "cita_textual": "These orders are then matched and executed according to time and price priority rules"
+    },
+    {
+      "nombre": "scaling limit",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica que conecta modelos discretos de LOB (basados en colas) con modelos de ecuaciones diferenciales estocásticas mediante límites fluidos o de difusión bajo escalamiento apropiado; mencionada como dirección futura del framework.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "limit order book"}
+      ],
+      "cita_textual": "studying various scaling limits of discrete order book models"
+    },
+    {
+      "nombre": "midpoint",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Precio medio aritmético entre ask y bid; punto de referencia para el marco de coordenadas centradas del libro de órdenes.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "centred order book"}
+      ],
+      "cita_textual": "a moving frame with its origin at the mid-price, i.e., the arithmetic average of the ask and bid prices"
+    },
+    {
+      "nombre": "computational cost trade-off Monte Carlo vs Kolmogorov",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Hallazgo de complejidad computacional: el costo de Monte Carlo crece cuadráticamente con el horizonte temporal, mientras que resolver la ecuación de Kolmogorov crece linealmente, por lo que conviene Monte Carlo para un solo horizonte y Kolmogorov para evaluaciones secuenciales múltiples.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "backward Kolmogorov equation"},
+        {"tipo": "MIDE", "objeto": "Monte Carlo simulation"}
+      ],
+      "cita_textual": "the time complexity of the Kolmogorov equation grows linearly...the time complexity of the Monte Carlo method grows quadratically with time"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Las simulaciones Monte Carlo del modelo (Modelos A y B) reproducen cualitativamente las dos regularidades observadas en datos reales de MU: la probabilidad condicional de que el ask suba disminuye cuando aumenta la profundidad del ask y aumenta cuando aumenta la profundidad del bid; el Modelo B (con tamaños de orden heterogéneos y dependencia de precio relativo) ajusta mejor que el Modelo A (tamaños homogéneos).",
+      "mercado": "US equities (Micron Technology, MU)",
+      "periodo": "2019-07-01 (un día de trading)",
+      "magnitud": "sin coeficiente estadístico único reportado; comparación visual de curvas de probabilidad condicional en función de profundidades bid/ask de 1 a 6 ticks (Fig. 13 a-c)",
+      "condiciones": "in-sample, calibrado y evaluado sobre el mismo día de datos Lobster; sin costos de transacción (no es estrategia de trading); sin partición IS/OOS explícita",
+      "robustez": "baja",
+      "cita_textual": "when the ask depth increases, the conditional probability decreases; when the bid depth increases, the conditional probability increases"
+    },
+    {
+      "afirmacion": "El spread entre ask y bid es igual a un tick el 88% del tiempo en los datos de MU analizados, justificando la simplificación de inicializar el modelo con spread de un tick.",
+      "mercado": "US equities (Micron Technology, MU)",
+      "periodo": "2019-07-01",
+      "magnitud": "88% del tiempo con spread = 1 tick (100 = $0.01)",
+      "condiciones": "estadística descriptiva simple sobre datos de order book de un día, sin test estadístico formal",
+      "robustez": "baja",
+      "cita_textual": "the diﬀerence between the ask and bid prices is one tick size most of the time (88% of the time)"
+    },
+    {
+      "afirmacion": "Las simulaciones Monte Carlo (500 réplicas) y la resolución numérica de la ecuación de Kolmogorov backward coinciden con excelente acuerdo cuantitativo en la probabilidad condicional de que el ask suba tras 0.2 segundos, para distintas combinaciones de profundidad bid/ask.",
+      "mercado": "US equities (Micron Technology, MU), datos sintéticos calibrados con Modelo B",
+      "periodo": "no especificado (calibración sobre datos de 2019-07-01)",
+      "magnitud": "valores de probabilidad entre 0.10 y 0.25 aprox., con desviaciones estándar Monte Carlo de ±0.006 a ±0.009; diferencias MC vs KBE del orden de 0.005-0.01",
+      "condiciones": "N*=500 experimentos Monte Carlo; comparación entre dos métodos numéricos del mismo modelo teórico (no contra mercado real en esta tabla), sin costos ni ejecución real",
+      "robustez": "media",
+      "cita_textual": "we notice the excellent agreement between the Kolmogorov and Monte Carlo simulations, as it should, because they are two approximations of the same process"
+    },
+    {
+      "afirmacion": "El costo computacional de generar la tabla completa de probabilidades condicionales fue de aproximadamente 8 horas con el método Monte Carlo (500 réplicas) frente a 17 horas con la resolución de la ecuación de Kolmogorov backward en el mismo servidor, para un único horizonte temporal.",
+      "mercado": "no aplica (benchmark computacional)",
+      "periodo": "no especificado",
+      "magnitud": "8 horas (Monte Carlo) vs 17 horas (Kolmogorov) en un servidor de cómputo",
+      "condiciones": "resultado específico de la implementación y hardware usados por los autores; no generalizable sin conocer especificaciones del servidor",
+      "robustez": "baja",
+      "cita_textual": "the Monte Carlo method for 500 replications takes around 8 hours, while the Kolmogorov equation requires around 17 hours on our computer server"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Es un marco teórico-matemático para simular dinámica de LOB con datos L3 de un solo nombre de equities; útil como referencia conceptual para diseñar simuladores de microestructura, pero no aporta señal operable directa ni fue testeado en futuros ES ni con order flow imbalance en el sentido usado en el ecosistema."
+  }
+}

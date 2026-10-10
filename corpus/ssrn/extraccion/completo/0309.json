@@ -1,0 +1,109 @@
+{
+  "doc_id": 309,
+  "titulo": "Sharks in the Dark: Quantifying HFT Dark Pool Latency Arbitrage",
+  "resumen_operativo": "Investiga el stale reference pricing y la provisión de liquidez en dark pools usando datos regulatorios propietarios a nivel de participante en el mercado del Reino Unido. Documenta que al menos 4% del trading en dark pools ocurre a precios de referencia stale, con un costo promedio de 2.4 bps para el lado pasivo y costo anual estimado de GBP 4.2 millones (2014). Los HFTs casi nunca proveen liquidez en dark pools; entre 96-99% de las ejecuciones a precios stale benefician a HFTs, y el 83% son iniciadas por órdenes agresivas de HFTs. Evalúa intervenciones de market design: solo mecanismos que protegen la liquidez pasiva (batch auctions, random uncrossings) son efectivos.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Dark Pool Latency Arbitrage",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Arbitraje casi libre de riesgo donde traders rápidos detectan cambios en el precio de referencia del mercado lit antes de que el dark pool actualice sus precios, ejecutando contra órdenes pasivas stale. Específico de dark pools por su dependencia de precios de referencia externos y órdenes pegged.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Adverse Selection in Dark Pools"},
+        {"tipo": "REQUIERE", "objeto": "Stale Reference Prices"}
+      ],
+      "cita_textual": "In situations where the dark pool reference price (and its pegged dark limit orders) are stale, fast traders aware of the new price can engage in near risk-free latency arbitrage and cause immediate adverse selection by trading at these (now stale) prices."
+    },
+    {
+      "nombre": "Stale Reference Price",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Precio de referencia desactualizado en un dark pool: el precio 'viejo' antes de que la actualización del mercado lit se propague al venue oscuro. Al menos 4% del trading en dark pools del Reino Unido ocurre a precios stale, con costo promedio de 2.4 bps por ejecución.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Dark Pool Latency Arbitrage"},
+        {"tipo": "MIDE", "objeto": "Adverse Selection Cost"}
+      ],
+      "cita_textual": "Using a conservative identification, we document that at least 4 percent of dark trading in our UK-based sample occurs at stale reference prices."
+    },
+    {
+      "nombre": "HFT Dark Pool Behavior",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Los HFTs casi nunca proveen liquidez en dark pools (no postean órdenes no-marketable significativas). En cambio, consumen liquidez agresivamente: 96-99% de las ejecuciones a precios stale benefician a HFTs y 83% son iniciadas por órdenes agresivas de HFTs.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "One-Sided Dark Pool Activity"},
+        {"tipo": "CONTRADICE_A", "objeto": "HFT Liquidity Provision Narrative"}
+      ],
+      "cita_textual": "HFTs almost never provide liquidity in the dark, instead frequently consuming liquidity, in particular in order to take advantage of stale reference prices."
+    },
+    {
+      "nombre": "Batch Auctions for Dark Pools",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Mecanismo de market design que reemplaza el trading continuo secuencial con subastas frecuentes (sub-segundo). Elimina la ventaja de velocidad porque todos los traders ven el resultado de la subasta anterior antes de enviar órdenes. Implementado por Turquoise con 'random uncross'.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Continuous Trading"},
+        {"tipo": "MITIGA", "objeto": "Dark Pool Latency Arbitrage"}
+      ],
+      "cita_textual": "Batch auctions do away with the conventional design of continuous, sequential trading, which by its very design creates conditions for speed races."
+    },
+    {
+      "nombre": "Speed Bumps",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Mecanismo que ralentiza órdenes entrantes pero permite que enmiendas a órdenes límite existentes pasen sin demora. IEX aplica 350 microsegundos. Protege a liquidity providers dándoles ventaja sobre arbitrageurs para actualizar sus cotizaciones stale.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "Dark Pool Latency Arbitrage"},
+        {"tipo": "USA", "objeto": "IEX Exchange"}
+      ],
+      "cita_textual": "Speed bump mechanisms typically slow down incoming orders but may allow amendments to existing limit orders to pass through without delay, thereby providing liquidity providers with a head start over potential arbitrageurs."
+    },
+    {
+      "nombre": "Minimum Resting Times",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Requisito de tiempo mínimo que una orden debe permanecer en el libro antes de poder ser cancelada o modificada. Deutsche Bank Super X: no matchea órdenes stale por más de 1 segundo. Protege a liquidity providers pasivos contra arbitrageurs rápidos.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "Dark Pool Latency Arbitrage"},
+        {"tipo": "APLICA_A", "objeto": "Passive Order Protection"}
+      ],
+      "cita_textual": "Deutsche Bank's Super X dark pool stops matching any orders that are stale by more than a second."
+    },
+    {
+      "nombre": "Pegged Dark Limit Orders",
+      "tipo": "dato",
+      "definicion_en_contexto": "Órdenes límite en dark pools cuyo precio está vinculado (pegged) al precio de referencia del mercado lit (típicamente el midpoint del NBBO). Son particularmente vulnerables al latency arbitrage porque quedan automáticamente stale cuando el precio de referencia cambia.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Reference Price Feed"},
+        {"tipo": "CAUSA", "objeto": "Stale Reference Price"}
+      ],
+      "cita_textual": "Dark liquidity is often pegged to this reference price. Changes in reference prices creates an 'old' current price and a 'new' price once the update is propagated to the dark venue."
+    },
+    {
+      "nombre": "Adverse Selection Cost in Dark Pools",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Costo de selección adversa impuesto por trades a precios stale: 2.4 bps promedio por ejecución. Costo anual total estimado para el lado pasivo en todos los dark pools del Reino Unido: GBP 4.2 millones (2014). Comparable a 2.2 bps de pérdida de lentos a rápidos en mercados lit (Hasbrouck, 2018).",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Latency Arbitrage Cost"},
+        {"tipo": "CAUSA", "objeto": "Reduced Dark Pool Liquidity"}
+      ],
+      "cita_textual": "We find an average cost of about 2.4 basis points for executions at stale prices in the dark and estimate the total annual cost to the passive side across all UK dark pools to be GBP 4.2 million for the year 2014."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Al menos 4% del trading en dark pools del Reino Unido ocurre a precios de referencia stale, con costo promedio de 2.4 bps para el lado pasivo y costo anual estimado de GBP 4.2 millones (2014).",
+      "mercado": "UK Dark Pools",
+      "periodo": "2014",
+      "magnitud": "≥4% trades stale; 2.4 bps costo promedio; GBP 4.2M costo anual",
+      "condiciones": "Datos regulatorios propietarios a nivel participante; identificación conservadora de stale prices",
+      "robustez": "alta",
+      "cita_textual": "At least 4 percent of dark trading in our UK-based sample occurs at stale reference prices. We find an average cost of about 2.4 basis points... total annual cost... GBP 4.2 million for the year 2014."
+    },
+    {
+      "afirmacion": "Entre 96% y 99% de las ejecuciones a precios stale en dark pools benefician a HFTs. El 83% de estos trades son iniciados por órdenes agresivas de HFTs.",
+      "mercado": "UK Dark Pools",
+      "periodo": "2014",
+      "magnitud": "96-99% benefician HFTs; 83% iniciados agresivamente por HFTs",
+      "condiciones": "Identificación de HFTs mediante flags regulatorios en datos propietarios",
+      "robustez": "alta",
+      "cita_textual": "It is almost exclusively high frequency trading firms that are on the benefiting side of dark pool executions at stale prices (between 96 and 99 percent of the time)... 83 percent is driven by aggressive dark orders from HFTs."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Estudio con datos tick-by-tick de dark pools; analiza latency arbitrage en milisegundos. Directamente relevante para diseño de mercados intradiarios y estrategias HFT."}
+}

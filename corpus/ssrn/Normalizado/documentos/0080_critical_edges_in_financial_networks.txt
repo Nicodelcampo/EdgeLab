@@ -1,0 +1,785 @@
+Critical edges in financial networks
+Abstract
+In this study, we propose a method for identifying influential edges in financial
+networks. In our approach, the critical edges are those whose removal would
+cause a large impact on the systemic risk of the financial network. We apply this
+framework to a thorough Brazilian data set to identify critical bank-firm edges. In
+our data set, banks and firms are connected through two financial networks: the
+interbank network and the bank-firm loan network. We found that the distribution
+of edges’ impact is heavy-tailed, following a log-normal distribution. Moreover,
+at least 18% of the edges are critical, in the sense they have a significant impact
+on the systemic risk of the network. We then employed machine learning (ML)
+techniques to predict the critical status of bank-firm edges. The level of accuracy
+obtained in these prediction exercises was very high (above 90%). Posterior analysis through Shapley values shows that the PageRank of the edge’s destination
+node (the firm) is the main driver of the critical status of the edges, in the sense
+that the probability of an edge being critical increases with the PageRank of its
+destination node.
+Keywords: critical edges, complex networks, financial networks, machine
+learning
+1. Introduction
+This paper deals with the impacts of interconnectedness on the stability of
+financial networks. A network can be represented as a collection of nodes (or
+vertices) connected through edges. Financial networks are ubiquitous, such as interbank markets [1, 2], bipartite bank-firm credit networks [3, 4], networks of correlated assets [5, 6], and so on. The type of node varies according to the network
+(e.g., banks in interbank networks, banks and firms in bank-firm credit networks),
+and so does the type of edge (e.g., loans in bipartite bank-firm credit networks,
+return correlations in networks of correlated assets).
+Mainly since the 2008 financial turmoil, network models have been widely
+applied to assess the relationship between interconnectedness and stability in fiPreprint submitted to Physica A
+April 2, 2025
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+nancial networks [8, 9, 10, 11, 12, 13, 14, 15, 16, 17]. More interconnections
+among different financial agents can promote shock propagation, leading to the
+collapse of a non-negligible part of the whole system. This risk is called systemic
+risk (SR). On the other hand, interconnections are also a channel for risk-sharing.
+This dual role played by financial networks configures the so-called robust-yetfragile nature of financial networks [7]. Yet there is a not a consensus on the relationship between between interconnectedness and stability in financial networks,
+it is widely accepted that this relationship is nonlinear [34, 12], and driven by
+other elements, such as the size of the initial shock [13] and the loss distribution
+regime adopted by distressed debtors [35].
+In this paper, we assess how financial stability is affected by interconnectedness considering its tiniest variation: the edge. We compute the impact of edges as
+the percentage difference in the SR of the whole network caused by the inclusion
+of that edge. The SR of the financial network is computed through the differential
+DebtRank (DDR) approach [37]. Under this methodology, the SR corresponds to
+the loss of equity suffered by the financial system caused by the propagation of an
+exogenous initial shock, in the form of firms’ equity loss (more on this on Section
+3).
+We apply this framework to a thorough Brazilian dataset to compute the impact on the SR of bank-firm edges – that is, edges whose origin nodes are banks
+and destination nodes are firms. In other words, we are assessing the impact of
+edges that represent loans extended by banks to firms. In our data set, the two
+types of agents – banks and firms – are connected through two financial networks:
+the interbank network and the bank-firm loan network.
+We found that edges are quite heterogeneous concerning their impact on the
+SR of the financial network. The distribution of the edges’ impact is well represented by a log-normal distribution. This result is expected, as the most striking
+characteristic of complex networks – the case of real financial networks – regards
+the heterogeneity of their components [18]. Therefore, some edges impact the stability of the financial network much more than others. A question that naturally
+emerges from this observation is the following: what makes an edge critical in the
+sense its inclusion or removal causes a variation in the SR of the network much
+greater than that of other edges?
+We shed some light on this question by assessing the drivers of edges’ criticality. First, we define an edge as critical if it is an outlier according to the interquartile range (IQR) approach considering its impact. Thus, the critical edges are those
+whose inclusion would cause a large impact on the SR of the financial network.
+Then, we employ machine learning (ML) techniques to classify an edge as critical
+2
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+using topological and financial features as predictive variables. The purpose is to
+identify which features (from the edges or the nodes) are the drivers of edge criticality. Shapley values are used in the interpretation of the results, showing which
+features are more relevant in the definition of critical edges in financial networks.
+This analysis shows that the PageRank of the edge’s destination – that is, the firm
+– is the main driver of the critical status of the edges.
+Our paper contributes to at least two strands of the literature. The first one,
+as discussed previously, is related to the discussion on the relationship between
+interconnectedness and SR in financial networks. In this study, we show that the
+impact on SR caused by the tiniest variation in interconnectedness – represented
+by the removal/inclusion of edges – is very heterogeneous. Moreover, the magnitude of this impact is related to some specific features of the edge and its origin
+and destination nodes.
+The second one concerns the identification of critical edges. Although node
+importance has been explored more often,1 the study of the criticality of edges
+in networks has attracted much attention from researchers in many fields [24,
+19, 25, 26, 27, 28]. Identifying critical edges helps in the design of procedures
+to keep or increase the resilience of a network [27, 24]. Moreover, the removal
+of edges as a strategy to protect the network is much less costly than the nodecutting strategy. For instance, the withdrawal of certain financial products is much
+more applicable than removing financial institutions to prevent financial crises
+[29]. Many approaches have been proposed to identify the importance of edges in
+networks, such as the topological overlap [30], the BCCMOD [19], the edge gravity
+[32], the second-order neighborhood index [27], and the BCDCN [31].
+As far as we know, the only study devoted specifically to the identification of
+critical edges in financial networks is that of [33]. The authors defined a structural
+importance metric, le, based on the change in the largest eigenvalues of the adjacency matrix of the network resulting from perturbations in it. The authors then
+propose a model of network evolution where this metric controls the probabilities
+of subsequent edge changes. Using synthetic data, they show how the parameters
+of the model are related to the capability of le to predict whether an edge will
+change. Assessing five real networks (four financial and one social), the authors
+showed le is slightly predictive of edge change in all cases, but only marginally
+so for two of the financial networks. The advantage of our approach is that it pro1See, for instance, [20], [21], [22], and [23] specifically on the identification of important nodes
+in financial networks.
+3
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+poses a measure of edge importance explicitly related to its impact on the stability
+of the financial network.
+This paper proceeds as follows. The data set and methodological issues are
+discussed in Sections 2 and 3, respectively. Section 4 brings the results. Final
+considerations are presented in Section 5.
+2. The data set
+Our data set comprises two types of information: i) financial and supervisory
+(F & S) information on the agents, which can be financial institutions (FIs) or
+firms, and ii) information on the financial linkages between these agents. The FIs
+of our data set can be banks or credit unions. All these data are from December
+2022.
+We include in our data set FIs which are financial conglomerates or individual
+FIs. Concerning the firms, we include those belonging to the Alexandria database
+[36] with positive net worth. The Alexandria database gathers information on
+more than 42,000 firms, of which more than 31,000 are non-financial companies
+(NFCs). Most of these firms are medium-sized and owned by non-residents. The
+firms belong to 18 different economic sectors, labeled from A to S (we are only
+considering NFCs, so financial firms are excluded). The F & S information on
+these agents includes net worth, financial indicators (e.g., ROE), type of control,
+economic sector, and so on.
+Regarding the financial linkages, we consider two financial networks: the interbank (IB) and the bank-firm credit network. In the IB network, we consider
+the net financial exposures between Brazilian FIs in the IB market. This network
+comprises all types of unsecured financial instruments, such as credit, capital, foreign exchange operations, and money markets. These financial instruments are
+registered in different custodian institutions – Cetip, Central Bank of Brazil, and
+B3. Exposures between FIs belonging to the same financial conglomerate are excluded. The bank-firm credit network encompasses the corporate loans granted
+by FIs to non-financial firms. The source of this information is the Central Bank
+of Brazil’s Credit Risk Bureau System (SCR). Besides the value of these exposures for both networks, we have more information on the bank-firm loans, such
+as the interest rate and maturity. Some topological metrics of both networks are
+presented in Table 1.
+4
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+Table 1: Some topological metrics of the networks
+Type of network
+Metric
+Value
+IB network
+N. of nodes
+803
+N. of edges
+2971
+Assortativity
+-0.3630
+Average degree
+7.3998
+Average closeness centrality
+0.1220
+Average eigenvector centrality
+0.0174
+Bank-firm network
+N. of nodes
+11,955
+N. of edges
+28,157
+Assortativity
+-0.3965
+Average degree
+4.7105
+Average closeness centrality
+0.0002
+Average eigenvector centrality
+0.0063
+3. Methodology
+As stated in Section 2, we consider two types of financial linkages: the IB
+market and the bank-firm credit network. Figure 1 depicts a simple representation
+of our financial networks. The nodes in blue are the banks, labeled as B1,...,B4,
+and the nodes in coral are firms, labeled as F1,...,F3. The edges in red represented
+the IB connections and those in green, the bank-firm linkages. Edges are directed,
+showing the origin node and the destination node, and weighted. For instance,
+bank 3 (B3) has lent an amount of resources equal to 10 to bank 2 (B2) in the IB
+market and equal to 5 to firm 2 (F2).
+5
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+Figure 1: A stylized representation of a financial network
+The first step is to compute the SR of the whole system depicted in Figure 1
+by imposing losses in the form of net worth decrease to all firms at the same time.
+The net worth of both FIs and firms and the exposures among them in the two
+financial networks will be used at this step. The green edges are responsible for
+the direct losses this initial shock will cause on the banks. The red edges represent
+the IB connections that will amplify this initial shock – that is, they are responsible
+for the contagion.
+We are interested in measuring the systemic relevance of bank-firm edges –
+that is, the green edges. This is done by removing one edge at a time and computing the proportional difference in the SR of the system. This metric is the edge’s
+impact. An edge is deemed as critical if it is an outlier considering its impact, according to the IQR approach. Finally, we perform some prediction exercises. The
+topological variables built from the two networks, along with the F& S variables
+on the agents and the variables related to the bank-firm loan itself, will constitute
+the set of potential explanatory variables. These variables will be employed to
+predict the edges’ critical status through ML techniques. In the following subsections, we detail our methodological process.
+3.1. Systemic risk
+In what follows, we describe the differential DebtRank (DDR) approach [37],
+used to compute the SR of the financial network. Let us define Ei as the equity of
+6
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+agent i and Aij, the net exposure of agent i towards agent j. The agents correspond
+to banks and firms in Figure 1, and the exposures, to the weight of the edges
+between them. At period t = 0, we impose an exogenous shock on the network,
+in which some agents will lose a fraction ζ of their equity. At t = 1, the agents
+hit by the exogenous shock will transmit part of this loss to their creditors, by
+defaulting on part of their debt. In the next period, the agents that suffered some
+loss (that is, those with exposures towards the agents hit by the exogenous shock)
+will transmit part of this loss to their creditors. This process of loss transmission
+will continue in the subsequent periods. At a given period t, the accumulated loss
+transmitted by agent j to its creditor i is Li j(t). The aggregate loss suffered by i
+(considering all i’s debtors) up to t is Li(t). The dynamics of these two variables
+are represented by the following equations:
+∆Lij(t) = min
+
+Aij −Li j(t −1),Ai j
+[Lj(t −1)−Lj(t −2)]
+Ej
+
+,
+(1)
+∆Li(t) = min
+ 
+Ei −Li(t −1),∑
+j
+∆Li j(t)
+!
+,
+(2)
+in which t ≥0. In Eqs. 1 and 2, ∆Li j(t) = Li j(t) −Li j(t −1) is the new flow of
+loss transmitted by j to i at t, and ∆Li(t) = Li(t)−Li(t −1) is the variation in the
+total loss transmitted to i by their debtors at t. Thus, the loss transmitted by a
+given debtor to a given creditor is the proportional loss of equity suffered by the
+debtor times the exposure of the creditor on it. Observe, from Eq. 1, that the loss
+imposed by j to i cannot be greater than i’s exposures towards j. Moreover, an
+agent cannot suffer a loss greater than its equity (Eq. 2).
+At t = T ≫0, the system converges – i.e., when no more losses are transmitted. Then, we compute the SR of the network according to the following equation:
+Sζ = 100× ∑i[Li(T)−Li(0)]
+∑i Ei
+.
+(3)
+Therefore, the SR Sζ of the network is the percentage of the aggregate equity
+of the system which is lost after an exogenous shock of size ζ. Observe that we remove Li(0) from the computation, which is the loss resulting from the exogenous
+shock. Thus, Sζ considers only the loss resulting from the contagion process.
+Figure 2 gives a simple example of how SR is computed according to the
+DDR approach. Considering again Figure 1, suppose F3 loses 20% of its net
+worth. This firm will default the same fraction on the exposures of B1, its only
+7
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+creditor, towards it. For simplicity, assume all banks have a net worth equal to 4.
+The loss transmitted by F3 to B1 (0.2 × 5 = 1) corresponds to 25% of B1’s net
+worth. The exposure of B1 towards F3 reduces to 4 (Figure 2, panel (a)). In the
+next step, B1 defaults 25% on the exposures of B2 in the IB towards it, imposing
+to B2 a loss (0.25 × 8 = 2) equal to 50% of its net worth (Figure 2, panel (b)).
+Finally, B2 defaults 50% on its creditors’ exposures, B3 and B4 (Figure 2, panel
+(c)). However, as the loss suffered by an agent cannot be greater than its net worth
+(Equation 2), this loss is capped at 4 for both B3 and B4. The process stops, as
+B3 and B4 have no creditors. The SR engendered by an initial shock of 20% on
+F3’s net worth is equal to the total loss excluding the initial shock (2+4+4 = 10)
+divided by the aggregate banks’ net worth (4×4 = 16) – that is, 62.5%.
+Figure 2: Example of SR computation through the DDR approach
+(a)
+(b)
+(c)
+3.2. Classification of critical edges
+The next step is to set the critical status of the edges. For each edge e of the
+network, we compute its impact in the SR Ie,ζ:
+Ie,ζ = Sζ −S−e,ζ
+S−e,ζ
+,
+(4)
+where S−e,ζ is the SR of the network for an exogenous shock of size ζ computed
+after the removal of edge e. If Ie,ζ > 0, it means the edge has a positive impact on
+the SR of the network for that level of ζ.
+Considering the distribution of Ie,ζ, we assign each edge a label Ce,ζ according
+to
+Ce,ζ =
+(
+1,
+if Q1−1.5IQR > Ie,ζ | Q3+1.5IQR < Ie,ζ
+0,
+otherwise
+(5)
+8
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+where Q1 is the first quartile of the distribution of Ie,ζ, Q3 is the third quartile, and
+IQR is the interquartile range Q3 −Q1. Therefore, an edge will be classified as
+critical if it is an outlier considering the distribution of Ie,ζ, according to the IQR
+criterion.
+3.3. Machine learning techniques
+The final step is to predict the critical status of the impact of the edges through
+ML techniques. For this task, we rely on the Tree-based Pipeline Optimization
+Tool (TPOT), a programming-based automated machine learning (AutoML) system [38]. TPOT uses a genetic programming (GP) stochastic global search procedure to efficiently discover the top-performing ML algorithm, as well as the
+optimal hyperparameters, for a given prediction problem. The search performed
+by TPOT encompasses all models included in the Scikit-learn library, including
+linear (e.g., linear regression, logistic regression, ElasticNet, etc.) and nonlinear
+(SVM, tree-based models, XGBoost, neural networks, etc.) models. The TPOT
+pipeline was used to perform the following tasks: data cleaning, feature selection, feature processing, feature construction, model selection, hyperparameter
+optimization, and model validation (Figure 3). The set of potential explanatory
+variables is presented in Table A1.
+Figure 3: Overview of the TPOT pipeline search. Source: [39]
+For the interpretability of the predictions made by the ML model, we use
+the Shapley values approach, which originated from the coalition games theory
+[40, 41]. This methodology informs on how important is a given feature in the
+prediction of the output, as well as whether this feature is positively or negatively
+9
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+correlated to the output. For the computation of Shapley values, we resort to the
+SHAP (SHapley Additive exPlanation) framework [42]. Let g be an explainer
+model aiming at predicting an output. A set of M features will be used as inputs.
+The predicted value for a given data instance is given by
+g(z′) = φ0 +
+M
+∑
+i=1
+φiz′
+i,
+(6)
+where φ0 is the mean output, φi is the SHAP value of feature i, and z′ is a binary
+variable indicating whether feature i was included in the model or not. Therefore, the SHAP value φi indicates to what extent the inclusion of feature i in the
+model shifts (upwards or downwards) the predicted value from the mean output.
+If certain properties (local accuracy, missingness, and consistency) are met, φi
+corresponds to the original Shapley value [42]. The SHAP value of feature i is
+defined by the following equation:
+φi = ∑
+S⊆M\i
+|S|!(|M|−|S|−1)!
+M!
+[F(S∪{i})−F(S)].
+(7)
+Therefore, the SHAP value of feature i for a given data instance computes the
+difference between the predicted value of the instance using all features in S plus
+feature i, F(S∪{i}), and the prediction excluding feature i, F(S). This is weighted
+and summed over all possible feature vector combinations of all possible subsets
+S.
+4. Results
+4.1. General results
+We computed the Ie,ζ (Eq. 4) for the bank-firm edges considering two values
+of ζ: 0.1 and 0.5. The great majority of observations (99.8% for ζ = 0.1 and
+82.8% for ζ = 0.5) are positive. It means, in most of the cases, the inclusion of the
+edge increases the SR. It corroborates the idea that financial networks are robustyet-fragile [43]: if the financial network is sparse enough (what is the case of our
+network), shock propagation prevails over risk-sharing. Therefore, an increase in
+the interconnectedness of the network causes an increase in the SR.
+The majority of the values of Ie,ζ are very small, as well as the dispersion of
+these values. The maximum impact is around 2% for ζ = 0.1 and 1% for ζ = 0.5.
+According to the criteria set in Eq. 5, around 18.7% (22.0%) of the bank-firm
+edges are critical for ζ = 0.1 (ζ = 0.5). The average impact of critical edges is
+10
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+around 5 times higher than that of all edges. Moreover, the impact is higher for
+ζ = 0.1. Some statistics of Ie,ζ are presented in Table 2.
+Table 2: Statistics of Ie,ζ
+Statistic
+All edges
+Critical edges
+ζ = 0.1
+ζ = 0.5
+ζ = 0.1
+ζ = 0.5
+Mean
+3.16e-05
+1.83e-05
+1.60e-04
+8.24e-05
+Std. dev.
+2.26e-04
+1.51e-04
+5.01e-04
+3.14e-04
+Min.
+-1.92e-04
+-1.92e-04
+-1.92e-04
+-1.92e-04
+1st quartile
+2.37e-08
+1.43e-14
+3.00e-05
+7.84e-06
+Median
+6.12e-07
+3.48e-08
+5.36e-05
+1.86e-05
+3rd quartile
+9.19e-06
+2.24e-06
+1.26e-04
+5.41e-05
+Max.
+2.06e-02
+1.06e-02
+2.06e-02
+1.06-02
+Figure 4 shows that the distribution of Ie,ζ is heavy-tailed. Comparing the
+goodness-of-fit of a power-law distribution to that of a log-normal distribution,
+one can see that the latter better fits the distribution of edges’ impact for both
+levels of ζ.
+Figure 4: Distribution of edges’ impact (in log scale).
+ζ = 0.1
+ζ = 0.5
+4.2. Predicting edges’ critical status
+We then applied the TPOT approach in our set of predictive variables (Table
+A1) to predict the critical status of the bank-firm edges. We split our observations into in-sample (80%) and out-of-sample (20%) data sets. The in-sample
+11
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+data set was oversampled through the Synthetic Minority Oversampling Technique (SMOTE) methodology [44] so the fraction of critical edges reached 50%
+before being used to train the model. We evaluate the model using accuracy as the
+performance metric through the k-fold cross-validation technique, with k = 5 and
+10 repetitions.
+The model selected by the TPOT pipeline was the XGBoost [45] for ζ = 0.1
+and the Random Forest [46] for ζ = 0.5. The optimal hyperparameters are presented in Table 3. In the in-sample data set, the model has achieved an accuracy
+of over 90% (Figure 5), being slightly higher for ζ = 0.5. Table 4 presents some
+performance metrics for the out-of-sample data set.
+Table 3: Hyperparameters of the ML models for the prediction of the edges’ critical status
+Model
+Hyperparameter
+Value
+XGBoost
+learning_rate
+0.5
+max_depth
+2
+min_child_weight
+20
+n_estimators
+100
+subsample
+0.9
+Random Forest
+bootstrap
+True
+criterion
+Gini
+max_features
+0.05
+min_samples_leaf
+5
+min_samples_split
+12
+n_estimators
+100
+Figure 5: Histogram of accuracy – in-sample data set. Target variable: edges’ critical status
+ζ = 0.1
+ζ = 0.5
+12
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+Table 4: Performance metrics – out-of-sample data set. Target variable: edges’ critical status
+Metric
+ζ = 0.1
+ζ = 0.5
+Precision
+0.68
+0.70
+Recall
+0.78
+0.90
+F1-score
+0.72
+0.79
+Accuracy
+0.88
+0.89
+The SHAP analysis (Figure 6) shows the main drivers of the critical status of
+the bank-firm edges. The figure can be interpreted as follows: for each feature, it is
+shown which observations have their predicted output increased (those at the right
+of the vertical axis) or decreased (those at the left of the vertical axis) after the
+inclusion of the feature in the model as a predictive variable. On the other hand,
+the observations closer to the red (blue) color spectrum have a higher (smaller)
+value of the feature. For instance, for ζ = 0.1, edges with a smaller value of the
+borrower’s PageRank (PR_brw) are concentrated at the left side of the vertical axis
+– that is, the probability of these edges being critical decreases when this feature
+is used as a predictive variable. Thus, there is a positive correlation between the
+probability of an edge being critical and the value of the PageRank of the firm
+which is the destination node of this edge.
+The features are sorted in descending order according to the mean absolute
+SHAP value. The relative importance of the features in predicting the critical
+status of the bank-firm edges varies according to the level of the initial shock. For
+ζ = 0.1, the PageRank of the borrower (that is, the firm) is the main driver of
+the edge’s critical status, followed by the borrower’s net worth (nw_brw) and the
+average interest rate (avg_int_rate). The first two features are positively correlated
+to the probability of edges being critical. Thus, edges which are loans extended
+to firms with a large PageRank and a large net worth have a higher probability of
+being critical.
+For ζ = 0.5, the borrower’s PageRank is also the main driver of the edge’s
+criticality. The average interest rate appears as the second most important driver.
+The relationship between this feature and the target variable is nonlinear, as can
+be seen by the presence of edges with a high interest rate (red observations) in the
+middle of the horizontal axis. This nonlinear relationship between the interest rate
+and the edge’s criticality is also observed for ζ = 0.1. Comparing the two levels
+of ζ, the most striking difference is that the firm’s net worth loses importance as
+a driver of the edge critical status. This result is expected, as firms with a not-so13
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+large net worth can cause a large impact under a higher level of initial shock.
+Figure 6: SHAP values, 10 most important features. Target variable: edges’ critical status
+ζ = 0.1
+ζ = 0.5
+Figures B1 and B2 depict the SHAP partial dependence plots of the most relevant continuous features for both values of ζ. These figures show how the expected value of the target variable varies according to the value of the feature. We
+can observe that some of these features present a nonlinear pattern of interaction
+with the target variable, corroborating the findings of Figure 6. For instance, in
+Figure B2, an increase in the interest rate initially leads to a rise in the predicted
+value of the target for small values of the feature. However, if this value surpasses
+a given threshold, further increases in the value of the feature lead to a decrease in
+the predicted value of the target variable.
+5. Concluding remarks
+In this paper, we presented a methodology to identify critical edges in financial
+networks. The advantage of our approach is that this is explicitly related to the
+impact of the edge on the SR of the financial network. We first compute the SR
+of the financial network. Then we assess how this measure of SR is impacted by
+the removal of the edge. The edges deemed as critical are those which are outliers
+according to this impact. Thus, a critical edge is that whose removal would cause
+a large impact on the SR of the network.
+We applied this framework to a thorough Brazilian dataset to identify critical bank-firm edges. The majority of the edge impacts are positive. This finding
+goes in hand with the robust-yet-fragile nature of financial networks: in sparse
+14
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+networks (what is the case of real financial networks), an increase in the interconnectedness (represented by the addition of an edge) would have a positive impact
+on the SR. The reason is that, for low levels of interconnectedness, shock propagation prevails over risk-sharing. For a smaller level of the initial shock (ζ = 0.1),
+at least 18% of the edges are critical, but this percentage rises to 22% for ζ = 0.5.
+The distribution of the edges’ impact is heavy-tailed, well represented by a lognormal distribution.
+We applied ML-based models to predict the critical status of bank-firm edges.
+The purpose was to identify which features drive the size of the edges’ impact on
+the SR. These models proved to have high predictive power for this specific task,
+showing a level of accuracy of around 90%. A posterior interpretative analysis
+carried out through Shapley values showed the main predictor of the critical status
+of bank-firm edges is the PageRank of the borrower — that is, the firm – for both
+values of ζ. Edges whose destination node has a large PageRank have a higher
+probability of being critical. The interest rate of the loan and the net worth of
+the firm are other important drivers of the edge’s criticality. While the former
+feature interacts nonlinearly with the target variable, the latter loses importance
+for a higher value of the initial shock.
+This study contributes to the literature on the relationship between interconnectedness and SR. Our results show that the impact of removing or adding edges
+– that is, changes in interconnectedness – on SR is heterogeneous. Some edges are
+much more influential than others on the SR of the financial network. In addition,
+we show which features – related to the origin node, the destination node, or the
+edge itself – identify an edge as critical. The relative importance of the features in
+predicting the systemic importance of the edge varies according to the level of the
+initial shock. Our results are also useful for policy-making purposes. They help
+financial regulators in the identification of financial transactions that will have
+the greatest impact on SR and should therefore be closely monitored. Finally, by
+showing the firm’s PageRank is the most important driver of the bank-firm edge’s
+critical status, we corroborate the findings of other studies [20, 21, 22, 23], according to which topological variables are at least as important as financial variables
+in driving SR.
+15
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+Appendix A. Potential explanatory variables
+Table A1: List of potential explanatory variables
+Type
+Description of the variable
+Acronym
+Lenders’ F & S
+variables
+Net worth
+nw_lnd
+Return over equity
+roe_lnd
+Leverage
+lev_lnd
+Liquidity
+liq_lnd
+Provisions-to-loans ratio
+qualasset_lnd
+Dummy variable for private banks
+private_lnd
+Dummy variable for foreign banks
+foreign_lnd
+Dummy variable for credit unions
+cred_union_lnd
+Borrowers’ F & S
+variables
+Net worth
+nw_brw
+Return over equity
+roe_brw
+Leverage
+lev_brw
+Bank debt-to-total debt ratio
+bnkdebt_brw
+Market debt-to-total debt ratio
+mktdebt_brw
+ROF debt-to-total debt ratio
+rofdebt_brw
+Number of employees
+qtt_emp_brw
+Average wage
+avg_wage_brw
+Share of female employees
+share_women_brw
+Age of the firm
+age_brw
+Short-term external debt ratio
+extdebtst_brw
+Dummy for Limited Society
+ltd_brw
+Dummies for the economic sector
+sector_brw_k∗
+Topological variables∗∗
+In-degree
+Kin
+Out-degree
+Kout
+Core number
+KC
+Closeness centrality (incoming links)
+CCin
+Closeness centrality (outgoing links)
+CCout
+Betweenness centrality
+B
+Eigenvector centrality (incoming links)
+ECin
+Eigenvector centrality (outgoing links)
+ECout
+PageRank
+PR
+Transaction variables
+Average interest rate
+avg_int_rate
+Average maturity
+avg_matur
+Provision-to-value ratio
+prov
+(*): k refers to the economic sector, represented by letters from A to S.
+(**): The suffix "_lnd" (for lenders) or "_brw" (for borrowers) will be added to the acronym.
+16
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+Appendix B. SHAP partial dependence plots
+Figure B1: SHAP partial dependence plots, four most important features. Target variable: edges’
+critical status, ζ = 0.1
+(a)
+(b)
+(c)
+(d)
+17
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+Figure B2: SHAP partial dependence plots, four most important features. Target variable: edges’
+critical status, ζ = 0.5
+(a)
+(b)
+(c)
+(d)
+References
+[1] F. Allen, D. Gale, Financial contagion, Journal of Political Economy 108 (1)
+(2000) 1–33.
+[2] M. Bardoscia, F. Caccioli, J. I. Perotti, G. Vivaldo, G. Caldarelli, Distress
+propagation in complex networks: the case of non-linear debtrank, PloS One
+11 (10) (2016) e0163825.
+[3] G. De Masi, M. Gallegati, Bank–firms topology in Italy, Empirical Economics 43 (2) (2012) 851–866.
+[4] T. Lux, A model of the topology of the bank–firm credit network and its
+role as channel of contagion, Journal of Economic Dynamics and Control 66
+(2016) 36–53.
+[5] R. N. Mantegna, H. E. Stanley, Scaling behaviour in the dynamics of an
+economic index, Nature 376 (6535) (1995) 46–49.
+18
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+[6] X. Gabaix, P. Gopikrishnan, V. Plerou, H. E. Stanley, A theory of powerlaw distributions in financial market fluctuations, Nature 423 (6937) (2003)
+267–270.
+[7] M. Chinazzi, G. Fagiolo, Systemic risk, contagion, and financial networks:
+A survey, Institute of Economics, Scuola Superiore Sant’Anna, Laboratory
+of Economics and Management (LEM) Working Paper Series No. 2013/08
+(2015).
+[8] L. Eisenberg, T. H. Noe, Systemic risk in financial systems, Management
+Science 47 (2) (2001) 236–249.
+[9] Y. Deng, Z. Zhang, L. Zhu, A model-based index for systemic risk contribution measurement in financial networks, Economic Modelling 95 (2021)
+35–48.
+[10] N. Chen, H. Fan, C. Pang, Contagion mechanism of liquidity risk in the
+interbank network, Economic Modelling 140 (2024) 106873.
+[11] A. Agosto, D. F. Ahelegbey, P. Giudici, Tree networks to assess financial
+contagion, Economic Modelling 85 (2020) 349–366.
+[12] P. Gai, S. Kapadia, Contagion in financial networks, Proceedings of
+the Royal Society A: Mathematical, Physical and Engineering Sciences
+466 (2120) (2010) 2401–2423.
+[13] D. Acemoglu, A. Ozdaglar, A. Tahbaz-Salehi, Systemic risk and stability in
+financial networks, American Economic Review 105 (2) (2015) 564–608.
+[14] P. Glasserman, H. P. Young, How likely is contagion in financial networks?,
+Journal of Banking & Finance 50 (2015) 383–399.
+[15] P. Glasserman, H. P. Young, Contagion in financial networks, Journal of
+Economic Literature 54 (3) (2016) 779–831.
+[16] S. Battiston, S. Martinez-Jaramillo, Financial networks and stress testing:
+Challenges and new research avenues for systemic risk analysis and financial
+stability implications, Journal of Financial Stability 35 (2018) 6–16.
+[17] S. Martinez-Jaramillo, C. U. Carmona, D. Y. Kenett, Interconnectedness
+and financial stability, Journal of Risk Management in Financial Institutions
+12 (2) (2019) 168–183.
+19
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+[18] R. Albert, A.-L. Barabási, Statistical mechanics of complex networks, Reviews of modern physics 74 (1) (2002) 47.
+[19] E.-Y. Yu, D.-B. Chen, J.-Y. Zhao, Identifying critical edges in complex networks, Scientific Reports 8 (1) (2018) 14469.
+[20] M. Alexandre, T. C. Silva, C. Connaughton, F. A. Rodrigues, The drivers of
+systemic risk in financial networks: a data-driven machine learning analysis,
+Chaos, Solitons & Fractals 153 (2021) 111588.
+[21] R. Ghanbari, M. Jalili, X. Yu, Correlation of cascade failures and centrality
+measures in complex networks, Future Generation Computer Systems 83
+(2018) 390–400.
+[22] T. U. Kuzubas, I. Omercikoglu, B. Saltoglu, Network centrality measures
+and systemic risk: An application to the Turkish financial crisis, Physica A
+405 (2014) 203–215.
+[23] S. Martinez-Jaramillo, B. Alexandrova-Kabadjova, B. Bravo-Benitez, J. P.
+Solórzano-Margain, An empirical study of the Mexican banking system’s
+network and its implications for systemic risk, Journal of Economic Dynamics & Control 40 (2014) 242–265.
+[24] J.-H. Song, Important edge identification in complex networks based on local and global features, Chinese Physics B (32) (2023) 098901.
+[25] O. De la Cruz Cabrera, M. Matar, L. Reichel, Edge importance in a network
+via line graphs and the matrix exponential, Numerical Algorithms 83 (2020)
+807–832.
+[26] T. Bröhl, K. Lehnertz, Centrality-based identification of important edges in
+complex networks, Chaos: An Interdisciplinary Journal of Nonlinear Science 29 (3) (2019).
+[27] N. Zhao, J. Li, J. Wang, T. Li, Y. Yu, T. Zhou, Identifying significant edges
+via neighborhood information, Physica A: Statistical Mechanics and its Applications 548 (2020) 123877.
+[28] K. Hajarathaiah, M. K. Enduri, S. Anamalamudi, A. Abdul, J. Chen, Node
+significance analysis in complex networks using machine learning and centrality measures, IEEE Access 12 (2024) 10186–10201.
+20
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+[29] R. May, S. Levin, G. Sugihara, Complex systems: Ecology for bankers,
+Nature 451 (7181) (2008) 893–895.
+[30] J.-P. Onnela, J. Saramäki, J. Hyvönen, G. Szabó, D. Lazer, K. Kaski,
+J. Kertész, A.-L. Barabási, Structure and tie strengths in mobile communication networks, Proceedings of the National Academy of Sciences 104 (18)
+(2007) 7332–7336.
+[31] K. Kanwar, S. Kaushal, H. Kumar, G. Gupta, M. Khari, BCDCN: a new
+edge centrality measure to identify and rank critical edges pertaining to SIR
+diffusion in complex networks, Social Network Analysis and Mining 12 (1)
+(2022) 49.
+[32] M. E. Helander, S. McAllister, The gravity of an edge, Applied Network
+Science 3 (1) (2018) 1–35.
+[33] I. E. Seabrook, P. Barucca, F. Caccioli, Evaluating structural edge importance in temporal networks, EPJ Data Science 10 (1) (2021) 23.
+[34] E. Nier, J. Yang, T. Yorulmazer, A. Alentorn, Network models and financial
+stability, Journal of Economic Dynamics and Control 31 (6) (2007) 2033–
+2060.
+[35] M. Alexandre, T. C. Silva, K. Michalak, F. A. Rodrigues, Does the default
+pecking order impact systemic risk? Evidence from Brazilian data, European
+Journal of Operational Research 309 (3) (2023) 1379–1391.
+[36] F. A. Docha, L. B. P. Rodrigues, Industry and securities market influences
+on indebtedness: evidence from a large dataset from Brazil, Central Bank of
+Brazil Working Paper Series No. 586 (2023).
+[37] M. Bardoscia, S. Battiston, F. Caccioli, G. Caldarelli, Debtrank: A microscopic foundation for shock propagation, PloS One 10 (6) (2015) e0130406.
+[38] R. S. Olson, J. H. Moore, TPOT: A tree-based pipeline optimization tool for
+automating machine learning, in: Workshop on automatic machine learning,
+2016, pp. 66–74.
+[39] R. S. Olson, N. Bartley, R. J. Urbanowicz, J. H. Moore, Evaluation of a
+tree-based pipeline optimization tool for automating data science, in: Proceedings of the genetic and evolutionary computation conference, 2016, pp.
+485–492.
+21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed
+
+[40] L. S. Shapley, A value for n-person games, Contributions to the Theory of
+Games 2 (28) (1953) 307–317.
+[41] Y. Shoham, K. Leyton-Brown, Multiagent systems: Algorithmic, gametheoretic, and logical foundations, Cambridge University Press, 2008.
+[42] S. Lundberg, S.-I. Lee, A unified approach to interpreting model predictions,
+arXiv preprint arXiv:1705.07874 (2017).
+[43] A. G. Haldane, Rethinking the financial network, in: Fragile stabilität–
+stabile fragilität, Springer, 2013, pp. 243–278.
+[44] N. V. Chawla, K. W. Bowyer, L. O. Hall, W. P. Kegelmeyer, SMOTE: Synthetic Minority Over-sampling Technique, Journal of Artificial Intelligence
+Research 16 (2002) 321–357.
+[45] J. Friedman, T. Hastie, R. Tibshirani, et al., Additive logistic regression: a
+statistical view of boosting (with discussion and a rejoinder by the authors),
+Annals of statistics 28 (2) (2000) 337–407.
+[46] L. Breiman, Random forests, Machine learning 45 (1) (2001) 5–32.
+22
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5201554
+Preprint not peer reviewed

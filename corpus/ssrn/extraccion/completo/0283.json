@@ -1,0 +1,173 @@
+{
+  "titulo": "Quantitative Spread Trading on Crude Oil and Refined Products Markets",
+  "resumen_operativo": "Investiga oportunidades de trading cuantitativo en spreads de petroleo crudo y productos refinados (WTI, Brent, heating oil, gasoil) entre 2003-2010. Aplica el modelo de arbitraje estadistico optimo de Bertram (2010) con proceso OU sobre 861 spreads. Usa procedimientos stepwise (Romano-Wolf stepdown y balanced stepdown) para controlar data snooping. Identifica estrategias rentables con Sharpe ratios >2, retornos diarios promedio 0.07%-0.55% y duraciones de trade de 9-55 dias. Colapso de estrategias rentables en 2008.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Bertram Optimal Trading Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de arbitraje estadistico que asume spread OU zero-mean; maximiza retorno esperado por unidad de tiempo determinando niveles optimos de entrada a* y salida m*=-a*.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Ornstein-Uhlenbeck Process"
+        },
+        {
+          "tipo": "APLICA_A",
+          "objeto": "Statistical Arbitrage"
+        }
+      ],
+      "cita_textual": "the novel optimal statistical arbitrage trading model of Bertram (2010) is applied"
+    },
+    {
+      "nombre": "Romano-Wolf Stepdown Procedure",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Procedimiento stepwise que controla el k-FWER generalizado, permitiendo identificar multiples estrategias rentables con significancia estadistica, no solo la mejor.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "White Reality Check"
+        },
+        {
+          "tipo": "MITIGA",
+          "objeto": "Data Snooping"
+        }
+      ],
+      "cita_textual": "The stepwise procedure improves on single step procedures with subsequent iterative steps"
+    },
+    {
+      "nombre": "Balanced Stepdown Procedure",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Variante de Romano-Wolf que trata cada test de hipotesis con igual poder estadistico (balance asintotico), identificando muchas mas estrategias rentables que el stepdown no balanceado.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "Romano-Wolf Stepdown Procedure"
+        }
+      ],
+      "cita_textual": "the balanced stepdown procedure is shown to identify many more profitable strategies"
+    },
+    {
+      "nombre": "k-FWER (generalized Familywise Error Rate)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Probabilidad de k o mas falsos descubrimientos; k=26 para 2,583 tests (1% del total), con nivel de significancia alpha=5%.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "Data Snooping"
+        }
+      ],
+      "cita_textual": "k is chosen to ensure that no more than 1% of the tests considered represent false discoveries"
+    },
+    {
+      "nombre": "Expected Return per Unit Time",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Metrica de performance: xi(a,m,c) = r(a,m,c)/E(T) donde r es retorno deterministico y E(T) tiempo esperado del ciclo de trade.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "Statistical Arbitrage Performance"
+        },
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Bertram Optimal Trading Model"
+        }
+      ],
+      "cita_textual": "maximising the expected return per unit time"
+    },
+    {
+      "nombre": "First-Passage Time Theory",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Teoria de Thomas (1975), Sato (1977) y Ricciardi-Sato (1988) usada para derivar expresiones analiticas de E(T) y V(T) del proceso OU.",
+      "relaciones": [
+        {
+          "tipo": "REQUIERE",
+          "objeto": "Bertram Optimal Trading Model"
+        }
+      ],
+      "cita_textual": "drawing on the first-passage time theory"
+    },
+    {
+      "nombre": "Data Snooping Bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de identificar estrategias rentables por puro azar al testear muchas simultaneamente; controlado con procedimientos stepwise.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "Romano-Wolf Stepdown Procedure"
+        }
+      ],
+      "cita_textual": "the well-known issue of data snooping bias, whereby under naive analysis profitable trading strategies may be identified by pure chance alone"
+    },
+    {
+      "nombre": "Trade Cycle Time",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Tiempo total T = T(a->m) + T(m->a) para completar un ciclo de entrada y salida; estocastico bajo el modelo OU.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Bertram Optimal Trading Model"
+        }
+      ],
+      "cita_textual": "a complete trade cycle is the time taken for the spread process to transition from a to m and then return back to a"
+    },
+    {
+      "nombre": "Structural Break (2008)",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El colapso de precios de commodities en 2008 causo un shift estructural en los spreads, generando desviaciones extremas del mean level estimado in-sample.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "Trading Strategy Collapse"
+        }
+      ],
+      "cita_textual": "The effect of the collapse in commodity prices manifests as a structural shift in the range of the spreads over 2008"
+    },
+    {
+      "nombre": "Transaction Cost Calibration",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Costos relativos estimados: WTI 0.094%, Brent 0.029%, Heating Oil 0.248%, Gasoil 0.248% por pata del spread.",
+      "relaciones": [
+        {
+          "tipo": "REQUIERE",
+          "objeto": "Statistical Arbitrage Profitability"
+        }
+      ],
+      "cita_textual": "the relative transactions costs reported for these three commodities"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Estrategias con Sharpe ratios >2 en muchas instancias; retornos diarios promedio 0.07%-0.55% para categorias top, duraciones de trade 9-55 dias.",
+      "mercado": "WTI, Brent, Heating Oil, Gasoil futures spreads (861 spreads)",
+      "periodo": "2003-2010 (8 one-year OOS periods)",
+      "magnitud": "Avg daily returns 0.07%-0.55%; Sharpe ratios >2 (algunos cerca de 4); trade lengths 9-55 days",
+      "condiciones": "Bertram optimal OU model; 3 in-sample periods (1Y, 2Y, 3Y); 2,583 estrategias testeadas simultaneamente",
+      "robustez": "alta",
+      "cita_textual": "profitable strategies are identified with Sharpe ratios greater than 2 in many instances"
+    },
+    {
+      "afirmacion": "Colapso dramatico en el numero de estrategias rentables en 2008: stepdown identifica CERO estrategias, balanced stepdown solo 8.",
+      "mercado": "Oil futures spreads",
+      "periodo": "2008 OOS",
+      "magnitud": "Stepdown: 0 estrategias; Balanced stepdown: 8 estrategias",
+      "condiciones": "Credit crisis shock; divergencias extremas de niveles medios in-sample",
+      "robustez": "alta",
+      "cita_textual": "a collapse in the number of profitable trading strategies is seen in 2008"
+    },
+    {
+      "afirmacion": "Balanced stepdown identifica entre 1.5x y 9.5x mas estrategias rentables que stepdown; 2009 excepcional con retornos 0.5%-0.55% en spreads HO-GO.",
+      "mercado": "Oil futures",
+      "periodo": "2003-2010",
+      "magnitud": "Balanced stepdown: 1.5x-9.5x mas estrategias; 2009: avg daily returns 0.5%-0.55%",
+      "condiciones": "Locational HO-GO spreads destacan en 2009",
+      "robustez": "alta",
+      "cita_textual": "The balanced stepdown procedure manages to identify between 1.5 and 9.5 times the number of profitable strategies"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Datos diarios de futuros; el modelo OU de Bertram es adaptable a intradia pero requiere datos de mayor frecuencia."
+  },
+  "doc_id": 283
+}

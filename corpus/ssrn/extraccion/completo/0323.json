@@ -1,0 +1,100 @@
+{
+  "doc_id": 323,
+  "titulo": "Substitute Trading and the Effectiveness of Insider Trading Regulations",
+  "resumen_operativo": "Extiende el modelo de Kyle (1985) a dos activos correlacionados con un insider por empresa, analizando si las regulaciones de insider trading son efectivas cuando los insiders pueden hacer 'substitute trading' (trading legal en acciones de empresas relacionadas). En mercados opacos (market makers solo ven su propio order flow), las regulaciones pueden aumentar las ganancias agregadas de los insiders cuando la correlación entre firmas es alta (|rho| > 0.936). En mercados transparentes, las regulaciones siempre reducen las ganancias de los insiders.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Substitute Trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Práctica legal donde insiders de una empresa usan información privilegiada sobre su propia firma para tradear acciones de empresas relacionadas (competidores, proveedores, clientes) en lugar de las propias. Tomado de la literatura legal (Ayres y Bankman, 2001).",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Competitor trading"},
+        {"tipo": "SE_OPONE_A", "objeto": "Insider trading regulations"}
+      ],
+      "cita_textual": "Borrowing from the law literature (Ayres and Bankman, 2001), we call insiders' trading in related stocks 'substitute trading'."
+    },
+    {
+      "nombre": "Kyle model extension",
+      "tipo": "modelo",
+      "definicion_en_contexto": "Extensión del modelo de Kyle (1985) a dos activos riesgosos correlacionados con un insider por firma, un market maker competitivo por activo, y noise traders exógenos. Se analiza bajo dos regímenes de información del market maker: opaco (solo ve su propio order flow) y transparente (ve ambos order flows).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Linear equilibrium"},
+        {"tipo": "EQUIVALE_A", "objeto": "Multi-asset Kyle model"}
+      ],
+      "cita_textual": "We extend Kyle's (1985) static model to a (static) model with two correlated firms, each with its own insider."
+    },
+    {
+      "nombre": "Opaque market",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Entorno de trading donde cada market maker observa únicamente el order flow del activo en el que hace mercado, sin visibilidad del otro activo correlacionado. Ejemplificado por NYSE donde distintos specialists manejan diferentes stocks.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Transparent market"},
+        {"tipo": "APLICA_A", "objeto": "Kyle model extension"}
+      ],
+      "cita_textual": "In an opaque trading environment... the market maker observes only the order flow of the asset he makes the market in, whereas in the second [transparent], the market maker also observes the order flow of the other (correlated) stock."
+    },
+    {
+      "nombre": "Camouflage level",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Producto sigma_i * sigma_{ui} que representa la facilidad con que un insider puede ocultar su trading. Una mayor varianza del valor del activo (sigma_i) y mayor varianza del noise trading (sigma_{ui}) implican mayor camouflage y más beneficio para el insider.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Insider's ability to hide trades"},
+        {"tipo": "CAUSA", "objeto": "Insider trading profits"}
+      ],
+      "cita_textual": "We summarize the joint effect of these two factors by their product, which we call the 'camouflage' level."
+    },
+    {
+      "nombre": "Self price pressure vs cross-asset price pressure",
+      "tipo": "metrica",
+      "definicion_en_contexto": "En el mercado transparente, el coeficiente del order flow propio en la regla de pricing es el self price pressure (siempre positivo), y el coeficiente del order flow del otro activo es el cross-asset price pressure (positivo si correlación positiva, negativo si negativa). En mercados regulados, el cross-asset siempre excede al self price pressure.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Market liquidity"},
+        {"tipo": "PARTE_DE", "objeto": "Linear pricing rule"}
+      ],
+      "cita_textual": "In the pricing rule of asset i, we call the coefficient of the total order flow of asset i 'self price pressure'... and we call the coefficient of the total order flow of the other asset j 'cross-asset price pressure'."
+    },
+    {
+      "nombre": "Price informativeness (Sigma_j)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Varianza del error del precio después del trade: Sigma_j = Var(v_j | order flows). Mide cuánta información privada retiene el insider. Mayor Sigma implica precios menos informativos. En mercado opaco sin regulación: Sigma_j = ((2-rho^2)/(4-rho^2)) * sigma_j^2.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Information revelation"},
+        {"tipo": "SE_OPONE_A", "objeto": "Market efficiency"}
+      ],
+      "cita_textual": "We use error variances of prices after trade, Sigma_1 = Var(v_1 | X_{21}(v_2)+u_1) and Sigma_2 = Var(v_2 | X_{12}(v_1)+u_2), to measure the informativeness of prices."
+    },
+    {
+      "nombre": "Singular information matrix",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Problema técnico que impide aplicar directamente el modelo de Caballé y Khrisnan (1994): cada insider conoce exactamente su propia firma e infiere imperfectamente sobre la otra, resultando en matrices de varianza-covarianza singulares para el best guess de fundamentales.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Caballé-Khrisnan model"},
+        {"tipo": "REQUIERE", "objeto": "Alternative solution approach"}
+      ],
+      "cita_textual": "The corresponding variance-covariance matrix of an informed trader's best guess of the fundamentals is singular, so we cannot use Caballé and Khrisnan's analysis in our model."
+    },
+    {
+      "nombre": "Competition effect of regulations",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "En mercado opaco con alta correlación, las regulaciones pueden aumentar ganancias al convertir a cada insider en monopolista informacional en el activo del otro, eliminando la competencia que reduce beneficios cuando ambas partes compiten por casi la misma información.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Increased insider profits under regulation"},
+        {"tipo": "SE_OPONE_A", "objeto": "Regulatory intent"}
+      ],
+      "cita_textual": "When two firms are closely correlated, the two insiders will compete against each other for almost the same piece of information if there are no regulations. With regulations, each insider becomes an information monopolist in the other firm's stock and makes more profit."
+    },
+    {
+      "nombre": "Counter-directional substitute trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "En mercado transparente sin regulación, el insider con mayor camouflage tradea el activo sustituto en contra de su información para confundir al market maker y proteger sus ganancias en su propio activo. Esto genera 'muddy water' que reduce la precisión de los precios.",
+      "relaciones": [
+        {"tipo": "CONTRADICE_A", "objeto": "Standard informed trading direction"},
+        {"tipo": "CAUSA", "objeto": "Reduced price informativeness"}
+      ],
+      "cita_textual": "The insider of the larger camouflage stock finds it optimal to trade the substitute stock against his information. This will 'muddy the water' for the market makers and hence create more room for the insider to profit from trading his own stock."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "baja", "nota": "Modelo teórico de un solo período (Kyle estático); no aborda dinámica intradiaria. Los insights sobre estructura de mercado opaco/transparente son relevantes para diseño de mercados pero no para estrategias de trading."}
+}

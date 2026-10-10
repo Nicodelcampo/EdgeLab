@@ -1,0 +1,168 @@
+{
+  "titulo": "Queueing Dynamics and State Space Collapse in Fragmented Limit Order Book Markets",
+  "resumen_operativo": "Modela mercados fragmentados como sistema de colas FIFO paralelas donde traders optimizan ruteo de ordenes limite y mercado considerando rebates y delays. Demuestra propiedad de State Space Collapse: el mercado multidimensional colapsa a un proceso unidimensional de workload que es estadistico suficiente del estado. Verifica empiricamente con TAQ data de 30 acciones del Dow Jones (sept 2011) y con el experimento natural de cambio de fees de NASDAQ (2015). El expected delay en cada exchange es proporcional al workload agregado.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "State Space Collapse (SSC)",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Propiedad donde el estado N-dimensional del mercado (colas en cada exchange) se reduce a un proceso unidimensional de workload W=sum(beta_i*Q_i).",
+      "relaciones": [
+        {
+          "tipo": "EQUIVALE_A",
+          "objeto": "Workload Sufficiency"
+        },
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Fragmented Market Equilibrium"
+        }
+      ],
+      "cita_textual": "the behavior of the multi-dimensional market reduces to that of a one-dimensional system expressed in terms of workload"
+    },
+    {
+      "nombre": "Workload (W)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Suma ponderada de colas W=sum(beta_i*Q_i) donde beta_i captura atractividad del exchange; estadistico suficiente para expected delays en equilibrio.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "Aggregate Market Depth"
+        },
+        {
+          "tipo": "REQUIERE",
+          "objeto": "State Space Collapse (SSC)"
+        }
+      ],
+      "cita_textual": "the workload is a sufficient statistic that summarizes the state of the market"
+    },
+    {
+      "nombre": "Make-Take Fees",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Exchanges pagan rebate r_i a liquidity makers y cobran fee a takers; diferencias en fees/rebates generan trade-off entre delay y retorno monetario.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "Order Routing Decisions"
+        }
+      ],
+      "cita_textual": "exchanges typically offer a rebate to liquidity providers... simultaneously, exchanges charge a fee to takers of liquidity"
+    },
+    {
+      "nombre": "Investor Heterogeneity (gamma)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Traders heterogeneos con coeficiente gamma que pesa rebate vs delay en su utilidad: max_i (gamma*tilde_r_i - ED_i).",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "Market Equilibrium"
+        }
+      ],
+      "cita_textual": "investors are heterogeneous with respect to their way of trading off rebate against delay"
+    },
+    {
+      "nombre": "Fluid Model Approximation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo determinista continuo como limite asintotico del sistema estocastico cuando las tasas de llegada crecen y el tamano de orden es infinitesimal.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "Queueing System"
+        },
+        {
+          "tipo": "USA",
+          "objeto": "Law of Large Numbers"
+        }
+      ],
+      "cita_textual": "a deterministic fluid model where the discrete and stochastic order arrival processes are replaced by continuous and deterministic analogues"
+    },
+    {
+      "nombre": "Expected Delay (ED_i)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Tiempo esperado hasta ejecucion: ED_i = Q_i/mu_i; en equilibrio ED_i = W/(mu*beta_i) proporcional al workload agregado.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "Liquidity"
+        },
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Order Routing Decision"
+        }
+      ],
+      "cita_textual": "the expected delay on exchange i is given by ED_i = W/(mu*beta_i)"
+    },
+    {
+      "nombre": "Price-Time Priority",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Regla de prioridad en limit order books: primero por precio, luego por tiempo de llegada (FIFO); fundamento del modelo de colas.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "Queueing System"
+        }
+      ],
+      "cita_textual": "exchanges typically operate under a price-time priority rule"
+    },
+    {
+      "nombre": "Little's Law for Order Books",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Q_i = (lambda_i + Lambda*chi_i) * ED_i; cada cola es igual a la tasa de llegada agregada por el expected delay de equilibrio.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "Flow Balance Condition"
+        }
+      ],
+      "cita_textual": "each queue length is equal to the corresponding aggregate arrival rate times the equilibrium expected delay"
+    },
+    {
+      "nombre": "Market Order Attraction Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo reduced-form: mu_i(Q) = mu * (beta_i*Q_i)/(sum_j beta_j*Q_j); market orders se dirigen a exchanges con mas liquidez disponible.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Fragmented Market Model"
+        }
+      ],
+      "cita_textual": "mu_i(Q(t)) = mu * (beta_i*Q_i)/(sum_j beta_j*Q_j)"
+    },
+    {
+      "nombre": "NASDAQ Fee-Change Experiment (2015)",
+      "tipo": "dato",
+      "definicion_en_contexto": "Experimento natural donde NASDAQ modifico fees/rebates para 14 acciones; usado para validar predicciones del modelo sobre ajuste de delays.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "State Space Collapse (SSC)"
+        }
+      ],
+      "cita_textual": "we find strong statistical support for our model's prediction"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Verificacion empirica de SSC en TAQ data para 30 acciones del Dow Jones (sept 2011): relacion lineal entre expected delays de exchanges.",
+      "mercado": "US equities (Dow Jones 30, multiple exchanges)",
+      "periodo": "Septiembre 2011",
+      "magnitud": "Relacion lineal entre delays a traves de exchanges confirmada estadisticamente",
+      "condiciones": "TAQ data; 30 liquid stocks con diferentes volumenes, precios, volatilidad y spreads",
+      "robustez": "alta",
+      "cita_textual": "we empirically verify the state space collapse property for a sample of TAQ data"
+    },
+    {
+      "afirmacion": "Validacion con NASDAQ fee-change experiment (2015): modelo predice correctamente que menores rebates reducen delays en el exchange.",
+      "mercado": "NASDAQ-listed stocks (14 stocks pilot)",
+      "periodo": "2015",
+      "magnitud": "Soporte estadistico fuerte para predicciones del modelo",
+      "condiciones": "Comparacion pre/post cambio de fees de NASDAQ",
+      "robustez": "alta",
+      "cita_textual": "we find strong statistical support for our model's prediction"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "Modelo disenado para dinamicas intradia de order books; tiempos de llegada en milisegundos/segundos y delays en segundos/minutos."
+  },
+  "doc_id": 287
+}

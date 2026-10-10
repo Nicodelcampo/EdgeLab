@@ -1,0 +1,138 @@
+{
+  "doc_id": 301,
+  "titulo": "The Statistical Limit of Arbitrage",
+  "resumen_operativo": "Investiga las consecuencias económicas del aprendizaje estadístico para el arbitraje en un entorno de alta dimensionalidad. Cuando los alphas son débiles y escasos, incluso arbitrajistas con técnicas óptimas de machine learning no pueden explotar todos los errores de precio, creando una brecha entre el Sharpe ratio factible y el infasible. Deriva una estrategia uniformemente óptima usando Empirical Bayes que logra los bounds superiores de utilidad para cualquier prior de alphas. Empíricamente, con acciones y portafolios de EE.UU. (1965-2020), el Sharpe factible es <0.7 mientras el infasible promedia >4.8.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Statistical Limit of Arbitrage",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Brecha entre el Sharpe ratio alcanzable por estrategias factibles (basadas solo en datos observables) y el Sharpe ratio infasible (que requiere conocimiento perfecto de alphas). Surge cuando los alphas son débiles y escasos, volviendo el aprendizaje estadístico inherentemente ruidoso.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Feasible vs Infeasible Sharpe Gap"},
+        {"tipo": "SE_OPONE_A", "objeto": "Arbitrage Pricing Theory (APT)"}
+      ],
+      "cita_textual": "When alphas are weak and rare, estimation errors hinder arbitrageurs—even those employing optimal machine learning techniques—from fully exploiting all true pricing errors. This statistical limit to arbitrage widens the equilibrium bounds of alphas."
+    },
+    {
+      "nombre": "Feasible Strategy",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estrategia de portafolio que es G-medible, es decir, depende solo de datos observables por el arbitrajista (retornos históricos, características). Excluye estrategias que requieren conocimiento del valor verdadero de alphas o del prior. Es la restricción clave del modelo.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Infeasible Strategy"},
+        {"tipo": "REQUIERE", "objeto": "G-Measurable Information Set"}
+      ],
+      "cita_textual": "A strategy w is said to be feasible (or infeasible) if it is (or is not) G-measurable."
+    },
+    {
+      "nombre": "Uniformly Optimal Strategy via Empirical Bayes",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia que logra los bounds superiores de utilidad y Sharpe ratio uniformemente para cualquier distribución previa de alphas, sin conocer el prior. Usa Empirical Bayes para recuperar el impacto del prior desde la distribución empírica de estimaciones de alpha. Los pesos son proporcionales al t-statistic de alpha.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Benjamini-Hochberg Procedure"},
+        {"tipo": "MEJORA_A", "objeto": "Ridge Shrinkage"}
+      ],
+      "cita_textual": "A uniformly optimal feasible strategy does exist in our setting. Under this strategy, portfolio weights are determined by the relative magnitudes and associated uncertainty of the alpha estimates, following Bayes' rule."
+    },
+    {
+      "nombre": "Rare and Weak Alpha Signals",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Configuración donde la magnitud de alphas decae como T^(-1/2) y la proporción de alphas no nulos decae como N^(-1/2). En este régimen, ningún alpha individual es estadísticamente detectable, pero colectivamente pueden generar Sharpe ratios considerables.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Statistical Limit of Arbitrage"},
+        {"tipo": "CONTRADICE_A", "objeto": "FDR-Controlling Methods"}
+      ],
+      "cita_textual": "We allow for rare and weak alpha signals such that any procedure aiming to control the FDR is too conservative with too few or no discoveries. Even if signals were so weak that they are undetectable by multiple testing methods, they may lead to a portfolio with a considerable Sharpe ratio."
+    },
+    {
+      "nombre": "Feasible Sharpe Ratio Bound",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Máximo Sharpe ratio alcanzable por cualquier estrategia factible dado un prior de alphas. Es estrictamente menor que el infasible S* cuando los alphas son débiles y escasos. Empíricamente estimado por debajo de 0.7 anualizado para acciones individuales de EE.UU.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Infeasible Sharpe Ratio S*"},
+        {"tipo": "MIDE", "objeto": "Statistical Limit of Arbitrage"}
+      ],
+      "cita_textual": "The optimal feasible arbitrage portfolios yield moderately low annualized Sharpe ratios below 0.7. In contrast, the infeasible Sharpe ratios are considerably higher, averaging more than 4.8."
+    },
+    {
+      "nombre": "Benjamini-Hochberg (BH) Procedure",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Procedimiento de testeo múltiple que controla la tasa de falsos descubrimientos (FDR). Solo es óptimo cuando pocos alphas son fuertes; con señales débiles es excesivamente conservador. Los alphas que no pasan el umbral se fijan a cero.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Uniformly Optimal Strategy via Empirical Bayes"},
+        {"tipo": "USA", "objeto": "False Discovery Rate (FDR)"}
+      ],
+      "cita_textual": "The BH procedure achieves optimal performance only when a small number of true alpha signals are strong; otherwise, it tends to be overly conservative, falling short of optimality."
+    },
+    {
+      "nombre": "Prior Ambiguity",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Incertidumbre del arbitrajista sobre cuál distribución previa (prior) genera los alphas verdaderos. Diferentes priors implican diferentes estrategias óptimas (BH, Ridge, Lasso). La estrategia uniformemente óptima resuelve esta ambigüedad aprendiendo el prior de los datos.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Non-Uniform Optimality of Standard Methods"},
+        {"tipo": "MITIGA", "objeto": "Empirical Bayes Method"}
+      ],
+      "cita_textual": "When arbitrageurs face ambiguity about the true prior, striving for uniformity offers the most robust solution."
+    },
+    {
+      "nombre": "Characteristics-Based Factor Model (MSCI Barra Style)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo donde las exposiciones factoriales β son características observables de las acciones (16 predictores de retorno + 11 indicadores de industria), no factores latentes. Permite estimar alphas como residuos de regresiones cross-sectionales en ventanas móviles de 60 meses.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Cross-Sectional Regression"},
+        {"tipo": "EQUIVALE_A", "objeto": "Observable Factor Model"}
+      ],
+      "cita_textual": "We construct a multi-factor model that uses observed stock characteristics as risk exposures. The characteristics include 16 commonly used return predictors and 11 industry indicators."
+    },
+    {
+      "nombre": "Infeasible Sharpe Ratio S*",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Sharpe ratio teóricamente óptimo bajo conocimiento perfecto de alphas y covarianzas: S* = √(α'Σ_u^(-1)α). No es alcanzable por ninguna estrategia factible. Condición de no near-arbitrage requiere S* ≲ 1, pero empíricamente S* explota (4.8-16) mientras el factible es <0.7.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Feasible Sharpe Ratio Bound"},
+        {"tipo": "REQUIERE", "objeto": "Perfect Knowledge of Alphas"}
+      ],
+      "cita_textual": "Ingersoll (1984) establishes that a sufficient and necessary condition for the absence of near-arbitrage is that S* := √(α'Σ_u^(-1)α) ≲ 1."
+    },
+    {
+      "nombre": "Managed Portfolios Transformation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Transformación que convierte un modelo condicional con alphas time-varying en un modelo incondicional con alphas constantes proyectando retornos sobre características rezagadas: (c'_{t-1}c_{t-1})^(-1)c'_{t-1}r_t. Permite aplicar el marco teórico a estrategias con señales.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Characteristics-Based Factor Model"},
+        {"tipo": "EQUIVALE_A", "objeto": "Latent Factor Model for Portfolios"}
+      ],
+      "cita_textual": "This transformation converts a conditional model for individual stocks with time-varying alphas into an unconditional latent factor model for managed portfolios."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Solo 7.58% y 1.12% de las estimaciones de alpha de acciones individuales tienen t-statistics >2.0 y >3.0 en valor absoluto, indicando que alphas no nulos son escasos y débiles. El R² cross-sectional promedio es solo 8%.",
+      "mercado": "US Stock Market (acciones individuales)",
+      "periodo": "1965-2020 (ventanas móviles de 60 meses)",
+      "magnitud": "7.58% con |t|>2.0; 1.12% con |t|>3.0; R² ~8%",
+      "condiciones": "16 características + 11 industrias como β observables; regresiones cross-sectionales en ventanas de 60 meses",
+      "robustez": "alta",
+      "cita_textual": "Only 7.58% and 1.12% of individual stocks' alpha estimates have t-statistics greater than 2.0 and 3.0, respectively, in absolute values."
+    },
+    {
+      "afirmacion": "El Sharpe ratio factible óptimo anualizado para acciones individuales es consistentemente menor a 0.7, mientras que el Sharpe infasible promedia más de 4.8 y alcanza hasta 16 en algunos subperíodos.",
+      "mercado": "US Stock Market",
+      "periodo": "1965-2020",
+      "magnitud": "Factible <0.7; infasible 4.8-16; brecha ~7x-23x",
+      "condiciones": "Estrategia uniformemente óptima con Empirical Bayes; factor-neutral portfolios",
+      "robustez": "alta",
+      "cita_textual": "The optimal feasible arbitrage portfolios yield moderately low annualized Sharpe ratios below 0.7. In contrast, the infeasible Sharpe ratios are considerably higher, averaging more than 4.8 and reaching as high as 16."
+    },
+    {
+      "afirmacion": "Para portafolios formados por características (1,273 portfolios + 49 industrias), los Sharpe factibles también son bajos mientras los infasibles varían entre 5 y 20, confirmando la relevancia empírica del límite estadístico al arbitraje.",
+      "mercado": "US characteristic-sorted portfolios",
+      "periodo": "Publicación hasta 2020",
+      "magnitud": "Factible bajo; infasible 5-20",
+      "condiciones": "Ajuste por año de publicación de cada característica; modelo de factores latentes vía SVD",
+      "robustez": "alta",
+      "cita_textual": "The infeasible Sharpe ratios... ranging from 5 to 20 for portfolios."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "baja", "nota": "Marco teórico asintótico con aplicación empírica a retornos mensuales; no aborda frecuencias intradiarias aunque el framework de aprendizaje estadístico es conceptualmente extensible."}
+}

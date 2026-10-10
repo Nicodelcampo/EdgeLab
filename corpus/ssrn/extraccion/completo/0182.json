@@ -1,0 +1,139 @@
+{
+  "doc_id": 182,
+  "titulo": "Implied Convergence Risk in Statistical Arbitrage",
+  "resumen_operativo": "El paper introduce una función Modified Generalized Smooth-Transition (MGST) con volatilidad condicional DeTGARCH para estimar el riesgo de convergencia específico de cada par en statistical arbitrage. La banda de no-arbitraje se determina endógenamente, capturando variación cross-sectional. En pruebas empíricas contra tres benchmarks (intervalos de confianza del 90%, 95% y 99%), la estrategia MGST produce mayores retornos acumulados y Sharpe ratios incluso tras costes de transacción, aplicada a pares A-H (China/Hong Kong) y pares del CSI300.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Statistical Arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia que explota desviaciones de precios entre pares de valores con relaciones de cointegración o pricing parity. A diferencia del arbitraje puro, conlleva riesgo de convergencia significativo.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "convergence risk"},
+        {"tipo": "USA", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "Many statistical arbitrage strategies depend on pricing error measures whose conditional volatility exposes capital-constrained arbitrageurs to significant convergence risk."
+    },
+    {
+      "nombre": "Convergence Risk",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de que el pricing error entre pares no converja dentro del horizonte esperado, exponiendo al arbitrajista a pérdidas intermedias que pueden forzar liquidación anticipada por margin calls.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "limits to arbitrage"},
+        {"tipo": "MITIGA", "objeto": "no-arbitrage band"}
+      ],
+      "cita_textual": "Interim losses may trigger margin calls and force early liquidation. Since arbitrageurs are often capital-constrained and use leverage, they are especially sensitive to convergence risk."
+    },
+    {
+      "nombre": "No-Arbitrage Band",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Banda alrededor del equilibrio de pricing error dentro de la cual el arbitraje no es rentable tras costes. En el MGST se determina endógenamente con nivel y ancho de banda específicos para cada par.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "convergence risk"},
+        {"tipo": "USA", "objeto": "MGST function"}
+      ],
+      "cita_textual": "The MGST strategy's ability to tailor arbitrage mechanisms to individual pairs is what drives its superior returns."
+    },
+    {
+      "nombre": "Modified Generalized Smooth-Transition",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Función que modela la transición suave entre estados de arbitraje y no-arbitraje, incorporando un proceso DeTGARCH para la volatilidad condicional del pricing error. Sus parámetros se asemejan a un GARCH-in-Mean.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "GST function"},
+        {"tipo": "USA", "objeto": "DeTGARCH"}
+      ],
+      "cita_textual": "We introduce a Modified Generalized Smooth-Transition (MGST) function, whose parameters resemble those of a GARCH-in-Mean process, to estimate pair-specific convergence risk."
+    },
+    {
+      "nombre": "Double-Endogenous Threshold GARCH",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Especificación GARCH con umbrales separados para pricing errors positivos y negativos, permitiendo volatilidad asimétrica sin asumir direccionalidad. Los umbrales se estiman endógenamente.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "GARCH"},
+        {"tipo": "PARTE_DE", "objeto": "MGST function"}
+      ],
+      "cita_textual": "DeTGARCH offers three advantages over standard GARCH. First, separate thresholds for positive and negative omega allow for arbitrage asymmetry, resulting in a skewed no-arbitrage band."
+    },
+    {
+      "nombre": "Pricing Error",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Desalineación en precios normalizados entre pares de valores en el tiempo t. Representa la desviación del equilibrio de no-arbitraje y sigue un proceso de corrección de error con volatilidad condicional.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "mispricing"},
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "The pricing error omega refers to the misalignment in normalized prices between paired securities i at time t."
+    },
+    {
+      "nombre": "Cointegration",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Relación estadística de largo plazo entre series de precios que comparten una tendencia común. En el paper, el pricing error se modela dentro de un Vector Error-Correction Model (VECM) para pares cointegrados.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "pairs trading"},
+        {"tipo": "USA", "objeto": "VECM"}
+      ],
+      "cita_textual": "Such pairings may arise from parity-pricing conditions with clear economic foundations, or from cointegrated-pricing relations lacking an obvious or stable economic link."
+    },
+    {
+      "nombre": "Pairs Trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia que explota el mispricing relativo entre dos acciones, típicamente identificadas por cointegración o distancia. El paper aplica MGST a pares del CSI300 y a pares A-H cross-listed.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "statistical arbitrage"},
+        {"tipo": "REQUIERE", "objeto": "no-arbitrage band"}
+      ],
+      "cita_textual": "We use the estimated MGST bands to construct separate A-H and pairwise arbitrage portfolios."
+    },
+    {
+      "nombre": "Vector Error-Correction Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo bivariante que relaciona los retornos de dos activos cointegrados con el pricing error rezagado, incorporando la función MGST para modelar la corrección de error con transición suave entre regímenes.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "cointegration"},
+        {"tipo": "PARTE_DE", "objeto": "MGST function"}
+      ],
+      "cita_textual": "We embed a modified generalized smooth transition (MGST) function in a Vector Error-Correction Model (VECM), allowing the error-correction process to transition between arbitrage and no-arbitrage states."
+    },
+    {
+      "nombre": "Sharpe Ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de rentabilidad ajustada por riesgo. La estrategia MGST supera a todos los benchmarks en Sharpe ratio excepto al intervalo del 90% en la muestra A-H.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"},
+        {"tipo": "USA", "objeto": "arbitrage portfolio"}
+      ],
+      "cita_textual": "The MGST strategy consistently outperforms three benchmarks using fixed no-arbitrage bands... Its Sharpe ratio exceeds all benchmarks, except the 90% interval in the A-H sample."
+    },
+    {
+      "nombre": "Limits to Arbitrage",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Restricciones como short-sale restrictions o funding illiquidity que limitan la capacidad del arbitrajista de actuar sobre pricing errors no triviales, particularmente cuando hay riesgo de convergencia.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "no-arbitrage band"},
+        {"tipo": "SE_OPONE_A", "objeto": "arbitrage"}
+      ],
+      "cita_textual": "The limits-to-arbitrage literature highlights widespread empirical deviations from no-arbitrage pricing, shedding light on how constraints drive persistent cross-sectional and time-series variation in pricing errors."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La estrategia MGST consistentemente supera a tres benchmarks (bandas fijas al 90%, 95%, 99%) en retornos acumulados, Sharpe ratio y net returns incluso tras costes de transacción.",
+      "mercado": "A-H cross-listed stocks (China/Hong Kong) y pares del CSI300",
+      "periodo": "Datos de 2022 (por los precios mostrados en figuras, ~RMB 4.50 para ICBC/CCB)",
+      "magnitud": "Sharpe ratio superior a benchmarks excepto 90% CI en A-H; MGST impone bandas más estrechas y opera con más frecuencia",
+      "condiciones": "Estimación recursiva MLE en dos etapas del MGST-VECM; costes de transacción incluidos según Leippold et al. (2022)",
+      "robustez": "alta",
+      "cita_textual": "The MGST strategy consistently outperforms three benchmarks using fixed no-arbitrage bands based on 90%, 95%, and 99% confidence intervals as in Gatev et al. (2006), with transaction costs included."
+    },
+    {
+      "afirmacion": "La variación cross-sectional en las bandas de no-arbitraje (NaB_i,M) es el driver clave del rendimiento superior, ya que los benchmarks imponen nivel de banda cero y ancho fijo para todos los pares.",
+      "mercado": "CSI300 pairs y A-H pairs",
+      "periodo": "Período de estimación in-sample y out-of-sample",
+      "magnitud": "La variación residual en los implied thresholds sustancial incluso tras controlar por volatilidad; average band level cercano a cero pero con variación notable",
+      "condiciones": "Umbrales determinados endógenamente por MGST-VECM con DeTGARCH",
+      "robustez": "alta",
+      "cita_textual": "When we infer the implied theta from NaB_i,M, substantial residual variation remains, indicating that epsilon_omega alone does not fully explain NaB_i,M."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "El modelo VECM-MGST opera con datos diarios; la calibración de bandas de no-arbitraje es aplicable a monitoreo intradía de desviaciones de pares pero requiere adaptación de frecuencia."}
+}

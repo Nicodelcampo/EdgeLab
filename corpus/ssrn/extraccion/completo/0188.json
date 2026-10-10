@@ -1,0 +1,90 @@
+{
+  "doc_id": 188,
+  "titulo": "Informed Trading, Predictable Noise Trading Activities and Market Manipulation",
+  "resumen_operativo": "El paper extiende el modelo de Kyle (1985) incorporando un componente sistemático y predecible del noise trading (como investor sentiment) que es observado privadamente por un informed trader monopolístico y averso al riesgo. El resultado principal es que el informed trader puede intencionalmente amplificar el mispricing causado por el noise trading en lugar de corregirlo, descomponiendo su demanda en un componente correctivo (mean-variance) y otro manipulativo (price-controlling). El modelo muestra que la manipulación de mercado emerge de forma natural en Kyle cuando la información privada tiene dos dimensiones: fundamentals y non-fundamentals.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Kyle Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo canónico de informed trading con un insider monopolístico que revela gradualmente su información privada a través de sus órdenes. Este paper lo extiende añadiendo un componente sistemático de noise trading y señales públicas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "market microstructure"},
+        {"tipo": "APLICA_A", "objeto": "market manipulation"}
+      ],
+      "cita_textual": "Kyle (1985) has shown that a monopolistic risk-neutral informed trader gradually reveals his private information through his trades over time."
+    },
+    {
+      "nombre": "Noise Trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Actividad de negociación no basada en información fundamental. En este modelo, una porción del noise trading es sistemática (autorregresiva, predecible) y el informed trader tiene información superior sobre ella.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "mispricing"},
+        {"tipo": "PARTE_DE", "objeto": "market manipulation"}
+      ],
+      "cita_textual": "Traditional models of informed trading typically assume the existence of noise trading activities which generate pure random noise in trading volumes."
+    },
+    {
+      "nombre": "Market Manipulation",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Estrategia donde el informed trader opera en dirección contraria a su información privada para aumentar el ruido en el mercado, sufriendo pérdidas a corto plazo para obtener beneficios a largo plazo mediante price control.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "manipulative demand"},
+        {"tipo": "CONTRADICE_A", "objeto": "arbitrage"}
+      ],
+      "cita_textual": "The informed trader suffers short-term losses to gain long-term profits by increasing noise in the market, which is market manipulation."
+    },
+    {
+      "nombre": "Corrective Demand",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Componente de la demanda del informed trader motivado por la típica optimización mean-variance como price-taker, buscando corregir el mispricing y obtener beneficios del exceso de retorno esperado.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "informed trader demand decomposition"},
+        {"tipo": "SE_OPONE_A", "objeto": "manipulative demand"}
+      ],
+      "cita_textual": "The informed trader's demand for the risky asset could be decomposed into two separate components: (1) a corrective demand which is coming from a typical mean-variance demand for the excess return as a price-taker."
+    },
+    {
+      "nombre": "Manipulative Demand",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Componente de la demanda del informed trader motivado por price-controlling: opera en la misma dirección que el error de forecasting de los market makers para aumentar el ruido y obtener beneficios a largo plazo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "informed trader demand decomposition"},
+        {"tipo": "CAUSA", "objeto": "market manipulation"}
+      ],
+      "cita_textual": "A manipulative demand which is driven by price-controlling motives."
+    },
+    {
+      "nombre": "Investor Sentiment",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Una de las posibles interpretaciones del componente sistemático del noise trading: comportamiento irracional de inversores individuales no correlacionado con factores fundamentales pero que sigue patrones autorregresivos.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "systematic noise trading"},
+        {"tipo": "CAUSA", "objeto": "mispricing"}
+      ],
+      "cita_textual": "One of the potential interpretations of the systematic component of noise trading featured in this paper is investor sentiment."
+    },
+    {
+      "nombre": "Public Signals",
+      "tipo": "dato",
+      "definicion_en_contexto": "Señales sobre el valor de liquidación del activo riesgoso observadas por todos los participantes del mercado. Pueden forzar al informed trader a corregir el mispricing en lugar de amplificarlo, mitigando la manipulación.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "market manipulation"},
+        {"tipo": "APLICA_A", "objeto": "information revelation"}
+      ],
+      "cita_textual": "It may force the informed trader to correct the mispricing instead of riding on it."
+    },
+    {
+      "nombre": "Linear Filtering",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de aprendizaje dinámico usada por los market makers para estimar el componente sistemático del noise trading a partir del aggregate order flow observado en cada período.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "market maker learning"},
+        {"tipo": "APLICA_A", "objeto": "order flow"}
+      ],
+      "cita_textual": "This new reinterpretation also reveals that the informed trader's demand could be decomposed into two separate components according to their trading motives."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "El modelo es teórico con análisis numérico; provee fundamentos para entender manipulación en mercados intradía donde el informed trading coexiste con noise trading predecible."}
+}

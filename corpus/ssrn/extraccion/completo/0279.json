@@ -1,0 +1,160 @@
+{
+  "titulo": "Dynamic Pairs Trading using the Stochastic Control approach",
+  "resumen_operativo": "Desarrolla un modelo de control estocastico optimo para pairs trading donde el portafolio contiene dos activos cointegrados. Para utilidad exponencial, reduce el problema HJB a una PDE parabolica lineal unidimensional que se resuelve en forma cerrada. Las posiciones optimas son proporcionales al spread cointegrado e inversamente proporcionales a la aversion al riesgo. Ilustrado con datos minuto a minuto de GS y JPM (17 oct 2011), generando ganancia de $1,348 en un dia.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Stochastic Control for Pairs Trading",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Aplicacion de control estocastico optimo a pares cointegrados sin restriccion de delta-neutral, maximizando utilidad esperada de la riqueza terminal.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "Pairs Trading"
+        },
+        {
+          "tipo": "USA",
+          "objeto": "Hamilton-Jacobi-Bellman Equation"
+        }
+      ],
+      "cita_textual": "we allow strategies with arbitrary amounts in each stock"
+    },
+    {
+      "nombre": "Exponential Utility",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Funcion de utilidad U(w) = -exp(-gamma*w) con aversion al riesgo gamma>0; permite factorizar la variable riqueza y reducir dimensionalidad.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Closed-Form Solution"
+        }
+      ],
+      "cita_textual": "for the exponential utility function and for a zero risk-free interest rate, we are able to reduce the problem to a one dimensional linear parabolic PDE"
+    },
+    {
+      "nombre": "Cointegration Vector z_t",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Variable de estado que es combinacion lineal de log-precios (z_t = a + log S1_t + beta * log S2_t) con dinamica OU mean-reverting.",
+      "relaciones": [
+        {
+          "tipo": "EQUIVALE_A",
+          "objeto": "Ornstein-Uhlenbeck Process"
+        },
+        {
+          "tipo": "REQUIERE",
+          "objeto": "Cointegration"
+        }
+      ],
+      "cita_textual": "z_t is mean-reverting: dz_t = alpha*(eta - z_t)*dt + sigma_beta*dB_t"
+    },
+    {
+      "nombre": "Intraday Pairs Trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia ejecutada con datos minuto a minuto de GS y JPM el 17 oct 2011 generando P&L de $1,348 con gamma=0.1.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "Pairs Trading"
+        }
+      ],
+      "cita_textual": "we collected on October 17, 2011, minute-by-minute data, on two stocks traded on the NYSE, GS and JPM"
+    },
+    {
+      "nombre": "Optimal Position Formula",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Posicion optima en cada accion depende del spread cointegrado X=mu1+delta*z, con terminos de (T-t) y (T-t)^2 que ajustan dinamicamente.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Stochastic Control for Pairs Trading"
+        }
+      ],
+      "cita_textual": "the amounts invested in each stock are inversely proportional to the risk aversion coefficient"
+    },
+    {
+      "nombre": "Phillips-Ouliaris Test",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Test adicional de cointegracion aplicado para confirmar la relacion cointegrada entre GS y JPM ademas del procedimiento Engle-Granger.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Cointegration"
+        }
+      ],
+      "cita_textual": "we performed in addition a Phillips-Ouliaris test whose outcome further confirmed that our time series were co-integrated"
+    },
+    {
+      "nombre": "Risk Aversion Coefficient",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Parametro gamma>0 de la utilidad exponencial; cortar la aversion a la mitad equivale a duplicar la inversion en cada accion.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Exponential Utility"
+        }
+      ],
+      "cita_textual": "cutting in half the risk aversion level is equivalent to investing twice as much capital in each stock"
+    },
+    {
+      "nombre": "Verification Theorem",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Demostracion formal de que la solucion candidata de la HJB es efectivamente la funcion valor del problema de control estocastico.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "Hamilton-Jacobi-Bellman Equation"
+        }
+      ],
+      "cita_textual": "we must verify that the smooth candidate solution we derived is indeed the value function"
+    },
+    {
+      "nombre": "Duan-Pliska Cointegration Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de cointegracion en tiempo continuo derivado como limite de difusion de un modelo discreto; base para la dinamica de S1_t y S2_t.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Cointegration Vector z_t"
+        }
+      ],
+      "cita_textual": "the model for the co-integrated stocks is taken from Duan and Pliska"
+    },
+    {
+      "nombre": "Brownian Motion Correlations",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Extension del modelo para incluir correlacion rho entre los Brownian motions de S1 y S2; modifica las formulas optimas y el parametro sigma_beta.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "Cointegration Vector z_t"
+        }
+      ],
+      "cita_textual": "it is also quite straightforward to incorporate correlations between the stocks into the above model"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Estrategia intraday sobre GS y JPM (17 oct 2011) genera P&L de $1,348 con gamma=0.1 en un dia de trading completo (390 minutos).",
+      "mercado": "NYSE: Goldman Sachs (GS) y JPMorgan Chase (JPM)",
+      "periodo": "17 de octubre de 2011 (intradia, minuto a minuto)",
+      "magnitud": "P&L aprox $1,348 al cierre del dia",
+      "condiciones": "gamma=0.1, sin costos de transaccion ni borrowing; horizonte maximo verificado: 38 segundos",
+      "robustez": "baja",
+      "cita_textual": "a significant profit is instantly realized. The profit then fluctuates throughout the day but remains strongly positive and by the end of the day, it is approximately $1,348"
+    },
+    {
+      "afirmacion": "Las posiciones optimas son opuestas en signo (long/short) y se deshacen progresivamente hacia el cierre del dia, terminando cerca de cero.",
+      "mercado": "GS y JPM (NYSE)",
+      "periodo": "17 oct 2011",
+      "magnitud": "Posiciones grandes en primera mitad, cerca de cero al final",
+      "condiciones": "Parametros anualizados estimados: delta=-3561, sigma_beta=0.309, rho=0.612",
+      "robustez": "baja",
+      "cita_textual": "the positions, which are large during the first half of the day, are both progressively unwound in the second half, ending close to 0"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "Disenado explicitamente para trading intradia con datos minuto a minuto; las formulas cerradas permiten implementacion computacional eficiente en alta frecuencia."
+  },
+  "doc_id": 279
+}

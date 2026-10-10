@@ -1,0 +1,404 @@
+Design of a Quantitative Futures Trading Model Incorporating Multimodal 
+Feature Fusion and Tail Risk Control
+ 
+Jinning Yang 
+Qilu Normal University, Jinan, 250200, China, 19707728293@163.com 
+Xizhen Deng* 
+University of Michigan, Ann Arbor, 48109, United States, xizhen@umich.edu 
+Abstract 
+The price dynamics of futures markets are driven by heterogeneous information sources, whereas the 
+traditional single-source models do not capture the complex interaction between yield and risk accumulation. 
+In order to overcome this limitation, we propose a new approach that combines multimodal features with tail 
+risk awareness. The new approach is to incorporate tail risk signals into the feature representation process, 
+which allows for dynamic re-weighting of multimodal inputs.The model combines price based technology, text 
+sentiment embedding, and market structure characteristics, and is assessed on the basis of a continuous 
+historical period, including stock index and commodity futures. This paper uses a rolling-window backtesting 
+framework with out-of-sample verification to guarantee the robustness of the system and prevent the 
+information from leaking. LSTM, Transformer, and traditional multimodal models with no risk awareness 
+modulation are used as the benchmark.The experimental results show that the Sharpe ratio is 2.25, and the 
+maximum draw is kept under 18%, which is superior to the baseline approach in terms of return stability and 
+risk control. The results show that multimodal integration can improve the quality of prediction signals, and 
+tail risk awareness can restrain the extreme loss exposure and enhance the robustness of the market. 
+Keywords 
+quantitative trading; multimodal fusion; tail risk; attention mechanism 
+1 Introduction 
+Price developments in futures markets are inherently driven by multiple and diverse sources of information, 
+such as price dynamics, text sentiment, and micro-structural signals. Due to the significant differences in time 
+scale, statistical distribution, and noise characteristics, these flows produce complex nonlinear interactions 
+that cannot be captured by conventional modeling methods. Traditional single-time-series models, which rely 
+mainly on historical price data, often do not sufficiently represent cross-modal dependencies, and are thus 
+limited in their capacity to model volatility clustering, regime shifts, and extreme market movements. In recent 
+years, multimodal feature fusion has been proposed as a promising tool to improve the performance of the 
+system. 
+Recent work has shown that multimodal modeling is effective in the field of financial forecasting. Farimani et 
+al. [1] (2024) proposed an adaptive multimodal learning framework to jointly model heterogeneous financial 
+signals. Bentaleb et al. [2] (2025) proposed a modal fusion network to improve the identification of trends. Lee 
+et al. [3] (2023) has integrated macro-economic variables into a multimodal transformer architecture, thus 
+increasing the robustness of market orientation classification. Badal et al. [4] (2026) extended the concept of 
+multimodal learning to cryptocurrency markets, highlighting their versatility across asset classes. Zheng et al. 
+[5] (2025) introduced cross-modal interaction mechanisms, which allow for further integration of 
+heterogeneous features. The results show that multimodal representations can significantly improve the 
+performance of prediction signals by capturing diverse market information. 
+In spite of this progress, most of the existing multimodal approaches are focused on improving the performance 
+of the return prediction, while ignoring the explicit modeling of the tail risk transfer mechanism. Thus, the 
+
+resulting trading signals are usually more sensitive to extreme fluctuations in the market, resulting in an 
+amplified draw and a loss of stability. Moreover, the contribution of different modes is usually determined by 
+static or weakly adaptive weighting schemes, which do not take into account the dynamic variation of risk. In 
+particular, the lack of a risk-driven adjustment mechanism limits the ability of the model to suppress noise and 
+avoid excessive exposure to adverse events in extreme samples or abnormal market conditions. 
+In order to overcome these limitations, a novel approach is proposed to combine multimodal features and tail 
+risk awareness. In contrast to traditional approaches that apply risk control in the post-decision phase, this 
+approach incorporates tail risk signals into the feature representation and fusion process. This design allows 
+dynamic re-weighting of multimodal inputs based on real time risk conditions, thus enhancing the model's 
+sensitivity to extreme market states while maintaining the integrity of informative signals. In this paper, a risk 
+sensitive decision mechanism is proposed, which combines multi-source feature coding and cross-modal 
+interaction. Through this integrated approach, the proposed framework is designed to enhance the accuracy 
+and robustness of prediction, and to provide a more stable basis for quantitative trading in complex and volatile 
+markets. 
+2. Foundations of Multi-modal Feature-Driven Futures Market Modeling 
+The dynamic evolution of futures price series is driven by heterogeneous information from multiple sources, 
+and there is a marked difference in time scale and statistical distribution, which makes it impossible to capture 
+the joint mechanism of return and risk accumulation. In order to solve this problem, multimodal modeling 
+constructs a unified representation space in which time-aligned features are integrated into a state tensor, 
+defined as: 
+ 
+Ωτ=Concat(Pτ
+(r),Nτ
+(s),Mτ
+(q)) 
+(1) 
+wherePτ
+(r) denotes the price technical indicator matrix,Nτ
+(s) denotes the text sentiment embedding matrix,Mτ
+(q) 
+denotes the microstructure feature matrix, andr,s,q represent the corresponding feature dimensions. The 
+concatenation is carried out in synchronous time windows and normalized feature scales to ensure time 
+consistency and comparability between modalities.However, even with uniform representation, extreme 
+market fluctuations are not fully captured, as conventional feature aggregation lacks an explicit mechanism for 
+modeling tail risk propagation. Thus, a tail enhancement mechanism is introduced to quantify the extreme loss 
+intensity by the combined effect of return bias, volatility amplification and liquidity contraction [6], which is 
+formulated as: 
+ 
+Rτtail=
+1
+H ∑
+[max ( 0,θ-ρτ-h+1)]
+2
+H
+h=1
+× exp ( κντ-h+1)× (1+
+1
+λτ-h+1+ε) (2) 
+whereρτ-h+1 denotes the standardized return, θ is the tail loss threshold,ντ-h+1 represents the volatility 
+intensity,κ is the volatility amplification coefficient,λτ-h+1 denotes the liquidity level, andε is a stability 
+constant. This formulation captures the nonlinear amplification effect of extreme losses, which is conceptually 
+consistent with the tail-risk measures such as conditional loss expectation. The resultant tail risk signal is used 
+as a dynamic modulation factor in the subsequent cross-modal fusion and attention weight allocation, which 
+provides a framework for risk sensitive feature reweighting. 
+3 Design of a Quantitative Trading Model for Multi-modal Feature Fusion and Tail Risk Control 
+3.1 Overall Model Architecture Design 
+In order to integrate multimodal features into spatially consistent state tensors, QFT is proposed as a structural 
+pipeline composed of feature coding, cross-modal interaction, and risk-conscious decision modulation. The 
+overall architecture is shown in Figure 1. The model receives price sequence, text sentiment, and micro 
+structure signals via a multi-branch input unit. The feature encoding layer extracts the temporal and semantic 
+representations, and then sends them to the cross-modal interaction module to perform the unified 
+
+information fusion [7].During the fusion phase, the unified state vector is transformed into a decision 
+representation through a weight mapping function, defined as: 
+ 
+zτ=σ(Wf⋅Ωτ+bf)⊙Γτ (3) 
+Where zτ denotes the fused decision feature vector, Wf denotes the feature mapping matrix, (Wf⋅Ωτ+bf) 
+denotes the bias term,σ(·) denotes the nonlinear activation function,⊙ denotes the element-wise product 
+operation, andΓτ denotes the tail-risk modulation vector, whose values are mapped from the aforementioned 
+tail-risk intensity function.In contrast to the conventional approach, which incorporates risk adjustment after 
+signal generation, the proposed approach introduces risk signals directly into the feature transformation 
+process, allowing for dynamic reweighting of multimodal representations.By integrating multimodal 
+information with risk-aware modulation, the architecture adjusts the feature contributions in high risk 
+situations, enabling the model to suppress noise amplification in extreme market fluctuations while preserving 
+informative signals. This design establishes a uniform computing foundation for subsequent decisions, 
+improving both return stability and robustness in volatile environments. 
+ 
+Figure 1 Architecture Diagram of the Multimodal Quantitative Trading Model 
+3.2 Multimodal Feature Encoding and Representation Methods 
+Multimodal feature coding is a key technology to translate heterogeneous information into a uniform 
+and learnable representation. Price Sequence Channel uses a sliding window mechanism to capture local 
+trends, short term fluctuations, and trading density, thus preserving temporal dependencies and cross-cycle 
+dynamics. The coding layer performs normalization, temporal alignment, and dimension compression, so 
+that the heterogeneous input is projected into a common latent space, while maintaining the modalityspecific properties and ensuring the consistency of the later interactions [8]. Specifically, the text 
+information is aligned with the time of release, and the asynchronous signal is adjusted in a controlled time 
+window to avoid misalignment.Furthermore, a risk-sensitive label is constructed by integrating return bias, 
+volatility intensity, and liquidity conditions at the end of the coding phase, and is embedded as an auxiliary 
+signal in the feature cache. These labels are not directly involved in prediction, but are used as a guide for 
+subsequent attention based weighting, which allows the model to differentiate high risk samples. The 
+overall coding process can be summarized as follows: 
+for t in time_index: 
+price_vec = encode_price(price_window[t]) 
+text_vec = encode_text(news_window[t]) 
+micro_vec = encode_micro(orderbook_window[t]) 
+ 
+price_vec = normalize(price_vec) 
+text_vec = align_time(text_vec, t) 
+micro_vec = compress_dim(micro_vec) 
+
+ 
+fused_input[t] = { 
+"price": price_vec, 
+"text": text_vec, 
+"micro": micro_vec, 
+"tail_tag": build_tail_tag(return_series[t], vol_series[t], liquidity_series[t]) 
+} 
+3.3 Design of the Cross-Modal Feature Fusion Mechanism 
+Cross-modal feature fusion is very important for the integration of heterogeneous information and the 
+construction of uniform decision-making. Price coding vector captures trend momentum and volatility, text 
+semantic vector represents event driven shocks and sentiment changes, and microstructural vector represents 
+liquidity contraction and order imbalance. Only when these modes are coupled in a shared decision space can 
+the model establish a coherent computational foundation for return forecasting and risk identification. [9] To 
+achieve this, a gated interaction mechanism is used to carry out dynamic modal reweighting while suppressing 
+redundant and conflicting information. Its core formulation is given in Equation (4): 
+ 
+uτ=ϕ(Apeτ
+(p)+Aneτ
+(n)+Ameτ
+(m))⊙Softmax(Bc[eτ
+(p);eτ
+(n);eτ
+(m)]) 
+(4) 
+Here,uτ represents the fused output vector, whileeτ
+(p),eτ
+(n), andeτ
+(m) denote the price, text, and microstructure 
+encoding results, respectively.Ap,An, andAm are the modal mapping matrices,Bc is the interaction weight 
+matrix,ϕ(·) is the nonlinear activation function, and⊙ denotes the element-wise weighted operation. The 
+Softmax-based weighting term generates adaptive contribution coefficients between modes, which allows the 
+model to focus on informative signals and mitigate inconsistent or noisy inputs.This mechanism achieves 
+feature level adaptive weighting instead of simple concatenation. The resulting fused representation forms a 
+decision-consistent feature space and provides a structured input for subsequent risk-aware attention 
+modulation, thus improving the model's ability to maintain stability under extreme volatility. 
+3.4 Tail Risk-Oriented Attention Control Mechanism 
+The Tail Risk-Oriented Attention Control Mechanism is designed to detect extreme volatility samples and make 
+dynamic adjustments in representation level. As shown in Figure 2, the relationship between the real time tail 
+risk score and the subsequent drawdown results suggests that the integration of risk constraints results in a 
+more structured separation of extreme loss regions, which improves the resolution of high risk states. The 
+attention weights are defined as: 
+ 
+ατ,j
+(r)=
+exp(ψ1hτ,j+ψ2 ωτ-+ψ3 lτ
+s)
+∑
+exp(ψ1hτ,v+ψ2 ωτ-+ψ3 lτ
+s)
+d
+v=1
+ (5) 
+whereατ,j
+(r) denotes the risk attention weight for theατ,j
+(r) th fusion feature channel at timeτ ,hτ,j denotes the 
+interaction response intensity of the corresponding channel, ωτ- denotes the downside tail perturbation 
+index, lτ
+s denotes the liquidity pressure index,ψ1、ψ2、ψ3 denotes the learnable modulation coefficient, andd 
+denotes the fusion feature dimension. 
+
+ 
+Figure 2 Comparison of Risk-Aware Adjustment Control 
+3.5 Trading Signal Generation and Risk Constraint Strategy 
+Trading Signal Generation Phase converts the Fusion Feature Representation and Risk Awareness Weights into 
+Executable Position Decisions. In this phase, the decision-making level takes into account the return signal and 
+the risk constraint, so as to avoid excessive exposure in extreme market conditions. After undergoing risksensitive feature modulation, the fused feature vector uτ * produces a net exposure score defined as: 
+ 
+χτ= tanh(q⊤uτ*+c0) -η1Rτtail-η2ςτ (6) 
+Whereχτ denotes the net exposure score at timeτ ,uτ* denotes the fused feature vector recalibrated by tail 
+attention,q denotes the decision projection parameter,c0 denotes the bias term,Rτtail denotes the tail risk 
+intensity,ςτ denotes the instantaneous impact cost metric, andη1 andη2 denote the risk and transaction 
+friction penalty coefficients. The position allocation module performs continuous position control based on the 
+score magnitude, and the position function is expressed as: 
+ 
+πτ=clip (
+χτ
+ξτ+ϵ0 ,-Πmax,Πmax) (7) 
+Whereπτ denotes the target position,ξτ denotes the conditional volatility measure,ϵ0 denotes the stability 
+constant,Πmax denotes the maximum allowable leverage limit, andclip(·) denotes the interval truncation 
+operator. The volatility normalization term is used to prevent over-leverage in high-variance periods, and the 
+truncation mechanism imposes strict position limits in extreme circumstances. [10] Through the integration of 
+return signal, tail risk intensity and transaction cost into a unified decision-making function, the proposed 
+strategy builds a dynamic allocation mechanism which is driven by information quality, risk level, and market 
+influence. The proposed approach improves the consistency of decision making, improves the robustness of 
+the regime shift, and provides a stable foundation for the assessment of return, drawdown, and generalization 
+within a coherent risk-return framework.. 
+4 Experimental Design and Results Analysis 
+4.1 Experimental Data and Parameter Settings 
+The experimental data is designed to support the joint modeling of price dynamics, textual information, and 
+structural patterns in futures markets. The data set is composed of large liquid futures contracts, such as stock 
+index and commodity futures, covering multiple market regimes over a continuous period to ensure that trends, 
+clustering and structural shocks are adequately represented. The text channel is used to aggregate and preprocess financial news and announcements, and then sentiment coding, while the micro channel reconstructs 
+
+high frequency state sequences on the basis of order book depth, bid-ask spread, trading direction, and order 
+imbalance. In this paper, a rolling-window training scheme is proposed, in which the model parameters are 
+trained on the historical data, and then evaluated on the later unseen periods. Furthermore, the transaction 
+related factors, such as market influence and execution costs, are integrated into the data representation by 
+means of microstructural characteristics, ensuring compliance with the actual trading conditions.Model 
+parameters are set to balance stable learning and risk-sensitive optimization. Key hyperparameters, such as 
+coding dimension, fusion layer width, attention head, batch size, learning rate, risk penalty factor, and location 
+limit, are determined by a validation based search with early stopping criteria to avoid overfitting. The 
+experimental setup ensures that the model is able to reflect both the prediction performance and the 
+robustness under various market conditions. 
+4.2 Multimodal Fusion and Return Performance Analysis 
+Backtesting was performed with a rolling time-window training scheme coupled with strict out-of-sample 
+sequential verification. The proposed Multimodal Fusion Framework, as shown in Figure 3, presents a stable 
+and consistent pattern of risk return throughout the assessment period. The equity curve shows a continuous 
+upward trend with limited breaks in volatility, and the drawdown profile is well under control. In quantitative 
+terms, the strategy achieves a Sharpe ratio of 2.25, keeping the maximum draw under 18 per cent, which 
+suggests a favourable balance between yield and risk exposure.The improved performance can be attributed 
+to two core mechanisms embedded in the framework. Firstly, multimodal feature integration allows the model 
+to construct a more informative and structured representation of the market by jointly coding trend dynamics, 
+sentiment signals, and micro-structural information. Such a uniform representation improves the signal to 
+noise ratio and enables the model to capture both the short term direction and the short term. Thus, the 
+proposed model can produce more reliable prediction signals than single-modality approaches, which often 
+suffer from incomplete information representation.Secondly, the integration of the tail risk-aware modulation 
+mechanism is crucial to the stabilization of the return trajectory. Through dynamic adjustment of feature 
+contributions based on real time risk intensity, the model is effective in containing excessive exposure in 
+periods of unusual volatility or liquidity contraction. Such an adaptive control mechanism reduces the 
+magnitude and duration of drawdowns, as shown in Figure 3, as shown in Figure 3. In contrast, conventional 
+multimodal fusion approaches that do not have explicit risk modulation tend to amplify the noise, resulting in 
+a sharper decline in equity.Generally speaking, the combination of multi-modality information and risksensitive feature reweighting can not only improve the prediction precision but also improve the robustness 
+of the transaction. The combination of these results in more stable NAV developments and greater resilience 
+to changes in the market regime, which shows that the proposed framework is effective in balancing 
+profitability and risk management within a single modeling framework. 
+ 
+Figure 3 Backtesting Performance and Risk Results 
+4.3 Tail Risk Control and Stability Analysis 
+
+Rolling backtests were conducted under highly volatile market conditions to systematically evaluate the 
+effectiveness of the proposed tail risk control mechanism across different temporal stages and structural 
+regimes. As illustrated in Figure 4, the risk-aware model demonstrates a substantial reduction in extreme loss 
+exposure compared with the baseline framework, confirming the effectiveness of integrating tail risk signals 
+into the feature representation and decision process. Specifically, the 95% Value-at-Risk (VaR) improves from 
+−6.84% to −4.12%, reflecting a clear contraction of the left-tail distribution and a reduced probability of 
+severe losses. Meanwhile, the maximum daily loss decreases from −4.96% to −2.71%, and the frequency of 
+extreme loss events, defined as returns exceeding the VaR threshold, declines significantly from 7.3 to 3.1, 
+indicating enhanced robustness against abnormal shocks. In addition, the volatility fluctuation metric is 
+reduced from 2.18% to 1.36% in range-bound market scenarios, suggesting improved stability in price 
+dynamics and reduced sensitivity to short-term disturbances. Although the average return experiences a 
+moderate decline from 3.02% to 2.11%, the overall return distribution becomes more consistent and less prone 
+to abrupt downside deviations. This is further supported by the improvement in tail skewness from −0.62 to 
+−0.21, which implies a reduction in asymmetric downside risk and a more balanced risk-return profile. Overall, 
+the results confirm that the proposed risk-conscious attention mechanism effectively enhances the model’s 
+capability to identify, quantify, and mitigate tail risk, thereby improving stability without significantly 
+compromising return performance. 
+ 
+Figure 4 Backtesting Comparison of Market Risk Metrics 
+4.4 Ablation Studies and Model Generalization Analysis 
+Ablative research is carried out to assess the contribution of each of the core modules. Key components are 
+gradually removed and tested for different asset classes, as shown in Table 1. When the text mode is excluded, 
+the average return of the model is reduced from 21.6% to 16.3%, and the information ratio is reduced from 
+1.84 to 1.29. The win ratio drops to 55.2 per cent when the microstructural mode is eliminated, which reflects 
+a reduced ability to capture short term trading opportunities and execution times.Further analysis indicates 
+that the removal of the tail risk attention mechanism results in a worsening of risk metrics. The average 
+maximum drawdown is increased from -2.71% to -3.98%, the return dispersion (P95 – P5) is increased from 
+6.12% to 8.47%, and the standard deviation is increased from 1.42% to 2.06%. Furthermore, the maximum 
+number of consecutive loss days increased from 3.2 to 5.7, which further confirms that tail risk control is 
+important in stabilizing the return trajectory. The whole model maintains a Sharpe ratio within the range of 
+1.42 to 1.58 across different contracts, while simplified variants show higher drawdown variability and longer 
+loss streaks. The results show that multimodal integration improves the robustness of different asset classes, 
+and the tail risk-aware attention mechanism is crucial to maintaining the same performance in different market 
+structures. 
+Table 1 Comparison of Ablation Experiment Results and Generalization Capabilities 
+
+Model 
+Configuration 
+Annualized 
+Return (%) 
+Information 
+Ratio 
+Win 
+Rate 
+(%) 
+Mean 
+Maximum 
+Drawdown 
+(%) 
+P95–P5 
+Percentile 
+Difference 
+(%) 
+Standard 
+Deviation of 
+Returns (%) 
+Maximum 
+Consecutive 
+Loss Days 
+Full Model 
+21.6 
+1.84 
+62.7 
+-2.71 
+6.12 
+1.42 
+3.2 
+Text-free 
+modality 
+16.3 
+1.29 
+58.4 
+-3.15 
+7.08 
+1.73 
+4.1 
+Microstructural 
+Modes 
+18.7 
+1.51 
+55.2 
+-3.42 
+7.56 
+1.88 
+4.6 
+Tail Risk 
+Attention 
+19.2 
+1.47 
+59.1 
+-3.98 
+8.47 
+2.06 
+5.7 
+5 Conclusions 
+In this paper, multimodal feature fusion and tail risk awareness are combined to optimize the yield generation 
+and risk control in quantitative futures trading. The model establishes a risk-sensitive decision-making 
+mechanism at the representation level by building a unified representation space that integrates price 
+dynamics, text sentiment, and microstructure information, which is characterized by an improvement in 
+Sharpe ratio and a reduction in drawdown, while maintaining stable performance in various market regimes. 
+The ablative and generalizability analyses further show that multimodal integration can improve the quality of 
+prediction, while the tail risk-aware attention mechanism is essential in restraining the extreme loss exposure 
+and stabilizing the return path. 
+In spite of these improvements, there are still some limitations. The high frequency data noise can influence 
+the performance stability, and the time delay of text information can make the response of the market less 
+responsive. Furthermore, the model may show limited adaptability in the context of a rapidly changing regime 
+with structural breaks.Further work will focus on the development of more robust temporal alignment 
+strategies and the integration of real-time semantic updating mechanisms. Furthermore, it is possible to 
+explore adaptive risk modulation in the context of regime-switching, which will allow the model to perform 
+consistently in more complex and dynamic markets. 
+References: 
+[1] Farimani S A, Jahan M V, Fard A M. An adaptive multimodal learning model for financial market price 
+prediction[J]. IEEE Access, 2024, 12: 121846-121863. 
+[2] Bentaleb K, Houad M B, Mestari M. An Adaptive Modality Fusion Network for Stock Trend Prediction[J]. IEEE 
+Access, 2025, 13: 213052-213066. 
+[3] Lee T W, Teisseyre P, Lee J. Effective exploitation of macroeconomic indicators for stock direction classification 
+using the multimodal fusion transformer[J]. IEEE Access, 2023, 11: 10275-10287. 
+[4] Badal D, Busalim A, Lee D. An Explainable Multimodal Framework for Real-Time Bitcoin 
+Forecasting[C]//Proceedings of the 2026 Conference on Human Centred Artificial Intelligence-Education and Practice. 
+2026: 100-106. 
+[5] Zheng, X., Chen, X., Gong, S., Griffin, X., & Slabaugh, G. (2025, September). Xfmamba: Cross-fusion mamba 
+for multi-view medical image classification. In International Conference on Medical Image Computing and ComputerAssisted Intervention (pp. 672-682). Cham: Springer Nature Switzerland. 
+[6] Shu M, Wang Z, Liang J. Early warning indicators for financial market anomalies: A multi-signal integration 
+approach[J]. Journal of Advanced Computing Systems, 2024, 4(9): 68-84. 
+[7] Battazza I F C, Rodrigues C M O, Oliveira J F L. A Framework for Market State Prediction with Ontological 
+Asset Selection: A Multimodal Approach[J]. Applied Sciences, 2025, 15(3): 1034. 
+[8] Odunaike A. Integrating real-time financial data streams to enhance dynamic risk modeling and portfolio decision 
+accuracy[J]. Int J Comput Appl Technol Res, 2025, 14(08): 1-16. 
+[9] Гао Ц, Юй Х. EXAMINING THE ROLE OF TEXT ANALYSIS IN SOYBEAN OIL FUTURES PRICE 
+PREDICTION[J]. Financial and credit activity problems of theory and practice, 2025, 5(64): 261-286. 
+[10] Friday I K, Pati S P, Mishra D, et al. A Meta-Adaptive Framework Combining Gated Attention Mechanisms and 
+Feature-Wise Modulation for Multi-Horizon Stock Price Movement Prediction[J]. IEEE Access, 2026, 14: 2658126603. 

@@ -25,7 +25,9 @@ _STOPWORDS = frozenset({
 
 
 def _tokenize(text: str) -> list[str]:
-    return [t for t in (tok.lower() for tok in _TOKEN_RE.findall(text))
+    """minusculas + sin tildes: 'ejecución' y 'ejecucion' son el mismo termino."""
+    from .trading_glossary import fold
+    return [t for t in (tok for tok in _TOKEN_RE.findall(fold(text)))
             if t not in _STOPWORDS and len(t) > 1]
 
 
@@ -41,7 +43,7 @@ def _record_text(record_type: str, payload: dict[str, Any]) -> tuple[str, str]:
     """(record_id, searchable text) for a ledger payload."""
     id_keys = ("lesson_id", "counterexample_id", "failure_id", "success_id",
                "episode_id", "step_id", "expectation_id", "repair_id",
-               "artifact_id")
+               "artifact_id", "consultation_id", "claim_id", "record_id")
     record_id = next((str(payload[k]) for k in id_keys if payload.get(k)), "")
     text_parts = [str(v) for v in payload.values()
                   if isinstance(v, (str, int, float)) and v is not None]
@@ -104,8 +106,24 @@ class LedgerIndex:
             records += [("counterexample_recorded", asdict(c)) for c in cxs]
         return cls(records, **kwargs)
 
-    def query(self, text: str, *, k: int = 5) -> list[ScoredRecord]:
-        q_tokens = _tokenize(text)
+    @classmethod
+    def from_store(cls, store, **kwargs) -> "LedgerIndex":
+        """Memoria propia completa de un DurableHippocampus: episodios, pasos, fallas, exitos, lecciones,
+        contraejemplos y consultas de literatura ya registradas."""
+        own = cls.from_memory(store.memory)
+        records = [(rtype, {"record_id": rid, "text": text}) for rid, rtype, text, _ in own._docs]
+        for cid, row in sorted(getattr(store, "literature", {}).items()):
+            records.append(("literature_consulted", {
+                "consultation_id": cid, "query": row.get("query", ""), "purpose": row.get("purpose", ""),
+                "titles": " ".join(str(it.get("title", "")) for it in row.get("items", []))}))
+        return cls(records, **kwargs)
+
+    def query(self, text: str, *, k: int = 5, expand: bool = False) -> list[ScoredRecord]:
+        """``expand=True`` agrega las traducciones es<->en del glosario de trading a la consulta."""
+        if expand:
+            from .trading_glossary import expand_query
+            text = " ".join([text] + expand_query(text))
+        q_tokens = list(dict.fromkeys(_tokenize(text)))
         if not q_tokens or not self._n:
             return []
         scored: list[ScoredRecord] = []

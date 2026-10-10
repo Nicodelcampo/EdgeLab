@@ -1,0 +1,225 @@
+{
+  "doc_id": 222,
+  "titulo": "Market Dynamics vs. Statistics: Limit Order Book Example",
+  "resumen_operativo": "El paper contrasta el enfoque estadístico del estudio del libro de órdenes (típico en la academia) con el enfoque dinámico (típico entre practitioners). A partir de datos ITCH de NASDAQ para AAPL, muestra que atributos como el midprice, el volume disbalance y el tiempo en el libro tienen propiedades muy distintas a las asumidas en modelos académicos. Propone una transición hacia el estudio de atributos con spikes (como la tasa de ejecución I=dv/dt), rechaza la normalización estadística que elimina información clave, y aboga por evaluar la calidad de modelos mediante dinámicas de P&L en lugar de predicción de precios.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "execution rate",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Tasa de ejecución I = dv/dt: número de acciones negociadas por unidad de tiempo. Es el concepto central de la teoría de dinámica de mercado de los autores, considerado el factor clave que define la dinámica del mercado de renta variable estadounidense y la driving force detrás de movimientos de precios.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "volatility"},
+        {"tipo": "MIDE", "objeto": "liquidity"},
+        {"tipo": "USA", "objeto": "price support"},
+        {"tipo": "USA", "objeto": "P&L dynamics"}
+      ],
+      "cita_textual": "the trading rate (1) is the most important characteristics affecting price dynamics"
+    },
+    {
+      "nombre": "market dynamics",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Enfoque de estudio del mercado centrado en variables dependientes del tiempo (precios, medias móviles, spreads, volatilidad) tal como lo usan los practitioners, en contraposición al enfoque estadístico que calcula características agregadas sobre escalas temporales fijas. Los autores argumentan que la dinámica de mercado contiene información en atributos con spikes y carece de estado estacionario.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "statistical equilibrium"},
+        {"tipo": "REQUIERE", "objeto": "execution rate"},
+        {"tipo": "APLICA_A", "objeto": "limit order book"}
+      ],
+      "cita_textual": "there is no any \"stationary case\" on the market and typical market dynamics is a \"fast excitation and then slow relaxation\" type of behavior with a wide distribution of excitation frequencies and relaxation times"
+    },
+    {
+      "nombre": "limit order book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Registro de órdenes de compra y venta pendientes en un exchange. Los autores cuestionan su utilidad informativa real desde aproximadamente 2008-2010, argumentando que los mejores niveles de precio reportados son demasiado conservadores y que la información real del exchange no difiere mucho de la de un dark pool, con más del 90% de las órdenes canceladas.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market microstructure"},
+        {"tipo": "CONTRADICE_A", "objeto": "bid-ask spread"},
+        {"tipo": "USA", "objeto": "order book depth"}
+      ],
+      "cita_textual": "since at least 2010 available from exchange order book best price levels are way too conservative, and actual \"exchange\" info is not that much different from a \"dark pool\" info"
+    },
+    {
+      "nombre": "midprice",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Precio medio entre el mejor bid y el mejor offer del libro de órdenes: Pm = (Psell + Pbuy)/2. Los autores demuestran empíricamente que se vuelve irrelevante durante los momentos de alta tasa de ejecución I0, que son precisamente los de mayor volatilidad de precios, porque el trading ocurre típicamente en un solo lado del libro.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "bid-ask spread"},
+        {"tipo": "CONTRADICE_A", "objeto": "price formation"},
+        {"tipo": "USA", "objeto": "limit order book"}
+      ],
+      "cita_textual": "This make the midprice (2) irrelevant during most interesting moments of high I0 (correspond to the moments of high price volatility)"
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre el mejor precio de compra (bid) y de venta (offer/ask) en el libro de órdenes. Los autores argumentan que el spread reportado es casi inútil porque los precios reales de ejecución son significativamente mejores, ya que órdenes ligeramente dentro del spread se ejecutan casi inmediatamente, haciendo que el spread y el midprice sean irrelevantes.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "MIDE", "objeto": "liquidity"},
+        {"tipo": "SE_OPONE_A", "objeto": "market dynamics"}
+      ],
+      "cita_textual": "the order book spread and the midprice (2) are almost useless"
+    },
+    {
+      "nombre": "volume disbalance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Indicador de desbalance relativo de volumen en los mejores niveles del libro: η = (Vbest_sell − Vbest_buy)/(Vbest_sell + Vbest_buy). Los autores muestran que tiene una normalización defectuosa porque elimina los spikes (la información más relevante), y su interpretación es ambivalente: puede funcionar tanto como price support como liquidity attractor.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "order book depth"},
+        {"tipo": "USA", "objeto": "price support"},
+        {"tipo": "USA", "objeto": "liquidity attractor"},
+        {"tipo": "CONTRADICE_A", "objeto": "price formation"}
+      ],
+      "cita_textual": "widely used in academic study best price level volume disbalance indicator (3) has a bad normalizing (spikes are the most informative features) and volume disbalance should be interpreted ambivalently: both as \"price support\" and as \"liquidity attractor\""
+    },
+    {
+      "nombre": "time in order book",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Tiempo promedio ponderado por tamaño que una orden pasa en el mejor nivel de precio del libro, calculado como diferencia entre tiempo actual y tiempo de originación de la orden. Los autores lo consideran uno de los pocos buenos indicadores extraíbles del libro de órdenes, más difícil de manipular que el volumen y con naturaleza de rate-like attribute.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "volume disbalance"},
+        {"tipo": "MIDE", "objeto": "order flow"},
+        {"tipo": "PARTE_DE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "the time spent in order book is one of a few good indicators obtained out of the order book data. The reasons may be: difficulty to calculate (the order book is required), harder to manipulate (time is not possible to \"fix\", but the volume is easy) and being rate–like attribute"
+    },
+    {
+      "nombre": "liquidity attractor",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno por el cual un gran volumen en el mejor nivel del libro de órdenes atrae ejecuciones inmediatas en lugar de servir como soporte de precio: los participantes ven la liquidez disponible como una oportunidad y la toman al instante. Es el efecto opuesto al price support y hace ambivalente la interpretación del volumen en el libro.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "price support"},
+        {"tipo": "CAUSA", "objeto": "order flow"},
+        {"tipo": "PARTE_DE", "objeto": "market microstructure"}
+      ],
+      "cita_textual": "market participants see large liquidity on the best price level, and, if this price is acceptable to them, take it immediately, considering best level liquidity as an opportunity. This \"liquidity attractor\" effect is opposite to the \"price support\""
+    },
+    {
+      "nombre": "price support",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Interpretación tradicional del volumen en el libro de órdenes como soporte de precio: el lado con mayor volumen en el mejor nivel proporciona resistencia al movimiento de precio en esa dirección, requiriendo mayor volumen negociado para atravesarlo. Los autores muestran que esta interpretación es ambivalente y no siempre se cumple.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "liquidity attractor"},
+        {"tipo": "USA", "objeto": "volume disbalance"},
+        {"tipo": "PARTE_DE", "objeto": "market impact"}
+      ],
+      "cita_textual": "the side with the biggest best level volume providing \"price support\"; price move in this direction requires a bigger volume traded"
+    },
+    {
+      "nombre": "P&L dynamics",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Propuesta de los autores para evaluar la calidad de modelos de trading mediante la dinámica de pérdidas y ganancias (P&L) en lugar de la predicción de precios. El P&L separa el movimiento de precio de las acciones del trader (Enter Long, Exit Long, Enter Short, Exit Short), siendo the ultimate criteria de cualquier estrategia.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "price formation"},
+        {"tipo": "USA", "objeto": "execution rate"},
+        {"tipo": "APLICA_A", "objeto": "market dynamics"}
+      ],
+      "cita_textual": "the P&L, that is \"the ultimate criteria\" of any trading strategy quality"
+    },
+    {
+      "nombre": "non-stationarity",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Propiedad fundamental del mercado según los autores: no existe ningún estado estacionario. El comportamiento típico es de fast excitation and then slow relaxation con una amplia distribución de frecuencias de excitación y tiempos de relajación. Las variables observables son severamente no estacionarias.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "statistical equilibrium"},
+        {"tipo": "CAUSA", "objeto": "volatility"},
+        {"tipo": "PARTE_DE", "objeto": "market dynamics"}
+      ],
+      "cita_textual": "most of observable variables are severely non–stationary and represent a combination of \"fast excitation and then slow relaxation\" type of behavior with a wide distribution of excitation frequencies and relaxation times"
+    },
+    {
+      "nombre": "hidden orders",
+      "tipo": "dato",
+      "definicion_en_contexto": "Órdenes no mostrables (non-displayable) de NASDAQ que no se reportan en el libro de órdenes pero sí en ejecución. Su ID era accesible antes del 6 de octubre de 2010, pero posteriormente NASDAQ dejó de reportarlo, y desde el 14 de julio de 2014 tampoco reporta el tipo de matching para estas órdenes, limitando el análisis del libro.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "APLICA_A", "objeto": "market microstructure"}
+      ],
+      "cita_textual": "NASDAQ exchange also has non–displayable (previously called \"hidden\") orders, that cost more to place and are not reported in order book"
+    },
+    {
+      "nombre": "order flow",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Flujo de órdenes que llegan al mercado. Los autores distinguen entre liquidity offer (órdenes entrantes al libro) y liquidity consumption (ejecuciones y cancelaciones), y muestran empíricamente que ambos flujos tienen timing casi idéntico en la escala de milisegundos, haciendo que la tasa de ejecución I sea un proxy suficiente para ambos.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "execution rate"},
+        {"tipo": "PARTE_DE", "objeto": "market microstructure"},
+        {"tipo": "APLICA_A", "objeto": "limit order book"}
+      ],
+      "cita_textual": "\"liquidity offer\" and \"liquidity consumption\" flows have almost identical timing (check the position of the spikes in flows plotted as time–dependent charts, do not use any statistics)"
+    },
+    {
+      "nombre": "liquidity deficit",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Teoría alternativa a Supply-Demand propuesta por los autores, donde oferta y demanda se consideran siempre matched pero la tasa a la que se matchean (I) varía. Un evento de liquidity deficit corresponde a momentos de alta I donde se deben abrir posiciones; el liquidity excess corresponde a momentos de baja I donde se deben cerrar.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "execution rate"},
+        {"tipo": "SE_OPONE_A", "objeto": "price formation"},
+        {"tipo": "APLICA_A", "objeto": "P&L dynamics"}
+      ],
+      "cita_textual": "our alternative to Supply–Demand theory, the Liquidity Deficit theory[10], where supply and demand are considered as always matched, but the rate of their matching I varies"
+    },
+    {
+      "nombre": "statistical equilibrium",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Supuesto implícito en muchos estudios académicos del libro de órdenes de que existe un estado estacionario o caso cuasi-estacionario sobre el cual calcular características estadísticas. Los autores lo consideran un error metodológico fundamental porque el mercado nunca tiene estado estacionario y la información relevante está en los spikes no estacionarios.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "non-stationarity"},
+        {"tipo": "CONTRADICE_A", "objeto": "market dynamics"},
+        {"tipo": "USA", "objeto": "limit order book"}
+      ],
+      "cita_textual": "there is no any stationary state for these variables; the data supported fact is that most of observable variables are severely non–stationary"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El midprice se vuelve irrelevante durante los momentos de alta tasa de ejecución I0, que son los de mayor volatilidad de precios, porque el trading ocurre típicamente en un solo lado del libro y el spread puede crecer o colapsar al mínimo.",
+      "mercado": "AAPL (NASDAQ)",
+      "periodo": "20 de septiembre de 2012, alrededor de las 10am",
+      "magnitud": "I0 alto correlacionado con trading unilateral del libro; spread colapsa a valor mínimo cuando se alcanza el precio de maximal I",
+      "condiciones": "Datos ITCH de NASDAQ; cálculo de I0 en base Shifted Legendre con 7 elementos y τ=128s",
+      "robustez": "media",
+      "cita_textual": "during the periods of high value of I0 the trading typically occurs on one side of the book and the spread can either growths or shrink to minimal value when a \"maximal I\" price is reached"
+    },
+    {
+      "afirmacion": "Los spikes en el volumen en los mejores niveles de precio del libro de órdenes correlacionan con valores altos de la tasa de ejecución I, y el volumen en el mejor nivel puede actuar ambivalentemente como price support o como liquidity attractor.",
+      "mercado": "AAPL (NASDAQ)",
+      "periodo": "20 de septiembre de 2012, entre 9.7h y 10.3h (decimal)",
+      "magnitud": "Intervalo 9.95-10.0 muestra large best bid volume actuando como price support y liquidity attractor simultáneamente según condiciones",
+      "condiciones": "Datos ITCH de NASDAQ; observación del volumen absoluto en best bid/ask levels (Vbestbuy, Vbestsell)",
+      "robustez": "media",
+      "cita_textual": "Large order book best price level volume can cause both: \"price support\"(bounce back) and \"liquidity attractor\"(trend following)"
+    },
+    {
+      "afirmacion": "Más del 90% de las órdenes que estuvieron en el mejor nivel de precio en algún momento terminan siendo canceladas, lo que implica que el libro contiene mayoritariamente órdenes antiguas con poco efecto sobre la tasa de ejecución.",
+      "mercado": "AAPL y otras acciones NASDAQ",
+      "periodo": "Referencias a estudios de 2010-2015; observación general post-2010",
+      "magnitud": "Más del 90% de órdenes en best price level canceladas; el libro contiene mostly old orders",
+      "condiciones": "NASDAQ ITCH data; estudios previos de los autores [9] y Hautsch & Huang [16]",
+      "robustez": "alta",
+      "cita_textual": "more than 90% of orders being at best price level at some time end up being cancelled[9, 16]"
+    },
+    {
+      "afirmacion": "Órdenes de compra con precio min(Psell, Plast+δ) y de venta con precio max(Pbuy, Plast−δ) para acciones de alta liquidez se ejecutan casi inmediatamente, siendo δ de pocos centavos, lo que demuestra que los precios reales de ejecución son significativamente mejores que los reportados en el libro.",
+      "mercado": "AAPL y otras acciones de alta liquidez (NASDAQ)",
+      "periodo": "Observación general post-2008-2010",
+      "magnitud": "δ ≈ pocos centavos dependiendo de liquidez y spread; ejecución casi inmediata de órdenes dentro del spread reportado",
+      "condiciones": "Stocks de alta liquidez en NASDAQ; observación empírica de los autores como traders",
+      "robustez": "media",
+      "cita_textual": "for high liquidity stocks, buy order with price min(Psell, Plast+δ) and sell orders with price max(Pbuy, Plast−δ) get almost immediately executed. The value of δ is about few cents"
+    },
+    {
+      "afirmacion": "Los flujos de liquidity offer (órdenes entrantes al libro) y liquidity consumption (ejecuciones) tienen timing casi idéntico, con diferencias en la posición de los spikes que no exceden la escala de milisegundos, haciendo que la tasa de ejecución I sea un proxy suficiente para ambos.",
+      "mercado": "AAPL (NASDAQ)",
+      "periodo": "Septiembre 2012 (datos ITCH S092012-v41)",
+      "magnitud": "Timing casi idéntico de spikes; diferencias en escala de milisegundos; time resolution de ITCH: 1 nanosegundo",
+      "condiciones": "NASDAQ ITCH data; código similar al del Apéndice A; time-dependent charts sin estadística",
+      "robustez": "media",
+      "cita_textual": "\"liquidity offer\" and \"liquidity consumption\" flows have almost identical timing (check the position of the spikes in flows plotted as time–dependent charts, do not use any statistics). This gives possible prediction time, obtained from flows–disbalance, not exceeding milliseconds scale"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "El paper analiza datos intradía de NASDAQ ITCH con resolución de nanosegundos, centrándose en la dinámica de alta frecuencia del libro de órdenes; todos los hallazgos, métricas (I=dv/dt, tiempo en el libro, spikes de volumen) y el código provisto están diseñados para aplicación intradía/HFT."
+  }
+}

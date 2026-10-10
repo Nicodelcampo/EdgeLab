@@ -1,0 +1,220 @@
+{
+  "doc_id": 30,
+  "titulo": "A volume-weighted-average-price (VWAP) method for estimating beta in the context of reference-day risk",
+  "resumen_operativo": "El paper documenta que la elección del día de referencia para calcular retornos mensuales genera variaciones grandes en las estimaciones de beta (reference-day risk) en acciones del JSE ALSI, y propone sustituir el precio de cierre mensual por un VWAP ex-ante de 60 días para estimar beta. El método VWAP no reduce de forma generalizada la dispersión de beta, pero sí mejora la robustez en acciones con rangos extremos de beta (recursos naturales). Un análisis de series de tiempo por quintiles de beta VWAP muestra que las acciones con beta más bajo superaron a las de beta más alto, lo cual contradice la relación riesgo-retorno postulada por el CAPM.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "beta",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Parámetro de riesgo sistemático del CAPM, definido como la covarianza del retorno del activo con el retorno del mercado dividido la varianza del retorno del mercado; describe la sensibilidad de los retornos en exceso del activo a los del mercado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "systematic risk"},
+        {"tipo": "USA", "objeto": "CAPM"}
+      ],
+      "cita_textual": "βi is the \"beta\" (a term originally coined by Sharpe (1964)) and represents the systematic risk component of an asset, as specified by the CAPM"
+    },
+    {
+      "nombre": "CAPM",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo lineal que relaciona el retorno esperado de un activo con su riesgo sistemático (beta) vía el retorno esperado del mercado y la tasa libre de riesgo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "beta"}
+      ],
+      "cita_textual": "The CAPM describes a simple linear model for estimating the expected return on an asset in terms of its systematic risk"
+    },
+    {
+      "nombre": "reference-day risk",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de estimación que surge porque la elección del día inicial (dentro del mes) usado para construir la serie de retornos mensuales genera variaciones grandes en los retornos, varianzas y betas estimados de una acción.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "beta instability"},
+        {"tipo": "MITIGA", "objeto": "VWAP beta"},
+        {"tipo": "PARTE_DE", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "Acker and Duck (2007) introduced the concept of \"reference-day risk\" to refer to large sampling variations and estimation risks that can be detected in share returns, variances and share betas, and which is simply attributable to the choice of an initial reference day"
+    },
+    {
+      "nombre": "VWAP beta",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método propio del paper que sustituye el precio de cierre mensual por un VWAP ex-ante de 60 días al calcular retornos mensuales, antes de correr la regresión convencional de beta.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "VWAP"},
+        {"tipo": "MITIGA", "objeto": "reference-day risk"},
+        {"tipo": "SE_OPONE_A", "objeto": "closing price beta"},
+        {"tipo": "MEJORA_A", "objeto": "standard beta"}
+      ],
+      "cita_textual": "the conventional method for estimating beta was maintained, however monthly closing prices were substituted with the 60-day ex-ante VWAP"
+    },
+    {
+      "nombre": "VWAP",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Precio promedio ponderado por volumen de todas las transacciones intradía durante un período; se plantea como estimador más eficiente del precio de equilibrio que el cierre diario.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "closing price"}
+      ],
+      "cita_textual": "Ting (2005; 2006) who suggests that a VWAP is closer to the equilibrium price of a share than the daily closing price"
+    },
+    {
+      "nombre": "beta instability",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Tendencia de los coeficientes beta a moverse aleatoriamente en el tiempo en lugar de permanecer estables, contradiciendo el supuesto del modelo OLS.",
+      "relaciones": [],
+      "cita_textual": "the findings suggest that beta coefficients move randomly through time rather than remain stable, as the OLS regression model presumes"
+    },
+    {
+      "nombre": "Blume regression method",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método que estima betas \"predichas\" regresionando los valores de beta de un período sobre los del período anterior, ajustando hacia una media de 1.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "reference-day risk"},
+        {"tipo": "SE_OPONE_A", "objeto": "Vasicek Bayesian beta"}
+      ],
+      "cita_textual": "Blume then estimated the betas for the resultant portfolios across two, non-overlapping consecutive periods"
+    },
+    {
+      "nombre": "Dimson thin trading adjustment",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método de coeficientes agregados (AC) que corrige el sesgo a la baja en la covarianza de acciones poco transadas, regresionando retornos sobre retornos de mercado rezagados, sincrónicos y adelantados.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "reference-day risk"}
+      ],
+      "cita_textual": "Dimson's (1979) AC method asserts that the true systematic risk parameter beta (𝛽̂) can be obtained from price data which is subject to infrequent trading by regressing observed share returns on lagged, synchronous and leading market returns"
+    },
+    {
+      "nombre": "Vasicek Bayesian beta",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Estimador bayesiano de beta que combina información previa a la muestra con la información muestral para minimizar la pérdida de precisión por mala estimación.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "reference-day risk"}
+      ],
+      "cita_textual": "Bayesian estimates are preferred to the conventional beta estimates as the Bayesian procedure minimises the loss of accuracy arising from misestimation"
+    },
+    {
+      "nombre": "t-distribution beta adjustment",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método que reemplaza la distribución normal estándar por la t de Student, de colas más pesadas, para incorporar mejor el efecto de outliers al ajustar beta ante reference-day risk.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Blume regression method"},
+        {"tipo": "MITIGA", "objeto": "reference-day risk"}
+      ],
+      "cita_textual": "the t-distribution method for adjusting beta is better able to incorporate the influence of outliers in estimating beta"
+    },
+    {
+      "nombre": "bootstrapped beta",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método no paramétrico de bootstrap que organiza los datos según cada uno de los 20 días de trading del mes para simular una distribución de beta independiente del día de referencia.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "reference-day risk"}
+      ],
+      "cita_textual": "Baker et al (2016) then introduce the prospect of using a nonparametric bootstrap method to determine beta estimates which are independent of the reference-day"
+    },
+    {
+      "nombre": "survivorship bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo de excluir empresas que dejaron de existir; el paper lo evita incluyendo cualquier firma que tuvo suficiente capitalización de mercado en algún momento del período, sin importar su estado final.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "sample selection"}
+      ],
+      "cita_textual": "the qualification of companies to the population applied to any firm which at any stage between 1985 and 2016 had sufficient market capitalisation, irrespective of their eventual state. This eliminated the potential for survivorship bias"
+    },
+    {
+      "nombre": "graphical time-series analysis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método de portafolios en quintiles, ordenados por magnitud de beta, cuyo desempeño simulado se compara visualmente vía una línea de precio relativo para testear si beta alto predice retornos altos según el CAPM.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "VWAP beta"},
+        {"tipo": "APLICA_A", "objeto": "CAPM"}
+      ],
+      "cita_textual": "each share in the sample was ranked according to the magnitude of the 60-day ex-ante VWAP betas and placed into virtual portfolios in the form of quintiles"
+    },
+    {
+      "nombre": "low-beta anomaly",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Hallazgo empírico de que acciones con beta más bajo generan retornos más altos que acciones con beta alto, invirtiendo la relación riesgo-retorno positiva postulada por el CAPM.",
+      "relaciones": [
+        {"tipo": "CONTRADICE_A", "objeto": "CAPM"},
+        {"tipo": "SE_OPONE_A", "objeto": "beta"}
+      ],
+      "cita_textual": "shares with a lower VWAP beta tend to outperform shares with high VWAP betas"
+    },
+    {
+      "nombre": "thin trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Condición de negociación infrecuente de una acción que produce un sesgo a la baja en la covarianza estimada y por ende en beta, motivando el ajuste de Dimson.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "beta instability"}
+      ],
+      "cita_textual": "Fisher (1966) suggests that a major source of bias in estimating beta emanates from the tendency of shares which are subject to thin trading having substantially underestimated covariances"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "En una muestra de acciones del S&P500, la elección del día de referencia puede hacer que la beta estimada de una acción caiga o suba drásticamente, y aproximadamente tres cuartas partes de las betas convencionales pueden clasificarse como positivas o negativas según el día de referencia elegido.",
+      "mercado": "US equities (S&P500, muestra de 459 empresas)",
+      "periodo": "15 años, tres subperíodos de 5 años (Acker & Duck 2007, citado)",
+      "magnitud": "beta cae 0.931 y sube 3.454 según el día de referencia; ~75% de betas cambian de signo según el día",
+      "condiciones": "estudio citado de la literatura, no propio de este paper; retornos mensuales convencionales, sin costos",
+      "robustez": "media",
+      "cita_textual": "the authors present evidence of a share's beta falling by 0.931 and rising by 3.454 depending on the choice of reference-day"
+    },
+    {
+      "afirmacion": "En la muestra de 136 acciones del JSE ALSI, la beta convencional varía notablemente según el día de referencia elegido dentro de 20 días de trading, siendo el efecto más pronunciado en acciones de recursos naturales; 15 de 136 acciones pueden clasificarse como beta positiva o negativa según el día elegido.",
+      "mercado": "JSE ALSI (South Africa equities)",
+      "periodo": "3 enero 2012 a 31 enero 2017",
+      "magnitud": "15/136 empresas cambian de signo de beta; rangos de beta hasta 2.890 (Lonmin) vs. 0.277 (Remgro) entre mínimo y máximo estimado en 20 días de referencia; 9 de las 10 acciones con mayor rango de beta son de recursos naturales",
+      "condiciones": "in-sample, sin costos de transacción, muestra local (JSE), 20 estimaciones de beta por acción usando metodología convencional (regresión OLS mensual)",
+      "robustez": "media",
+      "cita_textual": "15 out of the 136 sampled companies also exhibited conventional betas which could be classified as either positive or negative by an appropriate choice of the reference day"
+    },
+    {
+      "afirmacion": "Un ANOVA sobre las betas estimadas a través de los 20 días de trading no encuentra evidencia estadísticamente significativa de un efecto de día de referencia, pero una prueba t de dos colas confirma que las betas mínima y máxima por acción son significativamente distintas.",
+      "mercado": "JSE ALSI",
+      "periodo": "3 enero 2012 a 31 enero 2017",
+      "magnitud": "ANOVA p-valor = 0.501 (no significativo); t-test comparando beta mínima vs máxima por acción p < 0.0001 (significativo al 5%)",
+      "condiciones": "in-sample, sin ajuste por costos ni validación OOS en esta parte del análisis",
+      "robustez": "media",
+      "cita_textual": "the ANOVA reveals insufficient evidence to verify a definitive trading day effect of beta, when the reference day is varied (p-value = 0.501)"
+    },
+    {
+      "afirmacion": "Una prueba t pareada al 5% de significancia confirma que las betas VWAP y las betas estándar son estadísticamente diferentes entre sí, aunque estimadas con la misma metodología de regresión sobre el mismo período muestral.",
+      "mercado": "JSE ALSI",
+      "periodo": "30 marzo 2012 a 31 marzo 2017",
+      "magnitud": "paired t-test significativo al nivel 5%",
+      "condiciones": "in-sample, sin costos de transacción",
+      "robustez": "media",
+      "cita_textual": "A paired t-test at the 5% level of significance confirms that the two measures are statistically different"
+    },
+    {
+      "afirmacion": "Contrario a lo esperado, las betas estimadas con el 20° día de trading del mes produjeron estimaciones más robustas (menor varianza) que tanto la beta estándar como la beta VWAP; el método VWAP resulta ser menos robusto que el método convencional para el conjunto general de la muestra.",
+      "mercado": "JSE ALSI",
+      "periodo": "3 enero 2012 a 31 enero 2017",
+      "magnitud": "comparación de varianzas de distribuciones de beta mediante pruebas Kolmogorov-Smirnov, Cramer-Von Mises, Anderson-Darling y Levene (sin reportar valores numéricos exactos)",
+      "condiciones": "in-sample, análisis agregado sobre 136 acciones",
+      "robustez": "baja",
+      "cita_textual": "Counter-intuitively, the VWAP method produces a less robust set of share betas for the sample"
+    },
+    {
+      "afirmacion": "Para las acciones con mayor dispersión de beta convencional (KIO y RBP), las betas VWAP mostraron distribuciones significativamente más ajustadas alrededor de la media que las betas estándar, evaluadas con datos out-of-sample de 10 años adicionales; para la acción con mayor volatilidad general (LON) esto no se cumplió.",
+      "mercado": "JSE ALSI (Kumba Iron Ore, Royal Bafokeng Platinum, Lonmin)",
+      "periodo": "out-of-sample: 1 enero 2002 a 31 enero 2012",
+      "magnitud": "KIO p = 0.004; RBP p = 0.002 (distribuciones estadísticamente distintas y más ajustadas para VWAP); LON sin diferencia significativa",
+      "condiciones": "out-of-sample real (10 años, no solapado con la muestra principal), sin costos de transacción; efecto solo válido para acciones con reference-day risk extremo",
+      "robustez": "media",
+      "cita_textual": "KIO and RBP had statistically different distributions (p = 0.004 and p = 0.002, respectively) for which the VWAP estimates were significantly tighter around the mean"
+    },
+    {
+      "afirmacion": "En un análisis de series de tiempo por quintiles de beta VWAP con rebalanceo trimestral, el quintil de menor beta VWAP (quintil 5) superó consistentemente en retorno al quintil de mayor beta VWAP (quintil 1) desde diciembre de 1999, invirtiendo la relación riesgo-retorno del CAPM.",
+      "mercado": "JSE ALSI",
+      "periodo": "1985-2017 (motor de estilo Ward & Muller), simulación sobre muestra de acciones ALSI",
+      "magnitud": "orden de retorno anualizado simulado de mayor a menor: quintil 4, quintil 3, quintil 5, quintil 2, quintil 1 (el quintil 1 de mayor beta fue el peor)",
+      "condiciones": "portafolios rebalanceados trimestralmente, sin especificar costos de transacción explícitamente; consistente con hallazgos previos de Ward & Muller (2012)",
+      "robustez": "media",
+      "cita_textual": "the quintile with the lowest VWAP betas (quintile 5) consistently outperformed quintile 1, which contained the highest ranked VWAP betas"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper trabaja con retornos mensuales y betas de acciones sudafricanas de baja frecuencia (no order flow ni microestructura intradía), pero la idea de sustituir precios de referencia puntuales por un VWAP para reducir ruido de muestreo podría inspirar métricas de referencia de precio más robustas (p.ej. anclas VWAP) en el análisis de zonas ES, aunque no es directamente transferible a estrategias intradía."
+  }
+}

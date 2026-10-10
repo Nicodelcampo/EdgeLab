@@ -1,0 +1,4736 @@
+Electronic copy available at: http://ssrn.com/abstract=1958546
+1 
+ 
+Pairs Trading on International ETFs  
+ 
+ 
+ 
+Panagiotis Schizas*  Dimitrios D. Thomakos    and Tao Wang 
+ 
+11/14/2011 
+ 
+Abstract 
+ 
+Pairs trading is a popular, market-neutral trading strategy among finance practitioners 
+that has been recently evaluated in a number of papers. Since it is a successful trading 
+strategy, allowing for multiple implementations of solid underlying ideas, it is interesting 
+to further explore the underlying factors for its success. In this paper we do so using a 
+large family of international exchange traded funds (ETFs), a recent instrument of choice 
+among professionals. Using ETFs from across the world we examine the performance of 
+the pairs trading strategy and the various potential sources of its profitability. Our results 
+show that pair trading is a profitable strategy in the context of international ETFs. There 
+is a clear difference between the long and short component of the pairs, maybe in 
+contrast to the common perception on the profitability of long trades. Finally, we explore 
+the sources of the strategy’s total profitability and find that it can be explained by a 
+number of fundamentals, the most important being the earnings per share, the dividend 
+yield and the unemployment rate.  
+ 
+ 
+ 
+ 
+Keywords: convergence/divergence of prices, exchange traded funds, ETF, Fama-French, international 
+asset pricing, long and short strategies, market neutral strategies, mean reversion.  
+ 
+                                                 
+* Corresponding author. Department of Economics, University of Peloponnese, 22 100, Greece. Email: 
+pschizas@uop.gr, panagiotis.schizas@gmail.com.  
+Corresponding author. Department of Economics, University of Peloponnese, 22 100, Greece. Email: 
+thomakos@uop.gr, thomakos@gmail.com. Tel.: +30-2710-230128, Fax: +30-2710-230139. 
+Corresponding author. Department of Economics, Queens College City University of Nerw York, US. 
+Email:twang2000@gmail.com. Tel.: +1(718) 997-5445 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+Electronic copy available at: http://ssrn.com/abstract=1958546
+2 
+ 
+1. Introduction 
+Investors and finance professionals are always on the lookout for successful trading 
+strategies that account for different aspects and assumptions about the markets. A family 
+of strategies, that are relatively aggressive, is the one that uses assumptions and models 
+about market timing: the ability to provide accurate signals of when to enter/exit the 
+market and which way (long or short) to invest. 
+ 
+However, market timing can also be casted in the context of market neutral strategies, 
+where both a long and a short position are taken based on a timing signal. An example of 
+such a strategy, much used in the industry but having received little attention in 
+academia, is pairs trading. This particular strategy uses a number of underlying 
+assumptions about the path that asset prices take; the most important ones are those of 
+co-movement and mean reversion: prices of selected assets tend to move together and 
+when they diverge this presents an investment opportunity that is exploited by taking a 
+market neutral position. In a recent paper Gatev et al. (2006) report that the origins of 
+pairs trading probably lies in the mid 1980s when Nunzio Tartaglia developed a high-end 
+trading platform to implement it. In the early 1990s pairs trading strategy flourished as it 
+was used by many individual and institutional investors, mostly hedge funds, in their 
+attempt to reduce market exposure1. The pairs trading strategy exploits this with a 
+number 
+of 
+statistical 
+tools, 
+such 
+as 
+the 
+concept 
+of 
+distance 
+and 
+of 
+convergence/divergence of prices based on this distance. In this paper we examine in 
+detail the performance of pairs trading using a large family of international exchange 
+traded funds (ETFs), a liquid instrument of choice among professionals. Besides making 
+a few methodological innovations in the application of the strategy we examine in 
+sufficient detail the probable underlying causes of the profitability of the strategy and its 
+variations.  
+ 
+Gatev, Goetzmann and Rouwenhorst (2006, hereafter GGR) and Engleberg, Gao and 
+Jagannathan (2008, hereafter EGJ) are the most authoritative recent studies and replicate 
+the “original” pairs trading methodology, as discussed above. We have certain 
+methodological deviations from their approach, which we describe. The EGJ paper 
+works some of the implications of pairs trading profitability, especially in examining the 
+factors that may be responsible for the success of the method. These two papers provide 
+a rather thorough treatment of pairs trading for the US securities markets and this 
+                                                 
+1 According to Thomson Financial database (2010), pair trading covers around 27% of the total hedge 
+funds strategies. 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+3 
+ 
+distinguishes their works from ours where we concentrate, for the first time in this 
+literature, on international ETFs2.  
+ 
+There is a limited number of, neutral and non-neutral, strategies that use pairs and 
+distances for formulating combinations of long/short positions.  Jurek and Yang (2007) 
+use the “Siamese twin formula” where a trading rule is formulated between two assets 
+with common fundamentals and proposes a long position for an undervalued security 
+and a short position for overvalued one. Here the fundamentals of a security take the 
+place of price divergence. Nath (2003) applied an approach based on the (static) 
+empirical distribution of returns. Now a record of the distance of pairs of different 
+securities is being kept and a trade opens a trade when the difference exceeds the 15% 
+percentile. At the same time positions that were already open are liquidated when the 
+distance falls below the 5% percentile. There is also the literature that uses results on 
+mean reversions but the strategies on this literature do not necessarily use pairs or are 
+market neutral to be directly comparable to pairs trading.  
+ 
+While we cannot account for all the variations of this strategy that have been applied by 
+practitioners, there have been two recent studies that examine some of the mechanics of 
+implementation of pairs trading in some detail. By focusing on the way that one enters 
+into a trade, it appears that is more important to have a solid understanding of why and 
+when to exit a trade. Since pairs trading requires to monitor convergence/divergence of 
+prices one can have the situation that one stays into a trade “too long”. According to 
+GGR (2006) no convergence means to leave the pairs to trade within the next 6 months 
+and if they do not converge within this horizon to liquidate the trade. An alternative, and 
+simultaneously shorter perspective, applied by EGJ (2008) is called “cream-skimming 
+strategy” and limits the trade only to the first 10 days after a trade is initiated. One of the 
+contributions of our paper is that it examines in detail the profitability implications of 
+different forms of exiting from a trade. Related to this issue is the issue of number of 
+eligible pairs to trade, as pairs are ranked and then one has to make a decision of which 
+pairs will he/she be considering for monitoring and actually trading.  
+ 
+As in the previous two papers who worked on pairs trading, we examine also in some 
+detail the economic and other market factors that may explain profitability in pairs 
+                                                 
+2 ETFs are very popular in the implementation of trading strategies among the practitioners, to testify so 
+according to ETF landscape global handbook providing by Blackrock,, at the beginning of June 2010 the 
+global ETF industry had 2,218 ETFs with 4,478 listings, assets of $1,0441.1bn from 131 providers on 42 
+exchanges around the world. 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+4 
+ 
+trading. In this paper, we attempt to provide an answer, checking one by one the pairs, 
+on the source of profitability, under the question of: “What are the main factors that 
+cause the prices of pairs to diverge and how that affects subsequent convergence?” and  
+“Could we explain statistical strategies under any fundamental factors?” The significant 
+difference in this exercise, compared to previous studies, is that we use a family of 
+international assets and that, apart from the “traditional” set of variables (market and 
+idiosyncratic factors) that that are usually used in assessing the causes of strategy 
+profitability, we include macroeconomic factors for the first time in such an analysis. 
+ 
+Finally, to face the potential problem of diminished profitability, because of “hedge fund 
+overcrowding”, we make a modification of the trading algorithm from the sum of 
+squares to absolute deviations; this leads to a more robust measure to capture smaller 
+divergences, increasing the number of trades and as a result lead to higher profitability.   
+ 
+The rest of the paper is organized as follows. In section 2 we discuss issues of arbitrage, 
+liquidity and short sales constraints, as they relate to the pairs trading strategy. In section 
+3 we detail our data and statistics related to our sample of ETFs. In section 4 we present 
+our methodology with the proposed modifications while in section 5 we discuss our 
+results for the performance of pairs trading. In section 6 we present results that relate 
+this performance to various economic factors and in section 7 we offer some concluding 
+remarks. 
+ 
+2. Arbitrage, liquidity and short sale constraints   
+Trading strategies are implicitly grounded on the presence of a (possibly time-varying) 
+arbitrage mechanism that could create profitable trading opportunities. Pairs trading 
+assumes that such opportunities arises either when there is “extreme” divergence 
+between pairs of assets within a larger family. Whether arbitrage opportunities exist is, of 
+course, a matter of continuous investigation.  
+ 
+According to Shleifer and Vishny (1997) an arbitrage mechanism becomes ineffective 
+when all arbitrageurs are fully invested and the profits have to be shared to a pool of 
+participants. From such a pool of investors only a small incremental group of 
+“specialists” could identify promptly abnormal returns and can utilize them. When the 
+majority of investors realize these abnormalities, superior profits will diminish and 
+investors will go long onto overpriced assets. It therefore becomes paramount to know 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+5 
+ 
+when to enter a trade and when to exit from it, even when arbitrage opportunities exist 
+and are acknowledged by investors. Risk aversion is a prime factor to be considered 
+when taking trading positions. Empirical evidence shows that periods of high market 
+volatility are considered significant by professionals in placing their trades: they tend to 
+avoid extremely volatile arbitrage positions, even those positions which (ex post) are seen 
+to terminate in excess returns. Thus, a high volatility environment will force investors to 
+increase their redemptions and fund managers to exit the market, possibly with increased 
+probability of having a loss. Extreme circumstances (such as the divergence that is used 
+in pairs trading) do not reflect a direct consequence of fundamentals and macroeconomic 
+risks but may simply reflect the arbitrageurs risk aversion. This is an important point to 
+remember later when we discuss the factors of pairs trading profitability. 
+ 
+Jurek and Yang (2006) confirm Shleifer and Vishny’s (1997) work, where arbitrageurs are 
+reluctant to increase their allocation in a high volatility environment even when a 
+mispricing opportunity has been detected. There is a trade-off between horizon and 
+divergence risk, where after a crucial cut-off point any mispricing, even in the case of 
+expanding divergence, leads to a smaller exposure to market positions. They argued that 
+this trade-off creates a time-varying boundary, where outside the bounds even when the 
+opportunity map increases rational arbitrageurs will diminish their exposure.  
+ 
+Kondor (2008) confirmed the vital role of arbitrage in the success of a trading strategy 
+under three perspectives: (1) competition among investors leads the prices out of their 
+long run “equilibrium” and the predictability of the direction of change diminishes (2) 
+such competition can lead to substantial losses in the majority of cases when an 
+extremely short horizon is considered (3) the absence of arbitrage from the market helps 
+prices to converge to their “equilibrium”.  
+ 
+Jacob and Levy (2003), on the question of optimal time to exit, argued that statistical 
+arbitrage opportunities and accurate forecasting of the time series of price or return 
+spreads should be considered as the unique factor which affects profitability of a pair 
+trading strategy.  
+ 
+Do et al (2006), Jurek et al. (2006) and Kondor (2008) all also discussed the issue of the 
+“convergence time”, i.e. the time to exit in pairs trading-like strategies. All agree that the 
+decision of when to exit is among important factors that affect a strategies performance. 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+6 
+ 
+Based on this we are lead to investigate several different timing intervals and to crosscompare results on the decision of when to exit a trade from a pairs trading strategy in an 
+attempt to shed some light on whether there is an “optimal trading horizon”. 
+ 
+Beyond these issues there are two other ones that greatly affect the implementation and 
+profitability of any trading strategy: liquidity and trading constraints, especially short 
+selling. There are studies that provide evidence that mean-reversals, both on a short and 
+long run, are driven by the level of liquidity, see Conrad, Hemmed and Niden (1994), and 
+Cooper (1999).  Amihud and Mendelson (1986), Brennan and Subrahmanyam (1996) and 
+Brennan, Chordia, and Subrahmanyam (1998) argued that illiquid stocks give on average 
+higher returns. Amihud (2002) and Jones (2001) model liquidity as an endogenous 
+variable and show that there is a link between market liquidity and expected market 
+returns. EWJ (2008), on the other hand, provide evidence that liquidity factors have 
+limited power to explain pairs trading profits and this power further decline further as we 
+shorten the time-to-exit from a trade. Llorente et al (2002) argued that short-term return 
+reversals are driven by non-informational hedging trades where illiquid stocks are more 
+vulnerable.  
+ 
+Chordia et al. (2000) concentrate on aggregate spreads, depths and trading activity on US 
+stocks, showing that on daily basis there is negative correlation between liquidity and 
+trading activity. Liquidity collapses on bear markets and is positive correlated by long and 
+short interest rates. Increasing market volatility has a direct negative effect in trading 
+activity and spreads. Major macroeconomic announcements increase trading activity and 
+depth just before their release. Knez and Ready (1997), under a different perspective, 
+showed that the difference between quoted depth and order size is strongly correlated 
+with conditional expected price, so the profits depends on the size of the positions.  
+ 
+Short sale constraints prohibit the application of market neutral strategies and cancel the 
+hedging ability that arbitrageurs and investors have to reduce their market risk. However, 
+EGJ (2008) on their pairs trading implementation argued that short-sale constraints are 
+not correlated with the risk and return of pair trading. In our analysis we find that short 
+selling might be important in that it appears as a strong driving force of pairs trading 
+profitability in the group of ETFs that we consider. 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+7 
+ 
+3. Data 
+Our empirical analysis focuses on 22 international, passive ETFs. The ETFs come from 
+both developed and developing economics. Our dataset’s primary listing is the American 
+Stock Exchange3 The list of our series includes the following countries accompanied by 
+their ticker: MSCI Australia (EWA), MSCI Belgium (EWK), MSCI Austria (EWO), 
+MSCI Canada (EWC), MSCI France (EWQ), MSCI Germany (EWG), MSCI Hong–
+Kong (EWH), MSCI Italy (EWI), MSCI Japan (EWJ), MSCI Malaysia (EWM), MSCI 
+Mexico (EWW), MSCI Netherlands (EWN), MSCI Singapore (EWS), MSCI Spain 
+(EWP), MSCI Sweden (EWD), MSCI Switzerland (EWL), MSCI Japan (EWJ), MSCI S. 
+Korea (EWY), MSCI EMU4 (EZU), MSCI UK(EWU), MSCI BRAZIL (EWZ), MSCI 
+TAIWAN (EWT) and S&P500 (SPY), the biggest ETF worldwide5.    
+ 
+The majority of the ETF records starts on April, 01 19966. Exceptions are MSCI S. 
+Korea, that started on 10/05/2000, MSCI Taiwan that started on 20/06/2000 and MSCI 
+EMU that started on 25/07/2000. All ETF data end on 11/03/2009. Our analysis is 
+based on daily observations including open, high, low and closing (dividend adjusted7) 
+prices for each ETF series. All of the ETFs we use have futures contracts and some of 
+them also have options8. Almost all of them can be traded, over the counter, to 
+electronic platforms (ECN) at the AMEX trading hours.  
+ 
+An important part of our analysis, which has not been considered in the previous papers, 
+is to examine whether there is differential behaviour of pairs trading in developed against 
+developing economies. For this we split the ETFs into two respective groups and 
+perform a separate analysis on both. We also use segmentation for our ETFs, based on 
+                                                 
+3  The majority of the ETFs are provided by Barclays Global Investors - (Ishares). 
+4 EMU corresponds to the performance of publicly traded securities in the European Monetary Union 
+markets. 
+5 We focus only to the aforementioned ETFs under the following criterion: We have selected all the 
+international ETFs that have been launched before the 30/07/2000, which was our cut off date in order to 
+have a sufficient number of observations. The included ETFs are a subsample of the broader group of 
+international ETFs. International ETFs are a popular group among the practitioners (with high trading 
+volumes and large market capitalization) since they embed distinctive properties in the implementation 
+(event its beyond the scope of this paper its much more cheaper and easier to invest into Taiwan through 
+ETF than directly to the local stock exchange). Among others Pennathur (2002) compared the 
+performance of international ETFs with closed end funds of the objective country in means of 
+diversification benefit, since country funds are determined in the US and NAVs in the home country. 
+Engle et al (2002) compared domestic against international ETFs in means of premiums/discounts, for 4 
+separate horizons, during a day, end of the day, minute by minute and intraday.    
+6 It’s the first time that we apply pair trading including the period of the great credit crunch. 
+7 Dividends may be responsible for the divergence of the prices.    
+8 Options have the following ETFs: MSCI Australia, MSCI Brazil, MSCI Canada, MSCI Germany, MSCI 
+Hong-Kong, MSCI Japan, MSCI UK, MSCI Taiwan, S&P500. Options increase the liquidity of the 
+respective ETFs. 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+8 
+ 
+market capitalisation. This split allows examining the potential effects of liquidity on the 
+pairs trading strategy in cross-comparison with the level of financial development of the 
+underlying market.  
+  
+In addition to our full sample results we divided our sample into four different subperiods. The first sub-period covers April 1st 1996 to December 31st of 1999. The 
+second sub-period starts on January 1st 2000 and goes until December 31st of 2002. The 
+third sub-period covers the period from January 1st 2003 until the end of 2005, and the 
+last period is extended from January 1st of 2006 till the end of our dataset. The idea 
+behind these sample splits is to examine if there are any patterns that lead the strategy 
+only on specific periods and to check the relation of pairs trading to different conditions 
+of capital markets. Furthermore, note that the first sub-period corresponds to a bull 
+market while the second sub-period corresponds to a bear market. The third sub-period 
+is related to a “recovery” period for the markets while the last sub-period covers both the 
+rally of recent years and part of the start of the recent crisis.   
+ 
+Finally, two short comments on the suitability of our chosen dataset. First, the MSCI 
+indices are free of survivor bias and are a very robust proxy of market performance for 
+each country. In addition, when using such indices there is practically no bankruptcy risk, 
+a factor that was discussed in GGR (2006) in connection with pairs trading performance. 
+A characteristic example arises by the properties of “twin” stocks. A negative 
+announcement on the first stock will have identical influence on both stocks but on 
+different direction (positive for one and negative for the other): pairs trading between 
+such “twin” stocks will be unsuccessful. Considering ETFs, bankruptcy risk alleviates, as 
+implicitly are aggregate major indices of the stock exchanges with no survivor bias as we 
+refer extensively on the previous paragraph.  
+ 
+4. Methodology 
+In this section we describe the empirical methodology for implementing pairs trading. 
+We start off with some preliminaries and terminology. To apply the methodology we 
+have to first make a selection of pairs. This has to be done on a specific (rolling) time 
+segment called the “formation period”. During the formation period a specific rule is 
+applied to find which pairs are eligible for trading. Then we have the actual trading 
+period, whose length has to also be pre-selected as was done for the length of the 
+formation period. During the trading period another rule is applied to monitor whether a 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+9 
+ 
+trade should be terminated; all trades are exited at the end of the trading period. Then 
+another formation period is considered and so on. Note that trading periods do not 
+overlap while there is a partial overlap to the formation periods. To avoid the pitfalls of 
+(excess) data mining we fix the formation period to 120 trading days throughout our 
+analysis and experiment with different lengths for the trading period. Our approach relies 
+on a shorter formation period when compared with GGR (2006) and EWJ (2008) but we 
+have the advantage of non-overlapping trading periods. During the formation period we 
+apply a rule similar, but not identical, to the one used in GGR (2006) and EWJ (2008). 
+Our approach is as follows.  
+ 
+During the 120 days of each formation period we record the price of all ETFs in the 
+group we are using. From these prices we compute normalized cumulative price indices 
+which are comparable across the ETFs in the group. Divergence is based on these 
+indices that are given as: 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  (1) 
+ 
+where 
+ is the simple return of the ath ETF and the index i runs as a 
+sequence of the form  to create the partially overlapping rolling formation periods (note 
+that these exclude the 20-day trading period) and similarly for other lengths of the 
+trading period. Next, for each formation period we compute the average absolute 
+distance among all pairs in the group we are considering as: 
+ 
+ 
+ 
+ 
+ 
+ 
+  (2) 
+ 
+and we rank the distances from largest to smallest to identify trading opportunities, 
+where these distances are larger than a pre-specified threshold. The use of absolute 
+distances allows us to have more of trading opportunities and, as usual when compared 
+to a sum-of-squares measure, is more robust to sudden large discrepancies that quickly 
+disappear. It is interesting to note that the use of the absolute value instead of the square 
+in computing distances, as in the previous papers, changes the way we use the threshold c 
+for getting into and out of a trade (see below). However, it is well known that there is a 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+10 
+ 
+relationship between the mean absolute deviation and the variance in many distributions 
+so that the two approaches are statistically equivalent (although they may differ in trading 
+performance). As an example, for the normal distribution the relationship between the 
+mean absolute deviation MAD and the standard deviation SD is given by MAD = 0.798 
+SD. Similar results hold for other distributions. Note that the MAD in the above 
+example is smaller than the corresponding value of the SD, that is computed using the 
+sum of squares.  
+ 
+Suppose now that we consider the top L pairs, i.e. the pairs that have the L largest  
+ 
+values during the formation period. For each of the 20 days of the trading period we 
+compute the 120-day normalized cumulative price indices and compare them to a 
+fraction of the 
+formation value for each pair; if the absolute difference of the price 
+indices is greater than this fraction then a trade is initiated as: 
+ 
+ 
+ 
+ 
+ 
+  (3) 
+ 
+for some constant c (we experiment with c = 0.5, 1 and 2.) When a position is initialized 
+we go long in the asset with the lowest price index and short in the asset with the highest 
+one, say if 
+ then we go long on 
+ and short on
+. Then, we check that 
+each day in the trading period the same sign is maintained otherwise the trade is 
+terminated and the associated return of the trade is computed and stored. We thus have: 
+ 
+  (4) 
+ 
+ 
+The above procedure is repeated for all L pairs and the strategy’s return is then 
+computed. Since we have both a long and a short position across L pairs we need to find 
+the return for each long/short position and the total return across all L positions. First, 
+we compute the return for a single pair as:   
+ 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+  (5) 
+ 
+and then we compute the return for the “portfolio” of L pairs as a weighted sum of the 
+form: 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+11 
+ 
+ 
+  
+ 
+ 
+ 
+ 
+ 
+              (6) 
+ 
+where the weights are computed based on the previously accumulated wealth as in: 
+ 
+ 
+ 
+The above describe our basic methodology for pairs trading. An important issue that we 
+do not put into equation format is whether a trade is executed on the signal day or the 
+following day (a one-day delay); we experiment with both scenarios as do GGR (2006) 
+and EWJ (2008). Other variations and robustness checks are presented and discussed in 
+the results section that follows. 
+ 
+5. Empirical results 
+5.1. 
+Choice of trading horizon 
+The pairs trading methodology relies on certain user-defined conditions, such as the 
+choice of c and the choice of the trading horizon. We therefore start our discussion with 
+empirical results on the choice of a 20-day trading horizon. In Figure 1 we present the 
+mean return of the pairs trading strategy for three different values of c and a sequence of 
+trading horizons k=1, 2, 3, 4, 5, 10, 20, ... , 120 days for L=5 (using the first five pairs). 
+Within the maximum horizon of 120 business days, the optimal trading period roughly 
+corresponds to 20 days, irrespective of the choice of c. We can see a rather clear peak at 
+the 20-day trading horizon. While it is possible to let the pairs trading strategy run until 
+the price indices have converged we can clearly see that there is an increasing risk 
+associated with this approach.         
+ 
+5.2. 
+Properties of trading 
+Using the 20-day horizon we next compute some summary measures for the actual 
+trading activity and report them in Table 1. In Panel A of the table we report some 
+statistics on the time and duration of pairs trading across different values of L. The 
+interesting results are that (a) there is, on average, one-round trip per pair across all L 
+combinations and (b) almost all pairs open for trading with the 20-day horizon. 
+However, not all pairs convergence and the trade is terminated within the 20-days. As we 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+12 
+ 
+can see from Panel B of Table 1 to have about 50% of the pairs to converge we require a 
+trading horizon of about 40 days. This is an interesting result of practical significance that 
+can partially explain the success of the pairs trading method: if one waits long enough for 
+all the trades to converge will essentially gain nothing from this strategy; there appears to 
+be an issue of underlying “timing” at work here, a horizon after which you will not be 
+making much of a profit. Taking any profits that may arise using the signals of the 
+strategy appears to be a suitable way to go.  
+ 
+ 
+5.3. 
+Stochastic dominance 
+There is considerable literature that uses the notion of “stochastic dominance” in 
+evaluating the performance of strategies and the ranking of assets (e.g. mutual funds) and 
+types of portfolios. Here we use the methodology proposed by Cho et al. (2007) for a 
+quick (but comprehensive) way to assess the overall performance of the pairs trading 
+strategy we implemented.9 In an early paper, Jarrow (1986) examined the existence of 
+arbitrage opportunities incorporating first order stochastic dominance and argued that 
+“The condition is that the price of a particular contingent claim, defined in terms of the distribution 
+involving the stochastically dominated assets, is non positive. These conditions are both necessary and 
+sufficient in complete markets for the existence of an arbitrage opportunity”. Fong et al (2005) find 
+evidence for international momentum strategies. They strongly argue that the nonparametric nature of stochastic dominance tests allows clearly deciding between profits 
+and losses and the knowledge of the utility function is adequate for the investors to 
+decide, without to be aware of the distribution of the returns. Post (2003) compared the 
+power of stochastic dominance efficiency into a portfolio. In his tests, Fama and French 
+market portfolio is insignificant compared to portfolios based on market capitalization 
+and book-to-market ratio (referring extensively in section 7). 
+ 
+We will not digress into many details of the methodological and computational aspects of 
+the tests we performed, as they are given in the Cho et al. (2007) paper, but proceed 
+directly to the hypotheses of interest and the results.10 The null hypothesis is that a 
+particular strategy is dominated by the benchmark. Here this is formulated (along with 
+the alternative) as: 
+ 
+                                                 
+9 We make no attempt to review the large literature on stochastic dominance here. The paper by Cho et al. 
+(2007) contains many references up to that date. 
+10 Details on the methodology and computational details are available on request.  
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+13 
+ 
+Ho: pairs profitability stochastically dominated by S&P500 profitability  
+H1: pairs profitability stochastically dominates S&P500 profitability   
+ 
+Table 2, has the results according to first through third order stochastic dominance. 
+These concepts are basically saying that the average utility (of unknown form) of the 
+returns is higher for the better strategy and that the cumulative distribution function of 
+the better strategy’s returns is everywhere lower than the distribution function of the 
+competing strategy (i.e., there is lower cumulative probability of smaller returns, for any 
+given return value, for the better strategy). For all the cases examined, the p-values reject 
+the null hypothesis showing that pair trading returns dominate the distribution of 
+S&P500 returns. Under utility function/decision making framework, a rational investor 
+who chooses to invest on a net exposure to the market will prefer to invest in pair 
+trading strategy rather than to the buy and hold strategy on S&P500. 
+ 
+5.4. 
+Omega Function 
+Another approach for a non-parametric, “total” performance measure is that based on 
+the (so-called) omega function or omega ratio developed by Keating and Shadwick 
+(2002) and further detailed and explained in Kazemi et al. (2004). This is a statistic that is 
+based on the use of the distribution function of returns and it compares the cumulative 
+probabilities between two sections of the distribution function. As re-iterated in Bertrand 
+and Prigent (2010) the omega ratio is defined as “the probability weighted ratio of gains 
+to losses relative to a return threshold”. The formula for the omega ratio is given by: 
+ 
+  
+    
+ 
+ 
+ 
+ 
+  (7) 
+ 
+where F(r)  is the cumulative distribution of the return defined in the interval (a,b) and L 
+is the is the return threshold (we use L = 0 in our analysis). Anything above the 
+threshold is considered a gain and anything below it a loss. From this definition we can 
+see that a larger omega ratio is preferable to a smaller one. There is a nice interpretation, 
+provided by Kazemi et al. (2004), as the ratio of expectations of gains above the 
+threshold to expectations of losses below the threshold. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+14 
+ 
+ 
+Figure 5, exhibits the results of omega ratio under the segmentation between positive 
+returns. The results represent the best 5 eligible pairs for the main pairs trading strategy 
+in relative comparison with the long and short components, the S&P500 and an equally 
+weighted portfolio (the latter constructed by the long and short components). The results 
+here are not favourable to the pairs trading strategy since they exhibit that the upside 
+mean is limited for pair trading, however, one should note that the S&P500 and an 
+equally weighted portfolio exhibit a steepest curve about zero returns.      
+ 
+5.5. 
+Profitability of pairs trading: baseline results 
+Pairs’ trading is, in general, a profitable strategy as can be seen from the broad summary 
+measures of the previous sections. The extent of the profitability results that we obtain 
+of course varies, depending on the number of pairs L used, the groupings based on 
+market origin or capitalization and sub-samples in time. But it will be seen that the 
+profitability results are robust across all these categories.  
+ 
+Before discussing the results let us overview the exact methodological parameters on 
+which they are based. The back testing starts on September, 23 1996 with the first 19 
+available ETFs. At June, 20 2000 we add the latest ETF. The number of pairs used in 
+constructing the portfolio returns are set to L = 2, 5, 10 and 20. The formation period is 
+120 and the trading period is 20 days; results based on a 60-day trading period are also 
+available but not discussed here. The threshold parameter is set to c = 0.5 throughout. 
+Finally, a trade is initiated at the closing prices of the day after a signal is given (one-day 
+waiting) and, for comparison, we also provide results when a trade is initiated at the 
+closing prices of the signal (“event” in the tables) day.   
+ 
+Table 3 presents the baseline results of our application of pairs trading. Panel A has the 
+results based on the event day and Panel B has the results with one-day waiting. We 
+present various summary measures and we discuss them in turn. Terminal wealth of the 
+portfolio is affected by the size of L: using half or more of our universe of pairs results in 
+deterioration of performance based on terminal wealth, especially when one uses the 
+(more realistic) one-day waiting approach. Therefore, a smaller size of pairs, in our case 
+that of about 10% to 25%, appears to be best suited for the strategy at hand. Note that 
+terminal wealth is cut in half or more when the one-day waiting approach is used 
+although the other performance measures appear to be quite similar. The strategy’s 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+15 
+ 
+skewness is always positive, a rather significant result when compared to the mildly 
+negative skewness that most equity indices have.11 Next, note the difference in the risk of 
+the L = 2 portfolio vs. the portfolios with L = 5 or more pairs: as expected, a larger L 
+leads to a smaller standard deviation of the strategy but also to a smaller Sharpe ratio (for 
+Panel B; in Panel A the Sharpe ratios are becoming larger with L but the practicality of 
+the event-day strategy is rather limited). The use of L = 5 pairs appears to be giving the 
+best overall performance throughout in Table 1; the annualized Sharpe ratio for the L = 
+5 pairs portfolio for the one-day waiting period is about 1,86 (using 252 trading days per 
+year). 
+ 
+The results of the table also reveal that the timing abilities of this strategy are rather 
+good: the mean positive excess return of the strategy is always larger than the mean 
+negative excess return of the strategy. This implies that the successful trades are on 
+average larger (they are slightly over 50%) than the negative ones but, more importantly, 
+they tend to be more accurate in their timing. This is important for making an investor 
+using this strategy accept the inherent risks. Finally, it’s also important to note that the 
+strategy is almost unrelated to the returns of the S&P500 index (especially for L = 2 or L 
+= 5); this reflects on either the international composition of our ETF group (which, 
+nevertheless, includes the ETF for the S&P500) or on the timing ability of the strategy to 
+correctly identify disequilibria in the price paths.  
+ 
+The evolution the strategy’s wealth (cumulative return), corresponding to Panel B of 
+Table 3, is given in Figure 2. There we plot the pairs trading performance, the S&P500 
+and also the long and the short components of the strategy, all for L = 2, 5, 10 and 20 
+pairs. There are some interesting features in the plots: first, the strategy’s performance 
+during the boom years before 2000 is below that of S&P500 but it sharply picks up and 
+outperforms the S&P500 after we go into the bear market; second, the strategy’s 
+performance increases almost monotonically for all pairs except for L = 2, when we can 
+see a large drawdown period after 2002; third, the apparent success of the strategy’s 
+timing ability shows through the domination of the short component – this makes sense 
+since the strategy’s performance starts going over the S&P500 when the bear market 
+started; finally, this figure leaves open the question as to whether the strategy would 
+                                                 
+11 Goetzmann et al (2002) argued that evaluation results based on the Sharpe ratio can be misleading if the 
+strategy’s return distribution exhibits negative skewness but this problem disappears when we observe 
+positive skewness. 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+16 
+ 
+perform equally well if it was implemented from a different starting point. We return to 
+this question later in our discussion.  
+ 
+Before continuing we give a very brief comparison of performance of pairs trading 
+between this paper and GGR (2006). For the top L = 5 eligible our asset selection and 
+implementation gave an average monthly excess of 1.49% versus a 0.78% for GGR; for 
+L = 20 the numbers are much more similar, being 0.93% and 0.81% respectively.  
+ 
+The relative comparison between short 20days and long strategy 60days is given in Table 
+4. 20days outperforms the 60days trading in means of mean return, while both the risk 
+profile and the risk-return profile is improving as we let the trade open beyond 20days.  
+ 
+Figure 4, illustrates the empirical distribution of the mean returns for the top 5 eligible 
+pairs from the opening of the trade at day k=1,...,20, until the last day that we exit the 
+trade. Panel A, demonstrate a spike between day 4 and 5. Panel B, demonstrate the risk 
+of the distribution to be extremely volatile around k=10day. To sum up the results, 
+confirm our empirical motivation of 20 days and the hypothesis that the profits are short 
+lived and declines over time (EGJ).   
+ 
+5.6. 
+Results based on market capitalization  
+Are the results we have seen so far affected by market size? After all our grouping is one 
+that includes data on ETFs from different markets. We repeat our analysis by splitting 
+the ETFs into “small” and “large” capitalization groups and examining the new results. 
+In the context of their analysis, GGR (2006) argued that an examination of different 
+levels of capitalization provides a robustness check against short-selling – and we have 
+seen that the short component was pretty strong in driving the previous results. In the 
+context of pairs trading and contrarian strategies, Avramov et al (2006) claim that large 
+mean reversals are positively linked to illiquid stocks and higher turnover. Put differently, 
+a low level of liquidity is more vulnerable to non-informational trades and Llorente et al 
+(2002) argued that short-term reversals are correlated to non-information driven hedging 
+trades.12  
+       
+                                                 
+12 In the context of more “traditional” approaches that rely on market capitalization there is some evidence 
+that across countries small capitalization might outperform large capitalization; see De Bondt et al (1989), 
+Conrad et al (1989), Rouwenhorst (1998), Zarowin (1990), Richards (1997), Chan (1988) and Knez et al 
+(1996). 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+17 
+ 
+For the size split we consider “large” capitalization to correspond to ETFs with market 
+cap between 384 millions to 65 billion while “small” capitalization to correspond to 
+ETFs with market cap from 330 million down to 59 millions. Accordingly, we have in 
+the “large” cap category the ETFs for: Australia, Brazil Canada, EMU, Hong Kong, 
+Japan, Singapore and South Korea, Taiwan, UK, S&P500; and on the “small” cap 
+category the ETFs from Austria, Belgium, France, Germany, Italy, Malaysia, Mexico, the 
+Netherlands, Spain, Sweden and Switzerland  Table 5 has the related results.  
+ 
+The most striking result from this split is that performance of the trading strategy is 
+greatly reduced for both groups, in terms of terminal wealth, mean return and Sharpe 
+ratio – although the strategy’s performance remains unrelated to the S&P500. However, 
+we can also see that there are differences between the “large” and “small” ETFs. First, 
+the performance appears to be slightly better for the “small” cap group in terms of 
+terminal wealth and Sharpe ratio – now for L = 5 the annualized Sharpe ratio for the 
+“small” cap group is 1.03 and for the “large” cap group is 0.87. Due to the diminished 
+size of the universe of ETFs in each group we also see that better performance is for L = 
+2 rather than L = 5 but with a lower Sharpe ratio. Second, the performance of the 
+“small” cap group might be driven by the timing ability of the strategy in the smaller 
+markets since we can see that the percentage of observations with positive returns is 
+larger for this group than for the “large” cap group. Overall, the results here indicate that 
+a blend large and small ETFs is better than either group alone – the strategy needs a 
+larger, more diverse universe to be able to provide market timing results.  
+ 
+EGJ (2008) split their sample into two portfolios based on average market capitalization 
+and level of liquidity, however they do not find anything conclusive in terms of the 
+interaction of market capitalization and profitability for their data. This suggests that the 
+type of exposure (domestic vs. international) may also be a significant factor behind pairs 
+trading performance.  
+ 
+5.7. 
+Results based on type of market (developed vs. emerging) 
+Splitting the ETFs into “small” and “large” cap groups is useful but it mixes markets that 
+are mature with markets that are still developing. Since emerging markets are always seen 
+as potential opportunities it is of interest to separately analyze the performance of the 
+strategy in developed and emerging markets. Bekaert et al. (2000) claim that to treat 
+emerging markets as identical to developed markets could lead to wrong conclusions. 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+18 
+ 
+Due to the pronounced heterogeneity of this new split we have to make some changes in 
+the way we run our backtesting. First, due to differences in inception dates the 
+backtesting starts on June of 2000. Second, there are only five ETFs classified as 
+“emerging” markets:13 Brazil, Malaysia, Mexico, Taiwan and South Korea; this limits the 
+number of pairs to be considered to a max of L = 10.  
+ 
+Our results from this split are given in Table 6. Emerging markets as expected 
+outperform developed markets in means of mean return. However, the risk of trading in 
+emerging markets is higher than these of developed markets. In means of Sharpe ratio 
+developed markets achieved better. However, the crucial fact is the evidence of mean 
+reversion in emerging markets. 
+ 
+5.8. 
+Results based on long and short components separately 
+As we already discussed in the baseline results (see Figure 2), the short component in the 
+pairs trading appear to be dominating the long component.14 In Table 7 we present more 
+detailed results that document that indeed this is the cases (here we are again using all 
+ETFs as in the baseline results). The better performance of the short component is 
+evident across all L pairs but note that its effect diminishes as L increases. While there is 
+a differences in terminal wealth, mean return and Sharpe ratio, it’s interesting to note that 
+the differences in the standard deviations of the short and long components are rather 
+small. Another interesting result in the table is that we can now see a pronounced, 
+positive correlation of both the short and long component with the S&P500: this 
+probably supports the timing ability of the strategy, since we require a positive 
+correlation even when the S&P500 is falling so as to effect the short side of the trade. 
+See that the correlation with the S&P500 is larger for the short component, thus 
+supporting what we saw in Figure 2 (the strategy picking up in terms of performance 
+when the S&P500 started falling in 2000). Our results are in contrary with those in GGR 
+(2006). We should argue about that, probably has to do with the volatile environment 
+during the crisis 2007-2009, or the narrow distance criterion. 
+ 
+5.9. 
+Results based on sub-samples: sensitivity analysis 
+Does it matter when this (or any other trading strategy) starts? It should matter otherwise 
+we would have a “universal” winner. To examine the sensitivity of our results so far we 
+break the full sample into four sub-samples covering different periods of interest: first 
+                                                 
+13 We followed the MCSI classification for this. 
+14 GGR (2006) argued about the necessity of examining separately these two components of the strategy. 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+19 
+ 
+sub-sample goes from April 1, 1996 until the end of 1999; the second sub-sample goes 
+from January, 1 2000 and ends on 2002; the third sub-sample starts in 2003 and ends in 
+2005 while the last sub-sample spans 2006 to March 2009. As we already noted in 
+passing, the first period is one of a bull market, the second period has the bear market 
+that followed, the third period can be thought of as the “recovery” period for global 
+markets while the fourth and last period has a structural break in it (first going into a 
+small uptrend and then getting into the subprime crisis and the ensued global financial 
+turmoil).  
+ 
+If pairs trading is a “true” market-neutral strategy we would expect to maintain its 
+profitability even in bear markets where a significant downturn is occurring. We can 
+examine whether this is the case by looking at the results in Table 8. The performance 
+details during the second sub-sample immediately stand out: performance is increasing 
+with L as does the positive correlation of the strategy with the S&P500. The annualized 
+Sharpe ratio for L = 5 (for comparability with the baseline results) is now 2.06 
+(compared to 1.86 in the baseline case), a value that falls in the range of practitioners’ 
+interest. Then, note that the strategy’s performance is (obviously) best during trending 
+markets, i.e. in the first or the second subsample, irrespective of the trend direction. 
+During the “recovery” period of the third sub-sample the performance is worse among 
+all four sub-samples considered. During the second and third sub-samples there appears 
+to be increased “risk aversion”, and that a higher L gives better performance. On the 
+fourth sub-period that contains both a positive trend and a break components we can see 
+that performance has the same characteristics as in the first sub-sample although all 
+measures are now smaller in magnitude; note that here we have, as in the second subsample, increased correlation with the S&P500.   
+ 
+6. Pairs Trading Profitability and Economic Fundamentals 
+Our discussion so far shows that, in GGR (2006) and EWJ (2008), pairs trading is a 
+viable and profitable trading strategy that exploits price divergence among co-moving 
+assets. However, where does its profitability come from? This question has been 
+addressed in these two studies but here we have a different family of assets that we are 
+working with. We therefore have to use not just the literature standards, such as the 
+Fama and French factors, but also other economic and market variables that are suitable 
+to the international aspect of our dataset.  
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+20 
+ 
+We cannot possibly review the literature that relates to factors here in any degree of 
+detail. We briefly go over some references that are related to the work that we discuss in 
+this section. We can split the work on factors on three major categories, according to the 
+purpose that the asset pricing model has been constructed. We have:  
+(1) Firm–Level Characteristics (Idiosyncratic), as in Cavaglia, Brightman and 
+Aked (2000), Carrieri, Errunza and Sarkissian (2005), Hou, Karolyi and Kho 
+(2006) and EWJ (2008). 
+(2) Market level characteristics (local and global markets), as in Fama and French 
+(FF) (1993, 1996, 1998), Rouwenhorst (1998) and Griffin (2002). 
+(3) Macro-economic or country characteristics, as in Chan, Chen and Hsieh 
+(1985), Chan and Chen (1991), Cooper, Gulen and Vassalou (2001), Liew and 
+Vasalou (2000), Vasalou (2003), Brennan, Wang and Xia (2004) and Petkova 
+(2006).  
+ 
+Financial practitioners have also employed several risk models including explanatory 
+factors, the most popular being (according to Hou et al., 2006) the BARRA Integrated 
+Global Equity Market Model (Stefek, 2002; Senechal, 2003), Northfield’s Global Equity 
+Risk Model (Northfield, 2005), ITG’s Global Equity Risk Model (ITG, 2003) and 
+Salomon Smith Barney’s Global Equity Risk Management (GRAM, Miller et al., 2002).   
+6.1. 
+Pairs trading against the FF-type factors 
+Table 9 has the results of a regression of compounded monthly returns from our 
+backtesting on the three FF factors and a momentum factor.15 For both the 20 and the 
+60-day trading horizon we can see that there are significant excess returns that cannot be 
+explained by any factor except the HML one, which is based on book-to-market. The 
+estimates are negative and significant for all choices of L pairs. Our results reveal a 
+different source of pairs trading profitability compared to GGR (2006) and EWJ (2008), 
+which was expected due to the different composition of the universe of assets that we 
+considered here.  
+ 
+Performing the same analysis but in sub-samples, and adding two more momentum 
+indicators, we can see a variety of interesting results at Table 10. First, note that the 
+                                                 
+15 The conversion to monthly returns was done for conformability with the earlier literature; results are 
+available for a daily frequency as well. Moreover, all the estimations have been conducted with the long and 
+short term reversal factor as they are presenting in Ken French site. However, their explanatory power was 
+and we drop; results are available as well. We run the results using the rolling p-value in order to check; 
+results are available on request. 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+21 
+ 
+significant excess returns now only appear in the first and second sub-sample of the 
+bull/bear markets that goes until 2000 and 2002; this is in accordance of our earlier result 
+that pairs trading appeared to worked strongly in trending markets. During these two 
+sub-samples no factor appears to be statistically significant, except the short-term 
+reversal indicator for the second sub-sample – which again validates the timing ability of 
+the strategy. Second, for the third and fourth sub-samples it is difficult to discuss the 
+explanatory ability of the factors since the excess returns are statistically zero. The 
+significant coefficients appeared scattered with no discernible pattern.  
+ 
+In Tables 11 and 12 we present results similar to Table 9 but using the ETF splits to 
+emerging vs. developed markets and “small” vs. “large” capitalization – as we have done 
+for the presentation of baseline results in Tables 5 and 6. For the split based on market 
+development, in Table 11, we can see that excess returns are significant in both types of 
+markets but profitability is explained by different factors. In the case of emerging 
+markets the market and momentum factors loads negatively and significantly while in the 
+case of developed markets the book-to-market factor leads negatively and significantly. 
+These results are intuitive since the emerging markets could not possibly be explained by 
+structural factors like book-to-market but rather by the leading U.S. market and the 
+underlying momentum. Note that the R2 values from the emerging markets regressions 
+are the highest so far, up to 17% for the top L = 5, 10 pairs. Turning next to the split 
+based on capitalization, in Table 12, we can see that for the “large” cap portfolio we have 
+significance excess returns and negative and significant the size factor – that was to be 
+expected. For the “small” capitalization portfolio the excess returns are significant but 
+not as significant as in the “large” cap case; no factor appears to be overall significant 
+ 
+Finally, in Tables 13 and 14 we present results from a regression based on FF-type 
+international factors, constructed from international indices that were weighted based on 
+the MCSI EAFE index. The results of the full sample in Table 1316 show that we have 
+excess returns that are significant and cannot be explained by any of these factors, maybe 
+except the book-to-market factor for L = 2 – but then again this choice of L was not the 
+most successful one in backtesting. On the other hand in Table 14, where we have the 
+sub-samples that were discussed before, we can see some more interesting results. For 
+the first sub-period the excess returns remain significant while there is some (limited) 
+explanatory power to the earnings to price variable; for the second sub-period (the bear 
+                                                 
+16 We conduct the estimations with the earnings-to-price variable and dividend yield as they appear in Ken 
+French website; Results are available on request. 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+22 
+ 
+market after 2000) no factor has any explanatory value – this is important as the strategy 
+has a very good performance even during downturns and it’s interesting to know that 
+this performance is unrelated to these international factors. However, the most 
+interesting of all results in Table 14 are those for the last period, which is after 2006. 
+Note here the magnitude of the R2 values, which ranges from 37% to 59% indicating that 
+these international factors can explain a large percentage of variation for pairs trading 
+during this period that includes the onset of the financial crisis. Two variables account 
+for this percentage of explanatory power, earnings-to-price and dividend yield, especially 
+the last one.  
+ 
+6.2. 
+What drives signals in pairs trading? Opening and duration of positions 
+While it is clearly interesting to examine the potential factors that explain pairs trading 
+profitability, it is also of interest to consider whether there are economic or financial 
+variables that can explain the generation of signals in pairs trading. Is it then possible to 
+identify if profitability can be linked to economic fundamentals, the emphasis now being 
+that we are using international ETFs for the trades. Such an exercise requires that we 
+track all individual trading signals and then associate them with, appropriately timealigned, variables. EWJ (2008) have done a similar exercise for their universe of U.S. 
+stocks only in terms of idiosyncratic risk, while GGR (2006) have not considered it. 
+Concentrating on the L = 5 top pairs portfolio and looking at the 20-day and 60-day 
+trading horizon, we next discuss our approach and results for explaining signal 
+generation. Note that we pool all signals from the top 5 pairs and form a “crosssectional” regression (in the sense that the time ordering of the signals is not used) where 
+the explanatory variables are properly aligned with the time of the signals.  
+ 
+To begin with, we have to define the variables that we will be using to explain signal 
+generation and a method for model reduction. The variables that we use are both 
+economic and financial and are listed and are detailed in the appendix. As for model 
+reduction we follow the simplest possible approach that maintains a solid statistical 
+foundation: all variables are entered in at the initial estimation stages and they are 
+removed (one-at-a-time) based on their p-value; estimates with the largest p-value go off 
+first. This approach maintains the appropriate level of significance at all times and we 
+have found it to be robust against other variable selection methods, such as stepwise 
+regression. This model reduction approach is used both on all set of explanatory 
+variables and also on various sub-groups (macroeconomic, market, fundamentals). 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+23 
+ 
+Furthermore, it is important to note that we (a) use the long and short component of the 
+strategy separately, in addition to using the full strategy results alone and (b) we pairwise 
+align the explanatory variables in all regressions so that they correspond to each member 
+of the pair: each time that a new pair is initiated for trading the explanatory variables 
+change accordingly to the members of the pair.    
+ 
+We thus estimate five (5) groups of regressions as follows:  
+ The first group includes all variables. 
+ The second group includes only the macroeconomic variables. 
+ The third group includes the market variables. 
+ The fourth group includes fundamental variables.  
+ Finally, the fifth group contains the variables that survived model reduction from the 
+above four groups.  
+In Tables 15 and 16 we present results on the explanatory power of variables for the 
+opening of a pair and for the duration that a trade stays open.17 For breity we discuss 
+below the results from the first group. 
+ 
+The short position is more volatile and risky than the long position and it is well known 
+that the hedge funds suffer more to bear short positions in an uptrend market. As 
+anticipated, the longer trading horizon can be explained with more factors that the 
+20days trading. Regarding the significant factors we find that investors pay attention on 
+the dividend yield, probably investors during the last ten years were driven by value 
+equities instead of growth. The EPS forward factor is also significant and this result is of 
+interest since it would imply that investors are taking under consideration (again, as 
+anticipated) the forward looking outlook of the markets. Moreover, portfolio inflows also 
+are found to have explanatory power to the divergence of the underlying assets. Turning 
+next to the macroeconomics factors, unemployment is found to have more explanatory 
+power instead of GDP – this accords well with recent market moves where 
+unemployment is gauged as a more important indicator that can lead to substantially 
+volatile movements in equity markets. Furthermore, turnover and volatility are also 
+significant factors for the presented strategy as they contain momentum information for 
+the capital flows and investors pay attention to them. Aggressive positions can be 
+disclosed by these flows (heavy trading). It is well established that volatility creates 
+                                                 
+17 The results on Table 15 are from a standard binary data regression (logistic) on the event of a trade being 
+opened for any of the top 5 pairs. The results on Table 16 are from a negative binomial regression on the 
+duration of days that a trade stays opened. 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+24 
+ 
+divergence and consequently increases the opportunities for trading and arbitrage 
+opportunities.   
+ 
+Finally, in Table 17, we present results on the explanatory power of variables for the 
+pairs returns of a pair. Regarding the 20-days trading, the factor EPS and dividend yield 
+appeared to be significant while in 60-days trading, divergence is explained only with the 
+short side of the components. Money market rates and country credit rating is also found 
+to have explanatory power on the return of the pairs. As anticipated, the money market 
+rates exhibits a positive effect, while the country credit rating exhibits a negative link with 
+the pairs returns.   
+ 
+7. Concluding remarks 
+We examine in detail the performance of a popular and successful trading strategy, pairs 
+trading, using international ETFs. Our study supports the existing literature on the 
+profitability of this strategy and also brings forth some new insights, now in the context 
+of the popular investment vehicle that are ETFs. Our results show that there is an 
+asymmetric response between the long and the short component of the strategy which 
+enhances overall profitability. We find that the strategy dominates the profitability of the 
+S&P500 benchmark in a variety of parameter combinations and also that it has very small 
+correlation with this benchmark. This profitability survives over different market periods 
+and over different sub-samples on the composition of our ETF universe, such as based 
+on market capitalization and market development. We then examine the sources of 
+profitability of the strategy using the standard Fama-French factors and a variety of other 
+variables. This analysis confirms the presence of excess returns, although the explanatory 
+power of these variables is limited. Finally, we discuss the underlying drivers for initiating 
+a trade and for the duration of the relevant position, both of which directly affect overall 
+profitability. The combined results from this exercise suggest that the most important 
+factors boil down to be earnings per share, dividend yields and the unemployment rate. 
+All in all our analysis strongly supports the merits of pairs trading as an economically 
+meaningful and practical investment approach.  
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+25 
+ 
+References 
+Amihud, Y., Mendelson, H., 1986, Asset pricing and the bid-ask spread, Journal of 
+Financial Economics 17, pp223-249. 
+ 
+Amihud, Yahov, 2002, Illiquidity and Stock Returns: Cross-Section and Time-Series 
+Effects, Journal of Financial Markets 5, 31-56. 
+ 
+Abramov, D., Chordia, T., Goyal, A., 2006, Liquidity and autocorrelations in individual 
+stock returns, Journal of Finance, 61, 2365-2394. 
+ 
+Bekaert, G., Harvey, C., R., 2000, “Foreign Speculators and Emerging Equity Markets”, 
+Journal of Finance, 55, pp565-614. 
+ 
+Bertrand, P., Prigent, J., L., 2010, “Omega performance measure and portfolio 
+insurance” Journal of Banking and Finance, 35, 1811-1823   
+Brennan, M.,J., Subrahmanyam, A., 1996, “Market microstructure and asset pricing: On 
+the compensation for illiquidity in stock returns”, Journal of Financial Economics 
+Volume 41, pp 441-464 
+Brennan M., J., Cao, H., H., 1997, “International Investment Portfolio Inflows”, Journal 
+of Finance, 52, pp1851-1880.  
+ 
+Brennan, M., J., Chordia, T., Subrahmanyam, A., 1998, “Alternative Factor 
+Specifications, Security Characteristics, and the Cross-Section of Expected Stock 
+Returns”, Journal of Financial Economics 49, 345-373. 
+ 
+Brennan, M., Ashley, J., Wang W., Xia, Y., 2004, "Estimation and Test of A Simple 
+Model of Intertemporal Capital Asset Pricing," Journal of Finance, 59, pp1743-1776. 
+ 
+Carrieri, F., Vihang E., Sarkissian, S., 2005, “The Dynamics of Geographic Versus 
+Sectoral Diversification: Is There a Link to the Real Economy?” McGill University 
+working paper. 
+ 
+Cavaglia, S., Brightman, C., Aked, M., 2000. "The Increasing Importance Of Industry 
+Factors," Financial Analysts Journal, 56, pp41-54. 
+ 
+Chan, L.,K.,C., 1988, “On the contrarian investment strategy,” Journal of Business 61, 
+pp147-163. 
+ 
+Chan, L., K., C., Chen, N.,F., Hsieh, D., A., 1985. “An Exploratory Investigation of The 
+Firm Size Effect”, Journal of Financial Economics, 14, pp 451-471. 
+ 
+Chan, L., K., C., Chen, N.F., 1991, “Structural and return characteristics of small and 
+large firms”, The Journal of Finance 46, pp1467-1484. 
+ 
+Chen, N., F., Roll R., Ross, S., A., 1986, “Economic forces and the stock market”, Journal 
+of Business, 59, pp383-403. 
+ 
+Chan, L., K., C., Karceski, J., Lakonishok, J., 1998, “The risk and return from factors”, 
+Journal of Financial and Quantitative Analysis, 33, 159-188. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+26 
+ 
+Cho, Y., H., Linton, O., Whang, Y., J., 2007, “Are there Monday effects in stock returns: 
+A stochastic dominance approach”, Journal of Empirical Finance, 14, 736-755 
+ 
+Chordia, T., Swaminathan, B., 2000, Trading Volume and Cross-Autocorrelations in 
+Stock Returns, The Journal of Finance 55, pp913-935. 
+ 
+Conrad, J., Kaul, G. 1989, ‘‘Mean Reversion in Short-horizon Expected Returns,’’ The 
+Review of Financial Studies, 2, pp225–240. 
+ 
+Conrad, J., Hemmed, A., and Niden C., 1994, Volume and autocovariances in shorthorizon individual security returns, Journal of finance, 49, 1305-1329 
+ 
+Cooper, M., Gulen, H., Vassalou M., 2001, “Investing in size and book-to-market 
+portfolios using information about the macroeconomy: some new trading rules”, 
+working paper, Purdue University 
+ 
+Cooper, M., 1999, “Filter rule based on price and volume in individual security 
+overreaction”, Review of Financial Studies, 12, pp901-935. 
+ 
+De Bondt Werner F.,M., Thaler H.,R., 1989, “Anomalies: A mean Reverting Walk Down 
+Wall Street” The Journal Of Economic Perspectives, 3 pp 189-202 
+ 
+Do, B., Faff., B,.R., Hamza, K., 2006, A New Approach to Modelling and Estimation for 
+Pairs Trading In Proceedings of 2006 Financial Management Association European 
+Conference, Stockholm 
+ 
+Engelberg, J., Gao P., Jagannathan R., 2008, “An Anatomy of Pairs Trading: the role of 
+idiosyncratic news, common information and liquidity,” working paper 
+ 
+Engle, R., Sarkar, D., 2002, Pricing Exchange traded funds, working paper, New York 
+University 
+ 
+Fama, Eugene F., Kenneth R. French, 1993, “Common risk factors in the returns on 
+stocks and bonds,” Journal of Financial Economics 33, pp3-56. 
+ 
+Fama, Eugene F., Kenneth R. French, 1996, “Multifactor explanations of asset pricing 
+anomalies,” Journal of Finance 51, pp55-84. 
+ 
+Fama, Eugene F., Kenneth R. French, 1998. "Value Versus Growth: The International 
+Evidence," Journal of Finance, 53, pp1975-1999. 
+ 
+Ferson, W., E., Campbell, R., H., 1993, "The Risk and Predictability of International 
+Equity Returns," Review of Financial Studies, 6, pp 527-566. 
+ 
+Fong, W., M., Wong, W., K., Lean, H., H., 2005, International momentum strategies: a 
+stochastic 
+dominance 
+approach, 
+Journal 
+of 
+Financial 
+Markets 
+8, pp 89-109 
+ 
+Froot, K., O’ Connell, P., and Seasholes, M., 2001, ‘‘The portfolio flows of international 
+investors,’’ Journal of Financial Economics, 59, pp151–193. 
+ 
+Gatev, E., W., Goetzmann, N., Rouwenhorst, K., G., 2006, “Pairs Trading: Performance 
+of a Relative-Value Arbitrage,” Review of Financial Studies 19, pp 797 - 827. 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+27 
+ 
+ 
+Griffin J., M., 2002, “Are the Fama and French Factors Global or Country Specific?” 
+Review of Financial Studies 5, pp 783-803 
+ 
+Goetzmann W., Ingersoll, J., Spiegel, M., Welch, I., 2002, ‘‘Sharpening Sharpe Ratios,’’ 
+working paper, Yale School of Management. 
+ 
+Goh, J., C., Ederington L., H., 1993, “Is a Bond Rating Downgrade Bad News, Good 
+News, or No News for Stockholders?”, Journal of Finance 48, pp. 2001-2008. 
+ 
+Hou. K., Karolyi, G., A., Kho, B., C., 2006, What Factors Drive Global Stock Returns? 
+Working paper 
+ 
+Jacobs, B. Levy, K., 1993 “Long/Short Equity Investing”, Journal of Portfolio Management, 
+20, pp.52-64 
+ 
+Jarrow, R., 1986, “The Relationship between Arbitrage and First Order Stochastic 
+Dominance” The Journal of Finance, Vol. 41, pp. 915-921 
+ 
+Jones, C. M. 2001, A Century of Stock Market Liquidity and Trading Costs, Graduate 
+School of Business, Columbia University 
+ 
+Jurek, J.,W., Yang, H., 2006 Profiting from Mean-Reversion: Optimal Strategies in the 
+Presence of Horizon and Divergence Risk, Working Paper, Harvard Business School 
+ 
+Jurek, J.,W., Yang, H., 2007, Dynamic Portfolio Selection in Arbitrage, working Paper, 
+Harvard University. 
+ 
+Kazemi, H., Schneeweis, T., Gupta, R., 2004, “Omega as performance measure”, Journal 
+of Performance Measurement, vol. 8, pp. 16–25. 
+ 
+Khandani and Lo 2007, “What happened to the Quants in August 2007”, Journal of 
+Investment Management, vol. 5, pp5-54. 
+ 
+Keating, C., Shadwick, W.F., 2002, “A universal performance measure”, Journal of 
+Performance Measurement, vol. 6, 59–84. 
+ 
+Knez, P.,J., Ready, M., J., 1996, Estimating the Profits from Trading Strategies, The Review 
+of Financial Studies, Vol. 9, No. 4, pp. 1121-1163 
+ 
+Knez, P.,J., Ready, M., J., 1997, On the Robustness of Size and Book-to-Market in CrossSectional Regressions, The Journal of Finance, Vol. 52, No. 4 pp. 1355-1382 
+ 
+Kondor, Peter, 2008, Risk in Dynamic Arbitrage: The Price Effects of Convergence, 
+Journal of Finance, Forthcoming 
+ 
+Liew, J., Vassalou, M., 2000. "Can Book-To-Market, Size And Momentum Be Risk 
+Factors That Predict Economic Growth?," Journal of Financial Economics, 57, pp 221-245. 
+ 
+Llorente, G., Michaely, R., Saar, G., Wang J., 2002, “Dynamic models of limit-order 
+executions”, Journal of Financial Studies 3, pp175-205. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+28 
+ 
+Nath, P., 2003, “High Frequency Pairs Trading with U.S. Treasury Securities: Risks and 
+Rewards for Hedge Funds” working paper, London Business School. 
+ 
+Pennathur, A., K., Delcoure, N., Anderson, D., 2002, “Diversification benefits of iShares 
+and closed-end country funds,” Journal of Financial Research 25, 541–557. 
+ 
+Petkova, R., 2006. “Do the Fama-French Factors Proxy for Innovations in Predictive 
+Variables?” Journal of Finance, 61, pp582-613. 
+ 
+Post, T., 2003, “Empirical Tests for Stochastic Dominance Efficiency”, The Journal of 
+Finance, Vol. 58, pp. 1905-1931 
+ 
+Richards A., J., 1997, “Winner-Loser Reversals in National Stock Market Indices: Can 
+They be Explained?” The Journal of Finance, Vol. 52, pp. 2129-2144. 
+ 
+Rouwenhorst, K.,G., 1998, “International Momentum Strategies” Journal of Finance, 53 pp 
+267-284. 
+ 
+Taylor, M., P.,  Sarno, L.,  1997, “Capital flows to developing countries: Long and shortterm determinants”, World Bank Economic Review, 11, pp451-470. 
+ 
+Shleifer, A., Vishny, R.,W., 1997, “The limits of arbitrage”, Journal of Finance 52, pp35-55. 
+ 
+Vassalou, M,. 2003. “New Related To Future GDP Growth As A Risk Factor In Equity 
+Returns”, Journal of Financial Economics, 68, pp47-73. 
+ 
+Zarowin, P., 1990, “Size, Seasonality, and Stock Market Overreaction” The Journal of 
+Financial and Quantitative Analysis, Vol. 25, pp. 113-125 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+29 
+ 
+Tables and Figures 
+ 
+ 
+ 
+Table 1 
+Summary of Trading Statistics  
+The table represents the trading statistics of the excess return portfolios. Due to different inception 
+dates of dataset, I initiate the calculations with the first 19 ETFs and we add each separate ETF by 
+its own inception date. The sample period is from April, 01 1996 to March, 11 2009 (3.140 
+observations). The "top n" represents the "n" best eligible ranked pairs according to the historical 
+distance of their mean price. On Panel A, we open the trade when the divergence between the 
+pairs exceed 0.5 standard deviations, and if does not converge within the next 20 business days 
+we stop the trade. The implementation of the strategy takes place the next business day of the 
+divergence. Panel B, represents pairs that convergence according to different trading periods. 
+Panel A: Trading Statistics 
+Pairs Portfolio 
+Top 2 
+Top 5 
+Top10 
+Top 20 
+ 
+ 
+ 
+ 
+ 
+Average Number of Round-Trips per pair 
+0,952 
+0,920 
+0,857 
+0,805 
+Standard Deviation of Average Number of 
+Round-Trips 
+1,064 
+1,042 
+1,021 
+0,997 
+Average Number Pairs Open in 20days 
+1,913 
+4,772 
+9,537 
+18,969 
+Standard Deviation of Average Number Pairs 
+Open  
+0,099 
+0,161 
+0,281 
+0,472 
+  
+  
+  
+  
+  
+Panel B: Pairs that Convergence within N trading days 
+ 
+ 
+ 
+ 
+ 
+Trading Horizon 
+Top 2 
+Top 5 
+Top10 
+Top 20 
+ 
+ 
+ 
+ 
+ 
+5 Days 
+26,8% 
+26,9% 
+25,6% 
+25,5% 
+10 Days 
+33,5% 
+33,2% 
+31,9% 
+31,6% 
+20 Days 
+42,7% 
+41,3% 
+40,4% 
+40,9% 
+40 Days 
+57,7% 
+53,3% 
+52,1% 
+51,8% 
+60 Days 
+69,2% 
+65,4% 
+61,5% 
+60,7% 
+120 Days 
+80,8% 
+74,6% 
+72,3% 
+72,1% 
+  
+  
+  
+  
+  
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+30 
+ 
+ 
+ 
+Table 2 
+Summary Statistics for Stochastic Dominance Test 
+The table represents stochastic dominance test of the excess return portfolios. For 
+definitions of pair trading refer to table 1. The sample period is from April, 01 1996 to 
+March, 11 2009 (3.140 observations).  One day waiting estimations represents the 
+implementation of the strategy the next business day. We implement three order 
+stochastic dominance tests. Stochastic dominance test examines the order of 
+dominance between two assets according to their distribution. The test refers to the 
+null hypothesis that pair profitability is stochastically dominated S&P500 profitability 
+Panel A: Event Day 
+Pairs Portfolio 
+Top 2 
+Top 5 
+Top10 
+Top 20 
+ 
+ 
+ 
+ 
+ 
+1st Order 
+0,0000 
+0,0000 
+0,0000 
+0,0000 
+2nd Order 
+0,0005 
+0,0000 
+0,0000 
+0,0000 
+3rd Order 
+0,0042 
+0,0037 
+0,0096 
+0,0101 
+ 
+ 
+ 
+ 
+ 
+Panel B: One Day Waiting 
+Pairs Portfolio 
+Top 2 
+Top 5 
+Top10 
+Top 20 
+ 
+ 
+ 
+ 
+ 
+1st Order 
+0,0000 
+0,0000 
+0,0000 
+0,0000 
+2nd Order 
+0,0008 
+0,0000 
+0,0000 
+0,0000 
+3rd Order 
+0,0043 
+0,0042 
+0,0050 
+0,0056 
+  
+  
+  
+  
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+31 
+ 
+ 
+Table 3 
+Summary Statistics of Daily Estimations of Baseline results 
+The table represents the summary statistics in percentages of the excess return portfolios. 
+Due to different inception dates of our dataset, we initiate the calculations with the first 19 
+ETFs and we add each separate ETF by its own inception date. The sample period is from 
+April, 01 1996 to March, 11 2009 (3.140 observations). The "top n" represents the "n" best 
+eligible ranked pairs according to the historical distance of their mean price. We open the 
+trade when the divergence between the pairs exceed 0.5 standard deviations and if does not 
+converge within the next 20 business days we stop the trade. One day waiting estimations 
+represents the implementation of the strategy the next business day. 
+Panel A: Event day 
+Pairs Portfolio 
+Top 2 
+Top 5 
+Top10 
+Top20 
+Terminal Wealth 
+18,284 
+20,041 
+13,786 
+8,965 
+Mean 
+0,097 
+0,098 
+0,085 
+0,071 
+Standard Deviation 
+0,887 
+0,667 
+0,551 
+0,454 
+Sharpe Ratio 
+0,109 
+0,147 
+0,155 
+0,156 
+Maximum  
+9,420 
+8,860 
+7,070 
+4,720 
+Minimum 
+-7,450 
+-7,780 
+-6,030 
+-4,080 
+Skewness 
+1,050 
+1,340 
+1,740 
+1,400 
+Kurtosis 
+13,700 
+26,800 
+28,600 
+16,700 
+Correlation with S&P500 
+0,065 
+0,069 
+0,101 
+0,146 
+Observations with Excess return>0 
+52,55% 
+54,14% 
+55,41% 
+55,73% 
+Mean of Excess Return >0 
+0,660 
+0,502 
+0,406 
+0,344 
+Mean of Excess Return <0 
+-0,543 
+-0,380 
+-0,317 
+-0,273 
+Mean of top ten excess return 
+5,778 
+4,729 
+4,099 
+3,347 
+Mean of bottom ten excess return 
+-3,504 
+-2,644 
+-0,020 
+-1,629 
+Panel B: One day waiting 
+Pairs Portfolio 
+Top 2 
+Top 5 
+Top10 
+Top20 
+Terminal Wealth 
+10,994 
+9,769 
+5,502 
+4,183 
+Mean 
+0,080 
+0,075 
+0,056 
+0,047 
+Standard Deviation 
+0,869 
+0,637 
+0,534 
+0,448 
+Sharpe Ratio 
+0,092 
+0,117 
+0,104 
+0,104 
+Maximum  
+6,150 
+6,300 
+7,060 
+4,650 
+Minimum 
+-7,440 
+-7,760 
+-6,860 
+-4,440 
+Skewness 
+0,637 
+0,470 
+0,822 
+0,938 
+Kurtosis 
+10,200 
+17,600 
+27,000 
+15,700 
+Correlation with S&P500 
+0,049 
+0,070 
+0,086 
+0,128 
+Observations with Excess return>0 
+51,91% 
+53,50% 
+53,18% 
+53,50% 
+Mean of Excess Return >0 
+0,647 
+0,476 
+0,387 
+0,330 
+Mean of Excess Return <0 
+-0,552 
+-0,389 
+-0,323 
+-0,279 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+32 
+ 
+Mean of top ten excess return 
+5,204 
+4,035 
+3,657 
+3,038 
+Mean of bottom ten excess return 
+-3,582 
+-2,798 
+-2,329 
+-1,957 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+33 
+ 
+ 
+ 
+ 
+ 
+Table 4 
+Summary Statistics of  Relative Comparison between Two Trading Horizons 
+The table represents the summary statistics in percentage basis of the excess return portfolios. Due to 
+different inception dates of our dataset, we initiate the calculations with the first 19  ETFs and we add each 
+separate ETF by its own inception date. The sample period is from April, 01 1996 to March, 11 2009 (3.140 
+observations). The "top n" represents the "n" best eligible ranked pairs according to the historical distance of 
+their mean price. We open the trade when the divergence between the pairs exceed 0.5 standard deviations, 
+and if does not converge within the selected trading horizons we stop the trade. The selected trading horizons 
+are 20 and 60 business days respectively. The implementation of the strategy occurs one day after the 
+divergence. 
+Trading Horizon 
+20 days  
+60 days  
+Pairs Portfolio 
+Top 2 
+Top 5 
+Top10
+Top20
+Top 2 
+Top 5 
+Top10
+Top20
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Terminal Wealth 
+10,994 
+9,769 
+5,502 
+4,183 
+5,744 
+3,361 
+2,471 
+2,298 
+Mean 
+0,080 
+0,075 
+0,056 
+0,047 
+0,059 
+0,040 
+0,030 
+0,028 
+Standard Deviation 
+0,869 
+0,637 
+0,534 
+0,448 
+0,814 
+0,590 
+0,468 
+0,432 
+Sharpe Ratio 
+0,092 
+0,117 
+0,104 
+0,104 
+0,072 
+0,068 
+0,064 
+0,064 
+Maximum  
+6,150 
+6,300 
+7,060 
+4,650 
+6,820 
+3,110 
+2,580 
+3,090 
+Minimum 
+-7,440 
+-7,760 
+-6,860 
+-4,440 
+-3,250 
+-3,340 
+-2,360 
+-3,130 
+Skewness 
+0,637 
+0,470 
+0,822 
+0,938 
+53,500 
+15,400 
+6,350 
+24,800 
+Kurtosis 
+10,200 
+17,600 
+27,000 
+15,700 
+7,340 
+5,310 
+4,790 
+7,740 
+Correlation with S&P500 
+0,049 
+0,070 
+0,086 
+0,128 
+0,028 
+0,064 
+0,051 
+0,134 
+Observations with Excess return>0 
+51,91% 53,50% 53,18% 53,50% 50,96% 52,87% 51,91% 51,59% 
+Mean of Excess Return >0 
+0,647 
+0,476 
+0,387 
+0,330 
+0,624 
+0,447 
+0,361 
+0,327 
+Mean of Excess Return <0 
+-0,552 
+-0,389 
+-0,323 
+-0,279 
+-0,543 
+-0,419 
+-0,329 
+-0,294 
+Mean of top ten excess return 
+5,204 
+4,035 
+3,657 
+3,038 
+4,231 
+2,564 
+1,882 
+2,177 
+Mean of bottom ten excess return 
+-3,582 
+-2,798 
+-2,329 
+-1,957 
+-2,933 
+-2,270 
+-1,711 
+-1,949 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+34 
+ 
+ 
+ 
+Table 5 
+Summary Statistics of Daily Estimations between Large vs. Small Capitalization 
+Portfolios  
+The table represents the summary statistics in percentage basis of the excess return distribution 
+including the segmentation of the data set into two portfolios according to their capitalization: The first 
+portfolio includes the first 50% of the sample with the larger capitalization and the supplementary 50% 
+included in the second portfolio. Due to different inception dates of the our dataset, we initiate the 
+calculations with the first 19 ETFs and we add each separate ETF by its own inception date. The 
+sample period is from April, 01 1996 to March, 11 2009 (3.140 observations). The "top n" represents 
+the "n" best eligible ranked pairs according to the historical distance of their mean price. We open the 
+trade when the divergence between the pairs exceed 0.5 standard deviations, and if does not converge 
+within the next 20 business days we stop the trade. The implementation of the strategy occurs the 
+next business day after the event of divergence occurs 
+  
+Large Capitalization Portfolio 
+Small Capitalization Portfolio 
+Pairs Portfolio 
+Top 2 
+Top 5 
+Top10 
+Top 20
+Top 2 
+Top 5 
+Top10 
+Top 20
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Terminal Wealth 
+4,352 
+3,511 
+2,301 
+2,000 
+4,766 
+3,197 
+2,038 
+1,873 
+Mean 
+0,052 
+0,043 
+0,029 
+0,024 
+0,053 
+0,039 
+0,024 
+0,021 
+Standard Deviation 
+1,010 
+0,785 
+0,667 
+0,647 
+0,829 
+0,595 
+0,517 
+0,447 
+Sharpe Ratio 
+0,051 
+0,055 
+0,043 
+0,037 
+0,064 
+0,065 
+0,046 
+0,047 
+Maximum 
+8,300 
+7,940 
+6,260 
+4,790 
+4,400 
+2,940 
+3,340 
+2,620 
+Minimum 
+-5,810 
+-5,050 
+-4,740 
+-4,190 
+-7,200 
+-2,660 
+-2,320 
+-1,980 
+Skewness 
+0,385 
+0,934 
+0,679 
+0,525 
+0,009 
+0,020 
+0,133 
+0,183 
+Kurtosis 
+7,260 
+12,100 
+11,000 
+8,700 
+7,180 
+4,690 
+5,280 
+5,340 
+Correlation with S&P500 
+-0,022 
+0,037 
+0,066 
+0,112 
+0,094 
+0,110 
+0,135 
+0,178 
+Observations with Excess 
+return>0 
+50,32% 
+50,32%
+50,96%
+51,27%
+50,96%
+53,18% 51,59%
+51,91%
+Mean of Excess Return >0 
+0,767 
+0,579 
+0,485 
+0,466 
+0,628 
+0,448 
+0,393 
+0,338 
+Mean of Excess Return <0 
+-0,693 
+-0,504 
+-0,444 
+-0,440 
+-0,565 
+-0,427 
+-0,369 
+-0,320 
+Mean of top ten excess 
+return 
+5,004 
+5,078 
+3,966 
+3,690 
+3,590 
+2,327 
+2,307 
+2,061 
+Mean of bottom ten excess 
+return 
+-4,222 
+-3,128 
+-2,943 
+-2,698 
+-3,614 
+-2,225 
+-1,944 
+-1,698 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+35 
+ 
+Table 6 
+Summary Statistics of Daily Estimations of Developed vs. Emerging Countries 
+The table represents the summary statistics in percentage basis of the excess return distribution including the 
+segmentation of the data set into two different subsets: Developed and Emerging markets. Due to different inception 
+dates of the dataset, we initiate the calculations for developed markets by its own inception date and we add 
+additional ETFs based on developed markets by the inception date. The sample period is from April, 01 1996 to 
+March, 11 2009 (3.140 observations). For emerging markets, we initiate the calculations, at June, 20 2000 where the 
+last ETF on emerging market incepted (2.050 observations). The "top n" represents the "n" best eligible ranked pairs 
+according to the historical distance of their mean price. We open the trade when the divergence between the pairs 
+exceed 0.5 standard deviations, and if does not converge within the next 20 business days we stop the trade. The 
+implementation of the strategy occurs the next business day that the event of divergence occurs 
+  
+Emerging Countries 
+Developed Countries 
+Pairs Portfolio 
+Top 2 
+Top 5 
+Top 10 
+Top 2 
+Top 5 
+Top 10 
+Top 20 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Mean 
+0,063 
+0,050 
+0,764 
+0,069 
+0,056 
+0,049 
+0,047 
+Standard Deviation 
+1,320 
+1,060 
+0,709 
+0,842 
+0,603 
+0,486 
+0,415 
+Sharpe Ratio 
+0,048 
+0,048 
+1,078 
+0,082 
+0,093 
+0,100 
+0,113 
+Maximum  
+6,890 
+8,050 
+4,960 
+6,050 
+3,500 
+2,580 
+3,050 
+Minimum 
+-5,710 
+-4,620 
+0,001 
+-4,480 
+-2,900 
+-1,900 
+-2,020 
+Skewness 
+0,225 
+0,813 
+1,880 
+0,386 
+0,385 
+0,206 
+0,341 
+Kurtosis 
+6,050 
+9,070 
+8,190 
+7,710 
+5,670 
+4,900 
+6,060 
+Correlation with S&P500 
+0,075 
+0,077 
+0,061 
+0,066 
+0,087 
+0,107 
+0,129 
+Observations with Excess return>0 
+51,71% 
+49,76% 
+50,73% 
+52,55% 
+52,23% 
+52,55% 
+53,18% 
+Mean of Excess Return >0 
+0,983 
+0,811 
+0,764 
+0,625 
+0,472 
+0,388 
+0,327 
+Mean of Excess Return <0 
+-0,939 
+-0,694 
+-0,726 
+-0,565 
+-0,399 
+-0,329 
+-0,274 
+Mean of top ten excess return 
+5,886 
+5,589 
+4,168 
+4,516 
+2,849 
+2,149 
+1,920 
+Mean of bottom ten excess return 
+-5,079 
+-3,741 
+-3,489 
+-3,571 
+-2,281 
+-1,695 
+-1,681 
+  
+  
+  
+  
+  
+  
+  
+  
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+36 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Table 7 
+Summary Statistics of baseline results according to Long and Short decomposition 
+The table represents the summary statistics in percentage basis of the excess return portfolios decomposed 
+into long and short components. Due to different inception dates of the dataset, we initiate the calculations 
+with the first 19 ETFs and we add each separate ETF by its own inception date. The sample period is from 
+April, 01 1996 to March, 11 2009 (3.140 observations). The "top n" represents the "n" best eligible ranked 
+pairs according to the historical distance of their mean price. We open the trade when the divergence 
+between the pairs exceed 0.5 standard deviations and if does not converge within the next 20 business days 
+we stop the trade. One day waiting estimations represents the implementation of the strategy the next 
+business day 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+Pairs Portfolio 
+Top 2 
+Top 5 
+Top10 
+Top20 
+  
+Long 
+Short 
+Long 
+Short 
+Long 
+Short 
+Long 
+Short 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Terminal Wealth 
+0,940 
+10,722 
+1,506 
+6,424 
+1,438 
+3,810 
+1,249 
+3,464 
+Mean 
+0,005 
+0,082 
+0,016 
+0,062 
+0,013 
+0,044 
+0,008 
+0,041 
+Standard Deviation 
+1,160 
+1,150 
+0,751 
+0,781 
+0,519 
+0,560 
+0,437 
+0,472 
+Sharpe Ratio 
+0,004 
+0,072 
+0,021 
+0,080 
+0,025 
+0,079 
+0,018 
+0,086 
+Maximum 
+16,000 
+8,670 
+7,810 
+5,700 
+3,640 
+6,010 
+3,400 
+4,200 
+Minimum 
+-8,860 
+-9,160 
+-6,700 
+-7,610 
+-3,940 
+-4,570 
+-3,890 
+-4,060 
+Skewness 
+0,709 
+0,389 
+0,174 
+0,323 
+-0,246 
+0,911 
+-0,248 
+0,650 
+Kurtosis 
+21,700 
+12,100 
+16,700 
+14,500 
+9,960 
+15,700 
+12,900 
+15,700 
+Correlation with S&P500 
+0,364 
+0,379 
+0,380 
+0,439 
+0,441 
+0,531 
+0,437 
+0,503 
+Observations with Excess 
+return>0 
+49,04% 
+51,27% 
+50,00% 
+53,18% 
+50,96% 
+52,23% 
+50,64% 
+53,18% 
+Mean of Excess Return >0 
+0,742 
+0,797 
+0,502 
+0,535 
+0,361 
+0,395 
+0,292 
+0,325 
+Mean of Excess Return <0 
+-0,755 
+-0,722 
+-0,473 
+-0,476 
+-0,352 
+-0,339 
+-0,286 
+-0,282 
+Mean of top ten excess 
+return 
+7,319 
+6,834 
+4,710 
+4,915 
+2,623 
+3,707 
+2,468 
+3,033 
+Mean of bottom ten excess 
+return 
+-6,316 
+-6,171 
+-4,639 
+-4,535 
+-2,883 
+-2,748 
+-2,553 
+-2,603 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+37 
+ 
+ 
+Sample Range:
+Pair Portfolio
+Top 2 Top 5 Top10 Top20 Top 2 Top 5 Top10 Top20 Top 2 Top 5 Top10 Top20 Top 2 Top 5 Top10 Top20
+Mean
+0,133
+0,093
+0,077
+0,044
+0,061
+0,087
+0,081
+0,083
+-0,002
+0,018
+0,019
+0,023
+0,033
+0,031
+0,032
+0,022
+Standard Deviation
+1,070
+0,682
+0,524
+0,465
+0,923
+0,669
+0,564
+0,494
+0,513
+0,367
+0,284
+0,261
+0,524
+0,434
+0,389
+0,333
+Sharpe ratio
+0,124
+0,137
+0,146
+0,094
+0,066
+0,130
+0,144
+0,167
+-0,004
+0,050
+0,066
+0,089
+0,062
+0,070
+0,083
+0,065
+Maximum 
+6,050
+3,230
+2,340
+3,560
+4,220
+3,760
+2,450
+1,730
+2,070
+1,360
+1,210
+1,030
+4,790
+3,580
+3,140
+2,300
+Minimum
+-3,740
+-2,470
+-1,480
+-2,540
+-3,350
+-2,340
+-1,510
+-1,520
+-3,200
+-1,980
+-0,961
+-0,817
+-1,940
+-1,820
+-1,330
+-1,300
+Skewness
+0,457
+0,231
+0,189
+0,445
+0,351
+0,264
+0,337
+0,154
+-0,550
+0,090
+0,187
+0,297
+1,390
+1,610
+1,350
+0,988
+Kurtosis
+5,540
+3,910
+3,470
+7,910
+5,510
+4,710
+3,880
+3,630
+6,510
+5,200
+4,630
+3,650
+15,000
+15,300
+12,600
+9,650
+Correlation with S&P500
+0,050
+0,014
+0,007
+0,042
+0,203
+0,185
+0,201
+0,253
+0,045
+0,047
+0,053
+0,057
+0,183
+0,155
+0,210
+0,190
+Observations with Excess return>0 52,36% 54,66% 54,17% 53,81% 51,35% 55,31% 55,63% 54,99% 49,13% 51,34% 49,92% 52,28% 50,37% 51,84% 52,13% 52,72%
+Mean of Excess Return >0
+0,896
+0,575
+0,454
+0,368
+0,718
+0,547
+0,464
+0,426
+0,378
+0,283
+0,220
+0,199
+0,381
+0,310
+0,282
+0,240
+Mean of Excess Return <0
+-0,749
+-0,490
+-0,369
+-0,334
+-0,648
+-0,482
+-0,398
+-0,337
+-0,379
+-0,262
+-0,201
+-0,176
+-0,329
+-0,271
+-0,241
+-0,223
+Mean of top ten excess return
+3,851
+2,201
+1,562
+1,605
+3,267
+2,146
+1,840
+1,527
+1,345
+1,150
+0,889
+0,737
+2,069
+1,920
+1,736
+1,339
+Mean of bottom ten excess return
+-2,867
+-1,755
+-1,320
+-1,233
+-2,602
+-1,656
+-1,253
+-1,238
+-1,731
+-1,031
+-0,812
+-0,556
+2,069
+-1,198
+-1,045
+-0,923
+2006:01-2009:03
+The table represents the summary statistics in percentage basis of the excess return portfolios. Due to different inception dates of the our dataset, we initiate the
+calculations with the first 19 ETFs and we add each separate ETF by its own inception date. The sample period is from April, 01 1996 to March, 11 2009 (3.140
+observations). The sample period has been divided into 4 subsamples: The first period is from April, 01 1996 to December, 31 1999 (827 observations), the second
+period is from January, 1 2000 to December 31 2002 (631 observations). The third period is from January 1 2003 to December, 31 2005 (635 observations) and the
+last period is from January 1 2006, to March 11 2009 (681 observations). The "top n" represents the "n" best eligible ranked pairs according to the historical distance of 
+their mean price. We open the trade when the divergence between the pairs exceed 0.5 standard deviations, and if does not converge within the next 20 business
+days we stop the trade. One day waiting estimations represents the implementation of the strategy the next business day.
+Table 8
+Summary Statistics of Daily Estimations of Subsamples Portfolios
+ 1996:04-1999:12
+2000:01-2002:12
+2003:01-2005:12
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+38 
+ 
+ 
+ 
+ 
+ 
+ 
+Table 9 
+Profitability of Pair Trading Strategies 
+The table represents the results of monthly excess log returns from pair trading portfolios where the 
+independent variables are 6 risk factors as represented by Fama and French. The implementation of the 
+strategy occurs the next business day of the divergence and the trading horizon is constant 20 days. Daily 
+returns are compounded to calculate monthly returns. The independent variables are: Value weighted 
+market excess return (MARKET), a size portfolio based on small equities minus big equities (SMB), a 
+book-to market portfolio of high minus low stocks (HML), a portfolio of year long winners minus year long 
+losers (MOMENTUM). The corresponding p-values are reported for each separate variables and statistics 
+are corrected for autocorrelation and heteroscedasticity using the Newey-West estimator with 4 lags. The 
+sample period is from September 1996 to February 2009. The p-values and R2 from each time-series 
+regression are reported in nominal form. 
+Trading Horizon 
+20 days 
+60 days 
+Monthly Pairs Portfolio 
+Top 2 Top 5 
+Top 10 
+Top 20 
+Top 2 Top 5 
+Top 10 
+Top 20 
+Intercept 
+ 
+0,016 
+0,016 
+0,012 
+0,009 
+0,012 
+0,009 
+0,007 
+0,006 
+ 
+0,000 
+0,000 
+0,000 
+0,000 
+0,004 
+0,001 
+0,000 
+0,000 
+Market  
+ 
+-0,049 
+0,004 
+-0,014 
+-0,019 
+-0,068 
+-0,005 
+-0,012 
+0,010 
+ 
+ 
+0,454 
+0,949 
+0,763 
+0,660 
+0,540 
+0,941 
+0,727 
+0,805 
+HML  
+ 
+-0,206 
+-0,183 
+-0,188 
+-0,107 
+-0,248 
+-0,108 
+-0,097 
+-0,091 
+ 
+ 
+0,005 
+0,008 
+0,001 
+0,047 
+0,023 
+0,103 
+0,041 
+0,035 
+SMB  
+ 
+-0,031 
+-0,031 
+0,048 
+0,038 
+-0,031 
+0,054 
+0,021 
+-0,013 
+ 
+ 
+0,817 
+0,708 
+0,429 
+0,500 
+0,778 
+0,335 
+0,568 
+0,724 
+Momentum 
+ 
+0,076 
+0,074 
+0,025 
+0,059 
+0,042 
+0,012 
+-0,001 
+-0,006 
+  
+  
+0,211 
+0,157 
+0,527 
+0,130 
+0,410 
+0,739 
+0,950 
+0,821 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Observations 
+ 
+150 
+150 
+150 
+150 
+150 
+150 
+150 
+150 
+R2 
+  
+0,039 
+0,062 
+0,115 
+0,086 
+0,049 
+0,046 
+0,050 
+0,047 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+39 
+ 
+Period:
+Pair Portfolio
+Top 2
+Top 5
+Top10
+Top20
+Top 2
+Top 5
+Top10
+Top20
+Top 2
+Top 5
+Top10
+Top20
+Top 2
+Top 5
+Top10
+Top20
+Intercept
+0,024
+0,017
+0,017
+0,011
+0,010
+0,016
+0,019
+0,024
+-0,005
+0,002
+0,003
+0,003
+0,004
+0,004
+0,006
+0,003
+0,081
+0,078
+0,003
+0,016
+0,205
+0,068
+0,003
+0,000
+0,263
+0,347
+0,221
+0,307
+0,338
+0,126
+0,009
+0,120
+Market 
+0,024
+0,018
+0,030
+0,041
+0,101
+0,204
+0,129
+0,256
+0,574
+0,302
+0,214
+0,092
+-0,167
+-0,127
+-0,077
+-0,103
+0,924
+0,919
+0,795
+0,715
+0,593
+0,150
+0,262
+0,055
+0,041
+0,049
+0,114
+0,414
+0,341
+0,422
+0,262
+0,014
+HML 
+-0,180
+-0,215
+0,006
+0,047
+0,020
+0,210
+0,019
+0,031
+-0,051
+-0,181
+-0,053
+0,121
+-0,089
+-0,164
+-0,126
+-0,145
+0,733
+0,506
+0,979
+0,827
+0,921
+0,247
+0,876
+0,789
+0,821
+0,462
+0,718
+0,390
+0,522
+0,198
+0,138
+0,015
+SMB 
+-0,473
+-0,057
+0,144
+0,148
+0,016
+0,085
+-0,009
+-0,071
+-0,815
+-0,325
+-0,291
+-0,082
+-0,106
+0,133
+-0,245
+-0,106
+0,250
+0,833
+0,410
+0,311
+0,945
+0,539
+0,936
+0,436
+0,062
+0,216
+0,093
+0,527
+0,650
+0,561
+0,067
+0,337
+Long Term Reversal
+0,282
+-0,006
+-0,201
+-0,333
+0,225
+-0,042
+-0,041
+-0,271
+-0,536
+-0,078
+0,029
+0,096
+0,222
+0,242
+0,070
+0,039
+0,677
+0,989
+0,397
+0,089
+0,412
+0,803
+0,798
+0,066
+0,063
+0,640
+0,843
+0,524
+0,266
+0,181
+0,413
+0,419
+Short Term Reversal
+-0,030
+0,041
+-0,054
+-0,069
+0,057
+0,028
+-0,013
+-0,067
+0,160
+0,125
+0,172
+0,043
+0,102
+0,114
+0,078
+0,054
+0,919
+0,845
+0,685
+0,519
+0,540
+0,698
+0,799
+0,130
+0,581
+0,508
+0,189
+0,684
+0,514
+0,439
+0,186
+0,106
+Momentum
+-0,125
+-0,047
+-0,059
+-0,032
+-0,129
+-0,023
+0,002
+0,104
+0,238
+0,096
+0,052
+-0,013
+0,143
+0,155
+0,030
+-0,012
+0,674
+0,742
+0,571
+0,726
+0,209
+0,605
+0,975
+0,072
+0,279
+0,565
+0,711
+0,895
+0,248
+0,190
+0,656
+0,794
+Observations
+40
+40
+40
+40
+31
+31
+31
+31
+31
+31
+31
+31
+33
+33
+33
+33
+R2
+0,053
+0,044
+0,064
+0,125
+0,138
+0,129
+0,079
+0,320
+0,315
+0,143
+0,182
+0,120
+0,192
+0,230
+0,289
+0,377
+2006:01-2009:02
+ 1996:04-1999:12
+Regression of Monthly Returns of the Subsamples Estimations
+Table 10
+2003:01-2005:12
+2000:01-2002:12
+The table represents the results of monthly excess return from pair trading portfolios segment by regions of emerging and developed markets where the independent
+variables are 6 risk factors as represented by Fama and French. The implementation of the strategy occurs the next business day of the divergence and the trading
+horizon is constant 20days. Daily returns are compounded to calculate monthly returns. The independent variables are: the value weighted market excess return
+(MARKET), a size portfolio based on small equities minus big equities (SMB), a book-to-market portfolio of high minus low stocks (HML), a portfolio of year long winners
+minus a year long losers (MOMENTUM), a portfolio of last month losers minus last month winners (SHORT TERM REVERSAL) and finally a portfolio of 4 year long winners
+minus 4year long losers(LONG TERM REVERSAL). The corresponding p-values are reported for each separate variable and statistics are corrected for autocorrelation and
+heteroscedasticity using Newey-West estimator with 3 lags. The p-values and R2 are reported in nominal form. The sample period has been divided into 4 subsamples.
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+40 
+ 
+ 
+Table 11 
+Profitability of Pair Trading between Developed and 
+Emerging Countries  
+The table represents the results of monthly excess return from pair trading 
+portfolios segment by regions of emerging and developed markets where 
+the independent variables are 6 risk factors as represented by Fama and 
+French. The implementation of the strategy occurs the next business day of 
+the divergence and the trading horizon is constant 20days. Daily returns 
+are compounded to calculate monthly returns. The independent variables 
+are: Value weighted market excess return (MARKET), a size portfolio based 
+on small equities minus big equities (SMB), a book-to-market portfolio of 
+high minus low stocks (HML), a portfolio of year long winners minus a year 
+long losers (MOMENTUM). The corresponding p-values are reported for 
+each separate variable and statistic are corrected for autocorrelation and 
+heteroscedasticity using Newey-West estimator with 4 lags for developed 
+and 3 lags for emerging markets. The sample period extended from 
+September 1996 to February 2009. The p-values and R2 from each timeseries regression are reported in nominal form.  
+  
+Emerging markets 
+Developed markets 
+Monthly Pairs 
+Portfolio 
+Top 2 
+Top 5 
+Top 
+10 
+Top 2 
+Top 5 
+Top 10 
+Intercept 
+0,012 
+0,010 
+0,005 
+0,014 
+0,013 
+0,010 
+ 
+0,037 
+0,025 
+0,146 
+0,000 
+0,000 
+0,000 
+Market  
+-0,345 
+-0,494 
+-0,419 
+-0,025 
+-0,015 
+-0,022 
+ 
+0,155 
+0,027 
+0,014 
+0,709 
+0,808 
+0,602 
+HML  
+-0,099 
+-0,184 
+0,006 
+-0,173 
+-0,250 
+-0,075 
+ 
+0,727 
+0,502 
+0,976 
+0,020 
+0,002 
+0,253 
+SMB  
+-0,011 
+0,024 
+0,028 
+-0,191 
+-0,096 
+-0,031 
+ 
+0,953 
+0,911 
+0,877 
+0,088 
+0,136 
+0,546 
+Momentum 
+-0,214 
+-0,242 
+-0,276 
+0,063 
+-0,010 
+0,042 
+  
+0,118 
+0,002 
+0,002 
+0,269 
+0,784 
+0,175 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Observations 
+98 
+98 
+98 
+150 
+150 
+150 
+R2 
+0,060 
+0,166 
+0,170 
+0,046 
+0,088 
+0,037 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+41 
+ 
+ 
+Table 12 
+Profitability according to Market Capitalization 
+The table represents the results of monthly excess return from pair trading portfolios segment by 
+regions of emerging and developed markets where the independent variables are 6 risk factors as 
+represented by Fama and French. The implementation of the strategy occurs the next business day of 
+the divergence and the trading horizon is constant 20days. Daily returns are compounded to calculate 
+monthly returns. The independent variables are: the value weighted market excess return (MARKET), a 
+size portfolio based on small equities minus big equities (SMB), a book-to-market portfolio of high minus 
+low stocks (HML), a portfolio of year long winners minus a year long losers (MOMENTUM). The 
+corresponding p-values are reported for each separate variable, and statistics are corrected for 
+autocorrelation and heteroscedasticity using Newey-West estimator with 4 lags. The sample period 
+extended from September 1996 to February 2009. The p-values and R2 from each time-series 
+regression are reported in nominal form.  
+  
+Large Capitalization Portfolio 
+Small Capitalization Portfolio 
+Monthly Pairs 
+Portfolio 
+Top 2 
+Top 5 
+Top 10 
+Top 20 
+Top 2 
+Top 5 
+Top 10 
+Top 20 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Intercept 
+0,013 
+0,009 
+0,005 
+0,005 
+0,010 
+0,008 
+0,005 
+0,005 
+ 
+0,000 
+0,000 
+0,001 
+0,001 
+0,018 
+0,016 
+0,033 
+0,055 
+Market  
+-0,005 
+0,043 
+0,081 
+0,021 
+0,000 
+-0,133 
+-0,061 
+-0,030 
+ 
+0,943 
+0,405 
+0,044 
+0,527 
+0,999 
+0,175 
+0,265 
+0,584 
+HML  
+-0,276 
+-0,072 
+0,051 
+0,015 
+-0,068 
+-0,071 
+-0,011 
+-0,059 
+ 
+0,000 
+0,250 
+0,237 
+0,711 
+0,490 
+0,559 
+0,897 
+0,526 
+SMB  
+-0,193 
+-0,175 
+-0,085 
+-0,066 
+0,250 
+0,027 
+0,032 
+0,036 
+ 
+0,027 
+0,006 
+0,069 
+0,122 
+0,037 
+0,791 
+0,712 
+0,659 
+Momentum 
+-0,060 
+-0,014 
+-0,018 
+-0,055 
+0,027 
+0,065 
+0,072 
+-0,003 
+  
+0,096 
+0,775 
+0,571 
+0,063 
+0,789 
+0,323 
+0,196 
+0,952 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Observations 
+150 
+150 
+150 
+150 
+150 
+150 
+150 
+150 
+R2 
+0,074 
+0,070 
+0,070 
+0,059 
+0,056 
+0,049 
+0,037 
+0,012 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+42 
+ 
+ 
+Table 13 
+Profitability of Pair Trading Strategy against to International Factors  
+The table represents the results of monthly excess log returns from pair trading portfolios where the 
+independent variables are 4 risk factors as represented by Fama and French constructed from 
+international indices where the weighted is according to the weights of MSCI EAFE. The 
+implementation of the strategy occurs the next business day of the divergence and the trading 
+horizon is divided into two periods of 20 and 60 days. Daily returns are compounded to calculate 
+monthly returns. The table reports loadings on 5 factors market excess return (MKT), book-to-market 
+(B/M), cash earnings to price (CE/P). The corresponding p-values are reported for each separate 
+regression and statistics are corrected for autocorrelation and heteroscedasticity using the NeweyWest estimator with 4 lags. The sample period is from September 1996 to December 2007. The pvalues and R2 from each time-series regression are reported in nominal form. 
+Trading Horizon 
+20 days 
+60 days 
+Monthly Pairs 
+Portfolio 
+Top 2 
+Top 5 
+Top 10 
+Top 20 
+Top 2 
+Top 5 
+Top 10 
+Top 20 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Intercept 
+0,018 
+0,016 
+0,012 
+0,010 
+0,013 
+0,007 
+0,006 
+0,006 
+ 
+0,000 
+0,000 
+0,000 
+0,000 
+0,009 
+0,010 
+0,001 
+0,000 
+ Market 
+0,011 
+0,052 
+0,023 
+-0,011 
+0,102 
+0,117 
+0,036 
+0,041 
+ 
+0,869 
+0,294 
+0,618 
+0,842 
+0,354 
+0,119 
+0,328 
+0,384 
+B/M 
+0,068 
+0,174 
+0,142 
+0,081 
+0,034 
+-0,131 
+-0,101 
+-0,122 
+ 
+0,825 
+0,403 
+0,314 
+0,476 
+0,868 
+0,300 
+0,234 
+0,075 
+ CE/P 
+-0,200 
+-0,184 
+-0,199 
+-0,124 
+-0,362
+0,030 
+-0,016 
+0,014 
+  
+0,406 
+0,233 
+0,109 
+0,237 
+0,068 
+0,816 
+0,843 
+0,858 
+Observations 
+136 
+136 
+136 
+136 
+136 
+136 
+136 
+136 
+R2 
+0,009 
+0,015 
+0,021 
+0,010 
+0,068 
+0,048 
+0,041 
+0,047 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+43 
+ 
+Period:
+Pair Portfolio
+Top 2
+Top 5
+Top10 Top20
+Top 2
+Top 5
+Top10
+Top20
+Top 2
+Top 5
+Top10
+Top20
+Top 2
+Top 5
+Top10
+Top20
+Intercept
+0,026
+0,018
+0,016
+0,008
+0,034
+0,033
+0,024
+0,022
+0,010
+0,010
+0,008
+0,008
+0,008
+0,006
+0,006
+0,004
+0,027
+0,023
+0,010
+0,082
+0,005
+0,001
+0,002
+0,002
+0,032
+0,013
+0,007
+0,014
+0,039
+0,009
+0,014
+0,038
+ Market
+0,114
+0,125
+0,046
+0,115
+0,135
+0,230
+0,152
+0,048
+-0,311
+-0,112
+-0,167
+-0,174
+-0,010
+0,109
+-0,016
+-0,077
+0,421
+0,294
+0,667
+0,216
+0,182
+0,009
+0,070
+0,599
+0,102
+0,348
+0,136
+0,076
+0,931
+0,280
+0,906
+0,168
+B/M
+0,501
+0,439
+0,295
+0,218
+0,274
+0,515
+0,407
+0,135
+-0,448
+-0,159
+-0,040
+0,049
+0,214
+-0,122
+-0,024
+0,113
+0,348
+0,054
+0,094
+0,057
+0,696
+0,416
+0,405
+0,728
+0,211
+0,384
+0,750
+0,697
+0,486
+0,571
+0,912
+0,136
+ CE/P
+-0,610
+-0,580
+-0,333
+-0,345
+-0,468
+-0,451
+-0,485
+-0,212
+0,473
+0,001
+0,147
+0,078
+-0,088
+-0,108
+-0,159
+-0,088
+0,300
+0,053
+0,092
+0,025
+0,278
+0,298
+0,210
+0,544
+0,249
+0,995
+0,281
+0,522
+0,669
+0,531
+0,400
+0,381
+Observations
+40
+40
+40
+40
+36
+36
+36
+36
+36
+36
+36
+36
+24
+24
+24
+24
+R2
+0,037
+0,103
+0,064
+0,141
+0,067
+0,100
+0,111
+0,030
+0,119
+0,064
+0,100
+0,158
+0,027
+0,100
+0,046
+0,082
+Table 14
+Regression of monthly returns of the subsamples International evidence 
+The table represents the returns on monthly excess log returns form pair trading portfolios where the independent variables are 4 risk factors as represented by Fama
+and French constructed on international indices. The sample period is from April, 01 1996 to December, 2007. Daily returns are compounded to calculate monthly
+returns. The sample period has been divided into 4 subsamples: The first period is from April, 01 1996 to December, 31 1999, the second period is from January, 1
+2000 to December 31 2002. The third period extends from January 1 2003 to December, 31 2005 and the last period extended from January 1 2006, to December
+2007. The "top n" represents the "n" best eligible ranked pairs according to the historical distance of their mean price. We open the trade when the divergence between
+the pairs exceed 0.5 standard deviations, and if does not converge within the next 20 business days we stop the trade. One day waiting estimations represents the
+implementation of the strategy the next business day. International indices where the weighted is according to the weights of MSCI EAFE. The table reports loadings on
+3 factors market excess return (MKT), book-to-market (B/M), cash earnings to price (CE/P). 
+ 1996:09-1999:12
+2000:01-2002:12
+2003:01-2005:12
+2006:01-2007:12
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+44 
+ 
+Table 15 
+Analysis of Opening Probability of the pairs 
+The table represents a cross-sectional logistic regression of pairs opening probability from pair trading portfolios 
+where the independent variables are the days that every pair is opening and takes the value of one. In panel A 
+and panel B, the profits are computed from a strategy of 20days and 60days respectively. We run 4 different 
+regressions. Regression 1 includes all the variables, regression 2 only the macro variables, regression 3 the 
+market variables, regression 4 the fundamental variables and regression 5 only the variables that survived from 
+the previous 4 regressions. The sample period is from September 1996 to December 2007. The p-values and R2 
+from each time-series regression are reported in nominal form.  
+Panel A: 20 Days 
+  
+All Variables (1) 
+Macro (2) 
+Market (3) 
+Fundamentals (4) 
+Optimized (5) 
+Top 5 pairs 
+Portfolio 
+Coefficient 
+pValue 
+Coefficient 
+pValue Coefficient 
+pValue Coefficient 
+pValue Coefficient 
+pValue 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Intercept 
+-1,579 
+0,000 
+-1,852 
+0,000
+ 
+ 
+-1,447 
+0,000 
+-1,482 
+0,000 
+Inflation Long 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+10,760 
+0,063 
+Inflation Short 
+10,585 
+0,063 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Default Premium 
+Long 
+ 
+ 
+ 
+ 
+ 
+ 
+0,104 
+0,002 
+0,104 
+0,002 
+Dividend Yield 
+Long 
+-5,571 
+0,064 
+ 
+ 
+ 
+ 
+-8,728 
+0,002 
+-7,803 
+0,008 
+EPS forward Long 
+0,000 
+0,036 
+ 
+ 
+ 
+ 
+0,000 
+0,014 
+0,000 
+0,012 
+Eps Forward 
+Short 
+-0,001 
+0,000 
+ 
+ 
+ 
+ 
+-0,001 
+0,002 
+-0,001 
+0,002 
+FX Long 
+ 
+ 
+ 
+ 
+ 
+ 
+-0,723 
+0,001 
+-0,607 
+0,005 
+Market Volatility 
+Long 
+-0,151 
+0,037 
+ 
+ 
+ 
+ 
+ 
+ 
+-0,168 
+0,054 
+Unemployment 
+Rate Short 
+  
+  
+0,022 
+0,090
+  
+  
+  
+  
+  
+  
+McFadden Rsquared 
+0,003 
+ 
+0,000 
+ 
+ 
+ 
+0,003 
+ 
+0,004 
+ 
+Obs with Dep=0 
+11.360 
+ 
+12.754 
+ 
+ 
+ 
+11.488 
+ 
+11.288 
+ 
+Obs with Dep=1 
+1.719 
+  
+1.999 
+  
+  
+  
+1.738 
+  
+1.713 
+  
+Panel B: 60 Days 
+  
+All Variables (1) 
+Macro (2) 
+Market (3) 
+Fundamentals (4) 
+Optimized (5) 
+Top 5 pairs 
+Portfolio 
+Coefficient 
+pValue 
+Coefficient 
+pValue Coefficient 
+pValue Coefficient 
+pValue Coefficient 
+pValue 
+Intercept 
+-1,907 
+0,000 
+-2,265 
+0,000
+-1,332 
+0,000 
+-2,223 
+0,000 
+-1,712 
+0,000
+Inflation Long 
+ 
+ 
+11,014 
+0,096
+ 
+ 
+ 
+ 
+ 
+ 
+Default Premium 
+Short 
+0,129 
+0,002 
+ 
+ 
+ 
+ 
+0,066 
+0,050 
+0,128 
+0,003
+Dividend Yield 
+Short 
+-9,843 
+0,020 
+ 
+ 
+ 
+ 
+ 
+ 
+-12,010 
+0,006
+EPS forward Long 
+-0,001 
+0,003 
+ 
+ 
+ 
+ 
+-0,001 
+0,001 
+-0,001 
+0,000
+GDP Short 
+ 
+ 
+-0,037 
+0,052
+ 
+ 
+ 
+ 
+0,053 
+0,040
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+45 
+ 
+Market Cap Short 
+ 
+ 
+ 
+ 
+ 
+ 
+0,000 
+0,076 
+0,000 
+0,034
+Market Volatility 
+Short 
+0,354 
+0.0421 
+ 
+ 
+ 
+ 
+ 
+ 
+0,421 
+0,011
+Unemployment 
+Rate Short 
+-0,039 
+0.0575 
+-0,034 
+0,074
+ 
+ 
+ 
+ 
+-0,050 
+0,029
+Turnover Long 
+0,000 
+0.0444 
+  
+  
+0,000 
+0,000 
+  
+  
+  
+  
+McFadden Rsquared 
+0,004 
+0,001 
+0,088 
+0,002 
+0,006 
+Obs with Dep=0 
+11140 
+13082 
+14107 
+12127 
+10598 
+Obs with Dep=1 
+1076 
+1268 
+1363 
+1154 
+1007 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+46 
+ 
+ 
+Table 16 
+Survivor Analysis of Time to Convergence 
+The table represents a negative binomial regression of the days to convergence of each separate pair, where 
+the independent variables are the days of each individual pair. In panel A and panel B, the profits are computed 
+from a strategy of 20days and 60days respectively. We run 4 different regressions. Regression 1 includes all the 
+variables, regression 2 only the macro variables, regression 3 the market variables, regression 4 the 
+fundamental variables and regression  5 only the variables that survived from the previous 4 regressions. The 
+sample period is from September 1996 to December 2007. The p-values and R2 from each time-series 
+regression are reported in nominal form. Standard errors have been corrected with Huber-White. 
+Panel A: 20days 
+  
+All Variables (1) 
+Macro (2) 
+Market (3) 
+Fundamentals (4) 
+Optimized (5) 
+Top 5 pairs 
+Portfolio 
+Coefficient 
+pValue Coefficient 
+pValue Coefficient 
+pValue Coefficient 
+pValue Coefficient 
+pValue 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Intercept 
+1,455 
+0,000 
+2,009 
+0,000 
+ 
+ 
+1,532 
+0,000 
+2,253 
+0,000 
+GDP Short 
+ 
+ 
+-0,028 
+0,070 
+ 
+ 
+ 
+ 
+ 
+ 
+Default Premium 
+Long 
+ 
+ 
+ 
+ 
+ 
+ 
+-0,071 
+0,013 
+ 
+ 
+Dividend Yield 
+Short 
+10,990 
+0,001 
+ 
+ 
+ 
+ 
+8,657 
+0,002 
+ 
+ 
+EPS forward Long 
+0,001 
+0,003 
+ 
+ 
+ 
+ 
+ 
+ 
+0,001 
+0,019 
+Eps Forward Short 
+0,001 
+0,001 
+ 
+ 
+ 
+ 
+0,001 
+0,000 
+ 
+ 
+FX Long 
+ 
+ 
+ 
+ 
+ 
+ 
+0,406 
+0,017 
+ 
+ 
+Portfolio Inflows 
+Short 
+0,000 
+0,053 
+ 
+ 
+ 
+ 
+0,000 
+0,014 
+ 
+ 
+Unemployment 
+Rate Long 
+-0,109 
+0,039 
+-0,079 
+0,077 
+ 
+ 
+ 
+ 
+ 
+ 
+Unemployment 
+Rate Short 
+ 
+ 
+-0,026 
+0,021 
+ 
+ 
+ 
+ 
+ 
+ 
+Turnover Short 
+0,000 
+0,038 
+  
+  
+  
+  
+  
+  
+0,000 
+0,077 
+R-squared 
+0,020 
+0,003 
+ 
+ 
+0,018 
+0,005 
+Observations 
+included 
+1.216 
+1.510 
+  
+  
+1.756 
+1.246 
+Panel B: 60days 
+  
+All Variables (1) 
+Macro (2) 
+Market (3) 
+Fundamentals (4) 
+Optimized (5) 
+Top 5 pairs 
+Portfolio 
+Coefficient 
+pValue Coefficient 
+pValue Coefficient 
+pValue Coefficient 
+pValue Coefficient 
+pValue 
+Intercept 
+1,883 
+0,000 
+ 
+ 
+ 
+ 
+1,880 
+0,000 
+1,880 
+0,000 
+Default Premium 
+Short 
+-0,143 
+0,002 
+ 
+ 
+ 
+ 
+-0,143 
+0,002 
+-0,143 
+0,002 
+Dividend Yield 
+Short 
+13,797 
+0,004 
+  
+  
+  
+  
+13,797 
+0,004 
+13,797 
+0,004 
+R-squared 
+0,007 
+ 
+ 
+ 
+ 
+0,007 
+0,007 
+Observations 
+included 
+1.254 
+  
+  
+  
+  
+1.254 
+1.254 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+47 
+ 
+ 
+ 
+Table 17 
+Times-Series Cross Sectional Regressions of Pairs Returns  
+The table represents a times series cross-sectional regression of excess returns from pair trading portfolios 
+where the independent variables are the pairs returns of each individual pairs profit. In panel A and panel B, 
+the profits are computed from a strategy of 20days and 60days respectively. We run 4 different regressions. 
+Regression 1 includes all the variables, regression 2 only the macro variables, regression 3 the market variables, 
+regression 4 the fundamental variables and regression 5 only the variables that survived from the previous 4 
+regressions. The sample period is from September 1996 to December 2007. The p-values and R2 from each 
+time-series regression are reported in nominal form.  
+Panel A: 20Days 
+  
+All Variables (1) 
+Macro (2) 
+Market (3) 
+Fundamentals (4) 
+Optimized (5) 
+Top 5 pairs 
+Portfolio 
+Coefficient 
+pValue Coefficient 
+pValue Coefficient 
+pValue Coefficient 
+pValue Coefficient 
+pValue 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Intercept 
+-1.168 
+0,08 
+-3,43 
+0,00 
+ 
+ 
+-1,34 
+0,03 
+-2,47 
+0,00 
+Default Premium 
+Long 
+ 
+ 
+ 
+ 
+ 
+ 
+0,46 
+0,01 
+0,56 
+0,00 
+Dividend Yield 
+Short 
+-46,68 
+0,02 
+ 
+ 
+ 
+ 
+-50,98 
+0,01 
+-31,35 
+0,04 
+EPS forward 
+Short 
+0,00 
+0,05 
+ 
+ 
+ 
+ 
+0,00 
+0,06 
+ 
+ 
+FX Long 
+ 
+ 
+ 
+ 
+ 
+ 
+-2,12 
+0,05 
+-2,53 
+0,02 
+Money Market 
+Rates Short 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Portfolio Inflows 
+Short 
+0,00 
+0,00 
+ 
+ 
+ 
+ 
+0,00 
+0,00 
+ 
+ 
+Inflation Long 
+  
+  
+-55,15 
+0,06 
+  
+  
+  
+  
+-64,14 
+0,04 
+R-square 
+0,02 
+ 
+0,00 
+ 
+ 
+ 
+0,02 
+ 
+0,01 
+ 
+Observations 
+1.641 
+  
+2.096 
+  
+  
+  
+1.756 
+  
+1.856 
+  
+Panel B: 60Days 
+ 
+All Variables (1) 
+Macro (2) 
+Market (3) 
+Fundamentals (5) 
+Optimized (6) 
+Top 5 pairs 
+Portfolio 
+Coefficient 
+pValue Coefficient 
+pValue Coefficient 
+pValue Coefficient 
+pValue Coefficient 
+pValue 
+Intercept 
+-0,002 
+0,003 
+-0,001 
+0,472
+-0,003 
+0,000 
+-0,004 
+0,000 
+-0,004 
+0,000
+Inflation Short 
+ 
+ 
+-0,202 
+0,035
+ 
+ 
+ 
+ 
+ 
+ 
+Default Premium 
+Short 
+0,001 
+0,021 
+ 
+ 
+ 
+ 
+0,001 
+0,035 
+0,002 
+0,008
+EPS Forward 
+Short 
+0,000 
+0,067 
+ 
+ 
+ 
+ 
+0,000 
+0,021 
+0,000 
+0,004 
+GDP Short 
+ 
+ 
+-0,001 
+0,018
+ 
+ 
+ 
+ 
+ 
+ 
+Market Cap Short 
+0,000 
+0,011 
+ 
+ 
+ 
+ 
+ 
+ 
+0,000 
+0,008
+Money Market 
+Rates Short 
+0,008 
+0,077 
+0,010 
+0,047
+ 
+ 
+ 
+ 
+0,011 
+0,038
+Portfolio Inflows 
+Short 
+ 
+ 
+ 
+ 
+ 
+ 
+0,000 
+0,015 
+0,000 
+0,089 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+48 
+ 
+Credit Rating 
+Short 
+-0,003 
+0,062 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Market Volatility 
+Short 
+ 
+ 
+ 
+ 
+0,005 
+0,007 
+ 
+ 
+0,005 
+0,004
+Turnover Short 
+0,000 
+0,040 
+  
+  
+  
+  
+  
+  
+0,000 
+0,016
+R-square 
+0,020 
+ 
+0,011 
+ 
+0,052 
+ 
+0,009 
+ 
+0,032 
+ 
+Observations 
+986 
+  
+1.116 
+  
+1.388 
+  
+1.230 
+  
+937 
+  
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+49 
+ 
+ 
+ 
+0.00
+0.01
+0.02
+0.03
+0.04
+0.05
+0.06
+0.07
+0.08
+1
+2
+3
+4
+5
+10
+20
+30
+40
+50
+60
+90
+120
+Trading Horizon
+Mean Return
+  
+Figure 1: The lines plot the distribution of mean returns of the best 5 eligible pairs 
+according to different measures of standard deviations on the identification of the 
+opportunities. During the formation period (120 days), the strategy is evaluating two 
+price absolute differences according to three different scales of distance. For different k 
+trading horizons, where k=1,…,120, we consider three scales of deviations, 0.5, 1.0 and 
+2.0 standard deviations. Blue line corresponds to the distribution of mean returns for 0.5 
+standard deviations, magenta corresponds to empirical distribution of 1.0 standard 
+deviation, and gold corresponds to empirical distribution of 2.0 standards deviations. The 
+execution of the strategy occurs one day after the divergence  
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+50 
+ 
+.02
+.03
+.04
+.05
+.06
+.07
+.08
+1
+11
+21
+31
+41
+51
+61
+71
+81
+91
+101
+111
+ 
+Figure 2: Distribution of Mean Returns according to different Time Exit Strategies. The 
+testing period is between 1day and 120days. The mean returns are represented also from 
+Kernel density on the left. The execution of the strategy occurs the next business after 
+the divergence and the evidence have been applied to top 5 pairs. The grey bar on the 
+left side of the plot represents Kernel Density. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+51 
+ 
+ 
+-.10
+-.05
+.00
+.05
+.10
+.15
+.20
+.25
+1996
+1998
+2000
+2002
+2004
+2006
+2008
+ 
+Figure 3: The line plots the distribution of the monthly Excess Return of Pair Trading 
+Strategy for the top 5 eligible pairs. The trading period is extended from September 1996 
+to March 2009. The execution horizon is 20days. The strategy is implemented the next 
+business day of the divergence day.   
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+52 
+ 
+ 
+Panel A: Mean return distribution during the 20days execution period. 
+5
+10
+15
+20
+0.0000
+0.0005
+0.0010
+0.0015
+Evaluation days
+mret
+ 
+ 
+Panel B: Distribution of standard deviation during the 20 days execution period. 
+5
+10
+15
+20
+0.0055 0.0060 0.0065 0.0070 0.0075 0.0080
+Evaluation days
+sret
+ 
+ 
+Figure 4: Panel A and Panel B plots the distribution of mean returns and standard 
+deviation of top 5 eligible pairs of pairs trading strategy. The execution horizon is 20 
+days. The implementation of the strategy occurs one day after the divergence.   
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+53 
+ 
+ 
+ 
+Figure 5: The plot exhibits the daily Omega Ratio using the best 5 eligible pairs. The 
+threshold is set to zero and we are considering positive returns. 
+ 
+ 
+0.000 
+0.005 
+0.010
+0.015
+0.020
+0.025
+0.030
+0.0 
+0.2 
+0.4 
+0.6 
+0.8 
+1.0 
+1.2 
+Omega Ratio 
+return
+omega 
+PAIRS
+LONG
+SHORT
+SPY
+EQUAL
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+54 
+ 
+ 
+Panel A: Top2 Pairs Portfolio  
+ 
+Panel B: Top5 Pairs Portfolio 
+ 
+ 
+ 
+ 
+ 
+Panel C: Top10 Pairs Portfolio 
+ 
+Panel D: Top20 Pairs Portfolio 
+ 
+ 
+ 
+Figure 6: Presents daily terminal wealth of baseline results for different number of 
+eligible pairs in the respective panels (A:2pairs, B:5pairs, C:10pairs, D:20pairs). In the 
+figures, we represent in align with the terminal wealth, long and short component and 
+S&P500 for the relative comparison.    
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+55 
+ 
+ 
+Appendix 
+ 
+ 
+ 
+Variable Definitions 
+Macroeconomic Variables: In macros, we include a set of 4 variables, GDP, Inflation 
+and Unemployment Rate and are represented as growth rates. Chen, Roll and Ross 
+(1986), Ferson and Harvey (1993) Chan, Karceski and Lakonishok (1998) mentioned the 
+relevance of macro variables on equity returns. Variables are transformed to daily 
+frequency to be adapted to the respective trading days.  
+Money Market Rates: outline interbank rates of each country and we transformed to 
+daily rates.  
+ 
+Market Variables: 
+Market Volatility: define a continue time series variable constructed as range based 
+volatility estimators at day t, based on the daily prices of individual ETFs during the 
+trading period. Market risk is the average cumulative return over the prior 5 days. 
+Daily Turnover: The daily turnover of individual ETFs in Us dollars. EGJ (2008) 
+referred to market capitalization and daily turnover ratio as proxies on examination of 
+liquidity effect on profitability. Daily Turnover is the average return over the prior 5 days. 
+Average Return of the previous quarter: Each country daily excess return over the 
+previous 60 days, with respect to day t.  
+ 
+Fundamental factors  
+Dividend Yield Ratio: the countries daily dividend yield at day t.  
+Forward Earnings per share ratio: defines earnings per share of the next 12 months 
+for each respective country index. Forecast included the median of the consensus of the 
+market specialists. Earnings are the consensus at day t and prices calculated by the last 
+traded day t. 
+Default Premium: defines the daily change premium as the difference of US 10 year 
+government bonds minus daily change 10year government bond of each individual 
+country. Default premium is based on the perception to examine potentially financial 
+contagion (Khandani and Lo [2007]). 
+Exchange Rates: represents the daily exchange rate of each country against to US 
+dollars and is the rate of each day t relevant to prior day.  
+Electronic copy available at: https://ssrn.com/abstract=1958546
+
+56 
+ 
+International Portfolio Flows: The difference between portfolio inflows and outflows 
+of each country. Brennan and Cao (1997), Froot, O’ Connell and Seasholes (2001), stated 
+about the importance of international portfolio flows in the equity returns and loaded in 
+their estimations. Taylor and Sarno (1997) argued about the importance of global and 
+country specific factors in determining the long-run movements in equity flows. 
+International portfolio flows are expressed on the difference of the event daily minus the 
+prior day.  
+Market Capitalization: The daily market capitalization of each ETF in millions US 
+dollars at day t. Market capitalization is the average return over the prior 5 days.  
+Credit Rating: credit rating is the a dummy variable that takes the value of one if there 
+is an upgrade of the long term credit rating of each country, takes the value of zero if 
+there is a unchanged evaluation and takes the value of minus one if there is a downgrade. 
+Goh and Ederington (1993) argued about the importance of credit rating. The data 
+download from the three biggest credit rating agencies, Moody’s, S&P and Fitch.   
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1958546

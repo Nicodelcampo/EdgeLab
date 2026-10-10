@@ -1,0 +1,128 @@
+{
+  "doc_id": 203,
+  "titulo": "LLM-Based Market Microstructure Modeling via Representation-Induced Stochastic Games",
+  "resumen_operativo": "Desarrolla un framework unificado que acopla dinámicas de LOB con embeddings aprendidos por transformers tipo LLM y teoría de juegos con reinforcement learning multi-agente. Define un juego estocástico inducido por representación donde los agentes usan embeddings Zt como estado público. Demuestra existencia de equilibrio bajo condiciones de Lipschitz, estabilidad espectral y convergencia de RL.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Representation-Induced Stochastic Game",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Juego estocástico donde el estado público es el embedding Zt = Φ(Xt−k+1:t) producido por un encoder transformer aplicado a la historia del LOB, y los agentes eligen acciones en función de Zt y sus estados privados.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "LLM-Based Encoder"},
+        {"tipo": "REQUIERE", "objeto": "Markov Perfect Equilibrium"}
+      ],
+      "cita_textual": "Our core object is a representation-induced stochastic game: agents observe an embedding Zt = Φ(Xt−k+1:t) produced by a transformer-style encoder Φ applied to LOB histories, and choose actions as functions of Zt (and private states)."
+    },
+    {
+      "nombre": "LLM-Based Encoder",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Encoder transformer-style Φ que mapea una ventana de k estados del LOB a un embedding Zt ∈ Rd en espacio de representación, diseñado para preservar estructura económicamente relevante.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Limit Order Book State"},
+        {"tipo": "REQUIERE", "objeto": "Lipschitz continuity"}
+      ],
+      "cita_textual": "A transformer-style encoder Φ : Xk → Rd, Zt = Φ(Xt−k+1, . . . , Xt) produces an embedding Zt ∈ Rd summarizing recent message-level dynamics."
+    },
+    {
+      "nombre": "Representation Filtration",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Filtración FZ_t generada por la historia de embeddings {Z0, . . . , Zt}, que define el conjunto de información pública disponible para las políticas de los agentes.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "LLM-Based Encoder"},
+        {"tipo": "REQUIERE", "objeto": "Markov Perfect Equilibrium"}
+      ],
+      "cita_textual": "Define the representation filtration FZ_t = σ(Z0, . . . , Zt). Agents may be restricted to policies measurable w.r.t. FZ_t (and private states)."
+    },
+    {
+      "nombre": "Markov Perfect Equilibrium",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Perfil de políticas π* donde cada agente maximiza su payoff descontado esperado usando políticas medibles respecto al estado de representación y su estado privado, sin incentivo a desviarse unilateralmente.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Representation-Induced Stochastic Game"},
+        {"tipo": "REQUIERE", "objeto": "Representation Filtration"}
+      ],
+      "cita_textual": "A policy profile π* is a representation-based MPE if for every agent i and every (z, θi), πi*(· | z, θi) ∈ arg max Ji(πi, π−i*; Z0 = z, θi0 = θi)."
+    },
+    {
+      "nombre": "Strategic Similarity Modulus",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Supremo de la diferencia de payoff sobre todos los perfiles de estrategia entre dos embeddings z y z', que formaliza la idea de que embeddings cercanos corresponden a entornos estratégicos similares.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "embedding geometry quality"}
+      ],
+      "cita_textual": "Definition 3.2 (Representation-Induced Strategic Similarity). Let U(θ; z) denote a payoff functional ... Define ∆strat(z, z′) = supθ∈Θ |U(θ; z) − U(θ; z′)|."
+    },
+    {
+      "nombre": "Lipschitz Stability of Equilibria",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Propiedad que garantiza que pequeños cambios en el embedding producen cambios acotados en el perfil de acciones de equilibrio, con constante Leq dependiente de la concavidad fuerte de los payoffs.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Markov Perfect Equilibrium"},
+        {"tipo": "REQUIERE", "objeto": "strong concavity"}
+      ],
+      "cita_textual": "Theorem 5.4 (Lipschitz Stability of Best Responses). Under Assumption 5.3, the equilibrium action profile is locally unique and there exists Leq > 0 such that ∥a*(z) − a*(z′)∥ ≤ Leq∥z − z′∥."
+    },
+    {
+      "nombre": "Spectral Gap and Mixing",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Propiedad del operador de Markov inducido por las políticas de equilibrio que garantiza convergencia exponencial a la distribución invariante µ, con tasa λ (spectral gap).",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Markov Perfect Equilibrium"},
+        {"tipo": "MIDE", "objeto": "convergence speed"}
+      ],
+      "cita_textual": "Theorem 6.4 (Mixing Bound). Under Assumption 6.3, there exist constants C > 0 and λ > 0 such that ∥Kn(z, ·) − µ∥TV ≤ Ce−λn, ∀z ∈ S, ∀n ≥ 0."
+    },
+    {
+      "nombre": "Representation-Based Market Impact",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Cambio esperado en el mid-price condicional al estado de embedding actual y a las acciones de los agentes, que es Lipschitz en el embedding.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "LLM-Based Encoder"},
+        {"tipo": "MIDE", "objeto": "price impact"}
+      ],
+      "cita_textual": "Define (conditional) market impact I(z, a) = E[Pt+1 − Pt | Zt = z, at = a]."
+    },
+    {
+      "nombre": "Representation-Game-Volatility Coupling",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Cadena causal que vincula el embedding Zt con las acciones de equilibrio, el flujo agregado de órdenes, el cambio de precio y la volatilidad condicional, todas Lipschitz-locales.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "volatility"},
+        {"tipo": "USA", "objeto": "Representation-Based Market Impact"}
+      ],
+      "cita_textual": "High-frequency price dynamics couple through Zt → a*(Zt) → Qt = Σ a*i(Zt) → (Pt+1 − Pt) → σ²t, and each map is locally Lipschitz."
+    },
+    {
+      "nombre": "Encoder Perturbation Robustness",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estabilidad de las acciones de equilibrio ante perturbaciones acotadas del encoder Φ, demostrada mediante la combinación de Lipschitz del encoder y la estabilidad Lipschitz del equilibrio.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "encoder drift"},
+        {"tipo": "REQUIERE", "objeto": "Lipschitz Stability of Equilibria"}
+      ],
+      "cita_textual": "Theorem 5.6 (Equilibrium Robustness to Encoder Perturbations). Under Assumptions 5.3 and 5.5, there exists Ceq > 0 such that ∥a*,ε(Zε_t) − a*(Zt)∥ ≤ Ceq ε."
+    },
+    {
+      "nombre": "Adversarial Stress Testing in Embedding Space",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Metodología que perturba adversarialmente el embedding nominal Zt en una bola de radio ε para evaluar la robustez de las políticas entrenadas ante shocks de liquidez o drift del encoder.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Encoder Perturbation Robustness"}
+      ],
+      "cita_textual": "Embedding perturbations can model distribution shifts, adversarial liquidity events, or encoder drift."
+    },
+    {
+      "nombre": "Coupled Learning-Game Fixed Point",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Punto fijo único del operador T(θ) = (BR(θ), RLUpdate(θ)) que captura simultáneamente la respuesta estratégica y la actualización de aprendizaje, garantizado por Banach bajo contracción.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "contraction mapping"},
+        {"tipo": "APLICA_A", "objeto": "Multi-Agent RL"}
+      ],
+      "cita_textual": "Theorem 7.4 (Unique Learning–Game Fixed Point). Under Assumption 7.3, there exists a unique fixed point θ* satisfying θ* = T(θ*)."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Marco teórico para juegos estocásticos multi-agente de alta frecuencia con embeddings de LOB; incluye RL con simulador in-the-loop y stress testing adversarial."}
+}

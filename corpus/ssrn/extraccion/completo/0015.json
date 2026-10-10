@@ -1,0 +1,219 @@
+{
+  "doc_id": 15,
+  "titulo": "A non-stationary model for statistical arbitrage trading",
+  "resumen_operativo": "Propone modelar el precio de un activo sintético (par de acciones cointegrado o no) como suma de un proceso Ornstein-Uhlenbeck (componente estacionaria) más un movimiento Browniano aritmético (componente no estacionaria), para diseñar bandas óptimas de entrada/salida de una estrategia de mean-reversion. Deriva fórmulas analíticas cerradas para el retorno esperado, la varianza y el signal-to-noise ratio de la estrategia en el caso de drift cero, mostrando que la varianza crece linealmente con la volatilidad del componente no estacionario y que maximizar el Sharpe (vs. maximizar el retorno esperado) exige bandas de entrada/salida mucho más anchas. Da al quant una base teórica para calibrar objetivos de optimización de bandas en pairs trading cuando el spread no es perfectamente estacionario.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Familia de estrategias sistemáticas que buscan explotar dependencias predecibles de corto plazo en precios financieros, realizando muchas operaciones para acumular ganancias pequeñas por trade.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "mean reversion"},
+        {"tipo": "USA", "objeto": "pairs trading"},
+        {"tipo": "REQUIERE", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "Statistical based trading strategies have become widely used by the ﬁnancial industry over the past decade"
+    },
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Método en el que dos títulos similares se negocian en posiciones opuestas para formar un activo sintético mean-reverting; el paper señala que en este caso no puede garantizarse la eliminación completa del comportamiento no estacionario.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "statistical arbitrage"},
+        {"tipo": "USA", "objeto": "cointegration"},
+        {"tipo": "REQUIERE", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "in more general cases such as the popular method of pairs trading, when two similar securities are traded in oﬀsetting positions, it is not possible to guarantee the complete removal of all non-stationary behaviour"
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Comportamiento por el cual el precio (o spread sintético) revierte a un nivel de equilibrio tras alcanzar extremos temporales; base de la señal de entrada/salida del paper.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "non-stationary behaviour"},
+        {"tipo": "USA", "objeto": "Ornstein-Uhlenbeck process"}
+      ],
+      "cita_textual": "traders aim to proﬁt from temporary extremes in pricing, entering a trade when the security reaches an extreme value and exiting when it reverts to some equilibrium level"
+    },
+    {
+      "nombre": "Ornstein-Uhlenbeck process",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso estocástico estacionario mean-reverting usado para modelar el componente transitorio Xt del precio; dXt = −αXt dt + η dWt.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "mean reversion"},
+        {"tipo": "PARTE_DE", "objeto": "non-stationary model for statistical arbitrage trading"},
+        {"tipo": "MEJORA_A", "objeto": "arithmetic Brownian motion"}
+      ],
+      "cita_textual": "dXt = −αXtdt + ηdWt"
+    },
+    {
+      "nombre": "non-stationary behaviour",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Efecto no estacionario en series de precios financieras que dificulta distinguir movimientos extremos transitorios de cambios permanentes de nivel, invalidando el uso de medidas estadísticas invariantes en el tiempo para determinar puntos de entrada/salida.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "trading strategy variance"},
+        {"tipo": "MITIGA", "objeto": "cointegration"},
+        {"tipo": "SE_OPONE_A", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "when the data exhibits non-stationary eﬀects the entry and exit points cannot be reliably determined using methods and models based on stationary time series"
+    },
+    {
+      "nombre": "cointegration",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica propuesta en la literatura para remover efectos no estacionarios de series de tiempo y construir activos sintéticos estacionarios que permitan usar estadísticas comunes basadas en estacionariedad.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "non-stationary behaviour"},
+        {"tipo": "USA", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "Methods such as cointegration [20] have been proposed in order to remove non-stationary eﬀects from time series data"
+    },
+    {
+      "nombre": "arithmetic Brownian motion",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Proceso estocástico no estacionario (dMt = γ dt + θ dZt) que el paper usa para modelar la componente de largo plazo del log-precio del activo sintético, driftando con γ y volatilidad instantánea θ.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "non-stationary model for statistical arbitrage trading"},
+        {"tipo": "CAUSA", "objeto": "trading strategy variance"}
+      ],
+      "cita_textual": "dMt = γdt + θdZt"
+    },
+    {
+      "nombre": "non-stationary model for statistical arbitrage trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Modelo propuesto en el paper donde el log-precio del activo sintético St = Xt + Mt es la suma de un proceso Ornstein-Uhlenbeck (Xt) y un movimiento Browniano aritmético (Mt); define una estrategia continua de trading con bandas b1<b2 sobre Xt.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Ornstein-Uhlenbeck process"},
+        {"tipo": "USA", "objeto": "arithmetic Brownian motion"},
+        {"tipo": "MIDE", "objeto": "signal-to-noise ratio"}
+      ],
+      "cita_textual": "we propose a model for asset dynamics as an Ornstein-Uhlenbeck process with stochastic mean"
+    },
+    {
+      "nombre": "first-passage time",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Tiempo que tarda el proceso Xt en pasar de la banda b1 a la banda b2 (o viceversa); las variables T1, T2 son tiempos de primer pasaje independientes al ser Xt un proceso de Markov, y determinan la duración total del ciclo de trading T.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "trade cycle length"},
+        {"tipo": "PARTE_DE", "objeto": "non-stationary model for statistical arbitrage trading"}
+      ],
+      "cita_textual": "the variables T1, T2 can be identiﬁed as ﬁrst-passage times for the process Xt"
+    },
+    {
+      "nombre": "trade cycle length",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Tiempo total T = T1 + T2 requerido para completar un ciclo completo de compra y venta bajo la estrategia continua de bandas; su valor esperado y varianza tienen soluciones analíticas cerradas mediante funciones Erfi y series w1, w2.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "non-stationary model for statistical arbitrage trading"},
+        {"tipo": "USA", "objeto": "first-passage time"}
+      ],
+      "cita_textual": "Thus, the behaviour of T will largely determine the properties of the strategy"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costo de transacción c incorporado en el retorno del ciclo de trading; reduce el retorno esperado y desplaza los umbrales óptimos de entrada/salida, y solo instituciones con costos casi nulos pueden implementar la estrategia sistemáticamente.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "signal-to-noise ratio"}
+      ],
+      "cita_textual": "Such an approach incurs a high level of trading cost and can only be implemented by investment banks and specialist market-makers whose transaction costs are virtually negligible"
+    },
+    {
+      "nombre": "trading strategy variance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Varianza del retorno de la estrategia por unidad de tiempo; se muestra que es función lineal de la varianza instantánea de la componente no estacionaria θ², además de depender de la varianza del tiempo de ciclo T.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "non-stationary model for statistical arbitrage trading"}
+      ],
+      "cita_textual": "the variance of the return is aﬀected by both the drift and the instantaneous variance of the non-stationary component"
+    },
+    {
+      "nombre": "signal-to-noise ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio S = sqrt(µ²/σ²) definido como función objetivo alternativa al retorno esperado puro, análogo al Sharpe ratio con tasa libre de riesgo cero, usado para hallar la banda óptima que equilibra retorno y varianza.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Sharpe ratio"},
+        {"tipo": "MEJORA_A", "objeto": "expected return maximization"}
+      ],
+      "cita_textual": "we deﬁne the objective function as the following signal-to-noise ratio"
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Referencia clásica (Sharpe 1994) a la que el paper compara su signal-to-noise ratio como medida de retorno ajustado por riesgo con tasa libre de riesgo cero.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "non-stationary model for statistical arbitrage trading"}
+      ],
+      "cita_textual": "this measure is analogous to the Sharpe ratio [22] with zero risk free rate"
+    },
+    {
+      "nombre": "expected return maximization",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Criterio de optimización de bandas que maximiza solo el retorno esperado µ*(b1,c) sin considerar la varianza; el paper muestra que ignora el efecto del componente no estacionario en el riesgo.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "signal-to-noise ratio"}
+      ],
+      "cita_textual": "Note that maximising the expected return does not take into account the behaviour of the non-stationary component of the model"
+    },
+    {
+      "nombre": "state-space filtering",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método sugerido (p.ej. filtro de Kalman) para estimar los parámetros del modelo cuando las componentes Mt y Xt no son directamente observables, caso general de activos sintéticos.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "non-stationary model for statistical arbitrage trading"}
+      ],
+      "cita_textual": "the model parameters may be estimated by employing methods such as statespace ﬁltering [23]"
+    },
+    {
+      "nombre": "dual-listed securities",
+      "tipo": "dato",
+      "definicion_en_contexto": "Caso de dos cotizaciones del mismo título en distintos mercados/monedas (ejemplo ANZ.AX vs ANZ.NZ) usado como ejemplo empírico donde las componentes estacionaria y no estacionaria son directamente observables porque el componente no estacionario proviene del tipo de cambio.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "non-stationary model for statistical arbitrage trading"}
+      ],
+      "cita_textual": "we illustrate the results of the previous section with an example synthetic asset constructed from the dual-listed pair of securities, ANZ.AX and ANZ.NZ"
+    },
+    {
+      "nombre": "maximum likelihood estimation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método usado para estimar los parámetros α, η, γ, θ del modelo a partir de las componentes observadas del activo sintético ANZ.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "non-stationary model for statistical arbitrage trading"}
+      ],
+      "cita_textual": "Table 1 displays estimated parameter values for the example obtained via maximum likelihood estimation on Eqs. (2) and (3)"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Al calibrar el modelo sobre el par dual-listado ANZ.AX/ANZ.NZ, el drift de la componente no estacionaria resultó estadísticamente indistinguible de cero, justificando usar la solución analítica del caso de drift cero.",
+      "mercado": "ANZ dual-listed equities (ANZ.AX / ANZ.NZ, FX AUD/NZD embedded)",
+      "periodo": "2003-2007",
+      "magnitud": "γ = 0.0012 ± 0.0459 (std error); α = 199.9159 ± 7.5118; η = 0.1185 ± 0.0247; θ = 0.0943 ± 0.0197",
+      "condiciones": "estimación por máxima verosimilitud in-sample sobre datos donde ambas componentes son directamente observables; no se reportan costos de transacción variables ni validación OOS",
+      "robustez": "baja",
+      "cita_textual": "The estimated value of the non-stationary drift parameter γ = 0.0012±0.0459 justiﬁes making the approximation, γ ≈0"
+    },
+    {
+      "afirmacion": "Maximizar el signal-to-noise ratio (análogo al Sharpe) en vez del retorno esperado produce bandas de entrada/salida aproximadamente tres veces más anchas y reduce fuertemente la varianza del retorno, a costa de un menor retorno esperado.",
+      "mercado": "ANZ dual-listed equities (ANZ.AX / ANZ.NZ)",
+      "periodo": "2003-2007",
+      "magnitud": "maxµ: b1=-0.0038540, µ*=0.76512, σ²=0.51212, S=1.0692; maxS: b1=-0.0089865, µ=0.57169, σ²=0.15648, S=1.4452 (c=0.001, α=199.9159, η=0.1185, γ=0, θ=0.0943)",
+      "condiciones": "resultado analítico calculado a partir de parámetros estimados in-sample sobre un solo par y una sola ventana temporal; no incluye backtest de PnL realizado ni costos variables más allá de c fijo",
+      "robustez": "baja",
+      "cita_textual": "The optimal trading bands are approximately three times wider in the case of maximising the Sharpe ratio"
+    },
+    {
+      "afirmacion": "El ratio óptimo de señal-a-ruido (Sharpe análogo) de la estrategia decrece rápidamente al aumentar la volatilidad del componente no estacionario θ, mientras que las bandas óptimas de entrada se ensanchan.",
+      "mercado": "ANZ dual-listed equities (parámetros calibrados, análisis de sensibilidad simulado)",
+      "periodo": "no especificado (análisis paramétrico, no serie temporal real)",
+      "magnitud": "S*(b1,c) cae de 7.63855 (θ=0.01) a 1.36610 (θ=0.10), con c=0.001, α=199.9159, η=0.1185",
+      "condiciones": "resultado puramente analítico/paramétrico (no backtest real), variando θ manualmente manteniendo el resto de parámetros fijos",
+      "robustez": "baja",
+      "cita_textual": "The optimal Sharpe ratio decreases rapidly as the strength of the nonstationary noise is increased though the term θ"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El marco de bandas óptimas b1/b2 vía primer-pasaje de un OU con drift no estacionario podría adaptarse a spreads intradía o zonas de excursión en ES si se estima un componente no estacionario (p.ej. drift de sesión) separado del mean-reversion de corto plazo, pero el paper no valida esto en futuros ni con datos de alta frecuencia."
+  }
+}

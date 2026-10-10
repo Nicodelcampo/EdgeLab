@@ -1,0 +1,113 @@
+{
+ "doc_id": 147,
+ "titulo": "High Frequency Statistical Arbitrage via the Optimal Thermal Causal Path",
+ "resumen_operativo": "El paper aplica el método de Optimal Thermal Causal Path (física estadística) con un término adicional de energía de curvatura para identificar relaciones dinámicas de lead-lag entre pares de acciones utilizando datos intradía de alta frecuencia (NYSE). Implementa un esquema de filtrado computacional basado en segmentación (coarse grid) para buscar pares similares rápidamente. A partir de los rezagos estables encontrados, desarrolla una estrategia de trading direccional (apostar por la dirección del precio de la acción rezagada basándose en la líder) logrando 'hit ratios' superiores al 50%.",
+ "calidad_paper": "media",
+ "conceptos": [
+  {
+   "nombre": "Optimal Thermal Causal Path",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Método no paramétrico basado en mecánica estadística para encontrar la trayectoria esperada (causal path) que minimiza la energía de desajuste entre dos series temporales, permitiendo que el rol de líder-rezagado cambie dinámicamente.",
+   "relaciones": [
+    {
+     "tipo": "PREDICE",
+     "objeto": "lead-lag relation"
+    },
+    {
+     "tipo": "USA",
+     "objeto": "partition function"
+    }
+   ],
+   "cita_textual": "The method considers the mismatch between a given pair of time series in order to identify the expected minimum energy path lead-lag structure between the pair."
+  },
+  {
+   "nombre": "Curvature energy",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Término de regularización añadido a la función de optimización para imponer continuidad y suavidad a la ruta de mapeo temporal, modelado como la segunda derivada discreta del path.",
+   "relaciones": [
+    {
+     "tipo": "MITIGA",
+     "objeto": "fluctuations"
+    },
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "Optimal Thermal Causal Path"
+    }
+   ],
+   "cita_textual": "Further smoothness can be achieved by adding an analogue of a differentiability condition, which can be done by introducing a curvature energy term in the optimisation problem."
+  },
+  {
+   "nombre": "Directional trading",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Estrategia que toma posiciones direccionales (largas o cortas) en un activo basándose en la predicción de su próximo movimiento, usando en este caso la observación de los movimientos recientes de otro activo que lo lidera.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "Optimal Thermal Causal Path"
+    }
+   ],
+   "cita_textual": "Directional trading involves a bet on the price direction of a given security. Traders will benefit from a rise in the price if they are long (buying) or from a decline in the price if they are short (selling)."
+  },
+  {
+   "nombre": "Hit ratio",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Porcentaje de predicciones correctas (dirección y magnitud superior a un umbral) sobre el total de oportunidades de trading ejecutadas en el conjunto de validación.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "directional trading strategy"
+    }
+   ],
+   "cita_textual": "Hit ratio = no. of successful anticipation / total no. of trades."
+  },
+  {
+   "nombre": "Energy Approximations",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Esquema heurístico que subdivide las series de tiempo en segmentos más grandes (coarse grid) y calcula límites superiores e inferiores de energía para filtrar rápidamente pares sin relación.",
+   "relaciones": [
+    {
+     "tipo": "MITIGA",
+     "objeto": "computational intensity"
+    },
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "Filtering Process"
+    }
+   ],
+   "cita_textual": "In order to reduce the computational time, we propose an upper bounding measure that is similar to the lower bound of the fast search method for dynamic time warping (FTW)."
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "La estrategia de trading direccional basada en la trayectoria causal térmica óptima logra hit ratios de entre 54.4% y 66.5% operando en pares de acciones de NYSE en frecuencia de segundos.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "El algoritmo de filtrado en múltiples fases utilizando aproximaciones de energía (coarse grid) logró reducir el tiempo computacional en un estimado del 20% al depurar pares ineficientes.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "Aunque el término de energía de curvatura fue introducido para mejorar la precisión y suavidad de la relación causal, los experimentos indicaron empíricamente que no provee una ventaja significativa para obtener una relación lead-lag estable.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "alta",
+  "nota": "El enfoque completo del paper está fundamentado y aplicado a datos de muy alta frecuencia (ticks agregados cada 10 o 20 segundos) para identificar liderazgos a corto plazo en minutos o segundos. Ideal para construir modelos de lead-lag para pares de activos intradía (por ejemplo en ES vs NQ o distintos sectores), aunque se omiten costos de transacción y slippage."
+ }
+}

@@ -1,0 +1,126 @@
+{
+  "doc_id": 234,
+  "titulo": "Microstructure and Market Dynamics in Crypto Markets",
+  "resumen_operativo": "Investiga si medidas estándar de microestructura (Roll measure, VPIN, Kyle's lambda, Amihud, Roll Impact) predicen dinámicas de precios en 5 criptomonedas principales (BTC, ETH, XRP, SOL, ADA) usando random forest con datos de Binance (enero 2021 - julio 2023). Encuentra predictibilidad moderada (AUC > 0.55), con Roll y VPIN como features dominantes tanto en efectos propios como cruzados (BTC/ETH lideran). La predictibilidad se mantiene estable durante el crypto winter.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Volume-Synchronized Probability of Informed Trading (VPIN)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica de toxicidad de flujo que mide el imbalance de volumen bid-ask en buckets de volumen fijo sincronizados. Valores altos indican mayor probabilidad de trading informado/asimétrico. En crypto alcanza niveles elevados relativos a equities/futuros.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "trade toxicity"},
+        {"tipo": "PREDICE", "objeto": "change in realized volatility"}
+      ],
+      "cita_textual": "Higher levels of VPIN are indicative of greater trade toxicity arising potentially from more asymmetric information."
+    },
+    {
+      "nombre": "Roll Measure",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica de liquidez basada en la autocorrelación serial de cambios de precio, que estima el bid-ask spread efectivo implícito. Valores elevados en crypto sugieren mayor trading basado en momentum.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "effective bid-ask spread"},
+        {"tipo": "PREDICE", "objeto": "change in serial correlation"}
+      ],
+      "cita_textual": "The greater serial correlation in crypto prices is consistent with more momentum-based trading."
+    },
+    {
+      "nombre": "Random Forest Classification",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo de machine learning supervisado usado para predecir el signo de cambios en 5 medidas de dinámica de precios (volatilidad, autocorrelación, skewness, kurtosis, Jarque-Bera) a partir de features de microestructura.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "VPIN"},
+        {"tipo": "USA", "objeto": "Roll Measure"}
+      ],
+      "cita_textual": "We use random forest machine learning to ascertain overall predictability and to determine which features are most important for understanding market dynamics."
+    },
+    {
+      "nombre": "Cross-Market Microstructure Effects",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno donde las métricas de microestructura de BTC y ETH (Roll y VPIN) tienen poder predictivo significativo sobre las dinámicas de precios de otras criptomonedas (XRP, SOL, ADA), indicando factores comunes de liquidez e información.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "price dynamics in altcoins"},
+        {"tipo": "USA", "objeto": "VPIN"}
+      ],
+      "cita_textual": "Cross effects are also important: BTC Roll and VPIN and ETH Roll and VPIN have strong predictive power for price dynamics across the other crypto currencies."
+    },
+    {
+      "nombre": "Crypto Winter Stability",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Hallazgo de que la predictibilidad de las medidas de microestructura sobre las dinámicas de precios apenas cambió durante el crypto winter (bear market profundo), mostrando estabilidad estructural de los efectos.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "microstructure robustness"},
+        {"tipo": "APLICA_A", "objeto": "Cross-Market Microstructure Effects"}
+      ],
+      "cita_textual": "Somewhat surprisingly, we find no effects of crypto winter on our results, suggesting a remarkable stability to the price dynamic effects uncovered here."
+    },
+    {
+      "nombre": "Kyle's Lambda",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de impacto de precio por unidad de volumen, usada como proxy de profundidad de mercado e información asimétrica en los modelos de microestructura clásicos.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "price impact"},
+        {"tipo": "EQUIVALE_A", "objeto": "market depth inverse"}
+      ],
+      "cita_textual": "Microstructure theory provides various measures related to liquidity (Amihud measure), asymmetric information and toxicity (Kyle lambda, VPIN), and overall spreads and auto-correlations (Roll measure)."
+    },
+    {
+      "nombre": "Amihud Measure",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de iliquidez que captura la respuesta absoluta del precio por unidad de volumen negociado. Valores altos indican menor liquidez.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "illiquidity"}
+      ],
+      "cita_textual": "Microstructure measures of illiquidity or the presence of information-based trade include the Amihud measure."
+    },
+    {
+      "nombre": "Change in Realized Volatility Sign",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Variable target binaria (+1/−1) que indica si la volatilidad realizada aumentará o disminuirá en el siguiente período, relevante para ajustar velocidad de ejecución algorítmica.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "VPIN"},
+        {"tipo": "USA", "objeto": "algo execution speed adjustment"}
+      ],
+      "cita_textual": "If realized volatility is expected to increase, then increasing the speed of algo execution would be expected to reduce fill price uncertainty."
+    },
+    {
+      "nombre": "Jarque-Bera Statistic Change",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Target binario que indica si la normalidad de los retornos aumenta o disminuye; su incremento señala retornos no-normales que sugieren que las estimaciones de implementation shortfall pueden ser demasiado pequeñas.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "return normality"}
+      ],
+      "cita_textual": "The Jarque-Bera statistic captures normality of returns, so its increase signals non-normal returns, suggesting that estimates of implementation shortfall may be too small."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Las 5 criptomonedas muestran predictibilidad moderada de dinámicas de precios usando features de microestructura con random forest: AUC promedio de 0.55 (rango 0.54-0.61), excepto skewness (AUC=0.50, nula). VPIN y Roll measure son los features dominantes.",
+      "mercado": "BTC, ETH, XRP, SOL, ADA en Binance",
+      "periodo": "Enero 2021 - Julio 2023",
+      "magnitud": "AUC promedio > 0.55; Roll y VPIN como features más importantes; AUC de skewness = 0.50 (sin predictibilidad)",
+      "condiciones": "Datos de Binance; barras de 1 minuto; random forest classification con 5 labels binarios de cambio de signo",
+      "robustez": "alta",
+      "cita_textual": "Averaging across all currencies and variables, we find an AUC > .55. Focusing on the individual features, we find similar predictability (AUC ranging from .54 - .61) with the exception of skewness where we find no predictability (AUC=.50)."
+    },
+    {
+      "afirmacion": "BTC Roll y VPIN, y ETH Roll y VPIN tienen fuerte poder predictivo cruzado sobre las dinámicas de precios de otras criptomonedas (cross-market effects). Otros features de microestructura tienen poca o nula importancia para predicción propia.",
+      "mercado": "BTC, ETH, XRP, SOL, ADA en Binance",
+      "periodo": "Enero 2021 - Julio 2023",
+      "magnitud": "Roll y VPIN de BTC/ETH dominan la importancia de features en predicción cross-asset; otros features (Kyle lambda, Amihud, Roll Impact) con importancia marginal",
+      "condiciones": "Random forest feature importance analysis; datos de 1-min time bars",
+      "robustez": "alta",
+      "cita_textual": "Own measures of Roll and VPIN matter for most of our predicted features, with other microstructure features having little or no importance for own market prediction. Cross effects are also important: BTC Roll and VPIN and ETH Roll and VPIN have strong predictive power for price dynamics across the other crypto currencies."
+    },
+    {
+      "afirmacion": "Los resultados de predictibilidad no cambian durante el crypto winter (bear market), sugiriendo estabilidad estructural de los efectos de microestructura sobre las dinámicas de precios en cripto.",
+      "mercado": "BTC, ETH, XRP, SOL, ADA",
+      "periodo": "Crypto winter dentro de enero 2021 - julio 2023",
+      "magnitud": "Sin efectos del crypto winter sobre los resultados de AUC",
+      "condiciones": "División de la muestra en subperíodos de mercado alcista/bajista",
+      "robustez": "alta",
+      "cita_textual": "We find no effects of crypto winter on our results, suggesting a remarkable stability to the price dynamic effects uncovered here."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Usa datos de alta frecuencia de Binance en barras de 1 minuto; las features de microestructura (VPIN, Roll) están diseñadas para trading algorítmico intradiario."}
+}

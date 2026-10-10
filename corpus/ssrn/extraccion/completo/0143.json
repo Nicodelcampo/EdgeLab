@@ -1,0 +1,82 @@
+{
+  "doc_id": 143,
+  "titulo": "Governance through Trading: Evidence from Trading Activity around Earnings Announcements",
+  "resumen_operativo": "El paper investiga el rol del trading corporativo como mecanismo de gobierno, que denomina 'grading', como alternativa o complemento a la intervención directa ('voice'). Analiza el volumen anormal de operaciones de acciones en torno a los anuncios trimestrales de ganancias como proxy de cómo el mercado incorpora información sobre el desempeño gerencial y disciplina a los gestores. Sus hallazgos indican que el 'grading' es impulsado principalmente por inversores institucionales y se fortalece justamente en situaciones que suelen debilitar el 'voice', tales como: la presencia de múltiples grandes accionistas, cuando el principal bloque de inversores es pasivo (como fondos mutuos), y cuando hay alta liquidez de mercado (bajo bid-ask spread) que reduce los costos de salida.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Governance through trading (grading)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Mecanismo por el cual un mayor nivel de operaciones empuja el precio de la acción hacia su valor fundamental, revelando el desempeño del gerente e induciendo un mayor esfuerzo gerencial ex-ante.",
+      "relaciones": [
+        {"tipo": "COMPLEMENTA", "objeto": "Voice (direct intervention)"},
+        {"tipo": "MEDIDO_POR", "objeto": "Abnormal turnover"}
+      ],
+      "cita_textual": "Governance through trading is the mechanism in which higher trading impounds new information into the price, pushing it toward its fundamental value. This induces higher managerial effort ex-ante."
+    },
+    {
+      "nombre": "Voice",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Intervención o monitoreo directo por parte de los grandes accionistas institucionales (blockholders) para mejorar el gobierno corporativo.",
+      "relaciones": [
+        {"tipo": "COMPLEMENTA", "objeto": "Governance through trading (grading)"}
+      ],
+      "cita_textual": "Recent theories argue for governance through trading (grading) as an alternative governance mechanism to direct intervention (voice)."
+    },
+    {
+      "nombre": "Abnormal turnover",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre la rotación (turnover) diaria de la acción durante la ventana del anuncio de ganancias y el promedio de rotación diaria de un periodo base de no-reporte.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Governance through trading (grading)"}
+      ],
+      "cita_textual": "For each day in the [-10,10] window, abnormal turnover for firm i is measured as the difference between turnover and the average daily non-report period turnover."
+    },
+    {
+      "nombre": "Earnings surprise",
+      "tipo": "metrica",
+      "definicion_en_contexto": "La diferencia entre las ganancias reales y las proyectadas (forecast) normalizada por el precio de la acción 11 días antes del anuncio.",
+      "relaciones": [
+        {"tipo": "AFECTA", "objeto": "Abnormal turnover"}
+      ],
+      "cita_textual": "I define the earnings surprise as (actual earnings-consensus forecast earnings)/price(-11), where price(-11) is the share price eleven days before the earnings announcement"
+    },
+    {
+      "nombre": "Multiple blockholders structure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estructura de propiedad donde la empresa cuenta con varios grandes accionistas institucionales en lugar de un único dominante, lo cual genera un problema de free-rider para la intervención pero fomenta el trading competitivo.",
+      "relaciones": [
+        {"tipo": "AUMENTA", "objeto": "Governance through trading (grading)"},
+        {"tipo": "DISMINUYE", "objeto": "Voice"}
+      ],
+      "cita_textual": "even though a multiple blockholder structure might reduce the effectiveness of voice, it strengthens grading. Multiple blockholders act competitively in their trading behavior"
+    },
+    {
+      "nombre": "Bid-ask spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia porcentual entre el precio de ask de cierre y el bid de cierre, utilizada como un indicador (inverso) de liquidez del mercado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Market liquidity"}
+      ],
+      "cita_textual": "I proxy for liquidity using the bid-ask spread, which is defined as the difference between the closing ask-price and closing bid-price divided by the closing bid-price"
+    }
+  ],
+  "hallazgos": [
+    {
+      "hallazgo": "El nivel de operaciones anormal (grading) responde al comportamiento institucional: es significativamente mayor y responde mejor a sorpresas en ganancias en empresas con propiedad mayoritaria institucional que en firmas de control individual."
+    },
+    {
+      "hallazgo": "La existencia de múltiples grandes accionistas incrementa de forma estadísticamente significativa la cantidad de operaciones anormales (aumenta el 'grading') porque operan en competencia, contrarrestando la falta de 'voice'."
+    },
+    {
+      "hallazgo": "Las firmas controladas por bloques institucionales no intervencionistas, como las familias de fondos mutuos, presentan una rotación anormal significativamente superior comparado con firmas controladas por fondos de pensiones o aseguradoras (actores que favorecen el 'voice')."
+    },
+    {
+      "hallazgo": "Una alta liquidez de las acciones (bajos márgenes bid-ask) potencia la gobernanza a través del trading, elevando las métricas de turnover anormal tras los anuncios, contradiciendo el efecto perjudicial de la liquidez sobre el monitoreo directo (voice)."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El estudio se enfoca en gobierno corporativo (corporate governance) analizando volúmenes diarios en torno a eventos de ganancias de acciones individuales. Sus conclusiones son conceptuales sobre la dinámica de la disciplina gerencial mediante mecanismos de mercado, sin ofrecer factores o señales operables, anomalías intradía, ni estrategias aplicables sobre futuros de índices como el S&P 500."
+  }
+}

@@ -1,0 +1,665 @@
+                                                                      
+                               e-ISSN: 2582-5208 
+International Research Journal of Modernization in Engineering Technology  and  Science 
+( Peer-Reviewed, Open Access, Fully Refereed International Journal ) 
+Volume:07/Issue:07/July-2025         Impact Factor- 8.187                            www.irjmets.com 
+www.irjmets.com      @International Research Journal of Modernization in Engineering, Technology and Science 
+[2152] 
+AN EMPIRICAL ASSESSMENT OF PAIRS TRADING USING ENSEMBLE QLEARNING 
+Arnav Rayaprolu*1 
+*1Student, Oberoi International School, Mumbai, Maharashtra, India. 
+DOI: https://www.doi.org/10.56726/IRJMETS81287 
+ABSTRACT 
+The relentless pursuit of alpha has driven the creation of several quantitative trading strategies, including pairs 
+trading. The recent emergence of reinforcement learning frameworks, such as Q-learning, has led to the 
+development of advanced statistical arbitrage models. This study presents an empirical investigation into the 
+application of ensemble Q- learning, a reinforcement learning method, to pairs trading in the Indian equity 
+market. Utilising hourly data from the NIFTY 50 index constituents, which covers over 128,400 data points, a 
+novel composite scoring framework was devised to select optimal asset pairs, balancing both long-term 
+cointegration and mean-reversion criteria. A custom trading environment was constructed using OpenAI’s gym 
+library to realistically simulate capital constraints, transaction costs, and position management. The agent 
+maintained multiple independently trained Q-tables, aggregating their estimates to reduce variance and improve 
+stability in trading decisions. Hyperparameters for the agent were optimised via a Bayesian search, and strategy 
+performance was evaluated on out-of-sample data across multiple independent runs. Results demonstrate that 
+the ensemble Q-learning agent delivered an average six-month portfolio return of 105.2% with a Sharpe ratio of 
+2.08, substantially outperforming both traditional pairs trading benchmarks and major global indices. These 
+findings provide rigorous evidence that reinforcement learning, when coupled with well-designed pairs trading 
+strategies, can drive superior alpha generation in financial markets. 
+Keywords: Pairs Trading, Reinforcement Learning, Q-Learning, Ensemble Learning, Statistical Arbitrage, 
+Quantitative Trading, Quantitative Research, Mean Reversion, Cointegration, NIFTY 50 
+I. 
+INTRODUCTION 
+Contemporary financial markets are characterised by intense competition, rapid technological innovation, and 
+the constant pursuit of alpha using strategies that can yield consistent, risk-adjusted returns in the presence of 
+uncertainty and noise. Within this context, statistical arbitrage has emerged as a cornerstone of quantitative 
+finance, leveraging mathematical and statistical models to exploit temporary mispricing between related assets. 
+Among the various statistical arbitrage processes, pairs trading stands out for violating the efficient market 
+hypothesis through its market- neutral approach and empirical robustness [Gatev et al., 2006]. 
+Statistical arbitrage, often abbreviated as ‘stat arb’, is predicated on the notion that financial markets, while 
+generally efficient, are prone to transient deviations from equilibrium due to liquidity shocks, behavioural biases, 
+information lags, or structural changes [Avellaneda & Lee, 2010]. Rather than seeking absolute price 
+discrepancies, statistical arbitrageurs focus on the relative value between two or more assets, constructing 
+market-neutral portfolios to hedge against broad market movements [Vidyamurthy, 2004]. The central aim is to 
+identify and trade on mean-reverting relationships, instances where the price spread between two assets 
+diverges from its long-term mean and is expected to revert, thereby generating profit when the convergence 
+occurs. 
+Pairs trading, first formalised in the 1980s by Nunzio Tartaglia’s team at Morgan Stanley and later popularised 
+in academic literature [Gatev et al., 2006], is the predominant statistical arbitrage strategy. The approach 
+involves selecting two securities, typically equities within the same industry or sector, that have exhibited strong 
+historical co-movement. When the price relationship between these assets deviates significantly from its 
+historical average, a pairs trader simultaneously takes a long position in the underperforming asset and a short 
+position in the outperforming one, essentially betting that the spread will revert to its mean. The strategy is 
+inherently market-neutral, as returns are generated from the relative movement between the two assets rather 
+than from the direction of the overall market. 
+ 
+
+                                                                      
+                               e-ISSN: 2582-5208 
+International Research Journal of Modernization in Engineering Technology  and  Science 
+( Peer-Reviewed, Open Access, Fully Refereed International Journal ) 
+Volume:07/Issue:07/July-2025         Impact Factor- 8.187                            www.irjmets.com 
+www.irjmets.com      @International Research Journal of Modernization in Engineering, Technology and Science 
+[2153] 
+ 
+Figure 1: Oversimplified representation of pairs trading 
+The theoretical foundation of pairs trading is the aforementioned principle of mean reversion. In contrast to the 
+traditional random walk hypothesis, which posits that asset prices follow a memoryless stochastic process and 
+that past movements have no predictive power, mean reversion suggests that prices or spreads between the 
+prices of two assets tend to return to a historical average over time [Poterba & Summers, 1988]. Mathematically, 
+if St denotes the spread between the prices of two securities at time t, mean reversion implies that 
+𝐸[𝑆𝑡+𝑘 ∣ 𝑆𝑡] → 𝜇 𝑎𝑠 𝑘 → ∞ 
+where 𝜇 is the historical mean of the spread. In pairs trading, this property is exploited by entering trades when 
+the spread deviates by a statistically significant amount (often measured in standard deviations) from the mean, 
+and exiting when it reverts. 
+The process of implementing a pairs trading strategy can be delineated into several key steps: 
+1. Pair Identification: The first and perhaps most critical step is to identify pairs of assets that exhibit a strong 
+and stable statistical relationship. This relationship can be measured in several ways, including correlation, 
+cointegration, and distance metrics. The selection process must account for the possibility of structural 
+breaks, which are permanent changes in underlying relationships due to events such as mergers, 
+bankruptcies, or regulatory shifts. The risk that a divergence is not temporary but structural is the principal 
+risk in pairs trading, and underscores the importance of robust pair selection and the need to monitor these 
+pairs. 
+2. Spread Construction and Normalisation: Once a pair is selected, the spread is constructed, typically as a 
+linear combination of the two price series. To facilitate signal generation, spreads are often normalised using 
+a z- score transformation: 
+𝑧𝑡 = (𝑥 − 𝜇) / 𝜎 
+where St is the spread at time t, 𝜇 is the mean, and 𝜎 is the standard deviation of the spread over a rolling 
+window. Traditionally, and even now, this normalisation allows the trader to interpret deviations in terms 
+of standard deviations, providing a consistent basis for entry and exit signals [Gatev et al., 2006; 
+Vidyamurthy, 2004]. 
+3. Signal Generation: Trading signals are typically generated when the z-score of the spread crosses pre-defined 
+thresholds. For example, a common rule is to enter a trade when the z-score exceeds ±2 (indicating a 
+significant divergence) and to exit when it reverts back to 0 (the mean). Several frameworks and methods 
+have been developed over time to optimise these thresholds, enabling the creation of a precise, rule-based 
+pairs trading strategy. 
+4. Risk Management: Effective risk management is essential not only in the long-term viability of pairs trading 
+strategies, but in any investment strategy. This includes position sizing, stop-loss rules, maximum drawdown 
+constraints, and explicit modelling of transaction costs. The goal is to ensure that the strategy remains 
+efficient in the face of adverse market conditions and avoids catastrophic losses due to rare but extreme 
+events. The risk-adjusted performance of a portfolio is often characterised by the Sharpe ratio, a metric 
+
+                                                                      
+                               e-ISSN: 2582-5208 
+International Research Journal of Modernization in Engineering Technology  and  Science 
+( Peer-Reviewed, Open Access, Fully Refereed International Journal ) 
+Volume:07/Issue:07/July-2025         Impact Factor- 8.187                            www.irjmets.com 
+www.irjmets.com      @International Research Journal of Modernization in Engineering, Technology and Science 
+[2154] 
+which calculates the excess return an investment provides for each unit of risk taken. A higher Sharpe ratio 
+is considered to be better. 
+The pair selection process is particularly nuanced and has been the subject of extensive research. Three principal 
+approaches are commonly used: 
+● Distance Approach: Popularised by Gatev et al. (2006), this method identifies pairs by minimising the 
+sum of squared deviations between the spreads of normalised price series over a historical window. If 
+PA(t) and PB(t) are the normalised prices of stocks A and B at time t, the distance is computed as: 
+SSD = ∑ (from t=1 to t) (PA(t) − PB(t))² 
+ 
+Pairs with the smallest SSD are selected for pairs trading, as they have the most similar historical price 
+trajectories. 
+● 
+Correlation Approach: This approach selects pairs with the highest Pearson correlation coefficients over the 
+formation period. Typically, a correlation coefficient of 0.80 or higher is considered a strong positive 
+correlation, establishing a more definable statistical relationship. While easy to compute, correlation does 
+not guarantee mean reversion, as it only measures linear co-movement and can be inflated by spurious 
+relationships. 
+● 
+Cointegration Approach: Cointegration analysis, introduced by Engle and Granger, addresses the limitations 
+of correlation by testing for the existence of a stationary linear combination between two non-stationary 
+price series. If Xt and Yt are the log prices of two assets, they are cointegrated if there exists a coefficient β 
+such that the residual Zt = Yt - βXt is stationary. It is essential to note that the price series of all equities are 
+non-stationary (statistical properties such as mean and variance change over time). The Engle-Granger twostep method is an approach wherein, firstly, an OLS regression 
+Yt = α + βXt+et 
+is performed on the two securities, and then secondly, the residuals et are tested for stationarity using the 
+Augmented Dicker Fuller (ADF) method. The ADF method tests for a unit root to evaluate the null hypothesis of 
+non-stationarity [Engle & Granger, 1987]. Therefore, a lower p-value (the probability of obtaining results 
+considering the null hypothesis is true), typically less than 0.05, makes a pair considered cointegrated and 
+suitable for pairs trading. A lower p-value implies greater cointegration strength. The spread in cointegration- 
+based pairs trading is often constructed as 
+Spreadt = log(PA(t)) − βlog(PB(t)) 
+Where β is estimated from the regression. The stationarity of the spread is crucial, as it highlights the mean- 
+reverting property which the strategy exploits. 
+Despite the rigour of these methods, traditional pairs trading strategies are typically rule-based, relying on fixed 
+thresholds and static parameters. These approaches can be suboptimal in the face of the complex dynamics of 
+financial markets. In response, recent years have witnessed the growing application of machine learning, 
+particularly reinforcement learning, to the domain of statistical arbitrage [Deng et al., 2016; Yang & Malik, 2024; 
+Carta et al., 2020]. 
+Reinforcement learning is a paradigm wherein an agent learns to make sequential decisions by interacting with 
+an environment, receiving feedback in the form of rewards or penalties. The agent’s objective is to learn a policy 
+through mapping states and actions in order to maximise the cumulative expected reward over time [Sutton & 
+Barto, 2018]. Reinforcement learning is formalised through the framework of a Markov Decision Process (MDP), 
+defined by the tuple (S, A, P, R, γ), where: 
+● 
+State (S): The representation of a given environment at a certain point in time. 
+● 
+Action (A): All possible decisions that the agent can take in any given state. 
+● 
+Transition Probability Function (P): 𝑃(𝑠′ ∣ 𝑠, 𝑎), or the probability of the agent moving to state 𝑠′ when action 
+𝑎 has been taken. 
+● 
+Reward Function (R): 𝑅(𝑠, 𝑎, 𝑠′), or the feedback received upon transitioning from state 𝑠 to 𝑠′ due to action 
+𝑎. It quantifies the benefit of the given action. 
+
+                                                                      
+                               e-ISSN: 2582-5208 
+International Research Journal of Modernization in Engineering Technology  and  Science 
+( Peer-Reviewed, Open Access, Fully Refereed International Journal ) 
+Volume:07/Issue:07/July-2025         Impact Factor- 8.187                            www.irjmets.com 
+www.irjmets.com      @International Research Journal of Modernization in Engineering, Technology and Science 
+[2155] 
+● 
+Discount Factor (γ): A value between 0 and 1 that sets the importance of future rewards. A value closer to 1 
+encourages long-term rewards, whereas a value closer to 0 emphasises short-term gains. 
+The Markov property stipulates that the next state depends only on the current state and action, and not on the 
+sequence of events that preceded it. This means that the Reinforcement Learning process is memoryless [Sutton 
+& Barto, 2018], 
+𝑃(𝑠𝑡 + 1 ∣ 𝑠𝑡, 𝑎𝑡, 𝑠𝑡 − 1, 𝑎𝑡 − 1, … ) = 𝑃(𝑠𝑡 + 1 ∣ 𝑠𝑡, 𝑎𝑡) 
+In the context of pairs trading, the RL agent observes the current state (e.g. the z-score of the spread), selects an 
+action (e.g. enter/exit/hold), receives a reward (e.g. profit/loss adjusted for transaction costs and risk), and 
+transitions to a new state. Over time, the agent learns to optimise trading decisions in response to the evolving 
+market environment. 
+Recent studies have demonstrated that RL agents can adaptively learn optimal entry and exit points, 
+outperforming traditional rule-based strategies in both equity and cryptocurrency markets [Yang & Malik, 2024; 
+Liu et al., 2024; SSRN, 2023]. For example, Yang & Malik [2024] showed that RL-based pairs trading significantly 
+outperformed both manual and traditional approaches in volatile cryptocurrency markets, achieving annualised 
+profits as high as 31.53% compared to 8.33% for traditional methods. Similarly, deep reinforcement learning 
+(DRL) techniques, such as DQN and hybrid RL networks, have been shown to yield superior performance and 
+risk-adjusted returns in various stock and bond market settings [Liu et al., 2024; MDPI, 2022]. 
+Q-learning is a widely used, model-free RL algorithm that estimates the optimal action-value function Q*(s, a) 
+representing the maximum expected cumulative reward achievable from state s by taking action a and following 
+the optimal policy thereafter [Watkins & Dayan, 1992]. The Q-table is updated iteratively using the Bellman 
+equation: 
+𝑄(𝑠𝑡, 𝑎𝑡) ← 𝑄(𝑠𝑡, 𝑎𝑡) + 𝛼[𝑟𝑡 + 𝛾𝑚𝑎𝑥𝑎′𝑄(𝑠𝑡 + 1, 𝑎′) − 𝑄(𝑠𝑡, 𝑎𝑡)] 
+● 
+rt is the immediate reward received 
+● 
+α ∈ (0,1] is the learning rate, which governs the weight of new information 
+● 
+γ ∈ [0,1] is the discount factor, which governs the weight of future rewards 
+● 
+𝑚𝑎𝑥𝑎′𝑄(𝑠𝑡 + 1, 𝑎′) represents the maximum expected future reward obtainable from the next state 
+Through repeated interaction with the environment, the Q-table converges to the optimal value function, 
+enabling the agent to select actions that maximise long-term returns. The epsilon-greedy policy is commonly 
+used to balance exploration (random actions) and exploitation (informed, or greedy actions), with the 
+exploration rate decaying over time to favour exploitation as learning progresses. The integration of Q-learning 
+into pairs trading offers several advantages. The agent can adaptively learn optimal entry and exit points, 
+dynamically adjust to changing market conditions, incorporate complex risk management objectives directly into 
+the reward function, and more. 
+Due to the inherent stochasticity of the learning process, single Q-learning agents often experience fluctuations 
+in their learned policies and value estimates between runs, leading to unstable and inconsistent performance. 
+Research has demonstrated that ensemble Q-learning, where multiple Q-networks or Q-tables are trained 
+independently and their action-value estimates are aggregated, can enhance stability, reduce variance, and 
+improve robustness in financial Reinforcement Learning (RL) applications. For instance, Averaged-DQN 
+introduced by Anschel et al. (2017) and the Multi-DQN framework from Carta et al. (2021) both show that 
+ensembling several Q-networks (typically ranging from four to sixteen) significantly reduces value estimation 
+variance and stabilises learning, especially in noisy financial environments. In the context of a non-deterministic 
+Q-learning model, ensemble learning is especially valuable for achieving stable results. 
+The evolution of pairs trading from simple rule-based strategies to sophisticated, adaptive frameworks powered 
+by reinforcement learning represents a significant advance in the field of quantitative finance. 
+II. 
+METHODOLOGY 
+This section outlines the methodological framework and experimental architecture developed to evaluate the 
+empirical performance of ensemble Q-learning for statistical arbitrage in the form of pairs trading. The 
+methodology goes over multiple integral components. All methodologies are designed to mimic real-world 
+
+                                                                      
+                               e-ISSN: 2582-5208 
+International Research Journal of Modernization in Engineering Technology  and  Science 
+( Peer-Reviewed, Open Access, Fully Refereed International Journal ) 
+Volume:07/Issue:07/July-2025         Impact Factor- 8.187                            www.irjmets.com 
+www.irjmets.com      @International Research Journal of Modernization in Engineering, Technology and Science 
+[2156] 
+trading constraints using hourly data 
+in the Indian equity market. All code was implemented in Python using the VS Code IDE for reproducibility, 
+modularity, and integration with existing libraries. 
+a. Data Architecture and Preprocessing 
+The empirical basis of this study is grounded in hourly frequency financial data from the constituents of the 
+NIFTY 50 index, which offers a comprehensive representation of the Indian equity market by encompassing 
+companies from key sectors with significant market capitalisation and liquidity. Hourly closing price data for all 
+50 stocks were procured programmatically through the Yahoo Finance API, using the finance Python library. The 
+dataset spans a 547-day window from 1 January 2024 to 1 July 2025, and includes over 128,400 data points. For 
+modelling purposes, the dataset was divided into two distinct sets: a training window from 1 January 2024 to 1 
+January 2025, and an out-of-sample evaluation window covering 1 January 2025 to 1 July 2025. Raw price data 
+was rigorously preprocessed to ensure structural integrity. Missing values were addressed using a forward-fill 
+followed by backward-fill to maintain continuity. All time series were aligned to a common hourly index, ensuring 
+strict temporal synchronicity for spread and subsequent z-score calculations. 
+a. Advanced Pair Selection Framework 
+Given the pivotal impact of pair selection on the success of statistical arbitrage strategies, a robust and novel 
+composite scoring approach was adopted to identify the most promising trading pairs from among the 1,225 
+unique permutations available in the NIFTY 50 universe. The scoring mechanisms combine two metrics with 
+equal weighting to capture both long-term cointegration and short-term mean reversion properties: 
+1. Cointegration Strength (50% weight): For each asset pair, the Engle-Granger two-step methodology is 
+applied on the raw price series to test for a statistically significant long-run equilibrium relationship. The 
+first stage regresses one asset against the other; the second stage applies an Augmented Dickey-Fuller (ADF) 
+test on the residuals to determine stationarity. Implementation leverages the statsmodels Python library. 
+2. Z-Score Mean-Crossing Frequency (50% weight): The raw price spread for each pair is calculated hourly, and 
+its z-score normalisation is applied over the training window. The number of zero-crossings, which are 
+instances when the z-score crosses the mean (0) is counted, with higher cross-frequency interpreted as 
+stronger mean-reversion behaviour. 
+Both cointegration and crossing metrics were individually normalised across all pairs and then averaged to form 
+a composite pair score. The top five highest-scoring pairs were selected to comprise the trading portfolio used in 
+subsequent model training and evaluation. The z-scores of the spreads for these prices were then computed and 
+downloaded as a CSV file to be used for the state space of the agent. 
+Table 1. Tickers of five selected stock pairs 
+SN. 
+Stock 1 
+Stock 2 
+1 
+BPCL 
+CIPLA 
+2 
+CIPLA 
+NTPC 
+3 
+ADANIENT 
+TATACONSUM 
+4 
+EICHERMOT 
+M&M 
+5 
+HDFCBANK 
+ICICIBANK 
+ 
+The final datasets employed for the study are published on a GitHub repository (Datasets), including .csv files 
+with the hourly raw prices for all NIFTY 50 constituents and z-score computations of the spreads of the selected 
+pairs 
+for 
+the 
+training 
+and 
+evaluation 
+phase: 
+https://github.com/ArnavRayaprolu/ensembleqlearning_pairstrading 
+
+                                                                      
+                               e-ISSN: 2582-5208 
+International Research Journal of Modernization in Engineering Technology  and  Science 
+( Peer-Reviewed, Open Access, Fully Refereed International Journal ) 
+Volume:07/Issue:07/July-2025         Impact Factor- 8.187                            www.irjmets.com 
+www.irjmets.com      @International Research Journal of Modernization in Engineering, Technology and Science 
+[2157] 
+ 
+Figure 2, 3: Spread Z-scores for training (left) and evaluation (right) 
+c. Reinforcement Learning Agent Design 
+A custom OpenAI Gym-compatible environment was designed to portray the dynamics of a realistic pairs trading 
+framework. The environment encapsulates transaction costs, capital constraints, cooldown periods, forced entry 
+and exit conditions, and penalises undesired behaviours such as overtrading and inactivity. 
+In this framework, the state space is defined as a compact, information-rich encoding of recent market conditions 
+and 
+the agent’s current trading position: 
+- 
+Spread Z-Score History: The primary feature is a rolling window of the most recent three z-score values of 
+the spread between each selected asset pair. 
+- 
+Discretisation: Each z-score is discretised into 15 bins, mapping the continuous range (empirically, [−5,5] to 
+integer indices. 
+- 
+The agent’s trading position is encoded as one of three states. 
+The full state is represented as a unique integer by combining the discretised z-score history and position 
+encoding: 
+state_index = ∑(from j = 0 to 2) [ bin(z_{t−2+j}) × 15^j ] × 3 + pos_idx 
+Essentially, the system uses base 15 encoding (z-score multiplied by 15j) to provide a unique code for each zscore state. This scheme ensures that every possible combination of recent z-score history and trading position 
+maps to a unique integer, which is necessary for indexing into the Q-table. This also makes sure the model is 
+computationally efficient. Thus, the total number of states are 153 × 3 = 10,125. The agent operates within a 
+discrete action space comprising six possible actions at each time step: 
+1. Hold (do nothing) 
+2. Enter Long-Short (long asset A, short asset B) 
+3. Enter Short-Long (short asset A, long asset B) 
+4. Enter Long-Short (alt) (alternative entry logic) 
+5. Enter Short-Long (alt) 
+6. Exit Position (close any open position) 
+Positions may be opened only when the agent is not already engaged in a trade and the cooldown period (1 time 
+step) since the last exit has elapsed. Trades are allowed under two conditions: (1) the magnitude of the current 
+z-score exceeds a minimum threshold of 0.05 (to reduce unnecessary noise) or (2) the z-score crosses the mean, 
+implying a transition through equilibrium. Stop-losses are loose, implemented as forced exits if the spread 
+diverges excessively or if a trade is held for more than 60 steps without profit. Transaction costs are fixed at 
+0.09% of capital per trade, set to reflect realistic conditions of the leading Indian brokerage platform Zerodha. 
+
+                                                                      
+                               e-ISSN: 2582-5208 
+International Research Journal of Modernization in Engineering Technology  and  Science 
+( Peer-Reviewed, Open Access, Fully Refereed International Journal ) 
+Volume:07/Issue:07/July-2025         Impact Factor- 8.187                            www.irjmets.com 
+www.irjmets.com      @International Research Journal of Modernization in Engineering, Technology and Science 
+[2158] 
+The agent is terminated if the drawdown exceeds 25% of the initial capital (INR 100,000). 
+The reward function is designed as a hybrid of base activity penalties, profitability incentives, risk penalties, and 
+growth 
+bonuses, with each component scaled and shaped by the agent’s hyperparameters. The reward function is 
+formalised as 
+Q(st, at) ← Q(st, at) + α⋅[rt + γ⋅maxaQ(st+1, a) − Q(st, at)] 
+where: 
+● 
+α ∈ (0,1] is the learning rate, 
+● 
+rt is the immediate reward derived from interaction with the environment, 
+● 
+st is the current state 
+● 
+at is the executed action in st 
+● 
+max⁡aQ(st+1, a) estimates future value assuming greedy selection. 
+The reward function is not limited to raw profit or loss. It is an aggregate reward to reinforce profitable behaviour 
+and penalise poor timing. At every environment step, the reward is constructed through multiple contextsensitive components. The full expression can be written as 
+rt = -0.001 + rentry + rexit + rforced_exit + rgrowth 
+where: 
+● 
+-0.001 is a constant time penalty applied at each step to discourage passive or inactive episodes. 
+● 
+rentry is a bonus awarded for initiating a trade under valid entry signals. When the agent opens a position and 
+the entry condition is met, the agent receives a dynamic reward, 
+rentry = 0.5⋅∣ zt ∣ + 0.05 
+● 
+where zt is the current z-score of the spread. 
+● 
+rexit is a reward component for profitable and timely exits. When the agent exits a trade willingly using the 
+exit action (action 6), provided the position has been held for a minimum number of steps (1), the current zscore has moved closer to the mean compared to the entry z-score, and the trade is profitable by a ratio of 
+0.005%, the agent receives the reward 
+rexit = 50⋅ (PnL)/(Trade Size) + 0.3⋅ (1 - ∣ zt ∣) 
+where the first term rewards profitability and the second rewards precision of exit close to the mean. Otherwise, 
+a flat penalty is applied: 
+rexit = -0.2 
+● 
+rforced_exit is a penalty incurred when stop-loss or maximum duration constraints are violated. If a trade is held 
+for more than 60 time steps or diverges more than 7 standard deviations from its entry, the position is auto- 
+liquidated and a sharp penalty is imposed 
+rforced_exit = -1.0 
+● 
+rgrowth is a capital appreciation bonus reinforcing overall account growth. This reward is: 
+rgrowth = 0.05⋅((Ct - C0)/C0) where Ct is the current capital and C0 = 100,000 is the initial capital. 
+d. Hyperparameter Optimisation via Bayesian Search 
+Recognising the sensitivity of reinforcement learning performance to hyperparameter configurations, a Bayesian 
+optimisation framework was employed using the optuna Python library. The search domain includes the learning 
+rate (α), discount factor (γ), exploration rate (ϵ), and epsilon decay factor. A Gaussian Process serves as the 
+surrogate model for the objective function, enabling informed sampling. The optimisation criterion was defined 
+as the mean return minus 
+two times the standard deviation to favour consistent performance over high volatility. The process ran for 60 
+trials, with 10 runs per trial. The final values were slightly adjusted in accordance with current literature, 
+resulting in: 
+● 
+Learning Rate (α): 0.015 
+● 
+Discount Factor (γ): 0.99 
+
+                                                                      
+                               e-ISSN: 2582-5208 
+International Research Journal of Modernization in Engineering Technology  and  Science 
+( Peer-Reviewed, Open Access, Fully Refereed International Journal ) 
+Volume:07/Issue:07/July-2025         Impact Factor- 8.187                            www.irjmets.com 
+www.irjmets.com      @International Research Journal of Modernization in Engineering, Technology and Science 
+[2159] 
+● 
+Exploration Rate (ϵ): 1.0 
+● 
+Epsilon Decay: 0.999 
+● 
+Entry Threshold: z-score > 0.01 
+d. Out of Sample Evaluation 
+Post-training, each learned agent is evaluated against out-of-sample z-scores spread series from 1 January 2025 
+to 1 July 2025. For each pair, 10 independent training-evaluation cycles are run, each starting with fresh Q-table 
+reinitialisation and re-training. During evaluation, the agent operates fully exploitatively, choosing greedily from 
+the averaged Q-values of the ensemble. Performance metrics tracked included the total return, the Sharpe ratio 
+adjusted for a risk-free rate of 6.79% and 853 trading periods, the total amount of trades with the model’s win 
+rate (proportion of profitable trades), and the max drawdown value (largest peak-to-trough loss experienced). 
+The capital series of each run is also recorded using the matplotlib Python library. Each metric is reported per 
+run and aggregated across runs (mean ± standard deviation) for each pair. For visual clarity, capital over time is 
+plotted with shaded bands denoting ±1 standard deviations across the runs. Additionally, capital trajectories 
+across all pairs are aggregated into a composite portfolio-level performance plot. All metrics are logged and plots 
+saved for reproducibility and granular post-analysis. 
+III. 
+MODELLING AND ANALYSIS 
+The framework developed is a tabular ensemble multi-Q-learning agent trained via interaction with the custom 
+environment. The agent leverages an ensemble approach to address the common issue of overestimation bias in 
+conventional Q-learning. Specifically, an ensemble of n = 3 Q-tables, Q1, Q2, …, Qn is maintained. Increasing the 
+value of n increases the stability and lowers the variance of the model, but also makes it computationally heavier. 
+Each Q- table is instantiated with optimistic initialisation (value = 10.0) across all 10,125 observable states and 
+six actions, encouraging early-stage exploration. During training, the agent selects actions via an epsilon-greedy 
+policy. With probability epsilon, a random action is taken (exploration), and with probability 1 - epsilon, the 
+action maximising the average Q-value across all ensemble members is selected (exploitation). Each table was 
+independently trained for 50,000 episodes per pair using the respective training window data, in the same 
+environment but with random seeds. At the start of each episode, the trading environment resets both capital 
+and state variables. The agent alternates between exploration and exploitation based on the current epsilon 
+value, which decays multiplicatively (according to the epsilon decay value) after each episode, systematically 
+annealing exploration over time. After all Q-tables are trained, they are stacked into a NumPy array. The final, 
+deployable Q-table used for policy decisions is obtained by computing the element-wise mean across all Q-tables 
+in the ensemble. 
+ 
+
+                                                                      
+                               e-ISSN: 2582-5208 
+International Research Journal of Modernization in Engineering Technology  and  Science 
+( Peer-Reviewed, Open Access, Fully Refereed International Journal ) 
+Volume:07/Issue:07/July-2025         Impact Factor- 8.187                            www.irjmets.com 
+www.irjmets.com      @International Research Journal of Modernization in Engineering, Technology and Science 
+[2160] 
+ 
+Figure 4: Data flow diagram of the ensemble Q-learning pairs trading framework 
+IV. 
+RESULTS AND DISCUSSION 
+The ensemble Q-learning agent was evaluated on five selected pairs from the NIFTY 50 universe, selected using 
+a composite cointegration and mean-reversion metric. Each agent underwent 10 independent training and 
+evaluation cycles on an out-of-sample dataset of six months. Each evaluation started with a notional capital of 
+INR 100,000, incorporating a transaction cost of 0.09%. Capital trajectory is plotted using the matplotlib Python 
+library. 
+
+                                                                      
+                               e-ISSN: 2582-5208 
+International Research Journal of Modernization in Engineering Technology  and  Science 
+( Peer-Reviewed, Open Access, Fully Refereed International Journal ) 
+Volume:07/Issue:07/July-2025         Impact Factor- 8.187                            www.irjmets.com 
+www.irjmets.com      @International Research Journal of Modernization in Engineering, Technology and Science 
+[2161] 
+Table 2. Averaged 6-month performance metrics for each pair (± 1 standard deviation) 
+SN. 
+Pair (StockA_StockB) 
+Return % 
+Sharpe Ratio 
+Max Drawdown % 
+1 
+BPCL_CIPLA 
+147.36 ± 21.40 
+2.47 ± 0.19 
+-13.46 ± 0.00 
+2 
+CIPLA_NTPC 
+212.24 ± 26.40 
+3.12 ± 0.19 
+-17.08 ± 0.01 
+3 
+ADANIENT_TATACONSU M 
+35.14 ± 14.55 
+1.21 ± 0.59 
+-16.73 ± 4.50 
+4 
+EICHERMOT_M&M 
+31.50 ± 2.77 
+0.93 ± 0.07 
+-14.67 ± 0.71 
+5 
+HDFCBANK_ICICIBANK 
+99.69 ± 11.56 
+2.67 ± 0.26 
+-12.20 ± 2.29 
+The total portfolio return was 105.2% ± 7.8% over the 6-month evaluation window, assuming equal capital 
+allocation across the five selected pairs. The portfolio-level Sharpe ratio was 2.08 ± 0.14, indicating strong riskadjusted performance with low variance across pairs. These aggregate statistics confirm that the ensemble Qlearning agent not only delivered high returns and stable behaviour at the individual pair level, but also produced 
+consistent and diversified gains when deployed across multiple pairs. 
+ 
+ 
+ 
+
+                                                                      
+                               e-ISSN: 2582-5208 
+International Research Journal of Modernization in Engineering Technology  and  Science 
+( Peer-Reviewed, Open Access, Fully Refereed International Journal ) 
+Volume:07/Issue:07/July-2025         Impact Factor- 8.187                            www.irjmets.com 
+www.irjmets.com      @International Research Journal of Modernization in Engineering, Technology and Science 
+[2162] 
+ 
+ 
+ 
+Figure 5, 6, 7, 8, 9: Average capital trajectory plots for each pair over 10 runs (with ± 1 standard deviation) 
+ 
+Figure 10: Overall portfolio performance over 10 runs (with ± 1 standard deviation) 
+Individual runs and episodic rewards, as well as aggregate statistics are published in the aforementioned GitHub 
+repository 
+(Results) 
+as 
+.png 
+files, 
+along 
+with 
+a 
+.txt 
+file 
+with 
+the 
+evaluation 
+results: 
+https://github.com/ArnavRayaprolu/ensembleqlearning_pairstrading 
+Table. 1 January 2025 – 1 July 2025 portfolio benchmark summary 
+SN. 
+Source 
+Return % of Source 
+α (excess returns) of devised 
+model compared to source 
+1 
+NIFTY 50 
+7.20 
+98.00 
+
+                                                                      
+                               e-ISSN: 2582-5208 
+International Research Journal of Modernization in Engineering Technology  and  Science 
+( Peer-Reviewed, Open Access, Fully Refereed International Journal ) 
+Volume:07/Issue:07/July-2025         Impact Factor- 8.187                            www.irjmets.com 
+www.irjmets.com      @International Research Journal of Modernization in Engineering, Technology and Science 
+[2163] 
+2 
+S&P 500 
+4.33 
+100.87 
+3 
+FTSE 100 
+3.67 
+101.53 
+4 
+MSCI World Index (USD) 
+6.02 
+99.18 
+5 
+Hang Seng Index 
+1.46 
+103.74 
+It is essential to note that this study outperforms existing literature. Gatev et al. (2006) found average annualised 
+excess returns of up to 11% for self-financing portfolios of U.S. equities using a distance-based pairs selection 
+method over the period 1962–2002, after accounting for conservative transaction costs. Pizzutilo (2013) 
+conducted an international study, constructing 10-pair portfolios that yielded a mean annual gross return of 
+11.84%. Zhu (2024) replicated Gatev et al. (2006)’s methodology in modern markets, utilising a larger stock pool 
+and accounting for changing risk factors, and noted that top-performing traditional strategies still yield a 
+compounded annual excess return of 6.2%. Yang & Malik (2024) developed an RL-based pairs trading approach 
+in cryptocurrency markets and reported annualised profits up to 31.53% for RL models. These results, while 
+superior to many benchmarks, remain notably below the portfolio returns documented in the present study, 
+which achieves a portfolio-level average return of 105.2% with an average Sharpe ratio of 2.08. This indicates a 
+substantial excess return over global benchmarks, pointing towards the success of ensemble Q-learning in pairs 
+trading, particularly in the Indian equity market. 
+V. 
+CONCLUSION 
+In an era of unprecedented competition and technological advancements in strategies to apply in financial 
+markets, this research demonstrates the empirical and practical advantages of applying ensemble Q-learning to 
+pairs trading for statistical arbitrage methods. By combining rigorous data engineering, a novel composite metric 
+for robust pair selection, and a carefully designed ensemble Q-learning framework, this research establishes a 
+new benchmark for quantitative trading. It delivers a level of performance previously unseen in both Indian and 
+international pairs trading research. Looking forward, this approach lays the groundwork for a new era of data- 
+driven, reinforcement-learning-driven trading strategies, capable of thriving in the face of contemporary market 
+dynamics. 
+ACKNOWLEDGEMENTS 
+I would like to thank Dr. Martin Sewell, research scholar formerly from the University of Cambridge, for his 
+contributions towards this paper. His guidance was essential for shaping the research direction, refining the 
+methodology, and ensuring the academic rigour of this work. 
+VI. 
+REFERENCES 
+[1] 
+Avellaneda, M., & Lee, J. H. (2010). Statistical arbitrage in the US equities market. Quantitative Finance, 
+10(7), 761–782. https://doi.org/10.1080/14697680903155160 
+[2] 
+Carta, S., Ferreira, A., Podda, A. S., Reforgiato Recupero, D., & Sanna, A. (2021). Multi-DQN: An ensemble 
+of deep Q-learning agents for stock market forecasting. Expert Systems with Applications, 164, 113820. 
+https://doi.org/10.1016/j.eswa.2020.113820 
+[3] 
+Deng, Y., Bao, F., Kong, Y., Ren, Z., & Dai, Q. (2016). Deep direct reinforcement learning for financial signal 
+representation and trading. IEEE Transactions on Neural Networks and Learning Systems, 28(3), 653–
+664. https://doi.org/10.1109/TNNLS.2016.2522401 
+[4] 
+Engle, R. F., & Granger, C. W. J. (1987). Co-integration and error correction: Representation, estimation, 
+and testing. Econometrica, 55(2), 251–276. https://doi.org/10.2307/1913236 
+[5] 
+Gatev, E., Goetzmann, W. N., & Rouwenhorst, K. G. (2006). Pairs trading: Performance of a relative-value 
+arbitrage rule. Review of Financial Studies, 19(3), 797–827. https://doi.org/10.1093/rfs/hhj020 
+[6] 
+Liu, C., Chan, Y., Kazmi, S. H. A., & Fu, H. (2024). Deep reinforcement learning for pairs trading: Evidence 
+from 
+China. 
+Journal 
+of 
+Finance 
+and 
+Data 
+Science, 
+10, 
+Article 
+10011. 
+https://doi.org/10.1016/j.jfds.2024.10011 
+
+                                                                      
+                               e-ISSN: 2582-5208 
+International Research Journal of Modernization in Engineering Technology  and  Science 
+( Peer-Reviewed, Open Access, Fully Refereed International Journal ) 
+Volume:07/Issue:07/July-2025         Impact Factor- 8.187                            www.irjmets.com 
+www.irjmets.com      @International Research Journal of Modernization in Engineering, Technology and Science 
+[2164] 
+[7] 
+Pizzutilo, F. (2013). A note on the effectiveness of pairs trading for individual investors. SSRN Electronic 
+Journal. https://doi.org/10.2139/ssrn.2201312 
+[8] 
+Poterba, J. M., & Summers, L. H. (1988). Mean reversion in stock prices: Evidence and implications. Journal 
+of Financial Economics, 22(1), 27–59. https://doi.org/10.1016/0304-405X(88)90021-9 
+[9] 
+Roychoudhury, R., Bhagtani, R., & Daftari, A. (2023). Pairs trading using clustering and deep 
+reinforcement learning. SSRN Electronic Journal. https://doi.org/10.2139/ssrn.4397377 
+[10] 
+Sang Ko Him, Jung, J. H., & Lee, J. H. (2022). A hybrid deep learning model for forecasting stock market 
+trends. 
+[11] 
+Applied Sciences, 12(3), 944. https://doi.org/10.3390/app12030944 
+[12] 
+Sutton, R. S., & Barto, A. G. (2018). Reinforcement learning: An introduction (2nd ed.). MIT Press. 
+[13] 
+Watkins,  C.  J.  C.  H.,  &  Dayan,  P.  (1992).  Q-learning.  Machine  Learning,  8(3–4),  279–292. 
+https://doi.org/10.1007/BF00992698 
+[14] 
+Vidyamurthy, G. (2004). Pairs trading: Quantitative methods and analysis. John Wiley & Sons. 
+[15] 
+Xuanchi, Z. (2024). Examining pairs trading profitability. Working Paper, Yale University Department of 
+Economics. 
+[16] 
+Yang, H., & Malik, A. (2024). Reinforcement learning pair trading: A dynamic scaling approach. Journal of 
+Risk and Financial Management, 17(12), Article 555. https://doi.org/10.3390/jrfm17120555 

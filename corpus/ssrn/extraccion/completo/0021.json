@@ -1,0 +1,259 @@
+{
+  "doc_id": 21,
+  "titulo": "A Regime-Aware Hybrid Pairs Trading System with Sentiment-Driven Intelligence",
+  "resumen_operativo": "Propone HPTS, un sistema de pairs trading que combina un score compuesto de volatilidad/retorno/sentimiento (VADER+Finnhub) rankeado por Random Forest, detección de régimen con HMM y rotación sectorial walk-forward para elegir pares y sectores dinámicamente. Reporta retornos acumulados y Sharpe muy superiores a baselines numéricos, textuales, híbridos y de deep learning, pero con cifras de rendimiento (Rcum ~1940%) y comparaciones que lucen infladas y poco creíbles, además de datos/backtests con supuestos débiles (22 tickers, ventana única 2020-2023, thresholds fijos ad-hoc). Útil como catálogo de ideas (fusión numérico+sentimiento, regime-aware sector rotation) más que como evidencia robusta de edge.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de arbitraje estadístico que explota el comportamiento de reversión a la media de pares de acciones correlacionadas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "cointegration"},
+        {"tipo": "USA", "objeto": "mean reversion"},
+        {"tipo": "MEJORA_A", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "the pairs trading strategy (PTS) is widely used, exploiting the mean-reverting behavior of correlated stock pairs"
+    },
+    {
+      "nombre": "sentiment analysis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Cuantificación del sentimiento del inversor a partir de datos textuales (noticias financieras, redes sociales) para incorporarlo como señal en la selección de pares.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "stock returns"},
+        {"tipo": "USA", "objeto": "VADER"},
+        {"tipo": "PARTE_DE", "objeto": "composite score"}
+      ],
+      "cita_textual": "Sentiment analysis, a key component in modern financial modeling, quantifies investor sentiment using textual data sources such as financial news and social media"
+    },
+    {
+      "nombre": "VADER",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Analizador de sentimiento léxico basado en reglas, usado para generar scores de polaridad de titulares de noticias financieras en el rango -1 a +1.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "sentiment analysis"},
+        {"tipo": "REQUIERE", "objeto": "financial news headlines"}
+      ],
+      "cita_textual": "we employ the VADER sentiment analyzer, a lexicon and rule-based model well-suited for short financial news headlines"
+    },
+    {
+      "nombre": "regime switching",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica que clasifica el estado del mercado en regímenes discretos (alcista, bajista, neutral) para adaptar la estrategia a condiciones cambiantes.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "hidden Markov model"},
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"},
+        {"tipo": "APLICA_A", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "Regime-switching models address this limitation by classifying market states into distinct regimes, such as bullish, bearish, and neutral phases"
+    },
+    {
+      "nombre": "hidden Markov model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo con variable de estado latente que sigue un proceso de Markov, usado para inferir el régimen de mercado (alcista/bajista/neutral) a partir de retornos y volatilidad.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "regime switching"},
+        {"tipo": "MIDE", "objeto": "market regime"}
+      ],
+      "cita_textual": "a regime-switching model can be represented using a HMM, where the latent state variable Lt follows a Markov process"
+    },
+    {
+      "nombre": "sector rotation",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Reasignación dinámica de capital hacia los sectores que históricamente performan bien bajo el régimen de mercado vigente, implementada de forma walk-forward y trimestral.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "hidden Markov model"},
+        {"tipo": "APLICA_A", "objeto": "pairs trading"},
+        {"tipo": "USA", "objeto": "walk-forward validation"}
+      ],
+      "cita_textual": "a walk-forward sector rotation (WFSR) strategy is applied to reallocate capital across sectors that historically perform well under the prevailing regime"
+    },
+    {
+      "nombre": "composite score",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Suma ponderada de volatilidad, retorno y sentimiento por acción, con pesos normalizados y jerárquicos (volatilidad>retorno>sentimiento), usada para rankear y seleccionar acciones/pares.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "sentiment analysis"},
+        {"tipo": "USA", "objeto": "random forest"},
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "Cxi = wβ · βi + wR · Ri + wS · Si, ∀xi ∈X"
+    },
+    {
+      "nombre": "random forest",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Random Forest Regressor usado para predecir el composite score de cada acción a partir de volatilidad, retorno y sentimiento, y para derivar feature importance que refina los pesos del score.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "composite score"},
+        {"tipo": "MIDE", "objeto": "feature importance"},
+        {"tipo": "MEJORA_A", "objeto": "linear regression"}
+      ],
+      "cita_textual": "a Random Forest Regressor (RFR) is employed to model the composite score of each stock based on volatility, return, and sentiment features"
+    },
+    {
+      "nombre": "feature importance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Contribución relativa de cada variable (sentimiento, volatilidad, retorno, medias móviles, volumen, RSI) a la predicción del Random Forest; en el paper el sentimiento promedio resultó ser el factor más significativo.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "random forest"}
+      ],
+      "cita_textual": "the analysis, as shown in Table 2, revealed average sentiment as the most significant factor, followed by volatility and return"
+    },
+    {
+      "nombre": "z-score spread",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Normalización del spread de precios entre dos acciones respecto a su media y desvío móvil, usada para generar señales de entrada/salida con umbrales fijos (entry=1.0, exit=0.5).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "pairs trading"},
+        {"tipo": "PREDICE", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "Zt = δt −µt / σt ... A long position in xi and short in xj is initiated when Zt < −θentry"
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de retorno ajustado por riesgo, calculada como retorno promedio diario sobre desvío estándar de retornos diarios (tasa libre de riesgo asumida cero).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"}
+      ],
+      "cita_textual": "The Sharpe Ratio (ϕ), a measure of risk-adjusted return, is calculated as: ϕ = R̄t − Rf / σRt"
+    },
+    {
+      "nombre": "maximum drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Pérdida máxima observada desde un pico hasta un valle en los retornos acumulados durante el período de backtest, usada como métrica de riesgo a la baja.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "downside risk"}
+      ],
+      "cita_textual": "Maximum Drawdown (∆MDD) is another crucial metric used to assess downside risk"
+    },
+    {
+      "nombre": "win ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Proporción de días de trading con retorno positivo sobre el total de días, usada para medir consistencia de la estrategia.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "consistency"}
+      ],
+      "cita_textual": "the win ratio (Φ), defined as the ratio of the number of trading days with positive returns to the total number of trading days"
+    },
+    {
+      "nombre": "walk-forward validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Esquema de evaluación que recorre el horizonte temporal con ventanas rodantes de entrenamiento/test, reentrenando régimen y selección de pares en cada iteración.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"},
+        {"tipo": "USA", "objeto": "hidden Markov model"}
+      ],
+      "cita_textual": "Through the walk-forward validation process, the strategy undergoes continuous testing and refinement, ensuring robust decision-making"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de que resultados de backtest reflejen ajuste a datos históricos en vez de un edge real; el paper lo menciona implícitamente al justificar walk-forward validation, pero no reporta pruebas estadísticas de significancia contra múltiples comparaciones.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "walk-forward validation"}
+      ],
+      "cita_textual": "the strategy undergoes continuous testing and refinement, ensuring robust decision-making and the generation of consistent, cumulative returns"
+    },
+    {
+      "nombre": "cointegration",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Método estadístico tradicional para seleccionar pares (junto con correlación) mencionado como enfoque previo con adaptabilidad limitada a cambios de régimen.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "pairs trading"},
+        {"tipo": "SE_OPONE_A", "objeto": "composite score"}
+      ],
+      "cita_textual": "traditional approaches such as correlation- and cointegration-based methods (Rad et al., 2016) suffer from static pair selection"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costo por operación (0.1% por trade) incluido en el backtest out-of-sample con Backtrader/Alpaca para evaluar la rentabilidad real de HPTS.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "With a 0.1% transaction cost per trade, the strategy showed strong performance"
+    },
+    {
+      "nombre": "out-of-sample testing",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Validación en datos no vistos por el modelo de Random Forest y por el backtest completo del sistema, usada para confirmar la generalización del score compuesto predicho y de la estrategia.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"},
+        {"tipo": "MIDE", "objeto": "random forest"}
+      ],
+      "cita_textual": "out-of-sample testing was conducted. Fig. 5 compares the actual composite scores for unseen data ... with the predicted scores"
+    },
+    {
+      "nombre": "sentiment score",
+      "tipo": "dato",
+      "definicion_en_contexto": "Puntaje de sentimiento por acción obtenido de titulares financieros vía Finnhub API y procesado con VADER, en rango -1 a +1, agregado como promedio ponderado.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "composite score"},
+        {"tipo": "USA", "objeto": "VADER"}
+      ],
+      "cita_textual": "sentiment scores Sxi,t ranging from -1 (indicating negative sentiment) to +1 (indicating positive sentiment)"
+    },
+    {
+      "nombre": "market regime",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estado latente del mercado (bullish, bearish, neutral) caracterizado por retorno medio, fuerza de reversión a la media y volatilidad, inferido con HMM para guiar rotación sectorial y selección de pares.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "hidden Markov model"},
+        {"tipo": "CAUSA", "objeto": "sector rotation"}
+      ],
+      "cita_textual": "each time step is classified into one of three market regimes: bullish, bearish, or neutral"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El Random Forest Regressor que predice el composite score a partir de volatilidad, retorno y sentimiento explica una fracción sustancial de la varianza, con sentimiento como feature más importante, por delante de volatilidad y retorno.",
+      "mercado": "US equities (22 tickers, tecnología y salud principalmente)",
+      "periodo": "2020-01-01 a 2023-12-31",
+      "magnitud": "MSE=36.7735, R²=0.8194; feature importance: sentimiento=0.3827, volatilidad=0.5476, retorno=0.4469",
+      "condiciones": "in-sample sobre 22 acciones seleccionadas, sin desglose de significancia estadística de las importancias",
+      "robustez": "baja",
+      "cita_textual": "the model demonstrates strong performance, with a Mean Squared Error (MSE) of 36.7735 and an R-squared value of 0.8194"
+    },
+    {
+      "afirmacion": "La precisión predictiva y el retorno acumulado del RFR mejoran al aumentar la ventana de datos de entrenamiento hasta ~3-4 años, después de lo cual el beneficio se estanca (efecto meseta).",
+      "mercado": "US equities",
+      "periodo": "2020-2023 (ventanas de 1 a 4 años)",
+      "magnitud": "precisión 61.4%→73.1% y Rcum 12.5%→24.1% y Sharpe 0.89→1.30 al pasar de 1 a 4 años de datos",
+      "condiciones": "sensibilidad in-sample sobre el mismo dataset, sin especificar costos de transacción en esta tabla",
+      "robustez": "baja",
+      "cita_textual": "the performance of HPTS improves as the dataset size increases, particularly when trained on data spanning three or more years"
+    },
+    {
+      "afirmacion": "HPTS completo supera a todos los métodos comparados (numéricos, textuales, híbridos, regime-based y deep learning) en retorno acumulado y retorno ajustado por riesgo, logrando el máximo histórico reportado en la tabla comparativa.",
+      "mercado": "US equities (pares de las 22 acciones del dataset)",
+      "periodo": "2020-01 a 2023-01 (13 rotaciones trimestrales)",
+      "magnitud": "Rcum HPTS=1940.0% [95% CI 1905.2-1976.3] vs máximo baseline deep learning (Transformer Fusion) 975.6%; Sharpe HPTS=9.55 vs 9.4 del mejor baseline; MaxDD HPTS=-11.9%; retorno ajustado por riesgo (RA) HPTS=15.2 vs 9.021 del mejor baseline",
+      "condiciones": "comparación con baselines reconstruidos por los autores (no resultados originales de cada paper citado), sin desglose de costos por método comparado; cifras de retorno extremadamente altas para el período (Rcum ~1940% en 3 años) sugieren posible apalancamiento no explicitado, errores de escala o comparación no equitativa",
+      "robustez": "baja",
+      "cita_textual": "The proposed HPTS, integrating sentiment, regime detection, and sector rotation, achieves the highest cumulative return (1940.0) and superior risk-adjusted return (15.2)"
+    },
+    {
+      "afirmacion": "Los estudios de ablación muestran que remover el módulo de sentimiento reduce la rentabilidad y remover la detección de régimen aumenta la volatilidad/drawdown, confirmando la contribución de cada componente al desempeño de HPTS.",
+      "mercado": "US equities",
+      "periodo": "2020-01 a 2023-01",
+      "magnitud": "HPTS w/o Sentiment: Rcum=1345.2 [1320.4-1370.5], Sharpe=9.0, MDD=-13.2%; HPTS w/o Regime: Rcum=1523.8 [1498.1-1549.4], Sharpe=9.1, MDD=-12.6%; HPTS w/o Sector Rotation: Rcum=1637.5 [1610.2-1665.3], Sharpe=9.2, MDD=-12.2%; Full HPTS: Rcum=1940.0, Sharpe=9.55, MDD=-11.9%",
+      "condiciones": "ablation in-sample sobre el mismo período de evaluación, sin repetición en otros mercados/períodos",
+      "robustez": "baja",
+      "cita_textual": "Ablation studies confirm the contributions of sentiment and regime detection: removing sentiment reduces profitability, while omitting regime detection increases volatility"
+    },
+    {
+      "afirmacion": "En backtesting out-of-sample con costos de transacción usando Backtrader y datos de Alpaca, la estrategia fue consistentemente rentable tanto en el período de entrenamiento como en el de testing, con una ganancia total de portafolio de 25.57%.",
+      "mercado": "US equities",
+      "periodo": "no especificado el rango exacto de train/test dentro de 2020-2023",
+      "magnitud": "capital inicial $100,000 → $117,983.25 en training (+17.98%, ganancia neta $17,983.25) → $125,239.87 en testing (+7.26% adicional, ganancia $7,256.62); costo de transacción 0.1% por operación; ganancia total del portafolio 25.57%",
+      "condiciones": "incluye costos de transacción y separación train/test explícita, pero sobre un único split y un único universo de 22 acciones concentradas en tecnología y salud",
+      "robustez": "media",
+      "cita_textual": "starting from $100,000, the portfolio rose to $117,983.25 in training (net profit $17,983.25; +17.98%) and further to $125,239.87 in testing (additional profit $7,256.62; +7.26%)"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper opera en equities a frecuencia diaria/trimestral con datos fundamentales y sentimiento de noticias, sin relación directa con microestructura intradía de futuros ES; lo único transferible conceptualmente es la idea de condicionar reglas de trading a un régimen de mercado detectado (HMM) y validar walk-forward, pero las cifras de performance no son creíbles como referencia de edge."
+  }
+}

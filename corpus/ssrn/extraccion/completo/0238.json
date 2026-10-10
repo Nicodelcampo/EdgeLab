@@ -1,0 +1,99 @@
+{
+  "doc_id": 238,
+  "titulo": "Momentum Exhaustion and Fair Value Reversion: An ADX-Conditioned VWAP Strategy in FX Markets",
+  "resumen_operativo": "Desarrolla un marco teórico de trading para FX que explota reversión a la media intradiaria hacia VWAP bajo condiciones de agotamiento de momentum. Integra tres componentes: desviación del precio respecto a VWAP como ancla de fair value institucional, extremos de la sesión anterior como nodos de liquidez, y ADX con su primera diferencia como filtro de régimen que restringe entradas a estados donde el momentum es elevado pero ya no creciente. Incluye implementación completa en Python.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Volume Weighted Average Price (VWAP)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Precio promedio ponderado por volumen de todas las transacciones en una sesión. Funciona como ancla de fair value institucional: cuando el precio se desvía significativamente, las órdenes algorítmicas VWAP-targeting crean una fuerza restauradora.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "intraday fair value"},
+        {"tipo": "CAUSA", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "VWAP has accumulated a substantial theoretical rationale as a measure of intraday fair value — the price at which the volume-weighted average transaction has occurred."
+    },
+    {
+      "nombre": "Average Directional Index (ADX)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Indicador de Wilder (1978) que cuantifica la fuerza de una tendencia independientemente de su dirección, construido a partir de los indicadores direccionales +DI y −DI suavizados con la técnica de Wilder.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "trend strength"},
+        {"tipo": "PARTE_DE", "objeto": "Momentum Exhaustion Signal"}
+      ],
+      "cita_textual": "The ADX has been widely adopted as a regime-conditioning tool: values above a threshold (commonly 25) are interpreted as trending regimes."
+    },
+    {
+      "nombre": "Momentum Exhaustion Signal",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Condición conjunta donde ADX está elevado (por encima de su media móvil) pero su primera diferencia es ≤ 0 (ya no crece). Señala que el momentum direccional está decayendo y la susceptibilidad a reversión aumenta.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Average Directional Index (ADX)"},
+        {"tipo": "PREDICE", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "When ADX begins to flatten or decline from an elevated level, the marginal trend-following participant is no longer being rewarded, reducing fresh buying pressure and increasing the susceptibility of price to reversal."
+    },
+    {
+      "nombre": "Previous-Session Extremes as Liquidity Nodes",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "High y low de la sesión anterior actúan como niveles de concentración de órdenes límite, stops y barreras de opciones. Cuando el precio los revisita en un estado de momentum decay, la probabilidad de continuación disminuye frente a la de reversión.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "reversal probability"},
+        {"tipo": "USA", "objeto": "Trading Signal Derivation"}
+      ],
+      "cita_textual": "Prior-day highs and lows represent levels at which the market previously halted. Stop-loss orders, option barriers, and psychological resistance concentrate at these levels."
+    },
+    {
+      "nombre": "Composite Trading Signal",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Señal St ∈ {−1, 0, +1} que requiere conjunción de cuatro condiciones: precio en extremo anterior (Ht−1 o Lt−1), desviación de VWAP > θ, ADX elevado, y ∆ADX ≤ 0. Solo activa si TODAS se cumplen simultáneamente.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Volume Weighted Average Price (VWAP)"},
+        {"tipo": "REQUIERE", "objeto": "Average Directional Index (ADX)"},
+        {"tipo": "REQUIERE", "objeto": "Momentum Exhaustion Signal"}
+      ],
+      "cita_textual": "The composite trading signal St ∈ {−1, 0, +1} is defined as: Short when Pt ≥ Ht−1, Dt > θ, ADXt > ADX̄t, ∆ADXt ≤ 0. Long when Pt ≤ Lt−1, Dt < −θ, ADXt > ADX̄t, ∆ADXt ≤ 0."
+    },
+    {
+      "nombre": "VWAP Deviation Threshold",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Parámetro θ > 0 calibrado empíricamente que define la desviación mínima del precio respecto a VWAP requerida para generar señal. Valores típicos iniciales: una desviación estándar intradiaria de Dt.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Composite Trading Signal"}
+      ],
+      "cita_textual": "A natural starting point is to set θ equal to one intraday standard deviation of Dt."
+    },
+    {
+      "nombre": "Wilder Smoothing",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de suavizado recursivo X̃(n)t = ((n−1)X̃(n)t−1 + Xt)/n usada para calcular ATR, +DI, −DI, y ADX. Difiere del EMA estándar y es esencial para replicar el ADX original de Wilder (1978).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Average Directional Index (ADX)"},
+        {"tipo": "REQUIERE", "objeto": "True Range"}
+      ],
+      "cita_textual": "The True Range, directional indicators, and ADX all employ Wilder's smoothed average."
+    },
+    {
+      "nombre": "Institutional VWAP Anchoring",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Mecanismo de microestructura donde una fracción grande del volumen institucional de FX se ejecuta algorítmicamente mediante estrategias VWAP-targeting. Cuando el precio se desvía significativamente de VWAP, se acumulan órdenes algorítmicas de venta (sobre VWAP) o compra (bajo VWAP).",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "mean reversion toward VWAP"},
+        {"tipo": "PARTE_DE", "objeto": "market microstructure theory"}
+      ],
+      "cita_textual": "When a significant share of market participants target VWAP, prices exhibit a well-defined gravitational pull toward the VWAP level throughout the trading session."
+    },
+    {
+      "nombre": "True Range",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de volatilidad de Wilder definida como max(Ht−Lt, |Ht−Ct−1|, |Lt−Ct−1|), que captura el rango verdadero incluyendo gaps overnight.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Average Directional Index (ADX)"}
+      ],
+      "cita_textual": "The True Range is: TRt = max(Ht − Lt, |Ht − Ct−1|, |Lt − Ct−1|)."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Estrategia intradiaria explícita para FX con VWAP anclado al inicio de sesión y ADX calculado sobre barras de 5-60 minutos; incluye implementación Python completa."}
+}

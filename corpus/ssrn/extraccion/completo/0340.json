@@ -1,0 +1,60 @@
+{
+  "doc_id": 340,
+  "titulo": "The Inverted Parabola World of Classical Quantitative Finance: Non-Equilibrium and Non-Perturbative Finance Perspective",
+  "resumen_operativo": "Paper conceptual que argumenta que el modelo GBM y sus descendientes (local/stochastic volatility) equivalen a un oscilador armónico de masa negativa (parábola invertida), un sistema físicamente inestable. Propone una alternativa basada en física de no-equilibrio: el modelo Quantum Equilibrium-Disequilibrium (QED) que trata los mercados como sistemas abiertos no lineales sin depender de teoría de perturbaciones. Argumenta que los supuestos de equilibrio, cuasi-estacionariedad y linealidad de modelos clásicos son 'límites incorrectos' de una teoría correcta aún por desarrollar.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Inverted parabola potential",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El potencial del GBM: U(X) = -mu/2 * X^2, un oscilador armónico con masa negativa que tiene un máximo en X=0 y ningún mínimo. La fuerza repulsora crece ilimitadamente con el precio, impidiendo defaults pero generando un crecimiento exponencial no físico que contradice la evidencia empírica de defaults corporativos.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Negative mass harmonic oscillator"},
+        {"tipo": "SE_OPONE_A", "objeto": "Physical stability"}
+      ],
+      "cita_textual": "U_GBM(X) = -mu/2 * X^2. When the drift mu is positive, this is the potential of an inverted harmonic oscillator with 'mass' mu! Such a potential has a maximum at X=0 and no minimum. From elementary physics, a classical motion in such potential describes an unstable system."
+    },
+    {
+      "nombre": "Quantum Equilibrium-Disequilibrium (QED) model",
+      "tipo": "modelo",
+      "definicion_en_contexto": "Modelo alternativo al GBM que generaliza la dinámica de precios introduciendo dos parámetros adicionales y una extensión no lineal de la ecuación de difusión. Trata los mercados como sistemas abiertos y no lineales, sin asumir equilibrio ni usar teoría de perturbaciones para manejar no linealidades.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Geometric Brownian Motion (GBM)"},
+        {"tipo": "USA", "objeto": "Non-equilibrium physics"}
+      ],
+      "cita_textual": "The QED model generalizes the Geometric Brownian Motion (GBM) model by introducing two additional parameters, along with a non-linear extension of a diffusion equation driving the dynamics of the model."
+    },
+    {
+      "nombre": "Langevin equation correspondence",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Correspondencia matemática entre difusiones de Itô y la ecuación de Langevin de la física: dX_t = -dU(X_t)/dX_t dt + sigma X_t dW_t. Cualquier drift mu(X_t) puede interpretarse como gradiente negativo de un potencial U(X_t). Esto conecta modelos financieros con física estadística.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Ito diffusion interpretation"},
+        {"tipo": "USA", "objeto": "Potential function U(X)"}
+      ],
+      "cita_textual": "Any drift function mu(X_t) can be viewed as a negative gradient of a potential U(X_t) in the equivalent Langevin dynamics."
+    },
+    {
+      "nombre": "Non-perturbative approach",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Enfoque que no linealiza la dinámica alrededor de un punto de equilibrio usando teoría de perturbaciones. En su lugar, trata las no linealidades de forma exacta, reconociendo que los mercados financieros son sistemas inherentemente no lineales fuera del equilibrio.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Perturbation theory"},
+        {"tipo": "REQUIERE", "objeto": "Non-equilibrium physics methods"}
+      ],
+      "cita_textual": "The QED model presents a non-perturbative approach to handle non-linearities."
+    },
+    {
+      "nombre": "Survivorship bias in market indices",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo en índices como Dow Jones o S&P500 cuya composición cambia continuamente: acciones que quiebran son reemplazadas, creando la ilusión de crecimiento exponencial perpetuo. Esto oculta el hecho de que la mayoría de acciones individuales no sobreviven 100 años y contradice la predicción GBM de inmortalidad de precios.",
+      "relaciones": [
+        {"tipo": "CONTRADICE_A", "objeto": "GBM exponential growth prediction"},
+        {"tipo": "CAUSA", "objeto": "Misleading empirical evidence for GBM"}
+      ],
+      "cita_textual": "Due to the fact that the composition of such market index portfolios continuously changes, it embeds a survivorship bias that allows it to ignore the fact that stocks can default, and proceed away with the implicit assumption that stocks are immortal."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "baja", "nota": "Paper conceptual/filosófico sobre fundamentos de modelado financiero; no contiene aplicaciones empíricas ni estrategias de trading."}
+}

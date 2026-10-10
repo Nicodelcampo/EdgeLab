@@ -1,0 +1,2965 @@
+GENERALIZED STATISTICAL ARBITRAGE CONCEPTS AND
+RELATED GAIN STRATEGIES
+CHRISTIAN REIN, LUDGER R¨USCHENDORF, AND THORSTEN SCHMIDT
+Abstract. Generalized statistical arbitrage concepts are introduced corresponding to trading strategies which yield positive gains on average in a class
+of scenarios rather than almost surely. The relevant scenarios or market states
+are speciﬁed via an information system given by a σ-algebra and so this notion contains classical arbitrage as a special case. It also covers the notion of
+statistical arbitrage introduced in Bondarenko (2003).
+Relaxing these notions further we introduce generalized proﬁtable strategies
+which include also static or semi-static strategies. Under standard no-arbitrage
+there may exist generalized gain strategies yielding positive gains on average
+under the speciﬁed scenarios.
+In the ﬁrst part of the paper we characterize these generalized statistical
+no-arbitrage notions. In the second part of the paper we construct several
+proﬁtable generalized strategies with respect to various choices of the information
+system. In particular, we consider several forms of embedded binomial strategies
+and follow-the-trend strategies as well as partition-type strategies. We study
+and compare their behaviour on simulated data. Additionally, we ﬁnd good
+performance on market data of these simple strategies which makes them
+proﬁtable candidates for real applications.
+1. Introduction
+Since the mid-1980s trading strategies which oﬀer proﬁts on average in comparison
+to little remaining risk have been implemented and analyzed. The starting point
+were pairs trading strategies, see Gatev et al. (2006) for an historic account and
+further details. In this strategy one trades two stocks whose prices have a high
+historic correlation and whose spread widened recently by buying the looser and
+shorting the winner. Many variants of this simple strategy followed, see Krauss
+(2017) for a survey and a guide to the literature. This raised interest in a deeper
+theoretical understanding of these approaches.
+In this paper, we elaborate on the notion of statistical arbitrage (SA) introduced
+in Bondarenko (2003). The author considers a ﬁnite horizon market in order to
+restrict the class of admissible pricing rules. A trading strategy with zero initial cost
+is called statistical arbitrage if
+(i) the expected payoﬀis positive and,
+(ii) the conditional expected payoﬀis non-negative in each ﬁnal state of the
+economy.
+Unlike pure arbitrage strategies a statistical arbitrage can have negative payoﬀs
+provided the average payoﬀin each ﬁnal state is non-negative. This concept supplements previous forms of restrictions like ‘good deals’ or opportunities with high
+Sharpe ratios or with high utility (see Hansen and Jagannathan (1991), Cochrane
+and Saa-Requejo (2000) and ˇCern`y and Hodges (2002)) or ‘approximate arbitrage
+opportunities’ and investment opportunities with a high gain-loss ratio (see Bernardo
+and Ledoit (2000)). All these restrictions lead to essential reductions of the pricing
+intervals.
+Date: July 25, 2019.
+1
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+2
+CHRISTIAN REIN, LUDGER R¨USCHENDORF, AND THORSTEN SCHMIDT
+Bondarenko (2003) discusses the concept of statistical arbitrage in connection
+with various forms of risk preferences, w.r.t. the solution of the joint hypothesis
+problem, for tests of the eﬃcient market hypothesis (EMH) and the eﬃcient learning
+market (ELM). The main economic assumption introduced by Bondarenko is the
+assumption that the pricing kernel is path independent, i.e. it is a function depending
+only on the ﬁnal state of the underlying price model but not depending on the whole
+history. This assumption implies that the payoﬀprocess deﬂated by the conditional
+risk neutral density of the ﬁnal state is a martingale, i.e. has no systematic trend.
+The main result in (Bondarenko, 2003, Proposition 1) states that the existence of a
+path-independent pricing kernel is equivalent to the absence of SA strategies.
+Following Hogan et al. (2004), another strand of literature considers trading
+strategies which achieve positive gains on average together with vanishing risk in an
+asymptotic sense, see for example Elliott et al. (2005); Avellaneda and Lee (2010).
+In Section 2 we generalize the concept of statistical arbitrage: starting from
+a general information system given by a σ-ﬁeld G , a statistical G -arbitrage is a
+trading strategy with positive expected gain conditionally on G . The existence
+of a pricing measure with G -measurable density implies absence of G -arbitrage.
+Investigating in Section 3 in detail a class of trinomial models we ﬁnd that the
+converse direction in Bondarenko’s equivalence theorem is not valid in general.
+For two-period binomial models we fully characterize SA and construct statistical
+arbitrage strategies. In Section 4 we introduce generalized trading strategies including
+also static or semi-static strategies and derive various characterizations of the
+corresponding SA concepts; in particular we give conditions which imply equivalence
+results with the existence of G -measurable pricing densities. In Section 5 we construct
+for discrete and continuous time models various SA-strategies, test them in several
+examples and give an application to market data. A basic class of strategies is
+obtained by embedding binomial trading strategies into the continuous time models
+using ﬁrst-hitting times. Further classes are strategies induced by partitioning the
+path space and strategies which follow some trend in the data.
+Several of theses strategies are examined and compared. As a result we obtain
+some useful gain strategies and suggestions relevant for practical applications.
+2. Generalized gain strategies
+Consider a ﬁltered probability space (Ω, F, P) with a ﬁltration F = (Ft)0≤t≤T .
+The ﬁltration is assumed to satisfy the usual conditions, i. e. it is right continuous
+and F0 contains all null sets of F: if B ⊂A ∈F and P(A) = 0 then B ∈F0. We
+also suppose that F = FT .
+Following the classical approach to ﬁnancial markets as for example in Delbaen
+and Schachermayer (2006), we consider a ﬁnite time horizon T ∈N. The market
+itself is given by a Rd+1-valued locally bounded non-negative semi-martingale S =
+(S0, . . . , Sd). The num´eraire S0 is set equal to one, such that the prices are considered
+as already discounted.
+A dynamic trading strategy φ is an S-integrable and predictable process such that
+the associated value process V = V (φ) is given by
+Vt(φ) =
+Z t
+0
+φs dSs,
+0 ≤t ≤T.
+(1)
+The trading strategy φ is called a-admissible if φ0 = 0 and Vt(φ) ≥−a for all t ≥0.
+φ is called admissible if it is admissible for some a > 0. We further assume that the
+market is free of arbitrage in the sense of no free lunch with vanishing risk (NFLVR),
+which is equivalent to the existence of an equivalent local martingale measure Q, see
+Delbaen and Schachermayer (2006). Here, a measure Q which is equivalent to P,
+Q ∼P, such that S is a F-(local) martingale with respect to Q is called equivalent
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+GENERALIZED STATISTICAL ARBITRAGE CONCEPTS
+3
+(local) martingale measure, EMM (ELMM). Let Me denote the set of all equivalent
+local martingale measures.
+A statistical arbitrage is a dynamic trading strategy which is on average proﬁtable,
+conditional on the ﬁnal state of the economy ST . More generally, we consider a
+general information system represented by a σ-ﬁeld G ⊂FT and consider strategies
+which are on average proﬁtable conditional on G . For example, G could be generated
+by the event {ST > K}, or the events ST ∈Ki, where (Ki)i∈I is a partition of Rd, or
+by {max0≤t≤T St > K}. We call such strategies G -arbitrage strategies. Sometimes
+we call a statistical G -arbitrage strategy also a G -proﬁtable strategy or G -arbitrage,
+for short. By E we denote expectation with respect to the reference measure P.
+Deﬁnition 2.1. Let G ⊆FT be a σ-algebra. An admissible dynamic trading
+strategy φ is called a statistical G -arbitrage strategy, if VT (φ) ∈L1(P) and
+i) E[VT (φ)|G ] ≥0,
+P-a.s.,
+ii) E[VT (φ)] > 0.
+Let
+SA(G ) := {φ : φ is a G -arbitrage}
+denote the set of all statistical G -arbitrage strategies. The market model satisﬁes
+the condition of no statistical G -arbitrage NSA(G ) if
+SA(G ) = ∅.
+For G = FT , NSA(G ) is equivalent to the classical no-arbitrage condition (NA)
+since then E[VT (φ)|G ] = VT (φ). Recall that NA is implied by NFLVR. If G = σ(ST ),
+one recovers the notion of statistical arbitrage introduced in Bondarenko (2003).
+A further interesting type of examples is the case where G = σ({ST ∈Ki, i ∈I}),
+{Ki}i∈I being a partition of the state space, such that a statistical arbitrage
+oﬀers a gain in any {ST ∈Ki} on average, i.e. E[VT (φ)|ST ∈Ki] ≥0 for all
+i ∈I. Similarly one can also consider path-dependent strategies, like for example
+G = σ({max0≤t≤T St ∈Ki, i ∈I}).
+Remark 2.2 (Relation to good-deal bounds). The general approach to good-deal
+bounds in ˇCern`y and Hodges (2002) allows to consider statistical arbitrages as a
+special case: indeed, if we deﬁne
+A = {Z : E[Z|G ] ≥0 and E[Z] > 0}
+as set of good deals then a statistical G -arbitrage φ is a good deal strategy if
+VT (φ) ∈A. The corresponding good-deal pricing bound is given by
+π(X) = inf{x : ∃φ admissible s.t. X + x + VT (φ) ∈A}.
+Remark 2.3. We note some easy consequences of Deﬁnition 2.1.
+(i) The tower property of conditional expectations immediately yields that larger
+information systems G
+allow for less proﬁtable G -arbitrage strategies i. e.
+G1 ⊂G2 implies that SA(G2) ⊂SA(G1). As a consequence we get that in this
+case
+NSA(G1)
+⇒
+NSA(G2).
+(2)
+(ii) If G = {∅, Ω}, then φ ∈SA(G ) iﬀEP [VT (φ)] > 0.
+3. On the statistical no-arbitrage notion
+The notion of no statistical arbitrage is motivated by the question whether it is
+possible to construct a trading strategy φ such that in any ﬁnal state of the price
+process ST the trader gets a gain on average (i. e. conditional on σ(ST )).
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+4
+CHRISTIAN REIN, LUDGER R¨USCHENDORF, AND THORSTEN SCHMIDT
+Proposition 1 in Bondarenko (2003) states that (in discrete time), NSA is equivalent to the existence of an equivalent martingale measure Q with path independent
+density Z, i. e.
+dQ
+dP = Z ∈σ(ST ),
+(3)
+where we use the notation Z ∈σ(ST ) for Z being σ(ST )-measurable. We show
+in Section 3.2, that this equivalence needs additional assumptions which is one
+motivation of our work. In Section 3.3 we explicitly construct statistical arbitrages
+whose study is the second motivation of our work.
+On the other side, existence of an equivalent martingale measure with path
+independent density Z implies that NSA holds without further assumptions. This
+also holds true for the generalized notion NSA(G ), as we now show.
+Proposition 3.1. If there exists Q ∈Me such that
+dQ
+dP is G -measurable, then
+NSA(G ) holds.
+Proof. The proof follows from the Bayes-formula for conditional expectations. If
+Z = dQ
+dP ∈G , then for any X ∈L1(P) it holds that
+EP [X | G ] = EQ[XZ | G ]
+EQ[Z | G ]
+= EQ[X | G ].
+(4)
+If there would be a statistical arbitrage strategy φ with EP [X | G ] ≥0 and EP [X] > 0,
+where X = VT (φ) ∈L1(P), then, by (4),
+EQ[X | G ] ≥0,
+Q-a.s.
+Moreover, since φ is admissible, V (φ) is a Q-supermartingale by Fatou’s lemma,
+and we obtain that
+EQ[X] = EQ[VT (φ)] ≤V0(φ) = 0.
+(5)
+Hence,
+0 = EQ[X | G ] = EP [X | G ]
+in contradiction to EP [X] > 0.
+□
+Remark 3.2 (Alternative admissible strategies). An inspection of the proof, in
+particular Equation (5), shows that the claim also holds when we consider as
+admissible such strategies φ for which V (φ) is a Q-martingale.
+In the following we discuss whether also the converse direction in the Bondarenko
+result is true, i. e. the question if no statistical arbitrage implies the existence of an
+equivalent martingale measure with path-independent density. Moreover we study
+the question how statistical G -arbitrage strategies can be constructed.
+3.1. Statistical arbitrage in trinomial models. In this section we consider a
+special one-dimensional trinomial model of the following type which we will call the
+trinomial model. While the ﬁrst step is binomial, the second time-step is trinomial.
+In this regard, assume that d = 1, Ω= {ω1, . . . , ω6} and T = 2. Let S0 = s0 ∈R≥0
+and S1 take the two values s+
+1 and s−
+1 such that
+S1(ω1) = S1(ω2) = S1(ω3) = s+
+1 ,
+S1(ω4) = S1(ω5) = S1(ω6) = s−
+1 .
+The existence of an equivalent martingale measure Q ∼P is equivalent to ∆Si =
+Si −Si−1 taking positive as well as negative values in each sub-tree. For the ﬁrst
+time step we assume without loss of generality that s+
+1 −s0 > 0 and s−
+1 −s0 < 0.
+For the second step we assume that the model takes the four values s++
+2
+, s+−
+2
+,
+s−−
+2
+and the top state s◦
+2 with s◦
+2 > s++
+2
+> s+−
+2
+> s−−
+2
+> 0. While the +/−states
+are reached by following a standard binomial, recombining two-period model, i.e.
+S2(ω2) = s++
+2
+,
+S2(ω3) = S2(ω5) = s+−
+2
+,
+S2(ω6) = s−−
+2
+,
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+GENERALIZED STATISTICAL ARBITRAGE CONCEPTS
+5
+S2(ω1) = S2(ω4)
+S2(ω2)
+S1(ω1)
+S0(ω)
+S2(ω3) = S2(ω5)
+S1(ω4)
+S2(ω6)
+Figure 1. The considered trinomial model with T = 2 time steps.
+The ﬁrst step is binomial, the second step is also (recombining)
+binomial with an additional top state {ω1, ω4}.
+the top state is reached by
+S2(ω1) = S2(ω4) = s◦
+2.
+We illustrate the scheme in Figure 1.
+To ensure absence of arbitrage we assume that s++
+2
+−s+
+1 > 0, s−
+1 < s+−
+2
+< s+
+1 ,
+s−−
+2
+−s−
+1 < 0. The gains from trading at time 2 with a self-ﬁnancing strategy φ are
+given by
+V2(φ) = φ1∆S1 + φ2∆S2.
+(6)
+While φ1 is constant since F0 = {∅, Ω}, φ2 can take two diﬀerent values which we
+denote by φ+
+2 and φ−
+2 (taken in the states {ω1, ω2, ω3} and {ω4, ω5, ω6}, respectively).
+Since G = F2 = σ({ω1, ω4}, {ω3, ω5}, {ω2}, {ω6}) the strategy φ is a statistical
+arbitrage if and only if
+φ1∆S1(ω2) + φ+
+2 ∆S2(ω2) ≥0,
+(7)
+φ1∆S1(ω6) + φ−
+2 ∆S2(ω6) ≥0,
+(8)
+φ1∆S1(ω1)P(ω1) + φ+
+2 ∆S2(ω1)P(ω1)
++φ1∆S1(ω4)P(ω4) + φ−
+2 ∆S2(ω4)P(ω4) ≥0,
+(9)
+φ1∆S1(ω3)P(ω3) + φ+
+2 ∆S2(ω3)P(ω3)
++φ1∆S1(ω5)P(ω5) + φ−
+2 ∆S2(ω5)P(ω5) ≥0,
+(10)
+and, in addition, at least one of the inequalities is strict.
+Moreover, if we consider an equivalent martingale measure Q then the density Z
+is path-independent if and only if Z(ω1) = Z(ω4) and Z(ω3) = Z(ω5). As a next
+step we establish a criterion for our model to be free of statistical arbitrage. Denote
+Γ1
+=
+−∆S1(ω5) + ∆S2(ω5) ∆S1(ω6)
+∆S2(ω6)
+∆S1(ω3) −∆S2(ω3) ∆S1(ω2)
+∆S2(ω2)
+,
+Γ2
+=
+∆S1(ω6)
+∆S2(ω6)(∆S2(ω4) + ∆S2(ω5)) −∆S1(ω4) −∆S1(ω5)
+∆S1(ω3) −∆S1(ω1) ∆S2(ω3)
+∆S2(ω1)
+.
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+6
+CHRISTIAN REIN, LUDGER R¨USCHENDORF, AND THORSTEN SCHMIDT
+S2(ω1) = S2(ω4) = 14
+S2(ω2) = 13
+S1(ω1) = 12
+S0(ω) = 10
+S2(ω3) = S2(ω5) = 10
+S1(ω4) = 8
+S2(ω6) = 6
+Figure 2. An explicit trinomial model with T = 2 time steps
+Lemma 3.3. Let ν1 := P (ω1)
+P (ω4) and ν2 := P (ω3)
+P (ω5). In the trinomial model there is no
+statistical arbitrage if ν1 = −∆S2(ω3)
+∆S2(ω1)ν2 and if it holds that
+Γ1 < ν2 ≤Γ2.
+(11)
+The proof is relegated to the appendix.
+3.2. A counter example. In the following we use Lemma 3.3 to show that Proposition 1 in Bondarenko (2003) is not valid without additional conditions. Consider
+the (incomplete) trinomial model speciﬁed in Figure 2.
+It is easy to check that the equivalent martingale measures Q speciﬁed by q =
+(Q(ω1), . . . , Q(ω6)) are given by the set
+Q =
+n
+q ∈R6  q1 = −3
+4q2 + 1
+4, q3 = −1
+4q2 + 1
+4, q4 = q6 −1
+4, q5 = −2q6 + 3
+4,
+where q2 ∈
+1
+3, 1
+
+, q6 ∈
+1
+4, 3
+8
+o
+.
+Furthermore consider the underlying measure P uniquely speciﬁed by the vector
+p = (P(ω1), . . . , P(ω6)) given by
+p = (0.15, 0.2, 0.3, 0.05, 0.1, 0.2).
+We compute ν1 = p1
+p4 = 3 and ν2 = p3
+p5 = 3. Then
+Γ2 =
+∆S1(ω6)
+∆S2(ω6)(∆S2(ω4) + ∆S2(ω5)) −∆S1(ω4) −∆S1(ω5)
+∆S1(ω3) −∆S1(ω1) ∆S2(ω3)
+∆S2(ω1)
+= 3 = ν2,
+Γ1 =
+−∆S1(ω5) + ∆S2(ω5) ∆S1(ω6)
+∆S2(ω6)
+∆S1(ω3) −∆S2(ω3) ∆S1(ω2)
+∆S2(ω2)
+= 2
+3 < ν2
+and
+ν1 = −∆S2(ω3)
+∆S2(ω1)ν2 = ν2 = 3 = p1
+p4
+.
+According to Lemma 3.3 there is no statistical arbitrage in the stated example. But,
+on the other hand, there is no path independent density in this case because if there
+would be a path independent density, i. e. a density Z with Z(ω1) = Z(ω4) and
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+GENERALIZED STATISTICAL ARBITRAGE CONCEPTS
+7
+S2(ω1)
+S1(ω1)
+S0(ω)
+S2(ω2) = S2(ω3)
+S1(ω3)
+S2(ω4)
+Figure 3. The considered recombining binomial model with two periods.
+Z(ω3) = Z(ω5), there would exist an equivalent martingale measure Q fulﬁlling the
+conditions
+q1
+q4
+= p1
+p4
+= 3
+and
+q3
+q5
+= p3
+p5
+= 3.
+(12)
+But the only q ≥0 fulﬁlling (12) is q = ( 1
+4, 0, 1
+4, 1
+12, 1
+12, 1
+3) which is not an element of
+Q.
+This example shows that Proposition 1 in Bondarenko (2003) needs additional
+assumptions: indeed, we have shown that there does not exist a statistical arbitrage
+and at the same time there is no path-independent density. In Section 4 we study
+this topic in more detail.
+3.3. Statistical arbitrage strategies in binomial models. In this section we
+propose a method to construct statistical arbitrage strategies in binomial models.
+Consider the following recombining two-period binomial model: assume that
+Ω= {ω1, . . . , ω4} and T = 2. Let S0 = s0 > 0 and let S1(ω1) = S1(ω2) = s+,
+and S1(ω3) = S1(ω4) = s−as well as s++ = S2(ω1), s+−= S2(ω2) = S2(ω3), and
+s−−= S2(ω4). This model is illustrated in Figure 3.
+Absence of arbitrage is equivalent to ∆Si, i = 1, 2 taking positive as well as
+negative values. We assume without loss of generality that s+ > s0, s−< s0, and
+s++ > s+, s−< s+−< s+, and s−−< s−i. e. we consider binomial models as
+presented in Figure 3. Gains from trading are again given by (6). Also φ1 is constant
+and φ2 can take the two values {φ+
+2 , φ−
+2 }. As in Equations (7) - (10), φ is a statistical
+arbitrage, iﬀ
+φ1∆S1(ω1) + φ+
+2 ∆S2(ω1) ≥0
+(13)
+φ1∆S1(ω4) + φ−
+2 ∆S2(ω4) ≥0
+(14)
+φ1∆S1(ω2)P(ω2) + φ+
+2 ∆S2(ω2)P(ω2)
++φ1∆S1(ω3)P(ω3) + φ−
+2 ∆S2(ω3)P(ω3) ≥0
+(15)
+and at least one of the inequalities is strict.
+Moreover, the density Z is pathindependent if and only if Z(ω2) = Z(ω3). Equations (13) - (15) are equivalent to
+Aφ ≥0, φ = (φ1, φ+
+2 , φ−
+2 )⊤with
+A =
+
+
+∆S1(ω1)
+∆S2(ω1)
+0
+∆S1(ω4)
+0
+∆S2(ω4)
+q∆S1(ω2) + ∆S1(ω3)
+q∆S2(ω2)
+∆S2(ω3)
+
+,
+(16)
+where q = P (ω2)
+P (ω3).
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+8
+CHRISTIAN REIN, LUDGER R¨USCHENDORF, AND THORSTEN SCHMIDT
+Proposition 3.4. In the recombining two-period binomial model NSA holds if and
+only if det(A) = 0.
+The proof is relegated to the appendix.
+Remark 3.5. It turns out that in the binomial model above NSA is equivalent to
+existence of a path-independent density: indeed, the unique equivalent martingale
+measure is given by the vector B−1(q1, . . . , q4) with
+q1 = ∆S2(ω2)
+ ∆S1(ω3)∆S2(ω4) −∆S1(ω4)∆S2(ω3)
+
+,
+q2 = −∆S2(ω1)
+ ∆S1(ω3)∆S2(ω4) −∆S1(ω4)∆S2(ω3)
+
+,
+(17)
+q3 = −∆S2(ω4)
+ ∆S1(ω1)∆S2(ω2) −∆S1(ω2)∆S2(ω1)
+
+,
+(18)
+q4 = ∆S2(ω3)
+ ∆S1(ω1)∆S2(ω2) −∆S1(ω2)∆S2(ω1)
+
+and
+B =∆S2(ω2)
+ ∆S1(ω3) −∆S1(ω1)
+
+∆S2(ω4) +
+ ∆S1(ω1) −∆S1(ω4)
+
+∆S2(ω3)
+
++ ∆S2(ω1)
+ ∆S1(ω2) −∆S1(ω3)
+
+∆S2(ω4) +
+ ∆S1(ω4) −∆S1(ω2)
+
+∆S2(ω3)
+
+.
+Proposition 3.4 yields that NSA holds iﬀdet(A) = 0, which is according to Equation
+(54) equivalent to
+P(ω2)
+P(ω3) = ∆S2(ω1)(∆S1(ω3)∆S2(ω4) −∆S1(ω4)∆S2(ω3))
+∆S2(ω4)(∆S1(ω1)∆S2(ω2) −∆S1(ω2)∆S2(ω1)) =: ˜q.
+(19)
+Using (17) and (18) we obtain from det(A) = 0 that
+dQ(ω2)
+dQ(ω3) = ˜q = dP(ω2)
+dP(ω3),
+which means that NSA is equivalent to the existence of a path-independent density.
+The question now is what path properties imply absence of statistical arbitrage
+opportunities.
+Lemma 3.6. In the recombining two-period binomial model there exists a statistical
+arbitrage if and only if
+P(ω2)
+P(ω3)̸ = ˜q.
+(20)
+Proof. To have the possibility of statistical arbitrage we know from Proposition
+3.4 that we need det(A)̸ = 0 which is, according to Remark 3.5, equivalent to
+P (ω2)
+P (ω3)̸ = ˜q.
+□
+The following Lemma explicitly describes the statistical arbitrages in terms of
+the vector φ = (φ1, φ+
+2 , φ−
+2 )
+Lemma 3.7. In the recombining two-period binomial model with statistical arbitrage,
+φ = 1
+D(ξ1, ξ2, ξ3) with
+ξ1 =
+ q∆S2(ω2) −∆S2(ω1)
+
+∆S2(ω4) + ∆S2(ω1)∆S2(ω3),
+ξ2 = −
+ ∆S1(ω3) + q∆S1(ω2) −∆S1(ω1)
+
+∆S2(ω4) −
+ ∆S1(ω1) −∆S1(ω4)
+
+∆S2(ω3),
+ξ3 = −
+ q∆S1(ω4) −q∆S1(ω1)
+
+∆S2(ω2) −
+ −∆S1(ω4) + ∆S1(ω3) + q∆S1(ω2)
+
+∆S2(ω1),
+q = P (ω2)
+P (ω3), and
+D =
+
+q∆S1(ω1)∆S2(ω2) +
+ −∆S1(ω3) −q∆S1(ω2)
+
+∆S2(ω1)
+
+∆S2(ω4)
++ ∆S1(ω4)∆S2(ω1)∆S2(ω3)
+is a statistical arbitrage.
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+GENERALIZED STATISTICAL ARBITRAGE CONCEPTS
+9
+Proof. If P (ω2)
+P (ω3)̸ = ˜q we have statistical arbitrage according to Lemma 3.6 and the
+determinant of the matrix A in (16) is not equal to zero according to Proposition 3.4.
+In this case the matrix A is invertible. Hence, φ = A−11 is a statistical arbitrage
+and it is easily veriﬁed that φ = 1
+D(ξ1, ξ2, ξ3).
+□
+In Section 5 we will use this information and propose a dynamic trading strategy
+exploiting statistical arbitrages with the results of this section.
+3.4. Risk of statistical arbitrages. The word arbitrage might be misleading on
+the riskiness of statistical arbitrages, because in the classical sense, an arbitrage is a
+strategy without risk. This is of course not the case for statistical arbitrages (or the
+following generalizations of this concept). Since we consider arbitrage-free markets,
+all gains come with a certain risk and, higher proﬁts are associated with higher risk.
+This is conﬁrmed by our simulation results in Section 5.
+As a simple example consider the case where ∆iS(ωj) ∈{5, −5}, i.e. the stock
+either rises by 5 or falls by 5. In addition, assume that q = P(ω2)/P(ω3) = 1.2. Then,
+using Equation (16) it is not diﬃcult to compute φ = A−11 = (1.6, −1.4, −1.8)⊤.
+From this strategy we obtain that the gains at time 2, given by
+G2(ω) = φ1(ω)∆S1(ω) + φ2(ω)∆S2(ω),
+yield G2(ω1) = G2(ω4) = 1, corresponding to (13) and (14). In addition, we obtain
+that G2(ω2) = 15 and G2(ω3) = −17. If we assume that P(ω2) = 0.3 we obtain that
+the average expected gain on {ω2, ω3} computes to
+P(ω2)G2(ω2) + P(ω3)G3(ω3) = 0.3 · 15 + 0.25 · (−17) = 0.25 ≥0,
+(21)
+such that the strategy is indeed a statistical arbitrage. While the (average) gains in
+the three relevant scenarios are 1, 0.25, 1, the possible loss in scenario ω3 is equal to
+−17, which is attained with probability 0.25, clearly pointing out the riskiness of
+the strategy.
+To exploit the averaging property of statistical arbitrage, we repeat this strategy
+in the following until we ﬁrst record a positive P&L. These considerations show
+clearly, that a risk analysis of the implemented strategy is very important.
+4. Generalized G -arbitrage strategies
+In connection with improvement procedures for payoﬀs we consider any static or
+semi-static payoﬀX ∈L1(P) as a generalized strategy. This leads to the following
+notion of generalized statistical G -arbitrage strategies and the corresponding notion
+of generalized statistical G -arbitrage. This concept was used in several papers dealing
+with improvement procedures of ﬁnancial contracts, see for example Kassberger
+and Liebmann (2017). We denote by L1(P, Q) := L1(P) ∩L1(Q) the set of random
+variables which are integrable with respect to P and Q.
+Deﬁnition 4.1. Let G ⊆F be a σ-algebra. The set of generalized statistical
+G -arbitrage-strategies with respect to Q ∈Me is deﬁned as
+SA(Q, G ) := {X ∈L1(P, Q) : EQ[X] = 0, EP [X|G ] ≥0 P-a.s. and EP [X] > 0}
+The market satisﬁes NSA(Q, G ), the condition of no generalized statistical G -arbitrage
+with respect to Q, if
+SA(Q, G ) = ∅.
+We aim at studying under which conditions there exist generalized statistical
+G -arbitrages and to describe connections between NSA(Q, G ) and NSA(G ). The
+following result in Kassberger and Liebmann (2017), Proposition 6, characterizes the
+generalized NSA(Q, G )-condition by showing that in fact this notion is equivalent
+to G -measurability of dZ = dQ
+dP .
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+10
+CHRISTIAN REIN, LUDGER R¨USCHENDORF, AND THORSTEN SCHMIDT
+Proposition 4.2. Let Q ∈Me. Then NSA(Q, G )is equivalent to the existence of a
+G -measurable version of the Radon-Nikodym derivative Z = dQ
+dP .
+The proof of this result is achieved by Jensen’s inequality and using as candidate
+of a generalized G -arbitrage
+X = E[Z | G ]
+Z
+−1 ≥−1.
+(22)
+Equation (22) also shows that the statistical arbitrage, if it exists, may be chosen
+bounded from below.
+One consequence of this characterization result is the characterization of NSA(G )
+for the case of complete market models. Recall that the Radon-Nikodym derivative
+Z = dQ
+dP is path-independent, iﬀZ is σ(ST )-measurable.
+A ﬁnancial market is called complete, if every contingent claim is attainable, i.e. for
+every F-measurable random variable X bounded from below, we ﬁnd an admissible
+self-ﬁnancing trading strategy φ, such that x + VT (φ) = X. This is implied by the
+assumption that Me = {Q}: indeed, under this assumption, Theorem 16 in Delbaen
+and Schachermayer (1995a) yields that any X ∈L1(Q), bounded from below, is
+hedgeable and hence attainable.
+Proposition 4.3. Assume that Me = {Q}. Then NSA(G ) holds if and only if dQ
+dP
+is G -measurable.
+Proof. We ﬁrst show that existence of a G -measurable Q ∈Me implies NSA(G ):
+choose Q ∈Me, such that Z = dQ
+dP is G -measurable. Then NSA(G ) follows as in
+the proof of Proposition 3.1.
+For the converse direction assume that Z is not G -measurable. By Proposition
+4.2 it follows that there exists a generalized G -arbitrage, i.e. an X ∈L1(P, Q)
+with EQ[X] = 0, EP [X | G ] ≥0 and EP [X] > 0. As remarked above, X can be
+chosen bounded from below. Hence, Theorem 16 in Delbaen and Schachermayer
+(1995a) yields existence of an admissible self-ﬁnancing trading strategy φ, such that
+x + VT (φ) = X. Moreover, the superhedging duality, i.e. Theorem 9 in Delbaen and
+Schachermayer (1995a) implies that x = EQ[X] = 0, and hence φ is a G -arbitrage.
+This is a contradiction and the claim follows.
+□
+In particular this result implies that Proposition 1 in Bondarenko (2003) gives a
+correct characterization of NSA for complete markets.
+Example 4.4 (Statistical arbitrage for diﬀusions). This example discusses the
+consequences of Proposition 4.2 and Proposition 4.3 in the case of a diﬀusion model.
+Let S be a one-dimensional diﬀusion process satisfying
+dSt = at dt + bt dBt,
+0 ≤t ≤T,
+(23)
+where Bt is a P-Brownian motion, a and b are progressively measurable such that
+P(
+R T
+0 |as|ds < ∞) = 1 and P(
+R T
+0 b2
+sds < ∞) = 1. Assume further that b > 0
+dt-almost surely that the Novikov-condition is satisﬁed, i. e.
+E
+"
+exp
+1
+2
+Z T
+0
+a2
+s
+b2s
+ds
+#
+< ∞.
+Then this model is complete and by Girsanov’s theorem has a unique equivalent
+local martingale measure Q with Radon-Nikodym derivative
+ZT = exp
+ 
+−
+Z T
+0
+at
+bt
+dBt −1
+2
+Z T
+0
+a2
+t
+b2
+t
+dt
+!
+.
+(24)
+If at/bt = c dt-almost surely, then we obtain from Proposition 4.3 that there are no
+statistical arbitrage opportunities. This holds in particular when at = a0 and bt = b0,
+0 ≤t ≤T, i. e. in the case of constant drift and volatility (the Black-Scholes model).
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+GENERALIZED STATISTICAL ARBITRAGE CONCEPTS
+11
+On the other side, the diﬀusion model allows for statistical arbitrage except for the
+case that (at/bt) is constant dt-almost surely. A comparable result was obtained
+in G¨onc¨u (2015) when studying the concept of statistical arbitrage introduced in
+Hogan et al. (2004) in the Black-Scholes model.
+The following deﬁnition introduces the generalized G -no-arbitrage condition
+without dependence on a speciﬁc pricing measure Q.
+Deﬁnition 4.5. Let G ⊆F be a σ-algebra. The set of generalized statistical
+G -arbitrage-strategies is deﬁned as
+SA(G ) := {X ∈L1(P) : sup
+Q∈Me EQ[X] ≤0, EP [X|G ] ≥0 P-a.s. and EP [X] > 0}.
+The market satisﬁes NSA(G ), i.e. no generalized statistical G -arbitrage, if
+SA(G ) = ∅.
+Note that the deﬁnition deﬁnes a generalized statistical G -arbitrage as a random
+variable X ∈L1(P), such that supQ∈Me EQ[X] ≤0, EP [X|G ] ≥0, P-almost surely,
+and EP [X] > 0. In this sense, the strategies in SA(G ) are generalized statistical
+G -arbitrage-strategies under any choice of the pricing measure Q. Our next step is
+to establish a relation between G -arbitrages and generalized G -arbitrages. Note that
+the connection to trading strategies in a continuous-time setting requires, as usual,
+to allow that supQ∈Me EQ[X] may be negative, while for the deﬁnition of SA(Q, G )
+we were able to consider EQ[X] = 0. The precise reasoning for this is becoming
+clear in the proof of the next proposition.
+We use the concept of No Free Lunch with Vanishing Risk (NFLVR), which
+is a mild strengthening of the no-arbitrage concept, and refer to Delbaen and
+Schachermayer (1994) for deﬁnition and further reading. According to the results in
+this article we require in the following that S is locally bounded, i.e. there exists a
+sequence of stopping times (Tn)n≥1 tending to ∞a.s. and a sequence (Kn)n≥1 of
+positive constants, such that |S1J0,TnK| < Kn, n ≥1.
+The set of generalized G -arbitrage strategies restricted to claims bounded from
+below is denoted by
+SAb(G ) := SA(G ) ∩{X ∈L1(P) :∃a ∈R such that X ≥−a}.
+Proposition 4.6. Assume that S satisﬁes (NFLVR). Then
+NSAb(G ) ⇔NSA(G ).
+Proof. We ﬁrst show that every G -arbitrage strategy is a generalized G -arbitrage
+strategy: consider φ ∈SA(G ), i. e. E[VT (φ) | G ] ≥0 and E[VT (φ)] > 0. . By the
+superreplication duality, Theorem 9 in Delbaen and Schachermayer (1995b), it holds
+that
+sup
+Q∈Me EQ[VT (φ)] = inf{x | ∃admissible ˜φ, x + VT (˜φ) ≥VT (φ)}.
+Choosing ˜φ = φ it follows supQ∈Me EQVT (φ) ≤0. Note that in addition, admissibility of φ implies that VT (φ) is bounded from below and so VT (φ) ∈Ab(G ).
+For the reverse implication we have, again by the superreplication duality, for
+X ∈Ab(G ) that
+0 ≥sup
+Q∈Me EQX = inf{x ∈R | ∃admissible φ, x + VT (φ) ≥X}.
+Since the inﬁmum is ﬁnite, Theorem 9 in Delbaen and Schachermayer (1995b) yields
+that it is indeed a minimum. Without loss of generality, we may chose x = 0 and
+obtain the existence of an admissible dynamic trading strategy φ with X ≤VT (φ).
+As X ∈Ab(G ) it holds further that EP [X | G ] ≥0, P-a.s., which leads us to
+EP [VT (φ) | G ] ≥EP [X | G ] ≥0
+P-a.s.
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+12
+CHRISTIAN REIN, LUDGER R¨USCHENDORF, AND THORSTEN SCHMIDT
+Then, EP [VT (φ)] ≥EP [X] > 0, such that VT (φ) ∈SA(G ).
+So the existence
+of generalized G -arbitrage strategies is equivalent to the existence of G -arbitrage
+strategies VT (φ) in SA(G )and the claim follows.
+□
+5. Some classes of profitable strategies
+In Section 4 we saw conditions and examples of statistical arbitrages in a variety
+of models. Here we are considering several classes of simple statistical arbitrage
+strategies for several classes of information systems G . While these strategies are
+easy to apply for general stochastic models we investigate them on the Black-Scholes
+model which will allow for analytic properties of the trading strategies. We will see
+in the following section that similar results can be expected in more general market
+models.
+The Black-Scholes model is, according to Example 4.4, free of statistical arbitrage,
+and we show in the following how to construct dynamic trading strategies allowing
+statistical G -arbitrage for various choices of G . To this end, assume that S is
+a geometric Brownian motion, i.e. the unique strong solution of the stochastic
+diﬀerential equation
+dSt = µSt dt + σSt dBt,
+0 ≤t ≤T
+(25)
+where B is a P-Brownian motion and σ > 0. In the simulation we will ﬁrst chose
+µ = 0.1241, σ = 0.0837, S0 = 2186 according to estimated drift and volatility
+from the S&P 500 (September 2016 to August 2017), and later consider small
+perturbations.
+Motivated by our ﬁndings in Section 3.1, we begin by embedding binomial trading
+strategies into the diﬀusion setting by considering two limits (up / down) and taking
+actions at the ﬁrst times these limits are reached. In Section 5.2 we will introduce
+some related follow-the-trend strategies.
+5.1. Embedded binomial trading strategies. We introduce a recombination of
+several two-step binomial models embedded in the continuous-time model as long
+as the ﬁnal time T is reached. As information system we consider the σ-ﬁeld G
+generated by the stopping times when the ﬁnal states of each of the binomial model
+are reached (or the trivial σ-ﬁeld otherwise).
+As we repeatedly consider embedded binomial models it makes much sense to talk
+on the outcome of the trading strategy on average conditional on the ﬁnal states of
+each binomial model, i.e. by averaging the outcome over many repeated applications
+of the trading strategy and hence we may apply the concept of statistical arbitrage
+here.
+Let i denote the current step of our iteration and consider a multiplicative step
+size c > 0. We initialize at time t0
+0 = 0. Otherwise consider the initial time of our
+next iteration given by the time where ﬁnished the last repetition and denote this
+time by ti
+0 and the according level by si
+0 = Sti
+0. Then we deﬁne the following two
+stopping times denoting the ﬁrst and second period of our binomial model by
+ti
+1 = inf
+
+t ∈[ti
+0, T] | St ∈{si
+0(1 −c), si
+0(1 + c)}
+	
+(26)
+and
+ti
+2 = inf
+
+t ∈(ti
+1, T] | St ∈{si
+0(1 −2c), si
+0, si
+0(1 + 2c)}
+	
+,
+(27)
+with the convention that inf ∅= T. This induces a sequence of σ-ﬁelds
+G i := σ(Sti
+2).
+Since S is continuous, this scheme allows to embed repeated binomial models
+Sti
+0, Sti
+1, Sti
+2, i = 1, 2, . . . into continuous time. The considered trading strategy is
+to execute the statistical arbitrage strategy for binomial models computed in Lemma
+3.7 at the stopping times ti
+0, ti
+1, ti
+2. At ti
+2 the position will be cleared and we start the
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+GENERALIZED STATISTICAL ARBITRAGE CONCEPTS
+13
+Index
+Diffusion
+t1 = 136
+t2 = 264
+x0 −2h
+x0 −h
+x0
+x0 + h
+x0 + 2h
+Figure 4. The embedding of a binomial model: at the hitting
+times t1 and t2 of the diﬀusion the steps of the embedded binomial
+model take place. The hitting levels are given by s0(1 ± 0.15).
+procedure afresh by letting ti+1
+0
+= ti
+2. Generally, we assume that the time horizon T
+is suﬃciently large such that the (typically small) levels si
+0(1 −2c), . . . , si
+0(1 + 2c)
+are reached at least once.
+Example 5.1. Figure 4 illustrates the embedding of the binomial model: the
+boundary s0
+0(1 −c) is hit at stopping time t1 = t0
+1 and the boundary s0
+0(1 −2c) at
+stopping time t2 = t0
+2. The trading strategy φ from Lemma 3.7 then implies trading
+buying (selling) φ1 entities of the underlying at time t = 0 and φ−
+2 entities at t = t1.
+At time t = t2 we will close the position and start this procedure again with t1
+0 = t2
+and with the new starting point s1
+0 = St2. This leads to a recombination of several
+2-period binomial models, as illustrated in Figure 5.
+The constant c and with it the barriers for the hitting times will be chosen in
+dependence of µ and σ to ensure that we do not loose the statistical arbitrage
+opportunity. To be more precise we use
+c = 0.01 · µ
+σ
+which showed a good performance in our simulations. According to Lemma 3.6 there
+is a statistical arbitrage opportunity if P (ω2)
+P (ω3)̸ = ˜q. It is easy to check from Equation
+(19) that ˜q = 1 in the case considered here.
+To guarantee existence of a statistical arbitrage we calculate the path probabilities
+P(ω2), P(ω3). The ﬁrst exit time τ = inf{t ≥0 | St /∈(a, b)} from the interval (a, b)
+satisﬁes
+P(Sτ = a) =
+ a
+s0
+ν   b
+s0
+|ν| −
+  s0
+b
+|ν|
+  b
+a
+|ν| −
+  a
+b
+|ν| ,
+a < b,
+(28)
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+14
+CHRISTIAN REIN, LUDGER R¨USCHENDORF, AND THORSTEN SCHMIDT
+Index
+Diffusion
+x0 −2h
+x0 −h
+x0
+x0 + h
+x0 + 2h
+x0 + 3h
+x0 + 4h
+t1
+1 = 203
+t2
+1 = 372 t1
+2 = 476
+t2
+2 = 801
+Figure 5. The embedded multi-period binomial trading model
+with trading points t1
+1, t1
+2, t2
+1 and t2
+2. The statistical arbitrage in this
+case corresponds to repeated trading strategies from Lemma 3.7:
+we buy φ1 entities at t1
+0 = 0, change the position to φ+
+2 at t1
+1 and
+equalize the position at t1
+2. With the new starting time t2
+0 = t1
+2 the
+strategy will be started again and adjusted at the stopping times
+t2
+1 and t2
+2
+where ν =
+µ
+σ2 −1
+2, see Borodin and Salminen (2012), formula 3.0.4 in Section 9 of
+Part II. This in turn yields that
+q = P(ω2)
+P(ω3) = P
+ St1 = s0(1 + c)
+
+P
+ St2 = s0
+
+P
+ St1 = s0(1 −c)
+
+P
+ St2 = s0
+
+=
+
+1 −(1 −c)ν (1+c)|ν|−(1+c)−|ν|
+ 1+c
+1−c
+|ν|
+−
+ 1−c
+1+c
+|ν|
+
+(1 + c)−ν
+ 1+2c
+1+c
+|ν|
+−
+ 1+c
+1+2c
+|ν|
+(1+2c)|ν|−(1+2c)−|ν|
+
+(1 −c)ν (1+c)|ν|−(1+c)−|ν|
+ 1+c
+1−c
+|ν|
+−
+ 1−c
+1+c
+|ν|
+
+1 −
+
+1−2c
+1−c
+ν
+(1−c)−|ν|−(1−c)|ν|
+(1−2c)−|ν|−(1−2c)|ν|
+.
+(29)
+Clearly, in general q̸ = 1, such that in these cases statistical arbitrage exists, which
+we exploit in the following.
+From Lemma 3.7 we obtain with D = 2(q −2)(c si
+0)3 that the trading strategy
+φ = (φ1, φ+
+2 , φ−
+2 ) is given by
+φ1 = (2 + q)(c si
+0)2D−1,
+(30)
+φ+
+2 = (q −4)(c si
+0)2D−1,
+(31)
+φ−
+2 = −3q(c si
+0)2D−1.
+(32)
+We call the trading strategy which results by repeated application of φ at the
+respective hitting times the embedded binomial trading strategy.
+Simulation results. As already mentioned, we simulate a geometric Brownian
+motion according to Equation (25) with µ = 0.1241, σ = 0.0837, S0 = 2186, T = 1
+(year), discretize by 1000 steps and embed the according binomial models repeatedly
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+GENERALIZED STATISTICAL ARBITRAGE CONCEPTS
+15
+gain p.a.
+median
+VaR(0.95)
+gain/trade
+losses
+(mean)
+∅N
+max. N
+33.4
+206
+5,320
+8.74
+0.133
+-628
+3.82
+24
+Table 1. Simulation results for the embedded binomial trading
+strategy for 1 mio runs. This example serves as benchmark. Gain
+p.a. denotes the overall average gain in the time period of one year,
+[0, 1]; we also show its median and the associated estimated VaR at
+level 95%. Gain/trade denotes the average gain per trade, losses
+denotes the fraction of simulations where the outcome of the trading
+strategy was negative, and we also show the average of the losses
+titled mean. Finally, we also state the average number and maximal
+number of embedded binomial models.
+−10000
+−8000
+−6000
+−4000
+−2000
+0
+2000
+0e+00
+1e+05
+2e+05
+3e+05
+4e+05
+5e+05
+Figure 6. Histogram of the proﬁts and losses from the embedded
+binomial trading strategy used in Table 1.
+in this time interval. In this case we have q = 1.00189 (rounded to ﬁve digits) which
+is not equal to one and therefore q̸ = ˜q, i. e. the embedded binomial strategy in this
+case is a G -arbitrage strategy. We denote by N the (random) number of binomial
+models that are necessary for each simulated diﬀusion to gain either a proﬁt from
+trading or to reach T and by Gi the gain or loss of the i-th binomial model. Hence
+either PN
+i=1 Gi > 0 or we record a loss at time N = T.
+For 1 million runs, we obtain the results presented in Table 1. For each run we
+record either a gain or a loss from trading. The average gain per simulation run is
+shown in column one, its median in column two. The distribution of the P&L is
+skewed to the left with potential large losses with small probability which is reﬂected
+by a median of 206 in comparison to an average gain of 33. In column 3 we depict
+the 95% Value-at-Risk which is of size 5,320. Column 4 denotes the average gain
+per trade which is obtained by dividing the average gain by the average number
+of trades (i.e. repeated binomial models). In column 5 we show the (fraction of)
+losses, i.e. the fraction of simulated processes exhibiting no gain from trading before
+reaching the ﬁnal time T, followed by their mean. The average number of trading
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+16
+CHRISTIAN REIN, LUDGER R¨USCHENDORF, AND THORSTEN SCHMIDT
+c
+gain pa
+median
+VaR0.95
+gain pt
+losses
+(mean)
+∅N
+(max)
+0.0025
+8,890
+48,700
+-373
+743
+0.045
+-57,900
+12
+150
+0.005
+465
+3,810
+58,400
+66
+0.077
+-6,210
+7
+63
+0.01
+41
+206
+5,250
+11
+0.132
+-621
+4
+24
+0.02
+9
+10
+371
+5
+0.185
+-50
+2
+9
+0.04
+3
+2
+24
+3
+0.109
+-2
+1
+4
+Table 2.
+Simulations for the embedded binomial trading strategy
+with varying boundary levels; gain p.a. denotes the gain per year,
+gain p.t. denotes gain per trade. In the simulations for Table 1 we
+used c = 0.01µ/σ.
+repeats ∅N is followed by the maximal number of trading repeats over all runs (max
+N).
+As becomes clear from Table 1 we can record an overall proﬁt for many cases.
+We have a negative outcome in 13.3 percent in average of all simulations with an
+average size of -628. The median of the proﬁts is about 200, with a smaller average
+of about 30. The risk measured by the Value-at-Risk at 95% is 5,320 pointing to
+the fact that the average gain by the statistical arbitrage is (of course) not without
+risk. For clariﬁcation, we plot the associated histogram of the P&L in Figure 6.
+Although the actual amount of the proﬁt depends on many parameters we can
+conﬁrm the possibility of statistical arbitrage. Besides, we see that on average our
+multi-period binomial model has a small number of periods and the number of
+periods does not explode, which is important with a view on trading costs.
+Varying barrier levels. The most interesting parameter turns out to be the parameter
+c. It decodes the varying the barrier level and the results may be found in Table 2.
+It turns out that this parameter allows to balance gains and risk very well.
+First, the smaller the parameter c is chosen, the higher are the gains in general.
+The additional gain does imply an increase of risk: most prominently, the mean
+of the losses decreases with c. On the other side, we observe a decrease in the
+probability for losses to occur. The Value-at-Risk conﬁrms the increase of risk with
+decreasing c, except for the lowest c = 0.0025. In this case, the probability of having
+large losses is below 5%, such that the Value-at-Risk at level 0.95% does no longer
+see this risk (while it is of course still present).
+A high value of c corresponds intuitively to a larger step sizes, which leads to less
+trades on average. The largest value of c gives a statistical arbitrage with small gain
+and smallest risk.
+The role of drift and volatility. For the investor it is of interest which drift and
+which volatility of an asset promises a good proﬁt. To investigate this question we
+deﬁne the fraction
+η := µ
+σ
+and show simulation results for diﬀerent values of η. In Table 3 we ﬁx the volatility
+σ and consider varying drift, while in Table 4 we ﬁx the drift µ and consider varying
+volatility.
+Larger values of η point to a high drift relative to volatility situations which we
+would expect to be very well exploitable. In fact, our simulations show quite the
+contrary: we observe large gains when η is actually small, while for larger η we
+observe only minor gains. More precisely, for ﬁxed σ we obtain decreasing gains for
+increasing drift, while for ﬁxed µ we observe increasing gains for increasing volatility.
+This eﬀect is much more pronounced for the latter case (increasing σ). Already
+from the results with varying step sizes in Table 2 such an eﬀect was to be expected,
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+GENERALIZED STATISTICAL ARBITRAGE CONCEPTS
+17
+η
+gain pa
+median
+VaR0.95
+gain pt
+losses
+(mean)
+∅N
+(max)
+0.33
+211
+11,600
+252,000
+45
+0.13
+-29,400
+5
+30
+0.50
+170
+4,360
+94,500
+36
+0.13
+-11,000
+5
+30
+0.75
+109
+1,730
+38,100
+23
+0.13
+-4,400
+5
+30
+1.00
+64
+913
+20,400
+14
+0.12
+-2,340
+5
+30
+1.25
+77
+561
+12,400
+17
+0.12
+-1,400
+5
+30
+2.00
+42
+197
+4,430
+9
+0.11
+-490
+4
+31
+3.00
+34
+81
+1,680
+8
+0.10
+-182
+4
+31
+Table 3. Simulations for the embedded binomial trading strategy
+with diﬀerent values of the drift µ (and hence η), ﬁxed σ = 0.1
+and n = 250, 000 runs; gain p.a. denotes the gain per year, gain
+p.t. denotes gain per trade.
+η
+gain pa
+median
+VaR0.95
+gain pt
+losses
+(mean)
+∅N
+(max)
+0.50
+74,500
+222,000
+-48,400
+4,340
+0.036
+-2,770,000
+17
+270
+0.75
+6,020
+59,900
+480,000
+582
+0.056
+-79,400
+10
+120
+1.00
+241
+4,710
+80,500
+37
+0.090
+-8,520
+7
+51
+1.25
+67
+541
+12,700
+16
+0.124
+-1,460
+4
+28
+2.00
+8
+6
+165
+5
+0.144
+-22
+2
+9
+Table 4. Simulations for the embedded binomial trading strategy
+with diﬀerent values of the volatility (and hence η), ﬁxed µ = 0.1;
+gain pa denotes the gain per year, gain pt denotes gain per trade.
+as higher values of η lead to larger step sizes here and to lower gains. Intuitively,
+larger volatility implies more repetitions and therefore a higher likelihood for the
+statistical arbitrage to end up with gains. This is also reﬂected by increasing values
+of N in Table 4.
+5.2. Follow-the-trend strategy. As we have seen in the previous section, embedding a binomial model into continuous time is not able to exploit a large drift. This
+motivates the introduction of a further step into the embedded model in order to
+exploit existing trends in the underlying. We focus on an upward trend, while the
+strategy is easily adopted to the case for a downward trend. We consider two-step
+binomial embedding: ﬁrst, we specify barriers (up/down) as previously. If we twice
+observed up movements, we expect an upward trend and exploit this in a further
+step. Consequently, here we will consider four stopping times (for iteration i): initial
+time τ i
+0, and stopping times τ i
+1, τ i
+2 as previously and, in addition τ i
+3. Most notably,
+this modelling implies a diﬀerent choice of the ﬁltration G , see Equation (36).
+The associated strategy is to trade in the following way: the ﬁrst trading occurs
+as previously at the ﬁrst time when the barriers s(1 + c) or s(1 −c) are hit. The
+next trading takes place when the neighbouring barriers are hit, in the ﬁrst case s or
+s(1 + 2c) and in the second case s or s(1 −2c), respectively. If a trend was detected
+(i.e. the upper barrier s(1 + 2c) was hit, as we consider the case of a positive drift),
+trading continues until a suitable stopping time.
+More formally, this leads to the following procedure: let i denote the current step
+of our iteration. We initialize at time τ 0
+0 = 0. Otherwise consider the initial time of
+our next iteration given by the the time where we ﬁnished the last repetition and
+denote this time by τ i
+0 and the according level by si
+0 = Sτ i
+0. Then, using again the
+property that S is continuous, we deﬁne the following successive stopping times:
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+18
+CHRISTIAN REIN, LUDGER R¨USCHENDORF, AND THORSTEN SCHMIDT
+Index
+Diffusion
+τ i
+1
+σi
+1
+σi
+2
+σi
+3
+τ i
+2
+τ i
+3
+s0
+s0(1 −2c)
+s0(1 −4c)
+s0(1 + 2c)
+s0(1 + 4c)
+Figure 7. Illustration of the stopping times deﬁned in (33), (34)
+resp. (35). The ﬁrst stopping takes place when the process reaches
+either the ﬁrst upper or lower boundary si
+0(1 ± c). Starting from
+the upper boundary the next stopping takes place if the process
+increases to the level si
+0(1 + 2c), decreases to the level si
+0(1 −2c) or
+crosses the level s0. In case the process reached the upper level a
+third stopping occurs at τ i
+3.
+ﬁrst, analogously to ti
+1 from Equation (26), let
+τ i
+1 = inf
+
+t ∈(τ i
+0, T] | St ≥si
+0(1 + c) or St ≤si
+0(1 −c)
+	
+.
+(33)
+In the same manner the second stopping occurs if either the upper level is reached,
+or the mid-level is crossed, or the bottom level is reached. The levels of course diﬀer
+depending on whether Sτ i
+1 = si
+0(1 + c) or Sτ i
+1 = si
+0(1 −c). In this regard, we deﬁne
+(for the ﬁrst case)
+σi
+1 = inf
+
+t ∈(τ i
+1, T] | St ≥si
+0(1 + 2c)
+	
+σi
+2 = inf
+
+t ∈(τ i
+1, T] | St ≤si
+0
+	
+.
+For the second case, we set
+σi
+3 = inf
+
+t ∈(τ i
+1, T] | St ≤si
+0(1 −2c)
+	
+σi
+4 = inf
+
+t ∈(τ i
+1, T] | St ≥si
+0
+	
+.
+Altogether we obtain that
+τ i
+2 =
+(
+σi
+1 ∧σi
+2
+if Sτ i
+1 = si
+0(1 + c),
+σi
+3 ∧σi
+4
+otherwise.
+(34)
+Finally, we set
+τ i
+3 =
+(
+inf
+
+t ∈(τ i
+2, T] | St ≤s0 or St ≥si
+0(1 + 4c)
+	
+,
+if Sτ i
+2 = si
+0(1 + 2c),
+τ i
+2,
+otherwise.
+(35)
+Denote by τ max the last stopping time of τ 1
+3 , τ 2
+3 , . . . which lies before T. Then
+the statistical arbitrages traded on the partition of Sτ max generated by the values
+s0(1 + 2kc), k = 0, 1, 2, . . . which deﬁnes the G on the path space of the diﬀusion.
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+GENERALIZED STATISTICAL ARBITRAGE CONCEPTS
+19
+S3(ω1) = s+++
+S2({ω1, ω5})
+S1({ω1, ω2, ω5})
+S0 = s
+S2({ω2, ω3})
+S3(ω5) = s++−
+S1({ω3, ω4})
+S2(ω4) = s−−
+Figure 8. The embedded binomial model for the follow-the-trend
+strategy with positive drift. The ﬁltration generated by the ﬁnal
+states is generated by each {ωi} for i = 1, 4, 5 and {ω2, ω3}. We also
+denote the resulting outcomes by s = s0, s+, s−, . . . and indicate
+this notation at some places.
+Trading will be executed at times τ i
+1 to τ i
+3 when the process reaches one of the
+predeﬁned boundaries (or trading time is over). At time τ i
+2 we check if a positive
+trend persists and trade on this trend. Recall the trading strategy φ = (φ1, φ+
+2 , φ−
+2 )
+from Equations (30) to (32). First, trading at the ﬁrst two times is executed as
+previously at times ti
+0, ti
+1, see Lemma 3.7: we hold on [τ i
+0, τ i
+1) the fraction φ1 shares
+of S. After reaching si
+0(1+c) (si
+0(1−c), respectively) at time τ i
+1 the trading strategy
+changes to holding φ+
+2 (φ−
+2 ) shares of S until τ i
+2. The next trading can be split into
+the following three cases:
+(i) τ i
+2 = σi
+1: in this case we reached the upper level si
+0(1 + 2c) and follow the
+(upward) trend by holding φ++
+3
+shares of S. This position will be equalized at
+τ i
+3 or if the ﬁnal time is reached.
+(ii) τ i
+2 equals σi
+2 or σi
+4: from the state si
+0(1 + c) resp. si
+0(1 −c) we arrived back at
+si
+0 (or below resp. above). No trend was detected and the embedded binomial
+trading strategy ends by liquidating the position.
+(iii) τ i
+2 equals σi
+4: again, no (upward) trend was detected and the strategy ends by
+liquidation the position.
+Since Lemma 3.7 treats a related, but slightly diﬀerent case we explicitly check
+in the following that the embedded binomial model indeed allows for statistical
+arbitrage.
+The embedded binomial follow-the-trend strategy. We consider ˜Ω= {ω1, . . . , ω5} as
+depicted in Figure 8. Let S0 = s0 ∈R≥0 and S1 take the two values s+ and s−such
+that
+S1(ω1) = S1(ω2) = S1(ω5) = s+,
+S1(ω3) = S1(ω4) = s−.
+At time 2 we have the three possibilities S2(ω1) = S2(ω5) = s++, S2(ω2) = S2(ω3) =
+s+−and S2(ω4) = s−−. In the cases of ω2, . . . , ω4 the model stops. If, however, we
+saw two up-movements, the model continues and ends up at time 3 in the states
+S3(ω1) = s+++ or S3(ω5) = s++−. We assume without loss of generality that
+s+ > s0, s−< s0, and s++ > s+, s−< s+−< s+, and s−−< s−as well as
+s++−< s++ < s+++, i. e. we consider binomial models as presented in Figure 8.
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+20
+CHRISTIAN REIN, LUDGER R¨USCHENDORF, AND THORSTEN SCHMIDT
+The dynamic trading strategies can be described by
+V3(φ) = φ1∆S1 + φ2∆S2 + φ3∆S3,
+with φ1, φ+
+2 , φ−
+2 and φ++
+3
+being the respective values in the states ˜Ω, {ω1, ω2, ω5},
+{ω3, ω4} and {ω1, ω5} at times 1, 2, and 3, respectively. Moreover, we choose
+˜
+G = σ({ω1}, {ω2, ω3}, {ω4}, {ω5}),
+(36)
+i.e. the σ-ﬁeld generated by the ﬁnal states of the embedded binomial model. The
+following lemma shows that there is always statistical arbitrage in the follow-the-trend
+strategy if there is statistical arbitrage in the recombining two-period sub-model
+consisting only of the ﬁrst two periods.
+Denote
+γ = 1
+D
+
+
+q∆S2(ω2)∆S2(ω4)
+∆S1(ω4)∆S2(ω3) −
+ q∆S1(ω2) + ∆S1(ω3)
+
+∆S2(ω4)
+−q∆S2(ω2)∆S1(ω4)
+
+
+(37)
+with D given in Lemma 3.7. The following results shows, that in the follow-the-trend
+model there is statistical arbitrage, if (20) holds.
+Proposition 5.2. If φ is the strategy from Lemma 3.7, then for any α ≥0,
+ψ = (ψ1, ψ+
+2 , ψ−
+2 , ψ++
+3
+) with
+ψ++
+3
+=
+1 −α
+∆S3(ω1) −∆S3(ω5)
+and
+
+
+ψ1
+ψ+
+2
+ψ−
+2
+
+= φ −∆S3(ω1)ψ++
+3
+γ
+is a ˜
+G -arbitrage strategy, if (20) holds.
+Of course, the possible choice α = 1 leads to ψ++
+3
+= 0, such that in this case the
+statistical arbitrage in the ﬁrst two periods is exploited and the strategy coincides
+with that of Lemma 3.7.
+Proof. Following Deﬁnition 2.1 the strategy ψ is a statistical ˜
+G -arbitrage strategy if
+the following holds
+ψ1∆S1(ω1) + ψ+
+2 ∆S2(ω1) + ψ++
+3
+∆S3(ω1) ≥0
+(38)
+ψ1∆S1(ω4) + ψ−
+2 ∆S2(ω4) ≥0
+(39)
+ψ1∆S1(ω2)P(ω2) + ψ+
+2 ∆S2(ω2)P(ω2)
++ψ1∆S1(ω3)P(ω3) + ψ−
+2 ∆S2(ω3)P(ω3) ≥0,
+(40)
+ψ1∆S1(ω5) + ψ+
+2 ∆S2(ω5) + ψ++
+3
+∆S3(ω5) ≥0
+(41)
+and, in addition, at least one of the inequalities is strict.
+We extend the setting from Lemma 3.7. First, we let
+˜A =
+
+
+
+
+∆S1(ω1)
+∆S2(ω1)
+0
+∆S3(ω1)
+∆S1(ω4)
+0
+∆S2(ω4)
+0
+q∆S1(ω2) + ∆S1(ω3)
+q∆S2(ω2)
+∆S2(ω3)
+0
+∆S1(ω5)
+∆S2(ω5)
+0
+∆S3(ω5)
+
+
+
+.
+Then Equations (38)–(41) are equivalent to ˜Aψ ≥0. Note that Si(ω1) = Si(ω5) for
+i = 1, 2 such that ˜Aψ = ˜x with ˜x = (x1, . . . , x4)⊤reveals
+ψ++
+3
+=
+x1 −x4
+∆S3(ω1) −∆S3(ω5).
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+GENERALIZED STATISTICAL ARBITRAGE CONCEPTS
+21
+gain pa
+mean
+VaR0.95
+gain pt
+losses
+(mean)
+∅N
+(max)
+27.8
+164
+4,180
+9.17
+0.171
+-554
+3
+21
+Table 5.
+Simulations for the follow-the-trend strategy for 1 mio
+runs. In comparison to Table 1 (where the notation is explained)
+we ﬁnd slightly smaller gains together with a smaller risk.
+As for Lemma 3.7, we will consider the case where ˜A is invertible. Note that the
+three times three submatrix (upper left) of ˜A equals the matrix A from Equation
+(16). Then, denoting x = (x1, x2, x3)⊤,
+
+
+ψ1
+ψ+
+2
+ψ−
+2
+
+= A−1x −A−1
+
+
+∆S3(ω1)ψ++
+3
+0
+0
+
+
+= A−1x −∆S3(ω1)ψ++
+3
+γ
+with vector γ from Equation (37). Up to now we where free to choose any ˜x ∈R4
+>0.
+If we choose, as for Lemma 3.7, x = 13, then φ = A−113 is the strategy computed
+in Lemma 3.7 and the result follows.
+□
+Simulation results. We study the performance of the follow-the-trend strategy on
+basis of various simulations and compare it to the results of the embedded binomial
+strategies. As previously, we simulate a geometric Brownian motion according to
+Equation (25) with µ = 0.1241, σ = 0.0837, S0 = 2186, T = 1 (year), discretize
+by 1000 steps and embed the according models repeatedly in this time interval. In
+this case, Proposition 5.2 grants the existence of statistical arbitrage which we will
+exploit in the following.
+Contrary to the intention of improving the average gain of the follow-the-trend
+strategy, the simulations show that this goal is not achieved. But, in general, the
+follow-the-trend strategy leads to a reduction of risk compared to the embeddedbinomial trading strategy, visible through the reduced Value-at-Risk in Tables 5
+to 8. The reduction of the average gain and its mean can be explained from the
+observations in Section 3.4: the follow-the-trend-strategy introduces additional
+scenarios with smaller gains (compare Figure 8). This leads to a reduction of the
+average gain and, at the same time, to a reduction of risk.
+The results from Table 6 to 8 show a similar dependence on the choice of the
+parameters and of the barrier of the follow-the-trend strategy compared to the
+embedded binomial strategy. In general, we record smaller gains together with
+smaller risk with one exception: the last line of Table 8 shows that a small σ allows
+the follow-the-trend strategy to exploit the existing (although small) positive trend
+in the data better. Of course, this comes with a higher risk, which is clearly visible.
+Summarizing, the follow-the-trend strategy shows (in general) smaller gains
+together with a smaller risk. The follow-the-trend strategy is, however, able to
+exploit a positive trend when σ is very small.
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+22
+CHRISTIAN REIN, LUDGER R¨USCHENDORF, AND THORSTEN SCHMIDT
+c
+gain pa
+median
+VaR0.95
+gain pt
+losses
+(mean)
+∅N (max)
+0.005 µ/σ
+404
+3,300
+51,300
+71.1
+0.098
+-5,590
+6
+44
+0.01 µ/σ
+32
+162
+4,130
+10.7
+0.169
+-548
+3
+18
+0.02 µ/σ
+6
+8
+272
+3.9
+0.238
+-45
+2
+7
+0.04 µ/σ
+3
+1
+23
+2.6
+0.122
+-2
+1
+3
+Table 6. Simulations for the follow-the-trend strategy with varying
+barrier levels c. In the simulations for Table 5 we used c = 0.01 µ/σ.
+η
+gain pa
+median
+VaR0.95
+gain pt
+losses
+(mean)
+∅N (max)
+0.33
+282
+9,340
+203,000
+71
+0.16
+-26,100
+4
+24
+0.50
+122
+3,500
+76,200
+31
+0.16
+-9,780
+4
+24
+0.75
+99
+1,390
+30,400
+26
+0.16
+-3,890
+4
+22
+1.00
+78
+734
+16,200
+20
+0.15
+-2,050
+4
+23
+1.25
+54
+452
+9,950
+15
+0.15
+-1,260
+4
+23
+2.00
+34
+162
+3,570
+10
+0.14
+-436
+3
+21
+3.00
+24
+66
+1,390
+7
+0.13
+-165
+3
+21
+Table 7.
+Simulations for the follow-the-trend strategy with varying values of the drift (and hence η = µ/σ) with ﬁxed σ = 0.1.
+η
+gain pa
+median
+VaR0.95
+gain pt
+losses
+(mean)
+∅N (max)
+0.33
+65,600
+2,030,000
+22,700,000
+6,640
+0.06
+-2,770,000
+10
+100
+0.50
+2,010
+40,700
+586,000
+284
+0.09
+-62,500
+7
+58
+0.75
+292
+3,930
+69,200
+60
+0.12
+-7,940
+5
+34
+1.00
+44
+732
+16,400
+11
+0.15
+-2,080
+4
+24
+1.25
+27
+200
+5,330
+9
+0.18
+-729
+3
+17
+2.00
+10
+15
+469
+5
+0.20
+-68
+2
+9
+Table 8.
+Simulations for the follow-the-trend strategy with varying values of the volatility σ and ﬁxed µ = 0.1.
+5.3. Partition strategies on the ﬁnal value. In this section we study statistical
+arbitrage with respect to the information system G ﬁn deﬁned by
+{ST ≥s0} = {ω1, ω2, ω3},
+and {ST < s0} = {ω4, ω5}.
+(42)
+This information system corresponds to the two scenarios that the value of the asset
+increased or decreased at time T. The statistical G ﬁn-arbitrage corresponds to a
+strategy which yields an average proﬁt in both of these scenarios.
+As an example, we continue in the setting of the follow-the-trend model considered
+in the previous Section 5.2, although other settings are clearly possible. Recall that
+this means we are focusing on an upward trend. We add the assumption that
+s++−< s0 such that also the third period allows for interesting outcomes (below or
+above s0, compare Figure 8). The new information system will lead to a diﬀerent
+trading strategy as we detail in the following.
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+GENERALIZED STATISTICAL ARBITRAGE CONCEPTS
+23
+Proposition 5.3. In the follow-the-trend model with s++−< s0 there is G ﬁnarbitrage if
+
+ψ1∆S1(ω1) + ψ+
+2 ∆S2(ω1) + ψ++
+3
+∆S3(ω1)
+
++
+
+ψ1∆S1(ω3) + ψ−
+2 ∆S2(ω3)
+P(ω3)
+P(ω1)
++
+
+ψ1∆S1(ω2) + ψ+
+2 ∆S2(ω2)
+P(ω2)
+P(ω1) ≥0,
+(43)
+
+ψ1∆S1(ω4) + ψ−
+2 ∆S2(ω4)
+
++
+
+ψ1∆S1(ω5) + ψ+
+2 ∆S2(ω5) + ψ++
+3
+∆S3(ω5)
+P(ω5)
+P(ω4) ≥0
+(44)
+and, in addition, at least one of the inequalities is strict.
+The proof is immediate. Note that here there is a lot of freedom in choosing
+such strategies. Indeed, we will pursue choosing a strategy matching our previous
+strategies for better comparability.
+Example 5.4. We consider a special case of (43), (44): we additionally assume
+that the ﬁrst line of Equation (43) and the ﬁrst line of Equation (44) is non-negative.
+Then, the strategy ψ is a G ﬁn-arbitrage if
+ψ1∆S1(ω1) + ψ+
+2 ∆S2(ω1) + ψ++
+3
+∆S3(ω1) ≥0,
+(45)
+ψ1∆S1(ω3) + ψ−
+2 ∆S2(ω3)
++
+
+ψ1∆S1(ω1) + ψ+
+2 ∆S2(ω2)
+P(ω2)
+P(ω3) ≥0,
+(46)
+ψ1∆S1(ω3) + ψ−
+2 ∆S2(ω4) ≥0
+(47)
+ψ1∆S1(ω1) + ψ+
+2 ∆S2(ω1) + ψ++
+3
+∆S3(ω5) ≥0,
+(48)
+and at least one inequality is strict.
+Note that we used ∆S1(ω3) = ∆S1(ω4),
+∆S1(ω1) = ∆S1(ω2) = ∆S1(ω5) and ∆S2(ω1) = ∆S2(ω5) from Section 5.2. This
+choice is similar to the previously studied partition strategies and we compute a
+strategy explicitly. In this regard, deﬁne the matrix A by
+A =
+
+
+
+
+∆S1(ω1)
+∆S2(ω1)
+0
+∆S3(ω1)
+∆S1(ω3) + r∆S1(ω1)
+r∆S2(ω2)
+∆S2(ω3)
+0
+∆S1(ω3)
+0
+∆S2(ω4)
+0
+∆S1(ω1)
+∆S2(ω1)
+0
+∆S3(ω5)
+
+
+
+
+with r = P (ω2)
+P (ω3). If A is invertible, for any α ≥0, the strategy ψ given by
+ψ++
+3
+=
+1 −α
+∆S3(ω1) −∆S3(ω5)
+and
+
+
+ψ1
+ψ+
+2
+ψ−
+2
+
+= φ −∆S3(ω1)ψ++
+3
+γ
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+24
+CHRISTIAN REIN, LUDGER R¨USCHENDORF, AND THORSTEN SCHMIDT
+is a G ﬁn-arbitrage. Here, φ = 1
+D(ξ1, ξ2, ξ3) with
+ξ1 =
+
+r∆S2(ω2) −∆S2(ω1)
+
+∆S2(ω4) + ∆S2(ω1)∆S2(ω3),
+ξ2 =
+
+∆S1(ω3) −∆S1(ω1)
+
+∆S2(ω3) +
+
+∆S1(ω1) −∆S1(ω3) −r∆S1(ω1)
+
+∆S2(ω4),
+ξ3 = r∆S1(ω1)
+
+∆S2(ω2) −∆S2(ω1)
+
+−r∆S2(ω2)∆S1(ω3),
+and
+D =
+
+r∆S1(ω1)∆S2(ω2) −
+ ∆S1(ω3) + r∆S1(ω2)
+
+∆S2(ω1)
+
+∆S2(ω4)
++ ∆S1(ω3)∆S2(ω1)∆S2(ω3),
+computed analogously to Lemma 3.7. In addition,
+γ = 1
+D
+
+
+r∆S2(ω2)∆S2(ω4)
+∆S1(ω3)∆S2(ω3) −
+ r∆S1(ω1) + ∆S1(ω3)
+
+∆S2(ω4)
+−r∆S2(ω2)∆S1(ω3)
+
+,
+and the computation of the strategy is ﬁnished.
+⋄
+Remark 5.5. Under the same assumptions as in the previous example we aim
+to ﬁnd a G ﬁn-arbitrage strategy fulﬁlling equations (45) - (48). In that case the
+strategy (Φ, ψ++) with Φ = (ξ1, ξ2, ξ3) as in Lemma 3.7 and
+−
+1
+∆S3(ω1) ≤ψ++ ≤−
+1
+∆S3(ω5)
+is a G ﬁn-arbitrage strategy. To see this remind that
+ξ1∆S1(ω1) + ξ2∆S2(ω1) ≥0,
+ξ1∆S1(ω2) + ξ2∆S2(ω2)
++
+
+ξ1∆S1(ω3) + ξ3∆S2(ω3)
+P(ω3)
+P(ω2) ≥0,
+ξ1∆S1(ω4) + ξ3∆S2(ω4) ≥0
+ξ1∆S1(ω5) + ξ2∆S2(ω5) ≥0,
+where ξ1∆S1(ω1) + ξ2∆S2(ω1) = ξ1∆S1(ω5) + ξ2∆S2(ω5). We are looking for ψ++
+with
+B + ψ++∆S3(ω1) ≥0,
+B + ψ++∆S3(ω5) ≥0,
+where B := ξ1∆S1(ω1) + ξ2∆S2(ω1). This results in
+B
+∆S3(ω1) ≥−ψ++,
+B
+∆S3(ω5) ≤−ψ++.
+Note that B ≥0, as Φ is a statistical arbitrage strategy. Besides that we have
+∆S3(ω1) > 0 and ∆S3(ω5) < 0 and we therefore obtain
+−
+B
+∆S3(ω1) ≤ψ++ ≤−
+B
+∆S3(ω5).
+As B was set equal to 1 in Lemma 3.7 we gain in this setting the special condition
+−
+1
+∆S3(ω1) ≤ψ++ ≤−
+1
+∆S3(ω5),
+but of course strategies can be derived for any B ≥0.
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+GENERALIZED STATISTICAL ARBITRAGE CONCEPTS
+25
+gain pa
+median
+VaR0.95
+gain pt
+losses
+(mean)
+∅N (max)
+28.6
+167
+4,290
+8.76
+0.158
+-544
+3
+20
+Table 9. Statistical G ﬁn-arbitrage trading strategy simulation
+results for 1 mio simulations with ci = 0.01 η Sσi
+0. In comparison to
+Table 1 (the embedded binomial strategy) we ﬁnd slightly smaller
+gains together with smaller losses, while the gains are larger than
+in Table 5 (the follow-the-trend strategy).
+c
+gain pa
+median
+VaR0.95
+gain pt
+losses
+(mean)
+∅N (max)
+0.005 µ/σ
+356
+3,280
+51,500
+58
+0.09
+-5,510
+6
+49
+0.01 µ/σ
+28
+166
+4,290
+9
+0.15
+-543
+3
+19
+0.02 µ/σ
+6
+8
+288
+4
+0.22
+-44
+2
+8
+0.04 µ/σ
+3
+1
+22
+3
+0.12
+-2
+1
+4
+Table 10. Simulation results for the statistical G ﬁn-arbitrage trading strategy with varying boundaries of the embedded binomial
+model. Gain p.t. is gain per trade and ¯N equals the maximal N in
+the simulations.
+η
+gain pa
+median
+VaR0.95
+gain pt
+losses
+(mean)
+∅N (max)
+0.33
+192
+9,600
+207,000
+45.2
+0.15
+-25,700
+4
+26
+0.50
+112
+3,560
+77,700
+26.7
+0.15
+-9,600
+4
+25
+0.75
+97
+1,430
+31,200
+23.7
+0.14
+-3,830
+4
+26
+1.00
+73
+751
+16,600
+18.3
+0.14
+-2,020
+4
+26
+1.25
+55
+458
+10,100
+13.9
+0.14
+-1,230
+4
+24
+2.00
+34
+163
+3,600
+9.15
+0.13
+-428
+3
+25
+3.00
+24
+67
+1,410
+6.82
+0.12
+-162
+3
+24
+Table 11. Statistical G ﬁn-arbitrage trading strategy for varying µ
+but with ﬁxed σ = 0.01. Gain p.t. is gain per trade and ¯N equals
+the maximal N in the simulations.
+Simulation results. Again, we study the performance of the strategy, this time
+the strategy derived in Example 5.4 with a partition (above/below) on the ﬁnal
+value of the stock. We perform various simulations. As previously, we simulate a
+geometric Brownian motion according to Equation (25) with µ = 0.1241, σ = 0.0837,
+S0 = 2186, T = 1 (year), discretize by 1000 steps and embed the according models
+repeatedly in this time interval. The properties for existence of a v in this setting
+are conﬁrmed numerically.
+As pointed out before, the statistical arbitrages are with respect to diﬀerent
+information ﬁelds. By our variant of G ﬁn-arbitrage chosen in Example 5.4 we indeed
+ﬁnd very similar results to the follow-the-trend strategy as one can see in Table 9 to
+12.
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+26
+CHRISTIAN REIN, LUDGER R¨USCHENDORF, AND THORSTEN SCHMIDT
+η
+gain pa
+median
+VaR0.95
+gain pt
+losses
+(losses)
+∅N (max)
+0.75
+203
+3,890
+69,800
+38
+0.11
+-7,810
+5
+37
+1.00
+71
+752
+16,600
+18
+0.14
+-2,020
+4
+25
+1.25
+28
+205
+5,500
+9
+0.17
+-715
+3
+18
+2.00
+10
+15
+494
+5
+0.19
+-67
+2
+11
+3.00
+4
+3
+51
+3
+0.09
+-5
+1
+6
+Table 12. Statistical G ﬁn-arbitrage trading strategy for varying σ
+but ﬁxed µ = 0.1.
+5.4. Summary on the diﬀerent strategies. The previous results conﬁrm statistical G -arbitrage for all three introduced strategies with respect to the corresponding
+choices of G . Although we observe similar patterns through all strategies like higher
+gains for smaller boundaries or an decreasing average proﬁt for increasing η there
+are signiﬁcant diﬀerences between the strategies:
+(i) the average proﬁt achieved is best for the embedded binomial strategy.
+(ii) The follow-the-trend strategy and the G ﬁn-arbitrage strategy show similar
+behaviour: while showing smaller gains on average, these two strategies have
+smaller risk.
+6. Application to market data
+In this section we apply the previously studied approaches to real stock data. It
+is quite remarkable that the positive impression from the simulated data persists on
+market data. We study data from the Kellogg Company and from Deutsche Bank
+and study the performance of the G ﬁn-arbitrage from Chapter 5.3.
+Before we can start with that we have to do some preparations. As we determined
+the strategies above assuming a positive drift we have to calculate the corresponding
+strategy for negative drift at ﬁrst. This is because we will determine the drift in the
+following examples using real market data and in this case of course there will be
+both, sections with positive and negative drift as well.
+We consider ˜Ω= {ω1, . . . , ω5} as depicted in Figure 9. Let S0 = s0 ∈R≥0 and S1
+take the two values s+ and s−such that
+S1(ω1) = S1(ω2) = s+,
+S1(ω3) = S1(ω4) = S1(ω5) = s−.
+At time 2 we have the three possibilities S2(ω1) = s++, S2(ω2) = S2(ω3) = s+−and
+S2(ω4) = S2(ω5) = s−−. In the cases of ω1, . . . , ω3 the model stops. If, however,
+we saw two down-movements, the model continues and ends up at time 3 in the
+states S3(ω4) = s−−−or S3(ω5) = s−−+. We assume without loss of generality
+that s+ > s0, s−< s0, and s++ > s+, s−< s+−< s+, and s−−< s−as well as
+s−−−< s−−< s−−+, i. e. we consider binomial models as presented in Figure 9.
+We have a look at statistical arbitrage with respect to the information system
+G ﬁn deﬁned by
+{ST > s0} = {ω1, ω5},
+and {ST ≤s0} = {ω2, ω3, ω4}.
+(49)
+Analogously to the case with positive drift we add the assumption that s−−+ > s0.
+This will lead to a diﬀerent trading strategy as we detail in the following.
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+GENERALIZED STATISTICAL ARBITRAGE CONCEPTS
+27
+S2(ω1) = s++
+S1({ω1, ω2})
+S0 = s
+S2({ω2, ω3})
+S3(ω5) = s−−+
+S1({ω3, ω4, ω5})
+S2({ω4, ω5})
+S3(ω4) = s−−−
+Figure 9. The embedded binomial model for the follow-the-trend
+strategy with negative drift. The ﬁltration generated by the ﬁnal
+states is generated by each {ωi} for i = 1, 4, 5 and {ω2, ω3}. We also
+denote the resulting outcomes by s = s0, s+, s−, . . . and indicate
+this notation at some places.
+Proposition 6.1. In the follow-the-trend model with s−−+ > s0 there is G ﬁnarbitrage if
+
+ψ1∆S1(ω1) + ψ+
+2 ∆S2(ω1)
+
+P(ω1)
++
+
+ψ1∆S1(ω5) + ψ−
+2 ∆S2(ω5) + ψ−−
+3
+∆S3(ω5)
+
+P(ω5) ≥0,
+(50)
+
+ψ1∆S1(ω2) + ψ+
+2 ∆S2(ω2)
+
+P(ω2)
++
+
+ψ1∆S1(ω3) + ψ−
+2 ∆S2(ω3)
+
+P(ω3)
++
+
+ψ1∆S1(ω4) + ψ−
+2 ∆S2(ω4) + ψ−−
+3
+∆S3(ω4)
+
+P(ω4) ≥0
+(51)
+and, in addition, at least one of the inequalities is strict.
+Example 6.2. We consider a special case of (50), (51): we additionally assume
+that the ﬁrst line of Equation (50) and the last line of Equation (51) is non-negative.
+Then, the strategy ψ = (ψ, ψ+, ψ−, ψ−−) is a G ﬁn-arbitrage if
+ψ1∆S1(ω1) + ψ+
+2 ∆S2(ω1) ≥0,
+
+ψ1∆S1(ω2) + ψ+
+2 ∆S2(ω2)
+P(ω2)
+P(ω3)
++ψ1∆S1(ω3) + ψ−
+2 ∆S2(ω3) ≥0,
+ψ1∆S1(ω4) + ψ−
+2 ∆S2(ω4) + ψ−−
+3
+∆S3(ω4) ≥0
+ψ1∆S1(ω5) + ψ−
+2 ∆S2(ω5) + ψ−−
+3
+∆S3(ω5) ≥0,
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+28
+CHRISTIAN REIN, LUDGER R¨USCHENDORF, AND THORSTEN SCHMIDT
+20
+30
+40
+50
+60
+70
+80
+year
+Dollar stock price
+2000
+2005
+2010
+2015
+Figure 10. Daily closing prices of the shares of the Kellogg Company during January 1, 2000 and December 31, 2017. Prices are
+presented in US-Dollar.
+and at least one inequality is strict. In this regard, deﬁne the matrix A by
+A =
+
+
+
+
+∆S1(ω1)
+∆S2(ω1)
+0
+0
+∆S1(ω3) + r∆S1(ω2)
+r∆S2(ω2)
+∆S2(ω3)
+0
+∆S1(ω4)
+0
+∆S2(ω4)
+∆S3(ω4)
+∆S1(ω5)
+0
+∆S2(ω5)
+∆S3(ω5)
+
+
+
+
+with r = P (ω2)
+P (ω3). If A is invertible, for any α ≥0, the strategy ψ given by
+ψ−−
+3
+=
+1 −α
+∆S3(ω4) −∆S3(ω5)
+and
+
+
+ψ1
+ψ+
+2
+ψ−
+2
+
+= φ −∆S3(ω4)ψ−−
+3
+γ
+is a G ﬁn-arbitrage. Here φ is the strategy from Lemma 3.7 and
+γ = 1
+D
+
+
+∆S2(ω1)∆S2(ω3)
+−∆S1(ω1)∆S2(ω3)
+−∆S2(ω1)
+ r∆S1(ω2) + ∆S1(ω3)
+
++ r∆S1(ω1)∆S2(ω2)
+
+,
+with
+D =
+
+r∆S1(ω1)∆S2(ω2) −
+ ∆S1(ω3) + r∆S1(ω2)
+
+∆S2(ω1)
+
+∆S2(ω4)
++ ∆S1(ω3)∆S2(ω1)∆S2(ω3).
+The approach now is to simulate the trading with a dynamic strategy, i. e.
+whenever the data leads to a positive drift we will use the strategy from Example
+5.4 while for a negative drift we will use the strategy described above.
+Example 6.3 (Kellogg Company). In Figure 10 we depict historical stock prices
+of the Kellogg Company from January 1, 2000 to December 31, 2017. Trading
+strategies are used by implementing the strategies from Example 5.4 and 6.2 where
+the parameters of the geometric Brownian motion are estimated by the maximumlikelihood estimates from three years directly before the trading period (which is
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+GENERALIZED STATISTICAL ARBITRAGE CONCEPTS
+29
+boundary
+GPTA: Kellog
+Deutsche Bank
+0.05 Sσi
+0
+22.26
+69.68
+0.10 Sσi
+0
+147.32
+10.09
+0.15 Sσi
+0
+155.65
+4.03
+0.20 Sσi
+0
+0.05
+10.31
+0.25 Sσi
+0
+0.11
+4.82
+Table 13.
+Gains per traded assets (GPTA) for the G ﬁn-arbitrage,
+applied to historical stock data of the Kellogg Company and
+Deutsche Bank AG from the year 2000 to 2017. Drift and volatility were estimated by maximum-likelihood methods with a rolling
+window of length 3 years.
+20
+40
+60
+80
+year
+Euro stock price
+2000
+2005
+2010
+2015
+Figure 11. Daily closing prices of the shares of the Deutsche Bank
+AG during January 1, 2000 and December 31, 2017. Prices are
+presented in Euro.
+a sliding-window approach with a window length of 3 years). Table 13 shows the
+achieved gains for diﬀerent boundary values. The gains are normalized to one traded
+asset to improve comparability. The results conﬁrm the ﬁndings from the previous
+section in the sense that we see gains for all chosen boundaries. If the boundary
+is chosen too small or too large the trading strategy does, however, not perform
+optimally.
+Example 6.4 (Deutsche Bank). As a second example, we apply our methodology
+to stock prices of Deutsche Bank from January 1, 2000 to December 31, 2017. In
+contrast to the previous example, we observe higher volatility and also large losses
+in the observation period. We proceed as for the Kellogg’s example and the results
+are shown in Table 13. Due to the present downward trend in the stock evolution
+the G ﬁn-strategy is expected to perform as the embedded binomial strategy. We
+recognize positive gains through all boundaries.
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+30
+CHRISTIAN REIN, LUDGER R¨USCHENDORF, AND THORSTEN SCHMIDT
+7. Conclusion
+We introduce the concept of statistical G -arbitrage and give a characterization
+of it. Moreover, we examine various proﬁtable strategies both on simulated and on
+market data. The choice of the information system G is either motivated naturally
+by the aim to generate proﬁtable strategies in average over certain pre-determined
+scenarios or, alternatively, it can be used as a technical tool to generate proﬁtable
+strategies.
+Our data experiments show that the analysed strategies show a good performance
+both on simulated data and on market data.
+Appendix A. Proofs
+Proof of Lemma 3.3. Note that equations (7) - (10) reads Aξ ≥0 with
+A =
+
+
+
+
+∆S1(ω2)
+∆S2(ω2)
+0
+∆S1(ω6)
+0
+∆S2(ω6)
+∆S1(ω1)ν1 + ∆S1(ω4)
+∆S2(ω1)ν1
+∆S2(ω4)
+∆S1(ω3)ν2 + ∆S1(ω5)
+∆S2(ω3)ν2
+∆S2(ω5)
+
+
+
+.
+We do a change of basis for the mapping A and substitute the vector in the ﬁrst
+column. This leads to a matrix ˜A,
+˜A =
+
+
+
+
+0
+∆S2(ω2)
+0
+0
+0
+∆S2(ω6)
+B1
+∆S2(ω1)ν1
+∆S2(ω4)
+B2
+∆S2(ω3)ν2
+∆S2(ω5)
+
+
+
+
+where
+B1 = ν1
+
+∆S1(ω1) −∆S2(ω1)∆S1(ω2)
+∆S2(ω2)
+
++ ∆S1(ω4) −∆S2(ω4)∆S1(ω6)
+∆S2(ω6)
+B2 = ν2
+
+∆S1(ω3) −∆S2(ω3)∆S1(ω2)
+∆S2(ω2)
+
++ ∆S1(ω5) −∆S2(ω5)∆S1(ω6)
+∆S2(ω6).
+We denote by ℑ( ˜A) the image of a mapping ˜A. There exists statistical arbitrage if
+ℑ( ˜A) ∩R4
+>0̸ = ∅.
+The linear subspace spanned by ˜A is given by
+α
+
+
+
+
+0
+0
+B1
+B2
+
+
+
++ β
+
+
+
+
+∆S2(ω2)
+0
+∆S2(ω1)ν1
+∆S2(ω3)ν2
+
+
+
++ γ
+
+
+
+
+0
+∆S2(ω6)
+∆S2(ω4)
+∆S2(ω5)
+
+
+
+,
+(52)
+with α, β, γ ∈R. Assume this space meets R4
+≥0. Then it follows from the condition
+β∆S2(ω2) = β(s++
+2
+−s+
+1 ) ≥0 that β ≥0. Similarily, γ ≤0 because ∆S2(ω6) =
+s−−
+2
+−s−
+1 < 0. Summing up the third and fourth coordinate from (52) we get
+α
+
+ν1
+
+∆S1(ω1) −∆S2(ω1)∆S1(ω2)
+∆S2(ω2)
+
++ ν2
+
+∆S1(ω3) −∆S2(ω3)∆S1(ω2)
+∆S2(ω2)
+
++∆S1(ω6)
+∆S2(ω6)
+
+−∆S2(ω4) −∆S2(ω5)
+
++ ∆S1(ω4) + ∆S1(ω5)
+
+(53)
++ γ (∆S2(ω4) + ∆S2(ω5))
++ β (∆S2(ω1)ν1 + ∆S2(ω3)ν2) .
+Choosing ν1 = −∆S2(ω3)
+∆S2(ω1)ν2,
+β (∆S2(ω1)ν1 + ∆S2(ω3)ν2) = 0
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+GENERALIZED STATISTICAL ARBITRAGE CONCEPTS
+31
+such that the last term in the above equation vanishes. As we assumed that the
+space spanned by (52) meets R4
+≥0 it must also hold true that (53) ≥0. For
+ν2 <
+∆S1(ω6)
+∆S2(ω6)(∆S2(ω4) + ∆S2(ω5)) −∆S1(ω4) −∆S1(ω5)
+∆S1(ω3) −∆S1(ω1) ∆S2(ω3)
+∆S2(ω1)
+= Γ2
+the coeﬃcient of α in (53) is negative. Together with γ ≤0 and ∆S2(ω4), ∆S2(ω5) >
+0 by assumption this choice of ν2 results in α ≤0 in order to obtain (53) ≥0. On
+the other hand, if we claim
+ν2 >
+−∆S1(ω5) + ∆S2(ω5) ∆S1(ω6)
+∆S2(ω6)
+∆S1(ω3) −∆S2(ω3) ∆S1(ω2)
+∆S2(ω2)
+= Γ1
+it follows that B2 > 0 and it results for the fourth coordinate of (52) that
+αB2 + β∆S2(ω3)ν2 + γ∆S2(ω5) ≤0.
+Hence ℑ( ˜A) ∩R4
+>0 = ∅. It remains to prove that
+(i) Γ1 < Γ2 and
+(ii) there is no statistical arbitrage for ν2 = Γ2.
+The statements (i) and (ii) are veriﬁed by analogous calculations which concludes
+the proof.
+□
+Proof of Proposition 3.4. “⇒” If det(A)̸ = 0 we choose for example ξ := A−11 and
+have found an arbitrage opportunity.
+“⇐” On the other hand, if det(A) = 0 there still might be an arbitrage opportunity
+if the image of A intersects with the positive subspace of R3, i.e. if ℑ(A) ∩R3
+>0̸ = ∅.
+To show that this is not the case we change the basis for the mapping A and
+substitute the vector in the ﬁrst column. This leads to a matrix ˜A,
+˜A =
+
+
+0
+∆S2(ω1)
+0
+0
+0
+∆S2(ω4)
+B
+∆S2(ω2)q
+∆S2(ω3)
+
+,
+where
+B = q
+ ∆S1(ω1) −∆S1(ω1)
+∆S2(ω1)∆S2(ω2)
+
++ ∆S1(ω3) −∆S1(ω3)
+∆S2(ω4)∆S2(ω3).
+Calculating det(A) we see that det(A) = 0 is equivalent to
+0 = −∆S2(ω1)
+ ∆S1(ω4)∆S2(ω3) −
+ ∆S1(ω3) + q∆S1(ω2)
+
+∆S2(ω4)
+
+−q∆S1(ω1)∆S2(ω2)∆S2(ω4).
+(54)
+In the recombining binomial model this reduces to
+0 = q∆S1(ω1)
+
+1 −∆S2(ω2)
+∆S2(ω1)
+
++ ∆S1(ω3)
+
+1 −∆S2(ω3)
+∆S2(ω4)
+
+which is equivalent to B = 0. In this case the linear subspace spanned by ˜A is given
+by
+α
+
+
+∆S2(ω1)
+0
+q∆S2(ω2)
+
++ β
+
+
+0
+∆S2(ω4)
+∆S2(ω3)
+
+,
+(55)
+with α, β ∈R. Because ∆S2(ω1) > 0 we need α ≥0 to have arbitrage opportunities.
+Similar we need to have β ≤0 because of ∆S2(ω4) < 0 by assumption. But, as
+∆S2(ω2) < 0 and ∆S2(ω3) > 0, we obtain for the third coordinate that
+αq∆S2(ω2) + β∆S2(ω3) ≤0
+and hence ℑ(A) ∩R3
+>0 = ∅, which concludes the proof.
+□
+Electronic copy available at: https://ssrn.com/abstract=3423944
+
+32
+CHRISTIAN REIN, LUDGER R¨USCHENDORF, AND THORSTEN SCHMIDT
+References
+Avellaneda, M. and Lee, J.-H. (2010), ‘Statistical arbitrage in the US equities
+market’, Quantitative Finance 10(7), 761–782.
+Bernardo, A. E. and Ledoit, O. (2000), ‘Gain, loss, and asset pricing’, Journal of
+political economy 108(1), 144–172.
+Bondarenko, O. (2003), ‘Statistical arbitrage and securities prices’, The Review of
+Financial Studies 16(3), 875–919.
+Borodin, A. N. and Salminen, P. (2012), Handbook of Brownian motion-facts and
+formulae, Birkh¨auser.
+ˇCern`y, A. and Hodges, S. (2002), The theory of good-deal pricing in ﬁnancial markets,
+in ‘Mathematical Finance—Bachelier Congress 2000’, Springer, pp. 175–202.
+Cochrane, J. H. and Saa-Requejo, J. (2000), ‘Beyond arbitrage: Good-deal asset
+price bounds in incomplete markets’, Journal of political economy 108(1), 79–119.
+Delbaen, F. and Schachermayer, W. (1994), ‘A general version of the fundamental
+theorem of asset pricing’, Mathematische Annalen 300(1), 463–520.
+Delbaen, F. and Schachermayer, W. (1995a), ‘The existence of absolutely continuous
+local martingale measures’, Ann. Appl. Probab. 5(4), 926–945.
+Delbaen, F. and Schachermayer, W. (1995b), ‘The no-arbitrage property under a
+change of num´eraire’, Stochastics and Stochastic Reports 53(3-4), 213–226.
+Delbaen, F. and Schachermayer, W. (2006), The mathematics of arbitrage, Springer
+Science & Business Media.
+Elliott, R. J., Van Der Hoek, J. and Malcolm, W. P. (2005), ‘Pairs trading’, Quantitative Finance 5(3), 271–276.
+Gatev, E., Goetzmann, W. N. and Rouwenhorst, K. G. (2006), ‘Pairs trading:
+Performance of a relative-value arbitrage rule’, The Review of Financial Studies
+19(3), 797–827.
+G¨onc¨u, A. (2015), ‘Statistical arbitrage in the Black–Scholes framework’, Quantitative
+Finance 15(9), 1489–1499.
+Hansen, L. P. and Jagannathan, R. (1991), ‘Implications of security market data for
+models of dynamic economies’, Journal of political economy 99(2), 225–262.
+Hogan, S., Jarrow, R., Teo, M. and Warachka, M. (2004), ‘Testing market eﬃciency
+using statistical arbitrage with applications to momentum and value strategies’,
+Journal of Financial economics 73(3), 525–565.
+Kassberger, S. and Liebmann, T. (2017), ‘Additive portfolio improvement and
+utility-eﬃcient payoﬀs’, Mathematics and Financial Economics 11(2), 241–262.
+Krauss, C. (2017), ‘Statistical arbitrage pairs trading strategies: Review and outlook’,
+Journal of Economic Surveys 31(2), 513–545.
+Freiburg University, Dep. of Mathematics, Ernst-Zermelo Str. 1, 79104 Freiburg,
+Germany.
+E-mail address: ch.rein@gmx.net, ruschen@stochastik.uni-freiburg.de
+Freiburg Institute of Advanced Studies (FRIAS), Germany. University of Strasbourg
+Institute for Advanced Study (USIAS), France. University of Freiburg, Department of
+Mathematical Stochastics, Ernst-Zermelo-Str. 1, 79104 Freiburg, Germany
+E-mail address: thorsten.schmidt@stochastik.uni-freiburg.de
+Electronic copy available at: https://ssrn.com/abstract=3423944

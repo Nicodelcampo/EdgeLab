@@ -1,0 +1,110 @@
+{
+  "doc_id": 104,
+  "titulo": "Dynamics of Order Positions and Related Queues in a Limit Order Book",
+  "resumen_operativo": "Paper de matemática financiera que estudia el comportamiento límite de posiciones de órdenes y colas relacionadas en un LOB usando teoría de colas. Deriva fluid limits (aproximación de primer orden: la tasa a la que la posición se acerca a cero es proporcional a las intensidades de llegada de órdenes de mercado y cancelaciones), diffusion limits para las colas bid/ask (Brownian motion bidimensional), y fluctuation analysis para posiciones de órdenes (proceso Gaussiano con mean-reversion). Proporciona expresiones analíticas explícitas para tiempos esperados de ejecución, probabilidades de hitting time, y large deviations de las colas respecto a sus fluid limits. Riguroso matemáticamente pero puramente teórico; construye sobre supuestos de estacionariedad y ergodicidad de procesos de llegada de órdenes.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "limit order book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Libro de órdenes modelado como sistema de colas con seis tipos de órdenes (best bid, market bid, cancellation bid, best ask, market ask, cancellation ask). Las dinámicas de la posición de una orden dentro de la cola best bid dependen de market orders y cancellations según price-time priority.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market microstructure"},
+        {"tipo": "USA", "objeto": "queue position"}
+      ],
+      "cita_textual": "Limit orders are collected and posted in the LOB, which contains the quantities and the price at each price level"
+    },
+    {
+      "nombre": "queue position",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Posición de una orden dentro de una cola del LOB. El paper estudia su dinámica: disminuye con market orders y cancellations, y su velocidad hacia cero es modulada por la llegada de nuevas limit orders que cambian el tamaño relativo de la cola. El fluid limit muestra que Z(t) sigue una ODE no lineal.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "MIDE", "objeto": "order execution probability"}
+      ],
+      "cita_textual": "a better order position means less waiting time and a higher probability of the order being executed"
+    },
+    {
+      "nombre": "Hawkes process",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso de punto autoregresivo mencionado como posible modelo de llegada de órdenes para el cual los resultados del paper son inmediatamente aplicables, dado que las condiciones técnicas (stationarity, ergodicity) son satisfechas por Hawkes processes.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "limit order book"}
+      ],
+      "cita_textual": "order arrival processes can be Poisson processes or Hawkes processes, both of which have been extensively used in LOB modelings"
+    },
+    {
+      "nombre": "Brownian motion",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Límite de difusión para las colas best bid y best ask: convergen a una Brownian motion bidimensional con drift y matriz de covarianza explícitamente dadas en términos de las estadísticas de tamaños e intensidades de órdenes.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "APLICA_A", "objeto": "stochastic calculus"}
+      ],
+      "cita_textual": "the queues are two-dimensional Brownian motion with mean and covariance structure explicitly given"
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Las fluctuaciones de las posiciones de órdenes alrededor de su fluid limit son procesos Gaussianos con mean-reversion. La velocidad de mean-reversion es proporcional a la intensidad de llegada de órdenes y la tasa de cancelaciones.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "queue position"},
+        {"tipo": "APLICA_A", "objeto": "Ornstein-Uhlenbeck process"}
+      ],
+      "cita_textual": "fluctuations of the order positions are Gaussian processes with mean-reversion"
+    },
+    {
+      "nombre": "Ornstein-Uhlenbeck process",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Implícito en la estructura de mean-reversion de las fluctuaciones de la posición de órdenes (Theorem 15). La ecuación diferencial estocástica para la fluctuación Y(t) contiene un término de reversión proporcional a λ·¯V³/Qb(t).",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "mean reversion"},
+        {"tipo": "APLICA_A", "objeto": "queue position"}
+      ],
+      "cita_textual": "The speed of the mean-reversion is proportional to the order arrival intensity and the rate of cancellations"
+    },
+    {
+      "nombre": "stochastic calculus",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Herramienta matemática subyacente a todo el paper: convergencia en Skorokhod topology (J1), functional strong law of large numbers, functional central limit theorem, large deviations principle (Mogulskii's theorem), y Kurtz-Protter convergence para SDEs.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Brownian motion"},
+        {"tipo": "APLICA_A", "objeto": "limit order book"}
+      ],
+      "cita_textual": "convergence in the sense of the weak convergence in DK[0,T] equipped with J1 topology"
+    },
+    {
+      "nombre": "Avellaneda-Stoikov model",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Mencionado como referencia para la probabilidad de price increase, una cantidad core en LOB que el paper relaciona con el análisis de hitting times de las colas.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "market making"}
+      ],
+      "cita_textual": "This is an important piece of information especially when combined with an estimate on the probability of a price increase. The latter is a core quantity for the LOB and has been studied in Avellaneda and Stoikov"
+    },
+    {
+      "nombre": "market making",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Implícito en el propósito aplicado del paper: conocer la dinámica de la posición de órdenes y el tamaño de colas permite optimizar estrategias de market making, balanceando inventory risk de limit orders no ejecutadas contra el costo de market orders.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "queue position"},
+        {"tipo": "USA", "objeto": "limit order book"}
+      ],
+      "cita_textual": "At the core of these various optimization problems is the trade-off between the inventory risk from unexecuted limit orders and the cost from market orders"
+    },
+    {
+      "nombre": "order book depth",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Profundidad del libro medida indirectamente a través de los tamaños promedio de órdenes (¯V¹ a ¯V⁶). El paper muestra que los tiempos de ejecución dependen de la suma de tamaños promedio de market orders y cancellations modificadas.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "the rate of the order position approaching zero is proportional to the mean of order arrival intensities and to the summation of the average size of market orders and the modified average size of cancellation orders"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Paper puramente teórico sin validación empírica, pero las expresiones analíticas para fluid limits, tiempos de ejecución esperados y probabilidades de hitting time de colas son directamente útiles para modelar dinámicas de queue position en estrategias de market making sobre ES futures. El marco de diffusion limits para colas bid/ask podría informar modelos de riesgo de inventario intradía."
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "doc_id": 86,
+  "titulo": "M of a kind: A Multivariate Approach at Pairs Trading",
+  "resumen_operativo": "El paper extiende la clásica estrategia de pairs trading usando un enfoque multivariado (múltiples activos para construir el par sintético) en lugar de uno bivariado. Ofrece tres métodos de ponderación (OLS, pesos iguales y basado en correlación), mostrando que las señales de trading, especialmente con la ponderación por correlación, capturan retornos ajustados atractivos tras costos de transacción.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia clásica de reversión a la media que construye pares a partir de dos activos correlacionados para generar señales largas y cortas ante divergencias de precio.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "mean reversion"
+        }
+      ],
+      "cita_textual": "The main logic behind the expected profits of classical pairs trading strategy is: if the movements between the pairs are going to continue in the future... there is a good possibility that such prices are going to converge in the future"
+    },
+    {
+      "nombre": "multivariate pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Versión propuesta de la estrategia de pairs trading que construye el par artificial utilizando información de m activos, reduciendo el riesgo específico de un solo par.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "pairs trading"
+        }
+      ],
+      "cita_textual": "The main objective of this research is to suggest a multivariate version of pairs trading, which will try to create an artificial pair for a particular stock based on the information of m assets, instead of just one."
+    },
+    {
+      "nombre": "correlation weighting",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método para asignar pesos a los activos en el enfoque multivariado, escalando las posiciones por la correlación entre el precio normalizado de cada activo del canasto y el activo principal.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "multivariate pairs trading"
+        }
+      ],
+      "cita_textual": "This approach will calculate the weights using... the correlation of the normalized price series k with the normalized price of i"
+    },
+    {
+      "nombre": "ordinary least squares",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Uso de regresiones (OLS) para encontrar coeficientes que minimicen el error cuadrático con el precio normalizado del activo y así modelar la serie sintética.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "multivariate pairs trading"
+        }
+      ],
+      "cita_textual": "it’s possible to use least squares to find the coefficients that present the lowest sum of quadratic error between the asset’s i normalized price series and the normal price series of the artificial pair."
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Comportamiento empírico de mercado donde diferencias o distancias anormales en precios tienden a revertirse al nivel histórico medio.",
+      "relaciones": [],
+      "cita_textual": "This proposed version can clearly be labeled as a mean reverting strategy, since the idea is to build a conditional mean for the normalized prices of the series and trade when the error is considered abnormal, hoping for a reversion at the historical behavior."
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "dato",
+      "definicion_en_contexto": "Costos de operar que en backtesting se sustraen de las simulaciones, fundamentales para analizar si las ganancias de alta frecuencia son absorbibles.",
+      "relaciones": [],
+      "cita_textual": "Considering realistic transaction costs, the analysis of performance was conducted with the calculation of raw and excessive returns"
+    },
+    {
+      "nombre": "bootstrap validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Simulación de entradas aleatorias al mercado para construir una distribución empírica de métricas como el ratio de Sharpe y comparar si los retornos de la estrategia son un mero accidente estadístico.",
+      "relaciones": [],
+      "cita_textual": "The bootstrap method represents a way to compare the trading signals of the strategy against pure chance. The basic idea is to simulate random entries in the market"
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Relación entre riesgo y retorno anualizado para calificar la utilidad y rentabilidad extra de una estrategia respecto al azar o benchmark.",
+      "relaciones": [],
+      "cita_textual": "When looking at the results of the bootstrap method for the sharpe ratio, the values of beated random portfolios are all close to 80%, meaning that the strategy, on average, presents higher relation of return and risk"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La estrategia multivariada de pairs trading con ponderación por correlación supera consistentemente tanto a simulaciones aleatorias como a la versión bivariada en términos de retornos y Sharpe ratios tras costos.",
+      "mercado": "Brazilian equities",
+      "periodo": "2000-2006",
+      "magnitud": "Sharpe ratios excedentes vencen a ~80% de portafolios aleatorios en umbrales mayores (d>1.2)",
+      "condiciones": "0.1% transaction cost, moving window of 494 days",
+      "robustez": "media",
+      "cita_textual": "the MPT case presented a higher number of percentage of beated portfolios when it comes to annualized return. This result is more explicit for high values of d."
+    },
+    {
+      "afirmacion": "La estrategia de pares genera portafolios con desviaciones estándar (riesgo no sistemático) sistemáticamente superiores que las de cualquier portafolio aleatorio, actuando principalmente en regímenes de alta volatilidad.",
+      "mercado": "Brazilian equities",
+      "periodo": "2000-2006",
+      "magnitud": "Higher annualized standard deviation than 100% of simulated random portfolios",
+      "condiciones": "Ocurre a lo largo de todos los umbrales de d sin disminuir.",
+      "robustez": "media",
+      "cita_textual": "independent of the value of d, the strategy is picking up large volatility from the data, therefore the values of annualized standard deviation aren’t decreasing with the increase of the threshold parameter."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Aunque usa series diarias de acciones con baja validación OOS, el concepto multivariado de construir pares sintéticos ponderando correlaciones (NQ, YM, RTY) podría testearse en ecosistema intradía sobre el ES."
+  }
+}

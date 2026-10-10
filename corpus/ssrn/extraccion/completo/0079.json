@@ -1,0 +1,138 @@
+{
+  "doc_id": 79,
+  "titulo": "Correlation Matrix Clustering for Statistical Arbitrage Portfolios",
+  "resumen_operativo": "El paper presenta un framework sistemático para arbitraje estadístico combinando retornos residuales del mercado y algoritmos de clustering sobre grafos signados. Permite identificar grupos de activos con fuerte reversión a la media, superando clasificaciones sectoriales estáticas. Para un trader, provee metodologías prácticas para construir carteras dinámicas neutrales al mercado.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategias de inversión que utilizan métodos estadísticos para explotar desviaciones temporales de precios entre activos similares formando portafolios de costo cero.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "mean reversion"
+        },
+        {
+          "tipo": "USA",
+          "objeto": "clustering"
+        }
+      ],
+      "cita_textual": "Statistical arbitrage encompasses investment strategies that use statistical and quantitative methods to identify and exploit temporal price deviations among a group of similar assets."
+    },
+    {
+      "nombre": "market residual return",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Componente del retorno de una acción purgado del riesgo general del mercado al restarle el retorno del mercado ajustado por beta.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "correlation matrix"
+        }
+      ],
+      "cita_textual": "First, we compute market residual returns, which are given by the difference between the stock returns and the product of the stock’s CAPM Fama and French (2004) equity beta and the market return."
+    },
+    {
+      "nombre": "correlation matrix",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Matriz de similitud construida a partir de retornos residuales que contiene valores positivos y negativos, sirviendo como red signada para encontrar agrupaciones.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "clustering"
+        }
+      ],
+      "cita_textual": "Next, we compute the correlation matrix of residual returns, interpret it as a weighted signed network, and use graph clustering algorithms to partition the stocks into groups"
+    },
+    {
+      "nombre": "clustering",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnicas basadas en grafos signados que agrupan nodos buscando maximizar conexiones positivas intra-grupo y minimizar conexiones positivas entre distintos grupos.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "correlation matrix"
+        },
+        {
+          "tipo": "USA",
+          "objeto": "Marchenko-Pastur distribution"
+        }
+      ],
+      "cita_textual": "In particular, we use signed clustering algorithms that handle negative weights because the correlation matrix of residual returns we employ consists of both positive and negative entries"
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Tendencia de los retornos empíricos a converger hacia la media local de su clúster de activos similares tras una divergencia de corto plazo.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "statistical arbitrage"
+        }
+      ],
+      "cita_textual": "We expect the previous winners to revert down to the cluster mean and the previous losers to revert up to the cluster mean over the next T days."
+    },
+    {
+      "nombre": "Marchenko-Pastur distribution",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Distribución asintótica empleada para definir de forma adaptativa el número de clústeres, seleccionando únicamente los autovalores empíricos que superan su cota superior.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "correlation matrix"
+        }
+      ],
+      "cita_textual": "The Marchenko–Pastur theorem characterizes the limiting behavior of the eigenvalues of C."
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica tradicional de evaluación de riesgo que mide el retorno promedio del portafolio en relación con su volatilidad total.",
+      "relaciones": [],
+      "cita_textual": "The Sharpe ratio measures the risk-adjusted return. It considers the market residual return generated per unit of standard deviation of returns as a measure of risk."
+    },
+    {
+      "nombre": "Sortino ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Variante del ratio de Sharpe orientada a penalizar exclusivamente la varianza de los retornos negativos en la estrategia de reversión a la media.",
+      "relaciones": [],
+      "cita_textual": "The Sortino ratio focuses on the downside risk of the portfolio with the intuition that high upside standard deviation does not negatively impact portfolios"
+    },
+    {
+      "nombre": "SPONGE algorithm",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Variante algorítmica específica para clustering signado basada en formulación de autovalores generalizados, que muestra excelente rendimiento empírico.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "clustering"
+        }
+      ],
+      "cita_textual": "SPONGE (Signed Positive Over Negative Generalized Eigenproblem) is a generalized eigenvalue formulation of the signed clustering problem, which outperforms many benchmarks in the literature"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Agrupar acciones descontando factores de mercado y aplicar estrategias de arbitraje intra-clúster genera rendimientos positivos consistentes y neutrales a factores comunes.",
+      "mercado": "US equities",
+      "periodo": "2000-2022",
+      "magnitud": "10%+ retornos anualizados, ratios de Sharpe > 1",
+      "condiciones": "Top 25% market cap, rebalanceo cada 3 días o en stop 5%, costos de transacción omitidos.",
+      "robustez": "media",
+      "cita_textual": "We explore five clustering algorithms and demonstrate that our proposed framework generates profitable trading strategies with over 10% annualized returns and statistically significant Sharpe ratios above one."
+    },
+    {
+      "afirmacion": "La identificación empírica de agrupaciones basada en correlación residual capta relaciones que difieren significativamente de los sectores industriales estáticos.",
+      "mercado": "US equities",
+      "periodo": "2000-2022",
+      "magnitud": "Índice ARI menor a 15% respecto a Fama-French 12",
+      "condiciones": "Dinámicas empíricas de grupos revelando descorrelación durante crisis.",
+      "robustez": "media",
+      "cita_textual": "The similarity between clusters found by the clustering algorithms and the sector labels is less than 15%. This observation supports the observation that the returns of our statistical arbitrage portfolios cannot be fully explained by industry memberships."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El enfoque de agrupar componentes temporales, espaciales o regímenes descontando factores macros para realizar mean-reversion puede adaptarse al diseño de estrategias HFT en el spread intradía."
+  }
+}

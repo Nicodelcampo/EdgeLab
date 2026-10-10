@@ -1,0 +1,120 @@
+{
+  "doc_id": 298,
+  "titulo": "Review of Statistical Arbitrage, Cointegration, and Multivariate Ornstein-Uhlenbeck",
+  "resumen_operativo": "Introduce el proceso multivariado Ornstein-Uhlenbeck (OU), lo resuelve analíticamente y muestra cómo generaliza procesos VAR, cointegrados y de raíz unitaria. Usando la interpretación geométrica de la dinámica OU mediante eigenvalores y eigenvectores, introduce cointegración y su relación con el arbitraje estadístico. Ilustra con una aplicación a estrategias de swap rates usando PCA para detectar combinaciones cointegradas, calculando alpha, z-score y half-life ajustados por horizonte de trading. Incluye código MATLAB documentado.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Multivariate Ornstein-Uhlenbeck Process",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso definido por dXt = -Θ(Xt - μ)dt + S dBt, donde Θ es la matriz de transición, μ la esperanza incondicional y S el generador de dispersión. Su solución discreta es un VAR(1). Generaliza procesos VAR(n), raíz unitaria, cointegrados y estacionarios.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "VAR(1) in Discrete Time"},
+        {"tipo": "APLICA_A", "objeto": "Cointegration Analysis"}
+      ],
+      "cita_textual": "The Ornstein-Uhlenbeck is a continuous time process. When sampled in discrete time, the Ornstein-Uhlenbeck process gives rise to a vector autoregression of order one."
+    },
+    {
+      "nombre": "Cointegration via Eigenvalue Geometry",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Si algunos eigenvalores de Θ tienen parte real estrictamente positiva, las combinaciones lineales correspondientes son estacionarias (cointegradas). El espacio cointegrado es el hiperplano generado por los eigenvectores asociados a eigenvalores con parte real positiva.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Positive Eigenvalues of Θ"},
+        {"tipo": "EQUIVALE_A", "objeto": "Stationary Linear Combinations"}
+      ],
+      "cita_textual": "As long as some eigenvalues have strictly positive real part, the covariances of the respective entries in the transformed process stabilizes in the long run. Therefore these processes and any linear combination thereof are stationary. Such combinations are called cointegrated."
+    },
+    {
+      "nombre": "Error Correction Representation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Representación ΔτXt = Ψτ(Xt - μ) + εt,τ donde Ψτ = e^(-Θτ) - I. Si L eigenvalores son nulos, Ψτ tiene rango N-L y se factoriza como Ψτ = Φ'τΥτ. Las filas de Υτ generan hiperplanos de contracción hacia el equilibrio de largo plazo.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Cointegration Space"},
+        {"tipo": "REQUIERE", "objeto": "Unit Root Eigenvalues"}
+      ],
+      "cita_textual": "The representation Ψτ ≡ Φ'τΥτ, known as the error correction representation of the process, is not unique."
+    },
+    {
+      "nombre": "PCA-Based Cointegration Detection",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método modelo-independiente para detectar cointegración: se calcula la matriz de covarianza muestral, se extraen eigenvectores vía PCA, y se testea estacionariedad de las combinaciones Y_t^(e(n)) = X'_t e(n) desde el eigenvector de menor eigenvalor hacia arriba.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Sample Covariance Matrix"},
+        {"tipo": "APLICA_A", "objeto": "Eigenvalue Decomposition"}
+      ],
+      "cita_textual": "We consider the sample counterpart of the covariance; then we extract the eigenvectors; finally we explore the stationarity of the combinations Y_t^(e(n)) for n = N, ..., 1."
+    },
+    {
+      "nombre": "Z-Score (Statistical Arbitrage Signal)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Señal normalizada definida como z_{t,∞} = |Y_t - μ| / √(σ²/2θ). Representa el ex-ante Sharpe ratio del trade. Cuando el z-score es grande se entra al trade; cuando se estrecha se toma ganancia; si se amplía se toma pérdida.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Ex-Ante Sharpe Ratio"},
+        {"tipo": "USA", "objeto": "Alpha (Expected Gain)"}
+      ],
+      "cita_textual": "The z-score represents the ex-ante Sharpe ratio of the trade and can be used to generate signals: when the z-score is large we enter the trade; when the z-score has narrowed we cash a profit."
+    },
+    {
+      "nombre": "Half-Life of Mean Reversion",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Tiempo requerido para que la tendencia determinística de un proceso OU recorra la mitad del camino hacia su esperanza de largo plazo. Definido como τ̃ ∝ ln(2)/θ. A mayor θ (mayor velocidad de reversión), menor half-life y menor espera para realizar ganancias.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Mean-Reversion Speed θ"},
+        {"tipo": "PREDICE", "objeto": "Trade Horizon"}
+      ],
+      "cita_textual": "The half-life represents the order of magnitude of the time required before we can hope to cash in any profit: the higher the mean-reversion θ, the lesser the wait."
+    },
+    {
+      "nombre": "Horizon-Adjusted Z-Score",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ajuste del z-score de largo plazo al horizonte real de trading (típicamente 1 día). La fórmula es z_{t,τ} = z_{t,∞} · (1 - e^(-θτ)) / √(1 - e^(-2θτ)). Para horizontes cortos, z_{t,τ}/z_{t,∞} ≈ √(ln2/2 · τ/τ̃).",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Z-Score (Statistical Arbitrage Signal)"},
+        {"tipo": "REQUIERE", "objeto": "Half-Life of Mean Reversion"}
+      ],
+      "cita_textual": "The true horizon is typically one day and the computations for the alpha and the z-score must be adjusted accordingly."
+    },
+    {
+      "nombre": "Deterministic OU Drift Geometry",
+      "tipo": "concepto",
+      "definicion_en_contexto": "En coordenadas diagonalizadas z = A⁻¹(x-μ), el drift determinístico se desacopla: eigenvalores reales λ_k producen contracción/explosión exponencial; pares complejos conjugados γ_j ± iω_j producen espirales con contracción/explosión exponencial y rotación.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Eigenvalue Decomposition of Θ"},
+        {"tipo": "APLICA_A", "objeto": "Cointegration Space Visualization"}
+      ],
+      "cita_textual": "For the variables corresponding to the real eigenvalues, the solution reads z_{k;t} ≡ e^(-λ_k t) z_{k,0}. This is an exponential shrinkage at the rate λ_k."
+    },
+    {
+      "nombre": "Swap Rate Trading Strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia con contratos swap donde el P&L es aproximado por el cambio en la tasa swap × dv01. Se analizan combinaciones lineales de tasas (1y-30y) buscando patrones cointegrados vía PCA. Se ajusta AR(1) a cada eigen-serie para estimar θ, z-score y alpha.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "PCA-Based Cointegration Detection"},
+        {"tipo": "USA", "objeto": "DV01 Weighting"}
+      ],
+      "cita_textual": "We analyze linear combinations of swap rates, which map into portfolios p&l's, hoping to detect cointegrated patterns."
+    },
+    {
+      "nombre": "Stationarity Condition for OU",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El proceso OU X_t es estacionario solo si las partes reales de todos los eigenvalores de Θ son estrictamente positivas. Si algún eigenvalor tiene parte real ≤ 0, la covarianza no converge y el proceso no es estacionario.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Positive Real Parts of Eigenvalues"},
+        {"tipo": "SE_OPONE_A", "objeto": "Unit Root Process"}
+      ],
+      "cita_textual": "X_t is stationary only if the real parts of all the eigenvalues of Θ are strictly positive."
+    },
+    {
+      "nombre": "Alpha (Expected Gain of Trade)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ganancia esperada de largo plazo de un trade cointegrado: α_{t,∞} = |Y_t - μ|. Representa la distancia actual del spread a su media de largo plazo. Tiene el mismo orden de magnitud que la volatilidad del spread, lo cual limita su rentabilidad neta de costos.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Expected Long-Term Gain"},
+        {"tipo": "USA", "objeto": "Z-Score (Statistical Arbitrage Signal)"}
+      ],
+      "cita_textual": "The expected gain is also known as the 'alpha' of the trade."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "Marco teórico con aplicación a swaps usando datos diarios; los conceptos de half-life y z-score ajustado por horizonte son directamente aplicables a estrategias intradiarias."}
+}

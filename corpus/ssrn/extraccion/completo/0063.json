@@ -1,0 +1,150 @@
+{
+  "doc_id": 63,
+  "titulo": "Ambiguity Aversion in Algorithmic and High Frequency Trading",
+  "resumen_operativo": "Tesis doctoral que estudia los efectos de la aversión a la ambigüedad (model uncertainty) en estrategias de algorithmic y high-frequency trading. Usa control óptimo estocástico robusto para derivar políticas de market making y liquidación cuando el agente desconfía de su modelo de referencia. Analiza ambigüedad sobre: (1) llegadas de market orders, (2) probabilidad de fill, (3) drift del midprice. Muestra que distintos tipos de ambigüedad tienen efectos diferentes sobre el comportamiento óptimo. También introduce un modelo predictivo basado en volume order imbalance que captura regímenes de mercado con intensidades de salto dependientes del imbalance. Es teórico con simulaciones numéricas; no contiene backtesting sobre datos reales. Riguroso matemáticamente pero sin validación empírica out-of-sample.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "market making",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de provisión de liquidez mediante limit orders en ambos lados del libro. El paper formula el problema de market making robusto donde el agente es averso a la ambigüedad sobre la llegada de market orders, la probabilidad de fill y el drift del midprice, usando control estocástico con penalización de entropía relativa.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Avellaneda-Stoikov model"},
+        {"tipo": "REQUIERE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "Within the setting of a commonly used model for limit order and market order dynamics, the effects of protecting oneself against such misspecification in both high frequency market making and liquidation scenarios are investigated"
+    },
+    {
+      "nombre": "Avellaneda-Stoikov model",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Modelo de referencia para market making usado como baseline. El paper extiende este modelo incorporando ambigüedad sobre las intensidades de llegada de órdenes de mercado y la probabilidad de ejecución de limit orders.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "market making"},
+        {"tipo": "USA", "objeto": "stochastic optimal control"}
+      ],
+      "cita_textual": "a commonly used model for limit order and market order dynamics"
+    },
+    {
+      "nombre": "order flow imbalance",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Volume order imbalance usado como predictor de mercado en el nuevo modelo de referencia del Capítulo 4. El imbalance se modela como un proceso de Markov de dos estados que afecta las intensidades de salto del midprice y las tasas de llegada de market orders.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "midprice dynamics"},
+        {"tipo": "PARTE_DE", "objeto": "regime switching"}
+      ],
+      "cita_textual": "Imbalance as a Market Predictor: the volume order imbalance is a strong predictor of short term price movements"
+    },
+    {
+      "nombre": "limit order book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "LOB modelado con dinámicas simplificadas de limit orders, market orders y cancellations. El modelo de referencia asume que las órdenes de mercado llegan como procesos de Poisson y el midprice sigue un proceso de salto puro.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market microstructure"},
+        {"tipo": "USA", "objeto": "stochastic optimal control"}
+      ],
+      "cita_textual": "a quantitative model of market microstructure is proposed under which the tools of stochastic optimal control can be used to dictate the corresponding optimal trading strategies"
+    },
+    {
+      "nombre": "stochastic optimal control",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Control óptimo estocástico con PDE Hamilton-Jacobi-Bellman usada para derivar políticas óptimas de market making y liquidación. La versión robusta incorpora un término de penalización de entropía relativa para modelar la aversión a la ambigüedad.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "market making"},
+        {"tipo": "USA", "objeto": "Hamilton-Jacobi-Bellman equation"}
+      ],
+      "cita_textual": "the tools of stochastic optimal control can be used to dictate the corresponding optimal trading strategies"
+    },
+    {
+      "nombre": "Almgren-Chriss framework",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Mencionado como foundation de optimal execution. El capítulo 3 del paper extiende el problema de liquidación al incorporar ambigüedad sobre las llegadas de market orders y la probabilidad de fill.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "optimal execution"}
+      ],
+      "cita_textual": "The foundations of academic results in such problems is often attributed to Almgren and Chriss (2000)"
+    },
+    {
+      "nombre": "optimal execution",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Problema de liquidación óptima de un block de acciones minimizando market impact y riesgo de inventario. El paper lo trata con aversión a la ambigüedad sobre las tasas de llegada de liquidity takers y la probabilidad de ejecución de limit orders.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Almgren-Chriss framework"},
+        {"tipo": "REQUIERE", "objeto": "market impact"}
+      ],
+      "cita_textual": "Robust Liquidation: optimally liquidating a block of shares while accounting for market impact"
+    },
+    {
+      "nombre": "market impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Impacto de mercado incorporado en el problema de liquidación: cada market order del agente mueve el midprice adversamente. El paper extiende esto con ambigüedad sobre la magnitud del impacto y las tasas de ejecución.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "optimal execution"},
+        {"tipo": "CAUSA", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "optimally liquidating a block of shares while accounting for market impact"
+    },
+    {
+      "nombre": "midprice dynamics",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El midprice sigue un proceso de salto puro con drift. En el modelo extendido con volume imbalance, la intensidad de saltos y la distribución del tamaño de salto dependen del régimen de imbalance (alto/bajo).",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "USA", "objeto": "regime switching"}
+      ],
+      "cita_textual": "the midprice dynamics are modeled as a pure jump process"
+    },
+    {
+      "nombre": "regime switching",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de dos regímenes de imbalance (alto/bajo) como cadena de Markov que afecta las intensidades de arrivación de órdenes y la dinámica del midprice. El paper estudia ambigüedad sobre las tasas de transición entre regímenes.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order flow imbalance"},
+        {"tipo": "APLICA_A", "objeto": "market making"}
+      ],
+      "cita_textual": "Ambiguity aversion with respect to imbalance regime changes"
+    },
+    {
+      "nombre": "Hamilton-Jacobi-Bellman equation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Ecuación HJB usada para resolver los problemas de control estocástico robusto. La versión con ambigüedad incluye un término de penalización que penaliza medidas alternativas proporcionalmente a su entropía relativa respecto a la medida de referencia.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "stochastic optimal control"}
+      ],
+      "cita_textual": "The Hamilton-Jacobi-Bellman PDE"
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Spread óptimo que el market maker coloca como solución del problema de control estocástico. La aversión a la ambigüedad modifica el spread óptimo: el agente se vuelve más conservador (spreads más amplios) bajo ciertos tipos de ambigüedad.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market making"},
+        {"tipo": "CAUSA", "objeto": "adverse selection"}
+      ],
+      "cita_textual": "different types of ambiguity aversion are shown to have different effects on optimal behaviour"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Distintos tipos de aversión a la ambigüedad producen efectos diferentes sobre el comportamiento óptimo del market maker: la ambigüedad sobre llegadas de market orders genera spreads más amplios; la ambigüedad sobre fill probability afecta la colocación de órdenes; la ambigüedad sobre el drift del midprice modifica el sesgo direccional del inventario.",
+      "mercado": "Simulaciones numéricas (no datos reales)",
+      "periodo": "N/A (simulaciones)",
+      "magnitud": "Resultados cualitativos vía simulaciones numéricas; closed-form solutions disponibles para casos especiales (e.g., aversión exponencial con llegadas Poisson)",
+      "condiciones": "Modelo simplificado de LOB con procesos de Poisson; calibración de parámetros sobre datos de mercado en Capítulo 4; sin OOS ni backtesting formal sobre datos reales",
+      "robustez": "baja",
+      "cita_textual": "different types of ambiguity aversion are shown to have different effects on optimal behaviour"
+    },
+    {
+      "afirmacion": "El volume order imbalance es un predictor significativo de movimientos de precio de corto plazo. Las estimaciones empíricas del Capítulo 4 muestran que altos niveles de imbalance están asociados con mayor actividad de market orders y mayor probabilidad de saltos en el midprice.",
+      "mercado": "N/A (estimaciones puntuales sobre datos no especificados en detalle en el abstract)",
+      "periodo": "No especificado",
+      "magnitud": "Resultados de calibración cualitativos; las intensidades de salto dependen del régimen de imbalance",
+      "condiciones": "Modelo calibrado con datos tick; régimen binario de imbalance; sin validación OOS reportada en el abstract",
+      "robustez": "baja",
+      "cita_textual": "the volume order imbalance is a strong predictor of short term price movements"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "Tesis directamente enfocada en market making y ejecución óptima intradía con modelos de LOB. Las extensiones robustas con ambigüedad son relevantes para deployment en producción donde el modelo siempre está mal especificado. El modelo de imbalance como predictor es directamente aplicable a ES futures."
+  }
+}

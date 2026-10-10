@@ -1,0 +1,3374 @@
+Forecasting Limit Order Book Liquidity
+Supply-Demand Curves with Functional
+AutoRegressive Dynamics
+Ying Chen
+Department of Statistics and Applied Probability, National University of
+Singapore
+Risk Management Institute, National University of Singapore
+and
+Wee Song Chua∗
+Department of Statistics and Applied Probability, National University of
+Singapore
+and
+Wolfgang Karl H¨ardle
+Ladislaus von Bortkiewicz Chair of Statistics, C.A.S.E.- Center for
+Applied Statistics & Economics, Humboldt-Universit¨at zu Berlin
+Sim Kee Boon Institute for Financial Economics, Singapore Management
+University
+June 2, 2017
+Abstract
+We develop a dynamic model to simultaneously characterize the liquidity demand
+and supply in limit order book. The joint dynamics is modelled in a uniﬁed Vector
+Functional AutoRegressive (VFAR) framework. We derive a closed-form maximum
+likelihood estimator under sieves and establish asymptotic consistency of the proposed method under mild conditions.
+We ﬁnd the VFAR model presents strong
+interpretability and accurate out-of-sample forecast.
+In application to limit order
+book records of 12 stocks in NASDAQ traded from 2 Jan 2015 to 6 Mar 2015, the
+VFAR model yields R2 values as high as 98.5 percent for in-sample estimation and
+98.2 percent in out-of-sample forecast experiments. It produces accurate 5−, 25−and
+50−minute forecasts, with RMSE as low as 0.09 to 0.58 and MAPE as low as 0.3 to
+4.5 percent. The predictive power stably reduces trading cost in the order splitting
+strategies and achieves excess gains of 31 basis points on average.
+∗Corresponding author: Wee Song Chua
+Email: a0054070@u.nus.edu
+Phone: +65-6516 3470
+Fax: +65-6872 3919
+1
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+Keywords: Liquidity demand and supply curves; Order splitting strategy; Vector functional
+autoregression.
+2
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+1
+Introduction
+Liquidation of large orders has attracted much attention of researchers and practitioners.
+Markets address the large order liquidation problem in one of three ways: call auctions,
+dealer markets and limit order books, see Foucault, Kadan and Kandel (2005). Among
+them, Limit Order Book (LOB) has emerged as the main source for liquidity and exhibits
+a growing importance worldwide. LOB records investors’ orders on both the bid and ask
+sides with price and volume constraints. With a limit order, investors can improve the
+execution price, either buying or selling, according to their choice, but the execution is not
+immediate as a market order, nor guaranteed. Harris (1990) deﬁnes three components of
+liquidity as being (1) tightness such as bid-ask spread at the best price level; (2) depth measured by quantities e.g. eXchange Liquidity Measure (XLM); and (3) resilience referring to
+the recovery for deviations of spreads from their competitive level. As such, LOB contains
+the comprehensive information on market liquidity, not only a single-valued liquidity measurement at the best bid-ask price level, but also the queuing liquidities at deeper levels
+in the book. In this paper we develop a dynamic model to simultaneously characterize the
+liquidity demand and supply in LOB. The objectives are to understand the joint dynamics
+of liquidity at multiple levels and on both the bid and ask sides of LOB, and explore the
+applicability of the dynamic model in order splitting strategy.
+Liquidity in LOB can be well represented by a pair of demand and supply curves
+that are deﬁned as the (log) accumulated volumes on the quoted prices.
+The demand
+curve corresponds to the bid side and the supply is associated with the ask side. As an
+illustration, Figure 1 displays the liquidity curves of four stocks: Apple Inc.
+(AAPL);
+Applied Materials, Inc. (AMAT); AEterna Zentaris Inc. (AEZS); and Sirius XM Holdings
+Inc. (SIRI), based on the snapshots of book on March 4, 2015 at 14:45:00. Each pair of
+demand and supply curves forms a V-shape that is monotonically decreasing on the bid
+side and monotonically increasing on the ask side. The gap at the center represents the
+bid-ask spread, i.e. the market tightness at the best price level. Moreover, the market depth
+is reﬂected by the gradients of the liquidity curves. More precisely, the steeper the curves
+are, the less price impact there is for large orders, and thus the more liquidity is ready to be
+supplied or consumed in market. Liquidity is concentrated on relatively few quoted prices
+near the best bid and ask prices, while the tails are relatively ﬂat. This ﬂattening out of
+the tail, or the gentle gradient in the tails, implies low liquidity. A buy or sell of large
+3
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+volumes at the extreme prices will trigger a drastic change in the price and thus increase
+trading cost. The dynamic dependence of the series of the liquidity demand and supply
+curves naturally inherits the market resilience, the third component of liquidity.
+128
+128.5
+129
+129.5
+130
+130.5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+Price
+Log (Acummulated Volume)
+bid and ask supply curve on 2015−3−4 at 14:45 for AAPL
+22.5
+23
+23.5
+24
+24.5
+25
+25.5
+26
+7
+8
+9
+10
+11
+12
+13
+Price
+Log (Acummulated Volume)
+bid and ask supply curve on 2015−3−4 at 14:45 for AMAT
+0.5
+1
+1.5
+2
+2.5
+3
+3.5
+4
+4.5
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+Price
+Log (Acummulated Volume)
+bid and ask supply curve on 2015−3−4 at 14:45 for AEZS
+2
+2.5
+3
+3.5
+4
+4.5
+5
+5.5
+11
+11.5
+12
+12.5
+13
+13.5
+14
+14.5
+15
+15.5
+Price
+Log (Acummulated Volume)
+bid and ask supply curve on 2015−3−4 at 14:45 for SIRI
+Figure 1: AAPL, AMAT, AEZS, and SIRI liquidity demand and supply curves at an
+arbitrarily selected time point. In our study, AAPL has the largest market value; AEZS
+has the smallest value and the smallest bid-ask spread on average; SIRI is the most active
+stock; and AMAT is the relatively less active stock among the rest.
+VFARrandBidAskCurvePlot
+Liquidity is serially dependent, i.e. the current value of liquidity depends on its own
+past values. Though with limited information, the popular single-valued liquidity measures
+are found to be serially dependent; e.g. bid-ask spread (see Benston and Hagerman, 1974;
+Stoll, 1978; Fleming and Remolona, 1999) and XLM (see Cooper, Groth and Avera, 1985;
+Gomber, Schweickert and Theissen, 2015). These ﬁndings motivate as a ﬁrst proxy the
+adoption of autoregressive models for liquidity in LOB. Groß-Klußmann and Hautsch (2013)
+propose a long memory autoregressive conditional Poisson model for the quoted bid-ask
+4
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+spreads. Huberman and Halka (2001) evidence the serial dependence of bid-ask spread
+and market depth in the autoregressive framework. H¨ardle, Hautsch and Mihoci (2015)
+propose a local adaptive multiplicative error model to forecast the high-frequency series
+of one-minute cumulative trading volumes of several NASDAQ blue chip stocks. Chordia,
+Sarkar and Subrahmanyam (2003) document in a vector autoregressive model the crosssectional dependence among the liquidity measures of bid-ask spread, market depth and
+order ﬂow, and other statistics of volatility and returns in the stock and bond markets,
+where the liquidity measures depend on both their own past values and the historical
+values of the other measures.
+H¨ardle, Hautsch and Mihoci (2012) empirically analyze
+the season-adjusted liquidity supply curves in LOB using a dynamic semiparametric factor
+model, where the extracted factors of the curves are modeled in the Vector Error Correction
+(VEC) framework.
+It is worth noting that there also exists serial cross-dependence in the bivariate series
+of liquidity demand and supply. The impact of public information on limit order result in
+similar changes on both bid and ask sides, and can cause investors to switch from one side to
+the other. Thus it introduces lead-lag cross-dependence in both sides of liquidity. The joint
+serial cross-dependence suggests richer dynamics should be utilized in liquidity analysis.
+Building on this idea, we develop a Vector Functional AutoRegressive (VFAR) model to
+describe the joint dynamics of the bivariate series – liquidity demand and supply curves
+on bid and ask sides of an electronic open LOB – simultaneously in a uniﬁed framework.
+While there is in general co-integration or a common trend in demand and supply when
+both variables are scalar time series, the model features the dependence of the series of
+curves, which is stable over time. Figure 2 displays the sample cross-correlations between
+the fundamental representatives of the demand and supply curves of the four stocks (the
+“ﬁrst B-spline coeﬃcients” of the bid and ask curves). This ﬁrst proxy shows that there
+are signiﬁcant lead-lag cross-dependence between the demand and supply curves, but the
+patterns deviate far from persistence of unit root.
+In the VFAR model, we derive a closed-form maximum likelihood estimator under sieve
+and establish asymptotic consistency of the method.
+We investigate the ﬁnite sample
+performance of the proposed model along with the LOB records of 12 stocks traded in
+NASDAQ from 2 Jan 2015 to 6 Mar 2015, where the stocks are carefully selected to
+represent various types with diﬀerent market capitalization and liquidity.
+We ﬁnd the
+VFAR presents a strong predictability in liquidity, producing R2 values as high as 98.5
+5
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+−100
+−50
+0
+50
+100
+−0.04
+−0.03
+−0.02
+−0.01
+0
+0.01
+0.02
+0.03
+0.04
+Lag
+Sample Cross Correlation
+Sample cross correlation function between first B−spline coefficient of bid and ask curve for
+ AAPL
+−100
+−50
+0
+50
+100
+−0.06
+−0.04
+−0.02
+0
+0.02
+0.04
+0.06
+0.08
+0.1
+0.12
+Lag
+Sample Cross Correlation
+Sample cross correlation function between first B−spline coefficient of bid and ask curve for
+ AMAT
+−100
+−50
+0
+50
+100
+−0.06
+−0.05
+−0.04
+−0.03
+−0.02
+−0.01
+0
+0.01
+0.02
+0.03
+0.04
+Lag
+Sample Cross Correlation
+Sample cross correlation function between first B−spline coefficient of bid and ask curve for
+ AEZS
+−100
+−50
+0
+50
+100
+−0.12
+−0.1
+−0.08
+−0.06
+−0.04
+−0.02
+0
+0.02
+0.04
+Lag
+Sample Cross Correlation
+Sample cross correlation function between first B−spline coefficient of bid and ask curve for
+ SIRI
+Figure 2: Sample cross correlation function between ﬁrst B-spline coeﬃcient of the bid and
+ask curve for AAPL, AMAT, AEZS, and SIRI
+VFARcrossCorrPlot
+6
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+percent for in-sample estimation and 98.2 percent in out-of-sample forecast experiments.
+Moreover, it yields accurate 5−, 25−and 50−minute forecasts, with RMSE as low as 0.09
+to 0.58 and MAPE as low as 0.3 to 4.5 percent. Finally the predictive power stably reduces
+trading cost in the order splitting strategies and achieves excess gains of 31 basis points on
+average.
+We would like to highlight the diﬀerence between our study and the existing ones in
+literature. Above all, we develop a dynamic model to estimate and forecast liquidity demand and supply curves simultaneously and demonstrate the application in order splitting
+execution. H¨ardle et al. (2012) implement a dynamic semiparametric factor model for liquidity curves, but the extracted factors are handled separately on each side, although it is
+capable to capture the joint evolution of bid and ask sides. Secondly, we develop the FAR
+modeling for multiple functional time series, where the continuous curves are modeled in
+convolutional VFAR that is stationary modeling. Whereas in functional time series literature, Bosq (2000) has proposed the FAR model for univariate functional time series and
+developed Yule-Walker estimation (see also Besse, Cardot and Stephenson, 2000; Chaudhuri, Kim and Shin, 2016; Guillas, 2001; Antoniadis and Sapatinas, 2003). Mourid and
+Bensmain (2006) propose a maximum likelihood estimation with Fourier expansions, as far
+as we know this is the ﬁrst work to model multiple functional time series. We investigate
+its theoretical properties and within an maximum likelihood estimator approach based on
+B-spline expansions, we provide more ﬂexibility in ﬁtting beyond the Fourier expansion
+in Chen and Li (2017). Although the implementation focuses on the bivariate liquidity
+demand and supply curves in our study, the developed model is general and can be used
+for analyzing multiple functional time series in other research areas.
+This paper is structured as follows. In Section 2, we describe the LOB data. Section
+3 introduces the VFAR modeling in details including the estimation approach and the
+theoretical properties. Section 4 presents the modeling setup and in-sample estimation
+results, reports the out-of-sample forecast results and demonstrates the application in order
+execution strategy. Section 5 provides concluding remarks. All of the theoretical proofs
+are contained in the Appendix.
+7
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+2
+Data
+We consider the LOB records of 12 stocks from 2 Jan 2015 to 6 Mar 2015 (44 trading
+days). The LOB records contain the quoted prices and volumes up to 100 price levels on
+each side of ask and bid. All the quotes are timestamped with decimal precision up to
+nanoseconds (= 10−9 seconds). In total, the (buy or sell) order book contains 400 values
+from the best ask price, best ask volume, best bid price, and best bid volume until the 100th best ask (bid) price and corresponding volume. The data was obtained from LOBSTER
+through the Research Data Center of the Collaborative Research Center 649 (https://
+sfb649.wiwi.hu-berlin.de/fedc/). Note that the records of the 12 stocks in LOBSTER
+only contain the information in the National Association of Securities Dealers Automated
+Quotations (NASDAQ) stock market. NASDAQ is a continuous auction trading platform
+where the normal continuous trading hours are between 9:30 a.m.
+to 4:00 p.m.
+from
+Monday to Friday. During the normal trading, if an order cannot be executed immediately
+or completely, the remaining volumes are queued in the bid and ask sides according to a
+strict price-time priority order.
+The stocks correspond to high variations in terms of market capitalization, liquidity
+tightness and depth. They are Apple Inc. (AAPL), Microsoft Corporation (MSFT), Intel Corporation (INTC), Cisco Systems, Inc. (CSCO), Sirius XM Holdings Inc. (SIRI),
+Applied Materials, Inc. (AMAT), Comcast Corporation (CMCSA), AEterna Zentaris Inc.
+(AEZS), eBay Inc. (EBAY), Micron Technology, Inc. (MU), Whole Foods Market, Inc.
+(WFM), and Starbucks Corporation (SBUX). The largest stock is AAPL with market value
+of USD737.41 billions, and the smallest is AEZS with market value of USD35.38 millions.
+When considering the 5-minute queueing volume in the LOB, the most active stock is SIRI,
+with value of 3.73 millions on the bid side and 7.61 millions on the ask side. The lest active
+stocks are CMCSA with value of 0.02 millions on the bid side and SBUX with value of
+0.03 millions on the ask side. Moreover, the average value of the bid-ask spread varies from
+0.0062 (AEZS) to 0.0213 (SBUX), see Table 1.
+In data pre-processing, we remove the ﬁrst 15 minutes after opening and the last 5
+minutes before closing to eliminate the market opening and closing eﬀect. The accumulated
+bid and ask volumes are log-transformed when constructing liquidity curves to reduce the
+impact of extraordinarily large volumes. The liquidity curves are smoothed over the 100
+price levels of LOB on each side using B-spline basis functions.
+Moreover, to remove
+8
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+Ticker Symbol
+Mean spread
+Bid vol
+Ask vol
+(USD)
+min
+max
+min
+max
+AAPL
+0.0125
+52,267
+710,020
+61,305
+1,298,696
+MSFT
+0.0101
+90,344
+928,319
+122,377
+621,471
+INTC
+0.0102
+158,900
+557,251
+146,959
+1,142,641
+CSCO
+0.0101
+134,790
+1,316,058
+266,455
+4,458,672
+SIRI
+0.0101
+1,266,528
+3,725,304
+3,002,680
+7,605,467
+AMAT
+0.0102
+78,944
+334,794
+180,749
+787,983
+CMCSA
+0.0106
+23,668
+128,916
+40,638
+146,724
+AEZS
+0.0062
+145,635
+767,785
+472,689
+1,158,740
+EBAY
+0.0110
+42,060
+160,572
+52,813
+415,033
+MU
+0.0107
+95,907
+497,910
+102,357
+595,200
+WFM
+0.0153
+34,538
+114,386
+41,019
+159,488
+SBUX
+0.0213
+27,467
+151,022
+34,914
+166,932
+Table 1: Summary statistics on liquidity measures for the 12 stocks traded in NASDAQ.
+Sampling frequency is 5 minutes.
+the impact of microstructure noise, the sampling frequency is set to be 5 minutes for a
+good strike between bias and variance, see A¨ıt-Sahalia, Mykland and Zhang (2005), Zhang,
+Mykland and A¨ıt-Sahalia (2005), and Chen, H¨ardle, Liang and Schienle (2017). As such,
+there are 75 pairs of bid and ask liquidity curves on each day for each stock. Over the
+whole sample period of 44 trading days, it amounts to 3, 300 pairs of bid and ask supply
+curves for each stock.
+The liquidity curves exhibit signiﬁcant serial dependence over time. As an illustration,
+Figure 3 shows the sample cross correlations between the log-accumulated volumes at best
+bid and ask prices for four representative stocks including AAPL with the largest market
+value, AEZS with the smallest value and the smallest bid-ask spread on average, SIRI
+the most active stock, and AMAT the relatively mid active stock among the rest. While
+the simultaneous dependence between the bid and ask sides is insigniﬁcant or negatively
+correlated, there are signiﬁcant positive serial correlations on the ﬁrst lagged values of the
+opposite side and then decays for higher order. Similar features are observed in the other
+eight stocks, which are not displayed. The bid-ask cross dependency motivates analysing
+the liquidity demand and supply jointly.
+In addition, the serial cross-dependence between the series of curves is reﬂected in Figure
+2, where the sample cross-correlations are computed based on the ﬁrst B-spline coeﬃcients
+of the bid and ask curves, which will be detailed later. It shows that there are signiﬁcant
+9
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+−100
+−50
+0
+50
+100
+−0.04
+−0.02
+0
+0.02
+0.04
+0.06
+0.08
+Lag
+Sample Cross Correlation
+Sample cross correlation function between log−accumulated volumes
+ at best bid and best ask price for AAPL
+−100
+−50
+0
+50
+100
+−0.05
+0
+0.05
+0.1
+0.15
+0.2
+Lag
+Sample Cross Correlation
+Sample cross correlation function between log−accumulated volumes
+ at best bid and best ask price for AMAT
+−100
+−50
+0
+50
+100
+−0.06
+−0.04
+−0.02
+0
+0.02
+0.04
+0.06
+0.08
+0.1
+0.12
+Lag
+Sample Cross Correlation
+Sample cross correlation function between log−accumulated volumes
+ at best bid and best ask price for AEZS
+−100
+−50
+0
+50
+100
+−0.05
+0
+0.05
+0.1
+0.15
+0.2
+0.25
+0.3
+Lag
+Sample Cross Correlation
+Sample cross correlation function between log−accumulated volumes
+ at best bid and best ask price for SIRI
+Figure 3: Sample cross correlation function between log-accumulated volumes at best bid
+and ask price for AAPL, AMAT, AEZS, and SIRI
+VFARcrossCorrPlot
+10
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+lead-lag cross-dependence between the demand and supply curves, but the patterns deviate
+far from persistence of unit root. The Johansen (1991) co-integration test (not shown in
+the paper) supports rejecting the null hypothesis of co-integration for all the four cases.
+3
+Vector Functional AutoRegression (VFAR)
+In this section, we present the Vector Functional AutoRegressive (VFAR) model that is to
+describe the joint serial cross-dependence of multiple series of continuous curves. We show
+how to estimate the functional parameters of the bivariate liquidity demand and supply
+curves, with the help of B-spline expansions and sieve method. A closed-form estimator is
+presented and asymptotic consistency provided.
+The liquidity curves are deﬁned on the quoted price, denoted as τ, which is assumed to
+be exogenous. The quoted prices are observed on a dense tick grid, that is re-scaled into a
+continuous interval [0, 1]. Denote by X(a)
+t (τ) and X(b)
+t (τ) the liquidity supply and demand
+curves on the ask (a) side and the bid (b) side at t = 1, · · · , n. The curves are realizations
+of a functional stochastic process in the space C[0,1] of real continuous functions on [0, 1].
+In other words, each pair of the liquidity curves is one functional object. Over time, the
+curves form bivariate time series of n functional objects, each on the bid and ask sides. In
+our study, the curves are obtained by smoothing over the discrete log-accumulated volumes
+against the quoted prices at every time point.
+To handle the joint dynamics of the two continuous liquidity curves, we propose a Vector
+Functional AutoRegressive (VFAR) model of order p:
+
+X(a)
+t
+−µa
+X(b)
+t
+−µb
+
+=
+p
+X
+k=1
+
+ρaa,k
+ρab,k
+ρba,k
+ρbb,k
+
+
+
+X(a)
+t−k −µa
+X(b)
+t−k −µb
+
++
+
+ε(a)
+t
+ε(b)
+t
+
+
+(1)
+where the operators ρaa,k, ρab,k, ρba,k, and ρbb,k measure the serial cross-dependence among
+the liquidity demand and supply curves on their k−th lagged values. The operators are
+bounded linear operator from H to H, a real separable Hilbert space endowed with its Borel
+σ-algebra BH. The mean function is denoted as (µa(τ), µb(τ))
+⊤def
+=
+
+E[X(a)
+t (τ)],E[X(b)
+t (τ)]
+⊤
+.
+Under stationarity, both the serial cross-dependence and the mean are constant over time.
+The innovations {ε(a)
+t }n
+t=1 and {ε(b)
+t }n
+t=1 are strong H-white noise, independently and identically distributed with zero mean and ﬁnite second moment, 0 < E ∥ε(a)
+1 ∥2 = · · · =
+11
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+E ∥ε(a)
+n ∥2 < ∞and 0 < E ∥ε(b)
+1 ∥2 = · · · = E ∥ε(b)
+n ∥2 < ∞, where the norm ∥· ∥is induced from the inner product ⟨·, ·⟩of H. The innovation processes ε(a)
+t
+and ε(b)
+t
+need not
+be cross-independent.
+In the following, we derive the estimation for the VFAR model of order 1, which can be
+generalized for higher order. For the notational simpliﬁcation, the superscript k is dropped.
+We consider the convolutional VFAR, where each operator ρ is represented by a convolution
+kernel Hilbert-Schmidt operator,
+X(a)
+t (τ) −µa(τ) =
+Z 1
+0
+κab(τ −s)
+
+X(b)
+t−1(s) −µb(s)
+	
+ds
++
+Z 1
+0
+κaa(τ −s)
+
+X(a)
+t−1(s) −µa(s)
+	
+ds + ε(a)
+t (τ)
+X(b)
+t (τ) −µb(τ) =
+Z 1
+0
+κbb(τ −s)
+
+X(b)
+t−1(s) −µb(s)
+	
+ds
++
+Z 1
+0
+κba(τ −s)
+
+X(a)
+t−1(s) −µa(s)
+	
+ds + ε(b)
+t (τ).
+(2)
+The kernel function κxy ∈L2([0, 1]) and ∥κxy∥2 < 1 for xy = aa, ab, ba, and bb, where
+∥· ∥2 denotes the L2 norm in C[0,1]. Note that a linear operator ρ on a Hilbert space H
+with norm ∥· ∥and inner product ⟨·, ·⟩is Hilbert-Schmidt if ρ(·) = P
+j λj⟨·, ej⟩fj, where
+{ej} and {fj} are orthonormal bases of H and {λj} is a real sequence such that P
+j λ2
+j < ∞.
+Expand the functional terms in (2) using the B-spline basis functions in L2([0, 1]):
+Bj,m(τ) =
+τ −wj
+wj+m−1 −wj
+Bj,m−1(τ) +
+wj+m −τ
+wj+m −wj+1
+Bj+1,m−1(τ),
+m ≥2,
+where m is the order, w1 ≤· · · ≤wJ+m denote the sequence of knots, and
+Bj,1(τ) =
+
+
+
+
+
+1
+if wj ≤τ < wj+1,
+0
+otherwise.
+Plug-in the B-spline expansions to the VFAR model (2), we obtain the relationship of
+the B-spline coeﬃcients in the framework of VFAR:
+da
+t,h = pa
+h + P∞
+i=1
+ P∞
+j=1
+
+wj+m−wj+1
+wj+m−wj −wj+m+1−wj+2
+wj+m+1−wj+1
+
+caa
+j −caa
+h
+
+wi+m−wi
+m
+da
+t−1,i
+12
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
++ P∞
+i=1
+ P∞
+j=1
+
+wj+m−wj+1
+wj+m−wj −wj+m+1−wj+2
+wj+m+1−wj+1
+
+cab
+j −cab
+h
+
+wi+m−wi
+m
+db
+t−1,i + da
+h(ε(a)
+t )
+db
+t,h = pb
+h + P∞
+i=1
+ P∞
+j=1
+
+wj+m−wj+1
+wj+m−wj −wj+m+1−wj+2
+wj+m+1−wj+1
+
+cbb
+j −cbb
+h
+
+wi+m−wi
+m
+db
+t−1,i
++ P∞
+i=1
+ P∞
+j=1
+
+wj+m−wj+1
+wj+m−wj −wj+m+1−wj+2
+wj+m+1−wj+1
+
+cba
+j −cba
+h
+
+wi+m−wi
+m
+da
+t−1,i + db
+h(ε(b)
+t )
+(3)
+where da
+t,j and db
+t,j are the B-spline coeﬃcients for the observed functional data X(a)
+t
+and
+X(b)
+t
+respectively; pa
+h are the coeﬃcients associated with the expansion of the mean on the
+ask side µa(τ) −
+R 1
+0 κab(τ −s)µb(s)ds −
+R 1
+0 κaa(τ −s)µa(s)ds and pb
+h are the coeﬃcients on
+the bid side for µb(τ) −
+R 1
+0 κbb(τ −s)µb(s)ds −
+R 1
+0 κba(τ −s)µa(s)ds; da
+j(ε(a)
+t ) and db
+j(ε(b)
+t )
+are the B-spline coeﬃcients for the unknown innovations ε(a)
+t
+and ε(b)
+t
+respectively; and caa
+j ,
+cab
+j , cba
+j , and cbb
+j are the B-spline coeﬃcients for the unknown kernel functions κaa, κab, κba,
+and κbb respectively. As such, the original problem of estimating the functional parameters
+can now be equivalently solved by the estimation of the B-spline coeﬃcients in (3).
+Given a ﬁnite sample of the functional objects, it is however impossible to estimate the
+inﬁnite coeﬃcients in (3) for i, j = 1, · · · , ∞. The estimation is conducted with the help of
+a sieve.
+3.1
+Maximum Likelihood Estimator (MLE) under sieve
+We introduce a sequence of subsets - named sieve for the parameter space Θ, which is
+denoted by {ΘJn} with Jn →+∞as n →+∞, see e.g. Grenander (1981) on the theory of
+sieves. In other words, the dimension of the subset is allowed to increase with the sample
+size. We have ΘJn ⊆ΘJn+1 and the union of subsets S ΘJn is dense in the parameter space.
+The sieve is deﬁned as follows:
+ΘJn =
+n
+κxy ∈L2 | κxy(τ) =
+Jn
+X
+l=1
+cxy
+l Bl,m(τ),
+τ ∈[0, 1],
+Jn
+X
+l=1
+l2(cxy
+l )2 ≤vJn
+o
+(4)
+where v is some known positive constant such that the constraint on cxy
+l
+can be satisﬁed
+generally without sacriﬁce of the growth rate of Jn. We will show the estimation in the
+ﬁnite subsets of the parameter space.
+Under the sieve with Jn, Equation (3) can be represented in a form as follows:
+yt = v + Cyt−1 + ut
+(5)
+13
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+where yt =
+
+da
+t,1, · · · , da
+t,Jn, db
+t,1, · · · , db
+t,Jn
+⊤
+, v =
+
+pa
+1, · · · , pa
+Jn, pb
+1, · · · , pb
+Jn
+⊤
+,
+ut =
+
+da
+1(ε(a)
+t ), · · · , da
+Jn(ε(a)
+t ), db
+1(ε(b)
+t ), · · · , db
+Jn(ε(b)
+t )
+⊤
+, and C =
+
+RaaRab
+RbaRbb
+
+with Rxy being
+a Jn×Jn matrix with elements rxy
+h,i =
+ PJn
+j=1
+
+wj+m−wj+1
+wj+m−wj −wj+m+1−wj+2
+wj+m+1−wj+1
+
+cxy
+j −cxy
+h
+
+wi+m−wi
+m
+,
+for xy = aa, ab, ba, and bb.
+We impose an assumption that the B-spline coeﬃcients da
+j(ε(a)
+t ) and db
+j(ε(b)
+t ) are independently and identically Gaussian distributed with mean zero and constant variance σ2
+j,a
+and σ2
+j,b respectively. Following Geman and Hwang (1982), we deﬁne the likelihood function
+for (5) over the approximating subspace (4) of the original parameter space. The transition
+density is as follows:
+g
+
+X(a)
+t , X(b)
+t , X(a)
+t−1, X(b)
+t−1, ρaa, ρab, ρba, ρbb
+=
+1
+(2π)Kn/2
+In ⊗Σu
+
+−1
+2 exp
+(
+−1
+2
+
+y −(Z
+⊤⊗IK)β
+⊤
+(In ⊗Σ−1
+u )
+
+y −(Z
+⊤⊗IK)β
+)
+.
+where y = vec(y1, · · · , yn), Z =
+
+1 · · · 1
+y0 · · · yn−1
+
+, β = vec(v, C), u = vec(u1, · · · , un), K =
+2Jn, In is an n × n identity matrix, and vec is the column stacking operator.
+The Maximum Likelihood Estimators (MLEs) are obtained with closed-form:
+bβ =
+n
+(ZZ
+⊤)−1Z ⊗IK
+o
+y, or equivalently,
+bB = (bv, bC) = Y Z
+⊤(ZZ
+⊤)−1
+(6)
+c
+Σu = 1
+n(Y −BZ)(Y −BZ)
+⊤
+where the ﬁrst column of bB in (6) contains the estimators of coeﬃcients for the mean
+function v =
+
+pa
+1, · · · , pa
+Jn, pb
+1, · · · , pb
+Jn
+⊤
+.
+Let θ = (θ1, · · · , θ1, θ2, · · · , θ2), with θ1 =
+(caa
+1 , · · · , caa
+Jn, cba
+1 , · · · , cba
+Jn)⊤and θ2 = (cab
+1 , · · · , cab
+Jn, cbb
+1 , · · · , cbb
+Jn)⊤, such that θ contains Jn
+columns of θ1 and Jn columns of θ2. The estimator for cxy
+j
+for xy = aa, ab, ba, bb is as
+follows:
+bθ = Q−1Y Z
+⊤(ZZ
+⊤)−1(02Jn×1, I2Jn)
+⊤W
+where W = diag
+
+m
+w1+m−w1, · · · ,
+m
+wJn+m−wJn ,
+m
+w1+m−w1, · · · ,
+m
+wJn+m−wJn
+
+, Q =
+
+Q1
+0Jn×Jn
+0Jn×JnQ1
+
+,
+14
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+with Q1 being a Jn × Jn matrix with elements in the j−th diagonal equals qj −1 and the
+remaining elements in the j −th column equals qj, qj = wj+m−wj+1
+wj+m−wj −wj+m+1−wj+2
+wj+m+1−wj+1, and 0 is
+the zero matrix.
+3.2
+Asymptotic property
+We establish the consistency property of the sieve estimators. Let H(ρ, ψ) denote the
+conditional entropy between a set of operators ρ = (ρaa, ρab, ρba, ρbb) and a given set of
+operators ψ:
+H(ρ, ψ) = E
+ρ
+
+log g(X(a)
+t , X(b)
+t , X(a)
+t−1, X(b)
+t−1, ψ)
+
+.
+Theorem 3.1 Assume {ΘJn} is chosen such that conditions C1 and C2 in Appendix A.3
+are in force. Suppose that for each δ > 0, we can ﬁnd subsets Γ1, Γ2, · · · , ΓlJn of ΘJn,
+Jn = 1, 2, · · · such that
+(i) DJn ⊆SlJn
+k=1 Γk, where DJn = {ρ ∈ΘJn|H(ρ0|ΘJn, ρ) ≤H(ρ0|ΘJn, ρJn) −δ} for every
+δ > 0 and every Jn.
+(ii) P+∞
+n=1 lJn(ϕJn)n < +∞, where given l sets Γ1, · · · , Γl in ΘJn,
+ϕJn = supk inft≥0 Eρ0|ΘJn exp
+n
+t log
+g(X(a)
+t
+,X(b)
+t
+,X(a)
+t−1,X(b)
+t−1,Γk)
+g(X(a)
+t
+,X(b)
+t
+,X(a)
+t−1,X(b)
+t−1,ρJn)
+o
+.
+Then we have supbρn∈Mn
+Jn ∥bρn −ρ0|ΘJn∥S →0 a.s.
+The norm ∥· ∥S is a Hilbert-Schmidt norm for the convolution kernel operator and its
+Hilbert-Schmidt norm is ∥ρ∥S = (P
+j λ2
+j)1/2. The use of Hilbert-Schmidt norm comes from
+the fact that it forms a class of operators embedded in the whole space of Hilbert-Schmidt
+operators and for any convolution kernel operator ρ, the Hilbert-Schmidt norm of ρ is equal
+to the L2 norm of its kernel function, in particular, ∥ρ∥S = ∥κ∥2.
+Note that in Theorem 3.1, g(X(a)
+t , X(b)
+t , X(a)
+t−1, X(b)
+t−1, Γk) = supψ∈Γk g(X(a)
+t , X(b)
+t , X(a)
+t−1,
+X(b)
+t−1, ψ). We deﬁne the set of all the MLEs on ΘJn given the sample size n as M n
+Jn =
+{ρ ∈ΘJn|ℓ(X(a)
+1 , · · · , X(a)
+n , X(b)
+1 , · · · , X(b)
+n ; ρ) = supψ∈ΘJn ℓ(X(a)
+1 , · · · , X(a)
+n , X(b)
+1 , · · · , X(b)
+n ;
+ψ)}. Let ρ0 denotes the true set of values for the set of parameters (ρaa
+0 , ρab
+0 , ρba
+0 , ρbb
+0 ). We
+follow Mourid and Bensmain (2006) for the proof of Theorem 3.1 to show the convergence
+of the ML estimator to ρ0|ΘJn, the projections of the true operators on sieve, see Appendix
+A.3 for details. Together with the convergence of ρ0|ΘJn to the true set of operators ρ0 as
+the sieve dimension grows, we prove that the ML estimator converges to the true set of
+operators ρ0.
+15
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+Theorem 3.2 If Jn = O(n1/3−η) for η > 0, then ∥bκJn −κ0|ΘJn∥2 →0 a.s. when n →+∞.
+bκJn = (bκaa,Jn, bκab,Jn, bκba,Jn, bκbb,Jn) is the set of sieve estimators on ΘJn and κ0|ΘJn =
+(κaa,0|ΘJn, κab,0|ΘJn, κba,0|ΘJn, κbb,0|ΘJn) is the projection of the set of true kernel functions
+κ0 on ΘJn. ∥bκJn −κ0|ΘJn∥2 →0 a.s. means that each ∥bκxy,Jn −κxy,0|ΘJn∥2 →0 a.s. for
+xy = aa, ab, ba, bb.
+By checking the conditions of Theorem 3.1, we can achieve the proof of Theorem 3.2.
+The proof is detailed in the Appendix A.4. As n, Jn →∞, we have κ0|ΘJ →κ0 as κxy,0|ΘJ
+in κ0|ΘJ is just the B-spline truncation of the corresponding true kernel κxy,0 in κ0 on ΘJn.
+Finally we have the sieve estimator bκJn converges to the true set of kernel functions κ0.
+4
+Modeling liquidity demand and supply curves
+We apply the convolutional VFAR model to study the joint dynamics of the liquidity
+demand and supply curves in LOB. We investigate the in-sample and out-of-sample predictability based on the records of the 12 stocks with high variations over 44 trading days
+from date 2 Jan 2015 to 6 Mar 2015. We evaluate the accuracy of prediction and also
+demonstrate the application of the VFAR forecast in order execution strategy.
+On each day, the liquidity demand and supply curves are obtained by using the B-spline
+expansions on the log-accumulated volumes. Throughout the analysis, we assumed prices
+are known exogenous variables. The equally-spaced price percentiles are used as nodes and
+Jn = 20 is chosen in the sieve. The value of Jn is selected for giving on average the highest
+explanatory power over all the 12 stocks in our analysis. There are in total 20 coeﬃcients
+on the bid side and another 20 on the ask side.
+One may suspect co-integration between the bid and ask sides, though there is no
+empirical evidence on the existence of co-integration in Figure 2, we also consider the
+Random Walk (RW) model as an alternative, where the liquidity curves are predicted by
+the most recent curves at the previous time point. The selection of random walk is also
+motivated by the fact the it provides a general good predictability and is hard to beat
+under market eﬃciency.
+Three measures are used to evaluate the prediction performance. They are Root Mean
+Squared Error (RMSE), Mean Absolute Percentage Error (MAPE) for accuracy, and R2
+16
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+for the explanatory power:
+RMSE =
+v
+u
+u
+t
+P
+xy=a,b
+Pn
+t=1
+P
+τ
+n
+X(xy)
+t
+(τ) −b
+X(xy)
+t
+(τ)
+o2
+Pn
+t=1 Nt
+,
+MAPE =
+P
+xy=a,b
+Pn
+t=1
+P
+τ
+X(xy)
+t
+(τ)−b
+X(xy)
+t
+(τ)
+
+X(xy)
+t
+(τ)
+Pn
+t=1 Nt
+,
+R2 = 1 −
+P
+xy=a,b
+Pn
+t=1
+P
+τ
+n
+X(xy)
+t
+(τ) −b
+X(xy)
+t
+(τ)
+o2
+P
+xy=a,b
+Pn
+t=1
+P
+τ
+n
+X(xy)
+t
+(τ) −¯X
+o2
+,
+(7)
+where X is the actual value, b
+X denotes the estimate or forecast, and Nt is the total number
+of the observed price quotes on both sides of LOB at time point t. For each stock, we
+calculate the these measures for the estimated/forecasted liquidity curves using the VFAR
+model and the alternative RW model respectively.
+4.1
+In-sample estimation
+We conduct the in-sample estimation over the whole time period of the 44 days. Table
+2 reports the R2, RMSE and MAPE of the estimated liquidity curves.
+It shows that
+VFAR provides high explanatory power for all the stocks, with R2 ranging from 92 percent
+(AAPL) to 98 percent (AEZS), and superior prediction accuracy with RMSE smaller than
+0.42 (AEZS) and MAPE lower than 3.61 percent (AAPL). We compare the performance
+of VFAR and the alternative RW model. On the right panel, the ratio of each measure is
+computed for the estimates based on the RW model against those on the VFAR model. The
+best relative performance is marked in bold-face. Without exception, the VFAR model is
+better than the alternative. In terms of R2, VFAR outperforms by up to 3 percent (AAPL
+the largest stock and CMCSA the least active stock).
+As for estimation accuracy, the
+relative performance reaches to 13 percent in MAPE (CMCSA) and at least 9 percent
+(SIRI, the most active stock) and up to 45 percent (AEZS that has the smallest bid-ask
+spread on average) in RMSE. We ﬁnd the superior performance of the VFAR is robust with
+respect to market capitalization, market tightness and depth.
+Figure 4 visualizes the ﬁtted liquidity demand and supply curves and the actual values
+at an arbitrarily selected date, 24 February 2015 at 3PM, of the four representative stocks,
+AAPL, AMAT, AEZS and SIRI. The estimated curves reasonably trace the queuing orders
+17
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+Ticker Symbol
+VFAR
+RW vs VFAR
+R2
+RMSE
+MAPE
+R2
+RMSE
+MAPE
+AAPL
+92.03%
+0.34
+3.61%
+0.97
+1.18
+1.05
+MSFT
+95.19%
+0.18
+0.95%
+0.98
+1.16
+1.07
+INTC
+94.79%
+0.19
+0.92%
+0.98
+1.15
+1.07
+CSCO
+96.16%
+0.19
+0.86%
+0.99
+1.13
+1.06
+SIRI
+98.29%
+0.09
+0.29%
+1.00
+1.09
+1.00
+AMAT
+95.83%
+0.18
+0.89%
+0.99
+1.15
+1.09
+CMCSA
+93.39%
+0.19
+1.20%
+0.97
+1.18
+1.13
+AEZS
+98.48%
+0.42
+2.18%
+0.98
+1.45
+1.05
+EBAY
+94.88%
+0.23
+1.55%
+0.98
+1.15
+1.06
+MU
+95.14%
+0.26
+1.17%
+0.98
+1.16
+1.08
+WFM
+95.52%
+0.20
+1.57%
+0.98
+1.16
+1.01
+SBUX
+94.77%
+0.22
+2.51%
+0.98
+1.17
+1.05
+Table 2: R2, RMSE, and MAPE for in-sample estimation of the 12 stocks
+displayed as discrete dots as well as the smoothed liquidity curves in grey color.
+The
+accuracy is quite stable, especially in the middle around the best quotes as well as the
+extreme in the tails.
+4.2
+Out-of-sample forecast
+In this section, we analyze the model’s forecasting performance in a realistic setup. In
+particular, a trader is assumed to observe the LOB at 5-minute snapshots, with the information over the past 30 trading days. The trader can only submit orders every 5 minutes
+and thus asks for multi-step ahead out-of-sample forecasts for the liquidity curves, starting
+from the 31st trading day onwards. Among others, the trader is interested in 1−, 5−and
+10−step ahead forecasts that correspond to 5−, 25−and 50−minute ahead liquidity curves
+respectively. As such, the ﬁrst pair of the forecasted curves is for time t = 2251, based on
+the past 30 trading days of 30×75 = 2250 functional objects. Each time, he moves forward
+one period, i.e. 5 minutes and perform re-estimation and forecast until reaching the end of
+the sample at t = 3300.
+Figure 5 gives graphical illustrations of the forecasted liquidity curves for AAPL with
+the VFAR model. The forecasts closely trace the realized liquidity curves. It is remarkable
+that the VFAR model is able to catch the dynamic movements of the liquidity curves over
+the period from 17 February to 06 March 2015 for diﬀerent forecast horizon from 5−to
+50−minute.
+Table 3 reports the RMSE, MAPE and predictive power of the liquidity curves forecast
+18
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+131
+131.5
+132
+132.5
+133
+133.5
+134
+6
+7
+8
+9
+10
+11
+12
+13
+Price
+Log (Acummulated Volume)
+VFAR Fitted bid and ask curve at t=2689 , on 2015−2−24 at 15:00 for AAPL
+22.5
+23
+23.5
+24
+24.5
+25
+25.5
+26
+26.5
+27
+8
+8.5
+9
+9.5
+10
+10.5
+11
+11.5
+12
+12.5
+13
+Price
+Log (Acummulated Volume)
+VFAR Fitted bid and ask curve at t=2689 , on 2015−2−24 at 15:00 for AMAT
+0
+0.5
+1
+1.5
+2
+2.5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+Price
+Log (Acummulated Volume)
+VFAR Fitted bid and ask curve at t=2689 , on 2015−2−24 at 15:00 for AEZS
+1.5
+2
+2.5
+3
+3.5
+4
+4.5
+5
+5.5
+11
+11.5
+12
+12.5
+13
+13.5
+14
+14.5
+15
+15.5
+Price
+Log (Acummulated Volume)
+VFAR Fitted bid and ask curve at t=2689 , on 2015−2−24 at 15:00 for SIRI
+Figure 4: Estimated bid (and ask) supply curves vs. the actually observed
+VFARrandVfarPlot
+19
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+for the 12 stocks. Even if in the “worst” case, the VFAR approach is able to achieve high R2
+ranging from 91.13 percent (1-step AAPL) to 83.74 percent (10-step AAPL), low RMSE of
+0.48 (1-step AEZS) to 0.58 (10-step AEZS), and low MAPE of 3.61 percent (1-step AAPL)
+to 4.49 percent (10-step AAPL). The relative performance of the alternative RW model is
+summarized in Table 4. Again, the VFAR model dominates the RW model across forecast
+horizons and forecast measures. Though the improvement in R2 is weak, the advantage
+is obvious in terms of the forecast error reduction. In terms of RMSE, the VFAR model
+reaches about 4 percent (1-step SIRI) in the worst case and 36 percent (1-step AEZS) and
+40 percent (5-step AEZS) in the best case. On the other hand, the VFAR model does not
+always yield improvement in the MAPE comparison. However the RW performs better
+than VFAR only in 5 out of 36 instances.
+In the other cases, VFAR outperforms the
+RW by up to 20 percent. The relative superior performance grows as the forecast horizon
+increases, indicating that the utilization of cross-dependence in liquidity curves helps to
+improve out-of-sample prediction.
+We also ﬁnd that the strong predictability of the VFAR model is stable with respect
+to forecast horizons. Figure 6 displays the MAPEs for various multi-steps ahead forecasts
+ranging from 1 to 20 steps ahead for the four representative stocks AAPL, AMAT, AEZS,
+and SIRI. Except SIRI, the VFAR forecasts outperforms the RW with lower MAPEs. As
+we forecast further into the future, the advantage of VFAR over RW increases for AAPL,
+AMAT and AEZS and the diﬀerence shrinks for SIRI.
+To summarize, the proposed VFAR model is able to successfully predict the liquidity
+curves over various forecasting periods. These results can be applied to various ﬁnancial and
+economics applications, and we will show next an application to order execution strategy
+as an example.
+4.3
+Application to order execution strategy
+In this section, we show how to utilize the forecasting results in the previous section to a
+practical application on order execution. Assume that an investor decides to buy (sell) v
+number of shares over a course of a trading day, starting from 9:45 to 15:55. The volume
+v to be traded is chosen to be 5 or 10 times the average pending volume at the best bid
+(ask) price, yielding the following buy (sell) quantities in the respective two cases of (a)
+high and (b) very high liquidity demand:
+20
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+17−Feb−2015
+20−Feb−2015
+25−Feb−2015
+02−Mar−2015
+05−Mar−2015
+124
+129
+135
+0
+2
+4
+6
+8
+10
+12
+Date
+Dynamics of VFAR one−step ahead forecast for AAPL
+Price
+Log (Acummulated Volume)
+17−Feb−2015
+20−Feb−2015
+25−Feb−2015
+02−Mar−2015
+05−Mar−2015
+124
+129
+135
+0
+2
+4
+6
+8
+10
+12
+Date
+Dynamics of VFAR 5−step ahead forecast for AAPL
+Price
+Log (Acummulated Volume)
+17−Feb−2015
+20−Feb−2015
+25−Feb−2015
+02−Mar−2015
+05−Mar−2015
+124
+129
+135
+0
+2
+4
+6
+8
+10
+12
+Date
+Dynamics of VFAR 10−step ahead forecast for AAPL
+Price
+Log (Acummulated Volume)
+Figure 5: Dynamics of multi-step ahead forecast for AAPL. Top: 5−minute ahead forecast;
+Middle: 25−minute ahead forecast; Bottom: 50−minute ahead forecast.
+VFARdynamicPlot
+21
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+Ticker Symbol
+R2
+RMSE
+MAPE
+1-step
+5-steps
+10-steps
+1-step
+5-steps
+10-steps
+1-step
+5-steps
+10-steps
+AAPL
+91.13%
+85.64%
+83.74%
+0.37
+0.48
+0.51
+3.61%
+4.21%
+4.49%
+MSFT
+95.38%
+91.56%
+89.65%
+0.18
+0.24
+0.27
+0.93%
+1.42%
+1.63%
+INTC
+94.02%
+89.44%
+86.95%
+0.19
+0.26
+0.28
+0.95%
+1.46%
+1.74%
+CSCO
+96.67%
+93.07%
+90.35%
+0.21
+0.31
+0.36
+0.88%
+1.44%
+1.76%
+SIRI
+98.14%
+96.23%
+95.31%
+0.09
+0.13
+0.14
+0.30%
+0.52%
+0.62%
+AMAT
+95.47%
+92.17%
+89.99%
+0.19
+0.25
+0.29
+1.00%
+1.47%
+1.72%
+CMCSA
+92.80%
+89.22%
+88.09%
+0.20
+0.24
+0.25
+1.15%
+1.56%
+1.69%
+AEZS
+98.23%
+97.71%
+97.43%
+0.48
+0.55
+0.58
+2.22%
+2.85%
+3.14%
+EBAY
+94.64%
+91.54%
+89.74%
+0.23
+0.29
+0.32
+1.31%
+1.79%
+2.03%
+MU
+95.37%
+92.35%
+90.60%
+0.22
+0.28
+0.31
+1.18%
+1.70%
+1.99%
+WFM
+95.18%
+92.24%
+91.15%
+0.20
+0.26
+0.27
+1.25%
+1.76%
+1.94%
+SBUX
+94.49%
+91.82%
+90.63%
+0.23
+0.28
+0.30
+1.81%
+2.27%
+2.48%
+Table 3: R2, RMSE, MAPE for multi-step ahead VFAR forecast of the 12 stocks
+22
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+Ticker Symbol
+R2
+RMSE
+MAPE
+1-step
+5-steps
+10-steps
+1-step
+5-steps
+10-steps
+1-step
+5-steps
+10-steps
+AAPL
+0.97
+0.93
+0.90
+1.15
+1.19
+1.22
+1.03
+1.11
+1.13
+MSFT
+0.99
+0.98
+0.97
+1.10
+1.12
+1.14
+0.97
+0.98
+1.02
+INTC
+0.98
+0.96
+0.94
+1.12
+1.16
+1.19
+1.02
+1.05
+1.07
+CSCO
+0.99
+0.98
+0.97
+1.09
+1.13
+1.14
+1.01
+1.01
+1.05
+SIRI
+1.00
+0.99
+0.99
+1.04
+1.10
+1.09
+0.90
+0.90
+0.90
+AMAT
+0.99
+0.97
+0.96
+1.11
+1.16
+1.18
+1.01
+1.05
+1.09
+CMCSA
+0.98
+0.94
+0.91
+1.14
+1.23
+1.28
+1.06
+1.13
+1.19
+AEZS
+0.98
+0.98
+0.98
+1.36
+1.40
+1.39
+1.05
+1.12
+1.12
+EBAY
+0.99
+0.96
+0.94
+1.12
+1.19
+1.23
+1.05
+1.11
+1.16
+MU
+0.98
+0.96
+0.95
+1.15
+1.20
+1.22
+1.08
+1.12
+1.15
+WFM
+0.99
+0.96
+0.94
+1.13
+1.23
+1.29
+1.05
+1.12
+1.20
+SBUX
+0.98
+0.96
+0.94
+1.15
+1.21
+1.24
+1.03
+1.11
+1.15
+Table 4: Ratio of R2, RMSE, MAPE for multi-step ahead RW forecast to VFAR forecast of the 12 stocks
+23
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+0
+5
+10
+15
+20
+3.5
+4
+4.5
+5
+5.5
+AAPL
+MAPE
+Step
+0
+5
+10
+15
+20
+1
+1.2
+1.4
+1.6
+1.8
+2
+2.2
+AMAT
+MAPE
+Step
+0
+5
+10
+15
+20
+2.2
+2.4
+2.6
+2.8
+3
+3.2
+3.4
+3.6
+3.8
+4
+AEZS
+MAPE
+Step
+0
+5
+10
+15
+20
+0.3
+0.35
+0.4
+0.45
+0.5
+0.55
+0.6
+0.65
+0.7
+SIRI
+MAPE
+Step
+Figure 6: Mean absolute percentage errors (MAPEs) implied by the VFAR approach (blue)
+and the RW approach (black dashed) for diﬀerent number of steps ahead forecasts, corresponding to 5 to 100 minutes.
+VFARmapePlot
+24
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+(a) AAPL-4,000 (4,000); MSFT-26,000 (29,000); INTC-27,000 (31,000); CSCO-67,000
+(53,000); SIRI-675,000 (654,000); AMAT-17,000 (18,000); CMCSA-7,000 (8,000);
+AEZS-12,000 (17,000); EBAY-6,000 (6,000); MU-8,000 (8,000); WFM-2,000 (3,000);
+SBUX-2,000 (2,000)
+(b) AAPL-8,000 (8,000); MSFT-52,000 (58,000); INTC-54,000 (62,000); CSCO-134,000
+(106,000); SIRI-1,350,000 (1,308,000); AMAT-34,000 (36,000); CMCSA-14,000 (16,000);
+AEZS-24,000 (34,000); EBAY-12,000 (12,000); MU-16,000 (16,000); WFM-4,000 (6,000);
+SBUX-4,000 (4,000).
+Suppose that trading is only performed on a 5 min grid throughout the day corresponding to 75 possible trading time points, and investor can only make decision at 9:45 but
+not monitor the market anymore during the day. The forecasting horizon covers h = 75
+periods on each trading day. The following are two execution strategies the investor can
+use:
+(i) Splitting the buy (sell) order of size v equally in 5-min frequency over the trading
+day, resulting into 75 trades of size v/75 each; see Almgren and Chriss (2000).
+(ii) Placing diﬀerent orders at m (5-min interval) time points throughout the day where
+the VFAR predicted implied trading costs c of volume v are smallest. The volume is
+split over the m time points according to the relative proportion of expected trading
+costs, i.e. at time point i, wi · v shares are traded, with wi = ci/ Pm
+j=1 cj for i =
+1, · · · , m; see H¨ardle et al. (2012).
+Note that strategy (i) is a special case of strategy (ii) with m = 75 and the volume
+v is equally split.
+For strategy (ii), if m = 1, it is the extreme case where the whole
+quantity is traded only once. The VFAR prediction of the trading costs involve predicting
+the whole bid and ask curve at each time point and compute the eﬀective cost of trading
+using prevailing bid and ask quotes assumed to be known at the respective time points.
+We implement these strategies to 14 forecasting days, from 17 February to 06 March
+2015. Figure 7 shows the average percentage reduction in trading costs of strategy (ii)
+in excess of the equal-splitting strategy (i) for diﬀerent values of m ∈[1, 75] for AAPL,
+AMAT, AEZS, and SIRI. Overall, we observe that strategic placement of orders according
+to VFAR predictions achieve excess gains of 31 basis points on average. Generally, the
+behavior of the curves are similar, increasing as m increases from 1, and converge to zero
+25
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+as m reaches the upper limit of 75. The pattern shows that making small number of large
+market orders is superior to an equal-splitting strategy, while for the extreme case where
+m = 1, there is lesser beneﬁt or even loss since the transactions have to walk up the
+book too severely and cause large price impacts; and where m = 75, the relative beneﬁt
+only results from the strategic non-equal weighting scheme. All in all, the VFAR model is
+successful in predicting times when the market is suﬃciently deep to execute large orders.
+5
+Conclusion
+Predictions of future liquidity supply and demand in the limit order book (LOB) helps in
+analyzing optimal splitting strategies for large orders to reduce cost. To capture not only
+the volume around the best bid and ask price in the LOB, but also the pending volumes
+more deeply in the book, it becomes an ultra-high dimensional problem. Motivated by the
+signiﬁcant cross-dependency of the bid and ask side of the market, we proposed a Vector
+Functional AutoRegressive (VFAR) model to estimate and forecast the liquidity supply
+and demand curves in functional domain.
+The model is applied to 12 stocks traded in the National Association of Securities
+Dealers Automated Quotations (NASDAQ) stock market.
+It is shown that the VFAR
+model gives R2 values as high as 98.5 percent for in-sample estimation. In out-of-sample
+forecast experiments, it produces accurate 5−, 25−and 50−minutes forecasts, with MAPE
+as low as 0.3 to 4.5 percent. The predictive power of the VFAR model can be further used
+to improve order execution strategies at lower trading cost. Most important, the VFAR
+model is general and can be used for other multiple functional time series modeling and
+forecasting.
+A
+Appendix
+A.1
+Derivation of the B-spline coeﬃcient relationship as shown
+in Section 3
+X(a)
+t (τ) =
+∞
+X
+h=1
+pa
+hBh,m(τ) +
+Z 1
+0
+
+∞
+X
+j=1
+∞
+X
+i=1
+caa
+j da
+t−1,iBj,m(τ −s)Bi,m(s)
+
+ds
+26
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+0
+10
+20
+30
+40
+50
+60
+70
+−1
+−0.5
+0
+0.5
+1
+AAPL
+Benefits
+0
+10
+20
+30
+40
+50
+60
+70
+−1
+−0.5
+0
+0.5
+1
+Trades per Day
+Benefits
+0
+10
+20
+30
+40
+50
+60
+70
+−1
+−0.5
+0
+0.5
+1
+AMAT
+Benefits
+0
+10
+20
+30
+40
+50
+60
+70
+−0.5
+0
+0.5
+Trades per Day
+Benefits
+0
+10
+20
+30
+40
+50
+60
+70
+−2
+0
+2
+AEZS
+Benefits
+0
+10
+20
+30
+40
+50
+60
+70
+−2
+−1
+0
+1
+2
+Trades per Day
+Benefits
+0
+10
+20
+30
+40
+50
+60
+70
+−0.4
+−0.2
+0
+0.2
+0.4
+SIRI
+Benefits
+0
+10
+20
+30
+40
+50
+60
+70
+−1
+0
+1
+Trades per Day
+Benefits
+Figure 7: Average percentage gains by strategy (ii) in excess of the equal-splitting strategy
+(i) when buying (blue) and selling (red) shares based on m VFAR-predicted time points
+per day. For each stock, top: high liquidity demand corresponding to 5 times the average
+ﬁrst level market depth; bottom: very high liquidity demand corresponding to 10 times the
+average ﬁrst level market depth.
+VFARbenefitPlot
+27
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
++
+Z 1
+0
+
+∞
+X
+j=1
+∞
+X
+i=1
+cab
+j db
+t−1,iBj,m(τ −s)Bi,m(s)
+
+ds +
+∞
+X
+j=1
+da
+j(ε(a)
+t )Bj,m(τ)
+=
+∞
+X
+h=1
+pa
+hBh,m(τ)
++
+∞
+X
+h=1
+∞
+X
+i=1
+
+∞
+X
+j=1
+wj+m −wj+1
+wj+m −wj
+−wj+m+1 −wj+2
+wj+m+1 −wj+1
+
+caa
+j −caa
+h
+wi+m −wi
+m
+da
+t−1,iBh,m(τ)
++
+∞
+X
+h=1
+∞
+X
+i=1
+
+∞
+X
+j=1
+wj+m −wj+1
+wj+m −wj
+−wj+m+1 −wj+2
+wj+m+1 −wj+1
+
+cab
+j −cab
+h
+wi+m −wi
+m
+db
+t−1,iBh,m(τ)
++
+∞
+X
+j=1
+da
+j(ε(a)
+t )Bj,m(τ)
+X(b)
+t (τ) =
+∞
+X
+h=1
+pb
+hBh,m(τ) +
+Z 1
+0
+
+∞
+X
+j=1
+∞
+X
+i=1
+cbb
+j db
+t−1,iBj,m(τ −s)Bi,m(s)
+
+ds
++
+Z 1
+0
+
+∞
+X
+j=1
+∞
+X
+i=1
+cba
+j da
+t−1,iBj,m(τ −s)Bi,m(s)
+
+ds +
+∞
+X
+j=1
+db
+j(ε(b)
+t )Bj,m(τ)
+=
+∞
+X
+h=1
+pb
+hBh,m(τ)
++
+∞
+X
+h=1
+∞
+X
+i=1
+
+∞
+X
+j=1
+wj+m −wj+1
+wj+m −wj
+−wj+m+1 −wj+2
+wj+m+1 −wj+1
+
+cbb
+j −cbb
+h
+wi+m −wi
+m
+db
+t−1,iBh,m(τ)
++
+∞
+X
+h=1
+∞
+X
+i=1
+
+∞
+X
+j=1
+wj+m −wj+1
+wj+m −wj
+−wj+m+1 −wj+2
+wj+m+1 −wj+1
+
+cba
+j −cba
+h
+wi+m −wi
+m
+da
+t−1,iBh,m(τ)
++
+∞
+X
+j=1
+db
+j(ε(b)
+t )Bj,m(τ)
+(8)
+Rearranging the above equations gives the relationship of the B-spline coeﬃcients in (3).
+Next we show how the expansion was obtained in (8). We only show for the ﬁrst integral
+in (8) as the expansion other integrals can be obtained similarly.
+Z 1
+0
+
+∞
+X
+j=1
+∞
+X
+i=1
+caa
+j da
+t−1,iBj,m(τ −s)Bi,m(s)
+
+ds
+=
+∞
+X
+j=1
+caa
+j
+Z 1
+0
+Bj,m(τ −s)
+
+∞
+X
+i=1
+da
+t−1,iBi,m(s)
+
+ds
+=
+∞
+X
+j=1
+caa
+j
+(
+1
+m
+∞
+X
+i=1
+da
+t−1,i(wi+m −wi)Bj,m(τ −s)
+)
+s=1
+s=0
+28
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
++
+∞
+X
+j=1
+caa
+j
+Z 1
+0
+ 1
+m
+∞
+X
+i=1
+da
+t−1,i(wi+m −wi)
+n
+m
+wj+m −wj
+Bj,m−1(τ −s)
+−
+m
+wj+m+1 −wj+1
+Bj+1,m−1(τ −s)
+o
+ds
+= −
+∞
+X
+j=1
+∞
+X
+i=1
+da
+t−1,i(wi+m −wi)
+m
+caa
+j Bj,m(τ)
++
+∞
+X
+j=1
+∞
+X
+i=1
+da
+t−1,i(wi+m −wi)
+m
+caa
+j
+Z τ
+τ−1
+
+m
+wj+m −wj
+Bj,m−1(z)
+−
+m
+wj+m+1 −wj+1
+Bj+1,m−1(z)
+
+dz
+= −
+∞
+X
+h=1
+∞
+X
+i=1
+da
+t−1,i(wi+m −wi)
+m
+caa
+h Bh,m(τ)
++
+∞
+X
+h=1
+∞
+X
+i=1
+∞
+X
+j=1
+wj+m −wj+1
+wj+m −wj
+−wj+m+1 −wj+2
+wj+m+1 −wj+1
+
+caa
+j
+wi+m −wi
+m
+da
+t−1,iBh,m(τ)
+=
+∞
+X
+h=1
+∞
+X
+i=1
+
+∞
+X
+j=1
+nwj+m −wj+1
+wj+m −wj
+−wj+m+1 −wj+2
+wj+m+1 −wj+1
+o
+caa
+j −caa
+h
+wi+m −wi
+m
+da
+t−1,iBh,m(τ)
+The second equality made use of integration by parts, with
+d
+dsBj,m(τ −s) = −
+
+m
+wj+m−wj
+Bj,m−1(τ −s) −
+m
+wj+m+1−wj+1Bj+1,m−1(τ −s)
+
+and
+R P∞
+i=1 da
+t−1,iBi,m(s)ds = 1
+m
+P∞
+i=1 da
+t−1,i×
+(wi+m −wi). In the third equality, we made the substitution of z = τ −s. For the fourth
+equality, we made use of the formula:
+R τ
+−∞Bj,m(z)dz = wj+m+1−wj+1
+m+1
+P∞
+h=1 Bh,m+1(τ), and
+truncating the sum up till the J-th term. We also swapped the notation j for the ﬁrst
+summation with h in the fourth equality.
+A.2
+Derivation of the ML Estimator in (6)
+For t = 1, · · · , n, we write (5) compactly as the following:
+Y = BZ + U
+(9)
+By applying vec operator to (9) yields
+vec(Y ) = vec(BZ) + vec(U)
+= (Z
+⊤⊗IK)vec(B) + vec(U)
+29
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+or equivalently,
+y = (Z
+⊤⊗IK)β + u,
+where ⊗is the Kronecker product.
+Assuming
+u = vec(U) =
+
+
+u1
+...
+un
+
+∼N(0, In ⊗Σu),
+the probabilistic density of u is
+fu(u) =
+1
+(2π)Kn/2
+In ⊗Σu
+
+−1
+2 exp
+(
+−1
+2u
+⊤(In ⊗Σ−1
+u )u
+)
+.
+In addition,
+u =
+
+
+IK
+0
+−C
+...
+...
+...
+0
+−C
+IK
+
+
+(y −v) +
+
+
+−C
+0
+...
+0
+
+
+y0,
+where v = (v, · · · , v)⊤is a (Kn×1) vector. Consequently,
+∂u
+∂y⊤is a lower triangular matrix
+with unit diagonal which has unit determinant. Therefore using u = y −(Z⊤⊗IK)β, the
+transition density is as follows:
+g
+
+X(a)
+t , X(b)
+t , X(a)
+t−1, X(b)
+t−1, ρaa, ρab, ρba, ρbb
+= fy(y) =
+ ∂u
+∂y⊤
+fu(u)
+=
+1
+(2π)Kn/2
+In ⊗Σu
+
+−1
+2 exp
+(
+−1
+2
+
+y −(Z
+⊤⊗IK)β
+⊤
+(In ⊗Σ−1
+u )
+
+y −(Z
+⊤⊗IK)β
+)
+.
+The (approximated) log-likelihood function is:
+ℓ
+
+X(a)
+1 , · · · , X(a)
+n , X(b)
+1 , · · · , X(b)
+n ; ρaa, ρab, ρba, ρbb
+= ℓ(β, Σu)
+= −Kn
+2 log 2π −n
+2 log
+Σu
+ −1
+2
+
+y −(Z
+⊤⊗IK)β
+⊤
+(In ⊗Σ−1
+u )
+
+y −(Z
+⊤⊗IK)β
+
+= −Kn
+2 log 2π −n
+2 log
+Σu
+ −1
+2
+n
+X
+t=1
+
+yt −v −Cyt−1
+⊤
+Σ−1
+u
+
+yt −v −Cyt−1
+
+= −Kn
+2 log 2π −n
+2 log
+Σu
+ −1
+2
+n
+X
+t=1
+
+yt −Cyt−1
+⊤
+Σ−1
+u
+
+yt −Cyt−1
+
+30
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
++ v
+⊤Σ−1
+u
+n
+X
+t=1
+
+yt −Cyt−1
+
+−n
+2v
+⊤Σ−1
+u v
+= −Kn
+2 log 2π −n
+2 log
+Σu
+ −1
+2 tr
+
+(Y −BZ)
+⊤Σ−1
+u (Y −BZ)
+
+and the ﬁrst order partial diﬀerentiations are as follows:
+∂ℓ
+∂β = (Z ⊗IK)(In ⊗Σ−1
+u )
+
+y −(Z
+⊤⊗IK)β
+
+= (Z ⊗Σ−1
+u )y −(ZZ
+⊤⊗Σ−1
+u )β
+∂ℓ
+∂Σu
+= −n
+2Σ−1
+u + 1
+2Σ−1
+u (Y −BZ)(Y −BZ)
+⊤Σ−1
+u
+(10)
+By equating the ﬁrst order partial derivatives in (10) to zero, we obtain the maximum
+likelihood estimators in (6).
+A.3
+Proof of Theorem 3.1
+The growth of Jn is determined by the following two conditions:
+C1: If there exists a sequence {ρJn} such that ρJn ∈ΘJn∀n and H(ρ0|ΘJn, ρJn) →
+H(ρ0|ΘJn, ρ0|ΘJn), then
+ρJn −ρ0|ΘJn
+
+S →0; meaning each
+ρxy
+Jn −ρxy
+0|ΘJn
+
+S →0,
+for xy = aa, ab, ba, bb. Here ρ0|ΘJn denotes the projection of the set of true operators
+ρ0 on the sieve ΘJn.
+C2: There exists a sequence {ρJn} described in C1 such that H(ρ0|ΘJn, ρJn) →
+H(ρ0|ΘJn, ρ0|ΘJn).
+Fix δ > 0. Following Mourid and Bensmain (2006), we only need to show that
+P(DJn ∩M n
+Jn̸ = ∅) = 0,
+(11)
+because if (11) holds, then with probability 1
+inf
+ϕ∈Mn
+Jn
+H(ρ0|ΘJn, ρ) ≥H(ρ0|ΘJn, ρJn) −δ,
+for all n suﬃciently large. Since δ is arbitrary, and
+H(ρ0|ΘJn, ρJn) →H(ρ0|ΘJn, ρ0|ΘJn),
+31
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+by condition C2 we deduce
+lim inf
+inf
+ρ∈Mn
+Jn
+H(ρ0|ΘJn, ρ) ≥H(ρ0|ΘJn, ρ0|ΘJn)
+a.s.
+Combining with
+H(ρ0|ΘJn, ρ) ≤H(ρ0|ΘJn, ρ0|ΘJn),
+we have,
+lim
+n→+∞sup
+ρ∈Mn
+Jn
+|H(ρ0|ΘJn, ρ) −H(ρ0|ΘJn, ρ0|ΘJn)| = 0
+a.s.
+(12)
+Fix ε > 0, and for each n choose ψn ∈M n
+Jn such that
+d(ρ0|ΘJn, ψn)
+1 + d(ρ0|ΘJn, ψn) > sup
+ρ∈Mn
+Jn
+d(ρ0|ΘJn, ρ))
+1 + d(ρ0|ΘJn, ρ)) −ε.
+Condition C1 combined with (12) imply that
+d(ρ0|ΘJn, ψn) →0
+a.s.
+Hence,
+lim sup sup
+ρ∈Mn
+Jn
+d(ρ0|ΘJn, ρ))
+1 + d(ρ0|ΘJn, ρ)) ≤ε.
+Since ε is arbitrary, we deduce that M n
+Jn →ρ0|ΘJn, which is the desired result. Therefore, it suﬃces to prove (11).
+For now, n and Jn are ﬁxed. Then
+(DJn ∩M n
+Jn̸ = ∅)
+⊆
+n
+sup
+ρ∈DJn
+ℓ(X(a)
+1 , · · · , X(a)
+n , X(b)
+1 , · · · , X(b)
+n ; ρ) ≥ℓ(X(a)
+1 , · · · , X(a)
+n , X(b)
+1 , · · · , X(b)
+n ; ρJn)
+o
+⊆
+lJn
+[
+k=1
+
+sup
+ρ∈Γk
+n
+Y
+i=1
+g
+
+X(a)
+i
+, X(b)
+i , X(a)
+i−1, X(b)
+i−1, ρ
+
+≤
+n
+Y
+i=1
+g
+
+X(a)
+i
+, X(b)
+i , X(a)
+i−1, X(b)
+i−1, ρJn
+
+32
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+⊆
+lJn
+[
+k=1
+
+n
+Y
+i=1
+g
+
+X(a)
+i
+, X(b)
+i , X(a)
+i−1, X(b)
+i−1, Γk
+
+≤
+n
+Y
+i=1
+g
+
+X(a)
+i
+, X(b)
+i , X(a)
+i−1, X(b)
+i−1, ρJn
+
+.
+Next we bound the probability of this latter set and called it π.
+π ≤
+lJn
+X
+k=1
+P
+
+n
+Y
+i=1
+g
+
+X(a)
+i
+, X(b)
+i , X(a)
+i−1, X(b)
+i−1, Γk
+
+≤
+n
+Y
+i=1
+g
+
+X(a)
+i
+, X(b)
+i , X(a)
+i−1, X(b)
+i−1, ρJn
+
+=
+lJn
+X
+k=1
+P
+
+exp
+n
+X
+i=1
+
+tk log g(X(a)
+i
+, X(b)
+i , X(a)
+i−1, X(b)
+i−1, Γk)
+g(X(a)
+i
+, X(b)
+i , X(a)
+i−1, X(b)
+i−1, ρJn)
+
+≥1
+
+≤
+lJn
+X
+k=1
+E
+ρ0|ΘJn
+
+exp
+
+tk log g(X(a)
+t , X(b)
+t , X(a)
+t−1, X(b)
+t−1, Γk)
+g(X(a)
+t , X(b)
+t , X(a)
+t−1, X(b)
+t−1, ρJn)
+n
+for any nonnegative arbitrary t1, · · · , tk and conditionally to X(a)
+i−1 and X(b)
+i−1, the laws of
+the real r.v. g(X(a)
+i
+, X(b)
+i , X(a)
+i−1, X(b)
+i−1, Γk) and g(X(a)
+i
+, X(b)
+i , X(a)
+i−1, X(b)
+i−1, ρJn) are images of g
+by the translations of the laws εi which are i.i.d. Hence, we get
+π ≤lJn(ϕJn)n.
+Finally, result (11) is deduced by condition (ii) of Theorem 3.1 and by the Borel-Cantelli
+lemma.
+A.4
+Proof of consistency result in Theorem 3.2
+Without loss of generality, we assume that pa
+j and pb
+j are all zeros. For non-zero cases, the
+same consistency results can be obtained. We check the condition C1. We replace Jn by
+J in the remaining of this section for notational simplicity, and let all summation be from
+1 to J. Using the deﬁnition of the entropy, we have
+H(ρ0|ΘJ, ρ0|ΘJ) −H(ρ0|ΘJ, ρΘJ) = H(κ0|ΘJ, κ0|ΘJ) −H(κ0|ΘJ, κΘJ)
+= −1
+2 log |Σu| + 1
+2 log |Σu,J| + E
+
+−1
+2x
+⊤Σ−1
+u x + 1
+2x
+⊤
+JΣ−1
+u,JxJ
+
+,
+33
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+where
+x =
+
+
+da
+t,1 −P
+i(P
+j qjcaa
+j −caa
+1 )wi+m−wi
+m
+da
+t−1,i −P
+i(P
+j qjcab
+j −cab
+1 )wi+m−wi
+m
+db
+t−1,i
+...
+da
+t,J −P
+i(P
+j qjcaa
+j −caa
+J )wi+m−wi
+m
+da
+t−1,i −P
+i(P
+j qjcab
+j −cab
+J )wi+m−wi
+m
+db
+t−1,i
+db
+t,1 −P
+i(P
+j qjcba
+j −cba
+1 )wi+m−wi
+m
+da
+t−1,i −P
+i(P
+j qjcbb
+j −cbb
+1 )wi+m−wi
+m
+db
+t−1,i
+...
+db
+t,J −P
+i(P
+j qjcba
+j −cba
+J )wi+m−wi
+m
+da
+t−1,i −P
+i(P
+j qjcbb
+j −cbb
+J )wi+m−wi
+m
+db
+t−1,i
+
+
+,
+xJ =
+
+
+da
+t,1 −P
+i(P
+j qjcaa
+j,J −caa
+1,J)wi+m−wi
+m
+da
+t−1,i −P
+i(P
+j qjcab
+j,J −cab
+1,J)wi+m−wi
+m
+db
+t−1,i
+...
+da
+t,J −P
+i(P
+j qjcaa
+j,J −caa
+J,J)wi+m−wi
+m
+da
+t−1,i −P
+i(P
+j qjcab
+j,J −cab
+J,J)wi+m−wi
+m
+db
+t−1,i
+db
+t,1 −P
+i(P
+j qjcba
+j,J −cba
+1,J)wi+m−wi
+m
+da
+t−1,i −P
+i(P
+j qjcbb
+j,J −cbb
+1,J)wi+m−wi
+m
+db
+t−1,i
+...
+db
+t,J −P
+i(P
+j qjcba
+j,J −cba
+J,J)wi+m−wi
+m
+da
+t−1,i −P
+i(P
+j qjcbb
+j,J −cbb
+J,J)wi+m−wi
+m
+db
+t−1,i
+
+
+.
+Here Σu, caa
+j , cab
+j , cba
+j , and cbb
+j denote the covariance matrix and B-spline coeﬃcients for
+the kernel κ0|ΘJ; and Σu,J, caa
+j,J, cab
+j,J, cba
+j,J, and cbb
+j,J denote the covariance matrix and B-spline
+coeﬃcients for the kernel κJ. κJ is the set of kernel functions for ρJ with ρJ ∈ΘJ; and
+κ0|ΘJ is the projection of the set of true kernel functions κ0 on ΘJ. Assuming Σu = Σu,J,
+we have
+H(ρ0|ΘJ, ρ0|ΘJ) −H(ρ0|ΘJ, ρΘJ) = E
+
+−1
+2x
+⊤Σ−1
+u x + 1
+2x
+⊤
+JΣ−1
+u xJ
+
+= 1
+2
+X
+r,s
+(Σ−1
+u )r,s E
+n
+(xJ)r(xJ)s −(x)r(x)s
+o
+,
+where (Σ−1
+u )r,s is the r-th row, s-th column of Σ−1
+u , (xJ)r is the r-th element of xJ, and
+(x)r is the r-th element of x.
+Since the only diﬀerence between (xJ)r(xJ)s and (x)r(x)s are the diﬀerent B-spline
+coeﬃcients, we can group the individual terms of the expansion of (xJ)r(xJ)s and the
+expansion (x)r(x)s together. After cancelling out the common terms not containing the
+B-spline coeﬃcients, each of the grouped terms will contain a product of some common
+terms and the subtraction between the B-spline coeﬃcients (of the same index) of the two
+34
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+kernels or the subtraction between the product of B-spline coeﬃcients of one kernel and
+that of the other kernel (of the same combination of indices). Hence, if H(κ0|ΘJ, κΘJ) →
+H(κ0|ΘJ, κ0|ΘJ) as n, J →∞, we have caa
+j,J →caa
+j , cab
+j,J →cab
+j , cba
+j,J →cba
+j , cbb
+j,J →cbb
+j and
+consequently ρJ →ρ0|ΘJ.
+For the condition C2 and (i) of Theorem 3.1, we follow similar arguments as in Mourid
+and Bensmain (2006). To verify Theorem 3.1 (ii), we deﬁne
+ϕ(t) =
+E
+κ0|ΘJ
+(
+exp
+
+t log g(X(a)
+t , X(b)
+t , X(a)
+t−1, X(b)
+t−1, Γk)
+g(X(a)
+t , X(b)
+t , X(a)
+t−1, X(b)
+t−1, κJ)
+)
+,
+where g(X(a)
+t , X(b)
+t , X(a)
+t−1, X(b)
+t−1, Γk) = supψ∈Γk g(X(a)
+t , X(b)
+t , X(a)
+t−1, X(b)
+t−1, ψ). Furthermore, we
+have ϕ(0) = 1 and ϕ′ = Eκ0|ΘJ log
+g(X(a)
+t
+,X(b)
+t
+,X(a)
+t−1,X(b)
+t−1,Γk)
+g(X(a)
+t
+,X(b)
+t
+,X(a)
+t−1,X(b)
+t−1,κJ).
+For a ﬁxed κ ∈Γk, we have
+A =
+E
+κ0|ΘJ
+log g(X(a)
+t , X(b)
+t , X(a)
+t−1, X(b)
+t−1, Γk) −E log g(X(a)
+t , X(b)
+t , X(a)
+t−1, X(b)
+t−1, κ)
+=
+E
+κ0|ΘJ
+sup
+ψ∈Γk
+n
+log g(X(a)
+t , X(b)
+t , X(a)
+t−1, X(b)
+t−1, ψ) −log g(X(a)
+t , X(b)
+t , X(a)
+t−1, X(b)
+t−1, κ)
+o
+=
+E
+κ0|ΘJ
+sup
+ψ∈Γk
+(
+−1
+2 log |Σu,ψ| + 1
+2 log |Σu,κ| −1
+2x
+⊤
+ψΣ−1
+u,ψxψ + 1
+2x
+⊤
+κΣ−1
+u,κxκ
+)
+,
+where xψ and xκ have the same form as xJ, with J replaced by ψ and κ respectively. Σu,ψ,
+caa
+j,ψ, cab
+j,ψ, cba
+j,ψ, and cbb
+j,ψ denote the covariance matrix and B-spline coeﬃcients for the kernel
+ψ, while Σu,κ, caa
+j,κ, cab
+j,κ, cba
+j,κ, and cbb
+j,κ denote that for the kernel κ.
+Assuming Σu,ψ = Σu,κ = Σu, we have
+A =
+E
+κ0|ΘJ
+sup
+ψ∈Γk
+(
+1
+2
+X
+r,s
+(Σ−1
+u )r,s
+
+(xψ)r(xψ)s −(xκ)r(xκ)s
+)
+,
+where (Σ−1
+u )r,s is the r-th row, s-th column of Σ−1
+u , (xψ)r is the r-th element of xψ, and
+(xκ)r is the r-th element of xκ.
+We follow the similar conditions and arguments in Mourid and Bensmain (2006) and
+obtain A ≤
+C1
+Jη/2, where C1 is a constant. In addition, for δ > 0,
+ϕ′(0) = H(κ0|ΘJ, κ) −H(κ0|ΘJ, κJ) + A ≤C2J−η/2 −δ.
+35
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+Using Taylor expansion and the results from Hwang (1980) such that ϕ′′(t) ≤C3J2, we
+have ϕ( 1
+J2) ≤1 −
+δ
+C4J2, where C2, C3, and C4 are constants. Since ϕJ = supk inft≥0 ϕ(t),
+we can deduce that for suﬃciently large J, we have
+lJ(ϕJ)n ≤CJCJ1+η 1 −
+δ
+CJ2
+n,
+which is summable if J = O(n1/3−δ) for δ > 0 (see Hwang, 1980). Note that C is a constant.
+Finally, we can apply Theorem 3.1 to obtain the result that the ML estimator bκ obtained on
+ΘJn converges to the projected true set of kernel functions κ0|ΘJ. As n, Jn →∞, κ0|ΘJ →κ0
+because each κxy,0|ΘJ in κ0|ΘJ is just the B-spline truncation of the corresponding true kernel
+κxy,0 in κ0 on ΘJn.
+Acknowledgement
+This research was supported by the FRC grant at the National University of Singapore.
+Support from IRTG 1792 “High Dimensional Non Stationary Time Series”, HumboldtUniversit¨at zu Berlin, is gratefully acknowledged.
+References
+A¨ıt-Sahalia, Y., Mykland, P. and Zhang, L. (2005). How often to sample a continuous-time
+process in the presence of market microstructure noise, Review of Financial Studies
+18: 351–416.
+Almgren, R. and Chriss, N. (2000). Optimal execution of portfolio transactions, Journal
+of Risk 3: 5–39.
+Antoniadis, A. and Sapatinas, T. (2003). Wavelet methods for continuous-time prediction using hilbert-valued autoregressive processes, Journal of Multivariate Analysis
+87: 135–158.
+Benston, G. and Hagerman, R. (1974). Determinants of bid-asked spreads in the over-thecounter market, Journal of Financial Economics 1: 353–364.
+Besse, P., Cardot, H. and Stephenson, D. (2000). Autoregressive forecasting of some functional climatic variations, Scandinavian Journal of Statistics 27: 673–687.
+36
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+Bosq, D. (2000). Linear Processes in Function Spaces: Theory and Applications, Springer,
+New York.
+Chaudhuri, K., Kim, M. and Shin, Y. (2016). Forecasting distributions of inﬂation rates:
+A functional autoregressive approach, Journal of the Royal Statistical Society: Series
+A (Statistics in Society) 179(1): 65–102.
+Chen, S., H¨ardle, W., Liang, C. and Schienle, M. (2017). Vast network analysis of limit
+order books, SFB 649 DP 2017-051, Journal of Financial Economics (Submitted).
+Chen, Y. and Li, B. (2017). An adaptive functional autoregressive forecast model to predict electricity price curves, Journal of Business and Economic Statistics, (Published
+online).
+Chordia, T., Sarkar, A. and Subrahmanyam, A. (2003). An empirical analysis of stock and
+bond market liquidity, Federal Reserve Bank of New York StaﬀReports 164.
+Cooper, K., Groth, J. and Avera, W. (1985). Liquidity, exchange listing, and common
+stock performance, Journal of Economics and Business 37: 19–33.
+Fleming, M. and Remolona, E. (1999). Price formation and liquidity in the U.S. treasury
+market: The response to public information, Journal of Finance 54: 1901–1915.
+Foucault, T., Kadan, O. and Kandel, E. (2005). Limit order book as a market for liquidity,
+Review of Financial Studies 18(4): 1171–1217.
+Geman, S. and Hwang, C.-R. (1982). Nonparametric maximum likelihood estimation by
+the method of sieves, Annals of Statistics 10: 401–414.
+Gomber, P., Schweickert, U. and Theissen, E. (2015). Liquidity dynamics in an electronic
+open limit order book: An event study approach, European Financial Management
+21: 52–78.
+Grenander, U. (1981). Abstract inference, Wiley, New York.
+Groß-Klußmann, A. and Hautsch, N. (2013). Predicting bid ask spreads using long-memory
+autoregressive conditional Poisson models, Journal of Forecasting 32(8): 724–742.
+Guillas, S. (2001). Rates of convergence of autocorrelation estimates for autoregressive
+hilbertian processes, Statistics & Probability Letters 55: 281–291.
+37
+Electronic copy available at: https://ssrn.com/abstract=2818409
+
+H¨ardle, W., Hautsch, N. and Mihoci, A. (2012). Modelling and forecasting liquidity supply
+using semiparametric factor dynamics, Journal of Empirical Finance 19: 610–625.
+H¨ardle, W., Hautsch, N. and Mihoci, A. (2015). Local adaptive multiplicative error models
+for high-frequency forecasts, Journal of Applied Econometrics 30(4): 529–550.
+Harris, L. (1990). Liquidity, trading rules and electronic trading systems, Technical report,
+NYU Salomon Center Series in Finance and Economics.
+Huberman, G. and Halka, D. (2001). Systematic liquidity, Journal of Financial Research
+24: 161–178.
+Hwang, C. (1980). Gaussian measure of large balls in a hilbert space, Proceedings of the
+American Mathematical Society 78: 107–110.
+Johansen, S. (1991). Estimating and hypothesis testing of cointegration vectors in gaussian
+vector autoregressive models, Econometrica 59(6): 1551–1580.
+Mourid, T. and Bensmain, N. (2006). Sieves estimator of the operator of a functional
+autoregressive process, Statistics & Probability Letters 76: 93–108.
+Stoll, H. (1978). The pricing of security dealer services: An empirical study of nasdaq
+stocks, Journal of Finance 33: 1153–1172.
+Zhang, L., Mykland, P. and A¨ıt-Sahalia, Y. (2005). A tale of two time scales: Determining integrated volatility with noisy high-frequency data, Journal of the American
+Statistical Association 100(472): 1394–1411.
+38
+Electronic copy available at: https://ssrn.com/abstract=2818409

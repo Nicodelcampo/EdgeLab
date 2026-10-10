@@ -1,0 +1,102 @@
+{
+  "doc_id": 150,
+  "titulo": "High Frequency Trading: una panoramica",
+  "resumen_operativo": "El documento es una revisión institucional del Banco de Italia sobre los fundamentos, normativas y estrategias del trading de alta frecuencia (HFT). Ofrece descripciones claras sobre arbitraje de latencia, provisión de liquidez, spoofing, quote stuffing y momentum ignition, proporcionando una comprensión panorámica del rol del HFT en el mercado, pero carece de investigaciones empíricas o reglas mecánicas directas.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Tipología de trading automatizado que utiliza infraestructuras de ultra baja latencia para enviar y modificar miles de mensajes por segundo, extrayendo beneficio a partir de ineficiencias de corto plazo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "latency"}
+      ],
+      "cita_textual": "Una tipologia di trading completamente automatizzato... analizza dati tick – by – tick avvalendosi di infrastrutture tecnologiche e informatiche in grado di eseguire operazioni in un arco temporale di pochi millisecondi."
+    },
+    {
+      "nombre": "latency",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El retraso temporal en recibir información, procesarla y enviar órdenes de negociación. Su minimización es el núcleo competitivo del HFT.",
+      "relaciones": [],
+      "cita_textual": "Per latenza s’intende il tempo necessario all’implementazione della serie di operazioni necessarie a tramutare una decisione economica in un’effettiva contrattazione (esecuzione)."
+    },
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Captura de discrepancias de precios temporales originadas por ineficiencias transitorias entre distintos centros de negociación, aprovechando la velocidad computacional.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "latency"}
+      ],
+      "cita_textual": "Le strategie di arbitraggio passivo... le divergenze di prezzo tra attività identiche che non trovano giustificazione economica, se non in una momentanea inefficienza"
+    },
+    {
+      "nombre": "liquidity provision",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Colocación de órdenes pasivas (bid/ask) en el libro para ganar el diferencial, empleando la ultra velocidad para retirarse velozmente ante incrementos de volatilidad o noticias.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "Gli Hfts sono in grado di replicare l’attività dei tradizionali market maker... cercando di lucrare il bid ask spread."
+    },
+    {
+      "nombre": "stop hunting",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Emisión de pequeñas órdenes agresivas para testear la profundidad del mercado y accionar forzosamente las órdenes stop-loss de los operadores técnicos.",
+      "relaciones": [],
+      "cita_textual": "cercano poi di far scattare gli stop loss e i take profit degli altri partecipanti al mercato in modo da poter accumulare la liquidità offerta"
+    },
+    {
+      "nombre": "momentum ignition",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Práctica de ejecutar grandes volúmenes direccionales durante períodos de baja liquidez para instigar falsos quiebres e incitar compras/ventas de otros operadores por pánico o inercia.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "momentum"}
+      ],
+      "cita_textual": "prende una posizione aggressiva... che genera un forte movimento del prezzo e spinge gli altri trader a reagire al movimento; su questa reazione il momentum trader chiude la propria posizione"
+    },
+    {
+      "nombre": "spoofing",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia manipulativa consistente en simular presión compradora o vendedora mediante el rápido envío y cancelación de órdenes falsas para forzar a la competencia a ejecutar precios subóptimos.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "adverse selection"}
+      ],
+      "cita_textual": "inondano il book di negoziazione di Limit Order, modificandoli e cancellandoli continuamente, simulando situazioni di mercato al solo scopo di indurre i trader tradizionali... ad effettuare operazioni sbagliate"
+    },
+    {
+      "nombre": "quote stuffing",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Saturación intencionada de la infraestructura tecnológica mediante una cascada masiva de inserciones y cancelaciones para lentificar el procesamiento de los rivales.",
+      "relaciones": [],
+      "cita_textual": "riversare sul mercato una quantità ingestibile di informazioni, tramite immissione e contestuale cancellazione di migliaia di ordini a limite di prezzo, determinando... un rallentamento"
+    },
+    {
+      "nombre": "adverse selection",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Pérdida incurrida por operadores menos sofisticados al interactuar con el engaño direccional de sistemas HFT que poseen información más rápida y táctica.",
+      "relaciones": [],
+      "cita_textual": "appare ipotizzabile l’instaurarsi di un meccanismo di selezione avversa ai danni dei trader meno evoluti"
+    },
+    {
+      "nombre": "flash crash",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Depreciación extremadamente veloz de los activos catalizada por la súbita retirada de la liquidez HFT de los libros, seguida de ejecuciones de pánico.",
+      "relaciones": [],
+      "cita_textual": "Un flash crash è un fenomeno caratterizzato da un’improvvisa, rapida e spesso immotivata discesa dei prezzi di uno o più strumenti finanziari, cui corrisponde solitamente un vigoroso rimbalzo"
+    },
+    {
+      "nombre": "order to trade ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Cociente entre la cantidad de órdenes enviadas/canceladas y el número de ejecuciones reales, empleado para cuantificar la prevalencia HFT.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "high-frequency trading"}
+      ],
+      "cita_textual": "Il rapporto misura il numero di trade realmente effettuati rispetto al numero di ordini immessi ed è capace di identificare quelle tipologie di operatori che, a fronte di numerosi ordini immessi, eseguono relativamente pochi trade."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Al tratarse de un estudio panorámico e institucional, no provee modelos matemáticos ni backtests de estrategias implementables directamente en ecosistemas intradía reales."
+  }
+}

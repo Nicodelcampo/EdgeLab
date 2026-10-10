@@ -1,0 +1,369 @@
+{
+  "doc_id": 41,
+  "titulo": "Algorithmic Trading and Investment-to-Price Sensitivity",
+  "resumen_operativo": "Paper de finanzas corporativas (no de trading intradía) que muestra que el trading algorítmico (AT) aumenta la sensibilidad de la inversión corporativa al precio de la acción, vía mejora de la eficiencia reveladora de precios (RPE). Usa QT (quote-to-trade ratio) como proxy de AT y varios métodos causales (DiD con Autoquote NYSE, 2SLS). Relevante para un trader-quant sobre todo como evidencia de que el AT no es homogéneo: distingue AT market-making (mejora price discovery) de AT oportunista/latency arbitrage (lo deteriora), y ofrece proxies medibles de AT (QT, cancel-to-trade, odd-lot ratio, latency arbitrage opportunities) que podrían adaptarse a datos intradía.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "algorithmic trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Uso de programas de computadora que siguen un algoritmo para colocar y gestionar órdenes; el paper define AT en sentido amplio, incluyendo HFT como subconjunto de mayor velocidad.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "high-frequency trading"},
+        {"tipo": "MEJORA_A", "objeto": "revelatory price efficiency"}
+      ],
+      "cita_textual": "we take a broader definition of automated trading and define AT as all participants who use algorithms to submit and cancel orders, including high-frequency trading (HFT), which is a subset of AT with considerably higher trading speeds"
+    },
+    {
+      "nombre": "quote-to-trade ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Proxy principal de AT: ratio del número de mensajes de cotización (altas/bajas en mejor bid/ask) sobre el número de transacciones, calculado diariamente y promediado anualmente por firma.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "algorithmic trading"},
+        {"tipo": "EQUIVALE_A", "objeto": "QT"}
+      ],
+      "cita_textual": "we follow Hendershott et al. (2011) and Malceniece et al. (2019) and use the ratio of number of quote messages to number of trades, QTi,t, as the main proxy for AT"
+    },
+    {
+      "nombre": "cancel-to-trade ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida alternativa de AT: número de mensajes de cancelación (totales o parciales) dividido por número de trades, obtenida de datos MIDAS de la SEC; la mayoría de los mensajes de los AT terminan cancelados.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "algorithmic trading"},
+        {"tipo": "USA", "objeto": "quote-to-trade ratio"}
+      ],
+      "cita_textual": "The first measure is the cancel-to-trade ratio, CTi,t, computed as the number of all cancel messages (full or partial) divided by the number of trades obtained from the SEC’s MIDAS data"
+    },
+    {
+      "nombre": "odd-lot rate",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Proxy de AT basada en la fracción de mensajes de trades odd-lot (menos de 100 acciones) sobre el total de mensajes de trade; refleja que los AT dividen órdenes grandes en órdenes hijas pequeñas para reducir impacto de precio.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "algorithmic trading"},
+        {"tipo": "CAUSA", "objeto": "market impact"}
+      ],
+      "cita_textual": "the odd-lot rate, OddLoti,t, or the number of odd-lot trade messages (trades with less than 100 shares) divided by the number of all trade messages obtained from the SEC’s MIDAS data"
+    },
+    {
+      "nombre": "latency arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia oportunista de AT que explota cotizaciones desactualizadas ('stale quotes') detectadas cuando el salto del mid-price entre t-1 y t excede el half-spread; medida como LAO (número de oportunidades) siguiendo la metodología de Budish et al. (2015).",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "opportunistic algorithmic trading"},
+        {"tipo": "SE_OPONE_A", "objeto": "market making"},
+        {"tipo": "CAUSA", "objeto": "investment-to-price sensitivity"}
+      ],
+      "cita_textual": "the quote at time z −1 is considered as stale if the absolute value of mid-price changes from time z −1 to z exceeds half-spread... such stale quotes can be exploited (\"sniped\") by opportunistic ATs before being cancelled"
+    },
+    {
+      "nombre": "opportunistic algorithmic trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Subconjunto de AT que demanda liquidez y explota oportunidades de arbitraje de latencia y estrategias de order anticipation (back-running); el paper muestra que este tipo específico deteriora la sensibilidad inversión-precio pese a que el AT agregado la mejora.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "market making"},
+        {"tipo": "MITIGA", "objeto": "revelatory price efficiency"},
+        {"tipo": "USA", "objeto": "latency arbitrage"}
+      ],
+      "cita_textual": "we also show that a subset of AT, namely opportunistic AT is harmful to managerial learning"
+    },
+    {
+      "nombre": "revelatory price efficiency",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Grado en que los precios revelan información necesaria para que los tomadores de decisiones (managers) actúen, distinto de la eficiencia predictiva (forecasting price efficiency); concepto tomado de Bond et al. (2012). El paper muestra que AT contribuye positivamente a la RPE.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "forecasting price efficiency"},
+        {"tipo": "CAUSA", "objeto": "investment-to-price sensitivity"},
+        {"tipo": "MIDE", "objeto": "price discovery"}
+      ],
+      "cita_textual": "the revelatory price efficiency (RPE) as the extent to which prices reveal information necessary for decision makers"
+    },
+    {
+      "nombre": "forecasting price efficiency",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Grado en que el precio de un activo predice con precisión el valor futuro de ese activo; noción distinta de la RPE, en la que se centra la literatura previa sobre AT.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "revelatory price efficiency"}
+      ],
+      "cita_textual": "the forecasting price efficiency (FPE) as the extent to which the price of a given security accurately predicts the future value of that security"
+    },
+    {
+      "nombre": "investment-to-price sensitivity",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Sensibilidad de la inversión corporativa futura (CAPEX, cambio en activos) al precio normalizado de la acción (Tobin's Q) hoy; se interpreta como medida del aprendizaje gerencial a partir de los precios de mercado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "managerial learning"},
+        {"tipo": "USA", "objeto": "algorithmic trading"}
+      ],
+      "cita_textual": "we investigate the empirical relationship between AT and the sensitivity of corporate investment to stock prices (investment-to-price sensitivity)"
+    },
+    {
+      "nombre": "managerial learning",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Canal por el cual los gerentes extraen información nueva de los precios de las acciones para tomar decisiones de inversión; el paper argumenta que AT lo potencia al fomentar la producción de información nueva.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "revelatory price efficiency"},
+        {"tipo": "CAUSA", "objeto": "investment-to-price sensitivity"}
+      ],
+      "cita_textual": "AT contributes to managerial learning by fostering the production of new information, thereby increasing firms’ investment-to-price sensitivity"
+    },
+    {
+      "nombre": "difference-in-differences",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Estrategia de identificación causal que usa la introducción del NYSE Autoquote en 2003 como shock exógeno, comparando firmas NYSE (tratamiento) contra NASDAQ (control) antes/después del evento.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "NYSE Autoquote"},
+        {"tipo": "MITIGA", "objeto": "reverse causality"}
+      ],
+      "cita_textual": "We first employ difference-in-differences estimation method to establish causality. We use the introduction of NYSE Autoquote in 2003 as an exogenous event"
+    },
+    {
+      "nombre": "NYSE Autoquote",
+      "tipo": "dato",
+      "definicion_en_contexto": "Evento regulatorio/tecnológico de 2003 que reemplazó la diseminación manual del quote interno por specialists con un quote automatizado, aumentando el tráfico electrónico de mensajes en NYSE; usado como shock exógeno e instrumento.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "algorithmic trading"},
+        {"tipo": "USA", "objeto": "two-stage least squares"}
+      ],
+      "cita_textual": "The Autoquote replaced manual dissemination of the inside quote by specialists with a new automated quote and provided quicker feedback to algorithms, resulting in an increase in electronic message traffic in the NYSE"
+    },
+    {
+      "nombre": "two-stage least squares",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Enfoque de variable instrumental usado para mitigar endogeneidad, empleando la implementación escalonada de Autoquote, el rezago de QT y el QT promedio por cuartil de tamaño como instrumentos.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "reverse causality"},
+        {"tipo": "USA", "objeto": "NYSE Autoquote"}
+      ],
+      "cita_textual": "We now use a two-stage least-squares (2SLS) instrumental variable (IV) approach with several instruments to mitigate endogeneity concerns"
+    },
+    {
+      "nombre": "reverse causality",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de que la asociación entre AT e investment-to-price sensitivity no sea causal porque los AT se atraen naturalmente a acciones líquidas con mayor informatividad de precio, en lugar de causarla.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "difference-in-differences"},
+        {"tipo": "MITIGA", "objeto": "two-stage least squares"}
+      ],
+      "cita_textual": "ATs are inherently attracted to liquid stocks. This implies that ATs tend to trade the stocks of the firms with greater investment-to-price sensitivity and benefit from their price informativeness, raising a reverse causality concern"
+    },
+    {
+      "nombre": "omitted variable bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de que variables no observadas afecten simultáneamente la actividad de trading/order book y las decisiones de inversión de las firmas, sesgando la relación estimada entre AT e investment-to-price sensitivity.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "two-stage least squares"}
+      ],
+      "cita_textual": "there may be omitted variables that simultaneously affect the trading/order book activity and firms’ investment decisions"
+    },
+    {
+      "nombre": "Heckman selection model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Enfoque de estimación en dos etapas usado para testear sesgo de selección en cómo los AT eligen operar entre distintas acciones, reportado en el Apéndice de Internet.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "omitted variable bias"}
+      ],
+      "cita_textual": "we use the two-stage Heckman estimation approach to test for selection bias in how ATs trade across stocks and report the results in the Internet Appendix"
+    },
+    {
+      "nombre": "earnings forecast accuracy",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Precisión de los pronósticos de resultados de los gerentes, medida como la diferencia en los errores de dos pronósticos consecutivos escalada por el precio de la acción antes del primer pronóstico; usada como canal de RPE.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "revelatory price efficiency"},
+        {"tipo": "PREDICE", "objeto": "managerial learning"}
+      ],
+      "cita_textual": "we find that an average level of AT increases the effect of a one standard deviation shock to the stock price on managers’ forecast accuracy by about 17%"
+    },
+    {
+      "nombre": "information acquisition",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Actividad de adquisición de información por parte de participantes del mercado, proxied por descargas no-robot de datos de reporte financiero desde EDGAR de la SEC; AT puede fomentarla o desalentarla según el tipo de estrategia.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "revelatory price efficiency"},
+        {"tipo": "PREDICE", "objeto": "revelatory price efficiency"}
+      ],
+      "cita_textual": "we find a positive association between AT and the number of non-robot downloads of financial data from the SEC EDGAR database, suggesting that AT encourages overall information acquisition in the market"
+    },
+    {
+      "nombre": "market making",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de AT que provee liquidez (liquidity-supplying); el paper argumenta que este tipo de AT reduce el costo de adquisición de información y mejora la informatividad de precios, en oposición al AT oportunista.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "opportunistic algorithmic trading"},
+        {"tipo": "MEJORA_A", "objeto": "revelatory price efficiency"}
+      ],
+      "cita_textual": "we distinguish between market-making (liquidity-supplying) and opportunistic (liquidity-demanding) AT strategies and examine their impacts on investment-to-price sensitivity"
+    },
+    {
+      "nombre": "tick size",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Incremento mínimo de precio; la literatura citada (Ye et al. 2023, Lee and Watts 2021) muestra que un tick size mayor reduce el AT oportunista (no el market-making) y aumenta la sensibilidad inversión-precio.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "opportunistic algorithmic trading"},
+        {"tipo": "MEJORA_A", "objeto": "investment-to-price sensitivity"}
+      ],
+      "cita_textual": "an increment in tick size decreases opportunistic HFT activities, while increasing market-making HFT activities"
+    },
+    {
+      "nombre": "institutional holdings",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Fracción de acciones en circulación en manos de inversores institucionales; usada como característica cross-sectional que amplifica el efecto de AT sobre investment-to-price sensitivity por ser inversores informados.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "revelatory price efficiency"}
+      ],
+      "cita_textual": "institutional investors are generally considered as informed investors that have positive impact on RPE"
+    },
+    {
+      "nombre": "private information",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Varianza de retornos accionarios atribuible a información privada específica de la firma, calculada con un modelo VAR (Brogaard et al. 2022) descomponiendo la varianza en información de mercado, privada, pública y ruido.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "price discovery"},
+        {"tipo": "MEJORA_A", "objeto": "investment-to-price sensitivity"}
+      ],
+      "cita_textual": "PrivateInfoi,t is computed using a vector autoregression model (VAR) to decompose a return variance into four components (market-wide information, private firm-specific information, public firm-specific information, and noise)"
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Diferencia entre precio de venta y compra promedio mensual dividido por el punto medio; usado como medida de liquidez inversa que modula el efecto del AT sobre investment-to-price sensitivity.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "revelatory price efficiency"}
+      ],
+      "cita_textual": "Spreadi,t is the yearly average of the differences between monthly ask and bid quotes divided by the midquote"
+    },
+    {
+      "nombre": "earnings surprise",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Diferencia porcentual entre el resultado real por acción y el pronóstico promedio de analistas; usada para testear asimetría en el aprendizaje gerencial ante información positiva vs. negativa.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "investment-to-price sensitivity"}
+      ],
+      "cita_textual": "the cross-sectional analysis with the amount of earnings surprise ESPi,t ... aims to capture the asymmetric managerial learning about positive and negative information from stock prices"
+    },
+    {
+      "nombre": "operating performance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Desempeño operativo futuro de la firma, medido con return on assets y sales growth; el paper lo vincula a la sensibilidad inversión-precio impulsada por AT como evidencia de que ese canal mejora decisiones de inversión.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "return on assets"},
+        {"tipo": "PREDICE", "objeto": "operating performance"}
+      ],
+      "cita_textual": "we find that the amount of AT activities in stocks and the resulting increase in the investment-to-price sensitivity significantly improve firm performance"
+    },
+    {
+      "nombre": "return on assets",
+      "tipo": "metrica",
+      "definicion_en_contexto": "EBITDA en año t+1 dividido por activos totales del mismo año; una de las dos medidas de desempeño operativo usadas para vincular AT-driven investment-to-price sensitivity con desempeño futuro.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "operating performance"}
+      ],
+      "cita_textual": "ROAi,t+1 is computed as the earnings before interest, taxes, depreciation, and amortization (EBITDA) in year t + 1 divided by total assets in the same year"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El AT (medido con quote-to-trade ratio) aumenta significativamente la sensibilidad de la inversión corporativa (CAPEX, CAPEX+R&D, cambio en activos) al precio de la acción en un panel amplio de firmas EE.UU. con efectos fijos de firma y año.",
+      "mercado": "US equities (NYSE, AMEX, NASDAQ)",
+      "periodo": "1996-2019",
+      "magnitud": "coeficiente de interacción Qi,t*QTi,t: 0.039 (t=11.20) para CAPEX, 0.037 (t=7.19) para CAPEXRND, 0.359 (t=13.37) para CHGASSET; todos significativos al 1%",
+      "condiciones": "OLS con efectos fijos de firma y año, errores estándar doble-clusterizados por firma y año, variables de-meaned; 51,581 observaciones firma-año, 5,195 firmas",
+      "robustez": "media",
+      "cita_textual": "the coefficient of the interaction term between Qi,t and QTi,t are positive and statistically significant at 1 percent level with t-statistics of 11.20 for CAPEXi,t+1, 7.19 for CAPEXRNDi,t+1, and 13.37 for CHGASSETi,t+1"
+    },
+    {
+      "afirmacion": "Un nivel promedio de AT amplifica el impacto de un shock de una desviación estándar en el precio sobre la inversión futura, incrementando el efecto en 50% para CAPEX, 22% para CAPEX+R&D y 40% para cambio de activos.",
+      "mercado": "US equities",
+      "periodo": "1996-2019",
+      "magnitud": "incremento sin AT: 1.256% en CAPEX vs. con AT promedio: 1.878% (aumento del 50%); 22% para CAPEXRND; 40% para CHGASSET",
+      "condiciones": "cálculo de magnitud económica usando desviación estándar de Q (1.43) y QT promedio (11.17), a partir de coeficientes OLS",
+      "robustez": "media",
+      "cita_textual": "That is, an average level of AT increases the impact of a one standard deviation price shock on CAPEXi,t+1 by 50%"
+    },
+    {
+      "afirmacion": "Usando la introducción del NYSE Autoquote (2003) como shock exógeno en un diseño diferencias-en-diferencias, la sensibilidad inversión-precio aumentó más en firmas NYSE (tratamiento) que en NASDAQ (control), apoyando causalidad.",
+      "mercado": "US equities NYSE vs NASDAQ",
+      "periodo": "2001-2005 (ventana de 24 meses, excluyendo 2003)",
+      "magnitud": "coeficiente de la interacción triple: 0.448 (t=2.88) para CAPEX y 1.356 (t=4.79) para CAPEXRND, significativos",
+      "condiciones": "DiD sin efectos fijos de tiempo (por falta de variación temporal en Event), ventana acotada alrededor del evento",
+      "robustez": "media",
+      "cita_textual": "The coefficients of the triple interaction term for CAPEXi,t+1 and CAPEXRNDi,t+1 are 0.448 and 1.356 with t-statistics of 2.88 and 4.79, respectively"
+    },
+    {
+      "afirmacion": "Usando 2SLS con instrumentos (Autoquote escalonado, QT rezagado, QT promedio por cuartil de tamaño), se confirma una relación causal positiva y significativa entre AT y sensibilidad inversión-precio.",
+      "mercado": "US equities (subsample NYSE para instrumento Autoquote)",
+      "periodo": "2001-2005 para instrumento Autoquote; muestra completa 1996-2019 para otros instrumentos",
+      "magnitud": "coeficientes entre 0.007 y 0.048 según especificación, t-estadísticos entre 2.04 y 10.89",
+      "condiciones": "cuatro especificaciones distintas de 2SLS con distintos instrumentos, controles adicionales de dinámica de calidad de mercado",
+      "robustez": "media",
+      "cita_textual": "the coefficient estimates range between 0.007 to 0.048, and t-statistics vary between 2.04 and 10.89 in the 2SLS framework"
+    },
+    {
+      "afirmacion": "El AT mejora la precisión de los pronósticos de resultados de los gerentes: un nivel promedio de AT aumenta en 17% el impacto de un shock de precio de una desviación estándar sobre la precisión del pronóstico.",
+      "mercado": "US equities",
+      "periodo": "no especificado (submuestra desde 2003, 1,540 observaciones)",
+      "magnitud": "coeficiente de interacción 0.005, t-estadístico 1.72 (significativo al 10%); incremento del efecto de 0.906% a 1.064% (17%)",
+      "condiciones": "muestra pequeña (1,540 observaciones) por disponibilidad de datos de pronósticos gerenciales desde 2003 en adelante",
+      "robustez": "baja",
+      "cita_textual": "we find that the interaction term, |Returni,t|QT i,t−1, is positive (the coefficient estimate is 0.005) and statistically significant (t-statistic is 1.72) at 10%"
+    },
+    {
+      "afirmacion": "El AT aumenta la adquisición de información de mercado por parte de participantes no-robot: un nivel promedio de QT aumenta las descargas no-robot de EDGAR en aproximadamente 5.1%.",
+      "mercado": "US equities",
+      "periodo": "2003-2017",
+      "magnitud": "aumento de EDGARi,t de aproximadamente 5.1% (β1·Average(QTi,t)/Average(EDGARi,t) = 11.17·0.003/0.66)",
+      "condiciones": "resultados positivos y significativos tanto con valores crudos de QT como con valores predichos usando Autoquote como instrumento",
+      "robustez": "media",
+      "cita_textual": "An average level of QTi,t (11.17) increases EDGARi,t by about 5.1%"
+    },
+    {
+      "afirmacion": "El impacto de AT sobre la sensibilidad inversión-precio es más fuerte en acciones con mayor tenencia institucional, mayor información privada, menor spread relativo, mayor volumen de trading y sorpresas de resultados más positivas.",
+      "mercado": "US equities",
+      "periodo": "1996-2019",
+      "magnitud": "diferencia económica en el impacto: 7.3% del CAPEX promedio para institutional holdings (0.43%), 6.8% para PrivateInfo, -5.1% para spread, 15.1% para volumen, 6.5% para earnings surprise",
+      "condiciones": "análisis cross-sectional con dummy de grupo alto (percentil 75) por característica, resultados consistentes usando mediana como corte",
+      "robustez": "media",
+      "cita_textual": "The respective economic magnitudes are 6.8% for PrivateInfoi,t, -5.1% for Spreadi,t, 15.1% for V olumei,t, and 6.5% for ESPi,t"
+    },
+    {
+      "afirmacion": "Los AT oportunistas (que explotan arbitraje de latencia) debilitan la sensibilidad inversión-precio, aún cuando el AT agregado la mejora, evidenciando que el efecto de AT sobre la informatividad de precios no es homogéneo.",
+      "mercado": "US equities (muestra aleatoria de 120 firmas del dataset NASDAQ HFT)",
+      "periodo": "1996-2019",
+      "magnitud": "coeficiente de la interacción triple Qi,tQTi,tLAOi,t negativo y significativo para CAPEX y CAPEXRND; interacción Qi,t*LAOi,t negativa y significativa para CAPEX y CAPEXRND",
+      "condiciones": "muestra reducida a 120 firmas por costo computacional de datos de cotización de alta frecuencia; construcción de LAO en el espíritu de Budish et al. (2015)",
+      "robustez": "baja",
+      "cita_textual": "the coefficient of the triple interaction term, Qi,tQTi,tLAOi,t, is negative and statistically significant for CAPEXi,t+1 and CAPEXRNDi,t+1, implying that the opportunistic ATs weaken the aggregate association between AT and the investment-to-price sensitivity"
+    },
+    {
+      "afirmacion": "Los resultados son robustos a medidas alternativas de AT (cancel-to-trade ratio y odd-lot ratio construidas con datos MIDAS de la SEC), aunque con menor significancia estadística por el menor tamaño de muestra.",
+      "mercado": "US equities",
+      "periodo": "2012-2019",
+      "magnitud": "impacto positivo y estadísticamente significativo para ambas medidas de AT, con leve caída en t-estadísticos; muestra de 10,665 observaciones firma-año",
+      "condiciones": "muestra MIDAS más pequeña y período más corto que la muestra principal",
+      "robustez": "media",
+      "cita_textual": "the impact of AT on the investment-to-price sensitivity is positive and statistically significant for both measures of AT with a slight decrease in t-statistics"
+    },
+    {
+      "afirmacion": "El nivel de AT (ranking percentil) predice mejor desempeño operativo futuro: un incremento de mediana en AT aumenta el ROA futuro en 2.75% y el crecimiento de ventas en 25.85%.",
+      "mercado": "US equities",
+      "periodo": "1996-2019 (con ventana de un año adelante)",
+      "magnitud": "coeficiente de Rankingi,t: 0.005 (t=2.38) para ROA, 0.029 (t=5.80) para sales growth; incremento económico de 2.75% en ROA y 25.85%-26% en sales growth",
+      "condiciones": "enfoque de ranking basado en percentil de QT actual o predicho (usando Autoquote como instrumento), controlando por persistencia del desempeño operativo",
+      "robustez": "media",
+      "cita_textual": "A median level increase in QTi,t increases ROAi,t+1 by 2.75% and SGi,t+1 by 25.85%"
+    },
+    {
+      "afirmacion": "La relación positiva entre AT y sensibilidad inversión-precio persiste tras controlar por información gerencial existente (trading de insiders, retornos alrededor de anuncios de resultados), cobertura de analistas y restricciones de capital (índice Kaplan-Zingales), descartando estas explicaciones alternativas.",
+      "mercado": "US equities",
+      "periodo": "1996-2019",
+      "magnitud": "coeficiente de Qi,tQTi,t positivo y significativo con t-estadísticos de 8.62 y 10.30 controlando por insider trading y retornos de anuncios respectivamente; también significativo controlando analyst coverage y KZ",
+      "condiciones": "controles adicionales secuenciales en Tabla 13",
+      "robustez": "media",
+      "cita_textual": "The coefficients of the interaction term (Qi,tQTi,t) are positive and statistically significant (t-statistics are 8.62 and 10.30) in both models"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Es un paper de finanzas corporativas sobre datos anuales/de baja frecuencia (CAPEX, ROA) sin relación directa con estrategias de trading intradía en ES, pero la distinción metodológica entre AT market-making y AT oportunista/latency-arbitrage, y sus proxies (QT, cancel-to-trade, odd-lot, LAO), podrían inspirar filtros de régimen de flujo en el ecosistema de order flow."
+  }
+}

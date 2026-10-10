@@ -1,0 +1,63 @@
+{
+  "doc_id": 327,
+  "titulo": "Taming HFT in the multi-dealer FX market",
+  "resumen_operativo": "Nota corta que argumenta que el riesgo de liquidez causado por HFT en el mercado institucional de FX es más importante que el riesgo de volatilidad. Propone que las plataformas multi-dealer FX introduzcan un 'Market Maker Status' (MMS): los traders con MMS deben mantener órdenes en ambos lados del mercado con spread no mayor al 50% del promedio histórico; los traders sin MMS no pueden tener órdenes simultáneas en ambos lados y deben esperar un delay tras operar en un lado antes de colocar órdenes en el lado opuesto. El objetivo es aumentar el riesgo de adverse selection para traders que hacen market making sin MMS. Sin validación empírica; es una propuesta de política de mercado.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Trading automatizado en el mercado FX multi-dealer con frecuencias de milisegundos a minutos. Los 'ultra-HFT' (PTC con volúmenes de submission varias veces mayores que bank AT) han desplazado a los manual traders del top del order book y se han convertido en market makers de facto sin asumir la responsabilidad de liquidez.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "liquidity risk"},
+        {"tipo": "APLICA_A", "objeto": "market making"}
+      ],
+      "cita_textual": "HFT in our days determine volatility rather than just affect it. And second, more important, the HFT firms, most notably the ultra-HFT firms, may withdraw from the market during price jumps."
+    },
+    {
+      "nombre": "liquidity risk",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de liquidez en FX multi-dealer: los HFT/ultra-HFT se retiran del mercado durante saltos de precio (especialmente en intervenciones de bancos centrales), actuando como market makers de facto sin obligación de proveer liquidez continua. El paper argumenta que esto es más preocupante que el riesgo de volatilidad.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "high-frequency trading"},
+        {"tipo": "SE_OPONE_A", "objeto": "liquidity provision"}
+      ],
+      "cita_textual": "HFT have become de-facto market makers in the multi-dealer FX platforms without bearing responsibility for the market liquidity. Thus, it is liquidity risk rather than volatility risk that should be the subject of our concern."
+    },
+    {
+      "nombre": "market making",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Propuesta de Market Maker Status (MMS) para plataformas FX: obliga a mantener órdenes en ambos lados con spread ≤ 50% del promedio histórico. Quienes no tienen MMS no pueden cotizar simultáneamente en ambos lados ni revertir dirección inmediatamente.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "liquidity provision"},
+        {"tipo": "MITIGA", "objeto": "liquidity risk"}
+      ],
+      "cita_textual": "Those traders that have MMS would be required to maintain orders on both sides of the market with the bid/offer spread that does not exceed say 50% of the historical average."
+    },
+    {
+      "nombre": "adverse selection",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Riesgo de selección adversa que se busca aumentar para traders sin MMS mediante las restricciones propuestas, desincentivando estrategias de market making sin compromiso de liquidez.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "market making"},
+        {"tipo": "MITIGA", "objeto": "liquidity risk"}
+      ],
+      "cita_textual": "These constraints are intended to increase adverse selection risk for traders that employ market making strategies but do not have MMS."
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Spreads en FX: el paper argumenta que los spreads en la era 'pre-AT' (early 2000s) eran prácticamente igual de buenos que en la actualidad, sugiriendo que la introducción de MMS no aumentaría significativamente los spreads.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market making"},
+        {"tipo": "MIDE", "objeto": "liquidity provision"}
+      ],
+      "cita_textual": "I don't think this should be a great concern: the FX spreads in the 'pre-AT' era (say in early 2000s) were practically as good as in our days."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Paper de propuesta de política sin datos empíricos. El concepto de Market Maker Status y las restricciones a HFT son relevantes para entender la dinámica de liquidez intradía, pero no ofrece herramientas cuantitativas."
+  }
+}

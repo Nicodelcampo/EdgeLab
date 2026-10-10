@@ -1,0 +1,95 @@
+{
+  "doc_id": 160,
+  "titulo": "High-Frequency ETF Pairs Trading",
+  "resumen_operativo": "El paper analiza la efectividad de modelar portafolios de pares de ETFs referenciados a índices similares (ej. SPY/VOO, USO/OIL) utilizando un proceso de Ornstein-Uhlenbeck. Empleando estimación de máxima verosimilitud (MLE) sobre datos intradiarios de 5 minutos, el autor estima parámetros para derivar señales de trading en ventanas temporales de 5 a 42 días. Evalúa dos enfoques: una estrategia 'closeout' (cerrar posiciones al final del día) y una 'non-closeout' (mantener overnight). Concluye que, aunque ventanas de optimización más cortas generan mayores retornos, conllevan riesgos por saltos de mercado, favoreciendo ventanas más amplias para estabilidad.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Ornstein-Uhlenbeck process",
+      "tipo": "modelo",
+      "definicion_en_contexto": "Modelo estocástico de reversión a la media utilizado para caracterizar el comportamiento del spread de precios en un portafolio de activos cointegrados.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "maximum likelihood estimation"}
+      ],
+      "cita_textual": "we construct a portfolio that displays mean-reversion properties with greater reliability... herein modeled as an Ornstein-Uhlenbeck (OU) process"
+    },
+    {
+      "nombre": "maximum likelihood estimation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica estadística implementada para estimar los parámetros óptimos (tasa de reversión y volatilidad) del modelo Ornstein-Uhlenbeck a partir de datos históricos del spread.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Ornstein-Uhlenbeck process"}
+      ],
+      "cita_textual": "estimate the parameters of the OU model using the maximum likelihood estimation procedure outlined by Leung and Li (2015)."
+    },
+    {
+      "nombre": "closeout strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Regla de trading intradiario donde todas las posiciones abiertas se liquidan al final de la jornada, independientemente del valor del portafolio, mitigando el gap risk overnight.",
+      "relaciones": [
+        {"tipo": "COMPARA_CON", "objeto": "non-closeout strategy"}
+      ],
+      "cita_textual": "trade during the day based on indicators, signals, and rules, but with the additional rule where we liquidate all positions at the end of the trading date regardless of portfolio value."
+    },
+    {
+      "nombre": "non-closeout strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Enfoque donde las posiciones se mantienen durante la noche y se operan exclusivamente basándose en los movimientos de precio y las señales de los indicadores.",
+      "relaciones": [
+        {"tipo": "COMPARA_CON", "objeto": "closeout strategy"}
+      ],
+      "cita_textual": "Hold positions over night and trade exclusively on the price movements and the interaction with indicators, signals, and rules process"
+    },
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Marco de operación basado en el valor relativo, aprovechando las ineficiencias de precios transitorias entre activos fuertemente acoplados.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "My strategy project will focus on statistical arbitrage trading via pairs-trading."
+    },
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Táctica de tomar posiciones largas y cortas simultáneamente en dos ETFs que siguen el mismo índice (o materia prima), presumiendo alta cointegración.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "cointegration"},
+        {"tipo": "PARTE_DE", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "taking positions in two cointegrated securities we can construct a portfolio that displays mean-reversion properties with greater reliability."
+    },
+    {
+      "nombre": "cointegration",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Propiedad asumida para pares de ETFs sobre un mismo subyacente que asegura que la serie temporal combinada (el portafolio long-short) sea estacionaria.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "mean-reversion"}
+      ],
+      "cita_textual": "assume that two ETFs that are designed to track the same index or commodity are highly cointegrated, and as such a long-short portfolio of them will create a stationary time series"
+    },
+    {
+      "nombre": "mean-reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Comportamiento empírico donde el valor del portafolio diferencial tiende a retornar a un promedio de largo plazo, lo que genera las oportunidades de trading.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Ornstein-Uhlenbeck process"}
+      ],
+      "cita_textual": "numerous instruments exhibit mean-reversion properties"
+    }
+  ],
+  "hallazgos": [
+    {
+      "descripcion": "Los resultados demuestran empíricamente que los portafolios basados en ETFs cointegrados muestran fuertes propiedades de reversión a la media, que pueden modelarse eficazmente con un proceso de Ornstein-Uhlenbeck.",
+      "cita_textual": "Our results have shown that the sample of ETF pairs-traded portfolios selected exhibit mean-reversion properties that are well modeled as an Ornstein-Uhlenbeck process."
+    },
+    {
+      "descripcion": "El uso de períodos de optimización y trading más cortos (ej. 5 días) genera mayores retornos globales pero aumenta sustancialmente la exposición a shocks del mercado, por lo que ventanas más amplias (ej. 42 días) brindan un perfil de riesgo más estable.",
+      "cita_textual": "while higher total trading returns were correlated with shorter optimization and trading periods, they also carried considerable risk and as such more stable results were found using longer optimization and trading windows."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El análisis se basa fundamentalmente en datos intradiarios (velas de 5 minutos) y examina una estrategia 'closeout' ideal para el day trading. Aunque se enfoca en ETFs líquidos en lugar de futuros, la metodología estadística basada en reversión a la media y los modelos Ornstein-Uhlenbeck se pueden aplicar directamente al arbitraje estadístico (por ej. ES vs NQ o spread operado intradía)."
+  }
+}

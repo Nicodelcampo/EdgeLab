@@ -1,0 +1,3949 @@
+POWER LAWS IN MARKET MICROSTRUCTURE
+UMUT C¸ET˙IN AND HENRI WAELBROECK
+Abstract. We develop an equilibrium model for market impact of trades when
+investors with private signals execute via a trading desk. Fat tails in the signal
+distribution lead to a power law for price impact, while the impact is logarithmic
+for lighter tails. Moreover, the tail distribution of the equilibrium trade volume
+obeys a power law.
+The spread decreases with the degree of noise trading and
+increases with the number of insiders. In case of a monopolistic insider, the last
+slice traded against the limit order book is priced at the fundamental value of the
+asset reminiscent of Kyle (1985). However, competition among insiders leads to
+aggressive trading, hence vanishing proﬁt in the limit. The model also predicts that
+the order book ﬂattens as the amount of noise trading increases converging to a
+model with proportional transactions costs with non-vanishing spread.
+1. Introduction
+Kyle (1985) studies in a simple but remarkably powerful framework a single risk
+neutral informed trader and a number of non-strategic uninformed liquidity traders
+submitting orders to a market maker, who aggregates all the orders and clear the
+market at a single price. Consequently, Kyle’s uniform auction model does not produce a bid-ask spread and predicts a linear price impact of trades.
+However, his
+model allows for an explicit characterization of equilibrium parameters - including
+the optimal strategy of the informed trader as well as the equilibrium pricing rule.
+This in turn allows us to analyze how the private information is disseminated to the
+market and gets incorporated into the prices over time. In particular, Kyle’s lambda
+yields an explicit measurement of market’s liquidity and the extent of linear price
+impact.
+On the other hand, empirical data provides some clues as to the shape and scale of
+market impact. There is a strong consensus among the practitioners that the impact
+is a concave function of trade size (see Torre (1997)). But biases in the data, a low
+signal-to-noise ratio and other issues hinder a precise determination of the functional
+form of market impact, particularly for large trades where data is sparse. Impact
+functions used in practice range from square root to logarithm (e.g. Torre (1997),
+Potters and Bouchaud (2003), Gabaix et al. (2003), Almgren et al. (2005), Bershova
+Department of Statistics, London School of Economics and Political Science, 10
+Houghton St., London, WC2A 2AE
+Baruch College, CUNY, NY, USA and AlgoCortex LLC
+E-mail addresses: u.cetin@lse.ac.uk, H.Waelbroeck@algocortex.com.
+Date: February 24, 2022.
+1
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+2
+POWER LAWS IN MARKET MICROSTRUCTURE
+and Rakhlin (2013), and Zarinelli et al. (2015)). We contribute to this debate using
+a rational expectations approach.
+Understanding the exact shape of the price impact is of utmost importance for
+optimal trade execution.
+Portfolio managers endeavor to ﬁnd mispriced assets in
+order to beat their benchmarks. When they decide to change their holdings to take
+advantage of a mispricing, they create orders in an order management system and
+the trading desk routes these orders to broker-dealers for execution. However, this
+new order causes prices to move to a diﬀerent level due to the price impact of the
+trade. The value lost by not being able to execute at the decision price is called
+implementation shortfall (see Perold (1988)) and understanding how this shortfall
+scales with trade size is essential to optimize the investment management process. A
+market impact model is needed in order to maximize net trading proﬁts, optimize
+position sizes, limit liquidity risk and estimate a portfolio’s capacity.
+Various models yield similar results for small trade sizes but they yield very diﬀerent
+predictions for the impact of large trades. This is unfortunate since the large trades
+typically dominate the aggregate implementation shortfall for most portfolios. Indeed,
+Chakravarty (2001) ﬁnds that large trades (above 10,000 shares) from institutional
+traders account for approximately 48% of the aggregate volume and the moderate
+trades (500-9,999 shares) by institutions make up 38% of the trading volume. Yet,
+large trades are fewer in number, their implementation shortfall most exposed to
+market noise, and their size most subject to selection bias: a manager may execute
+a large trade because she can. This makes empirical testing diﬃcult. The absence of
+a consensus on the shape of market impact for large trades motivates the search for
+a theoretical framework that would capture the essential features of trading and yet
+be suﬃciently parsimonious to be testable.
+To address these issues we propose a market microstructure model for the price
+impact that shares features from Kyle (1985) and Glosten (1994).
+The liquidity
+suppliers in our model face adverse selection due to the existence of informed traders
+(henceforth called insiders).
+Diﬀerent from Kyle (1985), but consistent with the
+modern practice, they move ﬁrst by posting limit orders as in Glosten (1994). We
+assume following Glosten (1994) that the resulting oﬀer curve is competitive so that
+the limit prices are given by ‘tail expectations.’ That the marginal cost of a trade
+depends on the trade size leads to discriminatory pricing.
+Our assumption that the limit prices are competitive requires a justiﬁcation in view
+of the results of Biais et al. (2000) and Back and Baruch (2013). First of all, the
+competitive oﬀer curve should be viewed as a limit when the number of liquidity
+suppliers increases to inﬁnity. However, as shown in an example by Back and Baruch
+(2013), the competitive book is not always obtained as a limit of Nash equilibria
+among ﬁnitely many liquidity providers if the level of adverse selection faced by the
+limit order traders is not high enough. In our model there is always suﬃcient adverse
+selection since we assume that the noise demand for the asset is normally distributed
+as in Kyle (1985).
+We show that whether the market impact follows a power law or a logarithmic law
+depends on the distribution of the fundamental value, which is the private signal of
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+3
+the insiders. The price impact, and equivalently the implementation shortfall, has a
+power law if the market believes that the fundamental value has fat tails while lighter
+tails are responsible for a logarithmic behavior.
+Our model makes sharp predictions on the shape and magnitude of market impact
+based on the asset’s return distribution. The asset’s conditional return distribution
+is predicted by options market participants who encode their views in the options
+montage. The shape of this distribution is sensitive to the event calendar: for instance, an anticipated regulatory announcement to approve a new drug would lead
+to expectations of a binary jump in the stock price, and very likely a bimodal returns
+distribution. Thus, our predictions can be tested in practice by an asset manager
+who labels her trades by the decision type (earnings, analyst, rebalance...), records
+the options montage ahead of each trade and gives non-discretionary instructions to
+their trading desk to ﬁll the entire order.
+Our framework also allows us to compute the tails of the probability distribution
+associated with the aggregate volume. For a large class of distributions that can be
+used to model the liquidation value we demonstrate that the tail of the trade size
+obeys a power law.
+The power-law behavior of order sizes has been documented previously in various
+contexts: Gopikrishnan et al. (2000) showed that the market volume in a time interval
+∆t has a power-law tail with exponent 1.7; Lillo et al. (2005) consider oﬀ-book trades
+and ﬁnd an exponent ranging from 1.59 to 1.74; Gabaix et al. (2006) estimated
+the exponent to be in the neighbourhood of 1.5; Vaglica et al. (2008) reconstructed
+metaorders in Spanish stock exchange using data with brokerage codes and found
+that the metaorder transaction size distribution has a power-law tail with exponent
+1.7. And in a study performed directly on institutional trade data from Alliance
+Bernstein, Bershova and Rakhlin (2013) found a tail exponent 1.56 for metaorder
+sizes.
+One of the most striking features of our model is its tractability while allowing
+general distributions for the fundamental value.
+We characterize the equilibrium
+strategy of insiders and the corresponding market impact of trades as a solution of
+an integral equation. While an analytic solution to this equation can be found only
+in few examples, its numerical implementation is straightforward and fast.
+Although the exact form of the market impact can only be solved numerically, we
+are nevertheless able to obtain the exact analytic asymptotics when the order size is
+large. Moreover, due to the scaling property of the noise demand, these asymptotics
+still provide a good approximation for small orders if the variance of the noise demand
+is relatively small. The error in such an approximation appears to be still low even in
+the case of higher variance as conﬁrmed visually by our numerical studies and should
+provide a good benchmark for empirical works.
+Due to the discriminatory pricing by the liquidity suppliers, our model produces a
+non-zero bid-ask spread in equilibrium. We ﬁnd that the minimal bid-ask spread for
+an inﬁnitesimal trade is the same regardless of the variance of the noise trades. The
+shape of the order book, however, is not invariant to the changes in this variance; on
+the contrary, the order book ﬂattens as it increases as the liquidity suppliers do not
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+4
+POWER LAWS IN MARKET MICROSTRUCTURE
+need to extract signiﬁcantly higher rents for larger trades if the information content of
+the order is small. In particular, the spread associated with a non-inﬁnitesimal trade
+size decreases with the amount of noise trading consistent with the experimental
+ﬁndings of Bloomﬁeld et al. (2009). In the limit the equilibrium converges to one
+where the transaction cost is proportional to the trade size.
+Our proof of the existence of equilibrium assumes that the fundamental value of the
+asset is bounded. However, our numerical experiments suggest that equilibrium exists
+for a large class of unbounded distributions commonly found in the literature and used
+in practice. Moreover, the asymptotics for these solutions agree with the analytical
+forms that our theory predicts. Yet, unlike the bounded case, an equilibrium may
+not exist for all unbounded distributions. Given the premise of numerical results
+and our formal calculations we conjecture that existence of equilibrium requires a
+suﬃcient amount of competition among insiders if the signal distribution exhibit fat
+tails. This is intuitive given the fact that the liquidity suppliers post limit prices using
+tail expectations in equilibrium. Since the noise demand is Gaussian, the large orders
+are more likely to be informed and the tail risk in the total demand is completely
+determined by the signal distribution as the insiders’ aggregate demand is a monotone
+function of the fundamental value.
+Therefore, fat tails in the signal distribution
+increases the liquidity suppliers’ need for compensation. Moreover, sizable fat tails
+are typically associated with excessive variance. Our model predicts that such risks
+arising from the signal distribution cause the market to break down unless the risk is
+reduced to a manageable level by strong enough competition among informed traders.
+Even though we model the interactions in a single period model, our framework also
+has the ﬂavor of a continuous-time Kyle model considered by Back (1992). Indeed, in
+case of a monopolistic insider, we show that conditional on V = v the last inﬁnitesimal
+slice of the aggregate order traded by the desk against the order book is priced at
+v on average, reminiscing the convergence of the equilibrium price to the liquidation
+value by the end of the trading horizon in the continuous-time Kyle model. Thus, all
+private information gets incorporated into market prices once the last slice has been
+traded.
+The above ‘convergence’ result motivates the analysis of the case of multiple insiders. In the same vein as Holden and Subrahmanyam (1992), we also model and
+solve the imperfect competition among N ≥2 insiders who observe the liquidation
+value V perfectly. As in Holden and Subrahmanyam (1992) this competition leads
+to more aggressive trading. When the signal distribution is continuous, we ﬁnd that
+(conditional on V = v) the average price for the last slice traded by the desk exceeds
+v if the insiders are buying in equilibrium, which can be attributed to more aggressive
+buying due to competition. An analogous observation holds when the optimal strategy in equilibrium is to sell. We obtain an explicit formula for the aggregate proﬁt of
+the insiders that shows that it converges to 0 in the limit as the number of insiders
+increases.
+This article is related to the ‘econophysics’ literature that uses the concepts of
+physics to study economic issues. Gabaix et al. (2006) argue that “[econophysics] is
+similar in spirit to behavioral economics in that it postulates simple plausible rules
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+5
+of agent behavior,. . . ” and develop a theory of large institutional trades by assuming
+that the liquidity providers’ preferences exhibit ﬁrst order risk aversion justiﬁed by
+prospect theory and institutional practices. While we share the same motivation of
+explaining the power laws observed in the data for price impact and trade size as
+Gabaix et al., we instead follow a rational expectations approach to establish these
+laws. Thus, our model can be interpreted as a merger between econophysics and the
+market microstructure theory.
+Our article also relates to the literature on limit order markets. The case of liquidity suppliers moving ﬁrst and submitting limit orders to be later hit by potentially
+informed market order was ﬁrst studied by Rock (1989) and Glosten (1994). Glosten
+(1994) is more concerned on the equilibrium among the liquidity suppliers for a given
+market order and there is no general existence result for an equilibrium that incorporates the optimal strategies of both the limit order traders as well as the strategic
+trader submitting the market order with the exception of a special case given in an
+example. Moreover, studies of Biais et al. (1995) and Sand˚as (2001) on the limit
+order book and the order ﬂow in Paris Bourse and Stockholm Stock Exchange found
+evidence that contradicts the predictions of Glosten (1994). Sand˚as also stressed the
+need for a richer theoretical model to replicate the empirical observations. More recent works on limit order markets are mainly set in continuous time and a short list
+would include Parlour (1998), Foucault et al. (2005), Ro¸su (2009), and Goettler et al.
+(2005). However, the sheer complexity of equilibrium in continuous time required
+these works imposing very restrictive assumptions to have a tractable model such as
+traders being able to trade only once (essentially making it a collection of one period models) or only for one unit of the asset. We, on the other hand, establish the
+existence of equilibrium for general distributions and without any restriction on the
+trading strategy of the strategic traders, and characterize it via an integral equation
+that possesses an easy numerical solution.
+Structure of the paper is as follows: We present the trading model and the ﬁrst
+implications of equilibrium in the next section. In Section 3, we demonstrate the existence of an equilibrium under mild assumptions. Section 4 considers the asymptotic
+behavior of market impact and the distribution of trade volume in equilibrium. Further properties of equilibrium along with some comparative statics are given in Section
+5. Numerical solutions are provided in Section 6. Moreover, Section 7 explores an
+alternative same-price allocation model numerically and compares the results with
+those of the trading desk model.
+Section 8 contains the concluding remarks and
+directions for future study. All proofs are are delegated to the Appendix.
+2. The market structure and equilibrium
+Our model is built upon Glosten (1994) and the trading takes place in one-period.
+All random variables in this section are assumed to be deﬁned on a complete probability space (Ω, F, P) and E is the expectation operator associated to P. There are
+four types of agents interacting in this market:
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+6
+POWER LAWS IN MARKET MICROSTRUCTURE
+(1) Competitive (inﬁnitely many) liquidity suppliers move ﬁrst and place limit orders
+that give rise to an order book. The resulting limit order book is identiﬁed by
+some non-decreasing function h : R →R and, therefore, a market order of size x
+traded against the order book incurs the cost of
+Z x
+0
+h(y)dy.
+In other words, h(y) corresponds to marginal price of the y-th share.
+(2) A trading desk, which acts as a broker for its clients, does not trade for its own
+account, but only gathers and executes orders for its clients. At the beginning of
+the day, the desk does not have any orders. Any arriving order of size y is priced
+at
+Z y
+0
+h(Y + x)dx,
+(2.1)
+where Y is the accumulated number of shares from prior orders. The desk does
+not publish Y and, thus, its clients do not observe Y prior to submitting their
+orders. However, they are aware of the form of the pricing rule given by (2.1).
+(3) Noise traders whose cumulative demand for the traded asset is given by a random
+variable Z ∼N(0, σ2) are non-strategic.
+(4) N ≥1 risk neutral insider(s), who know(s) the liquidation value V of the asset
+and chooses a trade size X to maximize their expected proﬁt conditional on their
+private information. N is assumed to be deterministic, and therefore, known to
+the market participants.
+We assume that noise traders as well as insiders are the clients of the desk. The
+desk aggregates all orders and trades Z + X with the liquidity suppliers. Moreover,
+noise trades are assumed to arrive to the desk prior to the informed order(s).
+Let us ﬁrst consider the case N = 1. Since the accumulated number of shares
+from prior orders equals Z when the insider’s order arrives at the desk, the insider is
+charged
+Z X
+0
+h(Z + y)dy
+(2.2)
+for an order of X units. Observe that the insider will always prefer buying via the
+desk to buying from the order book since she will get a better price from the desk
+in case the noise traders are selling. Noise traders, on the other hand, are indiﬀerent
+between two trading venues under our assumption that they arrive slightly earlier to
+the market than the informed trader.
+The cost given by (2.1) can be justiﬁed by Bertrand competition for orders from a
+strategic trader (informed or uninformed) among brokerage ﬁrms each of which has
+already received noise orders of size Yi. We assume the strategic trader does not split
+her trades among diﬀerent brokers consistent with the market practice. Note that
+one does not have to assume that Yis are the same, but the pairs (Yi, V ) have the
+same distribution over the ﬁrms.
+It is worth mentioning here that the cost structure (2.2) can be perceived violating
+the limit order protection rule that is mandated by the SEC in the US when the noise
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+7
+and informed orders are of opposite sign. On the other hand, since the cost of trade
+is a volume weighted average that was agreed prior to the trade taking place, the
+trading desk can apply for a benchmark exception in Rule 611(b)(7)1.
+Another, and more common, approach in industry to ensure compliance with Rule
+611 is to charge all orders the same average price.
+That is, the insider’s cost of
+trading X units via the trading desk equals
+X
+X+Z
+R X+Z
+0
+h(y)dy, while the noise trades
+are priced at
+Z
+X+Z
+R X+Z
+0
+h(y)dy. However, such a cost structure makes the model
+analytically intractable. Nevertheless we analyze this model numerically in Section
+7 and ﬁnd that it shares the same qualitative features and same asymptotic price
+impacts with the equilibrium arising from the cost structure of (2.2).
+2.1. Optimal strategies for the informed. Let us next consider the optimization
+problem for the insider facing (2.2) as her trading cost. Note that the expected proﬁt
+of the insider from a market order of size x is, therefore, given by
+Ev
+
+V x −
+Z x
+0
+h(Z + y)dy
+
+,
+where Ev is the expectation operator for the insider with the private information
+V = v. Since h is assumed nondecreasing, the ﬁrst order condition characterizes the
+unique X∗achieving the maximum expected proﬁt via V = F(X∗), where
+F(x) :=
+Z ∞
+−∞
+h(x + z)q(σ, z)dz
+(2.3)
+and q(σ, ·) is the probability density function of a mean-zero Gaussian random variable
+with variance σ2. Note that since h∗is non-decreasing and not constant, F is strictly
+increasing and one-to-one. Thus, X∗= F −1(V ).
+As in the Kyle model, existence of noise traders makes equilibrium a possibility.
+Indeed, in the absence of noise trading, i.e.
+σ = 0, the insider would reveal her
+private information by choosing X∗= h−1(V ) since F coincides with h, and thus the
+No-trade Theorem would hold.
+We shall also consider the case of multiple insiders trading via the same desk and
+knowing the value of V . We assume that informed orders arrive simultaneously and
+the desk charges each insider an amount proportional to their order size. Therefore,
+the expected proﬁt of an individual insider placing an order of size x is given by
+Ev
+
+V x −
+x
+U + x
+Z U+x
+0
+h(Z + y)dy
+
+,
+where U denotes the aggregate demand of the other insiders.
+The ﬁrst order condition associated with the above optimization problem of an
+individual insider is again given by
+V = Ev
+
+x
+U + xh(Z + U + x) +
+U
+((U + x)2
+Z U+x
+0
+h(Z + u)du
+
+.
+1See Question 3.08 in https://www.sec.gov/divisions/marketreg/nmsfaq610-11.htm#sec3.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+8
+POWER LAWS IN MARKET MICROSTRUCTURE
+As every insider has symmetric information and is risk-neutral, the equilibrium demand x∗for each insider must be the same and satisfy
+V = Ev
+h(Z + Nx∗)
+N
++ N −1
+N 2x∗
+Z Nx∗
+0
+h(Z + u)du
+
+.
+Denoting the total informed demand by X∗, the above can be rewritten as V =
+F(X∗), where
+F(x) := Ev
+h(Z + x)
+N
++ N −1
+Nx
+Z x
+0
+h(Z + u)du
+
+,
+(2.4)
+and F(0) is interpreted by continuity to be Ev[h(Z)].
+Note that the marginal cost function F always satisﬁes F(x) ≤Ev[h(Z + x) for
+x > 0 since the marginal price h is increasing. Recall that Ev[h(Z +x) is the marginal
+cost of buying x units for a monopolist insider. Thus, the expression of the marginal
+cost via (2.4) can be viewed as a weighted combination of the marginal cost for the
+monopolist and the average cost of buying x units. The weight placed on the average
+cost vanishes in case of monopolist and is increasing to 1 as the number of insiders
+increases.
+Moreover, it follows from the monotonicity of h that F deﬁned via (2.4) is strictly
+increasing. Also note that (2.4) reduces to (2.3) when N = 1. Thus, we shall always
+refer to (2.4) when discussing the optimal strategies of the insiders regardless of the
+value of N.
+2.2. Equilibrium and ﬁrst properties. In what follows the total informed demand
+will be denoted by X and we assume following Glosten (1994) that limit prices are
+given by ‘tail expectations.’ That is, denoting the total demand X + Z by Y ,
+h(y) =
+
+E[V |Y ≥y],
+if y > 0;
+E[V |Y ≤y],
+if y < 0.
+(2.5)
+The value h(0) is not relevant for the subsequent computations and can be freely
+chosen to be any value between the best ask h(0+) := limy↓0 h(y) and the best bid
+h(0−) := limy↑0 h(y).
+The deﬁnition (2.5) entails that liquidity suppliers earn zero aggregate proﬁt on
+average. Indeed, the expected proﬁt is given by
+E
+Z Y
+0
+(h(y) −V )dy
+
+=
+Z ∞
+0
+E[(h(y) −V )1[Y ≥y]]dy +
+Z 0
+−∞
+E[(V −h(y))1[Y ≤y]]dy = 0,
+where the last equality is due to the deﬁnition of the conditional expectation.
+Deﬁnition 2.1. The pair (h∗, X∗) is an equilibrium if h∗is non-decreasing and nonconstant, X∗∈R and
+i) h∗satisﬁes (2.5) with Y = X∗+ Z;
+ii) X∗is the proﬁt maximising order size for the insider(s) given h∗. That is, V =
+F(X∗), where F is given by (2.4).
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+9
+The strict monotonicity of F leads to the following result that in particular yields
+an explicit formula for the aggregate proﬁt of the insiders.
+Proposition 2.1. Let (X∗, h) be an equilibrium and F deﬁned by (2.4).
+(1) For any x ∈R we have
+Ev[h(x + Z)]
+=
+F(x) + N(N −1)
+xN
+Z x
+0
+(F(x) −F(y))yN−1dy
+=
+F(x) + N(N −1)
+Z 1
+0
+(F(x) −F(xy))yN−1dy.
+(2.6)
+(2) Ev[h(X∗+ Z)] = v when N = 1 and, in general
+Ev[h(X∗+ Z)] = v + (N −1)
+Z 1
+0
+(v −F(y
+1
+N F −1(v)))dy.
+(2.7)
+Thus, Ev[h(X∗+ Z)] > v (resp. Ev[h(X∗+ Z)] < v) if F −1(v) ∈(0, ∞) (resp.
+F −1(v) ∈(−∞, 0)).
+(3) The aggregate expected proﬁt of the insiders conditional on V = v is given by
+π∗(v)
+:=
+Ev
+Z X∗
+0
+(v −h(y + Z))dy
+
+= N
+Z F −1(v)
+0
+(v −F(y))
+
+y
+F −1(v)
+N−1
+dy
+=
+F −1(v)
+Z 1
+0
+(v −F(y
+1
+N F −1(v)))dy,
+(2.8)
+with the second and third equalities being valid if F −1(v) is ﬁnite.
+(4) The expected loss of noise traders is given by
+Z ∞
+0
+h(y) −h(−y)
+2
+P(|Z| ≥y)dy.
+(2.9)
+Moreover, if the aggregate mid-spread function S deﬁned as S(x) :=
+R x
+0
+h(y)−h(−y)
+2
+dy
+satisﬁes limx→∞S(x)P(Z ≥x) = 0, then the above loss equals
+Z ∞
+0
+S(y)P(|Z| ∈dy) = E[S(|Z|)].
+(2.10)
+Since the liquidity suppliers earn zero proﬁt on average, (2.10) implies that the exante proﬁt of insiders is given by E[S(|Z|)]. Thus, the larger the spread, the bigger
+is the insiders’ proﬁt. Moreover, since S is concave and increasing, this proﬁt (or the
+loss of the noise traders) is bounded by S(E[|Z|]) = S(σ
+q
+2
+π) ≤S(σ). This upper
+bound corresponds to the aggregate spread at the expected noise volume.
+The expression (2.7) reveals an interesting feature of our model akin to Kyle’s model
+in continuous time. Observe that h(X∗+ Z) can be viewed as the last slice that is
+traded with the limit order traders. Thus, when there is a monopolistic insider, (2.7)
+shows that the ﬁnal slice is priced at the actual value of V similar to the convergence
+of the equilibrium price to the liquidation value of the asset in the continuous time
+version of the Kyle model studied in Back (1992) for general payoﬀs.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+10
+POWER LAWS IN MARKET MICROSTRUCTURE
+This ‘convergence’ may disappear when the liquidation value of the asset is observed
+by more than one insider as in Holden and Subrahmanyam (1992). If the distribution
+of the fundamental value does not possess any atoms, the optimal strategy of the
+insiders will be ﬁnite for any realization v of V .
+In this case Ev[h(X∗+ Z)] >
+v when the optimal strategy is buy. The intuition, as observed earlier by Holden
+and Subrahmanyam, behind this overvaluation is that competition leads to more
+aggressive trading and results in higher market valuation.
+On the other hand, such convergence may still hold if the asset value distribution
+has atoms. Suppose that V takes values in (m, M] where M is ﬁnite and P(V = M) >
+0. The optimal strategy of insiders observing V = M is to consume all sell orders
+since the price of any inﬁnitesimal share traded with the liquidity suppliers will be
+strictly smaller than M as a consequence of the strict monotonicity of the order book
+and the unbounded adverse selection due to the normally distributed noise demand.
+This holds irrespective of the number of insiders, even in the case of monopolistic
+insider (see Examples 3.1 and 3.2). This in turn implies the integral in (2.7) vanishes
+since F −1(v) = ∞when v = M and the convergence holds independently of the
+number of insiders. In this scenario the competition does not alter the ﬁnal valuation
+since even a monopolistic insider trades rather aggressively to take advantage of the
+diﬀerence between her private valuation and the price given by her broker.
+In practice an important trading benchmark for traders is the implementation shortfall. Perold (1988) deﬁnes it as the diﬀerence between a ‘paper trading’ benchmark
+and the actual trading costs. Assuming that the benchmark is given by the ex-ante
+valuation E[V ], the associated shortfall in our context can be deﬁned as follows:
+Deﬁnition 2.2. The implementation shortfall associated with trading x units is given
+by
+IS(x) := 1
+x
+Z x
+0
+E[h(Z + y)]dy.
+Observe that IS(x) is simply the expected average cost of trading x units. As the
+following result shows, it is smaller than the marginal cost F(x), which is given by
+the ﬁrst order condition (2.4).
+Proposition 2.2. Let h be a function that deﬁnes the order book and F(x) be given
+by the ﬁrst order condition (2.4). Then,
+IS(x) = N
+Z 1
+0
+F(xy)yN−1dy.
+In particular, IS(x) < F(x) for x > 0 and IS(x) > F(x) for x < 0.
+3. Characterization of equilibrium
+The aim of this section is to identify the integral equations whose solutions determine an equilibrium (X∗, h∗). Writing h instead of h∗to ease the exposition and
+using the deﬁnition of h when y > 0, we get
+h(y) = E[V |X∗+ Z ≥y] = E[V |F −1(V ) ≥y −Z] = E[V |V ≥F(y −Z)].
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+11
+Similarly, h(y) = E[V |V ≤F(y −Z)] for y < 0.
+Next introduce the right-continuous functions Φ± and Π± via
+Φ+(y)
+:=
+E[V 1[V >y]], Π+(y) := P(V > y)
+Φ−(y)
+:=
+E[V 1[V ≤y]], Π−(y) := P(V ≤y) = 1 −Π+(y).
+Note that Φ+(y−) = E[V 1[V ≥y]] and Π+(y−) = P(V ≥y) are the unnormalized
+upper tail expectation and the upper tail probability, respectively.
+Now let us compute h(y) for y > 0 using the fact that Φ+(x) = Φ+(x−) for almost
+all x:
+h(y) =
+E[V 1[V ≥F(y−Z)]]
+P(V ≥F(y −Z)) =
+R ∞
+−∞Φ+(F(y −z))q(σ, z)dz
+R ∞
+−∞Π+(F(y −z))q(σ, z)dz.
+(3.11)
+Similarly, for y < 0
+h(y) =
+R ∞
+−∞Φ−(F(y −z))q(σ, z)dz
+R ∞
+−∞Π−(F(y −z))q(σ, z)dz.
+(3.12)
+In order to obtain an equation for F it will be convenient to deﬁne, for any continuous
+g, the mappings
+φ+
+g (x) :=
+R ∞
+−∞Φ+(g(z))q(σ, x −z)dz
+R ∞
+−∞Π+(g(z))q(σ, x −z)dz and φ−
+g (x) :=
+R ∞
+−∞Φ−(g(z)q(σ, x −z)dz
+R ∞
+−∞Π−(g(z))q(σ, x −z)dz.
+Let us also set
+φg(x) := φ+
+g (x)1x≥0 + φ−
+g (x)1x<0.
+(3.13)
+Now, combining (2.4), (3.11) and (3.12) yields an equation for F:
+F(x) = 1
+N
+Z ∞
+−∞
+q(σ, x −z)φF(z)dz + N −1
+Nx
+Z x
+0
+dy
+Z ∞
+−∞
+q(σ, y −z)φF(z)dz,
+(3.14)
+Assuming one can change the order of integration in above2, then (3.14) can be
+rewritten as
+F(x) =
+Z ∞
+−∞
+ 1
+N q(σ, x −z) + N −1
+N
+¯q(σ, x, z)
+
+φF(z)dz,
+(3.15)
+with
+¯q(σ, x, z) := 1x̸=0
+1
+x
+Z x
+0
+q(σ, y −z)dy + 1x=0q(σ, z).
+(3.16)
+The preceding calculations show that the existence of a solution for the above integral
+equation is a necessary condition for equilibrium. We in fact have the converse, too.
+Theorem 3.1. Equilibrium exists if and only if there exists a function F : R →R
+that satisﬁes (3.14). Given such a solution F, (X∗, h∗) constitutes an equilibrium,
+where X∗= F −1(V ) and h∗is deﬁned via (3.11) and (3.12).
+2We shall see later that this is justiﬁed when V is bounded from below
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+12
+POWER LAWS IN MARKET MICROSTRUCTURE
+In view of the above theorem ﬁnding an equilibrium boils down to ﬁnding a solution
+of (3.14).
+Moreover, equilibrium will be uniquely deﬁned if there exists a unique
+solution of (3.14). As usual, solutions of (3.14) will be identiﬁed as ﬁxed-points of a
+mapping.
+Before analyzing in depth this ﬁxed-point problem, we shall ﬁrst consider some
+settings in which equilibrium is explicitly solvable. Note that since h is increasing its
+right and left limits exist. In particular h(0+) is the lowest ask price and h(0−) is the
+highest ask price. Thus, the bid-ask spread is given by h(0+) −h(0−) in equilibrium.
+Example 3.1. Suppose that P(V = 1) = P(V = −1) =
+1
+2.
+Then, the unique
+symmetric solution of (3.14) is deﬁned by
+F(x) = 1
+N
+Z ∞
+0
+q0(σ, x, z)dz + N −1
+Nx
+Z x
+0
+dy
+Z ∞
+0
+dzq0(σ, y, z),
+x ≥0,
+where q0(σ, y, z) := q(σ, y −z) −q(σ, y + z). In this case it is easily seen that in
+equilibrium X∗= ∞(resp.
+X∗= −∞) if V = 1 (resp.
+V = −1).
+Moreover,
+h∗(y) = 1[y>0] −1[y<0].
+Although the insiders’ optimal market order is to buy or sell an inﬁnite amount
+cumulatively, their proﬁt remains ﬁnite. Indeed, when V = 1, the aggregate expected
+proﬁt is given by
+Z ∞
+0
+E1(1 −h(Z + y))dy = 2E1
+Z ∞
+0
+1[Z<−y]dy
+
+= σ
+r
+2
+π.
+Note that the total proﬁt is independent of N.
+Example 3.2. Consider the case P(V = −1) = P(V = 0) = P(V = 1) = 1
+3. Then,
+similar considerations as above should yield F(∞) = 1 and F(−∞) = −1. Moreover,
+symmetry considerations lead to F(0) = 0, which suggests that the insider does not
+trade when V = 0. Indeed, the unique solution of (3.14) is given by
+F(x)
+=
+1
+N
+Z ∞
+0
+q0(σ, x, z)
+1
+1 + P(Z ≥z)dz + N −1
+Nx
+Z x
+0
+dy
+Z ∞
+0
+dzq0(σ, y, z)
+1
+1 + P(Z ≥z).
+Diﬀerently from Example 3.1, the order book will not be ﬂat since the insider does not
+trade when V = 0. One can obtain h∗via (3.12) and (3.11). Alternatively, for y > 0
+h(y)
+=
+E[V 1[X∗(V )+Z≥y]]
+P(X∗(V ) + Z ≥y) =
+P(V = 1)
+P(V = 1) + P(V = 0, Z ≥y)
+=
+P(V = 1)
+P(V = 1) + P(V = 0)P(Z ≥y) =
+1
+1 + P(Z ≥y),
+where the ﬁrst equality follows from the fact that X∗(V ) is inﬁnite when V = −1 or
+1. Similarly, for y < 0, h(y) = −
+1
+1+P(Z≤y). In particular, the bid-ask spread is given
+by h(0+) −h(0−) = 4
+3, and is again independent of the noise volume and of N.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+13
+3.1. Existence of equilibrium. We shall denote the interior of the support of the
+random variable V by (m, M), where −∞≤m < M ≤∞, and deﬁne on the support
+of V
+Ψ±(y) := Φ±(y)
+Π±(y)
+(3.17)
+so that Ψ+(y) = E[V |V > y] and Ψ−(y) = E[V |V ≤y].
+We impose the following condition on the function F to ensure that the integral
+equation (3.14) is well-deﬁned and changing the order of integration in (3.15) is justiﬁed.
+Assumption 3.1.
+Z 0
+−∞
+φ−
+F(z)q(σ, z)dz > −∞.
+Observe that the above is automatically satisﬁed if V is bounded from below in
+view of (B.34) in the Appendix. Moreover, if F is a continuous function satisfying
+(3.14) and V is symmetric, it satisﬁes the above assumption, too.
+One of the useful consequences of the above assumption is that the marginal tradings costs are strictly increasing.
+Lemma 3.1. Let F be a continuous non-decreasing solution of (3.14) or (5.23) satisfying Assumption 3.1. Then, limx→∞F(x) = M and limx→−∞F(x) = m. Consequently, F is strictly increasing.
+This gives rise to the following suﬃcient condition for equilibrium. Note that since
+V is bounded under the hypothesis of the theorem, Assumption 3.1 is satisﬁed.
+Theorem 3.2. Suppose −∞< m < M < ∞. Then, there exists an equilibrium.
+4. Market impact asymptotics
+The shape of market impact as a function of trade size is important to practitioners
+to address capacity and position sizing. Various functional forms have been explored
+in the literature (see, e.g., Bershova and Rakhlin (2013), Gabaix et al. (2006), Potters
+and Bouchaud (2003) and Torre (1997)), including
+√
+X and log(1 + aX). Rejecting
+either of these forms empirically is challenging due to three practical diﬃculties: (1)
+the spread and market impact terms are collinear for small orders, (2) signal-to-noise
+ratios are weak for executions that take a small percentage of market volume, and
+(3) for very large trades, order sizes are often increased if liquidity is available, or
+reduced if liquidity is hard to ﬁnd, leading to bias in the data. In absence of clear
+empirical evidence, theoretical predictions for the shape of market impact provide
+valuable insight into how trading costs scale with trade size.
+Motivated by this need, we draw our attention in this section to the market impact
+associated with large orders. More precisely, we will be computing the asymptotics
+of the marginal cost of trades, which is given by the function F. As we shall see
+later, the asymptotic form of F will coincide (up to a scaling factor) with that of the
+implementation shortfall IS. We will also be able to compute the tail asymptotics
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+14
+POWER LAWS IN MARKET MICROSTRUCTURE
+of the distribution of the total demand in equilibrium using the theory of regular
+variation.
+Deﬁnition 4.1. A function g : (0, ∞) →(0, ∞) is said to be regularly varying of
+index ρ at ∞if
+lim
+λ→∞
+g(λx)
+g(λ) = xρ,
+∀x > 0.
+Analogously, a function g : (−∞, 0) →(0, ∞) is said to be regularly varying of index
+ρ at −∞if g(−x) is regularly varying of index ρ at ∞.
+Roughly speaking, a function of regular variation behaves like a power function
+asymptotically. We shall obtain our asymptotic results under a mild condition on the
+distribution of V .
+Assumption 4.1. Π+ has a continuous derivative on (m, M). Moreover, Ψ+
+x (M) :=
+limx→M
+d
+dxΨ+(x) and Ψ−
+x (m) := limx→m
+d
+dxΨ−(x) exist and equal the left and right
+derivatives, respectively, at ﬁnite end points. Moreover, Ψ+
+x (M)Ψ−
+x (m)̸ = 03.
+Observe that when M is ﬁnite and the left derivative of Ψ+ at M exists,
+Ψ+
+x (M) = lim
+x→M
+M −Ψ+(x)
+M −x
+≤lim
+x→M
+M −x
+M −x = 1.
+Similarly, Ψ−
+x (m) ≤1 if m is ﬁnite under an analogous condition.
+In this section we will mainly focus on the asymptotics of F and IS. However, it
+is easy to see from (2.4) that F and h behave similarly for large values. For a more
+rigorous demonstration, suppose M −F is regularly varying at ∞with exponent ρ+.
+Recalling the measure ν deﬁned in (C.49), we formally obtain
+lim
+x→∞
+M −h(x)
+M −F(x) = lim
+x→∞
+Z ∞
+−∞
+ν(x, 1, dy)M −Ψ+(F(xy))
+M −F(x)
+= Ψ+
+x (M)1ρ+ = Ψ+
+x (M),
+(4.18)
+using the mean value theorem and the continuity of the derivative of Ψ+ together with
+the fact that the F is regularly varying with index ρ+ since the measure ν(x, 1, dy)
+converges to the point mass at 1 as x →∞. This shows that marginal price is also
+regularly varying with the same index ρ+.
+The next result is the ﬁrst description of the asymptotics of solutions of (3.14).
+Theorem 4.1. Assume Assumption 4.1, N > 1 and −∞< m < M < ∞. Let F be
+any solution of (3.14). Then, the following statements are valid:
+(1) M −F is regularly varying of index ρ+ at ∞, with ρ+ = Ψ+
+x (M)−1
+1−Ψ+
+x (M)
+N
+.
+3This last condition is automatically satisﬁed if M = ∞and m = −∞.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+15
+Moreover, if Ψ+
+x (M) = 1 and there exist an integer n ≥1 and a real constant
+k ∈(0, ∞) such that4
+lim
+x→M
+Ψ+(x) −x
+(M −x)n+1 = 1
+k,
+the following asymptotics hold:
+M −F(x) ∼
+
+N
+N −1
+n
+k
+−1
+n
+(log x)−1
+n,
+x →∞.
+(4.19)
+(2) F −m is regularly varying of index ρ−at −∞, with ρ−= Ψ−
+x (m)−1
+1−Ψ−
+x (m)
+N
+.
+Moreover, if Ψ−
+x (m) = 1, and there exist an integer n ≥1 and a real constant
+k ∈(0, ∞) such that
+lim
+x→m
+x −Ψ−(x)
+(x −m)n+1 = 1
+k,
+then
+F(x) −m ∼
+
+N
+N −1
+n
+k
+−1
+n
+(log |x|)−1
+n,
+x →−∞.
+(4.20)
+The lengthy and technical proof of the above result is given in the Appendix.
+However, we can give a quick motivation of why the regular variation exponent is as
+given. To this end deﬁne γ(x) := limα→∞
+M−F(αx)
+M−F(α) for x ≥1. Then, using the integral
+equation (3.14) and taking the appropriate ratios, one can show under the regularity
+assumptions above that
+γ(x) = Ψ+
+x (M)
+N
+γ(x) + Ψ+
+x (M)N −1
+Nx
+Z x
+0
+γ(y)dy.
+The initial condition γ(1) = 1 next reveals that γ(x) = xρ+.
+Observe that the asymptotic shape of marginal costs (or, equivalently, marginal
+prices) are independent of the noise variance. This stems from the tail expectation
+condition that deﬁnes the order book. Recall that, for y > 0, the marginal price of
+the y-th share purchased is given by h(y) = E[V |F(y + Z)]. Since the noise demand
+Z is mostly concentrated around two standard deviations in the neighborhood of 0,
+i.e. the large trades are most likely coming from the informed traders, the impact of
+the noise distribution on the asymptotic behavior of the marginal price is negligible
+in equilibrium. This is also responsible for the price impact depending on return
+distribution only by its tail.
+4In case Ψ+
+x (M)̸ = 1, this limit condition is valid with n = 0 and k = (1 −Ψ+
+x (M))−1. Thus, this
+additional regularity assumption can be viewed as an extension of the existing regularity that holds
+when ρ+̸ = 0. In particular, if V has a probability density p with
+p(x) ∝(M −x)β exp
+
+−
+Σ
+(M −x)n
+
+,
+for some β ∈R, Σ > 0, and n ≥1, the limit condition holds with k = nΣ. Analogous considerations
+apply in the second part.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+16
+POWER LAWS IN MARKET MICROSTRUCTURE
+Indeed, the power law of the price impact only depends on the number of insiders,
+i.e. the intensity of the competition among the informed, and the particular tail mass
+index Ψ+
+x (M). To see why Ψ+
+x (M) < 1 is an indication of fat tails, consider the
+situation where the distribution Π+ exhibit fat tails, i.e. power-like behavior, in the
+sense that for large x
+Π+
+x (x)
+Π+(x) ∼−α(M −x)−1,
+α > 0.
+Since M−Ψ+(x)
+M−x
+=
+R M
+x
+Π+(y)dy
+(M−x)Π+(x) −1, a direct application of the L’Hˆopital rule implies
+Ψ+
+x (M) =
+α
+1+α < 1. This shows in view of Theorem 4.1 that the price impact obeys a
+power law when the arithmetic return of the risky asset has a fat-tailed distribution.
+Thus, our model predicts that trading on assets with identical tail mass index, i.e.
+Ψ+
+x (M), results in diﬀerent price impact only if the intensity of informed trading is
+signiﬁcantly diﬀerent across the assets.
+In the preceding example, the magnitude of ρ+ equals
+1
+1+α N−1
+N . That is, the impact
+gets bigger as the returns distribution has fatter tails (smaller α) and increased competition among insiders results in smaller impact. We shall see analogous features
+when we discuss unbounded return distributions in Section 6.
+We have seen in Proposition 2.2 that the implementation shortfall is smaller than
+F. In view of Theorem 4.1 we have a more precise relationship for large x.
+Corollary 4.1. Assume Assumption 4.1, N > 1 and −∞< m < M < ∞, and let
+(h∗, X∗) be an equilibrium. Suppose that F ∗is given by (2.4), with h being replaced
+by h∗. Then,
+M −IS∗(x) ∼
+N
+N + ρ+(M −F ∗(x)),
+x →∞,
+IS∗(x) −m ∼
+N
+N + ρ−(F ∗(x) −m),
+x →−∞,
+where ρ+ and ρ−are as in Theorem 4.1.
+Corollary 4.1 shows that for large N implementation shortfall and the marginal
+cost of trading are almost indistinguishable. This is even more pronounced when
+M −F (resp. F −m) is slowly varying, i.e. ρ+ = 0 (resp. ρ−= 0). Combined with
+(4.18) the above yields
+M −IS∗(x) ∼
+N −Ψ+
+x (M)
+Ψ+
+x (M)(N −1)+(M −h∗(x)),
+x →∞.
+Observe that IS can be estimated from market data using the open limit order book
+governed by h. Moreover, the returns distribution, hence Ψ+
+x (M), can be estimated
+from the option data. Thus, the above relationship gives a statistic to estimate the
+number of informed traders in the market.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+17
+4.1. Equilibrium distribution of the traded volume. The above results will also
+allow us to compute the distribution of the traded volume in equilibrium. Although
+this will be achieved under an additional regularity assumption on the distribution
+of the asset value V , it will be satisﬁed for practically all distributions typically
+appearing in applications.
+Corollary 4.2. Assume Assumption 4.1, N > 1 and −∞< m < M < ∞. Let F be
+any solution of (3.14). Then, the following statements are valid:
+(1) Suppose that there exist an integer n ≥0 and a real constant k ∈(0, ∞) such that
+lim
+x→M
+Ψ+(x) −x
+(M −x)n+1 = 1
+k.
+Then, Π+(F) is regularly varying at ∞of index −Ψ+
+x (M)
+1−Ψ+
+x (M)
+N
+.
+(2) Suppose that there exist an integer n ≥0 and a real constant k ∈(0, ∞) such that
+lim
+x→M
+x −Ψ−(x)
+(x −m)n+1 = 1
+k.
+Then, Π−(F) is regularly varying at −∞of index −
+Ψ−
+x (m)
+1−Ψ−
+x (m)
+N
+.
+This seemingly technical result uncovers the distribution of the total volume traded
+in equilibrium. Indeed, for x > 0
+P(X∗> x) = P(F −1(V ) > x) = P(V > F(x)) = Π+(F(x)).
+Thus, under the hypothesis of Corollary 4.2, the tail distribution of equilibrium X∗
+is regularly varying at inﬁnity. That is,
+P(X∗> x) = x−ζ+s(x),
+where s is a slowly varying function and ζ+ :=
+Ψ+
+x (M)
+1−Ψ+
+x (M)
+N
+.
+Moreover, since the aggregate order is given by Y ∗= X∗+ Z and Z and V are
+independent, we have for y > 0
+P(Y ∗> y) =
+Z ∞
+−∞
+dzP(X∗> y −z)q(σ, z) =
+Z ∞
+−∞
+dzP(X∗> z)q(σ, y −z),
+which can easily be shown to be regularly varying at inﬁnity with the same index.
+Thus,
+P(Y ∗> y) = y−ζ+s(y),
+y > 0,
+(4.21)
+for some regularly varying s. In particular, if V has light tails, i.e. Ψ+
+x (M) = 1,
+P(Y ∗> y) is regularly varying of index −
+N
+N−1.
+Analogous computations yield for the sell side
+P(Y ∗< −y) = y−ζ−s(y),
+y > 0,
+(4.22)
+where ζ−:=
+Ψ−
+x (m)
+1−Ψ−
+x (m)
+N
+.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+18
+POWER LAWS IN MARKET MICROSTRUCTURE
+An interesting special case occurs when the price impact is truly regularly varying
+for buy orders, i.e. ρ+̸ = 0. In this case, the additional assumption of the above
+corollary is satisﬁed as remarked earlier and ζ+ =
+N
+N−1. An analogous consideration
+applies to the second part.
+5. Further properties of equilibrium and comparative statics
+The following scaling property of F is inherited from the analogous property of the
+Gaussian distribution.
+Proposition 5.1. Let F(1; ·) be a solution of (3.14) with σ = 1. Then the function
+x 7→F(1; x
+σ) solves (3.14).
+The above simpliﬁes the numerical analysis of the model considerably. A straightforward corollary to this result is the following.
+Corollary 5.1. Consider the solutions of (3.14) for any σ.
+(1) If (3.14) has a unique solution for some σ, it has a unique solution for all σs.
+(2) If (3.14) has a unique solution for some σ, F(0) does not depend on σ.
+(3) Let h(σ; ·) be the function deﬁned via (3.11) and (3.12), where F is the unique
+solution of (3.14) for the given σ. Then, h(σ; x) = h(1; x
+σ) for all x̸ = 0.
+(4) Suppose (3.14) has a unique solution for some σ and let X∗(σ) be the optimal
+order size for the given σ. Then, X∗(σ) = σX∗(1).
+In particular, h inherits the same scaling property of F. A simple but striking
+consequence of this property concerns the equilibrium bid-ask spread.
+Corollary 5.2. Suppose that uniqueness holds for the solutions of (3.14). Then,
+h(0+) −h(0−) does not depend on σ. Moreover, for ﬁxed x, h(x) is decreasing in σ
+for x > 0 and increasing in σ for x < 0. Consequently, the aggregate mid-spread S is
+decreasing in σ.
+The liquidity suppliers charge a minimal bid-ask spread that does not vanish even
+if the amount of ‘noise’ trading is excessively large. On the other hand, the spread
+associated with any trade size y > 0, i.e. h(y) −h(−y), and, therefore, the aggregate
+mid-spread S is decreasing with the amount of noise trading, consistent with the
+experimental ﬁndings of Bloomﬁeld et al. (2009). Moreover, in the limit as σ →∞,
+the order book, i.e., gets ﬂatten and converges to the one that yields transaction costs
+that are proportional to the order size.
+Uniqueness of solutions also allow us to discuss the dependency of aggregate insider
+proﬁt and the expected loss of noise traders on the noise variance. In particular, the
+aggregate proﬁt of insiders is increasing in noise variance as expected.
+Corollary 5.3. Suppose that uniqueness holds for the solutions of (3.14) and denote
+by π(σ) the aggregate wealth of the insiders in equilibrium. Then, π(σ) = σπ(1).
+Similarly, the expected loss of noise traders is given by σE[S(1, σ−1|Z|)] where
+S(1, ·) is the aggregate mid-spread function in equilibrium for σ = 1.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+19
+Another consequence of the uniqueness of solutions of (3.11) is that the aggregate
+expected proﬁt of the insiders vanishes as N →∞.
+Proposition 5.2. Suppose that −∞< m < M < ∞, there exists a unique solution
+FN of (3.14) for each N ≥1, and uniqueness holds for the solutions of
+F(x) = 1
+x
+Z x
+0
+dy
+Z ∞
+−∞
+q(σ, y −z)φF(z)dz.
+(5.23)
+Assume further that Π+ is continuous. Then F∞= limN→∞FN exists and solves
+(5.23). Moreover, limN→∞π∗(v) = 0, where π∗is the aggregate expected proﬁt as
+deﬁned in (2.8).
+We believe the aggregate proﬁt of the insiders decreases and the spread increases in
+the number of insiders. Although we are not able to prove these intuitive properties,
+it is observed in all numerical studies that we perform in the next section.
+6. Numerical studies
+This section is devoted to description of results obtained in previous version via a
+naive numerical search for a ﬁxed point: Starting with an F0, we compute Fn+1 =
+TFn until the distance between successive iterations become negligibly small, where
+TF corresponds to the right side of (3.14). Although the proofs of the statements
+concerning the existence of equilibrium and its asymptotics relied on a boundedness
+assumption, we shall also present the solutions of the ﬁxed point problems associated
+with equilibria with unbounded signals. The iteration converges exponentially for all
+cases considered below.
+Since σ can be absorbed into the units for measuring equity in view of Proposition
+5.1, we will set σ = 1 in all numerical tests with no loss of generality in this section.
+In practice, the signals distribution is at least partly known to practitioners since
+it can be inferred from the options montage and the event calendar. For example, an
+insider may have advance knowledge of the result of clinical trials of a new treatment
+from a biopharmaceutical company, or the insider may have been tipped about a
+number to be released in a scheduled earnings call. The signals distributions in these
+two examples are quite diﬀerent. In the case of clinical trial results, the signal is
+drawn from a bounded distribution since the outcome is bounded by total success
+and total failure. On the other hand, earnings surprises can be arbitrarily large.
+We consider ﬁrst the case of bounded signals that was the focus of the previous
+section.
+6.1. Bounded signals.
+6.1.1. Truncated Gaussian distribution.
+If signals are drawn from the truncated Gaussian distribution with density p(v) =
+1
+erf(
+M
+√
+2Σ )
+√
+2πΣe−v2
+2Σ for v ∈[−M, M], the numerical solution for equilibrium F converges
+to the upper bound as M −F(x) ∼1/x
+N−1
+2N
+in accordance with the predictions of
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+20
+POWER LAWS IN MARKET MICROSTRUCTURE
+Theorem 4.1. We show F and the theoretical prediction for its asymptotic behavior
+in Figure 1.
+0.0
+2.5
+5.0
+7.5
+10.0
+12.5
+15.0
+17.5
+20.0
+x
+0.6
+0.8
+1.0
+1.2
+1.4
+1.6
+1.8
+2.0
+sup(V)-F(x)
+Convergence to upper bound of signals distribution
+2.07/(1 + 0.66x)0.48
+equilibrium
+Figure 1. The asymptotic behavior of F is shown for the case where signals
+are drawn from a truncated Gaussian distribution.
+6.1.2. Logit-normal distribution. If price is a probability-weighted average over two
+possible outcomes v± = p0 ± 1, where the probability is a sigmoidal function of
+a Gaussian generator potential g as p =
+1
+1+e−g , the signals distribution is the logitnormal distribution with density p(v) =
+q
+2
+πΣ
+e−
+ln2( 1−v
+1+v )
+2Σ
+1−v2
+. This distribution has support
+in [−1, 1].
+We show the equilibrium solution for F, the order book h and the implementation
+shortfall for logit-normal signals, in Figure 2.
+Note that the logit normal distribution does not satisfy the hypothesis of Theorem
+4.1. Thus, our theory cannot predict the asymptotics of F for this distribution. However, the following formal arguments yield the asymptotics that seem to be veriﬁed
+by the numerical experiments. Observe that for x >> σ, 2.4 becomes
+F(x) ≈1
+N h(x) + N −1
+Nx
+Z x
+0
+h(u)du
+(6.24)
+It follows that F(x) + xF ′(x) ≈h(x) + 1
+N xh′(x). Moreover, for large values of x, we
+roughly have h(x) ≈Ψ+(F(x)). Let us consider the large N limit and drop the 1/N
+term. Using the approximation erfc(x) ≈e−x2
+x√π (1 −
+1
+2x2) and expanding to ﬁrst order
+in 1/ log(x) we ﬁnd that asymptotically
+xF ′ = Σ(1 −F)
+log(1 −F),
+which yields F →1 −e−k√
+log(x)
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+21
+0
+10
+20
+30
+40
+50
+x
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+impact
+Equilibrium: logit-normal, N=1
+h(x)
+IS(x)
+F(x)
+Figure 2. Equilibrium impact and shortfall for logit-normal signals for the
+case of an insider (N = 1).
+0
+10
+20
+30
+40
+50
+x
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1.0
+M-F(x)
+Convergence to upper bound: logit-normal, N=25
+2.5e−√1.2ln(x + 1.75)
+equilibrium
+Figure 3. Convergence to the upper bound for M = 1 when signals are
+drawn from a logit-normal distribution and shared with N = 25 traders.
+The numerical solution shown in Figure 3 for N = 25 is consistent with this asymptotic form.
+6.2. Unbounded signals. In the rest of this section we place emphasis on unbounded signals; that is, when the support of V is unbounded.
+Although we do
+not have a theoretical justiﬁcation for the existence of a solution for (3.14) in the case
+of unbounded signals, we were able to arrive at numerical solutions via the above
+numerical search.
+The asymptotic behavior of F(x) for large signals will depend on the tail behavior
+of the distribution of V . Assuming the interchange of limits and integrals in the proof
+of Theorem 4.1, we can show that
+γ(x) = Ψ+
+x (∞)
+N
+γ(x) + N −1
+Nx Ψ+
+x (∞)
+Z x
+0
+γ(y)dy,
+x > 0,
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+22
+POWER LAWS IN MARKET MICROSTRUCTURE
+Table 1. Distributions with power-law impact
+Distribution
+Density
+ρ+
+Beta prime
+xλ−1(1 + x)−(λ+α)
+  N−1
+N α −1
+−1
+Fr´echet
+(x −β)−(1+α) exp
+n
+−
+  x−β
+s
+−αo
+  N−1
+N α −1
+−1
+Lomax
+ 1 + x
+λ
+−(α+1)
+  N−1
+N α −1
+−1
+Pareto
+x−(α+1)
+  N−1
+N α −1
+−1
+Student
+
+1 + x2
+α
+−(α+1)/2
+  N−1
+N α −1
+−1
+In above probability densities are given up to a scaling factor and implicit constraints are enforced
+to ensure they are well deﬁned with ﬁnite mean. Moreover, N >
+α
+α−1 in all of the above.
+where γ(x) := limα→∞
+F(αx)
+F(α) in case of M = ∞.
+Solution of the above equation
+immediately yields that, for N > 1, F is regularly varying at ∞of order ρ+, where
+ρ+ = Ψ+
+x (∞) −1
+1 −Ψ+
+x (∞)
+N
+.
+(6.25)
+Observe that when M = ∞, Ψ+
+x (∞) ≥1 in contrast to the bounded case, where
+Ψ+
+x (M) ≤1. Since ρ+ must be non-negative, this places the restriction on N:
+N > Ψ+
+x (∞)
+(6.26)
+unless Ψ+
+x (∞) = 1. Thus, we conjecture that (6.26) is a necessary condition for the
+existence of equilibrium when M = ∞. Observe that for a fat tailed unbounded
+distribution, Ψ+
+x (∞) > 1. Thus, a suﬃcient competition among insiders is necessary
+for the equilibrium to exist. Such a condition is always satisﬁed in the bounded case
+since Ψ+
+x (M) ≤1 for M < ∞.
+As in the bounded case F will be slowly varying at inﬁnity when Ψ+
+x (∞) = 1. In
+this case, if we assume
+lim
+x→∞(Ψ+(x) −x)xn−1 = 1
+k
+(6.27)
+for some k > 0 and n ≥1, formal calculations yield
+F(x) ∼
+
+N
+N −1
+n
+k
+ 1
+n
+(log x)
+1
+n,
+x →∞.
+(6.28)
+Tables 1 and 2 summarize the predicted asymptotics for a class of distributions
+commonly used in the literature and practice. As can be observed by Table 1, the
+impact gets bigger as the return distribution has fatter tails (smaller α). At the same
+time, the market also needs more competition among the informed traders in order
+to function. Note that as α →1, the mean and the variance of the distributions
+listed therein diverge to ∞. Thus, the liquidity suppliers are only willing to make the
+market if this excessive risk is shared with a large amount of informed trading.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+23
+Table 2. Distributions with logarithmic impact
+Distribution
+Density
+Asymptotics
+Exponential
+exp(−λx)
+N
+λ(N−1) log x
+Gaussian
+exp(−(x −µ)2/Σ)
+q
+2ΣN
+N−1
+√log x
+Inverse Gaussian
+x−3/2 exp
+
+−λ(x−µ)2
+2µ2x
+
+2Nµ2
+λ(N−1) log x
+Normal Inverse Gaussian
+K1(λζ(x))
+πζ(x)
+exp(δγ + β(x −µ)
+N
+(N−1)(λ+β−1) log x
+Weibull
+xd−1 exp(−λpxp)
+
+N
+λp(N−1)
+1/p
+(log x)1/p
+In above probability densities are given up to a scaling factor and implicit constraints are enforced
+to ensure they are well deﬁned with ﬁnite mean. Moreover, ζ(x) := δ2 + (x −µ)2 for the Normal
+Inverse Gaussian distribution.
+6.2.1. Gaussian signals. We assume that the mean of V equals 0. The numerical
+solution is shown in Figure 4 together with the √log x asymptotic behavior.
+0.0
+2.5
+5.0
+7.5
+10.0
+12.5
+15.0
+17.5
+20.0
+x
+0.00
+0.25
+0.50
+0.75
+1.00
+1.25
+1.50
+1.75
+F(x)
+Functional form of the eq ilibri m (ga ssian N=25)
+√0.65 + 1.58ln(1 + 0.67x1.38) −√0.65
+eq ilibri m
+Figure 4. Functional form of the equilibrium for Gaussian signals, for N = 25.
+6.2.2. Log-normal signals. For a log-normal distribution, the mean is an arbitrary
+scale factor which we set to 1 and, thus, the density is p(v) =
+1
+√
+2πΣve−(ln(v)+Σ/2)2
+2Σ
+.
+We choose a large signal variance
+√
+Σ = 10% in our numerical experiments below,
+illustrative of an earnings announcement for a high-volatility name. Moreover, we
+translate the distribution by 1 so that the mean is 0. The equilibrium solutions for
+h, F and IS are shown for various values of N in Figure 5.
+The log-normal distribution does not satisfy the conditions of Theorem 4.1. Thus,
+we do not have a theoretical prediction for the asymptotic market impact. However,
+we ﬁnd numerically that the asymptotic form is
+p
+log(x), in Figure 6. Evidence for
+more concave impact function than the square root was reported in Bershova and
+Rakhlin (2013). In addition, one of us (HW) has had the opportunity to consider
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+24
+POWER LAWS IN MARKET MICROSTRUCTURE
+−20
+−10
+0
+10
+20
+x
+−0.4
+−0.2
+0.0
+0.2
+0.4
+0.6
+0.8
+F(x)
+F(x): N=1
+F(x): N=2
+F(x): N=25
+−20
+−10
+0
+10
+20
+x
+h(x)
+h(x): N=1
+h(x): N=2
+h(x): N=25
+−20
+−10
+0
+10
+20
+x
+IS(x)
+IS(x): N=1
+IS(x): N=2
+IS(x): N=25
+Eq ilibri m: Log-normal signals
+Figure 5. Equilibrium solutions for log-normal signals for the cases of an
+insider (N = 1), and shared signals with N = 2, N = 25. The discontinuity
+of h(x) at the origin is the bid-ask spread.
+the shape of the impact function for asset managers with diﬀerent order generation
+processes. We cite two relevant (unpublished) examples here. The impact function for
+a quantitative fund with no discernible intraday alpha is closest to a logarithmic one
+consistent with the ﬁndings of Bershova and Rakhlin. However, for a manager with
+non-discretionary executions rich in small-cap biopharmaceutical trades and other
+hard-to-execute orders, we found the log function to be too concave to explain the
+impact of large trades whereas a square root function ﬁt the data well.
+0.0
+2.5
+5.0
+7.5
+10.0
+12.5
+15.0
+17.5
+20.0
+x
+0.000
+0.025
+0.050
+0.075
+0.100
+0.125
+0.150
+0.175
+0.200
+IS(x)
+Equilibrium IS: log-normal, N=25
+0.1√ln(1 + 0.16x1.7) + 0.01
+positive branch
+0.08√ln(1 + 0.31x1.8) −0.01
+negative branch
+Figure 6. Functional form of the equilibrium for Log-normal signals, for
+N = 25. The log-normal distribution is not symmetric and this results in a
+notable diﬀerence between the positive and negative branches for cost as a
+function of trade size.
+The aggregate proﬁt is a decreasing function of the number of informed investors
+and we show the proﬁt as a function of trade size below for various values of N
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+25
+in Figure 7. Moreover, Figure 8 shows how the spread depends on the number of
+informed investors.
+−0.2
+−0.1
+0.0
+0.1
+0.2
+v
+0.00
+0.02
+0.04
+0.06
+0.08
+0.10
+π
+Aggregate profit per share, log-normal signals
+N=1
+N=2
+N=10
+Figure 7. Aggregate investor proﬁt per share for Log-normal signals.
+0
+5
+10
+15
+20
+25
+N
+0.130
+0.135
+0.140
+0.145
+0.150
+Ask-Bid
+Spread vs N : Log −normal signals, Σ = 0.12
+Figure 8. The spread is shown as a function of the number of informed
+investors, for log-normal signals with
+√
+Σ = 10%.
+6.2.3. Student signals. We explore the eﬀect of fat tails in the signal distribution next.
+We consider the case where signals drawn from a Student t-distribution with α = 3,
+p(v) ∼
+1
+(1+ v2
+Σ )2. This is reminiscent of some empirical studies such as Plerou et al.
+(1999). However, we note that we are assuming a Student distribution of arithmetic
+returns. The power-law tail of geometric returns in Plerou’s study implies an inﬁnite
+expected price.
+In view of Table 1 the expected asymptotics is F(x) ∼x1/(α−1−α
+N ). Moreover, our
+conjecture predicts no equilibrium when N ≤
+α
+α−1 = 3
+2. Indeed, no numerical solution
+for F can be found when N = 1. The equilibrium is asymptotically parabolic for
+N = 2 (theoretical ρ+ = 2), linear for N = 3 (theoretical ρ+ = 1) and concave
+for N ≥4.
+The numerical solutions are shown in Figure 9.
+For N = 25, the
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+26
+POWER LAWS IN MARKET MICROSTRUCTURE
+asymptotic exponent is F(x) ∼x25/47 according to our theory. The numerical solution
+is compared to this prediction in Figure 10.
+−20
+−10
+0
+10
+20
+x
+−30
+−20
+−10
+0
+10
+20
+30
+F(x)
+F(x): N=2
+F(x): N=3
+F(x): N=25
+−20
+−10
+0
+10
+20
+x
+h(x)
+h(x): N=2
+h(x): N=3
+h(x): N=25
+−20
+−10
+0
+10
+20
+x
+IS(x)
+IS(x): N=2
+IS(x): N=3
+IS(x): N=25
+Equilibrium: Student signals
+Figure 9. Equilibrium solutions for Student signals for the cases N = 2,
+N = 3 and N = 25.
+0.0
+2.5
+5.0
+7.5
+10.0
+12.5
+15.0
+17.5
+20.0
+x
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+F(x)
+Functional form of  he equilibrium F(x): S uden , N=25
+(0.10 + 0.42x)25/47 −(0.1)25/47
+equilibrium
+Figure 10. Functional form of the equilibrium for Student signals for α = 3,
+N = 25.
+The case of power-law tailed signal distributions was considered previously by
+Farmer et al. in the case of perfect competition between insiders Farmer et al. (2013).
+One can view their model as the limiting case of the one considered herein as N →∞
+in case of a Pareto-tailed distribution with exponent 3.
+7. Same-price allocation
+An alternative framework also of interest to practitioners is one where portfolio
+managers and noise traders submit their orders to an aggregator, which merges the
+orders into a block (“metaorder”, in the literature), liquidates X +Z for some average
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+27
+price, and allocates shares with the same average price to noise traders and insiders.
+We refer to this framework as same-price allocation.
+The expected proﬁt of the
+insiders in this case is
+Ev
+V X −
+X
+X + Z
+Z X+Z
+0
+h(y)dy
+
+.
+(7.29)
+In this case the corresponding ﬁrst order condition for the maximization problem
+is given by V = F(X∗), where
+F(x) = Ev
+
+x
+Z + x
+h(Z + x) −¯h(Z + x)
+N
++ ¯h(Z + x)
+
+,
+where ¯h(x) = 1
+x
+R x
+0 h(y)dy and h is given by the tail expectation as above.
+The problem with this ﬁrst order condition is that it is not clear whether it yields
+a maximum as F deﬁned above is not necessarily increasing.
+However, if one assumes that F is increasing and obtains the corresponding integral equation, one can still get a ﬁxed point. Moreover, our numerical solutions
+always suggest an increasing solution yielding a ‘numerical’ proof of the existence of
+equilibrium.
+The solutions are similar in form and share the same asymptotic behavior for both
+bounded and unbounded signal distributions. We show as an example the case of
+log-normal signals in Figure 11.
+−20
+−10
+0
+10
+20
+x
+−0.4
+−0.2
+0.0
+0.2
+0.4
+0.6
+0.8
+F(x)
+F(x): N=1
+F(x): N=2
+F(x): N=25
+−20
+−10
+0
+10
+20
+x
+h(x)
+h(x): N=1
+h(x): N=2
+h(x): N=25
+−20
+−10
+0
+10
+20
+x
+IS(x)
+IS(x): N=1
+IS(x): N=2
+IS(x): N=25
+Same-p ice equilib ium (Log-no mal signals)
+Figure 11. Equilibrium solutions for same-price liquidation with lognormal signals for the cases of an insider (N = 1), and shared signals with
+N = 2, N = 25.
+Figure 12 compares the same-price allocation model to the trading desk model in
+the case of Gaussian signals. The dotted lines represent the same-price liquidation
+equilibria. Market impact is somewhat greater with same-price liquidation than for
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+28
+POWER LAWS IN MARKET MICROSTRUCTURE
+the trading desk model, for N > 1. For the insider case, the two are essentially
+identical.
+−20
+−15
+−10
+−5
+0
+5
+10
+15
+20
+x
+−6
+−4
+−2
+0
+2
+4
+6
+F(x)
+F(x)
+N=1
+N=25
+N=1 s.p.
+N=25 s.p.
+−20
+−15
+−10
+−5
+0
+5
+10
+15
+20
+x
+−6
+−4
+−2
+0
+2
+4
+6
+h(x)
+h(x)
+N=1
+N=25
+N=1 s.p.
+N=25 s.p.
+Same-p ice vs. cash desk liquidation equilib ium: Gaussian signals
+Figure 12. Equilibrium for Gaussian signals, comparing the same-price
+and trading desk liquidation models (N = 1, 2, 25). Dotted lines represent
+the same-price liquidation equilibrium.
+8. Conclusion
+Since empirical data on very large trades is sparse and often biased, it is important
+to develop a theoretical understanding of the process in order to discriminate between
+various proposals for the shape of the impact function. We proposed an asymmetric
+information based equilibrium model where informed investors draw a signal and send
+their orders along with noise traders to a trading desk that executes at the net cost
+to liquidate the aggregate amount against a limit order book. Our results provide the
+micro-foundations for a large number of empirical ﬁndings including those on price
+impact and volume.
+We found that market impact is asymptotically a power of trade size if the signal
+has fat tails, whereas the impact becomes of the form (log x)1/p for some p > 0 for
+lighter tails. Moreover, for fat-tailed signal distributions, an equilibrium only exists if
+there is a suﬃcient amount of competition. The trade volume also obeys a power law
+in equilibrium. The spread decreases with the amount of noise trading and, although
+we do not have an analytic proof, the bid-ask spread seems to be an increasing and
+bounded function of the number of informed investors.
+A relevant and arguably more realistic extension of our framework while still remaining in a static setting is to consider the scenario in which the insiders receive
+diﬀerent but possibly correlated signals regarding the liquidation value. On the other
+hand, due to our assumption that the insiders’ orders arrive simultaneously to the
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+29
+desk, the optimization problem of each insider requires the solution of a non-linear
+ﬁltering problem even in the case of Gaussian signals.
+In reality limit order markets are dynamic and thus the order books change over
+time reﬂecting the changes in market parameters. The analytic characterization of the
+equilibrium in the current framework in terms of the ﬁxed point of an integral operator
+makes us optimistic regarding an extension of the current framework to a dynamic
+setting in continuous time. However, continuous trading brings extra ﬂexibilities to
+portfolio choice - including the option to place a market or limit order at each trade -
+resulting in a more complicated model. This extension, though extremely interesting,
+will thus be left for future research.
+This appendix contains proofs of all the results apart from those of market asymptotics from Section 4. The remaining proofs are included in the Online Appendix.
+Appendix A. Auxiliary results and proofs
+Lemma A.1. Ψ+ and Ψ−are non-decreasing on the support of V .
+Proof. Suppose x < y. Note that Ψ+ is non-decreasing if E[V 1[V >y]]P(V > x) −
+E[V 1[V >x]]P(V > y) ≥0. Indeed, the left side of the above equals
+E[(V −y)1[V >y]]P(V > x) −E[(V −y)1[V >x]]P(V > y)
+=
+E[(V −y)1[V >y]] (P(V > x) −P(V > y)) −E[(V −y)1[x<V ≤y]]P(V > y),
+which is non-negative since V −y ≤0 on the set [x < V ≤y].
+The second assertion is proved analogously.
+□
+Proof of Proposition 2.1. (1) Let g(x) := Ev[h(x + Z)]. By direct diﬀerentiation, the
+expression (2.4) implies
+xF(x) = xg(x)
+N
++ N −1
+N
+Z x
+0
+g(y)dy,
+(A.30)
+which is equivalent to the ODE x g′(x)
+N
++ g = F(x) + xF ′(x).
+Recall that g(0) = Ev[h(Z)] = F(0) by construction. Thus, the unique solution
+of the above ODE with this initial condition is given by
+g(x) = NF(x)−N(N −1)
+xN
+Z x
+0
+F(y)yN−1dy = F(x)+N(N −1)
+xN
+Z x
+0
+(F(x)−F(y))yN−1dy.
+This yields (2.6) after a change of variable.
+(2) The above also yields (2.7) due to the ﬁrst order condition F(X∗) = V . The
+remaining assertions are direct consequences of the strict monotonicity of F.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+30
+POWER LAWS IN MARKET MICROSTRUCTURE
+(3) Note that the total expected proﬁt is given by
+Z X∗
+0
+(v −Ev[h(y + Z)])dy =
+Z X∗
+0
+(v −g(y))dy
+=
+vX∗−
+N
+N −1
+
+X∗F(X∗) −X∗g(X∗)
+N
+
+= −vX∗
+N −1 + X∗g(X∗)
+N −1
+=
+X∗
+N −1 (g(X∗) −v) = N
+Z X∗
+0
+(v −F(y))
+ y
+X∗
+N−1
+dy,
+where the second equality follows from (A.30) and the third is due to F(X∗) = V .
+(4) Observe that
+Z Z
+0
+h(y)dy =
+Z ∞
+0
+h(y)1[Z≥y]dy −
+Z 0
+−∞
+h(y)1[Z≤y]dy.
+Taking expectations and using the symmetry of Z we obtain
+E
+Z Z
+0
+h(y)dy
+
+=
+Z ∞
+0
+(h(y) −h(−y))P(Z ≥y)dy =
+Z ∞
+0
+h(y) −h(−y)
+2
+P(|Z| ≥y)dy
+and prove the ﬁrst claim. The second claim follows directly from integration by
+parts.
+□
+Proof of Proposition 2.2. Note that E[h(y + Z)] = Ev[h(y + Z)] for all y. We shall
+show the result for N > 1, the remaining case is similar and easier. Using the ﬁrst
+representation in (2.6), we obtain
+Z x
+0
+E[h(y + Z)]dy
+=
+N
+Z x
+0
+F(y)dy −N(N −1)
+Z x
+0
+dyy−N
+Z y
+0
+dzF(z)zN−1
+=
+N
+Z x
+0
+F(y)dy −N(N −1)
+Z x
+0
+dzF(z)zN−1
+Z x
+z
+dyy−N
+=
+N
+Z x
+0
+F(y)dy + N
+Z x
+0
+dzF(z)zN−1  x−N+1 −z−N+1
+=
+N
+Z x
+0
+dzF(z)
+z
+x
+N−1
+= xN
+Z 1
+0
+dzF(xz)zN−1,
+which yields the ﬁrst assertion once divided by x. The remaining claims follow from
+F(xy) < F(x) (resp. F(xy) > F(x)) for x > 0 (resp. x < 0) and for all y ∈(0, 1)
+since F is strictly increasing.
+□
+Proof of Lemma 3.1. We give the proof for the solutions of (3.14), the analogous
+property of the solutions of (5.23) can be proven similarly.
+Monotone convergence theorem in conjunction with Assumption 3.1 implies
+lim
+x→∞
+Z ∞
+−∞
+q(σ, z)φF(x + z)dz =
+Z ∞
+−∞
+q(σ, z) lim
+x→∞φF(x + z)dz.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+31
+Moreover, limx→∞φF(x + z) = Ψ+(F(∞)−). To see this, ﬁrst note that
+φ+
+F(z + x) =
+R ∞
+−∞Ψ+(F(u))Π+(F(u))
+1
+√
+2πσ2 exp
+
+−(x+z−u)2
+2σ2
+
+du
+R ∞
+−∞Π+(F(u))
+1
+√
+2πσ2 exp
+
+−(x+z−u)2
+2σ2
+
+du
+.
+Next, the measure
+Π+(F(u)q(σ, z + x −u)du
+R ∞
+−∞Π+(F(u)q(σ, z + x −u)du
+converges to the point mass at ∞. Indeed, for any 0 < a < ∞, we have
+R a
+−∞Π+(F(u)q(σ, z + x −u)du
+R ∞
+−∞Π+(F(u)q(σ, z + x −u)du
+=
+R a
+−∞Π+(F(u) exp
+ −u2
+2σ2 + u(z+x)
+σ2
+
+du
+R ∞
+−∞Π+(F(u) exp
+ −u2
+2σ2 + u(z+x)
+σ2
+
+du
+≤
+exp(a(z+x)
+σ2
+)
+R a
+−∞Π+(F(u) exp(−u2
+2σ2)du
+R ∞
+2a Π+(F(u) exp
+ −u2
+2σ2 + u(z+x)
+σ2
+
+du
+≤
+exp(−a(z+x)
+σ2
+)
+R a
+−∞Π+(F(u) exp(−u2
+2σ2)du
+R ∞
+2a Π+(F(u) exp
+ −u2
+2σ2
+
+du
+,
+which converges to 0 as x →∞.
+Thus, using the representation of F via (3.15), we deduce F(∞) = Ψ+(F(∞)−).
+Note that changing the order of integration is justiﬁed thanks to Assumption 3.1. On
+the other hand, Ψ+(x−) > x for any x < M since P(V > x) > 0 whenever x < M.
+This in turn implies F(∞) = M. Similarly, limx→−∞F(x) = m. Thus, F is strictly
+increasing in view of (3.15) since m̸ = M and, therefore, F is not constant.
+□
+Proof of Proposition 5.1.
+F
+
+1; x
+σ
+
+=
+1
+N
+Z ∞
+−∞
+q
+
+1, x
+σ −z
+
+φF(z)dz + σN −1
+Nx
+Z
+x
+σ
+0
+dy
+Z ∞
+−∞
+q(1, y −z)φF(z)dz
+=
+1
+N
+Z ∞
+−∞
+q
+
+σ, x −z
+
+φF
+z
+σ
+
+dz + N −1
+Nx
+Z x
+0
+dy
+Z ∞
+−∞
+q
+
+1, y
+σ −z
+
+φF(z)dz
+=
+1
+N
+Z ∞
+−∞
+q
+
+σ, x −z
+
+φF
+z
+σ
+
+dz + N −1
+Nx
+Z x
+0
+dy
+Z ∞
+−∞
+q(σ, y −z)φF
+z
+y
+
+dz.
+Similar manipulations yield
+φ±
+F
+z
+y
+
+=
+R ∞
+−∞Φ± 
+F
+
+1; u
+y
+
+q
+
+σ, u −z
+
+du
+R ∞
+−∞Π±
+
+F
+
+1; u
+y
+
+q(σ, u −z)du
+,
+which establishes the claim.
+□
+Proof of Proposition 5.2. First observe that φF is bounded since V is.
+Thus the
+dominated convergence theorem in conjunction with the continuity of Π+, and thus
+that of Φ+ and Φ−, show that both of lim inf FN and lim sup FN solve (5.23). As
+(5.23) can have at most one solution, F∞:= lim FN exists.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+32
+POWER LAWS IN MARKET MICROSTRUCTURE
+Also note that F∞is strictly increasing and continuous by Lemma 3.1.
+Thus,
+limN→∞F −1
+N (v) = F −1
+∞(v) ∈R, and
+lim
+N→∞π∗(v)
+=
+lim
+N→∞F −1
+N (v)N
+Z 1
+0
+(v −FN(F −1
+N (v)y)yN−1dy
+=
+F −1
+∞(v) lim
+N→∞N
+Z 1
+0
+(v −FN(F −1
+N (v)y)yN−1dy.
+Since each FN takes values in (m, M), limN→∞FN(F −1
+N (v)y) = F∞(F −1
+∞(v)y), and the
+measure NyN−1dy on [0, 1] converges weakly to the point mass at 1, we have
+lim
+N→∞N
+Z 1
+0
+(v −FN(F −1
+N (v)y)yN−1dy = v −F∞(F −1
+∞(v)) = 0.
+□
+Appendix B. Existence of a solution for the fixed point equation
+Lemma B.1. Let g : R →R be a continuous function and u+ (resp. u−) be the
+unique solution of
+ut + σ2uxx = 0,
+u(1, x) = Π+(g(z)) (resp. u(1, x) = Π−(g(z))).
+(B.31)
+Then, the following hold:
+(1) There exits a solution B on a ﬁltered probability space (Ω, F, (Ft), Q) to the
+following SDE:
+dBt = σdWt + σ2ux(t, Bt)
+u(t, Bt) dt,
+B0 = x,
+(B.32)
+where u is either u+ or u−and W is a Brownian motion with W0 = 0.
+(2) φ+
+g (x) = EQ+ [Ψ+(g(B1))] and φ−
+g (x) = EQ−[Ψ−(g(B1))], where (B, Q+) (resp.
+(B, Q−)) corresponds to the solution of (B.32) if u = u+ (resp u = u−) and
+EQ stands for the expectation under Q.
+(3) φ+
+g (0) > φ−
+g (0).
+(4) Suppose further that g is non-decreasing. Then, φ±
+g are non-decreasing, too.
+Consequently, φg is non-decreasing. Moreover,
+φ+
+g (x)
+≤
+EQ+ 
+Ψ+(g(σW1 + x))
+
+(B.33)
+φ−
+g (x)
+≥
+EQ−
+Ψ−(g(σW1 + x))
+
+.
+(B.34)
+Proof. We shall prove the claims for u+ only, the corresponding proof for u−being
+analogous.
+(1) Note that
+u+(t, x) =
+Z ∞
+−∞
+Π+(g(z))
+1
+p
+2πσ2(1 −t)
+exp
+
+−(y −z)2
+2σ2(1 −t)
+
+dz.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+33
+Then, if β is a Brownian motion on a ﬁltered probability space (Ω, F, (Ft), P)
+with β0 = 0, u(t, Bt) is a bounded martingale with u(1, B1) = Π+(g(B1), where
+B = σβ + x. Thus, we can deﬁne a new measure Q on (Ω, F) by
+dQ
+dP = u(1, B1)
+u(0, B0).
+By means of Girsanov’s theorem, under Q, B solves (B.32).
+(2) Observe that
+φ+
+g (x)
+=
+E [Ψ+(g(B1))Π+(g(B1))]
+E [Π+(g(B1))]
+= E [Ψ+(g(B1))u+(1, B1)]
+E [u(1, B1)]
+= EQ 
+Ψ+(g(B1))
+
+.
+(3) The claim is equivalent to
+Z ∞
+−∞
+Φ+(g(z))q(σ, z)dz
+Z ∞
+−∞
+Π−(g(z))q(σ, z)dz−
+Z ∞
+−∞
+Φ−(g(z))q(σ, z)dz
+Z ∞
+−∞
+Π+(g(z))q(σ, z)dz > 0.
+Using Φ+ = E[V ] −Φ−and Π+ + Π−= 1, the above is valid if and only if
+0
+<
+Z ∞
+−∞
+Φ+(g(z))q(σ, z)dz −E[V ]
+Z ∞
+−∞
+Π+(g(z))q(σ, z)dz
+=
+Z ∞
+−∞
+ Ψ+(g(z)) −E[V ]
+
+q(σ, z)Π+(g(z))dz,
+which holds since for any x we have Ψ+(x) ≥Ψ+(m) = E[V ] in view of Lemma
+A.1 and Ψ+ is not constant.
+(4) Now, suppose g is non-decreasing, which in turn implies u+
+x ≤0 since Π+ is nonincreasing. Therefore, as ux(t,x)
+u(t,x) is Lipschitz on [0, t] for any t < T, the standard
+comparison results for SDEs applied to (B.32) in conjunction with Lemma A.1
+imply
+EQ 
+Ψ+(g(B1))
+B0 = y
+
+≥EQ 
+Ψ+(g(B1))
+B0 = x
+
+if y ≥x
+since we can construct all these solutions indexed by their starting point on the
+same probability space due to the local Lipschitz property of ux/u. This shows
+the desired monotonicity φ+(g).
+Similarly, the same comparison principle yields that the solution of (B.32) is
+bounded from above by σWt + x in case of u = u+ since u+
+x ≤0. Combined with
+the monotonicity property of Ψ+(g), we deduce φ+
+g (x) ≤EQ [Ψ+(g(σW1 + x))].
+□
+Proof of Theorem 3.2. The proof will be an application of Schauder’s ﬁxed point theorem.
+Note that since V takes values in [m, M], so does Ψ±.
+This justiﬁes the
+representation (3.15) for F. Since in equilibrium h must also be taking values in
+[m, M], we must expect F to take values in [m, M], too. Thus, we can concentrate
+on functions on R that takes values in [m, M]. Moreover, F will possess a derivative
+that is bounded by
+K0 := (|m| + M)
+Z ∞
+−∞
+|z| e−z2
+2σ2
+σ3√
+2πdz
+ 1
+N + N −1
+2N
+
+< ∞.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+34
+POWER LAWS IN MARKET MICROSTRUCTURE
+To see this ﬁrst observe that
+∂¯q(σ, x, z)
+∂x
+=
+q(σ, x −z) −¯q(σ, x, z)
+x
+= 1
+x2
+Z x
+0
+{q(σ, x −z) −q(σ, y −z)dy}
+=
+1
+x2
+Z x
+0
+uqx(σ, u −z)du.
+Therefore,
+
+d
+dxF(x)
+
+≤
+Z ∞
+−∞
+|φF(z)|
+(
+|qx(σ, x −z)|
+N
++ N −1
+Nx2
+Z |x|
+0
+u|qx(σ, u −z)|du
+)
+dz
+≤
+(|m| + M)
+
+
+
+1
+N
+Z ∞
+−∞
+|z −x|e−(z−x)2
+2σ2
+σ3√
+2π dz + N −1
+Nx2
+Z |x|
+0
+duu
+Z ∞
+−∞
+|z −u|e−(z−u)2
+2σ2
+σ3√
+2π dz
+
+
+
+=
+(|m| + M)
+Z ∞
+−∞
+|z| e−z2
+2σ2
+σ3√
+2πdz
+ 1
+N + N −1
+2N
+
+.
+We shall show the existence of a ﬁxed point in the normed space X := L2(R, µ0), i.e.
+the space of Borel measurable functions that are square integrable with respect to µ0,
+where
+µ0(dx) =
+1
+√
+2πe−x2
+2 dx.
+Note that µ0 is equivalent to the Lebesgue measure on R. Next deﬁne
+D0 : {g|g : R 7→[m, M] is such that |g(x) −g(y)| ≤K0|x −y|, ∀x, y ∈R}
+and let
+D := {g ∈X|g = g0, µ0-a.e. for some g0 ∈D0}.
+It is easy to see that D is a convex subset of X.
+Next deﬁne the operator T on X via
+Tg(x) :=
+Z ∞
+−∞
+ 1
+N q(σ, x −z) + N −1
+N
+¯q(σ, x, z)
+
+φ¯g(z)dz,
+where ¯g := (g ∨m)∧M and φg and ¯q are as deﬁned in (3.13) and (3.16), respectively.
+Note that for each x
+ 1
+N q(σ, x −z) + N −1
+N
+¯q(σ, x, z)
+
+dz
+is a probability measure on R.
+Step 1 (T maps D into itself): It is easy to verify that Tg is continuous and takes values
+in [m, M] in view of Lemma B.1 and that
+Z ∞
+−∞
+ 1
+N q(σ, x −z) + N −1
+N
+¯q(σ, x, z)
+
+dz = 1.
+Moreover, Tg is diﬀerentiable with a derivative bounded by K0 by using the above
+computations that led to the estimate K0. Thus, Tg ∈D0 ⊂D.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+35
+Step 2 (D is compact): Let (gn) ⊂D. Then there exists (g0
+n) ⊂D0 such that µ0-a.e.
+we have gn = g0
+n for each n ≥1. Then by Arzela-Ascoli Theorem there exists
+a subsequence that converges uniformly on compacts to a continuous function g0.
+Without loss of generality let us assume that g0
+n converges to g0. Note that necessarily |g0(x) −g0(y)| ≤K0|x −y| for all x, y ∈R, i.e g0 ∈D0. Finally, as gns
+are uniformly bounded and µ0 is a probability measure, the dominated convergence
+theorem yields gn →g0 in L2(R, µ0).
+Step 3 (T : D →D is continuous): Suppose gn →g in D as n →∞.
+In view of
+the deﬁnition of D we may assume without loss of generality that that gns are
+continuous since changing gn on a Lebesgue null set does not alter the value of
+Tgn. By another application of Arzela-Ascoli theorem there exists a subsequence
+that converges pointwise to some continuous function, which we may identify with
+g due to the uniqueness of L2-limits up to a null set. Thus, we may assume g is
+continuous, too.
+Moreover, the same argument shows that every subsequence of gn has a further
+subsequence that converges to g pointwise since continuous functions that agree on
+Lebesgue null sets should agree at every point. Thus, gn →g pointwise as n →∞.
+Next, since φgn is uniformly bounded, the dominated convergence theorem yields
+lim
+n→∞Tgn(x) =
+Z ∞
+−∞
+dz
+ 1
+N q(σ, x −z) + N −1
+N
+¯q(σ, x, z)
+
+lim
+n→∞φgn(z).
+On the other hand, Lemma B.1 and Girsanov theorem imply for z > 0
+φgn(z) = E [Ψ+(gn(σβ1 + z))Π+(gn(σβ1 + z))]
+un(0, z)
+,
+where E is the expectation operator for P under which β is a standard Brownian
+motion, and un is the function u+ in Lemma B.1 deﬁned by the terminal condition Π+(gn). Since Ψ+ and Π+ are continuous except on a Lebesgue null set, the
+dominated convergence theorem yields
+lim
+n→∞E
+
+Ψ+(gn(σβ1 + z))Π+(gn(σβ1 + z))
+
+= E
+
+Ψ+(g(σβ1 + z))Π+(g(σβ1 + z))
+
+.
+Similarly,
+lim
+n→∞un(0, z) = lim
+n→∞E
+
+Π+(gn(σβ1 + z))
+
+= E
+
+Π+(g(σβ1 + z))
+
+.
+Thus, we have shown limn→∞φgn(z) = φg(z) for z > 0. Analogous arguments yields
+the convergence for z ≤0, which in turn establishes the pointwise convergence of
+Tgn to Tg; i.e.
+lim
+n→∞Tgn(x) = Tg(x),
+x ∈R.
+This yields the claim by an application of the dominated convergence theorem since
+Tgns are uniformly bounded.
+Therefore, there exists a g ∈D such that g = Tg by Schauder’s ﬁxed point theorem.
+The claim now follows from Theorem 3.1.
+□
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+36
+POWER LAWS IN MARKET MICROSTRUCTURE
+Appendix C. Proof of impact asymptotics
+Under the hypotheses of Theorem 3.2 it is clear that m < F(x) < M for x ∈R.
+However, in view of the bounds given by (B.33) and (B.34) it is possible to obtain
+sharper bounds on any solution of (3.14).
+Theorem C.1. Suppose −∞< m < M < ∞and let Ψ± be as in (3.17). Then the
+following statements are valid.
+(1) There exists a maximal nondecreasing solution5 to
+R(x)
+=
+Z ∞
+0
+dz
+ 1
+N q(σ, x −z) + N −1
+N
+¯q(σ, x, z)
+ Z ∞
+−∞
+Ψ+(R(y))q(σ, z −y)dy
++E[V ]
+Z 0
+−∞
+dz
+ 1
+N q(σ, x −z) + N −1
+N
+¯q(σ, x, z)
+
+.
+(C.35)
+Moreover, this maximal solution is not constant and any solution of (3.14) is
+bounded from above by this maximal solution.
+(2) There exists a minimal nondecreasing solution6 to
+l(x)
+=
+E[V ]
+Z ∞
+0
+dz
+ 1
+N q(σ, x −z) + N −1
+N
+¯q(σ, x, z)
+
+(C.36)
++
+Z 0
+−∞
+dz
+ 1
+N q(σ, x −z) + N −1
+N
+¯q(σ, x, z)
+Z ∞
+−∞
+Ψ−(l(y))q(σ, z −y)dy
+
+.
+Moreover, this minimal solution is not constant and any solution of (3.14) is
+bounded from below by this minimal solution.
+Proof. (1) Let D be the space of nondecreasing functions on R that take values in
+[m, M] and deﬁne an operator T on D via
+Tr(x)
+=
+Z ∞
+0
+dz
+ 1
+N q(σ, x −z) + N −1
+N
+¯q(σ, x, z)
+ Z ∞
+−∞
+Ψ+(r(y))q(σ, z −y)dy
++E[V ]
+Z 0
+−∞
+dz
+ 1
+N q(σ, x −z) + N −1
+N
+¯q(σ, x, z)
+
+.
+First observe that Tr1 ≥Tr2 if r1 ≤r2 since Ψ+ is non-decreasing. Thus, setting
+r0 ≡m and rn = Trn−1 for n ≥1, we observe that rn is an increasing sequence
+of nondecreasing continuous functions taking values in [m, M]. Thus, the limit,
+r∞exists, is nondecreasing, and continuous by Dini’s theorem. It also follows
+from the dominated convergence theorem and that Ψ+ has only countably many
+discontinuities that r∞is a solution of (C.35).
+Now let E denote the set of all solutions of (C.35) in D and deﬁne
+R∗(x) := sup
+r∈E
+r(x).
+5R is a maximal nondecreasing solution if R(x) ≥r(x) for all x ∈R, where r is any other nondecreasing solution.
+6l is a minimal nondecreasing solution if l(x) ≤L(x) for all x ∈R, where L is any other nondecreasing
+solution.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+37
+Clearly, R∗takes values in [m, M].
+Due to the aforementioned monotonicity
+TR∗≥Tr = r for all r ∈E. Consequently, TR∗≥R∗. Setting g0 = R∗and
+gn = Tgn−1 for n ≥1, we again obtain an increasing sequence which converges
+to some element r of E. Moreover, r ≥R∗, which in turn implies r = R∗by the
+construction of R∗.
+Note that if R∗is constant, it has to equal M since R∗(∞) = M. However,
+under this assumption, the right side of (C.35) equals
+Z ∞
+0
+dz
+ 1
+N q(σ, x −z) + N −1
+N
+¯q(σ, x, z)
+
+(M1z>0 + E[V ]1z<0) < M
+as E[V ] < M. Thus, R∗cannot be constant.
+To show the ﬁnal assertion let F be a solution of (3.14). Since Ψ−≤E[V ] and
+that φ+
+F(z) ≤
+R ∞
+−∞Ψ+(F(y))q(σ, z −y)dy by (B.33), we deduce that
+F(x) ≤TF(x).
+As above, setting g0 = F and gn = Tgn−1 for n ≥1, we again obtain an increasing
+sequence which converges to a member of E, which proves the claim.
+(2) Since Ψ−≤E[V ], the proof follows the similar lines as above and, hence, omitted
+□
+We shall ﬁrst start with the asymptotics of solutions of (C.35) and (C.36) which
+will later allow us to compute the asymptotics of interest.
+Theorem C.2. Suppose that N > 1, −∞< m < M < ∞, and Assumption 4.1
+holds. Then, the following statements are valid:
+(1) Set G := M −R, where R is any nondecreasing solution of (C.35). Then, G
+is regularly varying of index ρ+ = Ψ+
+x (M)−1
+1−Ψ+
+x (M)
+N
+.
+(2) Set G := l −m, where l is any nondecreasing solution of (C.36). Then, G is
+regularly varying of index ρ−= Ψ−
+x (m)−1
+1−Ψ−
+x (m)
+N
+.
+Proof. Only the proof of the ﬁrst statement will be given, proof of the second being
+similar. We can assume without loss of generality that E[V ] = 0 since, otherwise, we
+can replace V by V −E[V ] and redeﬁne Ψ+ and R accordingly.
+By means of a straightforward change of variable we obtain for x > 0
+G(αx)
+G(α)
+= 1
+N
+Z ∞
+0
+dzq
+σ
+α, x −z
+ Z ∞
+−∞
+dyq
+σ
+α, z −y
+M −Ψ+(R(αy))
+M −R(α)
++N −1
+N
+Z ∞
+0
+dz¯q
+σ
+α, x, z
+ Z ∞
+−∞
+dyq
+σ
+α, y −z
+M −Ψ+(R(αy))
+M −R(α)
+.(C.37)
++
+M
+M −R(α)
+Z 0
+−∞
+dz
+ 1
+N q
+σ
+α, x −z
+
++ N −1
+N
+¯q
+σ
+α, x, z
+
+Observe that the measure q( σ
+α, x −z)dz converges to the Dirac measure at point x
+as α →∞.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+38
+POWER LAWS IN MARKET MICROSTRUCTURE
+Step 1: For y > 0
+(M −Ψ+(R(αy))
+M −R(α)
+= (M −R(αy))Ψ+
+x (y∗)
+M −R(α)
+for some y∗≥R(αy) by the Mean Value Theorem, where Ψ+
+x stands for the
+derivative of Ψ+, since Ψ+(M) = M. Thus,
+lim
+α→∞
+(M −Ψ+(R(αy))
+M −R(α)
+= (M −R(αy))Ψ+
+x (y∗)
+M −R(α)
+= Ψ+
+x (M) lim
+α→∞
+G(αy)
+G(α)
+(C.38)
+as R(∞) = M.
+Step 2: Let γ∗(x) := lim infα→∞
+G(αx)
+G(α) . Then, in view of the ﬁrst step, Fatou’s lemma
+yields
+γ∗(x) ≥Ψ+
+x (M)
+N
+γ∗(x) + N −1
+Nx Ψ+
+x (M)
+Z x
+0
+γ∗(y)dy.
+Thus, if γ∗(x) = 0 for some x > 0, it must be 0 for almost all x > 0. However,
+γ∗(x) ≥1 for all x ∈(0, 1) since G is decreasing. Thus, γ∗> 0 for all x > 0. In
+particular, γ∗is bounded away from 0 on [0, n] for any n ≥1.
+Step 3: It follows from Step 2 and Corollary 2.0.5 in Bingham et al. (1989) that
+xd
+C ≤G(αx)
+G(α) ≤Cxc forx ≥1 and α ≥α0
+for some constants c, d, C and α0. Moreover, since for x < 1 we have
+G(αx)
+G(α) =
+G(αxx−1)
+G(αx))
+−1
+,
+and αx > α0 for large enough α, we deduce that the mapping (α, x) 7→G(αx)
+G(α) is
+bounded when x belongs to bounded intervals in (0, ∞).
+Step 4: Moreover,
+(M −R(α))α ≥N −1
+N
+Z α
+0
+du
+Z ∞
+0
+dzq(σ, u −z)
+Z ∞
+−∞
+dy(M −Ψ+(R(y)))q(σ, z −y),
+which in turn implies
+1
+M −R(α) ≤Kα,
+α > 1 for some K < ∞.
+(C.39)
+Since G(αx)
+G(α) is bounded when x belongs to bounded intervals in (0, ∞) by Step 3,
+we obtain, for any ε > 0,
+lim
+α→∞
+Z ∞
+−∞
+dzq
+σ
+α, x−z
+ Z z+ε
+z−ε
+dyq
+σ
+α, z−y
+M −Ψ+(R(αy))
+M −R(α)
+= Ψ+
+x (M)γ(x), (C.40)
+where γ(x) := limα→∞
+G(αx)
+G(α) in view of (C.38) provided that the limit exists.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+39
+Furthermore, in view of (C.39) we also have
+Z ∞
+−∞
+dzq
+σ
+α, x −z
+ Z
+R\(z−ε,z+ε)
+dyq
+σ
+α, z −y
+M −Ψ+(R(αy))
+M −R(α)
+≤
+KM
+Z ∞
+−∞
+dzq
+σ
+α, x −z
+ Z
+R\(z−ε,z+ε)
+dyαq
+σ
+α, z −y
+
+→
+0 as α →∞.
+(C.41)
+Step 5: Applying the arguments of Step 4 to the second and the third integrals in (C.37)
+now shows that for x > 0
+γ(x) = Ψ+
+x (M)
+N
+γ(x) + N −1
+Nx Ψ+
+x (M)
+Z x
+0
+γ(y)dy.
+(C.42)
+In particular, limα→∞
+G(αx)
+G(α) exists.
+Using the initial condition that γ(1) = 1,
+direct manipulations show that
+γ(x) = xρ+.
+□
+Theorem C.3. Assume that N > 1, −∞< m < M < ∞, Π+ has a continuous
+derivative and Assumption 4.1 holds. Then, the following statements are valid:
+(1) Suppose that Ψ+
+x (M) = 1 and there exist an integer n ≥1 and a real constant
+k ∈(0, ∞) such that
+lim
+x→M
+Ψ+(x) −x
+(M −x)n+1 = 1
+k.
+Then, the following asymptotics7 hold:
+M −R(x) ∼
+
+N
+N −1
+n
+k
+−1
+n
+(log x)−1
+n,
+x →∞,
+(C.43)
+where R is any solution of (C.35).
+(2) Suppose that Ψ−
+x (m) = 1 and there exist an integer n ≥1 and a real constant
+k ∈(0, ∞) such that
+lim
+x→m
+x −Ψ−(x)
+(x −m)n+1 = 1
+k.
+Then
+l(x) −m ∼
+
+N
+N −1
+n
+k
+−1
+n
+(log |x|)−1
+n,
+x →−∞,
+(C.44)
+where l is any solution of (C.36).
+Proof. We shall again only give the proof the ﬁrst statement and assume without loss
+of generality that E[V ] = 0. For any α > 0 deﬁne
+r(α, x) := R(αx) −R(α)
+(M −R(α))n+1.
+7We write f(x) ∼g(x), x →±∞if limx→±∞
+f(x)
+g(x) = 1.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+40
+POWER LAWS IN MARKET MICROSTRUCTURE
+Straightforward manipulations similar to the ones employed in the proof of Theorem
+C.2 leads to
+r(α, x)
+=
+−
+R(α)
+(M −R(α))n+1
+Z 0
+−∞
+dz
+ 1
+N q
+σ
+α, x −z
+
++ N −1
+N
+¯q
+σ
+α, x, z
+
++
+Z ∞
+0
+dz
+ 1
+N q
+σ
+α, x −z
+
++ N −1
+N
+¯q
+σ
+α, x, z
+ Z ∞
+1
+dyq
+σ
+α, z −y
+Ψ+(R(αy)) −R(α)
+(M −R(α))n+1
++
+Z ∞
+0
+dz
+ 1
+N q
+σ
+α, x −z
+
++ N −1
+N
+¯q
+σ
+α, x, z
+ Z 1
+−∞
+dyq
+σ
+α, z −y
+Ψ+(R(αy)) −R(α)
+(M −R(α))n+1
+≤
+Z ∞
+0
+dz
+ 1
+N q
+σ
+α, x −z
+
++ N −1
+N
+¯q
+σ
+α, x, z
+ Z ∞
+1
+dyq
+σ
+α, z −y
+Ψ+(R(αy)) −R(α)
+(M −R(α))n+1
++
+Z ∞
+0
+dz
+ 1
+N q
+σ
+α, x −z
+
++ N −1
+N
+¯q
+σ
+α, x, z
+ Z 1
+−∞
+dyq
+σ
+α, z −y
+Ψ+(R(α)) −R(α)
+(M −R(α))n+1
+≤
+K +
+Z ∞
+0
+dz
+ 1
+N q
+σ
+α, x −z
+
++ N −1
+N
+¯q
+σ
+α, x, z
+ Z ∞
+1
+dyq
+σ
+α, z −y
+Ψ+(R(αy)) −R(α)
+(M −R(α))n+1
+for some K > 0 independent of α, where the ﬁrst inequality follows from that R ≥
+E[V ] = 0 and R(αy) ≤R(α) for y ≤1 and the second is due to the boundedness of
+Ψ+(R(αy))−R(α)
+(M−R(α))n+1 .
+Moreover, for y > 1
+Ψ+(R(αy)) −R(α)
+(M −R(α))n+1
+=
+Ψ+(R(αy)) −R(αy)
+(M −R(α))n+1
++ r(α, y)
+≤
+Ψ+(R(αy)) −R(αy)
+(M −R(αy))n+1
++ r(α, y)
+due to the monotonicity of R. Thus, utilizing the boundedness of Ψ+(R(αy))−R(α)
+(M−R(α))n+1
+once
+more, we arrive at
+r(α, x) ≤κ+
+Z ∞
+0
+dz
+ 1
+N q
+σ
+α, x −z
+
++ N −1
+N
+¯q
+σ
+α, x, z
+ Z ∞
+1
+dyq
+σ
+α, z−y
+
+r(α, y).
+(C.45)
+for some κ ∈(0, ∞) that is independent of α.
+Step 1: Let κ be as above and consider the operator T : C([1, ∞), [0, ∞)) →C([1, ∞), [0, ∞))
+deﬁned by
+Tf(x) = κ +
+Z ∞
+0
+dz
+ 1
+N q
+σ
+α, x −z
+
++ N −1
+N
+¯q
+σ
+α, x, z
+ Z ∞
+1
+dyq
+σ
+α, z −y
+
+f(y).
+Clearly T is increasing, i.e. Tf ≥Tg if f ≥g.
+Step 2: For z ≥0 and c ∈R,
+Z ∞
+c
+dyq
+σ
+α, z −y
+
+y = σ2
+α2q
+σ
+α, z −c
+
++ z
+Z ∞
+c−z
+dyq
+σ
+α, y
+
+≤z +
+σ
+α
+√
+2π.
+(C.46)
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+41
+Thus, if f(x) = βx + δ for some β > 0 and δ ≥0, we have
+Tf(x)
+≤
+δ + κ +
+√
+2σβ
+α√π + βx
+N + β N −1
+xN
+Z x
+0
+ydy
+=
+δ + κ +
+√
+2σβ
+α√π + βx(N + 1)
+2N
+≤δ + κ + β
+ √
+2σ
+α√π + 3x
+4
+!
+,
+where the last inequality is due to the hypothesis that N ≥2.
+In particular, given β = γκ for some γ > 4, Tf ≤f whenever α ≥
+4
+√
+2σγ
+√π(γ−4).
+Step 3: Deﬁne
+D(α) := {f : [1, ∞) →[0, ∞) : f is continuous and f(x) ≤5κx+
+1
+(M −R(α))n∀x ≥1}.
+and observe that the restriction of r(α, ·) to [1, ∞) belongs to D(α) for all α > 0.
+In view of Step 2 we have that TD(α) ⊂D(α) for large enough α. Thus, it
+admits a ﬁxed point in D(α) for large enough α by Tarski’s theorem (Theorem 1
+in Tarski (1955)). In fact, it admits a unique ﬁxed point. Indeed, if f and g are
+two ﬁxed points of T in D(α),
+(f−g)(x) =
+Z ∞
+0
+dz
+ 1
+N q
+σ
+α, x −z
+
++ N −1
+N
+¯q
+σ
+α, x, z
+ Z ∞
+1
+dyq
+σ
+α, z−y
+
+(f−g)(y).
+Thus,
+inf
+x≥1(f −g)(x)
+≥
+inf
+x≥1(f −g)(x) inf
+x≥1
+Z ∞
+0
+dz
+ 1
+N q
+σ
+α, x −z
+
++ N −1
+N
+¯q
+σ
+α, x, z
+ Z ∞
+1
+dyq
+σ
+α, z −y
+
+=
+c inf
+x≥1(f −g)(x)
+for some c ∈(0, 1). Since infx≥1(f −g)(x) < ∞, the above implies infx≥1(f −
+g)(x) ≤0. Applying the same argument to g −f, we deduce f = g.
+Moreover, taking f ∗(x) = 5κx and utilizing the previous step we deduce that
+the unique ﬁxed point is bounded from above by f ∗. Theorem 1 in Tarski (1955)
+now yields that r(α, ·) ≤f ∗for large enough α in view of (C.45).
+Step 4: In view of Step 3 we have that r(α, x) ≤10κ for all x ∈[1, 2] for large enough
+α. Thus, Theorem 3.1.5 in Bingham et al. (1989) yields r(α, ·) is bounded in
+bounded subintervals of (0, ∞) uniformly in α.
+Step 5: In view of Step 4 and using arguments similar to the ones used in Steps 4 and 5
+of the proof of Theorem C.2, we arrive at
+γ(x) = 1
+k + γ(x)
+N
++ N −1
+xN
+Z x
+0
+γ(y)dy,
+where γ(x) := limα→∞r(α, x) for x > 0.
+The unique solution of the above
+equation with γ(1) = 0 is given by
+γ(x) =
+N
+k(N −1) log x.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+42
+POWER LAWS IN MARKET MICROSTRUCTURE
+Step 6: Let g(x) := exp
+ (M −R(x))−n
+and observe that
+g(αx)
+g(α)
+=
+exp
+(M −R(α))n −(M −R(αx))n
+(M −R(α))n(M −R(αx))n
+
+=
+exp
+ 
+(R(αx) −R(α)) Pn−1
+i=0 (M −R(α)n−1−i(M −R(αx)i
+(M −R(α))n(M −R(αx))n
+!
+=
+exp
+ 
+R(αx) −R(α)
+(M −R(α))n+1
+M −R(α)
+M −R(αx)
+n−1
+X
+i=0
+ M −R(α)
+M −R(αx)
+n−1−i!
+,
+which converges to exp(nγ(x)) as α →∞since M −R is slowly varying at ∞.
+Thus,
+g(x) = x
+N
+N−1
+n
+k s(x),
+x > 0.
+where s is a slowly varying function at ∞. That is,
+(M −R(x))−n =
+N
+N −1
+n
+k log x + log s(x).
+Since limx→∞
+log s(x)
+log x
+= 0 (cf. Proposition 1.3.6 (i) and (iii) in Bingham et al.
+(1989)), we have
+M −R(x) ∼
+
+N
+N −1
+n
+k
+−1
+n
+(log x)−1
+n,
+x →∞.
+□
+Corollary C.1. Assume that N > 1, −∞< m < M < ∞, and Assumption 4.1
+holds. Then, the following statements are valid:
+(1) Suppose that there exist an integer n ≥0 and a real constant k ∈(0, ∞) such that
+lim
+x→M
+Ψ+(x) −x
+(M −x)n+1 = 1
+k.
+Then, Π+(R) is regularly varying at ∞of index −Ψ+
+x (M)
+1−Ψ+
+x (M)
+N
+, where R is any solution of (C.35).
+(2) Suppose that there exist an integer n ≥0 and a real constant k ∈(0, ∞) such that
+lim
+x→M
+x −Ψ−(x)
+(x −m)n+1 = 1
+k.
+Then, Π−(l) is regularly varying at −∞of index −
+Ψ−
+x (m)
+1−Ψ−
+x (m)
+N
+, where l is any solution
+of (C.36).
+Proof. Again we only prove the ﬁrst statement. The hypothesis implies Ψ+(x) −x is
+regularly varying with index n + 1 at M. Thus, Ψ+(R) −R is regularly varying of
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+43
+index (n + 1)ρ+ at ∞, which in particular implies
+lim
+x→∞
+Ψ+(R(x)) −R(x)
+R ∞
+x
+Ψ+(R(y))−R(y)
+y
+dy = −lim
+x→∞
+x(Ψ+
+x (R(x)R′(x) −R′(x))
+Ψ+(R(x)) −R(x)
+= −(n+1)ρ+, (C.47)
+in view of Theorem 1.5.11(ii) in Bingham et al. (1989).
+Moreover, direct manipulations yield Π+(x) =
+R M
+x
+Π+(y)dy
+Ψ+(x)−x , which in turn implies
+−Π+
+x (x)
+Π+(x) =
+Ψ+
+x (x)
+Ψ+(x)−x. Therefore,
+lim
+x→∞
+xΠ+
+x (R(x))R′(x)
+Π+(R(x))
+=
+−lim
+x→∞
+xR′(x)Ψ+
+x (R(x))
+Ψ+(R(x)) −R(x)
+=
+−(n + 1)ρ+ −lim
+x→∞
+xR′(x)
+Ψ+(R(x)) −R(x)
+=
+−(n + 1)ρ+ −k lim
+x→∞
+xR′(x)
+(M −R(x))n+1,
+where the second equality follows from (C.47).
+Note that if Ψ+
+x (M) < 1, n = 0 and k =
+1
+1−Ψ+(M). In this case,
+lim
+x→∞
+xR′(x)
+M −R(x) = −ρ+
+by Theorem Theorem 1.5.11(ii) in Bingham et al. (1989). Thus,
+lim
+x→∞
+xΠ+
+x (R(x))R′(x)
+Π+(R(x)
+= ρ+(k −1) = −Ψ+
+x (M)
+1 −Ψ+
+x (M)
+N
+.
+An application of Exercise 1.11.13 in Bingham et al. (1989) to 1/Π+(R) establishes
+the claim.
+Now, suppose Ψ+
+x (M) = 1 and observe that n is necessarily bigger than 0 and
+ρ+ = 0 in this case. Recall the function g in Step 6 of the proof of Theorem C.3 and
+note that
+lim
+x→∞
+xg′(x)
+g(x) =
+Nn
+(N −1)k
+by another application of Theorem 1.5.11(i) in Bingham et al. (1989). Since
+xg′(x)
+g(x) =
+xnR′(x)
+(M −R(x))n+1,
+we arrive at
+lim
+x→∞
+xR′(x)
+(M −R(x))n+1 =
+N
+k(N −1).
+Therefore,
+lim
+x→∞
+xΠ+
+x (R(x))R′(x)
+Π+(R(x)
+= −
+N
+N −1 = −Ψ+
+x (M)
+1 −Ψ+
+x (M)
+N
+,
+and we again conclude by means of Exercise 1.11.13 in Bingham et al. (1989).
+□
+We are now ready to prove the asymptotics that are of our main interest.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+44
+POWER LAWS IN MARKET MICROSTRUCTURE
+Proof of Theorem 4.1. We shall give a proof of the ﬁrst statement as the second one
+can be proven along similar lines.
+By means of a change of variable employed in earlier proofs we obtain for x > 0
+G(αx)
+G(α)
+= 1
+N
+Z ∞
+0
+dzq
+σ
+α, x −z
+ Z ∞
+−∞
+ν(α, z, dy)dyM −Ψ+(F(αy))
+M −F(α)
++N −1
+N
+Z ∞
+0
+dz¯q
+σ
+α, x, z
+ Z ∞
+−∞
+ν(α, z, dy)dyM −Ψ+(F(αy))
+M −F(α)
+(C.48)
++
+1
+M −F(α)
+Z 0
+−∞
+dz
+ 1
+N q
+σ
+α, x −z
+
++ N −1
+N
+¯q
+σ
+α, x, z
+
+φF(αz),
+where
+ν(α, z, dy) :=
+Π+(F(αy)q
+
+σ
+α, y −z
+
+)
+R ∞
+−∞duΠ+(F(αu)q
+
+σ
+α, u −z
+
+)
+dy.
+(C.49)
+We shall ﬁrst demonstrate that for z > 0 the measure ν(α, z, dy) converges to the
+Dirac measure at point z as α →∞. Indeed, let R∗be the maximal solution of (C.35)
+and observe that for any ε > 0 and z > 0
+ν(α, z, (R\(z−ε, z+ε))) =
+R
+R\(z−ε,z+ε) dyΠ+(F(αy)q
+
+σ
+α, y −z
+
+R ∞
+−∞duΠ+(F(αu)q
+
+σ
+α, u −z
+
+≤
+R
+R\(z−ε,z+ε) dyq
+
+σ
+α, y −z
+
+R ∞
+0 duΠ+(R(αu)q
+
+σ
+α, u −z
+,
+where the last inequality is due to the fact that F ≤R∗by Theorem C.1.
+Moreover, since Π+(R) is regularly varying at ∞with some index r ≤0 by Corollary C.1, we have Π+(R(αu) ≥c(1 + u)r−δαr−δ for some c > 0 for all u ≥0 by
+Proposition 1.3.6(v) in Bingham et al. (1989). Therefore,
+ν(α, z, (R\(z −ε, z + ε))) ≤
+αδ−r R
+R\(z−ε,z+ε) dyq
+
+σ
+α, y −z
+
+c
+R ∞
+0 du(1 + u)r−δq
+
+σ
+α, u −z
+ ,
+(C.50)
+the right side of which converges to 0 as α →∞. Similarly, we can show
+lim
+α→∞ν(α, z, (−∞, z −ε)) = 0.
+Step 1: Let γ∗(x) := lim infα→∞
+G(αx)
+G(α) . It follows from the same argument in Step 2 of the
+proof of Theorem C.2 that γ∗is bounded away from 0 on [0, n] for any n ≥1. This
+in turn implies the mapping (α, x) 7→G(αx)
+G(α) is bounded when x belongs to bounded
+intervals in (0, ∞) as in Step 3 of the same proof.
+Step 2: Moreover, since F ≤R∗, (C.39) yields
+1
+M −R(α) ≤Kα,
+α > 1 for some K < ∞.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+45
+Thus, the arguments of Steps 4 and 5 of the proof of Theorem C.2 are still applicable
+due to (C.50) and that Ψ−
+F ≤E[V ]. Consequently, γ still satisﬁes (C.42), where
+γ(x) = limx→∞
+G(αx)
+G(α) . In particular, γ(x) = xρ+.
+Step 3: If Ψ+
+x (M), the proof of Theorem C.3 can be applied verbatim once we show that
+f(α, ·) is bounded in [1, 2] uniformly in α, where
+f(α, x) := F(αx) −F(α)
+(M −F(α))n+1.
+Since F(α) is eventually larger than E[V ] and φF(z) ≤E[V ] for z < 0, we have for
+large enough α
+f(α, x)
+=
+Z 0
+−∞
+dz
+ 1
+N q
+σ
+α, x −z
+
++ N −1
+N
+¯q
+σ
+α, x, z
+ φF(αz) −F(α)
+(M −F(α))n+1
++
+Z ∞
+0
+dz
+ 1
+N q
+σ
+α, x −z
+
++ N −1
+N
+¯q
+σ
+α, x, z
+ Z ∞
+−∞
+ν(α, z, dy)Ψ+(F(αy)) −F(α)
+(M −F(α))n+1
+≤
+Z ∞
+0
+dz
+ 1
+N q
+σ
+α, x −z
+
++ N −1
+N
+¯q
+σ
+α, x, z
+ Z ∞
+−∞
+q
+σ
+α, z −y
+Ψ+(F(αy)) −F(α)
+(M −F(α))n+1
+,
+where the last inequality follows from Part (4) of Lemma B.1 since Ψ+(F(αy)) is
+increasing in y for positive α. Thus, f(α, ·) can be shown to be bounded by the same
+function that bounds r(α, ·) introduces in the proof of Theorem C.3. Repeating the
+remaining arguments therein yields the claim.
+□
+Proof of Corollary 4.1. It follows from Theorem 3.1 that F ∗must solve (3.14). In
+particular F ∗is regularly varying at ∞of order ρ+.
+In view of Proposition 2.2 we have
+M −IS∗(x)
+M −F ∗(x) = N
+Z 1
+0
+M −F ∗(xy)
+M −F ∗(x) yN−1dy = N
+R x
+0 (M −F ∗(y))yN−1dy
+xN(M −F ∗(x))
+.
+Observe that limy→∞(M −F ∗(y))y−ρ+ε = ∞by Proposition 1.3.6 (v) in Bingham
+et al. (1989). Thus,
+R ∞
+0 (M −F ∗(y))yN−1dy = ∞. This justiﬁes the application of
+the L’Hˆopital rule to arrive at
+lim
+x→∞
+M −IS∗(x)
+M −F ∗(x)
+=
+lim
+x→∞
+N(M −F ∗(x))xN−1
+NxN−1(M −F ∗(x)) −xNF ∗
+x(x)
+=
+1
+1 −limx→∞
+xF ∗
+x (x)
+N(M−F ∗(x))
+=
+1
+1 + ρ+
+N
+=
+N
+N + ρ+,
+where the third equality follows from Exercise 1.11.13 applied to 1/(M −F).
+Asymptotic relationship near −∞is proved the same way.
+□
+References
+Almgren R, Thum C, Hauptmann E, Li H (2005) Direct estimation of equity market impact.
+Risk 18(7):58–62.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+46
+POWER LAWS IN MARKET MICROSTRUCTURE
+Back K (1992) Insider trading in continuous time. The Review of Financial Studies 5(3):387–
+409.
+Back K, Baruch S (2013) Strategic liquidity provision in limit order markets. Econometrica
+81(1):363–392.
+Bershova N, Rakhlin D (2013) The non-linear market impact of large trades: evidence from
+buy-side order ﬂow. Quantitative Finance 13(11):1759–1778.
+Biais B, Hillion P, Spatt C (1995) An empirical analysis of the limit order book and the
+order ﬂow in the paris bourse. the Journal of Finance 50(5):1655–1689.
+Biais B, Martimort D, Rochet JC (2000) Competing mechanisms in a common value environment. Econometrica 68(4):799–837.
+Bingham NH, Goldie CM, Teugels JL (1989) Regular variation, volume 27 (Cambridge
+university press).
+Bloomﬁeld R, O’hara M, Saar G (2009) How noise trading aﬀects markets: An experimental
+analysis. The Review of Financial Studies 22(6):2275–2302.
+Chakravarty S (2001) Stealth-trading: Which traders’ trades move stock prices? Journal
+of Financial Economics 61(2):289–307.
+Farmer JD, Gerig A, Lillo F, Waelbroeck H (2013) How eﬃciency shapes market impact.
+Quantitative Finance 13(11):1743–1758.
+Foucault T, Kadan O, Kandel E (2005) Limit order book as a market for liquidity. The
+review of ﬁnancial studies 18(4):1171–1217.
+Gabaix X, Gopikrishnan P, Plerou V, Stanley HE (2003) A theory of power-law distributions
+in ﬁnancial market ﬂuctuations. Nature 423(6937):267–270.
+Gabaix X, Gopikrishnan P, Plerou V, Stanley HE (2006) Institutional investors and stock
+market volatility. The Quarterly Journal of Economics 121(2):461–504.
+Glosten LR (1994) Is the electronic open limit order book inevitable?
+The Journal of
+Finance 49(4):1127–1161.
+Goettler RL, Parlour CA, Rajan U (2005) Equilibrium in a dynamic limit order market.
+The Journal of Finance 60(5):2149–2192.
+Gopikrishnan P, Plerou V, Gabaix X, Stanley HE (2000) Statistical properties of share
+volume traded in ﬁnancial markets. Physical review e 62(4):R4493.
+Holden CW, Subrahmanyam A (1992) Long-lived private information and imperfect competition. The Journal of Finance 47(1):247–270.
+Kyle AS (1985) Continuous auctions and insider trading. Econometrica 53(6):1315–1335.
+Lillo F, Szabolcs M, Farmer JD (2005) Theory for long memory in supply and demand.
+Physical review e 71(6):066122.
+Parlour CA (1998) Price dynamics in limit order markets. The Review of Financial Studies
+11(4):789–816.
+Perold AF (1988) The implementation shortfall: Paper versus reality. Journal of Portfolio
+Management 14(3):4.
+Plerou V, Gopikrishnan P, Nunez Amaral LA, Stanley EH (1999) Scaling of the distribution
+of price ﬂuctuations of individual companies. Phys. Rev. E 60:6519.
+Potters M, Bouchaud JP (2003) More statistical properties of order books and price impact.
+Physica A: Statistical Mechanics and its Applications 324(1-2):133–140.
+Electronic copy available at: https://ssrn.com/abstract=4042844
+
+POWER LAWS IN MARKET MICROSTRUCTURE
+47
+Rock K (1989) The specialist’s order book and price anomalies. Technical report, Harvard
+University.
+Ro¸su I (2009) A dynamic model of the limit order book. The Review of Financial Studies
+22(11):4601–4641.
+Sand˚as P (2001) Adverse selection and competitive market making: Empirical evidence
+from a limit order market. The review of ﬁnancial studies 14(3):705–734.
+Tarski A (1955) A lattice-theoretical ﬁxpoint theorem and its applications. Paciﬁc journal
+of Mathematics 5(2):285–309.
+Torre N (1997) BARRA Market impact model handbook (Berkeley).
+Vaglica G, Lillo F, Moro E, Mantegna RN (2008) Scaling laws of strategic behavior and
+size heterogeneity in agent dynamics. Physical review e 77(77):036110.
+Zarinelli E, Treccani M, Farmer JD, Lillo F (2015) Beyond the square root: evidence for
+logarithmic dependence of market impact on size and participation rate. Market Microstructure and Liquidity 1(2).
+Electronic copy available at: https://ssrn.com/abstract=4042844

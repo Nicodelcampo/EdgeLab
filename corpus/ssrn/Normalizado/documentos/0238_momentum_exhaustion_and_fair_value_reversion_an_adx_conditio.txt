@@ -1,0 +1,1321 @@
+Momentum Exhaustion and Fair Value Reversion:
+An ADX-Conditioned VWAP Strategy in FX
+Markets
+Amaanullah Bhatti (Hafzan Osmanoglu)
+Symbiosis International University
+ORCID: 0009-0000-6922-0739
+amaanullahbhatti@outlook.com
+Working Paper
+March 22, 2026
+Abstract
+This paper develops a regime-conditioned trading framework for foreign exchange markets that
+exploits intraday mean reversion toward a volume-weighted fair value benchmark under conditions of momentum exhaustion. Three dimensions are integrated: price location relative to
+previous-session extremes, deviation from the Volume Weighted Average Price (VWAP), and
+trend strength as measured by Wilder’s Average Directional Index (ADX). The strategy generates short (long) signals when price reaches prior-session highs (lows) while simultaneously
+exhibiting large positive (negative) VWAP deviations and a turning-over ADX, which collectively indicate that directional momentum is fading. The model bridges market-microstructure
+theory — specifically the role of VWAP as an institutional benchmark price — with technical
+regime filtering, contributing a theoretically grounded, state-conditioned mean-reversion framework to the FX literature. Formal backtesting and performance attribution are left to future
+work.
+Keywords: mean reversion, VWAP, Average Directional Index, momentum exhaustion, foreign
+exchange, regime conditioning, market microstructure
+JEL Classification: G12, G14, G15, C58
+The authors declare no conflicts of interest. No empirical results are reported in this draft; the paper is limited to
+theoretical development and model specification.
+
+1
+Momentum Exhaustion and Fair Value Reversion in FX Markets
+Contents
+1
+Introduction
+2
+2
+Literature Review
+2
+2.1
+Mean Reversion in Foreign Exchange Markets . . . . . . . . . . . . . . . . . . . . . .
+2
+2.2
+VWAP as an Institutional Benchmark and Fair Value Proxy . . . . . . . . . . . . . .
+3
+2.3
+Directional Indicators and Regime Conditioning . . . . . . . . . . . . . . . . . . . . .
+3
+2.4
+Previous-Day Extremes as Liquidity Nodes . . . . . . . . . . . . . . . . . . . . . . . .
+4
+3
+Theoretical Framework
+4
+3.1
+Economic Hypothesis . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+4
+3.2
+Market Microstructure Interpretation . . . . . . . . . . . . . . . . . . . . . . . . . . .
+5
+4
+Model Specification
+5
+4.1
+VWAP: Definition and Properties . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+5
+4.2
+Price Deviation from Fair Value . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+5
+4.3
+Previous-Session Extremes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+4.4
+Wilder’s Average Directional Index
+. . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+4.5
+Regime Filter . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+5
+Trading Signal Derivation
+7
+5.1
+Composite Signal . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+5.2
+Economic Interpretation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+5.3
+Target and Risk Management . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+8
+6
+Implementation Considerations
+8
+6.1
+Data and Session Definition . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+8
+6.2
+Parameter Calibration
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+8
+6.3
+Transaction Costs and Execution
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+9
+6.4
+Applicability Across Currency Pairs . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+9
+7
+Planned Empirical Programme
+9
+8
+Conclusion
+10
+A Python Implementation of the Full Strategy Pipeline
+13
+
+2
+Momentum Exhaustion and Fair Value Reversion in FX Markets
+1.
+Introduction
+Foreign exchange markets are the largest and most liquid financial markets in the world, with daily
+turnover exceeding $7.5 trillion as of April 2022 (BIS, 2022). Despite their depth, empirical studies have documented persistent short-horizon inefficiencies: intraday price dynamics in FX exhibit
+discernible patterns linked to order flow, liquidity provision, and the behaviour of institutional participants (Evans and Lyons, 2002; Lyons, 2001). One of the most studied of these patterns is mean
+reversion — the tendency of prices that have deviated from equilibrium to return toward it over short
+time horizons (Poterba and Summers, 1988; Lo and MacKinlay, 1988).
+A fundamental challenge in exploiting mean-reversion strategies is distinguishing genuine exhaustion from the early stages of a trending move. Acting against a strong trend generates severe adverse
+excursion and ultimately negative expected returns (Jegadeesh, 1993). This identification problem
+motivates our regime-conditioning approach: we restrict mean-reversion trades to states in which
+trend strength, as measured by Wilder’s Average Directional Index (ADX), is elevated but no longer
+increasing, signalling that directional momentum is decaying rather than building.
+The equilibrium anchor in our framework is the Volume Weighted Average Price (VWAP). Originally developed as an execution benchmark for institutional trading desks (Berkowitz et al., 1988),
+VWAP has accumulated a substantial theoretical rationale as a measure of intraday fair value —
+the price at which the volume-weighted average transaction has occurred. Algorithmic execution
+strategies that seek to minimise market impact routinely target VWAP, creating a gravitational pull
+toward it from both above and below (Kissell and Glantz, 2003; Madhavan, 2002). This institutional
+anchoring provides the economic mechanism driving the reversion dynamics our strategy seeks to
+exploit.
+The spatial trigger for signal generation is proximity to previous-session extremes (prior-day high
+and low). These levels act as liquidity nodes: limit orders, stop orders, and option barriers tend to
+cluster at psychologically and technically salient price levels, creating zones of potential exhaustion
+and reversal (Osler, 2001, 2003). When price reaches these levels in a state of momentum decay, the
+probability of continuation diminishes relative to reversion.
+The remainder of this paper is structured as follows. Section 2 reviews the relevant literature
+on mean reversion in FX markets, VWAP-based strategies, and directional-index conditioning. Section 3 sets out the theoretical framework and economic intuition. Section 4 provides the formal
+model specification. Section 5 derives the composite trading signal. Section 6 discusses implementation considerations. Section 7 describes the planned empirical programme. Section 8 concludes.
+Appendix A provides a full Python implementation of the strategy pipeline.
+2.
+Literature Review
+2.1. Mean Reversion in Foreign Exchange Markets
+Mean reversion in asset prices has been studied extensively since the seminal papers of Poterba and
+Summers (1988) and Lo and MacKinlay (1988), who documented negative autocorrelation in stock
+returns over short horizons. In FX markets, the evidence for intraday mean reversion is generally
+stronger than at daily or weekly frequencies, owing to the dominant role of market-making and
+
+3
+Momentum Exhaustion and Fair Value Reversion in FX Markets
+liquidity provision (Lyons, 2001).
+Evans and Lyons (2002) demonstrate that order flow is the primary driver of short-run exchangerate movements, with prices reverting once the informational content of order flow dissipates. Breedon
+and Ranaldo (2010) show that large one-sided order flow imbalances at fixing windows generate
+transient price dislocations that subsequently reverse, consistent with a temporary market-impact
+mechanism. Menkhoff et al. (2012) provide evidence that technical trading rules, which typically
+exploit mean reversion or trend exhaustion, generate positive returns in FX markets even after
+accounting for transaction costs, particularly at intraday frequencies.
+2.2. VWAP as an Institutional Benchmark and Fair Value Proxy
+The Volume Weighted Average Price was formalised as an execution benchmark in the work of
+Berkowitz et al. (1988), who proposed it as a measure of trading performance relative to market
+conditions. Since then, it has become the dominant intraday execution benchmark for institutional
+equity and FX desks worldwide (Kissell and Glantz, 2003).
+Madhavan (2002) analyses the implications of VWAP-targeting behaviour for price dynamics and
+shows that when a significant share of market participants target VWAP, prices exhibit a well-defined
+gravitational pull toward the VWAP level throughout the trading session. This is because agents
+seeking to execute at VWAP provide mean-reverting liquidity when prices deviate significantly from
+it.
+In the FX microstructure literature, Ito and Yamada (2012) document that VWAP deviations at
+the Tokyo fix are systematically exploited by informed traders and subsequently corrected, suggesting
+that VWAP carries genuine equilibrium content. Butz and Oomen (2019) extend this analysis and
+formalise the relationship between VWAP, order-flow imbalance, and price impact in electronic FX
+markets, providing a structural foundation for VWAP-based reversion strategies.
+2.3. Directional Indicators and Regime Conditioning
+Wilder’s Directional Movement System, introduced in Wilder (1978), provides a family of indicators
+— the Positive Directional Indicator (+DI), Negative Directional Indicator (−DI), and the Average Directional Index (ADX) — designed to quantify the strength of a trend independently of its
+direction. The ADX has been widely adopted in academic and practitioner research as a regimeconditioning tool: values above a threshold (commonly 25) are interpreted as trending regimes, while
+values below suggest range-bound or mean-reverting conditions (Colby, 2003).
+Katz and McCormick (2000) demonstrate empirically that conditioning mean-reversion strategies
+on low-to-moderate ADX environments substantially improves performance relative to unconditional
+implementations, reducing exposure to breakout losses.
+Chan (2013) formalises this intuition in
+a regime-switching framework, showing that the expected return to counter-trend strategies is a
+decreasing function of current directional strength.
+Our contribution departs from this prior work in two respects. First, we condition not on the level
+of ADX alone, but on its derivative — specifically, we require that ADX is elevated but no longer
+rising, which is a more precise signature of exhaustion. Second, we combine this regime filter with
+a market-microstructure anchor (VWAP) and a spatial trigger (previous-day extremes), creating a
+
+4
+Momentum Exhaustion and Fair Value Reversion in FX Markets
+multi-dimensional signal with distinct theoretical motivation for each component.
+2.4. Previous-Day Extremes as Liquidity Nodes
+The role of psychologically salient price levels in FX markets has been documented by Osler (2001),
+who finds significant clustering of stop-loss and take-profit orders at round numbers and prior-session
+extremes. This clustering creates self-reinforcing dynamics: as price approaches a prior high, stop
+orders above it and option barriers at it generate a transient increase in selling pressure once those
+levels are penetrated or approached, which can catalyse reversal (Osler, 2003).
+De Grauwe and Grimaldi (2006) provide a model in which heterogeneous agents — chartists
+and fundamentalists — interact, producing endogenous cycles of overshooting and reversion around
+fundamental value. Prior-session extremes naturally serve as coordination points for the chartist
+component of this population, reinforcing their role as spatial triggers for reversals.
+3.
+Theoretical Framework
+3.1. Economic Hypothesis
+The strategy rests on the following central hypothesis:
+When an FX exchange rate approaches the prior session’s extreme prices while exhibiting a
+large deviation from intraday VWAP, and directional momentum is elevated but no longer
+increasing, the probability of mean reversion toward VWAP in the near term exceeds the
+unconditional baseline.
+This hypothesis has three interlocking economic foundations.
+Foundation 1 — Institutional fair-value anchoring.
+A large fraction of institutional FX
+volume is executed algorithmically via VWAP-targeting strategies. When price deviates significantly
+above (below) VWAP, algorithmic sell (buy) orders accumulate, creating a restoring force. The larger
+the deviation, the stronger the expected restoring force.
+Foundation 2 — Liquidity exhaustion at session extremes.
+Prior-day highs and lows represent levels at which the market previously halted. Stop-loss orders, option barriers, and psychological
+resistance concentrate at these levels. When price revisits them, the pool of momentum-driven buyers (sellers) willing to pay up (sell down) is typically smaller than at the first visit, while the pool of
+fade-oriented liquidity providers is larger.
+Foundation 3 — Momentum decay as an exhaustion signal.
+A rising ADX indicates that
+a trend is gathering strength; the time to fade a trend is not when it is accelerating. However, when
+ADX begins to flatten or decline from an elevated level, the marginal trend-following participant is
+no longer being rewarded, reducing fresh buying (selling) pressure and increasing the susceptibility
+of price to reversal.
+
+5
+Momentum Exhaustion and Fair Value Reversion in FX Markets
+The three conditions are individually necessary but not jointly sufficient; their simultaneous
+occurrence produces a significantly more concentrated distribution of subsequent returns skewed
+toward reversion.
+3.2. Market Microstructure Interpretation
+Let the exchange rate at time t within a session be Pt. Define the session VWAP as the volumeweighted centre of gravity of all transactions from session open to time t. A price Pt > VWAPt
+implies that the marginal buyer has transacted above the average price paid by all participants in
+the session. From the perspective of VWAP-benchmarked institutions, Pt represents an unfavourable
+execution level relative to their benchmark, reducing their willingness to buy and increasing their
+willingness to sell. The reverse holds for Pt < VWAPt.
+This institutional microstructure provides the mechanism through which VWAP functions as an
+equilibrium attractor, a role formalised by Madhavan (2002) and empirically confirmed by Butz and
+Oomen (2019).
+4.
+Model Specification
+4.1. VWAP: Definition and Properties
+Let Pi denote the transaction price at the i-th trade within a session, and Vi the volume transacted
+at that price. The intraday VWAP at time t is defined as the ratio of cumulative price-volume to
+cumulative volume over all trades from session open through t:
+VWAPt =
+Nt
+X
+i=1
+Pi Vi
+Nt
+X
+i=1
+Vi
+,
+(1)
+where Nt is the number of trades up to time t. When price data is aggregated into bars of equal
+width ∆t, the standard approximation replaces individual transaction prices with the bar’s typical
+price:
+ˆPt = Ht + Lt + Ct
+3
+,
+(2)
+where Ht, Lt, and Ct are the bar high, low, and close respectively, and equation (1) is computed
+using ˆPt in place of Pi. This approximation is standard in the practitioner literature (Kissell and
+Glantz, 2003).
+4.2. Price Deviation from Fair Value
+The signed, proportional deviation of the current price from VWAP is:
+Dt = Pt −VWAPt
+VWAPt
+.
+(3)
+A threshold θ > 0 partitions the state space into three regions: (i) Dt > θ — price is materially
+
+6
+Momentum Exhaustion and Fair Value Reversion in FX Markets
+overextended above fair value; (ii) Dt < −θ — price is materially underextended below fair value;
+and (iii) |Dt| ≤θ — price is within the fair-value band. The parameter θ should be calibrated from
+historical data as a function of the currency pair’s intraday volatility regime.
+4.3. Previous-Session Extremes
+Denote the prior session’s high and low by Ht−1 and Lt−1 respectively, where the subscript t−1 refers
+to the calendar session immediately preceding the current one. These levels are treated as fixed
+throughout the current session and serve as spatial boundary conditions that trigger the signal when
+breached or approached.
+4.4. Wilder’s Average Directional Index
+The ADX is constructed from the directional movement indicators +DMt and −DMt, defined for a
+bar of length ∆t as:
++DMt = max
+ Ht −Ht−1, 0
+
+· 1
+
+Ht −Ht−1 > Lt−1 −Lt
+
+,
+(4)
+−DMt = max
+ Lt−1 −Lt, 0
+
+· 1
+
+Lt−1 −Lt > Ht −Ht−1
+
+.
+(5)
+The True Range is:
+TRt = max
+ Ht −Lt, |Ht −Ct−1|, |Lt −Ct−1|
+
+.
+(6)
+Let e
+X(n)
+t
+denote the n-period Wilder smoothed average of series Xt, defined recursively as:
+e
+X(n)
+t
+= (n −1) e
+X(n)
+t−1 + Xt
+n
+.
+(7)
+The smoothed directional indicators and True Range are:
++DI(n)
+t
+= 100 ·
+^
++DM
+(n)
+t
+f
+TR
+(n)
+t
+,
+−DI(n)
+t
+= 100 ·
+^
+−DM
+(n)
+t
+f
+TR
+(n)
+t
+.
+(8)
+The Directional Movement Index is:
+DXt = 100 ·
++DI(n)
+t
+−−DI(n)
+t
+
++DI(n)
+t
++ −DI(n)
+t
+,
+(9)
+and the ADX is the Wilder smoothed average of DX:
+ADXt = g
+DX
+(n)
+t .
+(10)
+Following Wilder (1978), the standard lookback period is n = 14.
+
+7
+Momentum Exhaustion and Fair Value Reversion in FX Markets
+4.5. Regime Filter
+The strategy restricts entries to states in which trend strength is both materially elevated and
+decelerating. Define the cross-sectional mean ADX over the estimation window [t−m, t] as:
+ADXt =
+1
+m
+t
+X
+k=t−m
+ADXk.
+(11)
+The momentum-strength condition is:
+ADXt > ADXt,
+(12)
+and the momentum-decay condition is:
+∆ADXt ≡ADXt −ADXt−1 ≤0.
+(13)
+Condition (12) ensures we are in a genuinely trending environment — not simply a quiet, rangebound market. Condition (13) ensures that this trend is losing strength at the margin, which is the
+defining feature of momentum exhaustion.
+Remark 1. The use of ∆ADXt ≤0 rather than a strictly negative first derivative imposes a weak
+condition: ADX must not be increasing. A strict inequality (∆ADXt < 0) provides a cleaner exhaustion signal at the cost of fewer signals. The optimal threshold is an empirical question to be addressed
+in the backtesting section.
+5.
+Trading Signal Derivation
+5.1. Composite Signal
+Combining the spatial, microstructural, and regime conditions, the composite trading signal St ∈
+{−1, 0, +1} is defined as:
+St =
+
+
+
+
+
+
+
+
+
+
+
+−1,
+Pt ≥Ht−1,
+Dt > θ,
+ADXt > ADXt,
+∆ADXt ≤0
++1,
+Pt ≤Lt−1,
+Dt < −θ,
+ADXt > ADXt,
+∆ADXt ≤0
+0,
+otherwise,
+(14)
+where the parameters are:
+• Ht−1, Lt−1: previous-session high and low;
+• θ > 0: VWAP-deviation threshold (to be calibrated);
+• ADXt: rolling mean ADX over a window of length m;
+• ∆ADXt = ADXt −ADXt−1: first difference of ADX.
+5.2. Economic Interpretation
+Short signal (St = −1).
+All four conditions must hold simultaneously.
+Price has reached or
+exceeded the prior session’s high (Pt ≥Ht−1), confirming spatial proximity to a known liquidity
+
+8
+Momentum Exhaustion and Fair Value Reversion in FX Markets
+node.
+The positive VWAP deviation (Dt > θ) indicates that price has moved materially above
+institutional fair value, creating a restoring incentive for VWAP-benchmarked sellers. The ADXlevel condition (ADXt > ADXt) confirms that the preceding move was trend-driven rather than
+noise. Finally, the momentum-decay condition (∆ADXt ≤0) signals that the directional energy
+sustaining the move is fading. The equilibrium target for the subsequent reversion is VWAPt.
+Long signal (St = +1).
+The symmetric case: price is at or below the prior low, materially below
+fair value, and in a decelerating trend. Reversion toward VWAP is expected.
+Null signal (St = 0).
+Any failure of a single condition is sufficient to suppress the signal. In
+particular, when ∆ADXt > 0, the trend is strengthening and the strategy deliberately abstains to
+avoid exposure to breakout continuation.
+5.3. Target and Risk Management
+The natural profit target for a short (long) position initiated at P0 ≥Ht−1 (resp. P0 ≤Lt−1) is
+VWAPt∗, where t∗is the time at which the position is closed. Because VWAP is itself dynamic,
+the target moves through the session. A common operationalisation is to close the position either
+(i) when price crosses VWAPt from the entry side, or (ii) at session close, whichever occurs first.
+Stop placement is theoretically motivated by the spatial trigger: a short entered at Ht−1 should
+be stopped out on a confirmed close above Ht−1 by a margin proportional to the Average True Range,
+consistent with the risk management framework of Wilder (1978).
+6.
+Implementation Considerations
+6.1. Data and Session Definition
+FX markets trade continuously, which requires an explicit session definition for VWAP computation
+and for identifying prior-session extremes. Common choices are (i) the London session (07:00–17:00
+GMT), (ii) the New York session (13:00–22:00 GMT), and (iii) the 24-hour rolling session reset at
+midnight New York time. The session definition affects both VWAP anchoring and the relevance of
+prior-session extremes as liquidity nodes; it should be chosen to align with the liquidity profile of the
+target currency pair (Andersen and Bollerslev, 1998).
+6.2. Parameter Calibration
+The model contains four free parameters requiring empirical calibration:
+(i) The VWAP-deviation threshold θ, which governs the minimum overextension required to trigger
+a signal. A natural starting point is to set θ equal to one intraday standard deviation of Dt.
+(ii) The ADX lookback n, standardly set at 14 (Wilder, 1978), but potentially adjusted for higherfrequency data where the effective lookback in calendar time should remain economically meaningful.
+
+9
+Momentum Exhaustion and Fair Value Reversion in FX Markets
+(iii) The ADX mean-window m for computing ADXt, which determines the reference period against
+which current trend strength is evaluated.
+(iv) The bar frequency ∆t, which governs the trade-off between signal frequency and noise. At very
+short frequencies (e.g., tick-by-tick), microstructure noise dominates; at very long frequencies
+(e.g., daily), the intraday anchoring properties of VWAP are lost. The range 5–60 minutes is
+typical for intraday FX strategies.
+6.3. Transaction Costs and Execution
+Mean-reversion strategies are sensitive to transaction costs because positions are short-lived and
+profit margins per trade are modest. The round-trip bid-ask spread in major currency pairs (EUR/USD, USD/JPY, GBP/USD) is typically 0.1–0.5 basis points for institutional participants in
+normal conditions (BIS, 2022). Net-of-cost performance evaluation is essential; signal profitability in
+gross terms is not a sufficient indicator of viability.
+6.4. Applicability Across Currency Pairs
+The model is theoretically applicable to any exchange rate for which intraday volume data of sufficient quality is available to compute a meaningful VWAP. In practice, this restricts the universe
+to the major and cross-currency pairs traded on electronic platforms (EBS, Reuters Matching, and
+multilateral trading facilities), and excludes pairs dominated by voice brokering where volume data
+is unreliable (King et al., 2013).
+7.
+Planned Empirical Programme
+The theoretical framework presented here will be subjected to systematic empirical evaluation in
+subsequent work. The planned programme includes:
+Data.
+High-frequency tick and bar data for at least six major currency pairs (EUR/USD, GBP/USD,
+USD/JPY, USD/CHF, AUD/USD, USD/CAD) over a minimum of five years, sourced from a tier-1
+electronic venue or reputable data vendor.
+Backtesting methodology.
+Walk-forward out-of-sample evaluation with rolling parameter reestimation to prevent look-ahead bias. Performance will be evaluated on standard metrics including
+the Sharpe ratio (Sharpe, 1994), Calmar ratio, maximum drawdown, and the information ratio
+relative to a passive carry benchmark.
+Statistical significance.
+Given the well-documented dangers of data-snooping in technical trading
+strategy research (Sullivan et al., 1999; White, 2000), statistical significance will be assessed using
+White’s Reality Check and the superior predictive ability test of Hansen (2005).
+Regime decomposition.
+Performance will be decomposed across market regimes (trending vs.
+mean-reverting, high vs. low volatility, crisis vs. normal) to assess the conditions under which the
+strategy is most effective and to identify potential structural sources of return.
+
+10
+Momentum Exhaustion and Fair Value Reversion in FX Markets
+Transaction cost sensitivity.
+A break-even spread analysis will be conducted to establish the
+maximum round-trip transaction cost at which the strategy remains profitable, providing a practical
+bound on the universe of eligible participants.
+8.
+Conclusion
+This paper has presented a theoretically grounded, multi-dimensional framework for identifying
+mean-reversion opportunities in intraday FX markets.
+The model integrates three conceptually
+distinct but complementary components: VWAP as a microstructure-based measure of institutional
+fair value, prior-session extremes as spatial triggers reflecting the clustering of contingent orders, and
+ADX with its first difference as a regime filter that confines entry to states of momentum exhaustion
+rather than momentum continuation.
+The strategy’s theoretical contribution lies in the precise characterisation of the joint conditions
+under which reversion is most probable. Each individual condition is well-grounded in prior literature;
+their combination into a coherent, state-conditioned signal architecture represents an advance over
+single-indicator approaches. By explicitly avoiding entry when ∆ADXt > 0, the model provides
+a principled solution to the trend-versus-reversion identification problem that has long challenged
+mean-reversion practitioners.
+Formal empirical evaluation — incorporating backtesting, transaction cost analysis, and statistical significance testing — is deferred to the companion paper. The present work establishes the
+theoretical scaffolding necessary to interpret those results within a coherent economic framework.
+
+11
+Momentum Exhaustion and Fair Value Reversion in FX Markets
+References
+Andersen, T. G. and Bollerslev, T. (1998). Deutsche mark-dollar volatility:
+Intraday activity
+patterns, macroeconomic announcements, and longer run dependencies. Journal of Finance,
+53(1):219–265.
+Berkowitz, S. A., Logue, D. E., and Noser, E. A. (1988). The total cost of transactions on the NYSE.
+Journal of Finance, 43(1):97–112.
+Bank for International Settlements (2022). Triennial Central Bank Survey: OTC Foreign Exchange
+Turnover in April 2022. BIS, Basel.
+Breedon, F. and Ranaldo, A. (2010). Intraday patterns in FX returns and order flow. Journal of
+Money, Credit and Banking, 45(5):953–965.
+Butz, M. and Oomen, R. (2019). Internalisation by electronic FX spot dealers. Quantitative Finance,
+19(1):35–56.
+Chan, E. (2013). Algorithmic Trading: Winning Strategies and Their Rationale. Wiley, Hoboken,
+NJ.
+Colby, R. W. (2003). The Encyclopedia of Technical Market Indicators, 2nd edn. McGraw-Hill, New
+York.
+De Grauwe, P. and Grimaldi, M. (2006). The Exchange Rate in a Behavioral Finance Framework.
+Princeton University Press, Princeton, NJ.
+Evans, M. D. and Lyons, R. K. (2002). Order flow and exchange rate dynamics. Journal of Political
+Economy, 110(1):170–180.
+Hansen, P. R. (2005). A test for superior predictive ability. Journal of Business & Economic Statistics,
+23(4):365–380.
+Ito, T. and Yamada, M. (2012). Intraday seasonality in activities of the foreign exchange markets:
+Evidence from the electronic broking system. Journal of the Japanese and International Economies,
+26(3):394–420.
+Jegadeesh, N. (1993). An empirical examination of information, differences of opinion, and trading
+activity. Journal of Finance, 48(5):1883–1888.
+Katz, J. O. and McCormick, D. L. (2000). The Encyclopedia of Trading Strategies. McGraw-Hill,
+New York.
+King, M. R., Osler, C. L., and Rime, D. (2013). The market microstructure approach to foreign
+exchange: Looking back and looking forward. Journal of International Money and Finance, 38:95–
+119.
+Kissell, R. and Glantz, M. (2003). Optimal Trading Strategies. AMACOM, New York.
+
+12
+Momentum Exhaustion and Fair Value Reversion in FX Markets
+Lo, A. W. and MacKinlay, A. C. (1988). Stock market prices do not follow random walks: Evidence
+from a simple specification test. Review of Financial Studies, 1(1):41–66.
+Lyons, R. K. (2001). The Microstructure Approach to Exchange Rates. MIT Press, Cambridge, MA.
+Madhavan, A. (2002). VWAP strategies. Trading, Spring:32–38.
+Menkhoff, L., Sarno, L., Schmeling, M., and Schrimpf, A. (2012). Currency momentum strategies.
+Journal of Financial Economics, 106(3):660–684.
+Osler, C. L. (2001). Currency orders and exchange rate dynamics: An explanation for the predictive
+success of technical analysis. Journal of Finance, 58(5):1791–1819.
+Osler, C. L. (2003). Support for resistance: Technical analysis and intraday exchange rates. Federal
+Reserve Bank of New York Economic Policy Review, 6(2):53–68.
+Poterba, J. M. and Summers, L. H. (1988). Mean reversion in stock prices: Evidence and implications.
+Journal of Financial Economics, 22(1):27–59.
+Sharpe, W. F. (1994). The Sharpe ratio. Journal of Portfolio Management, 21(1):49–58.
+Sullivan, R., Timmermann, A., and White, H. (1999). Data-snooping, technical trading rule performance, and the bootstrap. Journal of Finance, 54(5):1647–1691.
+White, H. (2000). A reality check for data snooping. Econometrica, 68(5):1097–1126.
+Wilder, J. W. (1978). New Concepts in Technical Trading Systems. Trend Research, Greensboro, NC.
+
+13
+Momentum Exhaustion and Fair Value Reversion in FX Markets
+A.
+Python Implementation of the Full Strategy Pipeline
+This appendix provides a self-contained Python reference implementation of the ADX-conditioned
+VWAP mean-reversion strategy described in the main text. The code is structured as a pipeline
+of modular functions, each mapping directly onto the formal definitions in Sections 4 and 5. Every
+listing caption references the relevant equation(s) so that the correspondence between mathematics
+and code is explicit. The implementation requires only numpy and pandas.
+A.1
+Required Libraries and Data Format
+1
+import
+numpy as np
+2
+import
+pandas as pd
+3
+4
+# Expected
+input: pandas
+DataFrame
+with
+DatetimeIndex
+and
+columns:
+5
+#
+open
+-- bar open
+price
+6
+#
+high
+-- bar high
+price
+7
+#
+low
+-- bar low price
+8
+#
+close
+-- bar close
+price
+(used as P_t
+throughout)
+9
+#
+volume
+-- bar volume (units
+traded)
+10
+# Recommended: UTC -aware
+DatetimeIndex at a fixed
+intraday
+frequency
+11
+#
+(e.g. 5-min or 15-min bars).
+Listing 1: Library imports and expected OHLCV data schema.
+A.2
+Intraday VWAP and Price Deviation Dt
+The session VWAP is anchored at each calendar-date boundary and computed as the running ratio
+of cumulative price-volume to cumulative volume, using the typical price ˆPt = (Ht + Lt + Ct)/3 as
+the per-bar price proxy.
+1
+def
+compute_vwap_and_deviation (df: pd.DataFrame) -> pd.DataFrame:
+2
+"""
+3
+Compute
+intraday
+VWAP
+anchored at each
+session
+open and the
+4
+proportional
+deviation
+D_t = (P_t - VWAP_t) / VWAP_t.
+5
+"""
+6
+df = df.copy ()
+7
+8
+# Typical
+price per bar: (High + Low + Close) / 3
+[Eq. 2]
+9
+df[" typical_price"] = (df["high"] + df["low"] + df["close"]) / 3
+10
+11
+# Price -volume
+product
+12
+df["pv"] = df["typical_price"] * df["volume"]
+13
+14
+# Group by calendar
+date to define
+session
+boundaries
+15
+df["session"] = df.index.date
+16
+17
+# Cumulative
+sums
+within
+each
+session
+[Eq. 1]
+18
+df["cum_pv"]
+= df.groupby("session")["pv"]. cumsum ()
+19
+df["cum_vol"] = df.groupby("session")["volume"]. cumsum ()
+
+14
+Momentum Exhaustion and Fair Value Reversion in FX Markets
+20
+21
+df["vwap"] = df["cum_pv"] / df["cum_vol"]
+22
+23
+# Proportional
+deviation
+D_t
+[Eq. 3]
+24
+df["deviation"] = (df["close"] - df["vwap"]) / df["vwap"]
+25
+26
+df.drop(columns =["typical_price", "pv", "cum_pv",
+27
+"cum_vol", "session"], inplace=True)
+28
+return df
+Listing 2: Session VWAP (Eq. 1–2) and price deviation Dt (Eq. 3).
+A.3
+Previous-Session High Ht−1 and Low Lt−1
+Daily session extremes are computed by grouping all bars by date; the result is then shifted forward
+by one session so that each intraday bar carries the prior day’s range as a fixed boundary condition.
+1
+def
+compute_prev_session_extremes (df: pd.DataFrame) -> pd.DataFrame:
+2
+"""
+3
+Attach
+previous -session
+high and low to every
+intraday
+bar.
+4
+"""
+5
+df = df.copy ()
+6
+7
+# Aggregate to daily
+high / low
+8
+daily = df.groupby(df.index.date).agg(
+9
+session_high =("high", "max"),
+10
+session_low =("low",
+"min"),
+11
+)
+12
+daily.index = pd.to_datetime(daily.index)
+13
+14
+# Shift by one day to obtain prior -session
+extremes
+15
+daily["prev_high"] = daily["session_high"]. shift (1)
+16
+daily["prev_low"]
+= daily["session_low"]. shift (1)
+17
+18
+# Broadcast
+back onto the
+intraday
+index
+19
+date_index = pd.to_datetime(df.index.date)
+20
+df["prev_high"] = daily["prev_high"]. reindex(date_index).values
+21
+df["prev_low"]
+= daily["prev_low"]. reindex(date_index).values
+22
+23
+return df
+Listing 3: Previous-session extremes Ht−1 and Lt−1.
+A.4
+Wilder’s Average Directional Index
+The full ADX pipeline follows Wilder (1978) exactly: True Range (Eq. 5), directional movement
+(Eqs. 4a–4b), Wilder smoothing (Eq. 6), DI values (Eq. 7), DX (Eq. 8), and ADX (Eq. 9).
+1
+def
+compute_adx(df: pd.DataFrame , n: int = 14) -> pd.DataFrame:
+2
+"""
+
+15
+Momentum Exhaustion and Fair Value Reversion in FX Markets
+3
+Compute
+Wilder ’s ADX , +DI , and -DI for
+lookback
+period n.
+4
+5
+Parameters
+6
+----------
+7
+n : int
+Wilder
+smoothing
+period (default 14 per Wilder
+1978).
+8
+"""
+9
+df = df.copy ()
+10
+H
+= df["high"]
+11
+L
+= df["low"]
+12
+C
+= df["close"]
+13
+14
+# True
+Range [Eq. 5]
+15
+tr = pd.concat ([
+16
+H - L,
+17
+(H - C.shift (1)).abs(),
+18
+(L - C.shift (1)).abs(),
+19
+], axis =1).max(axis =1)
+20
+21
+# Directional
+Movement [Eqs. 4a, 4b]
+22
+up_move
+= H - H.shift (1)
+23
+down_move = L.shift (1) - L
+24
+25
+plus_dm
+= np.where (( up_move > down_move)
+& (up_move > 0),
+26
+up_move , 0.0)
+27
+minus_dm = np.where (( down_move > up_move)
+& (down_move > 0),
+28
+down_move , 0.0)
+29
+30
+plus_dm
+= pd.Series(plus_dm ,
+index=df.index)
+31
+minus_dm = pd.Series(minus_dm , index=df.index)
+32
+33
+# Wilder
+smoothing [Eq. 6]: X_t = ((n-1)*X_{t-1} + x_t) / n
+34
+def
+wilder_smooth(series: pd.Series , period: int) -> pd.Series:
+35
+result = series.copy ().astype(float)
+36
+result.iloc [: period] = np.nan
+37
+# Seed: simple sum of first
+window
+38
+result.iloc[period] = series.iloc [1: period + 1]. sum()
+39
+for i in range(period + 1, len(series)):
+40
+result.iloc[i] = (result.iloc[i - 1] * (period - 1)
+41
++ series.iloc[i]) / period
+42
+return
+result
+43
+44
+atr
+= wilder_smooth(tr ,
+n)
+45
+s_plus
+= wilder_smooth(plus_dm ,
+n)
+46
+s_minus = wilder_smooth(minus_dm , n)
+47
+48
+# Directional
+Indicators [Eq. 7]
+49
+plus_di
+= 100 * s_plus
+/ atr
+50
+minus_di = 100 * s_minus / atr
+51
+52
+# DX then ADX [Eqs. 8, 9]
+53
+dx
+= 100 * (plus_di - minus_di).abs() / (plus_di + minus_di)
+
+16
+Momentum Exhaustion and Fair Value Reversion in FX Markets
+54
+adx = wilder_smooth(dx , n)
+55
+56
+df["plus_di"]
+= plus_di
+57
+df["minus_di"] = minus_di
+58
+df["adx"]
+= adx
+59
+return df
+Listing 4: Full ADX computation (Eqs. 4–9) with Wilder smoothing.
+A.5
+Regime Filter
+Two derived series implement the regime conditions: the rolling mean ADX ADXt (Eq. 11) and the
+first difference ∆ADXt (Eq. 13).
+1
+def
+compute_regime_filter (df: pd.DataFrame ,
+2
+adx_window: int = 20) -> pd.DataFrame:
+3
+"""
+4
+Compute
+the
+rolling
+mean ADX and its first
+difference.
+5
+6
+Parameters
+7
+----------
+8
+adx_window : int
+Lookback m for mean ADX (default 20 bars).
+9
+"""
+10
+df = df.copy ()
+11
+12
+# Rolling
+mean: ADX_bar_t
+[Eq. 11]
+13
+df["adx_mean"]
+= df["adx"]. rolling(window=adx_window).mean ()
+14
+15
+# First
+difference: Delta_ADX_t
+[Eq. 13]
+16
+df["delta_adx"] = df["adx"]. diff ()
+17
+18
+return df
+Listing 5: Rolling mean ADX (Eq. 11) and ∆ADX (Eq. 13).
+A.6
+Composite Signal Generation
+All four conditions of Equation (14) are evaluated as boolean masks and combined with logical AND;
+the result is mapped to −1, +1, or 0.
+1
+def
+generate_signal (df: pd.DataFrame ,
+2
+theta: float = 0.001)
+-> pd.DataFrame:
+3
+"""
+4
+Generate
+the
+composite
+trading
+signal S_t in {-1, 0, +1}.
+5
+6
+SHORT
+signal (S_t =
+-1) requires
+all four
+conditions:
+7
+(1) P_t
+>= H_{t-1}
+price at or above prior -session
+high
+8
+(2) D_t
+>
+theta
+price
+overextended
+above
+VWAP
+9
+(3) ADX_t > ADX_bar_t
+trend
+strength
+elevated
+10
+(4)
+DeltaADX_t
+<= 0
+momentum is decelerating
+
+17
+Momentum Exhaustion and Fair Value Reversion in FX Markets
+11
+12
+LONG
+signal (S_t = +1): symmetric
+conditions at prior low.
+13
+14
+Parameters
+15
+----------
+16
+theta : float
+VWAP -deviation
+threshold (default
+0.1 pct).
+17
+"""
+18
+df = df.copy ()
+19
+20
+# Shared
+regime
+conditions
+21
+cond_adx_elevated = df["adx"]
+> df["adx_mean"]
+22
+cond_adx_decaying = df["delta_adx"] <= 0
+23
+24
+# SHORT: spatial + microstructure
+conditions
+25
+cond_at_high
+= df["close"]
+>= df["prev_high"]
+26
+cond_above_vwap = df["deviation"] >
+theta
+27
+28
+# LONG: spatial + microstructure
+conditions
+29
+cond_at_low
+= df["close"]
+<= df["prev_low"]
+30
+cond_below_vwap = df["deviation"] < -theta
+31
+32
+# Composite
+signal [Eq. 14]
+33
+short_mask = (cond_at_high
+34
+& cond_above_vwap
+35
+& cond_adx_elevated
+36
+& cond_adx_decaying )
+37
+38
+long_mask
+= (cond_at_low
+39
+& cond_below_vwap
+40
+& cond_adx_elevated
+41
+& cond_adx_decaying )
+42
+43
+df["signal"] = 0
+44
+df.loc[short_mask , "signal"] = -1
+45
+df.loc[long_mask ,
+"signal"] =
+1
+46
+47
+return df
+Listing 6: Composite signal St ∈{−1, 0, +1} (Eq. 14).
+A.7
+Full Pipeline Orchestrator
+The master function calls each module in sequence and returns the fully annotated DataFrame ready
+for backtesting or further analysis.
+1
+def
+run_strategy_pipeline (df:
+pd.DataFrame ,
+2
+adx_n:
+int
+= 14,
+3
+adx_window: int
+= 20,
+4
+theta:
+float = 0.001)
+-> pd.DataFrame:
+5
+"""
+6
+Run the
+complete ADX -conditioned
+VWAP
+strategy
+pipeline.
+
+18
+Momentum Exhaustion and Fair Value Reversion in FX Markets
+7
+8
+Steps
+9
+-----
+10
+1. Compute
+session
+VWAP and
+deviation
+D_t.
+11
+2. Attach
+previous -session
+high H_{t-1} and low L_{t -1}.
+12
+3. Compute ADX , +DI , -DI with
+Wilder
+smoothing.
+13
+4. Compute
+regime
+filter (rolling
+mean ADX , delta ADX).
+14
+5. Generate
+composite
+signal S_t.
+15
+16
+Parameters
+17
+----------
+18
+df
+: pd.DataFrame
+OHLCV
+data with
+DatetimeIndex.
+19
+adx_n
+: int
+Wilder
+lookback
+for ADX (default
+14).
+20
+adx_window : int
+Rolling
+window for mean ADX (default
+20).
+21
+theta
+: float
+VWAP -deviation
+threshold (default
+0.1 pct).
+22
+23
+Returns
+24
+-------
+25
+pd.DataFrame
+26
+Enriched
+DataFrame
+with all
+intermediate
+variables
+and ’signal ’.
+27
+Key output
+columns:
+28
+close , vwap , deviation , prev_high , prev_low ,
+29
+adx , adx_mean , delta_adx , signal
+30
+"""
+31
+df = compute_vwap_and_deviation (df)
+32
+df = compute_prev_session_extremes (df)
+33
+df = compute_adx(df , n=adx_n)
+34
+df = compute_regime_filter (df , adx_window=adx_window)
+35
+df = generate_signal (df , theta=theta)
+36
+return df
+37
+38
+39
+#
+Example
+usage
+40
+if __name__ == "__main__":
+41
+# Load
+OHLCV
+data (replace
+with your data
+source):
+42
+# df = pd.read_csv (" eurusd_5min.csv",
+43
+#
+index_col =0, parse_dates=True)
+44
+45
+# Run the
+pipeline
+with
+default
+parameters
+46
+# result = run_strategy_pipeline (df)
+47
+48
+# Inspect
+signal
+counts
+49
+# print(result [" signal "]. value_counts ())
+50
+#
+1
+-> long (fade
+prior low with
+decaying
+ADX)
+51
+# -1
+-> short (fade
+prior
+high with
+decaying
+ADX)
+52
+#
+0
+-> no trade
+53
+pass
+Listing 7: Full strategy pipeline: single entry point.
+
+19
+Momentum Exhaustion and Fair Value Reversion in FX Markets
+Implementation notes.
+The default threshold θ = 0.001 (0.1%) is a starting value only and
+should be calibrated to the realised intraday volatility of the target pair as discussed in Section 6.
+The Wilder smoothing function uses a simple-sum seed over the first n bars, the standard convention
+in Wilder (1978); an exponential moving average seed is an alternative. For large datasets, the loop
+inside wilder_smooth can be replaced with a Numba-accelerated implementation for substantial
+speed gains. The pipeline does not include position sizing, stop-loss execution, or transaction cost
+accounting; these components are required before any live or simulated deployment.

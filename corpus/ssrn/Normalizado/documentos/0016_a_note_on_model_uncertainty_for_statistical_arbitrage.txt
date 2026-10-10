@@ -1,0 +1,2028 @@
+A note on model uncertainty for statistical
+arbitrage
+Daisuke Yoshikawa∗
+January 5, 2023
+Abstract
+This study considers an optimal stopping problem that addresses
+model uncertainty.
+Model uncertainty is the uncertainty affecting
+model assumptions, e.g., the assumed form of the probability distribution and the parameters embedded in the probability distribution. The results presented in this study show the explicit form of the
+boundary indicating the optimal stopping time, assuming the portfolio value as an Ornstein-Uhlenbeck process. Furthermore, the boundary can be regulated depending on the ambiguity of the estimated
+model. Thus, the boundary is more robust than is a boundary derived without considering model uncertainty. In this sense, applying
+our method might make statistical arbitrage more robust because the
+trading code for statistical arbitrage often depends on the statistical
+test, which might lead to incorrect estimation. We also show that the
+value function for the optimal stopping problem that addresses model
+uncertainty has a structure consistent with the certainty equivalent,
+by which we derive the risk premium in the context of expected utility
+with risk rather than model uncertainty.
+Keywords
+Kullback-Leibler divergence, relative entropy, optimal stopping,
+robustness, certainty equivalent, Ornstein-Uhlenbeck (OU) process
+∗Department of Policy Studies, Kansai University
+1
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+1
+Introduction
+This study presents an optimal boundary for the optimal stopping problem
+that accounts for model uncertainty. Model uncertainty is the uncertainty
+affecting model assumptions, e.g., the assumed form of the probability distribution and the parameters embedded in the probability distribution. We
+can use this boundary to make a statistical arbitrage strategy more robust.
+According to [18], the term “statistical arbitrage” was first used in the
+1990s as a sobriquet elaborated from pairs trading, developed by Nunzio
+Tartaglia’s trading group at Morgan Stanley in the 1980s. The essence of
+statistical arbitrage is the pursuit of stable profits. Indeed, pairs trading,
+the simplest form of statical arbitrage, is executed by taking long and short
+positions of stocks with similar movements. If one stock depreciates, then the
+appreciation of another stock makes the portfolio stable. Statistical arbitrage
+inherits this spirit.
+While statistical arbitrage pursues stable profits, the implication of “stability” is not necessarily clear. In response to this situation, [13] provides a
+formal definition of statistical arbitrage; 1 i.e., there is an opportunity for
+statistical arbitrage in the market if a profit can be gained without facing a
+loss for a sufficiently long, possibly infinite, time horizon. For example, if an
+individual bets on a coin flip, where the odds of it coming up heads are 51%
+and the odds of it coming up tails are 49%, then he or she can keep betting
+on heads for an infinite number of entries and not lose. The above example
+may provide an intuition of a statistical arbitrage opportunity.
+Of course, in practice, the coin flip cannot be infinitely continued, and
+the odds of it coming up heads or tails might be incorrectly recognized. Even
+though it is possible to find a flip game with a biased coin, sometimes, this
+game must come to an end. If the odds of the coin flip coming up heads
+or tails is incorrectly recognized, then this recognition could lead to a result
+opposite of that expected.
+A similar problem appears in actual financial
+practice.
+According to [11, 12, 6, 5], if the portfolio value is stationary, then it
+is possible to pursue statistical arbitrage.
+The probability of coming up
+with heads or tails in a coin flip corresponds to the model parameters of
+stationary portfolio processes in financial practice. Thus, we have to consider
+1[4] also discusses the formal definition of statistical arbitrage from a different perspective, i.e., some investors can pursue statistical arbitrage if there is information bias
+between investors.
+2
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+model parameters’ misspecification to construct a trading code for statistical
+arbitrage. Furthermore, we must construct this trading code so that it works
+well in a finite time horizon. In summary, our issues are model uncertainty
+and finite time horizon.
+As we describe in Section 3, the above trading code consists of the meanreversion point of the stationary portfolio process and the most diverted
+point from the mean-reversion point. We usually derive the former point by
+calibrating the model parameters, which might lead to misspecification. We
+can derive the latter point by solving the optimal stopping problem using
+the calibrated model parameters. As in previous works, [20] formulates the
+optimal stopping problem in the infinite time horizon, taking into account
+model uncertainty,2 and [15] identifies the latter point by solving the optimal stopping problem in the finite time horizon without considering model
+uncertainty.
+Our contribution in this study is to present the most diverted point from
+the mean-reversion point by solving the optimal stopping problem in a finite
+time horizon, taking into account model uncertainty.
+More precisely, we utilize the method of [3], who discuss it in the context
+of convex risk measures. Specifically, we replace the estimated model with
+a model similar to but different from the estimated model. If we are sure
+about the estimation, then we adopt a model that is very similar to the
+estimated model. If not, then we adopt a very different scenario incorporating
+the worst-case scenario, thus reducing profit.
+This policy may make the
+trading code robust. In this formulation, we use Kullback–Leibler divergence
+to describe the similarity between models and incorporate the minimizing
+principle related to robustness.
+As a result, we can obtain the explicit form of the solution to the boundary
+implying the maximum expected value of the portfolio, which can be used as
+a benchmark to take a position. Furthermore, we show that the implication
+of this type of problem is consistent with the certainty equivalent, which
+leads to the risk premium in the context of expected utility with risk. This
+property might induce a clear connection between the contexts of risk and
+uncertainty.
+The remainder of this paper is structured as follows. Section 2 describes
+2Although we adopt the formulation of [20] for considering model uncertainty, we use
+a different procedure to apply a finite time horizon, inspired by several authors such as
+[15], [3], [1], and [16]
+3
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+the setting and main results. In Section 3, we describe the implications of the
+setting and main results reported in Section 2. Section 4 is devoted to a few
+numerical examples. In the final section, we state our concluding remarks.
+Finally, we summarize the mathematical proofs in the Appendix.
+2
+Main results
+Let us consider a complete, filtered probability space, (Ω, F , P), F = {Ft}t≥0,
+and on it a bounded, adapted process, X, that satisfies certain regularity
+conditions.
+For this process, we consider the following optimal stopping
+problem:
+Vλ(t, x) ≜ess supτ∈St,T ess infQ∈Qt
+(
+EQ[Yτ|Ft] + 1
+λEQ
+"
+log
+ dQ
+dP
+! Ft
+#)
+, P −a.s.
+(1)
+Here, St,T is the set of stopping times τ satisfying t ≤τ ≤T, P −a.s.; Qt is
+the collection of probability measures Q that are equivalent to P on F , equal
+to P on Ft, and satisfy a certain integrability condition; Y is a discounted
+process of X with the discount factor ρ > 0, i.e., Yt = e−ρtXt for 0 ≤t ≤T;
+λ > 0 is a constant; and dQ/dP is the density of Q ∈Qt with respect to
+P. That is, the density process ZQ of Q is the stochastic exponential of a
+predictable process,
+R ·
+0 θQ
+s dBs, such that
+ZQ
+t = exp
+(Z t
+0
+θQ
+s dBs −1
+2
+Z t
+0
+|θQ
+s |2ds
+)
+, 0 ≤t ≤T,
+and ZQ
+T = dQ/dP.
+Our main aim is to find the explicit solution to (1) by specifying X as an
+Ornstein-Uhlenbeck (OU) process, such that
+dXt = α(µ −Xt)dt + σdBt,
+(2)
+where α, σ > 0, µ ∈R and B is a Brownian motion defined on probability
+space (Ω, F , P).
+Theorem 2.1. Let X be given by (2). Then, the solution to (1) is given by
+Vλ(t, x) = −1
+λ log
+ 
+e−λe−ρ(T−t)mx(T−t,x)+ λ2e−2ρ(T−t)
+2
+σx(T−t)2 −
+Z T−t
+0
+K x(u, x, bx(t + u))du
+!
+,
+(3)
+4
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+where we define
+mx(u, x) ≜xe−αu + µ(1 −e−αu), σx(u) ≜
+r
+σ2
+2α(1 −e−2αu)
+which are the mean and volatility, respectively, of Xt,x = X conditioned on
+Xt = x. We also define the kernel
+K x(u, x, b) ≜Et
+µx  u, Xt,x
+u
+ I(Xt,x
+u ≥b) ,
+where µx(u, y) ≜−λ
+
+αe−ρuµ −λ
+2σ2e−2ρu −(α + ρ)e−ρuy
+
+exp (−λe−ρuy), the operator Et[·] is E[·|Ft], and bx(t) is given by the following equation:
+bx(t) = log
+ 
+e−λe−ρ(T−t)mx(T−t,bx(t))+ λ2e−2ρ(T−t)
+2
+σx(T−t)2 −
+Z T−t
+0
+K x(u, bx(t), bx(t + u))du
+!−1/λ
+,
+(4)
+and
+bx(T) = αµ −λ
+2σ2
+α + ρ
+.
+3
+Implications
+Let us consider an optimal stopping problem ess supτ∈St,T EQ[Yτ|Ft] for probability Q. If we know probability P, then we can apply Q = P and derive
+the optimal stopping time. If we do not know the true probability, then we
+estimate P. Then, if we believe that the estimate is certain, we again apply
+Q = P. However, if we are not necessarily convinced of our estimate, then
+we might hesitate to immediately apply Q = P. Then, how would we choose
+Q for which we have numerous candidates? This sort of uncertainty is often
+called model uncertainty. One criterion is to choose the Q that minimizes
+EQ[Yτ|Ft], where Q is equivalent to P because, even if the estimation of P is
+incorrect, the probability of Q generating a worst-case scenario may relieve
+the impact of the misspecification of P. That is, these criteria lead to the robust selection of Q. Although we are not perfectly certain of our estimate of
+P, we are willing to partially utilize the estimate depending on our confidence
+in it; i.e., if we are highly confident in our estimate of P, then we choose a
+Q relatively similar to P, simultaneously minimizing EQ[Yτ|Ft]. In contrast,
+5
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+if we are less confident in our estimate, then we choose a Q relatively less
+similar to P, simultaneously minimizing EQ[Yτ|Ft].
+The problem setting of (1) reflects the above situation. Here, EQ[log(dQ/dP)|Ft]
+is called Kullback–Leibler divergence or relative entropy. Kullback–Leibler
+divergence is always positive and is zero if and only if Q = P (Theorem 1.4.1
+of [14]). Due to this property, Kullback–Leibler divergence is considered to
+express the similarity between probability measures.
+As we state above, if the agents believe that their estimate is correct, then
+they choose a Q similar to P, and vice versa. The constant λ > 0 represents
+the degree of agents’ confidence in their estimation. Indeed, if λ is close to
+zero, then in problem (1), the weight of the second term EQ[log(dQ/dP)|Ft]/λ
+increases relative to the first term EQ[Yτ|Ft]. This situation induces the selection of a Q similar to P to minimize Kullback–Leibler divergence. In contrast,
+a larger λ value decreases the weight of the second term, thus inducing the
+robust selection of Q minimizing EQ[Yτ|Ft], which might be less similar to P.
+As a form of financial practice, this problem provides a trading code
+for statistical arbitrage. Following [13]’s formulation of statistical arbitrage,
+if the portfolio value is stationary, then statistical arbitrage is possible, as
+shown by several authors, such as [12, 11, 6, 5]. Indeed, if the portfolio value
+is stationary, then it moves around the mean-reversion point. Thus, we can
+construct a strategy to pursue statistical arbitrage by specifying the meanreversion point and the most divergent point from the mean-reversion point.
+For example, we may take a position when the portfolio value touches the
+most divergent point from the mean-reversion point and liquidate it when
+the portfolio value converges to the mean-reversion point.
+In this study, we apply the Onsenstein-Uhlenbeck (OU) process for (2),
+similar to [9] and [2]. Thus, X is stationary. We can estimate the meanreversion point by regarding X as the portfolio value.
+The main results indicate the most divergent point. Since Vλ(t, x) of (1)
+is essentially the expected value of the portfolio, if Vλ(t, x) were higher than
+the current portfolio value of Xt, then the portfolio value would increase if
+the investor waits. In other words, Vλ(t, x) = x implies the time to attain the
+expected maximum value of X. The boundary bx(t) given in (4) identifies the
+maximum value since Vλ(t, bx(t)) = bx(t). Thus, bx(t) characterizes the most
+divergent point.
+Noting that the boundary bx(t) characterizes the optimal stopping rule,
+we provide an interpretation of the value function (3). Due to the property
+6
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+of the OU process, we have
+e−λe−ρ(T−t)mx(T−t,x)+ 1
+2λ2e−2ρ(T−t)σx(T−t)2 = Et[e−λe−ρ(T−t)Xt,x
+T−t].
+Furthermore, since
+de−λe−ρuXt,x
+u = µx(u, Xt,x
+u )du + λe−λe−ρuXt,x
+u e−ρuσdBu,
+it holds that
+K x(u, x, bz(t + u))du = Et
+h
+de−λe−ρuXt,x
+u I(Xt,x
+u ≥bx(t + u))
+i
+.
+Therefore, (3) yields
+Vλ(t, x) = −1
+λ log
+ 
+Et
+h
+e−λe−ρ(T−t)Xt,x
+T−ti
+−
+Z T−t
+0
+Et
+h
+de−λe−ρuXt,x
+u I(Xt,x
+u ≥bx(t + u))
+i!
+= −1
+λ log
+ 
+e−λx + Et
+"Z T−t
+0
+de−λe−ρuXt,x
+u I(Xt,x
+u < bx(t + u))
+#!
+.
+The above implies a structure similar to the certainty equivalent by regarding
+the integrand of the right-hand side as the accumulated expected utility of
+the exponential utility with risk aversion λ and the value function Vλ(t, x) as
+the certainty equivalent. Of course, λ reflects the ambiguity regarding the
+misspecification of P and does not reflect the risk due to the fluctuation of
+the underlying portfolio value X. Hence, Vλ(t, x) may be called the certainty
+equivalent for ambiguity. Furthermore, the above situation implies an ambiguity premium, just as the certainty equivalent implies the risk premium.
+As such, this might enable us to discuss the context of model uncertainty
+analogously to the usual sense of risk.
+4
+Numerical examples
+In this section, we present a few numerical examples to illustrate the properties of our model. Here, we assume that we only know that the OU process
+gives the form of the portfolio value process and that we might mistakenly
+estimate the model parameters. A larger λ value implies anxiety regarding
+the agent’s misspecification of the parameters. The minimum value λ = 0.0
+means that the agent is perfectly confident in his or her estimation.
+7
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+Let us consider the case in which the actual portfolio value process is
+driven by dXt = −40Xtdt + 0.15dBt. The other parameters are ρ = 0.01 and
+T = 1. First, we assume that we can precisely estimate the parameters, i.e.,
+that our estimates are ˆα = 40, ˆµ = 0.0 and ˆσ = 0.15.
+Figure 1 depicts the boundaries for λ = 0.0, 0.1, 1.0, and 10. There are
+fewer differences between boundaries for the different λs in Figure 1.
+If
+we can estimate the true parameters, then the boundary might not depend
+on ambiguity aversion. However, by magnifying the figure, we can see the
+tendency of the boundary shifting down for the larger λ value (see the right
+panel of Figure 1.) This shift down implies that if the agent feels anxious
+about his or her misspecification, then he or she accepts lower profits. Indeed,
+a boundary farther from the mean-reversion point might imply higher profit
+because we often use the boundary as the trigger for taking a position that we
+will liquidate when the portfolio value converges to the mean-reversion point.
+In other words, a boundary closer to the mean-reversion point µ generates
+less profit. This finding is consistent with our intuition that a less confident
+agent likely accepts lower profits for moderating anxiety.
+0
+10
+20
+30
+40
+50
+0.00
+0.01
+0.02
+0.03
+0.04
+λ = 0
+λ = 0.1
+λ = 1.0
+λ = 10
+0.90
+0.92
+0.94
+0.96
+0.98
+1.00
+time
+0.000
+0.005
+0.010
+0.015
+0.020
+0.025
+λ = 0
+λ = 0.1
+λ = 1.0
+λ = 10
+Figure 1: Optimal boundaries when agents know the true parameters.
+Next, we consider the case in which the agent mistakenly estimates model
+parameter α, which is the speed of mean reversion. The left panel of Figure 2
+shows that the agent mistakenly estimates ˆα = 50, although the actual value
+is α = 40. In contrast, the right panel of Figure 2 shows that the estimate is
+given by ˆα = 16. The red lines in these figures are the boundaries calculated
+using the actual parameters without ambiguity, and the other lines are those
+boundaries determined using estimated parameters with different degrees of
+ambiguity aversion λ.
+In these figures, we can see that a more overestimated ˆα strengthens
+8
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+the concavity of the boundary and that an underestimated ˆα weakens it.
+As a result, the boundary for a more overestimated ˆα is lower than the
+correct boundary before maturity. That is, the agent can accept the lower
+profits for one round of transaction because he or she has more chances to
+make a profit through the rapid movement of the portfolio value between
+the mean-reversion point and the boundary.
+When maturity comes, this
+chance becomes limited. Thus, the agent cannot accept the lower profits, even
+though the speed of mean-reversion is high. The concavity of the boundary
+implies the above aspects. The boundary for a smaller estimated ˆα implies
+the opposite behaviour, which is shown in the right panel of the figure.
+Furthermore, the anxiety of less confident agents shifts down the boundary for higher ambiguity aversion λ. This phenomenon is more evident in
+the case of a lower mean-reversion speed (right panel) than in the case of
+a higher mean-reversion speed (left panel). The above factors might imply
+that a higher mean-reversion speed is more favourable for the agent.
+0
+10
+20
+30
+40
+50
+0.00
+0.01
+0.02
+0.03
+0.04
+boundary for correct estimation
+boundary for a = 50, λ = 0
+boundary for a = 50, λ = 0.1
+boundary for a = 50, λ = 1.0
+boundary for a = 50, λ = 10
+0
+10
+20
+30
+40
+50
+−0.01
+0.00
+0.01
+0.02
+0.03
+0.04
+0.05
+0.06
+boundary for correct estimation
+boundary for a = 16, λ = 0
+boundary for a = 16, λ = 0.1
+boundary for a = 16, λ = 1.0
+boundary for a = 16, λ = 10
+Figure 2: Optimal boundaries when agents mistakenly estimate parameter
+α, where the “boundary for correct estimation” is the optimal boundary with
+λ = 0 for the true parameters. The left panel shows boundaries using the
+estimated ˆα = 50, and the right panel shows those using the estimated ˆα = 16
+for the true value α = 40.
+Figure 3 shows the case in which the agent mistakenly estimates parameter σ; i.e., the left panel of Figure 3 shows the boundaries calculated using
+estimated volatility ˆσ = 0.3, although actual volatility is σ = 0.15. The right
+panel of Figure 3 shows the boundaries using the estimated ˆσ = 0.075. Note
+that lower volatility is more favourable for the agent for stable trading than is
+higher volatility. Thus, the case of ˆσ = 0.075 is more favourable and does not
+make the agent more anxious. Therefore, similar to Figure 2, the left panel
+9
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+of Figure 3 shows the lower concave boundary, and the right panel of Figure
+3 shows the higher concave boundary. Furthermore, in the less favourable
+case, the difference in boundaries for different degrees of ambiguity aversion
+is clearer.
+0
+10
+20
+30
+40
+50
+0.00
+0.02
+0.04
+0.06
+0.08
+boundary for correct estimation
+boundary for σ = 0.3, λ = 0
+boundary for σ = 0.3, λ = 0.1
+boundary for σ = 0.3, λ = 1.0
+boundary for σ = 0.3, λ = 10
+0
+10
+20
+30
+40
+50
+0.00
+0.01
+0.02
+0.03
+0.04
+boundary for correct estimation
+boundary for σ = 0.075, λ = 0
+boundary for σ = 0.075, λ = 0.1
+boundary for σ = 0.075, λ = 1.0
+boundary for σ = 0.075, λ = 10
+Figure 3: Optimal boundaries when agents mistakenly estimate parameter
+σ, where the “boundary for correct estimation” is the optimal boundary with
+λ = 0 for the true parameters. The left panel shows the boundaries using
+the estimated ˆσ = 0.3, and the right panel shows those using the estimated
+ˆσ = 0.075 for the true value σ = 0.15.
+Finally, we show the case in which the agent mistakenly estimates parameter µ, which is the mean-reversion point. The left panel of Figure 4
+indicates the boundaries using the estimated ˆµ = 0.01, and the right panel
+indicates those using ˆµ = 0.1 instead of the actual value µ = 0.0.
+However, the shift of the mean-reversion point does not change the environment
+for statistical arbitrage because the trading code may merely regulate the
+boundary in parallel with the estimated mean-reversion point ˆµ. Thus, the
+boundary using the erroneous parameter ˆµ = 0.01 with different degrees of
+ambiguity aversion induces parallel shifts from the boundary using the actual
+parameter µ = 0. This parallel shift is evident in the case of ˆµ = 0.1 (right
+panel of Figure 4). Furthermore, when the agent mistakenly estimates the
+parameter as ˆµ = −0.01 and −0.1, the boundary shifts down (Figure 5). This
+shift is opposite to that in the case of ˆµ = 0.01, 0.1, as expected, which is also
+intuitive.
+10
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+0
+10
+20
+30
+40
+50
+0.00
+0.01
+0.02
+0.03
+0.04
+0.05
+boundary for correct estimation
+boundary for μ = 0.01, λ = 0
+boundary for μ = 0.01, λ = 0.1
+boundary for μ = 0.01, λ = 1.0
+boundary for μ = 0.01, λ = 10
+0
+10
+20
+30
+40
+50
+0.00
+0.02
+0.04
+0.06
+0.08
+0.10
+0.12
+0.14
+boundary for correct estimation
+boundary for μ = 0.1, λ = 0
+boundary for μ = 0.1, λ = 0.1
+boundary for μ = 0.1, λ = 1.0
+boundary for μ = 0.1, λ = 10
+Figure 4: Optimal boundaries when agents mistakenly estimate parameter
+µ, where the “boundary for correct estimation” is the optimal boundary with
+λ = 0 for the true parameters. The left panel shows the boundaries using
+the estimated ˆµ = 0.01, and the right panel shows those using the estimated
+ˆµ = 0.1 for the true value µ = 0.00.
+0
+10
+20
+30
+40
+50
+−0.01
+0.00
+0.01
+0.02
+0.03
+0.04
+boundary for correct estimation
+boundary for μ = −0.01, λ = 0
+boundary for μ = −0.01, λ = 0.1
+boundary for μ = −0.01, λ = 1.0
+boundary for μ = −0.01, λ = 10
+0
+10
+20
+30
+40
+50
+−0.10
+−0.08
+−0.06
+−0.04
+−0.02
+0.00
+0.02
+0.04
+boundary for correct estimation
+boundary for μ = −0.1, λ = 0
+boundary for μ = −0.1, λ = 0.1
+boundary for μ = −0.1, λ = 1.0
+boundary for μ = −0.1, λ = 10
+Figure 5: Optimal boundaries when agents mistakenly estimate parameter
+µ, where the “boundary for correct estimation” is the optimal boundary with
+λ = 0 for the true parameters. The left panel shows the boundaries using the
+estimated ˆµ = −0.01, and the right panel shows those using the estimated
+ˆµ = −0.1 for the true value µ = 0.00.
+11
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+5
+Concluding remarks
+In this study, we show the explicit form of the optimal boundary while addressing model uncertainty. This boundary may represent a relevant factor
+for statistical arbitrage. The optimal boundary presented in this study might
+be the robust trigger for taking a position on which to conduct statistical arbitrage. The value function given by the optimal stopping problem has a
+similar structure to the certainty equivalent. This structure may clarify the
+discussion of ambiguity by utilizing the concept of risk.
+Although we identify the boundary while accounting for model uncertainty, we have yet to show the actual performance of the trading code presented in this study. To accomplish this, we have a future research project:
+i.e., we execute an empirical study using actual market data. We also need to
+account for transaction costs in the empirical study. Due to the properties of
+statistical arbitrage, transaction costs tend to increase with each transaction.
+Indeed, pairs trading, the minimum scale of statistical arbitrage, requires taking a long and a short position to make a stable but relatively small profit.
+Since statistical arbitrage often has a larger scale than does pairs trading,
+the former generates higher transaction costs, which cancel out the profits of
+statistical arbitrage. The robust trading code presented in this work plays
+an essential role in the empirical study accounting for transaction costs.
+A
+Proof of Theorem 2.1
+The proof is divided into three parts. First, we show that problem (1) can
+be written as follows:
+Vλ(t, x) = −1
+λ log
+
+ess infτ∈St,T
+n
+E
+h
+e−λYτ|Ft
+io
+. P −a.s.
+(5)
+Section A.2 is devoted to solving ess infτ∈St,T
+n
+E
+h
+e−λYτ|Ft
+io
+in (5). Finally, we
+derive the claim of Theorem 2.1 in Section A.3.
+12
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+A.1
+Deduction of (5)
+Before proceeding with the proof, in line with [3], we define
+Pt ≜{Q ∈Me : Q = P on Ft}
+=
+n
+Q ∈Me : θQ
+s (ω) = 0, ds ⊗dP −a.e. on [0, t)
+o
+,
+Qt ≜
+(
+Q ∈Pt : EQ
+Z T
+t
+|θQ
+s |2ds < ∞
+)
+.
+where Me is the set of all probability measures on (Ω, F ) that are equivalent
+to P.
+Proposition A.1. (5) holds.
+Proof of Proposition A.1. First, for (1), we show that
+Vλ(t, x) = ess supτ∈St,T
+(
+−1
+λ log E
+h
+e−λYτ|Ft
+i)
+, P −a.s.
+(6)
+For any given Q ∈Qt, the predictable process θ
+˜Q
+t
+≜1t≤τθQ
+t , t ∈[0, T]
+induces a probability measure, ˜Q ∈Pt, via d ˜Q ≜E(θ ˜Q • B)TdP, where E(·) is
+a stochastic (Doléans-Dade) exponential. Since |θ
+˜Q
+t |2 = 1t≤τ|θQ
+t |2, dt ⊗dP-a.e.,
+it follows, noting that ˜Q = Q for t ≤τ because θ
+˜Q
+t = θQ
+t for t ≤τ, that
+E
+˜Q
+Z T
+t
+|θ
+˜Q
+s |2ds = E
+˜Q
+Z τ
+t
+|θQ
+s |2ds = EQ
+Z τ
+t
+|θQ
+s |2ds < ∞.
+Thus, ˜Q ∈Qt.
+13
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+Then, it follows that
+ess infQ∈Qt
+(
+EQ[Yτ|Ft] + 1
+λEQ
+"
+log
+ dQ
+dP
+! Ft
+#)
+= ess infQ∈Qt
+(
+EQ[Yτ|Ft] + 1
+λEQ 
+log
+
+ZQ
+T
+ Ft
+)
+= ess infQ∈Qt
+(
+EQ[Yτ|Ft] + 1
+λEQ
+"Z T
+0
+θQ
+s dBs −1
+2
+Z T
+0
+|θQ
+s |2ds
+Ft
+#)
+= ess infQ∈Qt
+(
+EQ[Yτ|Ft] + 1
+λEQ
+"Z T
+t
+θQ
+s dBQ
+s + 1
+2
+Z T
+t
+|θQ
+s |2ds
+Ft
+#)
+= ess infQ∈Qt
+(
+EQ
+"
+Yτ + 1
+2λ
+Z T
+t
+|θQ
+s |2ds
+Ft
+#)
+≤E
+˜Q
+"
+Yτ + 1
+2λ
+Z T
+t
+|θ
+˜Q
+s |2ds
+Ft
+#
+= EQ
+"
+Yτ + 1
+2λ
+Z τ
+t
+|θQ
+s |2ds
+Ft
+#
+.
+On line 4, we use θQ
+s = 0 for s ∈[0, t) and dBQ ≜dB −θQdt. Taking ess infQ∈Qt
+for the above, we have
+ess infQ∈Qt
+(
+EQ[Yτ|Ft] + 1
+λEQ
+"
+log
+ dQ
+dP
+! Ft
+#)
+≤ess infQ∈Qt
+(
+EQ
+"
+Yτ + 1
+2λ
+Z τ
+t
+|θQ
+s |2ds
+Ft
+#)
+.
+The opposite inequality is clear; i.e.,
+ess infQ∈Qt
+(
+EQ[Yτ|Ft] + 1
+λEQ
+"
+log
+ dQ
+dP
+! Ft
+#)
+= ess infQ∈Qt
+(
+EQ
+"
+Yτ + 1
+2λ
+Z T
+t
+|θQ
+s |2ds
+Ft
+#)
+≥ess infQ∈Qt
+(
+EQ
+"
+Yτ + 1
+2λ
+Z τ
+t
+|θQ
+s |2ds
+Ft
+#)
+.
+Noting Proposition 1 of [19] (this well-known fact is also mentioned in
+Remark 4.6 of [3]), it follows that
+ess infQ∈Qt
+(
+EQ
+"
+Yτ + 1
+2λ
+Z τ
+t
+|θQ
+s |2ds
+Ft
+#)
+= −1
+λ log
+n
+E
+h
+e−λYτ|Ft
+io
+. P −a.s.
+Therefore, (6) holds.
+14
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+Next, we show that (5) holds. Since log E
+h
+e−λYτ|Ft
+i
+≥log
+
+ess infτ∈St,T
+n
+E
+h
+e−λYτ|Ft
+io
+,
+by taking the essential infimum of the left-hand side, we have
+ess infτ∈St,T log E
+h
+e−λYτ|Ft
+i
+≥log
+
+ess infτ∈St,T
+n
+E
+h
+e−λYτ|Ft
+io
+.
+For the opposite inequality, since ess infτ∈St,T log E
+h
+e−λYτ|Ft
+i
+≤log E
+h
+e−λYτ|Ft
+i
+,
+according to the monotonicity of the exponential,
+eess infτ∈St,T log E
+h
+e−λYτ|Ft
+i
+≤elog E
+h
+e−λYτ|Ft
+i
+= E
+h
+e−λYτ|Ft
+i
+.
+Taking the essential infimum of the right-hand side, it follows that
+eess infτ∈St,T log E
+h
+e−λYτ|Ft
+i
+≤ess infτ∈St,T E
+h
+e−λYτ|Ft
+i
+.
+Thus, according to the monotonicity of the logarithmic function, it holds
+that
+ess infτ∈St,T log E
+h
+e−λYτ|Ft
+i
+≤log
+n
+ess infτ∈St,T E
+h
+e−λYτ|Ft
+io
+.
+Therefore, we have
+ess supτ∈St,T
+(
+−1
+λ log E
+h
+e−λYτ|Ft
+i)
+= −1
+λ log
+
+ess infτ∈St,T
+n
+E
+h
+e−λYτ|Ft
+io
+, P −a.s,
+and the claim is proven.
+□
+Note that in this subsection, we do not need to specify process X as the
+OU process.
+A.2
+Solution to ess infτ∈St,T
+n
+E
+h
+e−λYτ|Ft
+io
+in (5)
+Given (5), our target is reduced to solving ess infτ∈St,T
+n
+E
+h
+e−λYτ|Ft
+io
+. Hereafter,
+we specify X as the OU process given by (2). To simplify this problem, we
+define Zt ≜e−λYt. We let Vλ(t, z) = −1
+λ log
+
+−vλ(t, z)
+
+with
+vλ(t, z) ≜−
+inf
+0≤τ≤T−t E Zt,z
+τ |Ft
+ =
+sup
+0≤τ≤T−t
+E −Zt,z
+τ |Ft
+ ,
+(7)
+where Zt,z ≜Z with the initial value Zt,z
+0 = z.
+To solve vλ(t, z), we also divide the process into three procedures. First,
+we derive the free boundary problem corresponding to (7). Second, we clarify
+the optimal boundary associated with the free boundary problem. Third, we
+derive the solution to (7).
+15
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+A.2.1
+Deduction of the free boundary problem
+According to the application of Itô’s formula to Z, we have the following
+SDE: For u ∈[0, T −t],
+dZt,z
+u =µz(u, Zt,z
+u )du + σz(u, Zt,z
+u )dBu,
+(8)
+where
+µz(u, z) = −(α + ρ)
+λαe−ρuµ −λ
+2σ2e−2ρu
+α + ρ
++ log z
+z,
+σz(u, z) = −λσe−ρuz.
+Here, we define the continuation and stopping set as follows, respectively:
+C =
+n
+(t, z) ∈[0, T) × R : vλ(t, z) > −z
+o
+,
+D =
+n
+(t, z) ∈[0, T) × R : vλ(t, z) = −z
+o
+.
+As is well known, if we have the regularity of vλ(t, z) in C and ∂C, then
+the optimal stopping problem (8) leads to the free boundary problem:
+vλ
+t (t, z) + LZvλ(t, z) = 0, in C,
+(9)
+vλ(t, z) = −z, in D,
+(10)
+vλ
+z(t, z) = −1, in ∂C,
+(11)
+where LZ is the infinitesimal generator of Z, which is given as
+LZF(t, z) = µz(t, z)Fz(t, z) + σz(t, z)2
+2
+Fzz(t, z)
+for t, z > 0 and F ∈C1,2([0, T −t) × R+).
+Thus, we show the regularity of vλ. More precisely, we need to show i)
+that the time-space process (s, Zt,z
+s ) is continuously differentiable in the space
+variable z, ii) the interior regularity of vλ on C, and iii) the probabilistic
+regularity of z ∈∂C for Do, where Do is the interior of D. These conditions
+assure the equivalence between the optimal stopping problem (8) and the
+free boundary problems (9)-(11) according to Theorem 10 of [1].
+Condition i) is clear due to the form of Zt,z. Note that
+Zt,z
+u = ze−(ρ+α)u exp
+ 
+−λe−ρu
+ 
+µ(1 −e−αu) + σ
+Z u
+0
+e−α(u−s)dBs
+!!
+, u ∈[0, T −t].
+16
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+Hereafter, we concentrate on conditions ii) and iii), especially on the latter.
+We introduce the first entry time τD of Zt,z into D by
+τD = inf 0 ≤s ≤T −t : (s, Zt,z
+s ) ∈D	 ,
+(12)
+and the first hitting time σD of Zt,z into D by
+σD = inf 0 < s ≤T −t : (s, Zt,z
+s ) ∈D	 .
+(13)
+Lemma A.1. vλ(t, z) is continuous. Furthermore, assuming that Et[sup0≤s≤T−t |Zz
+t+s|] <
+∞, τD is optimal in (7).
+Proof of Lemma A.1. First, we show that the function vλ(t, z) is continuous
+in [0, T] × R. Then, we let t ∈[0, T] and y > z ∈R+ be given and fixed and τy
+denote the optimal stopping time for vλ(t, y). Then, it follows that
+0 ≤vλ(t, y) −vλ(t, z) ≤Et
+h
+−Zt,y
+τy −
+
+−Zt,z
+τy
+i
+=Et
+"
+(ze−(ρ+α)τy −ye−(ρ+α)τy) exp
+ 
+−λe−ρτy
+ 
+µ(1 −e−ατy) + σ
+Z τy
+0
+e−α(τy−s)dBs
+!!#
+≤
+r
+Et
+ze−(ρ+α)τy −ye−(ρ+α)τy
+2 v
+t
+Et
+
+exp
+ 
+−λe−ρτy
+ 
+µ(1 −e−ατy) + σ
+Z τy
+0
+e−α(τy−s)dBs
+!!
+2
+≤K
+r
+Et
+ze−(ρ+α)τy −ye−(ρ+α)τy
+2
+.
+Here, we use the Cauchy-Schwarz inequality on line 3 and the BurkholderDavis-Gundy inequality with a constant K on line 4. Since ρ+α > 0, it holds
+that z 7→vλ(t, z) is uniformly continuous on R+ over t ∈[0, T]. Note that
+0 ≤e−(ρ+α)τy ≤1 implies that 0 ≤
+ze−(ρ+α)τy −ye−(ρ+α)τy ≤|z −y|.
+Next, we show that t 7→vλ(t, z) is continuous on [0, T] for each z ∈R+
+given and fixed. To do this, we fix an arbitrary 0 ≤t1 ≤t2 ≤T and z > 0 and
+let τ1 denote the optimal stopping time for vλ(t1, z). Since vλ(t, z) is decreasing
+in t ∈[0, T] for each z > 0, by setting τ2 ≜τ1 ∧(T −t2), we obtain
+0 ≤vλ(t1, z) −vλ(t2, z) ≤E
+h
+Zt1,z
+τ1 |Ft1
+i
+−E
+h
+Zt2,z
+τ2 |Ft2
+i
+=E
+h
+Zt1,z
+τ1 −E
+h
+Zt2,z
+τ2
+Ft2
+i Ft1
+i
+=E
+h
+Zt1,z
+τ1 −Zt2,z
+τ2
+Ft1
+i
+≤E
+hZt1,z
+τ1 −Zt2,z
+τ2
+ |Ft1
+i
+.
+17
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+Letting first t2−t1 →0 and using τ1−τ2 →0, we see that vλ(t2, z)−vλ(t1, z) →0
+by the dominated convergence theorem, which shows that t 7→vλ(t, z) is
+continuous in [0, T] for each z ≥0 fixed, and thus, the proof of the initial
+claim is complete.
+According to Corollary 2.9 of Chapter 1 in [17], the second claim is satisfied if vλ is lower semicontinuous.
+□
+When we consider a ball or a rectangle contained in C, we know the
+boundary values due to the continuity of vλ. Furthermore, the local Hölder
+continuity of the coefficients of LZ and Theorem 9 of [10] imply that there
+exists a unique solution involving vλ to problem (9), which is C2 in the space
+variables and C1 in the time variables and establishes the interior regularity
+of vλ on C.
+Now, we show the regularity of vλ on ∂C.
+Proposition A.2. The boundary ∂C is regular for Do; i.e., each point z from
+∂C is regular for the interior Do in the sense that Pt,z(σDo = 0) = 1.
+This regularity is often referred to as being probabilistically regular. Note
+that we use the interior Do instead of D.
+Proof of Proposition A.2. For (t, z) ∈∂C, there exists some ϵ > 0 such that
+(t + ϵ, z + γ) ∈Do for all γ > −z. Note that Zt > 0. Considering open ball
+B((t + ϵ, z + γ), δ) centred at (t + ϵ, z + γ) with radius δ > 0, we have a positive
+probability of P((t + ϵ, Zt,z
+t+ϵ) ∈B((t + ϵ, z + γ), δ)) by appropriately regularizing
+ϵ. By the construction of open cover ∪γ,δB((t + ϵ, z + γ), δ) for D0, we have
+Pt,z((t + ϵ, Zt,z
+t+ϵ) ∈D0) > 0.
+Since the event
+n
+(t + ϵ, Zt,z
+t+ϵ) ∈D0o
+for some ϵ > 0 implies {σDo < ∞}, it holds
+that
+Pt,z(σDo < ∞) > 0.
+(14)
+Since {σDo = 0} ∈F0, Blumenthal’s zero-one law reads that
+Pt,z({σDo = 0}) = 0 or 1.
+(15)
+Here, by using contradiction, we show that Pt,z({σDo = 0}) = 1. Suppose
+that Pt,z({σDo > 0}) = 1.
+18
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+Noting that A = {σDo > 0} = {∃ϵ > 0 such that (s, Zt,z
+s ) < Do for all s ∈
+(0, ϵ]} and assumption Pt,z({σDo > 0}) = 1, we have
+0 =Pt,z(σDo < ∞, ∃ϵ > 0 such that (σD0 + s, Zt,z
+σD0+s) < Do for all s ∈[0, ϵ]}
+=Et,z[IA ◦θσDo : σDo < ∞] (θσDo is a shift operator)
+=Et,z[PσDo,Zt,z
+σDo (A); σDo < ∞]
+=Pt,z(σDo < ∞)
+This result contradicts (14).Thus, the claim is proven.
+□
+The discussion above and Theorem 10 of [1] establish that vλ is C1 in the
+space variables on ∂C.
+A.2.2
+Characterization of the optimal boundary
+In this subsection, the feature of the optimal boundary associated with the
+free boundary problem is discussed.
+Proposition A.3. There exists a boundary, bz(t), by which the stopping time
+defined by (12) is characterized such that
+τD = inf{0 ≤s ≤T −t : Zt,z
+s ≤bz(t + s)}.
+Proof of Proposition A.3. Let f be continuously twice differentiable with
+compact support. Then, by Dynkin’s formula, (8) leads to
+Et
+f  Zt,z
+τ
+ = Et
+"
+f(Zt,z
+0 ) +
+Z τ
+0
+µz(u, Zt,z
+u ) fz(Zt,z
+u )du + 1
+2
+Z τ
+0
+σz(u, Zt,z
+u )2 fzz(Zt,z
+u )du
+#
+for Zt,z
+0 = z > 0 and any stopping time, τ ∈[0, T −t]. Given that f(x) = −x,
+fx(x) = −1 and fxx(x) = 0, we have
+Et
+−Zt,z
+τ
+ = −z −Et
+"Z τ
+0
+µz(u, Zt,z
+u )du
+#
+.
+Here, we have, for any s ∈[0, T −t],
+Et
+"Z s
+0
+µz(u, Zt,z
+u )du
+#
+= −λ
+Z s
+0
+
+αe−ρuµ −λ
+2σ2e−2ρu
+Et[Zt,z
+u ] + α + ρ
+λ
+Et[Zt,z
+u log Zt,z
+u ]
+
+du.
+19
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+Note that
+Et[Zt,z
+u log Zt,z
+u ] =Et
+"
+Zt,z
+u
+ 
+e−(ρ+α)u log z −λe−ρu
+ 
+µ(1 −e−αu) + σ
+Z u
+0
+e−α(u−s)dBt+s
+!!#
+=e−(ρ+α)u log zEt[Zt,z
+u ] −λe−ρuµ(1 −e−αu)Et[Zt,z
+u ].
+This result leads to
+Et
+"Z s
+0
+µz(u, Zt,z
+u )du
+#
+= −λ
+Z s
+0
+
+αe−ρuµ −λ
+2σ2e−2ρu + α + ρ
+λ
+e−(ρ+α)u log z −e−ρu(α + ρ)µ(1e−αu)
+
+Et[Zt,z
+u ]du.
+(16)
+Thus, Et
+hR s
+0 µz(u, Zt,z
+u )du
+i
+is positive for a sufficiently small z value and negative for a sufficiently large z value.
+By the optional sampling theorem, for a large z value such that Et[−Zt,z
+τ ] ≥
+−z, it holds that
+vλ(t, z) =
+sup
+0≤τ≤T−t
+Et[−Zt,z
+τ ] ≥−z.
+This result implies that (t, z) ∈C.
+By taking a sufficiently small z value such that Et[−Zt,z
+τ ] ≤−z, it holds
+that
+vλ(t, z) =
+sup
+0≤τ≤T−t
+Et[−Zt,z
+τ ] ≤−z.
+If (t, z) satisfies the above factors, then it is optimal to immediately exercise.
+Thus, by the continuity of vλ(t, z), it holds that the stopping sets C and
+D are not empty and that there exists a boundary such that vλ(t, z) = −z.
+For this boundary, we define bz(t) such that vλ(t, bz(t)) = −bz(t), and thus, we
+have
+τD = inf{0 ≤s ≤T −t : Zt,z
+s ≤bz(t + s)}.
+□
+Proposition A.4. Boundary bz(t) is continuously increasing with bz(T−) =
+exp
+
+−
+αµ−1
+2r σ2
+r(α+ρ)
+
+20
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+Proof of Proposition A.4. The continuity of bz(t) can be verified by the same
+approach shown in Theorem 1 (5) of [15], which also follows the approach of
+[8].
+Let us consider t →T−.
+−z = lim
+t→T−vλ(t, z) = lim
+t→T−sup
+0≤τ≤T−t
+Et
+−Zt,z
+τ
+ = lim
+t→T−Et
+h
+−Zt,z
+τD
+i
+= −z −lim
+t→T−Et
+"Z τD
+0
+µz(u, Zt,z
+u )du
+#
+.
+On the second term of the right-hand side of the above equation, let us
+recall (16). Applying the Leibniz integral differentiation rule, we have the
+following:
+dEt
+hR s
+0 µz(u, Zt,z
+u )du
+i
+ds
+= −λ
+d
+R s
+0
+
+αe−ρuµ −λ
+2σ2e−2ρu + α+ρ
+λ e−(ρ+α)u log z −e−ρu(α + ρ)µ(1 −e−αu)
+
+Et[Zt,z
+u ]du
+ds
+= −λ
+
+αe−ρsµ −λ
+2σ2e−2ρs + α + ρ
+λ
+e−(ρ+α)s log z −e−ρs(α + ρ)µ(1 −e−αs)
+
+Et[Zt,z
+s ].
+Letting
+dEt
+hR s
+0 µz(u,Zt,z
+u )du
+i
+ds
+= 0 with s = 0, we have the first-order condition required for τD to be optimal; i.e.,
+−(α + ρ)
+λαµ −λ
+2σ2
+α + ρ
++ log z
+z = 0.
+This result implies that bz(T−) = exp
+
+−λ
+αµ−λ
+2 σ2
+α+ρ
+
+.
+We also have that bz(t) is increasing because bz(t) is given, thus satisfying
+v(t, z) = −z by bz(t) = z, and t 7→v(t, z) is decreasing.
+□
+A.2.3
+Solution to the free boundary problem
+Lemma A.2. For boundary bz, the smooth-fit condition
+vλ
+z(t, bz(t)−) = vλ
+z(t, bz(t)+) = 1
+(17)
+holds for all t ∈[0, T).
+21
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+Proof of Lemma A.2. Let us fix a point, (t, z) ∈[0, T)×R, lying on boundary
+b; i.e., z = bz(t). Then, we have
+vλ(t, z) −vλ(t, z −ϵ)
+ϵ
+≤z −(z −ϵ)
+ϵ
+= 1.
+For the limit of ϵ ↓0, we obtain
+vλ
+z(t, z−) ≤1.
+Note that by Theorem 10 of [1], the space derivative of vλ on ∂C is shown to
+exist.
+Next, we show the opposite inequality. Letting τϵ = τϵ(t, z −ϵ) be an
+optimal stopping time for vλ(t, z −ϵ), it follows that τϵ →0 as ϵ →0 P-a.s.,
+noting that Z is a regular diffusion and that t 7→bz(t) is increasing. Then,
+we obtain
+1
+ϵ
+
+vλ(t, z) −vλ(t, z −ϵ)
+
+≥1
+ϵ Et[−Zt,z
+τϵ + Zt,z−ϵ
+τϵ
+]
+=1
+ϵ
+ 
+−z + (z −ϵ) −Et
+"Z τϵ
+0
+(µz(u, Zt,z
+u ) −µz(u, Zt,z−ϵ
+u
+))du
+#!
+.
+(18)
+The right-hand side of (18) approaches 1 as ϵ →0. Thus, taking the limits
+as ϵ →0, we obtain the following inequality:
+vλ
+z(t, z−) ≥1
+for t ∈[0, T). Likewise, the second equality of (17) is shown.
+□
+According to the representation of unknown boundary bz(t), we elaborate
+(9) - (11) as follows:
+vλ
+t + LZvλ = 0, in C
+vλ(t, bz(t)) = −bz(t), for t ∈[0, T)
+vλ
+z(t, bz(t)) = −1, for t ∈[0, T)
+vλ(t, z) = −z, in D
+vλ(t, z) > −z, in C
+22
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+Proposition A.5. Value function vλ(t, z) is given by
+vλ(t, z) = −em(T−t,z)+var(T−t,z)/2 +
+Z T−t
+0
+K(u, z, bz(t + u))du,
+(19)
+where m(u, z) ≜e−(ρ+α)u log z −λµe−ρu(1 −e−αu), var(u, z) ≜λ2σ2
+2α e−2ρu(1 −e−2αu),
+K(u, z, bz) ≜Et
+h
+µz(u, Zt,z
+u )I(Zt,z
+u ≤bz)
+i
+and bz(t) is given, thus satisfying
+−bz(t) = −bz(t)em(T−t,bz(t))+ var(T−t,bz(t))
+2
++
+Z T−t
+0
+K(u, bz(t), bz(t + u))du.
+Proof of Proposition A.5. We present the claim by the application of Theorem 3.1 of [16]. To do this, we verify the following conditions:
+1. vλ is C1,2 on C ∪D.
+2. bz is a continuous function of bounded variation.
+3. vλ
+t + LZvλ is locally bounded on C ∪D.
+4. vλ
+z(·, bz(·) ± ϵ) →vλ
+z(·, bz(·)±) uniformly on [0, t] as ϵ ↓0.
+5. sup0<ϵ<δ V(vλ(·, bz(·) ± ϵ))(t) < ∞for some δ > 0, where V(vλ)(t) is the
+total variation in vλ on [0, t].
+The 1st condition is clear, and the 2nd condition is also clear due to the
+monotonicity of bz. The 3rd condition holds because on C, vλ
+t +LZvλ = 0, and
+on D, vλ(t, z) = −z; i.e.,
+vλ
+t + LZvλ = 0 −µz(t, z).
+As we show in the previous section, the regularity of vλ on C and Do
+ensures the 4th condition.
+Now, let us consider the 5th condition. For a discrete partition, 0 = t0 <
+t1 < · · · < tN = t, it holds that
+|vλ(tn, bz(tn) −ϵ) −vλ(tn−1, bz(tn−1) −ϵ)| =|(bz(tn) −ϵ) −(bz(tn−1) −ϵ)|
+=|bz(tn) −(bz(tn−1)| < ∞, n = 1, · · · , N,
+where we use v(t, b(t) −ϵ) ∈D and the continuity of b(·) by Proposition A.4.
+Similarly, we have
+|vλ(tn, bz(tn) + ϵ) −vλ(tn−1, bz(tn−1) + ϵ)| < ∞,
+23
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+where we use v(t, b(t) + ϵ) ∈C and the continuity of vλ(·) by Lemma A.1 and
+bz(·) by Proposition A.4.
+Therefore, through the application of Theorem 3.1 of [16] for vλ(t+s, Zz
+t+s),
+we have
+vλ(t + s, Zt,z
+s ) =vλ(t, Zt,z
+0 ) + Ms +
+Z s
+0
+(vλ
+t + LZvλ)(t + u, Zt,z
+u )I(Zt,z
+u , bz(t + u))du
++ 1
+2
+Z s
+0
+(vλ
+z(t + u, Zt,z
+u +) −vλ
+z(t + u, Zt,z
+u −))I(Zt,z
+u = bz(t + u))dlb
+u(Zt,z)
+=vλ(t, Zt,z
+0 ) + Ms −
+Z s
+0
+µz(u, Zt,z
+u )I(Zt,z
+u ≤bz(t + u))du,
+where M = (Ms)s≥0 is the martingale part and (lb
+u(Zt,z))u≥0 is the local time of
+Zt,z at boundary b, given by
+lb
+u = P −lim
+ϵ↓0
+1
+2ϵ
+Z s
+0
+I(bz(t + u) −ϵ < Zt,z
+u < bz(t + u) + ϵ)d⟨Zt,z⟩u,
+and dlb
+u(Z) refers to the integration with respect to continuous increasing
+function u 7→lb
+u(Z). Note that vλ
+t +LZvλ = 0 on C and vλ(t, z) = −z on D, which
+implies that vλ
+t + LZvλ = 0 + µz(t, z)vλ
+z + σz(t,z)2
+2
+vλ
+zz = −µz(t, z). Letting s = T −t,
+considering expectation Et, and using the optional sampling theorem for M,
+we have
+Et[vλ(T, Zt,z
+T−t)] =vλ(t, Zt,z
+0 ) −
+Z T−t
+0
+Et
+µz(u, Zt,z
+u )I(Zt,z
+u ≤bz(t + u)) du.
+Noting that vλ(T, z) = −z for all z ∈R+ and Et[vλ(T, Zt,z
+T−t)] = Et[−Zt,z
+T−t] =
+−em(T−t,z)+ var(T−t,z)
+2
+due to the log-normality of Zt,z
+T−t, (19) is followed. By inserting
+z = bz(t) into (19), we have
+−bz(t) = −bz(t)em(T−t,bz(t))+ var(T−t,bz(t))
+2
++
+Z T−t
+0
+K(u, bz(t), bz(t + u))du.
+□
+Furthermore, by the introduction of law µ, which is a probability measure
+on (R, B(R)) such that µ({0}) = 0 and Zt,z
+τD ∼µ, bz is uniquely determined by
+law µ (see Theorem 10 of [7]).
+24
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+A.3
+Proof of Theorem 2.1
+We define bx(t + u) ≜−eρu log bz(t + u)/λ. Then, I(Zt,z
+u ≤bz(t + u)) = I(Xt,x
+u
+≥
+bx(t +u)). Using µx(u, x) = −λ
+
+αe−ρuµ −λ
+2σ2e−2ρu −(α + ρ)e−ρux
+
+exp (−λe−ρux),
+it follows that
+K x(u, x, bx(t + u)) =Et
+µx  u, Xt,x
+u
+ I(Xt,x
+u ≥bx(t + u))
+=Et
+µz  u, exp  −λe−ρuXt,x
+u
+ I(Xt,x
+u ≥bx(t + u))
+=K(u, z, bz(t + u)).
+Thus, noting that Vλ(t, z) = −1
+λ log
+
+−vλ(t, z)
+
+and z = e−λx, by Proposition
+A.5,
+Vλ(t, x) = −1
+λ log
+ 
+em
+
+T−t,e−λx
++var
+
+T−t,e−λx
+/2 −
+Z T−t
+0
+K x(u, x, bx(t + u))du
+!
+= −1
+λ log
+ 
+e−λe−ρ(T−t)mx(T−t,x)+ λ2e−2ρ(T−t)
+2
+σx(T−t)2 −
+Z T−t
+0
+K x(u, x, bx(t + u))du
+!
+,
+where we use
+mx(u, x) =xe−αu + µ(1 −e−αu),
+σx(u) =
+r
+σ2
+2α(1 −e−2αu).
+Boundary bx(t) is given by the following integral equation:
+bx(t) = log
+ 
+e−λe−ρ(T−t)mx(T−t,bx(t))+ λ2e−2ρ(T−t)
+2
+σx(T−t)2 −
+Z T−t
+0
+K x(u, bx(t), bx(t + u))du
+!−1/λ
+,
+where we use Vλ(t, bx(t)) = −1
+λ log(−vλ(t, bz(t))) = −1
+λ log(bz(t)) = bx(t). Furthermore, since bz(T−) = exp
+
+−λ
+αµ−1
+2r σ2
+α+ρ
+
+,
+bx(T) = −1
+λ
+−λαµ −λ
+2σ2
+α + ρ
+= αµ −λ
+2σ2
+α + ρ
+.
+As noted above, we can uniquely determine boundary bx by law µx, where
+µx({0}) = 0 and Xt,x
+τD ∼µx via Theorem 10 of [7].
+□
+25
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+Remark A.1. For λ = 0, it holds that
+V0(t, x) =e−ρ(T−t)mx(T −t, x) −
+Z T−t
+0
+K x,0(u, x, bx(t + u))du
+by the application of L’Hôpital’s rule to (3). Here, we define
+K x,0(u, x, b) ≜Et
+h
+e−ρu 
+αµ −(α + ρ)Xt,x
+u
+
+I(Xt,x
+u ≥b)
+i
+. Boundary bx,0(t) is given
+by the following equation:
+bx,0(t) = e−ρ(T−t)mx(T −t, bx,0(t)) −
+Z T−t
+0
+K x,0(u, bx,0(t), bx(t + u))du.
+B
+Algorithm for numerical examples
+In this subsection, we state some comments on the implementation of the
+numerical examples given in Section 4.
+To numerically calculate bx(t), we rearrange kernel K x(u, x, b) as follows:
+K x(u, x, b) =Et
+µx  u, Xt,x
+u
+ I(Xt,x
+u ≥b)
+=Et
+
+−λ
+
+αe−ρuµ −λ
+2σ2e−2ρu −(α + ρ)e−ρuXt,x
+u
+
+exp  −λe−ρuXt,x
+u
+ I(Xt,x
+u ≥b)
+
+= −λ
+
+αe−ρuµ −λ
+2σ2e−2ρu
+Et
+h
+e−λe−ρuXt,x
+u I(Xt,x
+u ≥b)
+i
++ λ(α + ρ)e−ρuEt
+h
+Xt,x
+u e−λe−ρuXt,x
+u I(Xt,x
+u ≥b)
+i
+.
+(20)
+Since Xt,x
+u
+∼N(mx(u, x), σx(u)) for normal distribution N(·, ·), using some
+frameworks equipped with a package for calculating expected values (for
+example, scipy.stats.norm, which is a Python package that includes the
+function expect()), we can numerically calculate
+Et
+h
+e−λe−ρuXt,x
+u I(Xt,x
+u ≥b)
+i
+and Et
+h
+Xt,x
+u e−λe−ρuXt,x
+u I(Xt,x
+u ≥b)
+i
+. Of course, we can explicitly
+calculate the above values as well. Indeed, it holds that
+Et
+h
+e−λe−ρuXt,x
+u I(Xt,x
+u ≥b)
+i
+=e−mx(u,x)λe−ρu+ 1
+2σx(u)2λ2e−2ρu
+×
+
+1 −Φ((−b + mx(u, x) −σx(u)2λe−ρu)/σx(u))
+
+26
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+and
+Et
+h
+Xt,x
+u e−λe−ρuXt,x
+u I(Xt,x
+u ≥b)
+i
+= e−mx(u,x)λe−ρu+ 1
+2σx(u)2λ2e−2ρu
+×
+"
+σx(u)φ
+ b −mx(u, x) + σx(u)2λe−ρu
+σx(u)
+!
++
+
+mx(u, x) −σx(u)2λe−ρu 
+1 −Φ
+ −b + mx(u, x) −σx(u)2λe−ρu
+σx(u)
+!!#
+where Φ(z) and φ(z) are the cumulative distribution function and density
+function of the standard normal distribution, respectively. Then, by substituting
+them into (20), it follows that
+K x(u, x, b) =λe−λe−ρumx(u,x)+ λ2e−2ρu
+2
+σx(u)2
+×
+"
+(α + ρ)e−ρuσx(u)φ
+ b −mx(u, x) + σx(u)2λe−ρu
+σx(u)
+!
+−
+
+αe−ρuµ −λ
+2σ2e−2ρu
+−(α + ρ)e−ρu 
+mx(u, x) −σx(u)2λe−ρu
+×
+ 
+1 −Φ
+ −b + mx(u, x) −σx(u)2λe−ρu
+σx(u)
+!!#
+.
+The result is the same whether we use the package for calculating expected
+values or that for calculating explicit forms.
+Next, we divide interval [0, T] into
+0, ∆t, 2∆t, . . . , (N −1)∆t, N∆t = T.
+Since we already know that bx(N∆t) = bx(T) = (αµ −λσ2/2)/(α + ρ),
+we recursively calculate bx((N −1)∆t), bx((N −2)∆t), . . ., bx(0) by backwards
+deduction. For each n = N −1, N −2, . . . , 0, we have to solve (4).
+Here, we approximate the integral term in (4) as follows:
+Z T−n∆t
+0
+K x(u, bx(n∆t), bx(n∆t + u))du ≈
+N
+X
+i=n+1
+K x((i −n)∆t, bx(n∆t), bx(i∆t + u))∆t.
+Note that (bx(i∆t + u))) for i = n + 1, n + 2, . . . , N are given by backwards
+deduction when we calculate bx(n∆t). We have the following equation: substituting
+27
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+the above into (4) and replacing t for n∆t.
+bx(n∆t) = log
+ 
+e−λe−ρ(N−n)∆tmx((N−n)∆t,bx(n∆t))+ λ2e−2ρ(N−n)∆t
+2
+σx((N−n)∆t)2
+−
+N
+X
+i=n+1
+K x((i −n)∆t, bx(n∆t), bx(i∆t + u))∆t
+!−1/λ
+.
+Moreover, there may be several methods to solve the above problems. We
+apply the Newton method for simplicity and set the initial value for the
+Newton method as bx((n + 1)∆t) because we know that bx(t) is a decreasing
+function such that bx(n∆t) ≥bx((n + 1)∆t).
+Acknowledgements
+I gratefully acknowledge the financial support from JSPS KAKENHI (Grant
+Number 18K01694). More than anything else, I would like to acknowledge
+my appreciation for Professor Mark H.A. Davis of Imperial College London.
+In 2018, Mark and I attempted to construct a trading code related to pairs
+trading. Unfortunately, our research project has been interrupted since Mark
+passed away in 2020. However, the results presented in this paper are deeply
+related to that collaboration.
+I look forward to completing this research
+project begun by Mark and I.
+References
+[1] T. De Angelis and G. Peskir. Global C1 regularity of the value function
+in optimal stopping problems.
+The Annals of Applied Probability,
+30(3):1007 – 1031, 2020.
+[2] M. Avellaneda and J. Lee. Statistical arbitrage in the US equities market.
+Quantitative Finance, 10:761–782, 2010.
+[3] E. Bayraktar, I. Karatzas, and S. Yao. Optimal stopping for dynamic
+convex risk measures. Illinois Journal of Mathematics, 54(3):1025–1067,
+2010.
+[4] O. Bondarenko. Statistical arbitrage and securities prices. The Review
+of Financial Studies, 16:875–919, 2003.
+28
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+[5] K. Chen, M. Chiu, and H. Wong.
+Time-consistent mean-variance
+pairs-trading under regime-switching cointegration. SIAM Journal on
+Financial Mathematics, 10(2):632–665, 2019.
+[6] M. Chiu and H. Wong.
+Optimal investment for an insurer with
+cointegrated assets:
+CRRA utility.
+Insurance:
+Mathematics and
+Economics, 52:52–64, 2013.
+[7] A. M. G. Cox and G. Peskir. Embedding laws in diffusions by functions
+of time. The Annals of Probability, 43(5):2481 – 2510, 2015.
+[8] T. De Angelis. A note on the continuity of free-boundaries in finitehorizon optimal stopping problems for one-dimensional diffusions. SIAM
+Journal on Control and Optimization, 53:167–184, 2014.
+[9] R.J. Elliott, J.M. Van Der Hoek, and W.P. Malcolm. Pairs trading.
+Quantitative Finance, 5:271–276, 2005.
+[10] Avner
+Friedman.
+Partial Differential Equations of Parabolic Type.
+Prentice-Hall, Inc, Englewood Cliffs, N.J., 1964.
+[11] A. Göncü.
+Statistical arbitrage in the Black-Scholes framework.
+Quantitative Finance, 15(9):1489–1499, 2015.
+[12] A. Göncü and E. Akyildirim. Statistical arbitrage with pairs trading.
+International Review of Finance, 16(2):307–319, 2016.
+[13] S. Hogan, R. Jarrow, M. Teb, and M. Warachka.
+Testing market
+efficiency using statistical arbitrage with applications to momentum and
+value strategies. Journal of Financial Economics, 73:525–565, 2004.
+[14] S. Ihara. Information theory for continuous system. World Scientific,
+Singapore, 1993.
+[15] Y. Kitapbayev and T. Leung. Optimal mean-reverting spread trading:
+nonlinear integral equation approach. Annals of Finance, 13:181–203,
+2017.
+[16] G. Peskir.
+A change-of-variable formula with local time on curves.
+Journal of Theoretical Probability, 18(3):499–535, 2005.
+29
+Electronic copy available at: https://ssrn.com/abstract=4110785
+
+[17] G. Peskir and A. Shiryaev.
+Optimal stopping and free-boundary
+problems. Birkhäuser Verlag, 2006.
+[18] A. Pole. Statistical arbitrage: Algorithmic trading insights and techniques.
+John Wiley & Sons, Inc., Hoboken, New Jersey, 2007.
+[19] Renjie Wang, Cody Hyndman, and Anastasis Kratsios. The entropic
+measure transform. Canadian Journal of Statistics, 48(1):97–129, 2020.
+[20] D. Yoshikawa. An entropic approach for pair trading. Entropy, 19:320,
+2017.
+30
+Electronic copy available at: https://ssrn.com/abstract=4110785

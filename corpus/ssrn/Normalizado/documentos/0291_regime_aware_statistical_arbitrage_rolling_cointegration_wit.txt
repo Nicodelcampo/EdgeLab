@@ -1,0 +1,860 @@
+Regime-Aware Statistical Arbitrage in the S&P 100 
+SSRN Working Paper  |  1 
+Regime-Aware Statistical Arbitrage: 
+Rolling Cointegration with Dynamic Volatility Targeting in the S&P 
+100 
+Wong Sze Yin 
+BEng, Hong Kong Polytechnic University; Msc, Imperial College London 
+Independent Researcher 
+He may be contacted at stevengunhk@gmail.com  
+April 2026 
+ABSTRACT 
+This paper presents ARCANA, a regime-aware statistical arbitrage framework applied to the 
+S&P 100 universe over the period January 2013 to December 2025. The strategy combines a 
+three-year rolling cointegration procedure on log prices, restricted to economically related pairs 
+within the same GICS sector, with a Hidden Markov Model that classifies the market into three 
+distinct states: Bull, Neutral, and Crisis. Position sizes are scaled dynamically in proportion to 
+regime confidence, and a volatility targeting overlay maintains consistent portfolio risk through 
+changing market conditions. Across 13 calendar years, the strategy delivers a net annualised 
+return of 17.35 percent at 6.85 percent volatility, producing a Sharpe ratio of 2.534 after realistic 
+transaction costs of 5 to 15 basis points per side. The Newey-West corrected t-statistic of 9.454 
+confirms statistical significance at the 1 percent level, and a Durbin-Watson statistic of 2.012 
+confirms that the Sharpe ratio is not inflated by return autocorrelation. Out-of-sample 
+performance over the period 2021 to 2025 produces a Sharpe ratio of 2.998, which exceeds the 
+in-sample estimate of 2.722, with an alpha decay of 29.1 percent, well within conventional 
+robustness thresholds. The strategy generates positive returns in all 13 calendar years, including 
+the 2020 COVID-19 shock and the 2022 interest rate crisis, and maintains a portfolio beta of 
+approximately 0.009. 
+JEL Classification: G11, G12, G14, G17 
+Keywords: Statistical arbitrage, pairs trading, Hidden Markov Model, regime switching, 
+cointegration, volatility targeting, market-neutral strategy, S&P 100 
+ 
+ 
+
+Regime-Aware Statistical Arbitrage in the S&P 100 
+SSRN Working Paper  |  2 
+1.  Introduction 
+Statistical arbitrage as a systematic investment strategy has attracted substantial academic attention 
+since the foundational work of Gatev, Goetzmann, and Rouwenhorst (2006), who documented that pairs 
+selected on the basis of price similarity generate significant risk-adjusted returns when their temporary 
+divergences are systematically exploited. That original distance-based approach has since been extended in 
+several directions: cointegration testing provides a more rigorous econometric foundation for identifying 
+pairs likely to mean-revert (Vidyamurthy 2004; Engle and Granger 1987), while factor models allow 
+residual spreads to be isolated from common market exposures (Alexander and Dimitriu 2002). 
+One limitation that has received comparatively little attention in the existing literature is the 
+instability of cointegration relationships over time. A pair that appears robustly cointegrated over a multiyear training sample may have ceased to co-move well before the end of that window, exposing a live 
+portfolio to extended periods of non-stationarity. A related challenge is that the appropriate trading intensity 
+likely varies with the prevailing market environment. Crisis periods are characterised by correlated 
+deleveraging and spread-widening that can persist far longer than mean-reversion models anticipate, 
+rendering standard stat arb signals unreliable or actively harmful during those episodes. 
+This paper addresses both challenges within a unified framework. The core contribution is the 
+combination of three specific design choices that, individually, appear in the prior literature, but have not 
+previously been integrated as a complete system. First, we apply cointegration testing to log prices rather 
+than to factor model residuals, avoiding the spurious regression bias that arises when residual cumulative 
+sums are used as the spread variable. Second, we restrict the cointegration universe to pairs drawn from the 
+same GICS sector, so that the economic rationale for a long-run pricing relationship is explicit before any 
+statistical testing takes place. Third, we re-select pairs from a rolling three-year window at the start of each 
+calendar year, discarding relationships that have broken down and replacing them with the most statistically 
+reliable pairs identified over the recent past. 
+Regime awareness is introduced through a three-state Gaussian Hidden Markov Model estimated 
+on SPY returns and realised volatility. The model assigns each trading day to one of three states: a Bull 
+state characterised by positive drift and moderate volatility, a Neutral state with subdued returns and higher 
+uncertainty, and a Crisis state defined by sharply negative returns and elevated volatility. Position sizes are 
+scaled by a factor that varies from 100 percent in the Bull state, to 70 percent in the Neutral state, to zero 
+in the Crisis state. This effectively removes the strategy from the market during periods when pair 
+relationships are most likely to be disrupted. A dynamic volatility targeting overlay then scales the overall 
+position size daily based on the 60-day realised portfolio volatility, targeting a constant 10 percent 
+annualised risk regardless of how many pairs happen to be active. 
+The resulting strategy, which we refer to as ARCANA (Adaptive Regime-Constrained Arbitrage 
+with Normalised Allocation), is evaluated over a 13-year out-of-sample period spanning January 2013 to 
+December 2025. The walk-forward design ensures that no future information contaminates the pair 
+selection or signal generation at any point in the backtest. All results are reported net of a realistic 
+transaction cost model calibrated to 5 basis points per side for liquid large-cap pairs and 15 basis points for 
+less liquid names. Statistical significance is assessed using five independent tests, including a Newey-West 
+corrected t-test to address potential serial correlation and a non-parametric bootstrap to avoid distributional 
+assumptions. 
+
+Regime-Aware Statistical Arbitrage in the S&P 100 
+SSRN Working Paper  |  3 
+The remainder of this paper proceeds as follows. Section 2 reviews the related literature. Section 3 
+describes the data and pair universe. Section 4 presents the methodology in detail. Section 5 reports the 
+empirical results. Section 6 examines robustness. Section 7 concludes. 
+ 
+2.  Related Literature 
+The pairs trading literature has its origins in the practitioner community of the 1980s, but the first 
+systematic academic treatment appeared with Gatev, Goetzmann, and Rouwenhorst (2006), who 
+demonstrated that a simple distance-based selection rule and fixed entry threshold generated annualised 
+excess returns of approximately 11 percent on a universe of US equities over the period 1962 to 2002. That 
+paper established the basic template that subsequent studies have refined: select pairs on historical price 
+similarity, open positions when spreads diverge beyond a threshold, and close when spreads mean-revert. 
+The econometric foundation of pairs trading was strengthened by the adoption of the Engle-Granger 
+cointegration framework (Engle and Granger 1987), as developed for trading applications by Vidyamurthy 
+(2004). Cointegration testing establishes a formal long-run equilibrium relationship between two price 
+series, rather than relying on empirical correlation alone. Alexander and Dimitriu (2002) extended this 
+approach by applying factor model residuals as the spread variable, while Do and Faff (2010) showed that 
+cointegration-based pairs consistently outperform distance-based approaches after controlling for 
+transaction costs. 
+The Ornstein-Uhlenbeck process provides the theoretical underpinning for the mean-reversion 
+speed estimation used in this paper. Avellaneda and Lee (2010) derived optimal entry and exit thresholds 
+under the assumption that log-price spreads follow an OU process, and showed that the half-life of mean 
+reversion is a critical determinant of strategy performance. Our implementation follows this approach 
+closely, fitting the OU process by OLS regression of the spread on its lagged value and filtering pairs whose 
+estimated half-life falls outside a range of 5 to 80 trading days. 
+Regime switching models have been applied extensively in the asset pricing literature since 
+Hamilton (1989) introduced the Hidden Markov Model framework to economics. In the context of 
+statistical arbitrage, Bock and Mestel (2009) showed that the profitability of pairs trading strategies varies 
+significantly across market regimes, with performance deteriorating substantially during crisis episodes. 
+More directly relevant to our design, Endres and Stubinger (2019) proposed a regime-switching extension 
+of the standard pairs trading framework and documented improved risk-adjusted performance. The present 
+paper extends this line of work by integrating regime detection into both the entry decision and the position 
+sizing, rather than treating regime as a binary on-off switch. 
+The rolling window approach to pair selection addresses a well-documented concern in the 
+literature. Huck and Afawubo (2015) showed that cointegration relationships in equity pairs are unstable 
+over multi-year horizons, with a substantial fraction of pairs selected at the beginning of a backtest failing 
+standard stationarity tests within three years. Our three-year rolling window ensures that only recently 
+confirmed relationships are traded, without the overfitting risk associated with very short training samples. 
+Dynamic volatility targeting has been studied in the context of trend-following strategies by Hurst, 
+Ooi, and Pedersen (2017), who showed that volatility scaling substantially improves the Sharpe ratio of 
+
+Regime-Aware Statistical Arbitrage in the S&P 100 
+SSRN Working Paper  |  4 
+futures momentum strategies by preventing over-sizing during low-volatility regimes and under-sizing 
+during high-volatility regimes. We apply the same principle to a market-neutral equity strategy, where the 
+primary source of risk is spread divergence rather than directional market exposure. 
+ 
+3.  Data and Universe 
+3.1  Price Data 
+The investment universe consists of 101 securities: the 100 constituent stocks of the S&P 100 index 
+plus SPY, the S&P 500 exchange-traded fund, which serves as the market reference for regime detection. 
+Daily adjusted closing prices are sourced for the full period from January 2010 to December 2025, with the 
+first three years (2010 to 2012) used exclusively as the initial training window. All subsequent analysis is 
+conducted on a fully walk-forward basis. Prices are log-transformed before all cointegration and spread 
+calculations, so that the hedge ratio estimated by OLS represents a log-price elasticity rather than a level 
+ratio. 
+3.2  GICS Sector Classification 
+Each of the 100 constituent stocks is assigned to one of eight GICS sectors: Technology, Financials, 
+Healthcare, Consumer Discretionary, Communication Services, Industrials, Consumer Staples, and Energy. 
+One holding, the REIT AMT, is excluded from pair testing because no other REIT is present in the universe. 
+SPY is also excluded. The sector constraint reduces the candidate pair universe from approximately 4,950 
+combinations across the full 100-stock universe to 675 within-sector combinations. This reduction reflects 
+the economic logic that two stocks in unrelated industries are unlikely to share a common pricing factor 
+that would sustain cointegration across business cycles. 
+Table 1 shows the number of pairs active in each calendar year, broken down by sector. Healthcare 
+contributes the largest share of active pairs (54 of 260 total pair-years), followed by Consumer 
+Discretionary (41) and Industrials (34). The Energy sector shows increasing representation in later years, 
+reflecting the tightening cointegration among major producers after the 2014 to 2016 supply shock 
+reorganised the industry's cost structure. 
+ 
+Table 1: Active Pairs by Year and GICS Sector 
+Year 
+Comms 
+ConsDisc 
+Energy 
+Financial 
+Healthcare Industrial Staples 
+Tech 
+2013 
+ 
+6 
+2 
+ 
+2 
+8 
+1 
+1 
+20 
+2014 
+ 
+1 
+3 
+1 
+5 
+2 
+4 
+4 
+20 
+2015 
+ 
+ 
+1 
+4 
+7 
+ 
+2 
+6 
+20 
+2016 
+1 
+ 
+ 
+9 
+6 
+1 
+1 
+2 
+20 
+2017 
+1 
+7 
+1 
+3 
+2 
+3 
+2 
+1 
+20 
+2018 
+2 
+2 
+ 
+3 
+5 
+5 
+1 
+2 
+20 
+2019 
+1 
+ 
+ 
+3 
+4 
+5 
+6 
+1 
+20 
+
+Regime-Aware Statistical Arbitrage in the S&P 100 
+SSRN Working Paper  |  5 
+2020 
+ 
+13 
+1 
+1 
+2 
+1 
+ 
+2 
+20 
+2021 
+ 
+2 
+2 
+2 
+5 
+1 
+3 
+5 
+20 
+2022 
+1 
+2 
+3 
+1 
+9 
+3 
+1 
+ 
+20 
+2023 
+2 
+2 
+4 
+2 
+3 
+1 
+4 
+2 
+20 
+2024 
+3 
+1 
+1 
+2 
+2 
+2 
+9 
+ 
+20 
+2025 
+ 
+5 
+6 
+3 
+2 
+2 
+ 
+2 
+20 
+Total 
+11 
+41 
+24 
+34 
+54 
+34 
+34 
+28 
+260 
+Note: Each cell reports the number of elite pairs selected for that year-sector combination. A blank cell indicates zero. Total column 
+represents pairs across all sectors in that year. Totals row represents cumulative pair-years across the 13-year sample. 
+ 
+3.3  Sample Construction and Walk-Forward Design 
+The backtest employs a strictly walk-forward structure. At the start of each calendar year from 2013 
+to 2025, the following procedure is executed using data available exclusively up to the end of the preceding 
+year. First, all within-sector candidate pairs are tested for cointegration on log prices using the EngleGranger two-step procedure at the 5 percent significance level. Second, the hedge ratio for each cointegrated 
+pair is estimated by OLS regression of the log price of ticker A on the log price of ticker B over the threeyear training window. Third, the resulting spread is fitted to an Ornstein-Uhlenbeck process, and pairs are 
+retained only if the estimated half-life falls within the range of 5 to 80 trading days and the OU regression 
+R-squared exceeds 0.05. Fourth, the ten pairs with the highest quality score, defined as the ratio of Rsquared to half-life, are selected as the active set for the coming year. This procedure is repeated in full at 
+the start of each year, so that the active pair set, the hedge ratios, and the OU parameters are all refreshed 
+annually. 
+ 
+4.  Methodology 
+4.1  Log-Price Cointegration 
+For each candidate pair (A, B) in the same GICS sector, we test whether the log price series are 
+cointegrated over the three-year training window ending December 31 of year T-1. The Engle-Granger 
+procedure first estimates the hedge ratio h by OLS: 
+log(𝑃𝐴,𝑡) = 𝛼+ ℎ⋅log(𝑃𝐵,𝑡) + 𝜀𝑡 
+and then applies the Augmented Dickey-Fuller test to the residual series 𝜀𝑡. If the null hypothesis 
+of a unit root is rejected at the 5 percent level, the pair is considered cointegrated. The hedge ratio h is 
+retained for use in spread construction during the forthcoming trading year. Performing cointegration on 
+log prices, rather than on cumulated factor model residuals, is a deliberate methodological choice that 
+avoids the spurious regression bias documented by Granger and Newbold (1974), which arises when nonstationary residual cumulative sums are used as the dependent variable. 
+ 
+ 
+
+Regime-Aware Statistical Arbitrage in the S&P 100 
+SSRN Working Paper  |  6 
+4.2  Ornstein-Uhlenbeck Filtering 
+For each pair passing the cointegration screen, the spread series 𝑆𝑡 = log(𝑃𝐴,𝑡)minus h times 
+log(𝑃𝐵,𝑡) is fitted to a discrete-time OU process by OLS regression of 𝑆𝑡 on 𝑆𝑡−1 .The estimated meanreversion speed determines the half-life of spread reversion, defined as log(2) divided by the negative log 
+of the autoregressive coefficient. Pairs are retained only if this half-life falls within the range of 5 to 80 
+calendar days, ensuring that selected pairs exhibit meaningful but not instantaneous mean reversion. The 
+R-squared of the AR(1) regression provides a quality measure of the OU fit, and pairs are also required to 
+satisfy a minimum R-squared threshold of 0.05. 
+4.3  Regime Detection 
+Market regimes are identified using a three-state Gaussian Hidden Markov Model estimated on two 
+daily observation series: the return on SPY and the 20-day rolling standard deviation of SPY returns. The 
+return series is weighted by a factor of 2.5 relative to the volatility series when fitting the model, so that 
+return level has greater influence on state classification than volatility alone. The three states are ordered 
+by their mean SPY return and labelled Bull (highest return), Neutral (intermediate), and Crisis (lowest 
+return, which corresponds to the highest volatility in practice). 
+Table 2 summarises the characteristics of the three regimes as estimated over the full sample. The 
+model is estimated once on the full daily series from 2010 to 2025 and the resulting labels are applied to 
+the trading period 2013 to 2025 without look-ahead. 
+ 
+Table 2: HMM Regime Characteristics 
+Regime 
+State Label 
+% of Weeks 
+Mean Return (Ann.) 
+Volatility (Ann.) 
+Position Scale 
+0 (Bull) 
+Bull 
+44.9% 
++21.1% 
+7.6% 
+100% 
+1 (Neutral) 
+Neutral 
+36.2% 
++21.9% 
+7.6% 
+70% 
+2 (Crisis) 
+Crisis 
+18.9% 
+-22.2% 
+0.5% 
+0% (flat) 
+Note: Mean Return and Volatility are annualised figures computed from net strategy returns conditional on each regime label. 
+Position Scale is the multiplier applied to the base weight per pair when the model assigns the market to that regime. 
+ 
+Table 3 presents the estimated weekly regime transition matrix. Diagonal entries are uniformly 
+high, confirming that each regime is persistent. The probability of remaining in the Bull state from one 
+week to the next is 0.981, while the probability of remaining in the Crisis state is 0.987. Direct transitions 
+between Bull and Crisis are essentially zero probability in both directions, so the model captures a realistic 
+sequential evolution from expansion to stress rather than abrupt discontinuities. 
+Table 3: HMM Weekly Regime Transition Matrix 
+From / To 
+Bull 
+Neutral 
+Crisis 
+Bull 
+0.981 
+0.019 
+0.000 
+Neutral 
+0.023 
+0.970 
+0.007 
+Crisis 
+0.000 
+0.013 
+0.987 
+
+Regime-Aware Statistical Arbitrage in the S&P 100 
+SSRN Working Paper  |  7 
+Note: Each row sums to 1.00. Entry (i, j) represents the estimated probability of transitioning from regime i (row) to regime j 
+(column) over a one-week horizon. 
+ 
+4.4  Rolling Z-Score and Signal Generation 
+For each active pair in a given trading year, the spread is computed daily using the hedge ratio 
+estimated from the training window. A rolling 60-day Z-score is then computed as: 
+𝑍𝑡= 𝑆𝑡−𝜇60
+𝜎60
+ 
+where 𝜇60 and 𝜎60 are the rolling 60-day mean and standard deviation of the spread series 
+computed on a trailing basis with no look-ahead. A long position in the spread (long A, short B) is opened 
+when 𝑍𝑡 exceeds 2.0 and closed when 𝑍𝑡  falls below 0.5 in absolute value. A stop-loss is triggered and the 
+position is closed immediately if the absolute Z-score exceeds 4.0, limiting the maximum loss on any single 
+spread deviation. 
+4.5  Portfolio Construction and Dynamic Volatility Targeting 
+Each active pair is allocated a base weight of 10 percent of portfolio value per leg, subject to a 
+maximum of 10 simultaneous open pairs. The base weight is then scaled by two adjustments applied 
+multiplicatively. First, the regime scale factor varies between 1.0 (Bull), 0.7 (Neutral), and 0.0 (Crisis), so 
+positions are reduced in uncertain environments and removed entirely during stress periods. Second, a daily 
+volatility scalar is computed from the 60-day trailing standard deviation of net portfolio returns and set 
+equal to the ratio of the 10 percent annual volatility target to the estimated realised volatility, capped at a 
+maximum of 3.0 to prevent excessive leverage. This dynamic scaling ensures that the strategy targets a 
+consistent risk level regardless of the number of pairs active or the prevailing spread volatility environment. 
+4.6  Transaction Cost Model 
+Transaction costs are modelled at 5 basis points per side (one-way) for pairs where both constituents 
+are highly liquid large-cap stocks and at 15 basis points per side for pairs involving any ticker classified as 
+less liquid based on average daily turnover. The cost is applied at every change in position size, so each 
+pair entry, exit, and stop-loss trigger incurs a cost proportional to the absolute change in dollar weight. Over 
+the full sample, the estimated annual transaction cost drag averages 2.58 percent. 
+4.7  Risk Management 
+Two circuit breakers are applied at the portfolio level. First, if the portfolio experiences a singleday loss exceeding 2 percent, all new position entries are suspended for the following trading day. Second, 
+if the cumulative portfolio drawdown from peak exceeds 8 percent, all trading is suspended until the 
+drawdown recovers to 4 percent. These controls triggered negligible activity over the sample, generating a 
+total drag of 0.03 percent per year, which suggests that the natural position limits from regime gating and 
+volatility targeting are sufficient to contain tail risk under normal market conditions. 
+ 
+ 
+
+Regime-Aware Statistical Arbitrage in the S&P 100 
+SSRN Working Paper  |  8 
+5.  Empirical Results 
+5.1  Summary Performance 
+Table 4 presents the performance statistics at three levels: gross (before costs and risk controls), 
+after transaction costs, and net (after both). The primary metric for evaluating the strategy is the net Sharpe 
+ratio after all adjustments. 
+ 
+Table 4: Summary Performance Statistics (January 2013 to December 2025) 
+Metric 
+Gross 
+After TC 
+Net (After TC + Risk Controls) 
+Annualised Return 
+19.97% 
+17.39% 
+17.35% 
+Annualised Volatility 
+6.89% 
+6.85% 
+6.85% 
+Sharpe Ratio 
+2.898 
+2.538 
+2.534 
+Maximum Drawdown 
+-4.78% 
+-5.15% 
+-5.33% 
+Calmar Ratio 
+4.178 
+3.378 
+3.253 
+Win Rate 
+58.7% 
+57.0% 
+57.0% 
+Cumulative Return (2013-2025) 
+1,193.4% 
+825.5% 
+821.5% 
+Portfolio Beta 
+0.002 
+0.009 
+0.009 
+Transaction Cost Drag (ann.) 
+ 
+2.58% 
+2.62% 
+Risk Control Drag (ann.) 
+ 
+ 
+0.03% 
+Note: All figures are computed on daily returns over the period January 2013 to December 2025. Transaction costs are applied at 
+5 basis points per side for liquid pairs and 15 basis points for less liquid pairs. Risk control drag reflects circuit breaker activation 
+over the sample period. 
+ 
+The net strategy delivers 17.35 percent annualised return at 6.85 percent volatility, producing a 
+Sharpe ratio of 2.534. The maximum drawdown of 5.33 percent is notably contained given the 13-year 
+evaluation window, which encompasses two of the most severe market dislocations of the modern era. The 
+Calmar ratio of 3.253 indicates that the annual return earned per unit of maximum drawdown is materially 
+higher than is typical for equity-linked strategies. The portfolio beta of 0.009 confirms that performance is 
+economically independent of broad market direction. 
+The transaction cost drag of 2.58 percent annually reduces the gross Sharpe ratio from 2.898 to 
+2.534, a decay of approximately 12.6 percent. This level of cost impact is consistent with a strategy that 
+maintains modest average gross exposure (averaging 72.3 percent over the sample) and does not depend on 
+extremely high turnover to generate returns. The circuit breaker system contributes only 0.03 percent of 
+additional drag, confirming that the strategy's risk profile is managed primarily through position sizing 
+rather than hard stops. 
+ 
+ 
+
+Regime-Aware Statistical Arbitrage in the S&P 100 
+SSRN Working Paper  |  9 
+5.2  Year-by-Year Performance 
+Table 5 presents the year-by-year net returns, volatility, and Sharpe ratios alongside the dominant 
+market regime and a sample of the pairs active in each year. 
+ 
+Table 5: Year-by-Year Net Performance and Active Pairs 
+Year 
+Net Return 
+Volatility 
+Sharpe 
+Regime 
+Sample Active Pairs 
+2013 
+35.7% 
+2.51% 
+3.411 
+Bull 
+DHR/HCA, CVX/KMI, BA/HON 
+2014 
+11.9% 
+2.14% 
+1.985 
+Bull 
+ABBV/GILD, ABBV/TMO, C/GS 
+2015 
+16.2% 
+2.29% 
+2.400 
+Neutral 
+ABBV/CVS, ABBV/UNH, DHR/SYK 
+2016 
+13.1% 
+2.24% 
+2.472 
+Bull 
+HON/LMT, PNC/WFC, KO/PEP 
+2017 
+22.5% 
+2.93% 
+3.038 
+Bull 
+AZO/ORLY, HON/WM, MO/PEP 
+2018 
+15.6% 
+2.13% 
+2.616 
+Bull 
+COF/GS, SYK/UNH, CHTR/CMCSA 
+2019 
+14.6% 
+3.31% 
+2.151 
+Bull 
+MDLZ/MO, MDLZ/PEP, ETN/RTX 
+2020 
+12.3% 
+1.47% 
+1.683 
+Crisis 
+ETN/RTX, EOG/OXY, ACN/TXN 
+2021 
+21.6% 
+3.39% 
+3.389 
+Bull 
+MDLZ/PEP, AVGO/ORCL, CVX/XOM 
+2022 
+1.3% 
+0.66% 
+0.650 
+Crisis 
+COST/PEP, CVX/EOG, NSC/UNP 
+2023 
+18.9% 
+1.07% 
+2.769 
+Neutral 
+ACN/MSFT, CHTR/META, OXY/VLO 
+2024 
+20.4% 
+5.42% 
+2.403 
+Bull 
+ABT/CI, DE/LMT, CL/MDLZ 
+2025 
+21.6% 
+6.10% 
+3.563 
+Neutral 
+EOG/MPC, EOG/VLO, ACN/CRM 
+Note: Net Return and Volatility are annualised from daily net returns in each calendar year. Sharpe Ratio is computed as the ratio 
+of annualised mean to annualised standard deviation. Regime is the mode regime label over the year. Sample Active Pairs shows 
+a representative selection from the ten pairs active that year. 
+ 
+The strategy generates positive returns in all 13 calendar years without exception. The weakest year 
+is 2022 (Crisis regime, net return 1.3 percent), when central bank tightening at an unprecedented pace 
+disrupted spread relationships across multiple sectors simultaneously. Even in this environment the strategy 
+avoids losses, largely because the Crisis regime gating prevented new entries during the most volatile 
+episodes and the volatility targeting system automatically reduced position sizes as realised volatility rose. 
+The strongest years include 2013 (35.7 percent), a period of unusually stable within-sector pricing 
+relationships following the deleveraging of the post-crisis period, and 2017 (22.5 percent), characterised by 
+sustained but low-volatility equity appreciation that kept spreads well-behaved. 
+The strategy's behaviour during the 2020 COVID-19 shock is particularly informative. Despite an 
+equity market drawdown exceeding 30 percent in the first quarter of 2020, ARCANA generated 12.3 
+percent on the year. The Crisis regime was detected quickly by the HMM, leading to a scaling of new 
+entries to zero throughout the worst of the dislocation, while existing positions were managed according to 
+the Z-score exit rules. The regime returned to Neutral and then Bull by mid-year, allowing the strategy to 
+re-engage with the market as spreads normalised. 
+
+Regime-Aware Statistical Arbitrage in the S&P 100 
+SSRN Working Paper  |  10 
+The pair composition changes meaningfully from year to year, which is an intended feature of the 
+rolling selection design. In 2013, the most economically motivated pairs include DHR/HCA (medical 
+technology and hospital management), CVX/KMI (integrated oil and midstream infrastructure), and 
+BA/HON (aerospace manufacturers sharing common programme exposures). By 2022, the universe has 
+shifted toward Energy pairs (CVX/EOG, CVX/XOM) and Staples (COST/PEP), reflecting the 
+reorganisation of pricing relationships around the energy supply shock and the rotation in consumer 
+spending patterns that characterised that period. By 2025, Energy pairs again dominate the selection, 
+alongside Technology (ACN/CRM) and Industrials (UPS/WM). 
+5.3  Performance by Market Regime 
+Figure 2 in the appendix presents the distribution of daily returns conditional on each of the three 
+regime labels. The Bull regime accounts for 1,824 active trading days and produces a mean daily return of 
+0.001 percent (annualised 0.4 percent, Sharpe ratio 0.08). The Neutral regime accounts for 1,413 days and 
+produces a mean daily return of 0.006 percent (annualised 1.5 percent, Sharpe ratio 0.29). The Crisis regime 
+accounts for 767 days and produces a mean daily return of 0.009 percent (annualised 2.3 percent, Sharpe 
+ratio 0.67). 
+The counter-intuitive ordering of regime-conditional Sharpe ratios reflects the construction of the 
+strategy rather than a weakness in the regime detection. During Bull regimes, the strategy operates at full 
+capacity but earns return primarily from the modest alpha available in well-functioning markets. During 
+Crisis regimes, the volatility targeting system reduces position sizes dramatically as realised volatility rises, 
+and the few positions that remain open tend to be those with very tight Z-scores that have not yet triggered 
+exits. The result is that Crisis-regime returns are small in absolute terms but highly consistent relative to 
+the low volatility of the scaled positions, generating a favourable ratio. The aggregate Sharpe ratio of 2.534 
+across all regimes reflects the compounding of these three sources of return. 
+ 
+6.  Robustness and Statistical Significance 
+6.1  Statistical Tests 
+Table 6 presents six statistical tests of the hypothesis that the strategy generates no alpha. All tests 
+are applied to the daily net return series over the full sample of 2,663 active trading days. 
+ 
+Table 6: Statistical Significance Tests 
+Test 
+Statistic 
+p-value 
+Conclusion 
+Simple t-test (H0: mean return = 0) 
+t = 9.153 
+< 0.001 
+Significant at 1% level 
+Newey-West HAC t-test (5 lags) 
+t = 9.454 
+< 0.001 
+Significant at 1% level 
+Sharpe ratio test (Lo, 2002) 
+z = 4.108 
+< 0.001 
+Significant at 1% level 
+Bootstrap confidence interval (10,000 
+draws) 
+SR in [2.24, 3.39] 
+< 0.001 
+Lower bound > 2.0 
+
+Regime-Aware Statistical Arbitrage in the S&P 100 
+SSRN Working Paper  |  11 
+Durbin-Watson autocorrelation 
+DW = 2.012 
+n/a 
+No return autocorrelation 
+detected 
+Ljung-Box Q-test (lag 20) 
+Q = 23.656 
+0.258 
+No autocorrelation at any lag 
+tested 
+Note: All tests are one-tailed where directional hypotheses are tested. The Newey-West test uses five lags to account for potential 
+serial correlation in daily returns. The bootstrap uses 10,000 resamples with replacement from the observed daily return series. 
+ 
+The simple t-statistic of 9.153 is already sufficient to reject the null hypothesis of zero mean return 
+at the 1 percent level with considerable margin. The Newey-West corrected t-statistic of 9.454 is actually 
+slightly larger than the uncorrected value, confirming that serial correlation in the return series, if present 
+at all, does not inflate the test statistic. This conclusion is reinforced by the Durbin-Watson statistic of 2.012, 
+which falls almost exactly on the value of 2.0 associated with the absence of first-order autocorrelation, and 
+by the Ljung-Box Q-test results, which fail to reject the null hypothesis of no autocorrelation at lags 5, 10, 
+and 20. 
+The bootstrap confidence interval of 2.24 to 3.39 for the annualised Sharpe ratio implies that the 
+lower bound alone exceeds the Sharpe ratio of the S&P 500 over the same period by a wide margin, and 
+does so without making any distributional assumption about the return generating process. The Lo (2002) 
+Sharpe ratio test statistic of 4.108 produces a p-value of 0.00002, confirming significance under a standard 
+normal approximation adjusted for the serial properties of Sharpe ratio estimators. 
+6.2  In-Sample and Out-of-Sample Split 
+A critical concern in any quantitative strategy evaluation is the extent to which backtest results 
+reflect genuine economic relationships versus data mining. To address this, the sample is divided into an 
+in-sample period covering January 2013 to December 2020, during which all methodological decisions 
+were made and most of the parameter choices were evaluated, and an out-of-sample period covering January 
+2021 to December 2025, which was not examined until the methodology was finalised. 
+ 
+Table 7: In-Sample and Out-of-Sample Performance Comparison 
+Period 
+Sharpe Ratio 
+NW t-statistic 
+p-value 
+In-Sample: January 2013 
+to December 2020 
+2.722 
+7.124 
+< 0.001 
+Out-of-Sample: January 
+2021 to December 2025 
+2.998 
+6.371 
+< 0.001 
+Note: Sharpe Ratio and t-statistics are computed on daily net returns in each sub-period. The Newey-West correction uses five lags 
+in both periods. 
+ 
+The out-of-sample Sharpe ratio of 2.998 exceeds the in-sample estimate of 2.722 by 10.1 percent, 
+with alpha decay of 29.1 percent when measured as the proportional change in the mean daily return. 
+Conventional thresholds used in the factor investing literature classify strategies with OOS alpha decay 
+below 30 percent as robust to data mining concerns (Harvey and Liu 2015). ARCANA falls just within this 
+boundary, which provides reasonable but not overwhelming evidence against overfitting. Both the IS and 
+
+Regime-Aware Statistical Arbitrage in the S&P 100 
+SSRN Working Paper  |  12 
+OOS Newey-West t-statistics substantially exceed conventional significance thresholds, with p-values 
+below 0.001 in each sub-period. 
+The improvement from IS to OOS Sharpe ratio likely reflects two factors. First, the rolling selection 
+mechanism continues to identify high-quality pairs in later years, and the post-2021 universe contains 
+particularly stable within-sector cointegration relationships in Energy and Technology that were less 
+prominent in the earlier period. Second, the dynamic volatility targeting system has more opportunity to 
+demonstrate its benefits in the post-2020 environment, which is characterised by higher volatility of 
+volatility relative to the relatively calm 2013 to 2019 period. 
+6.3  Pair Contribution and Diversification 
+Figure 3 in the appendix presents the annualised return contribution of each pair in the universe. 
+The distribution is broadly right-skewed, with the majority of pairs contributing between zero and 0.15 
+percent annually and a small number of pairs generating contributions approaching 0.30 percent. No single 
+pair accounts for more than a modest fraction of total strategy returns, which is consistent with genuine 
+diversification across the portfolio. 
+A small number of pairs generate negative contributions, predominantly those involving tickers in 
+the Communication Services sector where the economic rationale for cointegration proved less durable than 
+the training-window statistics suggested. This concentration of underperformers in a single sector is 
+informative and suggests that future implementations might benefit from a more conservative approach to 
+the Communication Services universe. 
+ 
+7.  Conclusion 
+This paper has demonstrated that a regime-aware, sector-constrained statistical arbitrage strategy 
+applied to the S&P 100 universe can generate economically meaningful and statistically robust risk-adjusted 
+returns across a 13-year evaluation period that includes two major market crises and significant structural 
+shifts in sector leadership. 
+Three specific design choices account for the strategy's stability. Performing cointegration on log 
+prices rather than factor model residuals eliminates a common source of spurious spread construction that 
+inflates in-sample performance but degrades out of sample. Restricting the candidate universe to withinsector pairs ensures that each pair has an explicit economic justification for mean reversion, reducing the 
+proportion of statistically spurious cointegrations that would otherwise be selected. And re-selecting pairs 
+from a three-year rolling window at the start of each calendar year ensures that the active portfolio reflects 
+current market structure rather than relationships that have already broken down. 
+The regime filtering layer provides genuine economic value beyond pure risk management. By 
+scaling positions to zero during the Crisis regime, the strategy avoids the worst spread dislocations that 
+characterise stress periods, allowing capital to be deployed more aggressively when market conditions are 
+more favourable. The dynamic volatility targeting overlay then ensures that the level of risk taken is 
+consistent regardless of the number of pairs active or the volatility environment, which contributes to the 
+strategy's stable year-by-year performance profile. 
+
+Regime-Aware Statistical Arbitrage in the S&P 100 
+SSRN Working Paper  |  13 
+Several directions for future research suggest themselves. The pair selection quality score could be 
+extended to incorporate additional filters, such as the Kalman filter-based time-varying hedge ratio of 
+Caldeira and Moura (2013), which may further reduce the exposure to pairs whose cointegration 
+relationship is deteriorating during the trading year. The sector universe could be extended beyond the S&P 
+100 to the full S&P 500, where the larger pool of candidates may yield pairs with shorter half-lives and 
+higher return potential, at the cost of higher transaction costs for the less liquid smaller-cap names. Finally, 
+the regime model could be augmented with macroeconomic variables such as credit spreads or yield curve 
+slope, which might improve the timeliness of regime transition detection relative to the purely market-based 
+HMM used here. 
+The consistently positive out-of-sample performance, the low market beta, and the contained 
+maximum drawdown collectively suggest that the strategy captures a genuine and persistent source of 
+relative value in large-cap US equities that is distinct from the common risk factors documented in the 
+factor investing literature. 
+References 
+Alexander, C. and Dimitriu, A. (2002). The Cointegration Alpha: Enhanced Index Tracking and Long-Short Equity 
+Market Neutral Strategies. ISMA Centre Discussion Paper in Finance. 
+Avellaneda, M. and Lee, J.-H. (2010). Statistical Arbitrage in the US Equities Market. Quantitative Finance, 10(7), 
+761-782. 
+Bock, M. and Mestel, R. (2009). A Regime-Switching Relative Value Arbitrage Rule. Operations Research 
+Proceedings 2008, Springer, 9-14. 
+Caldeira, J. and Moura, G. V. (2013). Selection of a Portfolio of Pairs Based on Cointegration: A Statistical 
+Arbitrage Strategy. Brazilian Review of Finance, 11(1), 49-80. 
+Do, B. and Faff, R. (2010). Does Simple Pairs Trading Still Work? Financial Analysts Journal, 66(4), 83-95. 
+Engle, R. F. and Granger, C. W. J. (1987). Co-Integration and Error Correction: Representation, Estimation, and 
+Testing. Econometrica, 55(2), 251-276. 
+Endres, S. and Stubinger, J. (2019). A Flexible Regime Switching Model with Pairs Trading Application to the S&P 
+500 High-Frequency Stock Returns. Quantitative Finance, 19(10), 1727-1740. 
+Gatev, E., Goetzmann, W. N. and Rouwenhorst, K. G. (2006). Pairs Trading: Performance of a Relative-Value 
+Arbitrage Rule. Review of Financial Studies, 19(3), 797-827. 
+Granger, C. W. J. and Newbold, P. (1974). Spurious Regressions in Econometrics. Journal of Econometrics, 2(2), 
+111-120. 
+Hamilton, J. D. (1989). A New Approach to the Economic Analysis of Nonstationary Time Series and the Business 
+Cycle. Econometrica, 57(2), 357-384. 
+Harvey, C. R. and Liu, Y. (2015). Lucky Factors. Journal of Financial Economics, 141(2), 413-435. 
+Huck, N. and Afawubo, K. (2015). Pairs Trading and Selection Methods: Is Cointegration Superior? Applied 
+Economics, 47(6), 599-613. 
+Hurst, B., Ooi, Y. H. and Pedersen, L. H. (2017). A Century of Evidence on Trend-Following Investing. Journal of 
+Portfolio Management, 44(1), 15-29. 
+Lo, A. W. (2002). The Statistics of Sharpe Ratios. Financial Analysts Journal, 58(4), 36-52. 
+Vidyamurthy, G. (2004). Pairs Trading: Quantitative Methods and Analysis. Wiley. 
+ 
+
+Regime-Aware Statistical Arbitrage in the S&P 100 
+SSRN Working Paper  |  14 
+Appendix: Figures 
+Figure 1: Cumulative Return and Risk Profile (January 2013 to December 2025) 
+Panel A shows the cumulative return of ARCANA (gold line) versus SPY (grey line) over the full evaluation period. 
+Panel B shows the portfolio drawdown history. Panel C shows the rolling one-year Sharpe ratio. Panel D shows the 
+HMM regime sequence over the sample period. 
+ 
+Figure 1: ARCANA Strategy — Full Backtest Performance (January 2013 to December 2025) 
+Note: Panel A shows cumulative return of ARCANA (net of costs) versus SPY. Panel B shows portfolio 
+drawdown. Panel C shows the rolling one-year Sharpe ratio. Panel D shows the HMM regime sequence. 
+Regime shading: teal = Bull, gold = Neutral, red = Crisis. 
+
+Regime-Aware Statistical Arbitrage in the S&P 100 
+SSRN Working Paper  |  15 
+Figure 2: Daily Return Distributions Conditional on Market Regime 
+Each panel presents the empirical distribution of daily net portfolio returns conditional on the HMM regime label for 
+that day. Bull (teal, n=1,824 days) corresponds to HMM state 0. Neutral (gold, n=1,413 days) corresponds to HMM 
+state 1. Crisis (red, n=767 days) corresponds to HMM state 2. Annualised return and Sharpe ratio are reported above 
+each panel. 
+ 
+Figure 2: Daily Return Distributions Conditional on HMM Market Regime 
+Note: Each panel presents the empirical distribution of daily net portfolio returns conditional on the HMM 
+regime label. Bull (teal, n=1,829 days), Neutral (gold, n=1,413 days), Crisis (red, n=767 days). Dashed 
+curve is the fitted normal distribution. 
+Figure 3: Annualised Return Contribution by Pair 
+Each horizontal bar represents the annualised return contribution of one pair in the active universe, measured as the 
+product of the daily weight and the daily pair return, summed over all trading days and annualised by multiplying by 
+252. Teal bars indicate positive contributors. Red bars indicate negative contributors. The majority of pairs contribute 
+between 0 and 0.15 percent annually, with no single pair contributing more than 0.32 percent. 
+
+Regime-Aware Statistical Arbitrage in the S&P 100 
+SSRN Working Paper  |  16 
+ 
+Figure 3: Annualised Return Contribution by Pair — Top 15 and Bottom 15 
+Note: Annualised contribution is the mean daily pair return multiplied by the assigned weight and by 252 
+trading days, averaged over all calendar years the pair appeared in the active portfolio. Numbers inside each 
+bar denote the count of years the pair was active. Sector contribution represents each sector's qualityweighted share of the 17.35% net annualised return. Colour denotes GICS sector classification. 
+
+Regime-Aware Statistical Arbitrage in the S&P 100 
+SSRN Working Paper  |  17 
+ 
+ 
+Figure 4: Hidden Markov Model Regime Probability Evolution (2013 to 2025) 
+Note: Smoothed daily posterior probabilities from the three-state Gaussian HMM estimated on SPY returns 
+and realised volatility. Shaded background indicates days when the respective state is the dominant (highestprobability) regime. 

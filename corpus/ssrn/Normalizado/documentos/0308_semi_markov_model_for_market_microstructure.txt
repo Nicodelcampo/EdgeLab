@@ -1,0 +1,2044 @@
+Electronic copy available at: http://ssrn.com/abstract=2261100
+Semi Markov model for market microstructure∗
+Pietro FODRA
+Laboratoire de Probabilit´es et
+Mod`eles Al´eatoires
+CNRS, UMR 7599
+Universit´e Paris 7 Diderot
+and EXQIM
+pietro.fodra91@gmail.com
+Huyˆen PHAM
+Laboratoire de Probabilit´es et
+Mod`eles Al´eatoires
+CNRS, UMR 7599
+Universit´e Paris 7 Diderot
+pham@math.univ-paris-diderot.fr
+CREST-ENSAE
+and JVN Institute, Ho Chi Minh City
+May 3, 2013
+Abstract
+We introduce a new model for describing the ﬂuctuations of a tick-by-tick single
+asset price. Our model is based on Markov renewal processes. We consider a point
+process associated to the timestamps of the price jumps, and marks associated to price
+increments. By modeling the marks with a suitable Markov chain, we reproduce the
+strong mean-reversion of price returns known as microstructure noise. Moreover, by
+using Markov renewal processes, we can model the presence of spikes in intensity of
+market activity, i.e. the volatility clustering, and consider dependence between price
+increments and jump times. We also provide simple parametric and nonparametric
+statistical procedures for the estimation of our model. We obtain closed-form formula
+for the mean signature plot, and show the diﬀusive behavior of our model at large scale
+limit. We illustrate our results by numerical simulations, and ﬁnd that our model is
+consistent with empirical data on the Euribor future. 1
+Keywords: Microstructure noise, High-frequency data, Markov renewal process, Signature
+plot, Scaling limit.
+∗We would like to thank Mathieu Rosenbaum for his relevant comments.
+1Tick-by-tick observation, from 10:00 to 14:00 during 2010, on the front future contract Euribor3m
+1
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+Electronic copy available at: http://ssrn.com/abstract=2261100
+1
+Introduction
+The modeling of tick-by-tick asset price attracted a growing interest in the statistical and
+quantitative ﬁnance literature with the availability of high frequency data. It is basically
+split into two categories, according to the philosophy guiding the modeling:
+(i) The macro-to-microscopic (or econometric) approach, see e.g. [12], [2], [14], [15], interprets the observed price as a noisy representation of an unobserved one, typically assumed
+to be a continuous Itˆo semi-martingale: in this framework many important results exist on
+robust estimation of the realized volatility, but these models seem not tractable for dealing
+with high frequency trading problems and stochastic control techniques, mainly because
+the state variables are latent rather than observed.
+(ii) The micro-to-macroscopic approach (e.g. [4], [3], [6], [1], [9]) uses point processes, in
+particular Hawkes processes, to describe the piecewise constant observed price, that moves
+on a discrete grid. In contrast with the macro-to-microscopic approach, these models do
+not rely on the arguable existence assumption of a fair or fundamental price, and focus
+on observable quantities, which makes the statistical estimation usually simpler. Moreover,
+these models are able to reproduce several well-known stylized facts on high frequency data,
+see e.g. [7], [5]:
+• Microstructure noise: high-frequency returns are extremely anticorrelated, leading to
+a short-term mean reversion eﬀect, which is mechanically explicable by the structure
+of the limit order book. This eﬀect manifests through an increase of the realized
+volatility estimator (signature plot) when the observation frequency decreases from
+large to ﬁne scales.
+• Volatility clustering: markets alternates, independently of the intraday seasonality,
+between phases of high and low activity.
+• At large scale, the price process displays a diﬀusion behaviour.
+In this paper, we aim to provide a tractable model of tick-by-tick asset price for liquid
+assets in a limit order book with a constant bid-ask spread, in view of application to optimal
+high frequency trading problem, studied in the companion paper [10]. We start from a
+model-free description of the piecewise constant mid-price, i.e. the half of the best bid and
+best ask price, characterized by a marked point process (Tn, Jn)n, where the timestamps
+(Tn) represent the jump times of the asset price associated to a counting process (Nt), and
+the marks (Jn) are the price increments. We then use a Markov renewal process (MRP)
+for modeling the marked point process. Markov renewal theory [13] is largely studied in
+reliability for describing failure of systems and machines, and one purpose of this paper is
+to show how it can be applied for market microstructure. By considering a suitable Markov
+chain modeling for (Jn), we are able to reproduce the mean-reversion of price returns, while
+allowing arbitrary jump size, i.e. the price can jump of more than one tick. Furthermore,
+the counting process (Nt), which may depend on the Markov chain, models the volatility
+clustering, i.e. the presence of spikes in the volatility of the stock price, and we also preserve
+a Brownian motion behaviour of the price process at macroscopic scales. Our MRP model
+2
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+is a rather simple but robust model, easy to understand, simulate and estimate, both
+parametrically and non-parametrically, based on i.i.d. sample data. An important feature
+of the MRP approach is the semi Markov property, meaning that the price process can be
+embedded into a Markov system with few additional and observable state variables. This
+will ensure the tractability of the model for applications to market making and statistical
+arbitrage. There is also an interesting connection of our MRP approach with model with
+uncertainty zones for endogenous microstructure noise and trading times, as developed in
+[15].
+The outline of the paper is the following. In Section 2, we describe the MRP model
+for the asset mid-price, and provides statistical estimation procedures. We show the simulation of the model, and the semi-Markov property of the price process. We also discuss the
+comparison of our model with some existing works in the literature used for modeling asset
+prices and microstructure noise, in particular Hawkes process approach and model with
+uncertainty zones. Section 3 studies the diﬀusive limit of the asset price at macroscopic
+scale. In Section 4, we derive analytical formula for the mean signature plot, and compare
+with real data.
+Finally, Section 5 is devoted to a conclusion and extensions for future
+research.
+2
+Semi-Markov model
+We describe the tick-by-tick ﬂuctuation of a univariate stock price by means of a marked
+point process (Tn, Jn)n∈N. The increasing sequence (Tn)n represents the jump (tick) times
+of the asset price, while the marks sequence (Jn)n valued in the ﬁnite set
+E = {+1, −1, . . . , +m, −m} ⊂Z \ {0}
+represents the price increments. Positive (resp. negative) mark means that price jumps
+upwards (resp. downwards). The continuous-time price process is a piecewise constant,
+pure jump process, given by
+Pt
+=
+P0 +
+Nt
+X
+n=1
+Jn,
+t ≥0,
+(2.1)
+where (Nt) is the counting process associated to the tick times (Tn)n, i.e.
+Nt
+=
+inf
+n
+n :
+n
+X
+k=1
+Tk ≤t
+o
+Here, we normalized the tick size (the minimum variation of the price) to 1, and the asset
+price P is considered e.g. as the last quotation for the mid-price, i.e. the mean between
+the best-bid and best-ask price. Let us mention that the continuous time dynamics (2.1) is
+a model-free description of a piecewise-constant price process in a market microstructure.
+We decouple the modeling on one hand of the clustering of trading activity via the point
+process (Nt), and on the other hand of the microstructure noise (mean-reversion of price
+return) via the random marks (Jn)n.
+3
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+2.1
+Price return modeling
+We write the price return as
+Jn
+=
+ˆJn ξn,
+n ≥1,
+(2.2)
+where ˆJn := sign(Jn) valued in {+1, −1} indicates whether the price jumps upwards or
+downwards, and ξn := |Jn| is the absolute size of the price increment. We consider that
+dependence of the price returns occurs through their direction, and we assume that only
+the current price direction will impact the next jump direction. Moreover, we assume that
+the absolute size of the price returns are independent and also independent of the direction
+of the jumps. Formally, this means that
+• ( ˆJn)n is an irreducible Markov chain with probability transition matrix
+ˆQ
+=
+ 1+α+
+2
+1−α+
+2
+1−α−
+2
+1+α−
+2
+!
+(2.3)
+with α+, α−∈[−1, 1).
+• (ξn)n is an i.i.d. sequence valued in {1, . . . , m}, independent of ( ˆJn), with distribution
+law: pi = P[ξn = i] ∈(0, 1), i = 1, . . . , m.
+In this case, (Jn) is an irreducible Markov chain with probability transition matrix given
+by:
+Q
+=
+
+
+
+p1 ˆQ
+. . .
+pm ˆQ
+...
+...
+...
+p1 ˆQ
+. . .
+pm ˆQ
+
+
+.
+(2.4)
+We could model in general (Jn)n as a Markov chain with transition matrix Q = (qij)
+involving 2m(2m−1) parameters, while under the above assumption, the matrix Q in (2.4)
+involves only m + 1 parameters to be estimated. Actually, on real data, we often observe
+that the number of consecutive downward and consecutive upward jumps are roughly equal.
+We shall then consider the symmetric case where
+α+
+=
+α−=: α.
+(2.5)
+In this case, we have a nice interpretation of the parameter α ∈[−1, 1).
+Lemma 2.1 In the symmetric case, the invariant distribution of the Markov chain ( ˆJn)n
+is ˆπ = (1
+2, 1
+2), and the invariant distribution of (Jn)n is π = (p1ˆπ, . . . , pmˆπ). Moreoever,
+we have:
+α
+=
+corrπ
+  ˆJn, ˆJn−1
+
+,
+∀n ≥1,
+(2.6)
+where corrπ denotes the correlation under the stationary probability Pπ starting from the
+initial distribution π.
+4
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+Proof. We easily check that under the symmetric case, ˆπ ˆQ = ˆπ for ˆπ = (1/2, 1/2), which
+means that ˆπ is the invariant distribution of the Markov chain ( ˆJn)n. Consequently, π =
+(p1ˆπ, . . . , pmˆπ) satisﬁes πQ = π, i.e. π is the invariant distribution of (Jn)n, and so under
+Pπ, ( ˆJn)n (resp. (Jn)n) is distributed according to ˆπ (resp. π). Therefore, Eπ[ ˆJn] = 0 and
+Varπ[ ˆJn] = 1. We also have for all n ≥1, by deﬁnition of ˆQ:
+Eπ
+ ˆJn ˆJn−1
+
+=
+Eπ
+h1 + α
+2
+  ˆJn−1
+2 −1 −α
+2
+  ˆJn−1
+2i
+= α,
+which proves the relation (2.6) for α.
+2
+Lemma 2.1 provides a direct interpretation of the parameter α as the correlation between
+two consecutive price return directions.
+The case α = 0 means that price returns are
+independent, while α < 0 (resp. α > 0) corresponds to a mean-reversion (resp. trend) of
+price return.
+We also have another equivalent formulation of the Markov chain, whose proof is trivial
+and left to the reader.
+Lemma 2.2 In the symmetric case, the Markov chain ( ˆJn)n can be written as:
+ˆJn
+=
+ˆJn−1Bn,
+n ≥1,
+where (Bn)n is a sequence of i.i.d. random variables with Bernoulli distribution on {+1, −1},
+and parameter (1+α)/2, i.e. of mean E[Bn] = α. The price increment Markov chain (Jn)n
+can also be written in an explicit induction form as:
+Jn
+=
+ˆJn−1ζn,
+(2.7)
+where (ζn)n is a sequence of i.i.d. random variables valued in E = {+1, −1, . . . , +m, −m},
+and with distribution: P[ζn = k] = pk(1 + sign(k)α)/2.
+The above Lemma is useful for an eﬃcient estimation of α. Actually, by the strong law
+of large numbers, we have a consistent estimator of α:
+ˆα(n)
+=
+1
+n
+n
+X
+k=1
+ˆJk
+ˆJk−1
+= 1
+n
+n
+X
+k=1
+ˆJk ˆJk−1.
+The variance of this estimator is known, equal to 1/n, so that this estimator is eﬃcient and
+we have a conﬁdence interval from the central limit theorem:
+√n(ˆα(n) −α)
+(d)
+−→
+N(0, 1),
+as n →∞.
+The estimated parameter for the chosen dataset is ˆα = −87.5%, which shows as expected
+a strong anticorrelation of price returns. In the case of several tick jumps m > 1, the
+probability pi = P[ξn = i] may be estimated from the classical empirical frequency:
+ˆp(n)
+i
+= 1
+n
+n
+X
+k=1
+1ξk=i,
+i = 1, . . . , m
+5
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+2.2
+Tick times modeling
+In order to describe volatility clustering, we look for a counting process (Nt) with an
+intensity increasing every time the price jumps, and decaying with time. We propose a
+modeling via Markov renewal process.
+Let us denote by Sn = Tn −Tn−1, n ≥1, the inter-arrival times associated to (Nt). We
+assume that conditionally on the jump marks (Jn)n, (Sn)n is an independent sequence of
+positive random times, with distribution depending on the current and next jump mark:
+Fij(t)
+=
+P[Sn+1 ≤t | Jn = i, Jn+1 = j],
+(i, j) ∈E.
+We then say that (Tn, Jn)n is a Markov Renewal Process (MRP) with transition kernel:
+P[Jn+1 = j, Sn+1 ≤t | Jn = i]
+=
+qijFij(t),
+(i, j) ∈E.
+In the particular case where Fij does not depend on i, j, the point process (Nt) is independent of (Jn), and called a renewal process, Moreover, if F is the exponential distribution,
+N is a Poisson process. Here, we allow in general dependency between jump marks and
+renewal times, and we refer to the symmetric case when Fij depends only on the sign of ij,
+by setting:
+F+(t) = Fij(t),
+if ij > 0,
+F−(t) = Fij(t),
+if ij < 0.
+(2.8)
+In other words, F+ (resp.
+F−) is the distribution function of inter-arrival times given
+two consecutive jumps in the same (resp. opposite) direction, called trend (resp. meanreverting) case. Let us also introduce the marked hazard function:
+hij(t)
+=
+lim
+δ↓0
+1
+δ P[t ≤Sn+1 ≤t + δ, Jn+1 = j | Sn ≥t, Jn = i],
+t ≥0,
+(2.9)
+for i, j ∈E, which represents the instantaneous probability that there will be a jump with
+mark j, given that there were no jump during the elapsed time t, and the current mark is
+i. By assuming that the distributions Fij of the renewal times Sn admit a density fij, we
+may write hij as:
+hij(t)
+=
+qij
+fij(t)
+1 −Hi(t) =: qijλij,
+where
+Hi(t)
+=
+P[Sn+1 ≤t | Jn = i] =
+X
+j∈E
+qijFij(t),
+is the conditional distribution of the renewal time in state i. In the symmetric case (2.5),
+(2.8), we have
+hij(t)
+=
+pj
+1 + sign(ij)α
+2
+
+λsign(ij)(t),
+6
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+with jump intensity
+λ±(t)
+=
+f±(t)
+1 −F(t),
+(2.10)
+where f± is the density of F±, and
+F(t)
+=
+1 + α
+2
+F+(t) + 1 −α
+2
+F−(t).
+Markov renewal processes are used in many applications, especially in reliability. Classical examples of renewal distribution functions are the ones corresponding to the Gamma
+and Weibull distribution, with density given by:
+fGam(t) = tβ−1e−t/θ
+Γ(β)θβ
+fWei(t) = β
+θ
+ t
+θ
+β−1
+e−βt/θ
+where β > 0, and θ > 0 are the shape and scale parameters, and Γ (resp. Γt) is the Gamma
+(resp. lower incomplete Gamma) function:
+Γ(β) =
+Z ∞
+0
+sβ−1e−sds,
+Γt(β) =
+Z t
+0
+sβ−1e−sds,
+(2.11)
+2.3
+Statistical procedures
+We design simple statistical procedures for the estimation of the distribution and jump
+intensities of the renewal times. Over an observation period, pick a subsample of i.i.d.
+data:
+{Sk = Tk −Tk−1 : k s.t. Jk−1 = i, Jk = j},
+and set:
+Iij
+=
+#{k s.t. Jk−1 = i, Jk = j}
+Ii
+=
+#{k s.t. Jk−1 = i},
+with cardinality respectively nij and ni. In the symmetric case, we also denote by
+I±
+=
+#{k s.t. sign(Jk−1Jk) = ±},
+with cardinality n±. We describe both parametric and nonparametric estimation.
+• Parametric estimation
+We discuss the parametric estimation of the distribution Fij of the renewal times when
+considering Gamma or Weibull distributions with shape and scale parameters βij, θij. We
+can indeed consider the Maximum Likelihood Estimator (MLE) (ˆβij, ˆθij), which are solution
+to the equations:
+ln ˆβij −Γ′(ˆβij)
+Γ(ˆβij)
+=
+ln
+ 1
+nij
+nij
+X
+k=1
+Sk
+
+−1
+N
+nij
+X
+k=1
+ln Sk
+ˆθij
+=
+1
+ˆβij
+¯Snij,
+with ¯Snij :=
+1
+nij
+nij
+X
+k=1
+Sk
+7
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+i
+j
+shape
+scale
++1
++1
+0.27651097
+2187
+-1
+-1
+0.2806104
+2565.371
++1
+-1
+0.07442401
+1606.308
+-1
++1
+0.06840708
+1508.155
+Table 1: Parameter estimates for the renewal times of a Gamma distribution
+There is no closed-form solution for ˆβij, which can be obtained numerically e.g. by Newton
+method. Alternatively, since the ﬁrst two moments of the Gamma distribution S ; Γ(β, θ)
+are explicitly given in terms of the shape and scale parameters, namely:
+β =
+ E[S]
+2
+Var[S] ,
+1
+θ =
+E[S]
+Var[S],
+(2.12)
+we can estimate βij and θij by moment matching method, i.e. by replacing in (2.12) the
+mean and variance by their empirical estimators, which leads to:
+˜βij =
+nij ¯S2
+nij
+nij
+X
+k=1
+(Sk −¯Snij)2
+,
+1
+˜θij
+=
+nij ¯Snij
+nij
+X
+k=1
+(Sk −¯Snij)2
+.
+We performed this parametric estimation method for the Euribor on the year 2010,
+from 10h to 14h, with one tick jump, and obtain the following estimates in Table 1.
+We observed that the shape and scale parameters depend on the product ij rather than
+on i and j separately. In other words, the distribution of the renewal times are symmetric
+in the sense of (2.8). Hence, we performed again in Table 2. the parametric estimation
+(˜β+, ˜θ+) and (˜β−, ˜θ−) for the shape and scale parameters by distinguishing only samples for
+ij = 1 (the trend case) and ij = −1 (the mean-reverting case). We also provide in Figure
+1 graphical tests of the goodness-of-ﬁt for our estimation results. The estimated value ˜β+,
+and ˜β−< 1 for the shape parameters, can be interpreted when considering the hazard rate
+function of Sn+1 given current and next marks:
+ˆλ±(t)
+:=
+lim
+δ↓0
+1
+δ P[t ≤Sn+1 ≤t + δ|Sn ≥t, sign(JnJn+1) = ±]
+=
+f±(t)
+1 −F±(t),
+t ≥0,
+when F± admits a density f± (Notice that ˆλ± diﬀers from λ±). ˆλ+(t) (resp. ˆλ−(t)) is the
+instantaneous probability of price jump given that there were no jump during an elapsed
+time t, and the current and next jump are in the same (resp. opposite) direction. For the
+Gamma distribution with shape and scale parameters (β, θ), the hazard rate function is
+given by:
+ˆλGam(t)
+=
+1
+θ
+
+t
+θ
+β−1
+e−t/θ
+Γ(β) −Γt/θ(β),
+8
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+i j
+shape
+scale
++1 (trend)
+0.276225
+2397.219
+-1 (mean-reverting)
+0.07132677
+1561.593
+Table 2: Parameter estimates in the trend and mean-reverting case
+and is decreasing in time if and only if the shape parameter β < 1, which means that
+the more the time passes, the less is the probability that an event occurs. Therefore, the
+estimated values ˆβ+, and ˜β−< 1 are consistent with the volatility clustering: when a jump
+occurs, the probability of another jump in a short period is high, but if the event does not
+take place soon, then the price is likely to stabilize. Using this modeling, a long period of
+constant price corresponds to a renewal time in distribution tail. On the contrary, since
+renewal times are likely to be small when β < 1, most of the jumps will be extremely close.
+We also notice that the parameters in the trend and mean-reverting case diﬀer signiﬁcantly.
+This can be explained as follows: trends, i.e. two consecutive jumps in the same direction,
+are extremely rare (recall that α ≈−90%), since, in order to take place, market orders
+either have to clear two walls of liquidity or there must be a big number of cancellations.
+Since these events are caused by speciﬁc market dynamic, it is not surprising that their
+renewal law diﬀer from the mean-reverting case.
+GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG GGGGGGGG GGG
+GGGGGGGG G GGG GG GGG
+G
+G
+G
+G
+G
+0
+2000
+4000
+6000
+8000
+10000
+0
+4000
+8000
+12000
+Gamma ( 0.0713 , 0.00064 )
+Renewal times
+Renewal times
+Density
+0
+2000
+4000
+6000
+8000
+10000
+0.0000
+0.0005
+0.0010
+0.0015
+GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG GGGGG G
+GGG
+GG GG
+G
+G G
+G
+G
+G
+0
+2000
+4000
+6000
+8000
+10000
+12000
+0
+5000
+15000
+25000
+Gamma ( 0.276 , 0.000417 )
+Renewal times
+Renewal times
+Density
+0
+2000
+4000
+6000
+8000
+10000
+12000
+0e+00
+4e−04
+8e−04
+Figure 1: QQ plot and histogram of F−(left) and F+ (right). Euribor3m, 2010, 10h-14h.
+• Non parametric estimation
+Since the renewal times form an i.i.d. sequence, we are able to perform a non parametric
+estimation by kernel method of the density fij and the jump intensity. We recall the smooth
+9
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+kernel method for the density estimation, and, in a similar way, we will give the one for hij
+and λij. Let us start with the empirical histogram of the density, which is constructed as
+follows. For every collection of breaks
+{0 < t1 < ... < tM ≤∞},
+δr := tr+1 −tr
+we bin the sample (Sk = Tk −Tk−1)k=1,...,n and deﬁne the empirical histogram of fij as:
+fhst
+ij
+(tr)
+=
+1
+δr
+#{k ∈Iij | tr ≤Sk < tr+1}
+nij
+.
+By the strong law of large numbers, when nij →∞, this estimator converges to
+1
+δr
+P [tr ≤Sk < tr+1] ,
+which is a ﬁrst order approximation of fij(tr). Anyway, this estimator depends on the
+choice of the binning, which has not necessarily small (nor equal) δr’s. The corresponding
+non parametric (smooth kernel) estimator of the density is given by a convolution method:
+fnp
+ij (t)
+=
+1
+nij
+X
+k∈Iij
+Kb(t −Sk),
+where Kb(x) is a smoothing scaled kernel with bandwidth b. In our example we have chosen
+the Gaussian one, given by the density of the normal law of mean 0 and variance b2. In
+practice, many softwares provide already optimized version of non-parametric estimation of
+the density, with automatic choice of the bandwidth and of the kernel (here Gaussian). For
+example in R, this reduces to the function density, applied to the sample {Sk | k ∈Iij}.
+In the symmetric case, the histogram reduces to:
+fhst
+±
+(tr)
+=
+1
+δr
+#{k ∈I± | tr ≤Sk < tr+1}
+n±
+,
+while the kernel estimator is given by:
+fnp
+± (t)
+=
+1
+n±
+X
+k∈I±
+Kb(t −Sk).
+Figure 2 shows the result obtained for the kernel estimation of f±(t), compared to the
+corresponding histogram. The non parametric estimation conﬁrms the decreasing form of
+both of the densities, whose interpetation is that most of the jump of the stock price takes
+place in a short period of time (less than second), even though some renewal times can go
+to hours.
+We use similar technique to estimate the marked hazard function hij deﬁned in (2.9).
+By writing
+hij(t)
+=
+lim
+δ→0
+1
+δ
+P [t ≤Sk < t + δ, Jk = j | Jk−1 = i]
+P [Sk ≥s | Jk−1 = i]
+,
+10
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+Histogram and non−parametric estimation of f−
+renewal times (s)
+density
+0
+2000
+4000
+6000
+8000
+10000
+12000
+0.000
+0.001
+0.002
+0.003
+0.004
+Histogram and non−parametric estimation of f+
+renewal times (s)
+density
+0
+5000
+10000
+15000
+0.0000
+0.0002
+0.0004
+0.0006
+0.0008
+0.0010
+0.0012
+0.0014
+Figure 2: Nonparametric estimation of the densities f+ and f−
+we can deﬁne the empirical histogram of hij as
+hhst
+ij (tr)
+=
+1
+δr
+#{k ∈Iij | tr ≤Sk < tr + δ}
+#{k ∈Ii | Sk ≥tr}
+,
+and the associated smooth kernel estimator by
+hnp
+ij (t)
+=
+X
+k∈Iij
+Kb(t −Sk)
+1
+#{k ∈Ii | Sk ≥t}.
+Notice that this nonparametric estimator is factorized as
+hnp
+ij (t)
+=
+nij
+ni
+  ni
+nij
+hnp
+ij (t)
+
+where nij
+ni is the estimator of qij and ni
+nij hnp
+ij (t) is the kernel estimator of the jump intensity
+λij(t) =
+fij(t)
+1−Hi(t). Thus, we can either estimate λij and multiply by the estimator of qij to
+obtain hij or vice versa, obtaining the same estimators. In the symmetric case, we have:
+hhst
+± (tr)
+=
+1
+δr
+#{k ∈I± | tr ≤Sk < tr + δ}
+#{k | Sk ≥tr}
+,
+while
+hnp
+± (t)
+=
+X
+k∈I±
+Kb(t −Sk)
+1
+#{k | Sk ≥t}.
+Figure 3 shows the result obtained for λ±, compared to the corresponding histogram.
+The interpretation is the following: immediately after a jump the price is in an unstable
+11
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+condition, which will probably leads it to jump again soon. If it does not happen, the price
+gains in stability with time, and the probability of a jump becomes smaller and smaller.
+Moreover, due to mean-reversion of price returns, the intensity of consecutive jumps in the
+opposite direction is larger than in the same direction, which explains the higher value of
+λ−compared to λ+.
+Non parametric estimation of lambda−
+s
+h
+2.8e−05
+0.35
+1.4
+2.9
+5
+7.7
+12
+18
+26
+39
+60
+93
+170
+440
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Non parametric estimation of lambda+
+s
+h
+0.07
+4.9
+11
+22
+35
+60
+88
+130
+190
+310
+480
+730
+1500
+5800
+0.000
+0.005
+0.010
+0.015
+0.020
+0.025
+0.030
+Figure 3: Nonparametric estimation of the jump intensities λ+ and λ−
+2.4
+Price simulation
+The simulation of the price process (2.1) with a Markov renewal model is quite simple,
+much easier than any other point process modeling microstructure noise. This would allow
+the user, even when Nt is better ﬁt by a more complex point process, to have a quick proxy
+for its price simulation. Choose a starting price P0 at initial time T0.
+Initialization step:
+• Set ˆP0 = P0
+• draw J0 from initial (e.g. stationary) law π
+Inductive step: k −1 →k (next price and next timestamp)
+• Draw Jk according to the probability transition, and set ˆPk = ˆPk−1 + Jk.
+• Draw Sk ; FJk−1Jk, and set Tk = Tk−1 + Sk.
+Once (Tk, ˆPk)k∈N is known, the price process is given by the piecewise constant process:
+Pt
+=
+ˆPk,
+Tk ≤t < Tk+1.
+We show in Figure 4 some simulated trajectories of the price process based on the estimated
+parameters of the Euribor3m.
+12
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+Jan 04 10:17:52
+Jan 04 12:00:10
+Jan 04 13:56:40
+98.485
+98.495
+98.505
+Sampled path
+Jan 04 10:00:06
+Jan 04 11:31:34
+Jan 04 13:10:21
+98.495
+98.510
+Sampled path
+Jan 04 10:00:01
+Jan 04 12:22:06
+98.500
+98.510
+98.520
+Sampled path
+Jan 04 10:00:01
+Jan 04 12:21:23
+98.485
+98.495
+98.505
+Sampled path
+May 25 10:00:00
+May 25 11:49:57
+May 25 13:43:09
+99.170
+99.185
+99.200
+Real data path
+Jan 04 10:00:01
+Jan 04 11:44:14
+Jan 04 13:39:34
+98.500
+98.515
+Sampled path
+Jan 04 10:00:01
+Jan 04 11:44:44
+Jan 04 13:52:51
+98.490
+98.500
+98.510
+Sampled path
+Jan 04 10:00:37
+Jan 04 11:46:32
+Jan 04 13:33:00
+98.495
+98.510
+98.525
+Sampled path
+Jan 04 10:00:01
+Jan 04 11:47:29
+Jan 04 13:38:57
+98.485
+98.495
+Sampled path
+Figure 4: Simulation of 9 trajectories of the Euribor with estimated parameters on empirical data
+2.5
+Semi-Markov property
+Let us deﬁne the pure jump process,
+It = JNt
+(2.13)
+which represents the last price increment. Then, I is a semi-Markov process in the sense
+that the pair (It, St) is a Markov process, where
+St
+=
+t −Tn, Tn ≤t < Tn+1,
+is the time spent from the last jump price. Moreover, the price process (Pt) is embedded
+in a Markov process with three observable state variables: (Pt, It, St) is a Markov process
+with inﬁnitesimal generator:
+Lϕ(p, i, s)
+=
+∂ϕ
+∂s +
+X
+j∈E
+hij(s)[ϕ(p + j, j, 0) −ϕ(p, i, s)],
+which is written in the symmetric case (2.5) and (2.8) as
+Lϕ(p, i, s)
+=
+∂ϕ
+∂s + λ+(s)
+1 + α
+2
+ m
+X
+j=1
+pj[ϕ(p + sign(i)j, sign(i)j, 0) −ϕ(p, i, s)]
++ λ−(s)
+1 −α
+2
+ m
+X
+j=1
+pj[ϕ(p −sign(i)j, −sign(i)j, 0) −ϕ(p, i, s)],
+where λ± is the jump intensity deﬁned in (2.10).
+13
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+2.6
+Discussion
+2.6.1
+Connection with model with uncertainty zones
+A classical approach for modeling microstructure noise in the ﬁnancial econometrics literature is to consider an additive noise independent of a latent eﬃcient price process. Recently,
+in the works [14] and [15], the authors propose to make endogenous the microstructure noise
+through a model with uncertainty zones. Their model is basically constructed as follows.
+Starting from a continuous time Itˆo process X representing the eﬃcient price, they deﬁne
+the times (Tn)n of change in transaction price as the exit times of the eﬃcient price from
+uncertainty zones of size η around the mid-tick grid value. The associated transaction price
+PTn is then deﬁned as the value of XTn rounded to the nearest multiple of the tick size, and
+(Pt)t≥0 is the c`ad-l`ag piecewise constant process built from (Tn, PTn)n. Denoting by Jn =
+PTn −PTn−1 the price increments, and in the case where X is a Markov process, it appears
+that (Tn, Jn)n is a Markov renewal process. Actually, the parameter η is directly related
+to the correlation α between price increments, while the distribution of renewal times Sn
+= Tn −Tn−1 is determined by the laws of exit times of the Markov process X from the uncertainty zones, hence depending also on η. Explicit calculations of these distributions can
+be done when X is Brownian, but are more complicated beyond the Brownian framework.
+2.6.2
+Comparison with respect to Hawkes processes
+In a recent work [3] (see also [9]), the authors consider a tick-by-tick model for asset price
+by means of cross-exciting Hawkes processes. More precisely, the stock price jumps by one
+tick according to the dynamics:
+Pt
+=
+N+
+t −N−
+t ,
+(2.14)
+where N± is a point process corresponding to the number of upward and downward jumps,
+with coupling stochastic intensities:
+λ±
+t
+=
+λ∞+
+Z t
+−∞
+ϕ(t −u)dN∓
+u ,
+(2.15)
+where λ∞> 0 is an exogenous constant intensity, and ϕ is a positive decay kernel. This
+model, which takes into account in the intensity the whole past of the price process, provides
+a better good-ﬁt of intraday data than the MRP approach, and can be easily extended to
+the multivariate asset price case. However, it is limited to unitary jump size, and presents
+some drawbacks especially in view of applications to trading optimization problem. The
+price process in (2.14)-(2.15) is embedded into a Markovian framework only for the case of
+exponential decay kernel, i.e. for
+ϕ(t)
+=
+γe−βt1R+(t),
+with 0 < γ < β. In this case, the Markov price system consists of P together with the
+stochastic intensities (λ+, λ−). But in contrast with the MRP approach, the additional
+state variables (λ+, λ−) are not directly observable, and have to be computed from their
+14
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+dynamics (2.15), which requires a “precise” estimation of the three parameters λ∞, γ, and
+β.
+In that sense, the MRP approach is more robust than the Hawkes approach when
+dealing with Markov optimization problem. Notice also that in the MRP approach, we can
+deal not only with parametric forms of the renewal distributions (which involves only two
+parameters for the usual Gamma and Weibull laws), but also with non parametric form
+of the renewal distributions, and so of the jump intensities. Simulation and estimation in
+MRP model are simple since they are essentially based on (conditional) i.i.d. sequence of
+random variables, with the counterpart that MRP model can not reproduce the correlation
+between inter-arrival jump times as in Hawkes model.
+We ﬁnally mention that one can use a combination of Hawkes process and semi Markov
+model by considering a counting process Nt associated to the jump times (Tn), independent
+of the price return (Jn), and with stochastic intensity
+λt
+=
+λ∞+ γ
+Z t
+0
+e−β(t−u)dNu,
+(2.16)
+with λ∞> 0, and 0 < γ < β. In this case, the pair (It, λt) is a Markov process, and
+(Pt, It, λt) is a Markov process with inﬁnitesimal generator:
+Lϕ(p, i, ℓ)
+=
+β(µ −ℓ)∂ϕ
+∂ℓ+ ℓ
+X
+j∈E
+qij[ϕ(p + j, j, ℓ+ γ) −ϕ(p, i, ℓ)],
+which is written in the symmetric case (2.5) as:
+Lϕ(p, i, ℓ)
+=
+β(µ −ℓ)∂ϕ
+∂ℓ
++ ℓ
+1 + α
+2
+ m
+X
+j=1
+pj[ϕ(p + sign(i)j, sign(i)j, ℓ+ γ) −ϕ(p, i, ℓ)]
++ ℓ
+1 −α
+2
+ m
+X
+j=1
+pj[ϕ(p −sign(i)j, −sign(i)j, ℓ+ γ) −ϕ(p, i, ℓ)].
+3
+Scaling limit
+We now study the large scale limit of the price process constructed from our Markov renewal
+model. We consider the symmetric case (2.5) and (2.8), and denote by
+F(t)
+=
+1 + α
+2
+F+(t) + 1 −α
+2
+F−(t),
+the distribution function of the sojourn time Sn. We assume that the mean sojourn time
+is ﬁnite:
+¯µ
+=
+Z ∞
+0
+t dF(t) < ∞,
+and we set ¯λ = 1
+¯µ.
+By classical regenerative arguments, it is known (see [11]) that the Markov renewal process
+obeys a strong law of large numbers, which means the long run stability of price process:
+Pt
+t
+−→
+c,
+a.s.
+15
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+when t goes to inﬁnity, with a limiting constant c given by:
+c
+=
+1
+¯µ
+X
+i,j∈E
+πi qij j,
+where E = {1, −1, . . . , m, −m}, ¯µij =
+R ∞
+0 tdFij(t), Q = (qij) is the transition matrix (2.4)
+of the embedded Markov chain (Jn)n, and π = (πi) is the invariant distribution of (Jn)n.
+In the symmetric case (2.5) and (2.8), we have qij = p|i|(1 + sign(j)α)/2, πi = p|i|/2, and
+so c = 0. We next deﬁne the normalized price process:
+P (T)
+t
+=
+PtT
+√
+T
+,
+t ∈[0, 1],
+and address the macroscopic limit of P (T) at large scale limit T →∞. From the functional central limit theorem for Markov renewal process, we obtain the large scale diﬀusive
+behavior of price process.
+Proposition 3.1
+lim
+T→∞P (T)
+(d)
+=
+σ∞W,
+where W = (Wt)t∈[0,1] is a standard Brownian motion, and σ∞, the macroscopic variance,
+is explicitly given by
+σ2
+∞
+=
+¯λ
+h
+Var(ξn) +
+ E[ξn]
+2 1 + α
+1 −α
+i
+.
+(3.1)
+Proof.
+From [11], we know that a functional central limit theorem holds for Markov
+renewal process so that
+P (T)
+(d)
+→
+σ∞W
+when T goes to inﬁnity (here
+(d)
+→means convergence in distribution), where σ∞is given by
+σ2
+∞= ¯λ˜σ2
+∞with ¯λ = 1/¯µ, and
+˜σ2
+∞
+=
+X
+i,j∈E
+πiqijH2
+ij,
+with
+Hij
+=
+j + gj −gi
+g = (gi)i
+=
+(I2m −Q + Π)−1b
+b = (bi), bi
+=
+X
+j∈E
+Qijj,
+and Π is the matrix deﬁned by Πij = πj. In the symmetric case (2.5), a straightforward
+calculation shows that
+bi
+=
+sign(i)α
+m
+X
+j=1
+jpj = sign(i)αE[ξn],
+16
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+and then
+gi
+=
+sign(i)
+α
+1 −αE[ξn],
+i ∈E = {1, −1, . . . , m, −m}.
+Thus,
+Hij
+=
+
+
+
+
+
+j
+if ij > 0
+j +
+2α
+1−αE[ξn]
+if j > 0, i < 0
+j −
+2α
+1−αE[ξn]
+if j < 0, i > 0.
+Therefore, a direct calculation yields
+˜σ2
+∞
+=
+m
+X
+j=1
+j2pj +
+2α
+1 −α
+ E[ξn]
+2
+=
+Var(ξn) +
+ E[ξn]
+2 1 + α
+1 −α.
+2
+4
+Mean Signature plot
+In this section, we aim to provide through our Markov renewal model a quantitative justiﬁcation of the signature plot eﬀect, described in the introduction. We consider the symmetric
+and stationary case, i.e.:
+(H)
+(i) The price return (Jn)n is given by (2.2) with a probability transition matrix ˆQ for
+( ˆJn)n = (sign(Jn))n in the form:
+ˆQ
+=
+ 
+1+α
+2
+1−α
+2
+1−α
+2
+1+α
+2
+!
+for some α ∈[−1, 1) .
+(ii) (Nt) is a delayed renewal process: for n ≥1, Sn has distribution function F (independent of i, j), with ﬁnite mean ¯µ =
+R ∞
+0 t dF(t) =: 1/¯λ < ∞, and ﬁnite second moment,
+and S1 has a distribution with density (1 −F(t))/¯µ.
+It is known that the process N is stationary under (H)(ii) (see [8]), and so the price
+process is also stationary under the stationary probability Pπ, i.e.
+the distribution of
+Pt+τ −Pt does not depend on t but only on increment time τ. In this case, the empirical
+mean signature plot is written as:
+¯V (τ)
+:=
+1
+T
+X
+iτ≤T
+Eπ
+ Piτ −P(i−1)τ
+2
+=
+1
+τ Eπ
+ Pτ −P0
+2
+(4.1)
+17
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+Notice that if Pt = σWt, where Wt is a Brownian motion, then ¯V is a ﬂat function:
+¯V (τ) = σ2, while it is well known that on real data ¯V is a decreasing function on τ with
+ﬁnite limit when τ →∞. This is mainly due to the anticorrelation of returns: on a short
+time-step the signature plot captures ﬂuctuations due to returns that, on a longer timesteps, mutually cancel. We obtain the closed-form expression for the mean signature plot,
+and give some qualitative properties about the impact of price returns autocorrelation. The
+following results are proved in Appendix.
+Proposition 4.1 Under (H), we have:
+¯V (τ)
+=
+σ2
+∞+
+−2α(E[ξn])2
+1 −α
+1 −Gα(τ)
+(1 −α)τ ,
+where σ2
+∞is the macroscopic variance given in (3.1), and Gα(t) := E[αNt] is given via its
+Laplace-Stieltjes transform:
+bGα(s) = 1 −¯λ(1 −α)
+1 −bF(s)
+s(1 −α bF(s))
+,
+α̸ = 0,
+(4.2)
+bF(s) :=
+R ∞
+0−e−stdF(t). Alternatively, Gα is given directly by the integral form:
+Gα(t)
+=
+1 −¯λ
+1 −α
+α
+
+t −(1 −α)
+Z t
+0
+Q0
+α(u)du
+
+,
+(4.3)
+where Q0
+α(t) =
+∞
+X
+n=0
+αnF ∗(n)(t), and F ∗(n) is the n-fold convolution of the distribution function F, i.e. F ∗(n)(t) =
+R t
+0 F ∗(n−1)(t −u)dF(u), F ∗(0) = 1.
+Corollary 4.1 Under (H), we obtain the asymptotic behavior of the mean signature plot:
+¯V (∞) :=
+lim
+τ→∞
+¯V (τ)
+=
+σ2
+∞,
+¯V (0+) := lim
+τ↓0+ ¯V (τ)
+=
+¯λE[ξ2
+n].
+Moreover,
+α
+  ¯V (0+) −¯V (∞)
+
+≤
+0.
+Remark 4.1 In the case of renewal process where F is the distribution function of the
+Gamma law with shape β and scale θ, it is known that F ∗(n) is the distribution function a
+the Gamma law with shape nβ and scale θ, and so:
+F ∗(n)(t)
+=
+Γt/θ(nβ)
+Γ(nβ) ,
+where Γ is the Gamma function, and Γt is the lower incomplete Gamma functions deﬁned in
+(2.11). Plugging into (4.3), we obtain an explicit integral expression of the mean signature
+plot, which is computed numerically by avoiding the inversion of the Laplace transform
+(4.2). Notice that in the special case of Poisson process for N, i.e. F is the exponential
+distribution of rate ¯λ, the function Gα is explicitly given by : Gα(t) = e−¯λ(1−α)t.
+18
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+Remark 4.2 The term σ2
+∞equal to the limit of the mean signature plot when time step
+observation τ goes to inﬁnity, corresponds to the macroscopic variance, and ¯V (0+) = ¯λE[ξ2
+n]
+is the microstructural variance. Notice that while σ2
+∞increases with the price returns autocorrelation α, the limiting term ¯V (0+) does not depend on α, and the mean signature plot
+is ﬂat if and only if price returns are independent, i.e. α = 0. In the case of mean-reversion
+(α < 0), ¯V (0+) > σ2
+∞, while in the trend case (α > 0), we have: ¯V (0+) < σ2
+∞. We display
+in Figures 5 plot example of the mean signature plot function for a Gamma distribution
+when varying α. We also compare in Figure 6 the signature plot obtained from empirical
+data on the Euribor, the signature plot simulated in our model with estimated parameters,
+and the mean signature for a Gamma distribution with the estimated parameters. This
+example shows how the signature plot decreasing form is a consequence (rather coarse)
+of the microstructure noise, and that the shape parameters of the gamma law, which is
+responsible for the volatility cluster, is able to reproduce the convexity of the signature plot
+shape.
+Gamma signature plot (shape = rate  0.5 )
+0
+10
+20
+30
+40
+50
+1
+2
+3
+4
+5
+alpha: 0.75
+alpha: 0.5
+alpha: 0.25
+Gamma signature plot (shape = rate  0.5 )
+0
+10
+20
+30
+40
+50
+0.2
+0.4
+0.6
+0.8
+1.0
+alpha: −0.75
+alpha: −0.5
+alpha: −0.25
+Figure 5: τ →¯V (τ) when varying price return autocorrelation α. Left: α > 0. Right: α < 0
+5
+Conclusion and extensions
+In this paper we used a Markov renewal process (Tn, Jn)n to describe the tick-by-tick
+evolution of the stock price and reproduce two important stylized facts, as the diﬀusive
+behavior and the decreasing shape of the mean signature plot towards the diﬀusive variance.
+Having in mind a direct application purpose, we decided to sacriﬁce the autocorrelation of
+inter-arrival times in order to have a fast and simple non-parametric estimation, perfect
+simulation and the suitable setup for a market making application, presented in a companion
+paper [10]. Aware of the model limits, and with an eye to statistical arbitrage, the next
+step is to extend the structure of the counting process Nt, for example to Hawkes process,
+to have a better ﬁt, and the structure of the Markov chain (Jn)n to a longer memory binary
+processes, able to recognize patterns. Another direction of study will be the extension to
+the multivariate asset price case.
+19
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+0
+500
+1000
+1500
+2000
+2500
+3000
+3500
+0.0005
+0.0010
+0.0015
+0.0020
+0.0025
+Signature Plot
+tau(s)
+C(tau)
+Data
+Simulation
+Gamma
+Poisson
+Figure 6: Comparison of signature plot: empirical data, simulated and computed
+A
+Appendix: Mean signature plot
+The price process Pt is given by
+Pt
+=
+P0 +
+Nt
+X
+k=1
+Jk =
+∞
+X
+n=0
+Ln1Nt=n,
+(A.1)
+where
+Ln
+=
+n
+X
+k=1
+Jk,
+n ≥1, L0 = 0.
+Lemma A.1 Under (H), we have
+Eπ
+
+L2
+n
+
+=
+nσ2
+∞
+¯λ −
+2α
+1 −α
+1 −αn
+1 −α
+ E[ξn]
+2,
+where σ∞is deﬁned in (3.1).
+Proof. By writing that Ln = Ln−1 + ξn ˆJn, we have for n ≥1
+Eπ
+
+L2
+n
+
+=
+Eπ
+
+L2
+n−1 + ξ2
+n ˆJ2
+n + 2ξnLn−1 ˆJn
+
+=
+Eπ
+
+L2
+n−1
+
++ Eπ
+
+ξ2
+n
+
++ 2
+ E
+
+ξn
+2
+n−1
+X
+k=1
+Eπ
+ ˆJk ˆJn
+
+,
+=
+Eπ
+
+L2
+n−1
+
++ Eπ
+
+ξ2
+n
+
++ 2
+ E
+
+ξn
+2
+n−1
+X
+k=1
+Eπ
+ ˆJk ˆJ0
+
+(A.2)
+where we used the fact that ˆJ2
+n = 1, (ξn)n are i.i.d, and independent of ( ˆJn)n in the second
+equality, and the stationarity of ( ˆJn)n in the third equality. Now, from the Markov property
+20
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+of ( ˆJk)k with probability transition matrix ˆQ in (2.3) and (2.5), we have for any k ≥1:
+Eπ
+ ˆJk ˆJ0
+
+=
+Eπ
+h
+Eπ
+ ˆJk| ˆJk−1
+ ˆJ0
+i
+=
+E
+h1 + α
+2
+
+ˆJk−1 ˆJ0 −
+1 −α
+2
+
+ˆJk−1 ˆJ0
+i
+=
+αEπ
+ ˆJk−1 ˆJ0
+
+,
+from which we obtain by induction:
+Eπ
+ ˆJk ˆJ0
+
+=
+αk.
+Plugging into (A.2), this gives
+Eπ
+
+L2
+n
+
+=
+Eπ
+
+L2
+n−1
+
++ Eπ
+
+ξ2
+n
+
++
+2α
+1 −α(1 −αn−1)
+ E[ξn]
+2.
+By induction, we get the required relation for Eπ
+
+L2
+n
+
+.
+2
+Consequently, we obtain the following expression of the mean signature plot:
+Proposition A.1 Under (H), we have
+¯V (τ)
+=
+σ2
+∞−
+2α
+1 −α
+1 −Gα(τ)
+(1 −α)τ
+ E[ξn]
+2,
+τ > 0,
+(A.3)
+where Gα(t) := Eπ[αNt] = P∞
+n=0 αnPπ[Nt = n].
+Proof. From (4.1) and (A.1), we see that the mean signature plot is written as
+¯V (τ)
+=
+1
+τ
+∞
+X
+n=0
+Eπ[L2
+n]Pπ[Nτ = n],
+since the renewal process N is independent of the marks (Jn). Together with the expression
+of Eπ[L2
+n] in Lemma A.1, this yields
+¯V (τ)
+=
+σ2
+∞
+¯λ
+Eπ[Nτ]
+τ
+−
+2α
+1 −α
+1 −Gα(τ)
+(1 −α)τ
+ E[ξn]
+2.
+Finally, since Eπ[Nτ] = ¯λτ by stationarity of N, we get the required relation.
+2
+We now focus on the ﬁnite variation function Gα that we shall compute through its
+Laplace-Stieltjes transform:
+bGα(s)
+:=
+Z ∞
+0−e−stdGα(t),
+s ≥0.
+We recall the convolution property for Laplace-Stieltjes transform
+\
+G ∗H
+=
+bG. bH,
+where
+G ∗H(t)
+=
+Z t
+0
+G(t −s)dH(s).
+21
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+Let us consider the function Qα deﬁned by:
+Qα(t)
+:=
+∞
+X
+n=0
+αnPπ[Nt ≥n].
+(A.4)
+Lemma A.2 Under (H), we have for all α̸ = 0,
+Gα
+=
+
+1 −1
+α
+
+Qα + 1
+α
+(A.5)
+bQα(s)
+=
+1 + α
+¯λ
+s
+ 1 −bF(s)
+1 −α bF(s)
+
+.
+(A.6)
+Proof. 1. For any α̸ = 0, t ≥0, we have
+Gα(t)
+=
+∞
+X
+n=0
+αnPπ[Nt = n] =
+∞
+X
+n=0
+αn Pπ[Nt ≥n] −Pπ[Nt ≥n + 1]
+
+=
+∞
+X
+n=0
+αnPπ[Nt ≥n] −1
+α
+ ∞
+X
+n=0
+αnPπ[Nt ≥n] −Pπ[Nt ≥0]
+
+=
+Qα(t) −1
+α
+
+Qα(t) −1
+
+,
+which proves (A.5).
+2. Recall that for the delayed renewal process N, the ﬁrst arrival time S1 is distributed
+according to the distribution ∆with density ¯λ(1−F). Let us denote by N0 the no-delayed
+renewal process, i.e. with all interarrival times S0
+n = T 0
+n −T 0
+n−1 distributed according to F,
+and by Q0
+α the function deﬁned similarly as in (A.4) with N replaced by N0. Then,
+Qα(t)
+=
+1 + α
+∞
+X
+n=0
+αnPπ
+
+Nt ≥n + 1
+
+=
+1 + α
+∞
+X
+n=0
+αnPπ[S1 + T 0
+n ≤t]
+=
+1 + αEπ
+h ∞
+X
+n=0
+αnPπ[T 0
+n ≤t −S1|S1 ≤t]
+i
+=
+1 + αEπ
+h
+Q0
+α(t −S1)1S1≤t
+i
+=
+1 + αQ0
+α ∗∆(t),
+(A.7)
+By taking the Laplace-Stieltjes transform in the above relation, and from the convolution
+property, we get
+bQα
+=
+1 + α c
+Q0α b∆.
+(A.8)
+By same arguments as in (A.7) and (A.8), we get c
+Q0α = 1 + α c
+Q0α bF, and so
+c
+Q0α
+=
+1
+1 −α bF
+.
+(A.9)
+22
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+Now, from the relation ∆(t) =
+R t
+0 ¯λ(1 −F(u))du, and by taking Laplace-Stieltjes transform
+we get:
+b∆(s)
+=
+¯λ
+s
+ 1 −bF(s)
+
+.
+(A.10)
+By substituting (A.9) and (A.10) into (A.8), we get the required relation (A.6).
+2
+From the relations (A.5)-(A.6) in the above Lemma, we immediately obtain the expression (4.2) for the Laplace-Stieltjes transform bGα. Let us now derive the alternative integral
+expression (4.3) for Gα.
+Lemma A.3 Under (H), we have for all α̸ = 0:
+Qα(t)
+=
+1 + ¯λt −¯λ(1 −α)
+Z t
+0
+Q0
+α(u)du,
+(A.11)
+with
+Q0
+α(t)
+=
+∞
+X
+n=0
+αnF ∗(n)(t),
+and F ∗(n) is the n-fold convolution of the distribution function F.
+Proof. We rewrite the expression (A.6) Laplace-Stieltjes transform as
+bQα(s)
+=
+1 + α¯λ
+s (1 −bF)
+∞
+X
+n=0
+(α bF)n
+=
+1 + α¯λ
+s
+∞
+X
+n=0
+αn
+( bF)n −( bF)n+1
+.
+(A.12)
+Let us now consider the function G0
+α (resp. Q0
+α) deﬁned similarly as for Gα (resp. Qα)
+with N replaced by N0, the no-delayed renewal process with all interarrival times S0
+n =
+T 0
+n −T 0
+n−1 distributed according to F. Then,
+G0
+α(t)
+=
+∞
+X
+n=0
+αn Pπ[N0
+t ≥n] −Pπ[N0
+t ≥n + 1]
+
+=
+∞
+X
+n=0
+αn
+Pπ[T 0
+n ≤t] −Pπ[T 0
+n+1 ≤t]
+
+=
+∞
+X
+n=0
+αn
+F ∗(n) −F ∗(n+1))(t).
+Therefore, the Laplace-Stieltjes transform of G0
+α is written also as
+c
+G0α
+=
+∞
+X
+n=0
+αn
+( bF)n −( bF)n+1
+.
+23
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+By deﬁning the function I0
+α(t) :=
+R t
+0 G0
+α(u)du, we then see from (A.12) that
+bQα(s)
+=
+1 + α¯λ bI0α,
+and thus
+Qα(t)
+=
+1 + α¯λ
+Z t
+0
+G0
+α(u)du.
+(A.13)
+Finally, by same arguments as in (A.5), we have
+G0
+α
+=
+
+1 −1
+α
+
+Q0
+α + 1
+α,
+and plugging into (A.13), we get the required result.
+2
+By using (A.5) and (A.11), we then obtain the integral expression (4.3) of the function
+Gα as in Proposition 4.1. Finally, we derive the asymptotic behavior of the mean signature
+plot.
+Proposition A.2 Under (H), we get:
+¯V (∞) :=
+lim
+τ→∞
+¯V (τ)
+=
+σ2
+∞,
+(A.14)
+¯V (0+) := lim
+τ↓0+ ¯V (τ)
+=
+¯λE[ξ2
+n],
+(A.15)
+and
+¯V (0+) > ¯V (∞)
+if and only if
+α < 0.
+Proof. By observing that the function Gα is stricly bounded in τ by 1 for any α ∈[−1, 1),
+we easily obtain from the expression (A.3) the limit for ¯V (τ) when τ goes to inﬁnity.
+On the other hand, by substituting the integral formula (4.3) of the function Gα into the
+expression (A.3) of the mean signature plot, we have:
+¯V (τ)
+=
+σ2
+∞−
+2α
+1 −α
+ E[ξn]
+2 ¯λ
+α
+
+1 −
+ 1 −α
+1
+τ
+Z τ
+0
+Q0
+α(s)ds
+
+Next, by noting that
+lim
+τ→0+
+1
+τ
+Z t
+0
+Q0
+α(s)ds
+=
+Q0
+α(0) = 1,
+we deduce that
+lim
+τ→0+ ¯V (τ)
+=
+σ2
+∞−2¯λα
+1 −α
+ E[ξn]
+2,
+(A.16)
+which gives (A.15) from the expression (3.1) of σ2
+∞. Finally, we immediately see from (A.16)
+that ¯V (0+) > ¯V (∞) if and only if α < 0.
+2
+24
+Electronic copy available at: https://ssrn.com/abstract=2261100
+
+References
+[1] Abergel F. and W. Jedidi (2011): “A mathematical approach to order book modeling”,
+to appear in International Journal of Theoretical and Applied Finance.
+[2] Ait-Sahalia Y., Mykland P. and L. Zhang (2011): “Ultra high frequency volatility estimation with dependent microstructure noise”, Journal of Econometrics, vol. 160, 160175.
+[3] Bacry E., Delattre S., Hoﬀman M. and J.F. Muzy (2013): “Modeling microstructure
+noise with mutually exciting point processes”, Quantitative Finance, vol 13, 65-77.
+[4] Bauwens L. and N. Hautsch (2009): Modeling ﬁnancial high frequency data using point
+processes, Handbook of Financial time series, Springer Verlag.
+[5] Bouchaud J.P. and M. Potters (2004): Theory of ﬁnancial risk and derivative pricing,
+from statistical physics to risk management, Cambridge university press, 2nd edition.
+[6] Cont R. and A. de Larrard (2010): “Price Dynamics in a Markovian Limit Order
+Market”, to appear in SIAM Journal of Financial Mathematics.
+[7] Dacorogna M., Gencay R., Muller U.A., Olsen R. and O.V. Pictet (2001): An introduction to high frequency ﬁnance, Academic press, 383.
+[8] Daley D. and D. Vere-Jones (2002): An introduction to the theory of point processes,
+vol 1, 2nd edition, Springer.
+[9] Fauth A. and C. Tudor (2012): “Modeling ﬁrst line of an order book with multivariate
+marked point processes”, preprint.
+[10] Fodra P. and H. Pham (2013): “High frequency trading in a Markov renewal model”.
+[11] Glynn P. and P. Haas (2004): “On functional central limit theorems for semi-Marlov
+and related processes”, Communications in Statistics, Theory and Methods, 33 (3), 487506.
+[12] Gloter A. and J. Jacod (2001): “Diﬀusion with measurement errors I and II”, ESAIM
+Prob. and Stats, 5, 225-242 and 243-260.
+[13] Limnios N. and G. Oprisan (2001): Semi-Markov processes and reliability, Birkhauser.
+[14] Robert C.Y. and M. Rosenbaum (2011): ”A new approach for the dynamics of ultra
+high frequency data: the model with uncertainty zones”, Journal of Financial Econometrics, 9(2), 344-366.
+[15] Robert C.Y. and M. Rosenbaum (2012): “Volatility and covariance estimation when
+microstructure noise and trading times are endogenous”, Mathematical Finance, 22(1),
+133-164.
+25
+Electronic copy available at: https://ssrn.com/abstract=2261100

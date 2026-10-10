@@ -1,0 +1,2522 @@
+Optimal Limit-versus-Market Order Slicing under a VWAP
+Bechmark - Discrete Case
+Tianhui Michael Li
+January 20, 2013
+Abstract
+Algorithmic brokers benchmarked to TWAP or VWAP face a limit-order market-order
+tradeoﬀwhen slicing orders. Executing market orders keeps them on schedule but is costly.
+Executing limit orders saves spread but can lead to schedule slippage. This paper presents
+an optimal solution for execution in light of this tradeoﬀin the discrete shares case. We
+prove the optimal solution can be described in terms of a forward and backward boundary
+which deﬁne how many limit orders should be placed on the order book and when to execute
+market orders. We also give a simple numerical scheme to obtain these two boundaries.
+1
+Introduction
+A deﬁning hallmark of modern ﬁnancial markets has been the proliferation of algorithmic
+trading.
+According to the Financial Times, 73% of all trading in the US is thought to
+be through algorithmic trading.1
+Many investors lack the speciﬁc experise or resources
+to implement an algorithmic trading platform and delegate the task of order execution to
+algorithmic brokers who execute on their behalf.
+The delegation of order execution to brokers leads to an agency conﬂict between brokers
+and investors. To compare broker performance, investors typically benchmark brokers to
+the Volume Weighted Average Price (VWAP). That is, the broker is asked to execute shares
+over a particular interval and the order’s average execution price will be compared to the
+1SEC runs eye over high-speed trading, Financial Times, July 29, 2009.
+1
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+market VWAP during the the same interval. Brokers are typically penalized for both underperforming with respect to VWAP and for not tracking VWAP closely. This paper studies
+how electronic brokerages should place orders when benchmarked to VWAP.
+The broker faces a risk-reward trade oﬀin deciding whether to execute with market
+(active) or limit (passive) orders.
+Market orders provide execution certainty but require
+paying half a bid-ask spread (relative mid-price) while limit orders save half a bid-ask spread
+at the expense of execution uncertainty. The broker can perfectly replicate interval VWAP
+by choosing an execution schedule of market orders to match the interval volume proﬁle.
+However, he would consistently underperform VWAP by half a bid-ask spread. Alternatively,
+the broker can choose to consistently save half the bid-ask spread by submiting only limit
+orders. But then the realized execution proﬁle may diﬀer wildly from the market volume
+proﬁle, thus incuring VWAP mistracking error. This execution timing versus transaction cost
+decision is the tradeoﬀat the heart of our limit order versus market order slicing problem
+and is the novel feature of our paper.
+In this paper, we present a solution that optimally balances between these two conﬂicting
+objectives. We ﬁnd that the optimal solution consists of forward and backward boundaries
+(˜Lt and ˜
+Mt) that track the ideal VWAP trajectory. The boundaries are time-dependent,
+satisfy ˜
+Mt ≥˜Lt, and bound vt, the total remaining shares to execute
+˜Lt ≤vt ≤˜
+Mt
+(1)
+If the number of shares remaining to execute reaches the backward boundary (vt ≥
+˜
+Mt)
+the broker executes market orders to stay just within the backward boundary (i.e. so that
+(1) is sastisﬁed). At any given point, the broker places vt −˜Lt shares on the order book.
+If he is crossed, at most vt −˜Lt limit orders are executed so that he has vt ≥˜Lt shares
+remaining to be executed after the limit orders are lifted.
+These forward and backward
+boundaries provide an extremely tractable solution that can be implemented in any order
+book placement algorithm. The rest of the paper will both prove why such a strategy is
+optimal and show how to compute the optimal boundaries ˜Lt and ˜
+Mt.
+At a high level, our model touches upon several disparate strands of the existing literature,
+including the work on illiquidity, proportional transaction costs, order book modeling, and
+market impact costs.
+Trading frictions have been modeled via various mechanisms. One strand of the literature
+2
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+is centered around illiquidity [Cetin, Jarrow, and Protter, 2004]. These authors hypothesize
+a stochastic supply curve whose steepness coincides with illiquidity. Similar work was done
+by Bank and Baum [2004]. The major drawback of both their theories is that liquidity costs
+can be completely avoided if trades are ﬁnite-variation. Hence, the cost of replicating an
+option is asymptotically zero as the writer can take ﬁnite-variation approximations to the
+classical Black-Scholes ∆-hedging technique. To get around this problem, Cetin, Jarrow,
+Protter, and Warachka [2006] impose an artiﬁcial constraint on the minimum time between
+discrete trades.
+Another strand of the literature models trading frictions as a cost proportional to trade
+size, typically interpreted as arising from the bid-ask spread. Mathematically, these problems
+exhibit a scaling which allows the authors to simplify their formulas. This branch of the
+literature uses singular control and the optimal solution is typically in the form of a tracking
+band. As the portfolio exits this band, the trader makes singular corrections to his holdings
+to keep it strictly within the limits of the band [Cvitanic, 1999, Cvitanic and Karatzas, 1996].
+This is analogous to the results of Davis and Norman [1990], Shreve and Soner [1994] for
+the Merton Problem. Typically, there is no analytic form for these no-trade regions and
+much work has been done on their numerics [Clewlow and Hodges, 1997, Davis, Panas, and
+Zariphopoulou, 1993] or asymptotics [Soner and Barles, 1998, Whalley and Wilmott, 1997].
+Yet another strand of the literature models the full order book. Alfonsi and Schied [2009],
+Alfonsi, Fruth, and Schied [2007], Predoiu, Shaikhet, and Shreve [2010] model a resilient
+order book where levels gradually replenish after large trades. They generally derive optimal
+strategies in which the broker makes large block trades at the beginning and end of the
+trading period with many small trades in between. These models often allow for general
+order book shape and are mathematically rather challenging to work with.
+The ﬁnal strand of related literature focuses on modeling eﬀective market impact. Rather
+than dwelling on the the details of microstructure, it models ‘eﬀective’ microstructure. The
+literature began with Bertsimas and Lo [1998] and Almgren and Chriss [1999] who decompose
+price impact in terms of both temporary and permanent price impact.
+The model was
+subsequently reﬁned in Obizhaeva and Wang [2005] by the addition of a transient price
+impact term. While earlier works in the literature concentrated on the liquidation a ﬁxed
+number of shares in a ﬁnite period, these impact models were applied to portfolio allocation
+[Garleanu and Pedersen, 2009] and options hedging [Rogers and Singh, 2007], the liquidation
+of portfolios [Schied and Sch¨oneborn, 2007], trading in both lit and dark venues [Kratz and
+3
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+Sch¨oneborn, 2010], and multiple-agent competitive liquidation [Schoeneborn and Schied,
+2010].
+Our result is reminiscent to those of the proportional-transaction-cost literature [Davis
+and Norman, 1990, Shreve and Soner, 1994] in that we are able to generate a forward and
+backward boundary for limit and market order execution. However, a key diﬀerence is that
+we allow for both passive and active orders while they assume all orders are active. Hence,
+while our backward boundary for market order execution is similar to the boundaries in the
+existing literature, the forward boundary for limit orders is qualitatively diﬀerent.
+Another strand of the literature deals with the optimal depth of limit order placement.
+This line of research was pioneered by Avellaneda and Stoikov [2008], based closely on the
+work of Ho and Stoll [1981]. They model a market maker who is able to control posting
+depth on both the bid and the ask. Subsequent work for the market maker problem has
+been done by Gu´eant, Lehalle, and Tapia [2011b] and Cartea, Jaimungal, and Ricci [2011]
+and a similar model with one-sided posting has been investigated for the liquidation problem
+[Gu´eant, Lehalle, and Tapia, 2011a]. These models represent a more tractable take on an
+order book, representing some features (such as multiple posting levels) while ignoring others
+(queue priority) and present a more tractable alternative to full order book models [Alfonsi
+and Schied, 2009, Predoiu, Shaikhet, and Shreve, 2010].
+In this strand of the literature, the agent is allowed to post one unit in the book and
+ﬁlls are of unit size as well. It is therefore capable of answering questions about posting
+depth, but not posting quantity. In contrast, our model only allows posting an arbitrary
+quantity to the top of the book and allows for both complete and partial ﬁlls. We seek to
+answer questions concerning posting quantity rather than posting depth. Another drawback
+of Avellaneda and Stoikov [2008] and its descendants is that they do not allow market orders
+(at least not during the execution period). The latter point is crucial: while in Gu´eant,
+Lehalle, and Tapia [2011a], the broker can only use limit orders to liquidate and thus can
+fall arbitrarily behind his liquidation schedule, in our model he can execute market orders
+to keep up with the schedule (at a cost).
+In the course of this work, we assume that the volume proﬁle (which can be time-varying
+in our model) is known in advance. While this assumption is not always realistic, it is justiﬁed
+for two reasons. The ﬁrst is that our results apply directly if the broker were benchmarked to
+TWAP (Time Weighted Average Price) rather than VWAP. The second is that the VWAP
+slicing literature has (up to now) been concentrated on stochastic volume at the expense
+4
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+of modeling market impact. Konishi [2002] solves the time-slicing problem with stochastic
+volatility and stochastic volatility and the result is extended in [Mcculloch and Kazakov,
+2007]. They show that when trading volume and volatility are positively correlated (as has
+been widely documented in real markets), it is optimal to trade behind the VWAP schedule.
+That is, the new ‘adjusted’ VWAP schedule is not the expected daily VWAP, but expected
+daily VWAP minus a term that accounts for the correlation with the volume and volatility.
+Hence, while we consider the VWAP in our model, we could just as well use the ‘adjusted’
+VWAP to account for stochastic volume and volatility. However, a major drawback of the
+analysis in Konishi [2002], Mcculloch and Kazakov [2007] is its restriction to static strategies
+in contrast to the dynamic ones considered in our paper. This literature also ignores the
+execution timing versus transaction cost tradeoﬀthat is the focus of our paper.
+Our results bear a close mathematical analog to work in the reinsurance literature
+[Goreac, 2008, Mnif and Sulem, 2005] and its Brownian limit is investigated in [Asmussen,
+Hjgaard, and Taksar, 1998]. However, their ﬁnancial interpretation and even some of the
+mathematical details are crucially diﬀerent. We postpone a detailed discussion until after
+we have introduced our model (see Remark 2.8). At this point, we only note that while they
+are only able to prove existence and uniqueness of a viscosity solution, we are able to prove
+existence and uniqueness of a classical solution, which in many cases is even closed-form.
+Finally, we compare how our proposed methodology diﬀerents from current practice in
+industry. Electronic brokerage houses and in-house electronic execution platforms typically
+split execution into two rigid steps. A high-level objective-aware algo splices a large trade
+into time intervals, scheduling the number of shares that need to be executed in each interval
+while a low-level microstructure-aware algo makes trading decisions. For example, the highlevel algo might splice a large full-day VWAP trade into half-hour buckets while the lowerlevel algo actually places the limit and market orders on the book. The communication is
+exclusively top-down. If the low-level algo encounters adverse market conditions, it has no
+way of notifying the top-level algo of the microstructure to modify the trading schedule.
+Instead, the low-level algo is forced to cross the spread and execute an expensive “cleanup”
+market order to ﬁll his allotted shares before time runs out. On the ﬂip side, if the low-level
+algo encounters favorable market conditions, it has no way of requesting a greater allocation
+to take advantage of the situation. We combine the two agorithms into a single strategy
+which is able to take advantage of prevailing microstructure conditions while keeping track
+of the overall objective.
+5
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+The subsequent sections are as follows. In Section 2, we introduce the discrete setup and
+model for limit orders and market orders. The solution is presented in Section 3. Special
+cases are discussed in Section 4 and plots of the optimal trading policy and continuation
+value are also provided.
+2
+Setup
+We follow the notation of Konishi [2002]. Let v ∈N denote the volume of shares that the
+broker must sell between time 0 and time T. We assume, the order size v is an insigniﬁcant
+fraction of interval-volume so that the market interval volume (total volume traded before
+T) can be written V rather than V + v. While it is a stochastic quantity in real life, we will
+assume V is deterministic for modeling simplicity. Similarly, it is assumed that the broker
+has no impact on the benchmark interval VWAP. Let the (mid) price be given exogenously
+by a Gaussian process
+Pt = P0 +
+Z t
+0
+σ(T −u) dWu
+where σ : [0, T] →(0, ∞) is assumed to be a deterministic function and Wt is a standard
+Brownian motion. (It turns out it will be more convenient to specify time in terms of timeto-maturity τ = T −t.) We assume the bid and ask (prices) are a ﬁxed s/2 below and above
+the mid (price). The choice of arithmetic Brownian Motion to model the mid is appropriate
+for the short time scales under consideration. For ﬁxed V > 0, let the traded market volume
+up to time t (denoted V (t)) be a deterministic, continuous strictly increasing function such
+that V (0) = 0 and V (T) = V . Then the interval market VWAP is therefore
+VWAP = 1
+V
+Z T
+0
+PtdV (t) .
+The number of shares executed by the broker is the sum of the limit and market orders
+executed,
+vt = lt + mt
+vT = v ,
+where lt and mt are non-decreasing and N-valued. The agent’s average liquidation price is
+therefore
+vwap = 1
+v
+Z T
+0
+
+Pt −s
+2
+
+dmt +
+
+Pt + s
+2
+
+dlt .
+6
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+While the agent has complete control over market orders mt at the bid, his limit orders lt
+at the ask are only lifted when crossing market orders arrive.
+We assume crossing market orders are modeled as an integer-valued Poisson arrival process. The N-valued increments of this process are denoted ∆Zt ≥0 and are independent of
+W (and hence Pt). We model this as a Poisson process where the event ∆Zt = k occurs
+with time-varying (but deterministic) intensity
+ν(T −t, k)
+and we write ν(T −t) = P
+j≥1 ν(T −t, j) for short. We assume the density ν(T −t, j) has
+ﬁnite total mass on [0, T] × N. Let Ft be the ﬁltration generated by the arrivals ∆Zt and
+Wt. At time t the agent can control Lt, the number of limit orders on the book. An arrival
+process ∆Zt at time t executes ∆Zt ∧Lt shares at the ask. Thus, the ﬁlled limit order
+process is given by
+lt =
+X
+s:s≤t
+∆Zs ∧Ls .
+Finally, we allow ∆Zs to take on the value ∞, i.e. the order is big enough to ﬁll all limit
+orders up to Lt for any Lt.
+We have abstracted out the details of the order book to form a parsimonious model that
+highlights the roles of market and limit orders. For example, we ignore the possibility of
+placing a limit order deeper in the book and concentrate on the best bid and ask (which
+ﬂuctuate with Pt). We have also (implicityly) assumed that the broker is the only one trading
+at the ask. This can be thought of as a simpliﬁed version of a full order book with competing
+orders where ∆Z represents only those crossing orders which execute against broker shares.
+Even to fully represent the dynamic details of time priority of the ask order queue, we must
+keep track of all competing orders and the priority of the broker’s orders with respect to
+those. This leads to a high-dimensional state space that is intractable both analytically and
+even diﬃcult to model numerically.
+One may object that by ignoring time priority, we have abstracted out an important
+feature of the order book. Our abstraction would be of concern only if our resulting optimal strategies were highly unrealistic, for example if they involved constantly placing and
+removing orders from the queue, which would be an unrealistic strategy under the presence
+of time priority. It turns out that the resulting optimal strategy will be to place more limit
+7
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+orders on the queue as we fall behind schedule and limit orders are only removed when they
+are crossed (see Theorem 3.1).
+One could also object that ﬁxed deterministic spread and a bid and ask that ﬂuctuate
+with Pt is an idealization that ignores too much microstructure detail: after all, the queues
+do not change prices levels, rather new queues form at the new resulting bid and ask. We
+argue that this factor is not salient. For example, if the price moves down away from the
+ask, the selling broker would simply move his limit orders from the old ask to the new ask.
+The broker may lose time priority, but that is a detail we have decided to abstract out of
+our model. The more interesting direction is if the price moves towards him, then crossing
+orders execute against his passive orders. By assuming independence of the price process Pt
+and limit order arrivals ∆Z, we have implicitly ignored the adverse selection between price
+movements and passive orders being ﬁlled. However, our model is able to cover the adverse
+selection case without explicit modeling (see Remark 2.5).
+Let X(T −t) and xt represent the fractions of shares left to be executed in the market
+and by the broker, respectively,
+X(T −t) = V −V (t)
+V
+xt = v −vt
+v
+so that X(T) = x0 = 1 and X(0) = xT = 0. We sometimes write xL,m for the trading
+process x that results from applying the trading strategy (L, m). At this point, we observe
+that we can rescale time so that X(T −t) is the linear function
+X(T −t) = T −t
+T
+.
+We make this assumption for the rest of the paper (unless otherwise noted) and recognize
+that σ(T −t) and ν(T −t, k) are rescaled to new quantities ˜σ(T −t) and ˜ν(T −t, k), although
+we shall omit the tilde ornamentation for the rest of the paper. We make the following two
+assumptions:
+Assumption 2.1. We assume that ν and σ2 are bounded in the sense
+sup
+τ∈[0,T ]
+ν(τ) < ∞
+and
+Z T
+0
+σ2(τ) dτ < ∞.
+8
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+Assumption 2.2. We assume that for all x ∈[0, 1], the function
+τ 7−→σ2(τ)
+ν(τ) (x −X(τ))
+is (strictly) decreasing (here, we write τ = T −t). The probability-measure-valued function
+τ 7−→ν(τ, ·)
+ν(τ)
+is non-decreasing in the sense of ﬁrst-order stochastic dominance. That is, for τ ≤τ ′, we
+have
+∞
+X
+j=1
+ν(τ, j)
+ν(τ) f(j) ≤
+∞
+X
+j=1
+ν(τ ′, j)
+ν(τ ′) f(j)
+for all bounded, non-decreasing functions f : N →R.
+Remark 2.3. Assumption 2.1 is necessary for the problem to be well-deﬁned and this technical
+assumption holds true for real applications. Assumption 2.2 is suﬃcient to ensure regularity
+of the solution. It is not a necessary condition, but is the ‘cleanest’ suﬃcient condition.
+The HJB equations, while describing the optimal control problem do not lend themselves
+to numerical techniques. We will show that under this assumption, a system of ODEs for
+Jn which are readily numerically computable can be shown to solve the HJB equation. See
+Remark 3.6 for details.
+Remark 2.4. The second condition of Assumption 2.2 is straightforward to verify. Observe
+that ν(T −t,·)
+ν(T −t) is the (probability) distribution of ﬁll-sizes. The fact that the mapping
+t 7−→ν(T −t, ·)
+ν(T −t)
+is non-increasing (in the ﬁrst-order stochastic dominating sense) implies that the ﬁll sizes
+do not get “larger” for larger t.
+The condition is satisﬁed if e.g.
+ν(T −t,·)
+ν(T −t)
+is a constant
+distribution.
+The ﬁrst condition is the analog to Assumption 3 of Konishi [2002]. It is easily satisﬁed
+for a large class of parameters. For example, it clearly holds if σ(τ) = σ and ν(τ) = ν
+are constant.
+It is also satisﬁed if the two quantities vary in such a way so that
+σ2(τ)
+ν(τ)
+remains constant. More generally, if σ(τ) and ν(τ) are diﬀerentiable functions of τ, then the
+9
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+derivative of the above function is given by
+∂
+∂τ
+σ2(τ)
+ν(τ) (x −X(τ))
+
+= σ2(τ)
+ν(τ)
+
+2 ˙σ(τ)
+σ(τ) −˙ν(τ)
+ν(τ)
+
+(x −X(τ)) −1
+T
+
+.
+(Here and throughout this manuscript, we use ˙σ to denote derivative in τ.) Since x −X(τ)
+remains within the interval [−1, 1] (see (2)), the derivative is non-positive for all x if
+2 ˙σ(τ)
+σ(τ) −˙ν(τ)
+ν(τ)
+ ≤1
+T .
+This says that a suﬃcient condition for Assumption 2.2 to be satisﬁed is when the logderivative of σ and ν remain close to one another. This is the important case since we know
+from the microstructure literature that σ2(τ) and ν(τ) tend to co-vary throughout the day
+[An´e and Geman, 2000, Cont, 2001, Jain and Joh, 1988].
+Remark 2.5. We can easily incorporate adverse selection into the model by decreasing the
+spread s. Intuitively, this decreases the cost (relative to limit orders) of a market order
+because the limit order price is not “as good as it appeared.” Equivalently, we can view this
+as lowering the ask at which sale limit orders execute so they are less than s/2 above the
+mid.
+Deﬁnition 2.6. We deﬁne Av to be the set of all pairs (L, m) such that
+• L is a pr´evisible N-valued process and
+• m is an adapted, non-decreasing N-valued process (here, we take N to include 0 by
+convention) with m0 = 0
+and such that the trading process x = xL,m is always within
+0 ≤xt ≤1
+P × Leb a.e.
+(2)
+where Leb is the Lebesgue measure on [0, T] and where all the shares have been executed by
+time T,
+xT = 0 .
+We assume the agent has the linear-quadratic objective,
+inf
+(L,m)∈Av E
+"Z T
+0
+γσ2(T −u)
+2
+(X(T −u) −xu)2 du + s
+v dmu
+#
+.
+(3)
+10
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+First, the objective (3) is thus always ﬁnite. Secondly, we observe that (3) captures the
+essential aspects of the problem. There is a quadratic mistracking penalty proportional to
+the risk aversion γ and riskiness of the stock σ(τ)2 and the square of the VWAP tracking
+error, (X(T −t) −xt)2.
+We can view this as a ‘risk’ term.
+There is also a ‘cost’ term
+proportional to the number of market orders executed dmt. The utility function can be
+motivated more directly by considering the CARA utility Remark 2.7
+Remark 2.7. This remark is meant to motivate the choice of the objective (3) and the statements are not meant to be rigorous. We assume an exponential utility uγ(x) = −exp(−γx)
+with absolute risk aversion γ > 0,
+sup
+L,m
+E [uγ(vwap −VWAP)] .
+(4)
+As in a traditional utility maximization problem, the broker is penalized for a higher VWAP
+cost. However, the agent is penalized for ﬂuctuations from the benchmarked VWAP, rather
+than ﬂuctuations from a constant return, as in a traditional utility maximization problem.
+Elementary manipulations yield that this is
+inf
+L,m E
+"
+exp
+ 
+−γ
+ 
+s
+2 +
+Z T
+0
+(xt −X(T −t)) dPt −s
+v dmt
+!!#
+.
+(5)
+Observe that since the leading s
+2 in (5) is a constant shift that does not aﬀect the CARA
+utility, we may simply drop it. This corresponds to benchmarking the cost to the ask (i.e.
+the price at which limit orders execute) rather than the mid, which we may freely do without
+changing the optimal policy. We now observe that the crucial term that determines our ‘risk’
+exposure is
+σ2(T −t)
+2
+(xt −X(T −t))2
+which partially motivates our original objective (3). It turns out that xt and mt will be
+independent of Pt (see Theorem 3.1) and so we can write (5) as
+inf
+L,m E
+"
+exp
+ 
+−
+ Z T
+0
+γ2σ2(T −t)
+2
+(xt −X(T −t))2 dt −γ s
+v dmt
+!!#
+which bears a close resemblance to (3). The CARA utility is useful for understanding the
+objective and manipulating it into a form that is suitable for dynamic programming (5) but is
+ultimately less tractable than the linear-quadratic objective (3). This tradeoﬀis well-known
+11
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+in the portfolio theory literature Fabozzi [2007, Chapter 2].
+This linear quadratic objective bears similarities to the Markowitz investment problem’s
+risk-return objective. In Markowitz, the investor chooses a mix between risky stocks and a
+risk-free bond balancing the higher returns from holding stocks with their higher risk. In our
+model, the risk is not price uncertainty but execution uncertainty. The “risky assets” are the
+limit orders which oﬀer price improvement at the risk of execution uncertainty. The “safe
+asset” are market orders which guarantee execution but cost a bid-ask spread to execute.
+While our objective shares similar features with the objective of the standard asset allocation problem, the controls do not. In the standard investment problem, the controls have
+a linear eﬀect on shares. The challenge of our problem is the non-linear and stochastic eﬀect
+of L on the number of shares vt. The standard functional-analytic techniques of optimization
+rely on the the objective (3) being convex in the control L. However, since
+L 7−→∆Z ∧L
+is concave and non-linear, we see that the objective is not convex in the control process.
+Remark 2.8. We pause to remark on the relationship with a strand of the insurance literature which is mathematically related to our problem [Asmussen et al., 1998, Goreac, 2008].
+Assume insurance claims of size Y ∈dy arrive as a Poisson process with a Poisson random
+measure µ(dt, dy). Given a claim of size Y , the agent then pays out
+Y ∧αt
+and a reinsurer pays the excess over the retention level αt, (Y −αt)+. The insurer’s net
+premium (after paying the reinsurer) is p(αt) and the company pays out a dividend dDt, so
+that its wealth process evolves as
+Xt = x +
+Z t
+0
+p(αu) du −
+Z t
+0
+Z
+R+
+(y ∧αu)µ(du, dy) −
+Z t
+0
+dDu
+and his objective is to maximize dividend payments until bankruptcy τ = inf {t ≥0 : X ≤0},
+sup
+D,α
+E
+Z τ
+0
+e−rudDu .
+The problem is analogous to ours.
+The claims play the roll of crossing orders and the
+12
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+retention level αt plays the role of limit orders Lt. The dividend dDt singular control in
+the insurance problem is analogous to market orders dmt and they both directly aﬀect the
+objective. The major diﬀerences are that our objective (3) is ﬁnite horizon and contains a
+risk-aversion term which is absent in that of the insurance problem. Furthermore, Asmussen
+et al. [1998], Goreac [2008] are only able to prove existence and uniqueness of a viscosity
+solution. In our problem, we are able to prove existence and uniqueness of a classical solution,
+which in many cases is even closed-form. Finally, while Mnif and Sulem [2005] solves their
+steady-state setup numerically using generic policy iteration, we are able to derive results
+speciﬁc to our model that yield diﬀerent numerical techniques.
+3
+General Solution
+The continuation value with n shares left to be executed at time t is deﬁned as
+Jn(T −t) = inf
+L,m Et
+"Z T
+t
+γσ(T −u)2
+2
+(X(T −u) −xu)2 du + s
+v dmu
+ xt = n
+v
+#
+.
+We can write the HJB equation as
+0 = min
+(
+s
+v + Jn−1(T −t) −Jn(T −t), min
+L≤n
+∞
+X
+k=1
+ν(t, k)
+
+Jn−(k∧L)(T −t) −Jn(T −t)
+
++ γσ2(T −t)
+2
+(X(T −t) −x(n))2 dt −˙Jn(T −t)
+)
+for n ≥1
+(6)
+0 = γσ2(T −t)
+2
+(X(T −t) −x(n))2 dt −˙J0(T −t)
+where x(n) = n/v. The ﬁrst term represents the eﬀect of executing a market order. The
+second represents the probability the broker’s limit orders being crossed at the spread. The
+quadratic term represents the running cost due to slipping away from the desired schedule
+and the ﬁnal term is the time value of J. For notational convenience, we now denote T −t by
+τ. The next proposition presents a representation of the solution which is directly numerically
+computable.
+13
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+Theorem 3.1. The continuation values Jn are given inductively for n = 0, . . . , v by
+J0(τ) =
+Z τ
+0
+γσ2(u)
+2
+X2(u) du
+˙Jn(τ) = min
+(
+˙Jn−1(τ), γσ2(τ)
+2
+(X(τ) −x(n))2 −
+∞
+X
+k=1
+ν(τ, k)
+h
+Jn(τ) −J(n−k)∨˜L(τ,n)(τ)
+i)
+Jn(0) = sn
+v
+˜L(τ, n) = arg min
+0≤k≤n
+Jk(τ) .
+These J’s are uniformly bounded in n, τ, and v and we have
+˜L(τ, n) = n ∧˜L(τ)
+where ˜L(τ) = ˜L(τ, v). We furthermore deﬁne the market and limit order times τ ·
+m and τ ·
+l as
+τ n
+m = inf
+n
+τ ∈[0, T] : Jn(τ) −Jn−1(τ) < s
+v
+o
+τ n
+l = inf {τ ∈[0, T] : Jn(τ) −Jn−1(τ) < 0}
+for n = 1 . . . , v and set τ 0
+l = τ 0
+m = 0. We have the estimate
+τ n
+m ≤Tx
+ n −1
+2
+
+< τ n
+l .
+(7)
+The optimal policy is as follows. If at time t there are n shares remaining, we place Lt =
+n −˜L(n, T −t) ≥0 limit orders on the book if τ ≤τ n
+l
+and place no limit orders Lt = 0
+otherwise. A market order is executed (dm ﬁres) as soon as τ ≤τ n
+m is satisﬁed. The resulting
+optimal processes xt, lt, and mt are independent of Pt.
+We prove the result by demonstrating that the J deﬁned by the integro-diﬀerential equations in Theorem 3.1 satisfy (6) from which we can easily verify the optimality of the controls
+given in Theorem 3.1. From henceforth, we assume that J is as given in Theorem 3.1 and
+its existence follows from Lemma 3.2.
+Before beginning the proof, we make a few remarks. First, it is clear from the deﬁnitions
+of τ n
+m and τ n
+l and the continuity of Jn(·) that
+τ n
+m < τ n
+l .
+14
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+Second, we deﬁne
+Gn(τ) = γσ2(τ)
+2
+(X(τ) −x(n))2
+(8)
+Fn(τ) =
+∞
+X
+j=1
+ν(τ, j)
+h
+Jn(τ) −J(n−j)∨˜L(τ,n)(τ)
+i
+(9)
+for n = 0, . . . , v and by induction, we may rewrite ˙Jn as
+˙Jn(τ) = min
+n
+˙Jn−1(τ), Gn(τ) −Fn(τ)
+o
+= min
+0≤k≤n [Gk(τ) −Fk(τ)] .
+(10)
+We ﬁrst observe that because x(k) = k
+v , we have
+Gn+1(τ) −Gn(τ) = γσ2(τ)
+2
+"
+X(τ) −x(n) −1
+v
+2
+−(X(τ) −x(n))2
+#
+= γσ2(τ)
+2
+ 1
+v2 −2
+v (X(τ) −x(n))
+
+= γσ2(τ)
+v
+ x
+ n + 1
+2
+
+−X(τ)
+
+.
+(11)
+Finally, we deﬁne the function Hn as
+Hn = Jn −Jn−1
+n = 1, . . . , v .
+We can use this to rewrite F as
+Fn(τ) =
+X
+j≥1
+ν(τ, j)
+h
+Jn(τ) −J(n−j)∨˜L(τ,n)(τ)
+i
+=
+X
+j≥1
+ν(τ, j)
+
+H+
+n (τ) + H+
+n−1(τ) + · · · + H+
+n+1−j(τ)
+
+and their diﬀerence as
+Fn+1(τ) −Fn(τ) =
+X
+j≥0
+ν(τ, j)
+
+H+
+n+1(τ) −H+
+n+1−j(τ)
+
+.
+(12)
+Lemma 3.2. The function Jn(τ) deﬁned in Theorem 3.1 is well-deﬁned.
+Proof. The proof follows by induction. Observe that J0 is completely deﬁned by the bound
+15
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+on σ in Assumption 2.1. Now assume J0, . . . , Jn−1 are well-deﬁned. Then a simple inductive
+argument shows
+ ˙Jn(τ)
+ ≤
+ ˙Jn−1(τ)
+ +
+
+γσ2(τ)
+2
+(X(τ) −x(n))2 −
+∞
+X
+k=1
+ν(τ, k)
+h
+Jn(τ) −J(n−k)∨˜L(τ,n)(τ)
+i
+Notice that Jn(τ) only appears in two places, directly as Jn(τ) and indirectly through ˜L(τ, n).
+Deﬁne
+A =
+n
+τ : ˜L(τ, n) < n
+o
+Ac =
+n
+τ : ˜L(τ, n) = n
+o
+and note that since ˜L(τ, n) ≤n, [0, T] is indeed the disjoint union of A and Ac.
+Then
+for τ ∈A, we have J(n−k)∨˜L(τ,n)(τ) does not depend on Jn(τ).
+For τ ∈Ac, we have
+Jn(τ) −J(n−k)∨˜L(τ,n)(τ) = 0. Either way, we have the bound
+ ˙Jn(τ)
+ ≤α(τ) + ν(τ)Jn(τ)
+where α is a ﬁnite, integrable function on τ ∈[0, T]. Hence, we have by an elementary
+application of Gronwall’s Lemma that
+|Jn(τ)| ≤α(τ) +
+
+Z T
+0
+α(u)ν(u) exp
+ 
+Z T
+u
+ν(r) dr
+
+!
+du
+
+Furthermore, we have from Assumption 2.1 that ν(τ) is uniformly bounded in τ and hence
+Jn is well-deﬁned.
+Based on our deﬁnitions, we have the following lemmas whose proofs are straightfoward.
+Lemma 3.3. For n = 1, . . . , v, we have
+Jn(τ) = Jn−1(τ) + s
+v
+τ ≤τ n
+m
+Jn(τ) < Jn−1(τ) + s
+v
+τ > τ n
+m
+(13)
+and
+Jn(τ) ≥Jn−1(τ)
+τ ≤τ n
+l
+Jn(τ) < Jn−1(τ)
+τ > τ n
+l
+(14)
+16
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+Using H, we can also write these equations as
+Hn(τ) = s
+v
+τ ≤τ n
+m
+Hn(τ) < s
+v
+τ > τ n
+m
+(15)
+and
+Hn(τ) ≥0
+τ ≤τ n
+l
+Hn(τ) < 0
+τ > τ n
+l .
+(16)
+Proof. The proof of (13) follows from the observation that ˙Jn(τ) ≤˙Jn−1(τ) from (10) and
+the initial condition Jn(0) = sn
+v . The proof for (14) follows similarly. The ones for (15) and
+(16) follow from the deﬁnition of H.
+The meat of the argument follows from the following Proposition.
+Proposition 3.4. We have for n = 0, . . . , v −1 that
+τ n
+m ≤τ n+1
+m
+τ n
+l ≤τ n+1
+l
+.
+Furthermore, we have that J·(τ) is “convex”, that is
+H1(τ) ≤H2(τ) ≤· · · H˜L(τ)−1(τ) ≤0 ≤H˜L(τ)(τ) ≤· · · ≤Hv(τ)
+(17)
+and that the mapping
+τ 7→Hn(τ)
+is non-increasing.
+(18)
+Proof. The proof follows by induction on the following inequalities
+Hk(τ) ≤Hk+1(τ)
+for 0 ≤τ ≤T
+(19)
+Gk+1(τ) −Fk+1(τ) < Gk(τ) −Fk(τ)
+for τ k+1
+m
+< τ ≤T .
+(20)
+We assume (19) holds for k = 1, . . . , n −1 and (20) holds for k = 0, . . . , n −1 and we will
+prove it holds for k = n. (The proof of the base case n = 1 follows similarly.)
+We ﬁrst make a few preliminary remarks. Observe that (17) follows from (19) and the
+deﬁnition of ˜L and (18) follows from (10). Also, it follows from this inductive hypothesis
+17
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+(19) and conditions (15) and (16) that
+τ k
+m ≤τ k+1
+m
+(21)
+τ k
+l ≤τ k+1
+l
+(22)
+for k = 0, . . . , n −1. (They hold for k = 0 by deﬁnition of τ 0
+m and τ 0
+l .) Hence, for k < n, let
+τ ≥τ k+1
+m
+so that
+τ ≥τ k+1
+m
+≥· · · ≥τ 0
+m
+and by the induction hypothesis (20) we have
+Gk+1(τ) −Fk+1(τ) ≤Gk(τ) −Fk(τ) ≤Gk−1(τ) −Fk−1(τ) ≤· · · ≤G0(τ) −F0(τ)
+and by the deﬁnition of ˙J (10), we have
+Gk+1(τ) −Fk+1(τ) ≤Gk(τ) −Fk(τ) = ˙Jk(τ) ≤˙Jk−1(τ) ≤· · · ≤˙J0(τ) .
+Hence, we may conclude that
+˙Jk+1(τ) = Gk+1(τ) −Fk+1(τ) ≤Gi(τ) −Fi(τ) = ˙Ji(τ)
+for τ ≥τ k+1
+m
+(23)
+for i = 0, . . . k and k = 0, . . . , n −1. We now show (19) and (20) for k = n.
+We now show that τ n
+m ≤τ n+1
+m
+by assuming τ n
+m > τ n+1
+m
+to show a contradiction. By the
+induction hypothesis (21), we have
+τ 0
+m ≤τ 1
+m ≤· · · ≤τ n
+m
+and so there exists some k < n such that
+τ k
+m ≤τ n+1
+m
+< τ k+1
+m
+.
+(24)
+By the deﬁnition of τ n+1
+m
+(13), we have ˙Jn(τ) = ˙Jn+1(τ) for τ ≤τ n+1
+m
+and ˙Jn+1(τ) < ˙Jn(τ)
+for τ > τ n+1
+m
+. So by the deﬁnition of ˙Jn+1 (10) there exists a τ satisfying
+τ in a neighborhood of τ n+1
+m
+and
+τ n+1
+m
+≤τ < τ k+1
+m
+(25)
+18
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+such that
+Gn+1(τ) −Fn+1(τ) ≤˙Jn(τ) .
+Indeed, the above holds for all τ in some neighborhood of τ n+1
+m
+satisfying (25). The last
+equation implies that
+Hn+1(τ) = Hn+1(τ n+1
+m
+) −
+Z τ
+τ n+1
+m
+h
+Gn+1(u) −Fn+1(u) −˙Jn(u)
+i−
+du
+= Hn+1(τ n+1
+m
+) +
+Z τ
+τ n+1
+m
+Gn+1(u) −Fn+1(u) −˙Jn(u) du .
+Since Hn(τ n+1
+m
+) ≤s
+v = Hn+1(τ n+1
+m
+), we can write
+Hn(τ) −Hn+1(τ) ≤
+Z τ
+τ n+1
+m
+−
+h
+Gn(u) −Fn(u) −˙Jn−1(u)
+i−
++
+h
+Gn+1(u) −Fn+1(u) −˙Jn(u)
+i−
+du
+≤
+Z τ
+τ n+1
+m
+Gn(u) −Fn(u) −˙Jn−1(u) −
+h
+Gn+1(u) −Fn+1(u) −˙Jn(u)
+i
+du
+≤
+Z τ
+τ n+1
+m
+Gn(u) −Fn(u) −[Gn+1(u) −Fn+1(u)] du
+where we have used ˙Jn ≤˙Jn−1 from (10). From (11) and the fact that x
+ n + 1
+2
+
+−x
+ k + 1
+2
+
+=
+n−k
+v , we have
+Gn+1(τ) −Gn(τ) = γσ2(τ)
+v
+ x
+ n + 1
+2
+
+−X(τ)
+
+= Gk+1(τ) −Gk(τ) + γσ2(τ)
+v2
+(n −k)
+> Gk+1(τ) −Gk(τ) .
+(26)
+where we have used the fact that n > k in the last line.
+However (24) and (25) imply
+τ k
+m ≤τ < τ k+1
+m
+and for τ within this range have by (10) and (23) that
+Gk+1(τ) −Fk+1(τ) ≥˙Jk+1(τ) = ˙Jk(τ) = Gk(τ) −Fk(τ) .
+19
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+Combining the last two results with (12), we obtain
+Hn(τ) −Hn+1(τ) <
+Z τ
+τ n+1
+m
+Gk(u) −Gk+1(u) −[Fn(u) −Fn+1(u)] du
+≤
+Z τ
+τ n+1
+m
+Fk(u) −Fk+1(u) −[Fn(u) −Fn+1(u)] du
+=
+Z τ
+τ n+1
+m
+X
+j≥1
+ν(u, j)
+
+H+
+n+1(u) −H+
+n+1−j(u)
+
+−
+X
+j≥1
+ν(u, j)
+h
+H+
+k+1(u) −H+
+k+1−j(u)
+i
+du
+=
+Z τ
+τ n+1
+m
+X
+j≥1
+ν(u, j)
+
+H+
+n+1(u) −H+
+n (u)
+
++
+X
+j≥1
+ν(u, j)
+h
+H+
+n (u) −H+
+k+1(u) −
+
+H+
+n+1−j(u) −H+
+k+1−j(u)
+i
+du .
+Now, for τ within our range (25), we have τ < τ k+1
+m
+≤· · · ≤τ n
+m. By (15) we have
+Hk+1(u) = · · · = Hn(u) = s
+v
+u ≤τ k+1
+m
+.
+Furthermore, we have from (19) that H+
+1 ≤· · · ≤H+
+n and since n > k, it follows that
+H+
+n+1−j ≥H+
+k+1−j
+for j = 0, . . . , k −1 .
+Hence, we have
+Hn(τ) −Hn+1(τ) <
+Z τ
+τ n+1
+m
+X
+j≥1
+ν(u, j)
+
+H+
+n+1(u) −H+
+n (u)
+
+du
+≤
+Z τ
+τ n+1
+m
+ν(u) [Hn+1(u) −Hn(u)] du
+where we have used the fact that s
+v ≥Hn+1(τ) > 0 for τ (in a possibly smaller neighborhood
+of τ n+1
+m
+) satisfying (25). A simple application of Gronwall’s Lemma now yields
+Hn(τ) −Hn+1(τ) < 0
+which contradicts (24) and so τ n+1
+m
+≥τ n
+m.
+Next, we prove (20) for k = n. Fix τ n+1
+m
+< τ ≤T. We use the recently-proved fact that
+τ n+1
+m
+≥τ n
+m and (23) to obtain ˙Jn(τ) = Gn(τ) −Fn(τ). It then follows from (10) and (11)
+20
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+that
+˙Hn+1(τ) = −[Gn+1(τ) −Gn(τ) −(Fn+1(τ) −Fn(τ))]−
+= −ν(τ)
+
+ϕ(τ) −H+
+n+1(τ)
+−
+(27)
+where
+ϕ(τ) = γ
+v
+σ2(τ)
+ν(τ)
+ x
+ n + 1
+2
+
+−X(τ)
+
++
+X
+j≥1
+ν(τ, j)
+ν(τ) H+
+n+1−j(τ) .
+Assumption 2.2 gives us that the ﬁrst term of ϕ(τ) is (strictly) decreasing in τ. For the
+second term, we ﬁrst use the induction hypothesis (23) to obtain
+˙Hk+1(τ) = Gk+1(τ) −Fk+1(τ) −[Gk(τ) −Fk(τ)] ≤0
+for τ ≥τ k+1
+m
+(28)
+for k = 1, . . . , n −1. Now for τ k+1
+m
+≤τ ≤τ ′, we have
+X
+j≥1
+ν(τ ′, j)
+ν(τ ′) H+
+n+1−j(τ ′) −
+X
+j≥1
+ν(τ, j)
+ν(τ) H+
+n+1−j(τ)
+=
+X
+j≥1
+ν(τ ′, j)
+ν(τ ′)
+ H+
+n+1−j(τ ′) −H+
+n+1−j(τ)
+
++
+
+X
+j≥1
+ν(τ ′, j)
+ν(τ ′) −
+X
+j≥1
+ν(τ, j)
+ν(τ)
+
+H+
+n+1−j(τ)
+The ﬁrst term on the right-hand side is non-positive by the Fundamental Theorem of Calculus
+and (28). The second term on the right-hand side is non-positive since the distribution ν(τ,·)
+ν(τ)
+is ﬁrst-order-stochastic-dominance non-decreasing by Assumption 2.2 and j 7→H+
+n−j(τ) is
+a non-increasing map by the induction hypothesis (19). The above then gives us that the
+second term of ϕ(τ) is non-increasing and hence, ϕ(τ) is (strictly) decreasing. The mapping
+τ 7→Jn(τ) is diﬀerentiable by its deﬁnition in Theorem 3.1. By (10) and (13), we have that
+˙Jn+1(τ n+1
+m
+) = ˙Jn(τ n+1
+m
+) and so
+˙Hn+1(τ n+1
+m
+) = 0 .
+Furthermore, since H(τ) <
+s
+v for τ > τ n+1
+m
+by (15), we have that
+˙H(τ) < 0 for τ in a
+neighborhood of τ n+1
+m
+such that τ > τ n+1
+m
+. Hence, in this neighborhood, (27) becomes
+˙Hn+1(τ) = ν(τ)
+
+ϕ(τ) −H+
+n+1(τ)
+
+21
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+and by continuity, this also holds for τ = τ n+1
+m
+Therefore, we have
+0 = ϕ(τ n+1
+m
+) −H+
+n+1(τ n+1
+m
+) .
+Finally, deﬁne ψ to solve the linear ODE,
+˙ψ(τ) = ν(τ) [ϕ(τ) −ψ(τ)]
+ψ(τ n+1
+m
+) = s
+v .
+Since ϕ(τ) is (strictly) decreasing, the solution satisﬁes
+ϕ(τ) −ψ(τ) ≤0
+and
+˙ψ(τ) < 0
+for τ ≥τ n+1
+m
+.
+But taking ψ to be H+
+n+1 in (27) shows that ψ also satisﬁes (27). We have from the unicity
+of ODEs that H+
+n+1(τ) = ψ(τ) for τ ≥τ n+1
+m
+. Therefore ˙Hn+1(τ) < 0 for τ ≥τ n+1
+m
+and we
+have from (27) that (20) holds for k = n.
+Finally, we will prove the inequality (19) for k = n. From (15) we have
+Hn(τ) ≤s
+v = Hn+1(τ)
+for τ ≤τ n+1
+m
+.
+Hence, it only remains to demonstrate the result for τ > τ n+1
+m
+so ﬁx such a τ. We have just
+shown (20) for k = n and so we have
+Gn+1(τ) −Fn+1(τ) −˙Jn(τ) ≤0
+and this implies that for τ > τ n+1
+m
+, we again have
+˙Hn+1(τ) = −
+h
+Gn+1(τ) −Fn+1(τ) −˙Jn(τ)
+i−
+= Gn+1(τ) −Fn+1(τ) −˙Jn(τ) .
+We see that this implies τ 7→Hn+1(τ) is a non-increasing mapping, and by similar logic, so
+22
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+is τ 7→Hn(τ). We can again write
+˙Hn(τ) −˙Hn+1(τ) ≤
+h
+Gn+1(τ) −Fn+1(τ) −˙Jn(τ)
+i−
+−
+h
+Gn(τ) −Fn(τ) −˙Jn−1(τ)
+i−
+≤Gn(τ) −Fn(τ) −˙Jn−1(τ) −
+h
+Gn+1(τ) −Fn+1(τ) −˙Jn(τ)
+i
+= −[Gn+1(τ) −2Gn(τ) + Gn−1(τ)]
++
+X
+j≥1
+ν(τ, j)
+
+H+
+n+1(τ) −H+
+n (τ) −H+
+n+1−j(τ) + H+
+n−j(τ)
+
+≤−ν(τ)
+
+Hn(τ) −H+
+n+1(τ)
+
+−[Gn+1(τ) −2Gn(τ) + Gn−1(τ)]
+−
+X
+j≥1
+ν(τ, j)
+
+H+
+n+1−j(τ) + H+
+n−j(τ)
+
+.
+By induction hypothesis on (19) for k = 1, . . . , n −1, we have H+
+n+1−j(τ) + H+
+n−j(τ) ≥0
+for j ≥1. Similarly, by (26), we have that Gn+1(τ) −2Gn(τ) + Gn−1(τ) ≥0. Finally, for
+τ n+1
+m
+≤τ ≤τ n+1
+l
+we have H+
+n+1(τ) = Hn+1(τ) and so
+˙Hn(τ) −˙Hn+1(τ) ≤−ν(τ) [Hn(τ) −Hn+1(τ)] .
+Since Hn(τ n+1
+m
+) ≤Hn+1(τ n+1
+m
+), we have by Gronwall’s Lemma, that
+Hn+1(τ) ≥Hn(τ)
+for τ n+1
+m
+< τ ≤τ n+1
+l
+.
+By deﬁnition, we have Hn+1(τ n+1
+l
+) = 0 and so τ n
+l ≤τ n+1
+l
+. So by (16), we have H+
+n (τ) −
+H+
+n+1(τ) = 0 for τ > τ n+1
+l
+. Therefore H+
+n (τ)−H+
+n+1(τ) = 0 for τ > τ n+1
+l
+. Since Hn(τ n+1
+l
+)−
+Hn+1(τ n+1
+l
+) ≤0, we have by integrating that
+Hn(τ) −Hn+1(τ) ≤
+Z τ
+τ n+1
+l
+−[Gn+1(u) −2Gn(u) + Gn−1(u)]
+−
+X
+j≥1
+ν(τ, j)
+
+H+
+n+1−j(u) + H+
+n−j(u)
+
+du .
+and the right-hand is non-positive as before. Hence, we have
+Hn(τ) ≤Hn+1(τ)
+for τ > τ n+1
+l
+and hence (19) holds for k = n.
+Lemma 3.5. The equation (7) holds.
+23
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+Proof. For τ ≤τ n
+m, we have
+Gn(τ) −Fn(τ) ≥Gn−1(τ) −Fn−1(τ)
+and so by (11) we have
+γσ2(τ)
+v
+
+x
+ n −1
+2
+
+−X(τ)
+
+= Gn(τ) −Gn−1(τ)
+≥Fn(τ) −Fn−1(τ) .
+We also have that τ ≤τ n
+m < τ n
+l , and so Hn(τ) > 0 and by (17) we have H1(τ) ≤· · · ≤Hn(τ)
+so that by (12) we have
+Fn(τ) −Fn−1(τ) =
+∞
+X
+j=1
+ν(τ, j)
+
+H+
+n (τ) −H+
+n−j(τ)
+
+> 0 .
+Hence we have x
+ n −1
+2
+
+−X(τ) > 0 and thus
+τ < Tx
+
+n −1
+2
+
+for all τ ≤τ n
+m and in particular for τ = τ n
+m. Similarly, for τ ≥τ n
+l > τ n
+m, we have
+γσ2(τ)
+v
+
+x
+ n −1
+2
+
+−X(τ)
+
+= Gn(τ) −Gn−1(τ)
+≤Fn(τ) −Fn−1(τ) .
+However, from (16) and (17), we have H1(τ) ≤· · · ≤Hn(τ) ≤0 and so by (12), we have
+Fn(τ) = Fn−1(τ) = 0
+and hence
+τ ≥Tx
+
+n −1
+2
+
+for all τ ≥τ n
+l , and in particular τ = τ n
+l and the result (7) then obtains.
+Proof of Theorem 3.1. The objective (3) is clearly non-negative. Executing only clean-up
+24
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+market orders, i.e. adopting the policy
+Lt = 0
+for all t ∈[0, T]
+mt = 0
+for all t ∈[0, T)
+and
+mT = v
+yields xt = mt and thus
+Jn(τ) ≤
+Z T
+0
+γσ2(u)
+2
+du + s
+which is ﬁnite by Assumption 2.1. Therefore, Jn(τ) is bounded by a constant independent
+of n, τ, and v. We ﬁrst show that the J deﬁned in Theorem 3.1 satisﬁes the HJB equation
+(6). By (18), we have τ 7→Jn(τ) −Jn−1(τ) is decreasing and from the initial condition
+Jn(0) −Jn−1(0) = s
+v, we have and
+s
+v + Jn−1(τ) −Jn(τ) ≥0 .
+(29)
+From the deﬁnition of ˙Jn, we have
+γσ2(τ)
+2
+(X(τ) −x(n))2 −
+∞
+X
+k=1
+ν(τ, k)
+h
+Jn(τ) −J(n−k)∨˜L(τ,n))(τ)
+i
+−˙Jn(τ) ≥0 .
+(30)
+By the (13) it is easy to see that the inequality in (29) is equality when τ ≤τ n
+m and by
+(23), the inequality in (30) is equality when τ ≥τ n
+m. Hence, the function Jn(τ) deﬁned in
+Theorem 3.1 satisﬁes the HJB equation (6).
+It is easy to see that Jn is attained by the optimal policy. That is, we must show that
+Z t
+0
+γσ(T −u)2
+2
+(X(T −u) −xu)2 du + s
+v dmu + Jv−vt(T −t)
+is a martingale. We have by (17) that setting Lt = n −˜L(T −t) minimizes
+∞
+X
+j=1
+ν(T −t, j)
+
+Jn−(j∧Lt)(T −t) −Jn(T −t)
+
+dt
+over all possible choices of Lt. dmt only ﬁres when τ = τ n
+m where
+Jn(τ n
+m) −Jn−1(τ n
+m) = s
+v
+and the loss to the continuation value perfectly cancels the gain from
+s
+v dmt.
+The opti25
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+mality of the prescribed policy then follows. Also, the independence of (xt, lt, mt) and Pt
+follows directly from the form of our solution and our assumption of the independence of
+the limit-order crossing process and Pt Remark 2.5. It remains to show (7), which is done
+in Lemma 3.5.
+The execution policy in Theorem 3.1 can be broken into three cases. Assume the broker
+has n shares remaining to execute.
+For τ ≤τ n
+m, it is optimal to cross the spread and
+immediately execute a market order. In this region, he is too far behind VWAP and pays
+the spread to catch up. Mathematically, we have
+Jn−1(τ) + s
+v < Jn(τ)
+so it is worth paying s to reach state n −1. This may continue to hold true for state n −1,
+in which case another market order would immediately be executed. For τ n
+m < τ ≤τ n
+l , the
+broker places limit orders on the bid but does not execute a market order. In this region, he
+is comfortably within the tracking region but is willing to accept free crossing executions.
+Mathematically, we have
+J˜L(τ,n)(τ) ≤· · · ≤Jn−1(τ) < Jn(τ) ≤Jn−1(τ) + s
+v .
+It is worth placing limit orders on the book so that he can enter state n −j if there is
+a crossing order ∆Z ≥j. It is optimal to place Lt = n −˜L(τ, n) shares because ˜L(τ, n)
+minimizes J·(τ). Placing fewer shares would not take advantage of larger crossing orders,
+while placing more risks getting too far ahead of VWAP. For τ n
+l
+< τ, the broker places
+neither a limit order nor executes a market order. In this region, he is so far ahead of VWAP
+that he does not even accept free-executions. Mathematically, we have
+Jn(τ) ≤Jn−1(τ)
+and the broker would prefer to remain in state n rather than drop down to state n −1.
+Remark 3.6. We are now in a position to explain the rationale for Assumption 2.2. We
+observe that Assumption 2.2 was only used to prove (20) and hence (23). This gave us the
+critical fact that (30) holds with equality for τ ≥τ n
+m. Without this condition, we could have
+26
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+points τ > τ n
+m such that
+Gn(τ) −Fn(τ) > Gk(τ) −Fk(τ)
+for k = 1, . . . , n −1
+(and hence (30) holds with strict inequality) but where
+Jn(τ) −Jn−1(τ) < s
+v
+(and hence (29) holds with strict inequality). Then the HJB equation (6) would fail to hold.
+Hence, Assumption 2.2 is used to show that the (readily numerically computable) solution
+Jn deﬁned in Theorem 3.1 satisﬁes the HJB condition (6).
+We conclude by giving bounds that will be used in the next section
+Proposition 3.7. Fix k in N. Then we have the following bounds
+|Gn+k(τ) −Gn(τ)| ≤γσ2(τ)k
+v
+(31)
+|Jn+k(τ) −Jn(τ)| ≤K k
+v
+(32)
+|Fn+k(τ) −Fn(τ)| ≤K k
+v
+(33)
+where the constant K depends only on s, γ
+R T
+0 σ2(u) du, and
+R T
+0 ν(u) du. Furthermore, we
+have
+0 ≤Hn+k(τ) −Hn(τ) ≤K′ k
+v2
+(34)
+where the constant K′ depends only on γ
+R T
+0 σ2(u) du and
+R T
+0 ν(u) du. In particular, both K
+and K′ are independent of τ, n, k and v.
+Proof. We prove all these statements for k = 1. The result for general k follows from the
+Triangle Inequality.
+We ﬁrst prove (31), which comes from (11)
+Gn+1(τ) −Gn(τ) = γσ2(τ)
+v
+ x
+ n + 1
+2
+
+−X(τ)
+
+and the fact that the point x
+ n + 1
+2
+
+and the path X are conﬁned within [0, 1]. The proof
+for general k then follows from the Triangle Inequality.
+27
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+For (32), observe that from (13), we have that
+|Jn+1(τ) −Jn(τ)| > s
+v
+implies
+Jn+1(τ) < Jn(τ) −s
+v
+and so that by (7) we have τ > τ n+1
+l
+≥τ n+1
+m
+≥τ n
+m so that
+˙Jn(τ) = Gn(τ) −Fn(τ)
+and
+˙Jn+1(τ) = Gn+1(τ) −Fn+1(τ) .
+Hence, we have from our previous two results (31) and (33) that
+|Jn+1(τ) −Jn(τ)| ≤s
+v +
+Z τ
+0
+|Gn+1(u) −Gn(u)| + |Fn+1(u) −Fn(u)| du
+≤s
+v +
+Z τ
+0
+γσ2(u)
+v
++ ν(u) |Jn+1(u) −Jn(u)| du .
+An application of Gronwall’s Lemma yields
+|Jn+1(τ) −Jn(τ)| ≤1
+v
+
+s + γ
+Z τ
+0
+σ2(u) du
+
+exp
+Z τ
+0
+ν(u) du
+
+≤1
+v
+ 
+s + γ
+Z T
+0
+σ2(u) du
+!
+exp
+ Z T
+0
+ν(u) du
+!
+and the result follows from Assumption 2.1.
+The proof for (33) comes from (12) and (32),
+|Fn+1(τ) −Fn(τ)| ≤
+X
+j≥1
+ν(u, j)
+H+
+n+1(τ) −H+
+n+1−j(τ)
+
+≤ν(τ)
+ H+
+n+1(τ) −H+
+n+1−j(τ)
+
+.
+Finally, the proof of (34) also follows from the k = 1 case and the Triangle Inequality so
+we will concentrate on this case. Then Hn+1 −Hn can be written as a new operator of Jn,
+∆nJn = Jn+1 −2Jn + Jn−1 .
+28
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+For τ ≥τ n+1
+m
+, we have
+∆n ˙Jn(τ) = ∆nGn(τ) −∆nFn(τ)
+= γσ2(u)
+v2
+−[(Fn+1(τ) −Fn(τ)) −(Fn(τ) −Fn−1(τ))]
+= γσ2(u)
+v2
+−
+X
+j≥1
+ν(τ, j)
+ H+
+n+1(τ) −H+
+n (τ)
+
+−
+ H+
+n+1−j(τ) −H+
+n−j(τ)
+
+.
+By (17), we have
+0 ≤H+
+n+1(τ) −H+
+n (τ) ≤Hn+1(τ) −Hn(τ) = ∆nJn(τ)
+for n = 1, . . . , v
+so that
+∆n ˙Jn(τ) ≤γσ2(u)
+v2
++
+X
+j≥1
+ν(τ, j)
+
+H+
+n+1−j(τ) −H+
+n−j(τ)
+
+≤γσ2(u)
+v2
++ ν(τ) sup
+n ∆nJn(τ) .
+(35)
+Observe that the RHS is always non-negative. For τ n
+m ≤τ < τ n+1
+m
+, we have
+∆n ˙Jn(τ) = −˙Jn(τ) + ˙Jn−1(τ) ≤0
+and for τ < τ n
+m, we have ∆n ˙Jn(τ) = 0. Hence, the inequality (35) holds true for all 0 ≤τ ≤T.
+An application of Gronwall’s Lemma then yields the bound
+sup
+n ∆nJn(τ) ≤
+Z τ
+0
+sup
+n ∆n ˙Jn(u) du
+≤1
+v2 exp
+ Z T
+0
+ν(u) du
+! Z T
+0
+γσ2(u) du
+and the result obtains.
+4
+Special Cases and Plots
+4.1
+Single-lot ﬁlls
+We ﬁrst analyze the case when ∆Z = 1 a.s. and so we may assume Lt takes only values in
+{0, 1}.
+29
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+For the remainder of this subsection, assume the broker has n shares remaining to execute.
+For τ ≤τ n
+m, the broker executes market orders as in the general case For τ n
+m < τ ≤τ n
+l , the
+broker places a limit order on the bid but does not execute a market order. In this region,
+Jn−1(τ) < Jn(τ) ≤Jn−1(τ) + s
+v .
+The limit is hit with intensity ν(t, 1), in which case the number of shares remaining goes
+from n to n −1. Since limit orders are ‘free’ to execute, it is worth placing one on the book
+in order to reach state n −1 but it is not (yet) worth paying s to cross the spread in order
+to reach state n −1. This diﬀers from the general case in that we can only place 1 share
+in the order book and thus simpliﬁes our analysis. For τ n
+l < τ, the broker places neither a
+limit order nor executes a market order as in the general case.
+Hence, an agent can only be in state x(n) for τ ∈[τ n
+m, τ n+1
+l
+): τ n+1
+l
+is the ﬁrst point at
+which it is optimal to place a limit order with n + 1 shares left to execute and τ n
+m is the
+point beyond which it is optimal to execute a market order to drop to state n −1. These
+results are plotted in Fig. 1 and Fig. 2. The following corollary makes our above explanation
+precise.
+Corollary 4.1. The continuation values are given inductively by
+J0(τ) =
+Z τ
+0
+γσ2(u)
+2
+X2(u) du
+˙Jn(τ) = min
+
+˙Jn−1(τ), γσ2(τ)
+2
+(X(τ) −x(n))2 −ν(t, 1)
+
+J(n−1)+(τ) −Jn(τ)
+−
+
+Jn(0) = sn
+v .
+Proof. The proof follows from Theorem 3.1 by assuming ν(τ, k) = 0 for k > 1.
+4.2
+Large-Fill Distribution
+Here, we assume the crossing quantity is inﬁnite, i.e. ∆Z = ∞a.s. and these occur with
+intensity ν(τ). This assumption would be appropriate in the limit where the number of
+shares to be executed is small compared to the size of crossing orders. Again, assume the
+broker has n shares remaining to execute. As in the single-ﬁll case, when τ ≤τ n
+m market
+orders are executed immediately. However, unlike in the single-ﬁll case, the broker can place
+any number L of limit orders on the book when τ > τ n
+m. The choice of L follows from
+30
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+1
+2
+3
+4
+5
+6
+T-t
+0.2
+0.4
+0.6
+0.8
+1.0
+XHT-tL
+1
+2
+3
+4
+5
+6
+T-t
+2
+4
+6
+8
+10
+JHT-tL
+(a) v = 4
+1
+2
+3
+4
+5
+6
+T-t
+0.2
+0.4
+0.6
+0.8
+1.0
+XHT-tL
+1
+2
+3
+4
+5
+6
+T-t
+1
+2
+3
+4
+5
+6
+7
+JHT-tL
+(b) v = 10
+Figure 1: Plots of X(τ) along with x(n) on the interval (τ n
+m, τ n+1
+l
+). The plots of Jn(τ) are also
+on the interval (τ n
+m, τ n+1
+l
+). The limit orders are single-lot ﬁlls and we used the parameterization
+T = 6.5, σ = 0.5, γ = 1000, ν = 1.0 and s = 10 with various values of v = 4, 10. We assume
+constant order ﬂow X(τ) = τ/T, i.e. VWAP = TWAP.
+minimizing the continuation value
+min
+L≥0 Jn−L(τ) .
+(36)
+(However, he is in general minimizing a diﬀerent continuation value J than in the general
+case because of our speciﬁc assumptions on ν). For τ n
+m < τ ≤τ n
+l , the broker places L ≥1
+shares on the book where L is determined by (36). For τ > τ n
+l , the L that minimizes (36) is
+L = 0. These results are plotted in Fig. 3 and Fig. 4.
+Corollary 4.2. The continuation values are given inductively by
+J0(τ) =
+Z τ
+0
+γσ2(u)
+2
+X2(u) du
+˙Jn(τ) = min
+
+˙Jn−1(τ), γσ2(τ)
+2
+(X(τ) −x(n))2 + ν(τ) min
+k≥0
+
+J(n−k)+(τ) −Jn(τ)
+
+Jn(0) = sn
+v .
+Proof. The proof follows from Theorem 3.1 by assuming ν(τ, k) = 0 for all k ≥1 ﬁnite.
+31
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+4.3
+Arrival-Price Benchmark
+It turns out the arrival price benchmark is a sub-case of the VWAP problem. Within the
+framework of our motivating remark Remark 2.7, we see that benchmarking to arrival price
+is given by
+sup
+(L,m)∈Av
+E [uγ(vwap −P0)] .
+Comparing with (4), we observe that this corresponds to thinking of P0 as the daily VWAP
+where all market trading occurs instantly at the order arrival time, i.e. X(T −t) = 0 for all
+t. In other words, the VWAP benchmark liquidated all its shares instantly and the broker
+is playing ‘catch-up’.
+Following the line of reasoning, we obtain that the corresponding
+linear-quadratic objective is
+inf
+(L,m)∈Av E
+"Z T
+0
+γσ2(T −u)
+2
+x2
+u du + s
+v dmu
+#
+.
+Hence, we have the following theorem, whose proof follows as a corollary of (3.1). Observe
+that in this case, it is optimal to place Lt = n limit orders on the book as free execution is
+always desirable when trying to ‘catch up.’
+Proposition 4.3.
+J0(τ) = 0
+˙Jn(τ) = min
+(
+˙Jn−1(τ), γσ2(τ)
+2
+x2(n) +
+∞
+X
+k=1
+ν(τ, k)
+
+J(n−k)+(τ) −Jn(τ)
+
+)
+Jn(0) = sn
+v
+32
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+References
+A. Alfonsi and A. Schied. Optimal trade execution and absence of price manipulations in
+limit order book models. Working Papers, Apr 2009.
+A. Alfonsi, A. Fruth, and A. Schied. Optimal execution strategies in limit order books with
+general shape functions. Quantitative Finance Papers 0708.1756, arXiv.org, Aug. 2007.
+URL http://ideas.repec.org/p/arx/papers/0708.1756.html.
+R. Almgren and N. Chriss. Value under liquidation. Risk, Jan 1999.
+T.
+An´e
+and
+H.
+Geman.
+Order
+ﬂow,
+transaction
+clock,
+and
+normality
+of
+asset
+returns.
+Journal
+of
+Finance,
+55(5):2259–2284,
+October
+2000.
+URL
+http://ideas.repec.org/a/bla/jfinan/v55y2000i5p2259-2284.html.
+S. Asmussen, B. Hjgaard, and M. Taksar. Optimal risk control and dividend distribution
+policies. example of excess-of loss reinsurance for an insurance corporation. Example of
+Excess-of Loss Reinsurance, Finance and Stochastics, 4:299–324, 1998.
+M.
+Avellaneda
+and
+S.
+Stoikov.
+High-frequency
+trading
+in
+a
+limit
+order
+book.
+Quantitative
+Finance,
+8(3):217–224,
+2008.
+URL
+http://ideas.repec.org/a/taf/quantf/v8y2008i3p217-224.html.
+P.
+Bank
+and
+D.
+Baum.
+Hedging
+and
+portfolio
+optimization
+in
+ﬁnancial
+markets
+with
+a
+large
+trader.
+Mathematical
+Finance,
+14(1):1–18,
+2004.
+URL
+http://ideas.repec.org/a/bla/mathfi/v14y2004i1p1-18.html.
+D.
+Bertsimas
+and
+A.
+W.
+Lo.
+Optimal
+control
+of
+execution
+costs.
+Journal
+of
+Financial
+Markets,
+1(1):1–50,
+1998.
+URL
+http://EconPapers.repec.org/RePEc:eee:finmar:v:1:y:1998:i:1:p:1-50.
+. Cartea, S. Jaimungal, and J. Ricci. Buy Low Sell High: A High Frequency Trading Perspective. SSRN eLibrary, 2011. doi: 10.2139/ssrn.1964781.
+U.
+Cetin,
+R.
+Jarrow,
+and
+P.
+Protter.
+Liquidity
+risk
+and
+arbitrage
+pricing
+theory.
+Finance
+and
+Stochastics,
+8(3):311–341,
+08
+2004.
+URL
+http://ideas.repec.org/a/spr/finsto/v8y2004i3p311-341.html.
+33
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+U.
+Cetin,
+R.
+Jarrow,
+P.
+Protter,
+and
+M.
+Warachka.
+Pricing
+options
+in
+an
+extended
+black
+scholes
+economy
+with
+illiquidity:
+Theory
+and
+empirical
+evidence.
+Review
+of
+Financial
+Studies,
+19(2):493–529,
+2006.
+URL
+http://ideas.repec.org/a/oup/rfinst/v19y2006i2p493-529.html.
+L. Clewlow and S. Hodges.
+Optimal delta-hedging under transactions costs.
+Journal of Economic Dynamics and Control,
+21(8-9):1353–1376,
+June
+1997.
+URL
+http://ideas.repec.org/a/eee/dyncon/v21y1997i8-9p1353-1376.html.
+R. Cont. Empirical properties of asset returns: stylized facts and statistical issues. Quantitative Finance, 1:223–236, 2001.
+J. Cvitanic.
+Theory of portfolio optimization in markets with frictions, 1999.
+URL
+http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.40.9078.
+J.
+Cvitanic
+and
+I.
+Karatzas.
+Hedging
+and
+portfolio
+optimization
+under
+transaction
+costs:
+A
+martingale
+approach12.
+Mathematical
+Finance,
+6(2):133–
+165,
+1996.
+ISSN 1467-9965.
+doi:
+10.1111/j.1467-9965.1996.tb00075.x.
+URL
+http://dx.doi.org/10.1111/j.1467-9965.1996.tb00075.x.
+M. H. A. Davis and A. R. Norman. Portfolio selection with transaction costs. Mathematics
+of Operations Research, 15(4):676–713, Nov 1990.
+M. H. A. Davis, V. G. Panas, and T. Zariphopoulou. European option pricing with transaction costs.
+SIAM J. Control Optim., 31(2):470–493, 1993.
+ISSN 0363-0129.
+doi:
+http://dx.doi.org/10.1137/0331022.
+F.
+Fabozzi.
+Robust
+portfolio
+optimization
+and
+management.
+Frank
+J.
+Fabozzi
+series.
+John
+Wiley,
+2007.
+ISBN
+9780471921226.
+URL
+http://books.google.com/books?id=9QnuJqeXSmQC.
+N. Garleanu and L. Pedersen. Dynamic trading with predictable returns and transaction
+costs. NBER Working Paper, Mar 2009.
+D. Goreac. Insurance, reinsurance and dividend payment, 2008.
+O. Gu´eant, C.-A. Lehalle, and J. F. Tapia. Optimal portfolio liquidation with limit orders,
+2011a.
+34
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+O. Gu´eant, C.-A. Lehalle, and J. F. Tapia. Dealing with the inventory risk. a solution to the
+market making problem, 2011b.
+T. Ho and H. R. Stoll.
+Optimal dealer pricing under transactions and return
+uncertainty.
+Journal of Financial Economics,
+9(1):47–73,
+March 1981.
+URL
+http://ideas.repec.org/a/eee/jfinec/v9y1981i1p47-73.html.
+P. C. Jain and G.-H. Joh. The dependence between hourly prices and trading volume. The
+Journal of Financial and Quantitative Analysis, 23(3):pp. 269–283, 1988. ISSN 00221090.
+URL http://www.jstor.org/stable/2331067.
+H. Konishi. Optimal slice of a vwap trade. Journal of Financial Markets, 5(2):197–221,
+April 2002. URL http://ideas.repec.org/a/eee/finmar/v5y2002i2p197-221.html.
+P. Kratz and T. Sch¨oneborn. Optimal liquidation in dark pools. papers.ssrn.com, Mar 2010.
+J.
+Mcculloch
+and
+V.
+Kazakov.
+Optimal
+VWAP
+trading
+strategy
+and
+relative
+volume.
+Technical
+report,
+University
+of
+Technology,
+Sydney,
+2007.
+URL
+http://ideas.repec.org/p/uts/rpaper/201.html.
+M. Mnif and A. Sulem.
+Optimal risk control and dividend policies under excess of loss reinsurance.
+Stochastics An International Journal of Probability and
+Stochastic Processes, 77(5):455–476, 2005.
+doi:
+10.1080/17442500500331201.
+URL
+http://www.tandfonline.com/doi/abs/10.1080/17442500500331201.
+A. Obizhaeva and J. Wang.
+Optimal trading strategy and supply/demand dynamics.
+Working Paper 11444, National Bureau of Economic Research, June 2005.
+URL
+http://www.nber.org/papers/w11444.
+S. Predoiu, G. Shaikhet, and S. Shreve. Optimal execution in a general one-sided limit-order
+book. math.cmu.edu, Feb 2010.
+L. C. G. Rogers and S. Singh. The cost of illiquidity and its eﬀects on hedging. Preprint,
+Aug 2007.
+A.
+Schied
+and
+T.
+Sch¨oneborn.
+Optimal
+portfolio
+liquidation
+for
+cara
+investors.
+Mpra
+paper,
+University
+Library
+of
+Munich,
+Germany,
+2007.
+URL
+http://econpapers.repec.org/RePEc:pra:mprapa:5075.
+35
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+T. Schoeneborn and A. Schied. Liquidation in the face of adversity: stealth vs. sunshine
+trading. papers.ssrn.com, Mar 2010.
+S. Shreve and H. Soner. Optimal investment and consumption with transaction costs. The
+Annals of Applied Probability, 4(3):609–692, Aug 1994.
+H. M. Soner and G. Barles.
+Option pricing with transaction costs and a nonlinear black-scholes equation.
+Finance and Stochastics,
+2(4):369–397,
+1998.
+URL
+http://ideas.repec.org/a/spr/finsto/v2y1998i4p369-397.html.
+A. E. Whalley and P. Wilmott. An asymptotic analysis of an optimal hedging model for
+option pricing with transaction costs. Mathematical Finance, 7(3):307–324, 1997. URL
+http://ideas.repec.org/a/bla/mathfi/v7y1997i3p307-324.html.
+36
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+1
+2
+3
+4
+5
+6
+T-t
+0.3
+0.4
+0.5
+0.6
+0.7
+VHT-tL
+1
+2
+3
+4
+5
+6
+T-t
+0.2
+0.4
+0.6
+0.8
+1.0
+XHT-tL
+1
+2
+3
+4
+5
+6
+T-t
+2
+4
+6
+J
+(a) v = 4
+1
+2
+3
+4
+5
+6
+T-t
+0.3
+0.4
+0.5
+0.6
+0.7
+VHT-tL
+1
+2
+3
+4
+5
+6
+T-t
+0.2
+0.4
+0.6
+0.8
+1.0
+XHT-tL
+1
+2
+3
+4
+5
+6
+T-t
+2
+4
+6
+8
+J
+(b) v = 10
+Figure 2: Plots of X(τ) along with x(n) on the interval (τ n
+m, τ n+1
+l
+). The plots of Jn(τ) are also
+on the interval (τ n
+m, τ n+1
+l
+). The limit orders are single-lot ﬁlls and we used the parameterization
+T = 6.5, σ0 = 0.25, γ = 1000, ν0 = 0.5 and s = 10 with various values of v = 4, 10. We
+assume ˙V (T −t) = b cosh(b(t −T/2)) with b = .5, ν(t) = ν0 ˙V (t), σ(t) = ν0 ˙V (t) which simulates
+the higher trading volume (and hence volatility and intensity of market order arrivals) at the
+beginning and ending of the trading day, which is what is typically observed.
+37
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+1
+2
+3
+4
+5
+6
+T-t
+0.2
+0.4
+0.6
+0.8
+1.0
+XHT-tL
+1
+2
+3
+4
+5
+6
+T-t
+2
+4
+6
+8
+10
+JHT-tL
+(a) v = 4
+1
+2
+3
+4
+5
+6
+T-t
+0.2
+0.4
+0.6
+0.8
+1.0
+XHT-tL
+1
+2
+3
+4
+5
+6
+T-t
+1
+2
+3
+4
+5
+6
+7
+JHT-tL
+(b) v = 10
+Figure 3: Plots of X(τ) along with x(n) on the interval (τ n
+m, τ n+1
+l
+). The plots of Jn(τ) are
+also on the interval (τ n
+m, τ n+1
+l
+). The limit orders have ‘large-ﬁll distributions’ and we used the
+parameterization T = 6.5, σ = 0.5, γ = 1000, ν = 1.0 and s = 10 with various values of
+v = 4, 10. We assume constant order ﬂow X(τ) = τ/T, i.e. VWAP = TWAP.
+38
+Electronic copy available at: https://ssrn.com/abstract=2318890
+
+1
+2
+3
+4
+5
+6
+T-t
+0.2
+0.4
+0.6
+0.8
+1.0
+XHT-tL
+1
+2
+3
+4
+5
+6
+T-t
+2
+4
+6
+8
+JHT-tL
+(a) v = 4
+1
+2
+3
+4
+5
+6
+T-t
+0.2
+0.4
+0.6
+0.8
+1.0
+XHT-tL
+1
+2
+3
+4
+5
+6
+T-t
+1
+2
+3
+4
+5
+6
+JHT-tL
+(b) v = 10
+Figure 4: Plots of X(τ) along with x(n) on the interval (τ n
+m, τ n+1
+l
+). The plots of Jn(τ) are
+also on the interval (τ n
+m, τ n+1
+l
+). The limit orders have ‘large-ﬁll distributions’ and we used the
+parameterization T = 6.5, σ0 = 0.25, γ = 1000, ν0 = 0.5 and s = 10 with various values of
+v = 4, 10. We assume ˙V (T −t) = b cosh(b(t −T/2)) with b = .5, ν(t) = ν0 ˙V (t), σ(t) = ν0 ˙V (t)
+which simulates the higher trading volume (and hence volatility and intensity of market order
+arrivals) at the beginning and ending of the trading day, which is what is typically observed.
+39
+Electronic copy available at: https://ssrn.com/abstract=2318890

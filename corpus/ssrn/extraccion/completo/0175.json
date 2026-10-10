@@ -1,0 +1,137 @@
+{
+ "doc_id": 175,
+ "titulo": "Hybrid IS-VWAP Dynamic Algorithmic Trading via LQR",
+ "resumen_operativo": "El documento presenta un modelo mejorado de Implementation Shortfall (IS) utilizando reguladores lineales cuadráticos (LQR) para el trading algorítmico dinámico. A diferencia de los modelos estáticos, esta aproximación de programación dinámica adapta la ejecución a las fluctuaciones del precio de mercado y la posición del inventario en tiempo real. Mejora el modelo previo de Hora (2006) al trabajar directamente con tasas de Participación de Volumen (PoV) en lugar de acciones absolutas, introduciendo costos de retraso variables en el tiempo para lograr una cuasi-aversión al riesgo, penalizando el deslizamiento de precios causado por el impacto permanente acumulado (lo que garantiza la estabilidad incondicional), incorporando el spread bid-offer y combinando (hibridando) la estrategia IS con VWAP para forzar suavemente el cumplimiento (completion) de la orden al final de la ventana de ejecución.",
+ "calidad_paper": "media",
+ "conceptos": [
+  {
+   "nombre": "Dynamic Programming (DP) based trading",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Uso de programación dinámica para ajustar automáticamente la ejecución algorítmica a las ondas de precios del mercado en tiempo real y a las posiciones de inventario.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "LQR"
+    }
+   ],
+   "cita_textual": "DP algorithms can adjust execution automatically to real-time market price waves as well as inventory positions, and thus are more responsive and realistic."
+  },
+  {
+   "nombre": "Linear-Quadratic Regulator (LQR)",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Tipo clásico de problema de control con transiciones de estado lineales y funciones de costo cuadráticas aditivas, que en este contexto permite obtener políticas óptimas de ejecución en forma cerrada como funciones afines de las variables de estado.",
+   "relaciones": [
+    {
+     "tipo": "APLICA_A",
+     "objeto": "algorithmic trading"
+    }
+   ],
+   "cita_textual": "In Dynamic Control Theory, LQR models allow closed-form solutions thanks to the Bellman equations and quadratic value functions. The resulted optimal policies are affine functions of the state variables."
+  },
+  {
+   "nombre": "hybrid IS-VWAP model",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Modelo de trading dinámico que penaliza las desviaciones de la tasa PoV óptima respecto a la tasa PoV objetivo de un algoritmo VWAP puro, permitiendo forzar el completamiento de la orden de manera suave mientras se persigue un Implementation Shortfall óptimo.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "LQR"
+    }
+   ],
+   "cita_textual": "incorporate this VWAP strategy softly into the implementation shortfall (IS) model... When the weight θ is sufficiently substantive, this hybrid model trades in a neighborhood of the VWAP algorithm... this can softly enforce the completion constraint"
+  },
+  {
+   "nombre": "Participation of Volume (PoV)",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Porcentaje del volumen total del mercado operado en un intervalo temporal. En este modelo se usa directamente como variable de control para las decisiones de trading (ut).",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "hybrid IS-VWAP model"
+    }
+   ],
+   "cita_textual": "ut = xt/vt is the PoV rate over the bin. Both impact models are expressed via this PoV variable."
+  },
+  {
+   "nombre": "delay cost",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Término de costo asociado al inventario residual que penaliza las demoras en la ejecución. Al configurarse con pesos crecientes monótonamente en el tiempo, actúa como una cuasi-aversión al riesgo.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "market risk"
+    }
+   ],
+   "cita_textual": "To softly enforce the completion condition, we shall design the βt’s so that they are monotonically increasing and penalize more any delayed executions. The objective is to achieve some degree of quasi risk aversion"
+  },
+  {
+   "nombre": "price slippage",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Desviación del precio de ejecución promedio respecto al precio de llegada inicial (arrival price), modelado como la suma del impacto de mercado permanente, impacto instantáneo, el spread y un componente estocástico.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "execution costs"
+    }
+   ],
+   "cita_textual": "pt = (St − S0)/S0 denote the price slippage per dollar... ˜pt+0.5 is the average execution slippage (with respect to the arrival price S0)"
+  },
+  {
+   "nombre": "instantaneous impact",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Impacto temporal y directo que sufren las órdenes ejecutadas sobre el precio, reflejando el costo de tomar liquidez antes de que el libro de órdenes (LOB) se restablezca.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "price slippage"
+    }
+   ],
+   "cita_textual": "At the micro level, it reflects the premium cost for liquidity taking when the trading event progressively reveals itself to the market and before the limit order book (LOB) restores itself"
+  },
+  {
+   "nombre": "permanent impact",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Impacto definitivo sobre el precio verdadero del activo a raíz de las transacciones previas, modelado linealmente sobre la tasa PoV.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "price slippage"
+    }
+   ],
+   "cita_textual": "The permanent impact over the t-bin only affects all trades after t+1."
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "Se demostró matemáticamente que al añadir una penalización cuadrática al deslizamiento del precio causada por el impacto permanente acumulativo, las funciones de valor de LQR se vuelven incondicionalmente estables y estrictamente positivas (positividad de las matrices de Riccati).",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "Trabajar con variables de Participación de Volumen (PoV) en lugar de acciones absolutas previene los problemas de calibración dependientes del tamaño de la orden y conecta de forma elegante las estrategias IS con objetivos de VWAP en un mismo framework.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "El costo de retraso variable en el tiempo (time-varying delay cost) funciona efectivamente como un sustituto de la aversión al riesgo localizada o de la varianza en la función objetivo, forzando a que la ejecución tienda a terminarse antes del vencimiento.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "alta",
+  "nota": "El documento está explícitamente diseñado para el trading intradía, dividiendo la ventana de ejecución en bins de tiempo (por ej., 1 o 2 minutos) y optimizando dinámicamente las decisiones a nivel de slicer. Provee derivaciones matemáticas explícitas para generar planes de trading dinámicos intra-diarios."
+ }
+}

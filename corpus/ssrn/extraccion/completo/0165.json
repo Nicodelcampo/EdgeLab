@@ -1,0 +1,109 @@
+{
+ "doc_id": 165,
+ "titulo": "Effect of high-frequency trading on mutual fund performance",
+ "resumen_operativo": "El paper demuestra empíricamente que los fondos mutuos con alta exposición a acciones dominadas por High-Frequency Trading (HFT) sufren un underperformance de aproximadamente 2.64% anual ajustado por riesgo. Este efecto se canaliza a través de la \"prima de iliquidez\" (illiquidity premium): los HFTs prefieren operar acciones líquidas para minimizar costos, lo cual deprime los retornos esperados de dichos activos y perjudica a los inversores a largo plazo que los mantienen. Contrario a preocupaciones comunes, no halla evidencia de que el HFT impacte negativamente el desempeño de los fondos mediante aumentos en los costos de transacción. Útil para entender efectos estructurales de pricing y liquidez en un horizonte mensual, pero sin métricas aplicables a microestructura intradiaria.",
+ "calidad_paper": "media",
+ "conceptos": [
+  {
+   "nombre": "illiquidity premium",
+   "tipo": "concepto",
+   "definicion_en_contexto": "Retorno adicional que los inversores exigen por mantener activos ilíquidos. El paper argumenta que la intensa presencia de HFT en activos líquidos amplifica esta prima, deprimiendo el retorno esperado de dichos activos líquidos.",
+   "relaciones": [
+    {
+     "tipo": "CAUSA",
+     "objeto": "mutual fund underperformance"
+    },
+    {
+     "tipo": "USA",
+     "objeto": "IML factor"
+    }
+   ],
+   "cita_textual": "illiquid assets should provide a return premium... the magnitude of the illiquidity return premium depends not only on the cost per trade but also on trading frequency of the marginal investor"
+  },
+  {
+   "nombre": "HFT intensity",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Proxy que mide la actividad relativa de trading de alta frecuencia en una acción. Se construye a partir del número de mensajes de actualización de cotizaciones (quote messages) en TAQ, ortogonalizado por deciles de tamaño (market value) para evitar sesgos.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "high-frequency trading"
+    },
+    {
+     "tipo": "PREDICE",
+     "objeto": "stock returns"
+    }
+   ],
+   "cita_textual": "we use the number of quote messages, defined as the number of changes in the best bid or offer quote or size across all quote reporting venues in the United States, as our HFT proxy."
+  },
+  {
+   "nombre": "quote messages",
+   "tipo": "dato",
+   "definicion_en_contexto": "Número de cambios en el mejor bid, offer o tamaño a través de todos los venues de reporte. Captura la naturaleza del HFT de enviar y cancelar masivamente órdenes.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "HFT intensity"
+    }
+   ],
+   "cita_textual": "number of quote messages, defined as the number of changes in the best bid or offer quote or size... This proxy captures one of the essential features of HFT—a very large number of order submissions and cancellations"
+  },
+  {
+   "nombre": "IML factor",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Factor 'illiquid-minus-liquid' creado para controlar por la prima de iliquidez en modelos de valuación de activos, computado ordenando acciones por volatilidad y luego por relative quoted spread (RQS).",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "illiquidity premium"
+    }
+   ],
+   "cita_textual": "The zero-investment illiquidity premium factor, IML, is constructed as the difference in returns between the five least liquid portfolios and the five most liquid portfolios"
+  },
+  {
+   "nombre": "institutional trading costs",
+   "tipo": "concepto",
+   "definicion_en_contexto": "Costos de transacción en los que incurren los fondos mutuos al operar. El paper descarta la hipótesis de que el HFT erosione los rendimientos de los fondos a través del incremento de estos costos (ej. vía back-running o predatory trading).",
+   "relaciones": [
+    {
+     "tipo": "SE_OPONE_A",
+     "objeto": "illiquidity premium explanation"
+    }
+   ],
+   "cita_textual": "we do not find evidence to support the concern that HFT raises trading costs of mutual funds."
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "Las acciones con mayor intensidad de HFT generan retornos ajustados por riesgo menores; el quintil más intenso en HFT bajo-rinde al quintil menos intenso en un 6.12% anual (FFC-4 alpha). Esta diferencia deja de ser estadísticamente significativa al controlar por el factor IML (prima de iliquidez).",
+   "mercado": "US equities (acciones comunes CRSP)",
+   "periodo": "2003-2018",
+   "magnitud": "-0.51% mensual (-6.12% anual) bajo FFC-4; no significativo bajo FFC-IML",
+   "condiciones": "Acciones ordenadas mensualmente en quintiles de intensidad de HFT, controlando previamente por volatilidad en los últimos 3 meses.",
+   "robustez": "media",
+   "cita_textual": "the top quintile (highest HFT intensity) significantly underperforms the bottom quintile by a risk-adjusted return of 6.12% per year. ... largely reduced and becomes statistically insignificant once the IML factor is controlled."
+  },
+  {
+   "afirmacion": "Los fondos mutuos que mantienen carteras sobreponderadas en acciones con alta intensidad de HFT presentan un menor rendimiento ajustado por riesgo comparado con fondos con menor exposición (2.64% anual de underperformance).",
+   "mercado": "US active equity mutual funds",
+   "periodo": "2003-2018",
+   "magnitud": "Diferencia de alpha FFC-4 mensual pre-fee de -0.22% (t-value = 2.40)",
+   "condiciones": "Quintiles de fondos formados por la intensidad de HFT promedio ponderada en sus tenencias del trimestre calendario previo.",
+   "robustez": "media",
+   "cita_textual": "when sorted by HFTH, funds in the top quintile significantly underperform funds in the bottom quintile by a monthly pre-fee alpha of 0.22% (t-value = 2.40), or roughly 2.64% annually."
+  },
+  {
+   "afirmacion": "La subperformance de los fondos mutuos expuestos al HFT no se debe a mayores costos de transacción institucionales impuestos por los HFTs.",
+   "mercado": "US active equity mutual funds",
+   "periodo": "2003-2018",
+   "magnitud": "La relación negativa persiste incluso usando el retorno de las tenencias simuladas (cero costos).",
+   "condiciones": "Reemplazo del NAV-based return por estimación teórica del retorno de las tenencias sin incluir fricciones comerciales.",
+   "robustez": "media",
+   "cita_textual": "the negative relation between HFT intensity and fund performance exists even if returns of fund holdings, which are not affected by trading costs, are used to replace the net asset value (NAV)–based fund returns"
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "baja",
+  "nota": "El paper opera con observaciones mensuales/trimestrales centradas en la rentabilidad estructural a largo plazo (fondos mutuos vs acciones particulares) basada en primas de riesgo (iliquidez). No aborda modelado predictivo intradiario, análisis de microestructura o series temporales de alta frecuencia, por lo que carece de componentes aplicables a la predicción intradía de futuros (ES)."
+ }
+}

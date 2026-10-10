@@ -1,0 +1,279 @@
+{
+  "doc_id": 52,
+  "titulo": "Analysis of Limit Order Book and Order Flow",
+  "resumen_operativo": "Reconstruye el limit order book de 141 acciones de la Bolsa de Tailandia (SET) en 1997 para caracterizar la forma del book, el efecto diagonal en la secuencia de órdenes, el patrón intradía de spreads y profundidades, y los determinantes de la agresividad de órdenes vía probit ordenado. Aporta evidencia de que el tick size y la asimetría de información explican la convexidad del book, y que traders contrarian reaccionan más fuerte que momentum ante cambios del book.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "limit order book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Conjunto de órdenes remanentes a distintos límites de precio luego de netear ejecuciones y cancelaciones; el paper lo reconstruye a partir de datos de órdenes y trades de la SET.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "price discovery"},
+        {"tipo": "USA", "objeto": "tick size"}
+      ],
+      "cita_textual": "A limit order book represents the remaining orders standing at various price limits after netting for the execution and cancellation."
+    },
+    {
+      "nombre": "order book convexity",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Variable definida por el paper como el promedio del cambio de pendiente entre el diferencial de precio respecto al midpoint y la profundidad acumulada; mide si la liquidez está concentrada cerca o lejos del mejor precio.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "limit order book"},
+        {"tipo": "PREDICE", "objeto": "tick size"},
+        {"tipo": "SE_OPONE_A", "objeto": "order book concavity"}
+      ],
+      "cita_textual": "we define the new variable so called “convexity”, which could be defined as follows"
+    },
+    {
+      "nombre": "order book concavity",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Forma del book donde el spread lejos del mercado es más angosto que en el mercado, o la profundidad lejos del mercado es mayor que en el mercado; asociada a alta asimetría de información.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "adverse selection"}
+      ],
+      "cita_textual": "The negative convexity or the concavity implies either the spread away from the market is narrower than the spread at the market, or the depth away from the market is larger than the depth at the market."
+    },
+    {
+      "nombre": "tick size",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Tamaño mínimo de variación de precio; el paper muestra que un tick size mayor está asociado a books más convexos, replicando el argumento de Niemeyer y Sandas.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "order book convexity"},
+        {"tipo": "MITIGA", "objeto": "adverse selection"}
+      ],
+      "cita_textual": "Securities with large tick size have more convex order books compared to the securities with small tick size."
+    },
+    {
+      "nombre": "adverse selection",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Riesgo de que el proveedor de liquidez sea 'picked off' por un trader informado; el paper lo usa para explicar la concavidad del book en firmas pequeñas y volátiles.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "order book concavity"},
+        {"tipo": "CAUSA", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "high information asymmetry securities e.g. small firms, and high volatility are likely to have a concave order book compared to the low information asymmetry securities"
+    },
+    {
+      "nombre": "diagonal effect",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Regularidad empírica documentada primero por Biais et al. (1995): la probabilidad de que llegue el mismo tipo de orden que la anterior es mayor que la incondicional; el paper lo confirma en la SET y es más fuerte para órdenes límite.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "order flow"},
+        {"tipo": "USA", "objeto": "order splitting"}
+      ],
+      "cita_textual": "the most likely incoming order type would be the same order type that just arrived"
+    },
+    {
+      "nombre": "order splitting",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estrategia de dividir una orden grande en varias pequeñas para reducir el impacto de precio u ocultar información; el paper la testea comparando intervalos de tiempo entre órdenes condicionados al spread, sin encontrar evidencia consistente que la sustente completamente.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "diagonal effect"},
+        {"tipo": "MITIGA", "objeto": "market impact"}
+      ],
+      "cita_textual": "this section does not find any evidence to support the order splitting hypothesis"
+    },
+    {
+      "nombre": "order aggressiveness",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Nivel de agresividad de una orden clasificado en 9 (o 6) categorías según precio y volumen relativo al book; el paper modela sus determinantes con un probit ordenado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "limit order book"},
+        {"tipo": "PREDICE", "objeto": "crowding out effect"}
+      ],
+      "cita_textual": "Orders are categorized into 9 aggressiveness levels according to the order price and volume relative to the price limit and shares available in the order book."
+    },
+    {
+      "nombre": "crowding out effect",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Mecanismo de Parlour (1998) por el cual una cola larga del mismo lado del book reduce la probabilidad de ejecución, empujando a los traders a competir con órdenes más agresivas; el paper lo usa para explicar la relación positiva entre profundidad del mismo lado y agresividad.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "order aggressiveness"},
+        {"tipo": "PARTE_DE", "objeto": "market depth"}
+      ],
+      "cita_textual": "she argued that the existence of order sequence patterns can be explained by a “crowding out” mechanism, which arises from the price and priority rule"
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Diferencia entre mejor bid y mejor ask; en la SET es el spread más ancho del book y exhibe patrón intradía descendente y relación negativa con la agresividad de la orden.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "CAUSA", "objeto": "order aggressiveness"}
+      ],
+      "cita_textual": "The bid-ask spread is the widest compared with all other spreads on both sides of the order book."
+    },
+    {
+      "nombre": "market depth",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Cantidad de acciones disponibles en cada cotización del book; la profundidad del mismo lado aumenta la agresividad de la orden, la del lado opuesto la reduce.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "limit order book"},
+        {"tipo": "CAUSA", "objeto": "order aggressiveness"}
+      ],
+      "cita_textual": "The same market depth and other displayed depths are positively associated with the order aggressiveness."
+    },
+    {
+      "nombre": "intraday seasonality",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Patrón sistemático a lo largo del día en spreads, profundidad y largo del book: spreads más anchos y profundidad más delgada al inicio, mejorando hacia el cierre.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "CAUSA", "objeto": "adverse selection"}
+      ],
+      "cita_textual": "Bid ask spread exhibits a downward intraday pattern, where it is highest in the first 30 minute interval and lowest in the last 30 minute interval."
+    },
+    {
+      "nombre": "momentum",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Traders que operan en la misma dirección del movimiento de precio; el paper los compara con contrarian traders en su respuesta a cambios del book, encontrando que reaccionan menos.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "contrarian traders have a stronger response to the change in limit order book than momentum traders"
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Comportamiento contrarian: vender cuando el precio sube, comprar cuando baja; el paper muestra que estos traders reaccionan con más fuerza a cambios del limit order book que los traders momentum.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "momentum"}
+      ],
+      "cita_textual": "When the price is increasing, contrarian traders are the sellers, and when the price is falling, contrarian traders are buyers."
+    },
+    {
+      "nombre": "informed trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Presencia de traders con información privada; el paper la infiere de la mayor proporción de órdenes de compra bajo spreads amplios y de la caída en el tiempo entre órdenes cuando la orden es más agresiva.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "adverse selection"},
+        {"tipo": "PREDICE", "objeto": "order aggressiveness"}
+      ],
+      "cita_textual": "buyers on average are slightly more informed than the sellers, so they are willing to trade-off between the higher execution cost and their private information"
+    },
+    {
+      "nombre": "market microstructure noise",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "El paper reconoce que su base de datos no incluye identificación del trader, lo que impide un test directo de imitación de operaciones y de la respuesta similar a eventos de información, limitando la inferencia causal sobre el diagonal effect.",
+      "relaciones": [],
+      "cita_textual": "The database does not contain a trader’s identification that would allow for a direct test of the trade imitation and the similar response of trader."
+    },
+    {
+      "nombre": "ordered probit model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo econométrico usado para estimar los determinantes de la agresividad de la orden como variable categórica ordinal, siguiendo a Hausman, Lo y MacKinlay (1992).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order aggressiveness"}
+      ],
+      "cita_textual": "an ordered probit model is used to investigate the determinants of order aggressiveness"
+    },
+    {
+      "nombre": "market sentiment",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estado bullish o bearish del mercado, que el paper muestra que modula la agresividad de compradores y vendedores frente a cambios del book.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "order aggressiveness"}
+      ],
+      "cita_textual": "the marginal probabilities of buyers are higher in the bearish period than in the bullish period"
+    },
+    {
+      "nombre": "order flow",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Secuencia de llegadas de órdenes de compra/venta, mercado/límite y niveles de agresividad; el paper documenta su asimetría, con mayor continuación de ventas que de compras en el período bajista estudiado.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "PREDICE", "objeto": "order aggressiveness"}
+      ],
+      "cita_textual": "the probability of sell continuation is higher than the probability of buy continuation in 106 stocks out of 141 stocks"
+    },
+    {
+      "nombre": "queue position",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Posición en la cola de órdenes al mismo precio según orden de llegada; determina la probabilidad de ejecución y motiva el mecanismo de crowding out en el modelo de Parlour.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "CAUSA", "objeto": "crowding out effect"}
+      ],
+      "cita_textual": "a volume at each price in the limit order book represents the queue of limit order traders according to the arrival time"
+    },
+    {
+      "nombre": "market impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costo de ejecución proporcional al tamaño de la orden; el paper lo vincula a la convexidad del book, ya que en un book convexo el costo de ejecución por acción aumenta con el tamaño de la orden de mercado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "order book convexity"}
+      ],
+      "cita_textual": "the execution cost per shares traded is positively associated with the size of market order"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El limit order book de la SET es débilmente convexo del lado bid y aproximadamente lineal del lado ask, con 95 de 141 acciones mostrando convexidad positiva (108 en el lado bid).",
+      "mercado": "Acciones Stock Exchange of Thailand (SET)",
+      "periodo": "1997",
+      "magnitud": "95/141 acciones con convexidad positiva; 108 stocks con convexidad positiva en el lado bid vs 47 en el lado ask",
+      "condiciones": "Reconstrucción del book a partir de datos de órdenes y trades, criterio de selección de mínimo 120 días de trading con 20 trades/día (141 de 457 acciones); sin costos de transacción explícitos, sin OOS",
+      "robustez": "baja",
+      "cita_textual": "The majority of the stocks in the dataset, 95 stocks out of 141 stocks, have a positive convexity."
+    },
+    {
+      "afirmacion": "El tick size mínimo se asocia positivamente con la convexidad del book y el tamaño de firma se asocia negativamente con la volatilidad, consistente con que tick size grande y firm size grande generan books más convexos mientras que alta asimetría de información (firmas chicas, alta volatilidad) genera books más cóncavos.",
+      "mercado": "Acciones SET",
+      "periodo": "1997",
+      "magnitud": "coeficiente tick size-market cap: -0.26; tick size-volatilidad: 0.57; firm size-volatilidad: -0.39 (variables estandarizadas)",
+      "condiciones": "Regresión cross-sectional de convexity sobre tick size, firm size, volatility y volume, todas variables estandarizadas; robusto a submuestras por tamaño de firma y tick size, aunque el efecto del tick size solo es significativo en firmas chicas",
+      "robustez": "media",
+      "cita_textual": "Minimum tick size is negatively associated with the market capitalization, -0.26, and positively associated with the daily volatility, 0.57."
+    },
+    {
+      "afirmacion": "El spread relativo y absoluto en la SET (3.38%, 1.13 baht) es mayor que en otros mercados de orden límite comparables (Saudi Stock Market 1.79%, Stockholm Stock Exchange 1.36%, mediana de 15 índices mayores 0.65%).",
+      "mercado": "Acciones SET vs SSM, SSE y benchmark internacional",
+      "periodo": "1997",
+      "magnitud": "spread relativo SET 3.38% vs SSM 1.79%, SSE 1.36%, mediana internacional 0.65%",
+      "condiciones": "Comparación cross-country con datos de otros papers (no controlado por costos ni período común); coincide con crisis cambiaria tailandesa de 1997 (índice SET cayó más de 50%)",
+      "robustez": "baja",
+      "cita_textual": "The relative and absolute bid-ask spreads of the sample are 3.38% and 1.13 baht, higher than 1.79% on the SSM, and 1.36% on the SSE"
+    },
+    {
+      "afirmacion": "Existe un efecto diagonal fuerte en la secuencia de órdenes: tras una orden límite de compra al mejor bid, la probabilidad condicional de que la siguiente orden sea del mismo tipo es sustancialmente mayor que la incondicional, y este efecto es más fuerte en órdenes límite que en órdenes de mercado.",
+      "mercado": "Acciones SET",
+      "periodo": "1997",
+      "magnitud": "prob. condicional de continuación 21.47% (compra) y 19.43% (venta) para órdenes límite lejanas del quote (LB1/LS1); 33.60% y 31.72% para órdenes de mercado más agresivas",
+      "condiciones": "Cálculo de probabilidades condicionales sobre 141 acciones sin controlar por identidad del trader; no hay test de significancia estadística reportado en el texto extraído",
+      "robustez": "media",
+      "cita_textual": "the following order is likely to be the same order type with a conditional probability of 21.47% and 19.43% for buy and sell orders respectively"
+    },
+    {
+      "afirmacion": "El flujo de órdenes es asimétrico: la continuación de ventas es más probable que la continuación de compras, consistente con el mercado bajista del período, y la proporción de órdenes de compra aumenta cuando el spread es amplio, sugiriendo que los compradores son ligeramente más informados.",
+      "mercado": "Acciones SET",
+      "periodo": "1997 (mercado bajista, crisis cambiaria)",
+      "magnitud": "Pr[St|Bt-1]=0.42 vs Pr[Bt|Bt-1]=0.58; Pr[Bt|St-1]=0.40 vs Pr[St|St-1]=0.60; proporción de órdenes de compra bajo spread chico 47.85% vs spread grande 49.05%; continuación de venta mayor que de compra en 106/141 acciones",
+      "condiciones": "Estadística descriptiva agregada sobre 141 acciones y 140-141 acciones para signo de continuación; período coincide con crisis 1997, no generalizable a mercados alcistas sin ajuste",
+      "robustez": "media",
+      "cita_textual": "the probability of a buy order followed by a sell order, Pr[St|Bt-1], equals to 0.42, and it is less than the probability of a buy order followed by a buy order, Pr[Bt|Bt-1], which equals to 0.58"
+    },
+    {
+      "afirmacion": "El intervalo de tiempo entre órdenes condicionado a spread amplio es mayor que el incondicional, y se acorta cuando la orden es más agresiva; sin embargo esta evidencia no respalda consistentemente la hipótesis de order splitting.",
+      "mercado": "Acciones SET",
+      "periodo": "1997",
+      "magnitud": "intervalo incondicional 332.5 segundos; intervalo bajo spread amplio 378.1 segundos",
+      "condiciones": "Test de Wald rechaza igualdad de intervalos condicionales al tamaño del spread; resultado contrario al de Biais et al. (1995) en la Bourse de Paris, lo que el paper atribuye al mercado bajista y alta asimetría de información en la SET",
+      "robustez": "media",
+      "cita_textual": "The unconditional time interval is 332.5 seconds... When the spread is large, the time interval is 378.1 seconds, larger than the unconditional case."
+    },
+    {
+      "afirmacion": "La agresividad de la orden se asocia negativamente con el bid-ask spread y positivamente con la profundidad del mismo lado del book, y negativamente con la profundidad del lado opuesto, para compradores y vendedores en mercados alcistas y bajistas; además, los traders contrarian responden con más fuerza que los momentum al cambio del book.",
+      "mercado": "Acciones SET",
+      "periodo": "1997",
+      "magnitud": "resultados de probit ordenado (signos de coeficientes reportados, sin valores numéricos específicos en el texto analizado); robusto en submuestras por tick size y tamaño de firma",
+      "condiciones": "Modelo probit ordenado separado para desempeño de precio positivo/negativo; regresión con variables estandarizadas de spread, profundidad, volatilidad, tiempo transcurrido y volumen de orden; sin costos de transacción ni backtest de estrategia",
+      "robustez": "media",
+      "cita_textual": "The bid-ask spread is negatively associated with the degree of order aggressiveness for both buyers and sellers and for both positive and negative sentiment markets."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Los mecanismos de crowding out, efecto diagonal y relación entre profundidad/spread y agresividad de orden son transferibles conceptualmente a microestructura de futuros ES, pero el estudio es de acciones ilíquidas de un mercado emergente en crisis de 1997, sin backtest de estrategia ni costos, por lo que sirve más como marco conceptual que como señal operable directa."
+  }
+}

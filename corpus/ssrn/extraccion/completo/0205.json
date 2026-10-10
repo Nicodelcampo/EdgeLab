@@ -1,0 +1,130 @@
+{
+  "doc_id": 205,
+  "titulo": "Latent Information Reconstruction via Vector Divergence in Market Microstructure",
+  "resumen_operativo": "Propone una métrica D(t) de divergencia vectorial entre el estado del libro de órdenes y el consenso público (news/social media) para detectar información latente no incorporada al discurso público. Valida con dos casos reales: GameStop (enero 2021) y Terra/LUNA (mayo 2022), donde D(t) cruza el umbral 36-48 horas antes de movimientos extremos de 9.4σ y 13.1σ.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Informational Divergence Metric D(t)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica definida como D(t) = 1 − cos(vmarket(t), vpublic(t)) ∈ [0, 2], que mide la brecha entre la representación vectorial del estado microestructural y la del consenso público en tiempo real.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "information asymmetry"},
+        {"tipo": "USA", "objeto": "Microstructural Encoder"},
+        {"tipo": "USA", "objeto": "Semantic Encoder"}
+      ],
+      "cita_textual": "The informational divergence metric is defined as D(t) = 1 − (vmarket(t) · vpublic(t)) / (∥vmarket(t)∥ · ∥vpublic(t)∥) with D(t) ∈ [0, 2]."
+    },
+    {
+      "nombre": "Microstructural Encoder",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Red neuronal profunda Eθ que proyecta snapshots del LOB enriquecidos con el exogeneity score ρ(t) del filtro de Hawkes a un espacio latente compartido de dimensión d.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Multimodal Embedding Pipeline"},
+        {"tipo": "USA", "objeto": "Hawkes Exogeneity Score"}
+      ],
+      "cita_textual": "The encoder Eθ is a deep neural network that compresses the high dimension of the enriched LOB into a latent space of dimension d."
+    },
+    {
+      "nombre": "Semantic Encoder",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de lenguaje pre-entrenado especializado en finanzas (tipo FinBERT) que proyecta el agregado de noticias, tweets y reportes de analistas a vectores densos en el espacio compartido.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Multimodal Embedding Pipeline"},
+        {"tipo": "REQUIERE", "objeto": "FinBERT"}
+      ],
+      "cita_textual": "A specialized model such as FinBERT is preferable because it distinguishes bullish from bearish tone in sector jargon and produces embeddings whose geometry reflects financial relationships."
+    },
+    {
+      "nombre": "Hawkes Exogeneity Score",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio ρ(t) = µ̂(t)/λ(t) que estima la fracción de intensidad de trading atribuible a innovación exógena versus cascadas endógenas, integrado como feature del encoder de mercado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "exogenous information content"},
+        {"tipo": "PARTE_DE", "objeto": "Hawkes Process de-clustering"}
+      ],
+      "cita_textual": "The exogeneity score ρ(t) = µ̂(t)/λ(t) represents the estimated fraction of intensity attributable to exogenous innovation."
+    },
+    {
+      "nombre": "Market Endogeneity",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno documentado por Bouchaud donde más del 90% de los movimientos de precio intradiarios no tienen causa exógena identificable, siendo producto de la mecánica interna del mercado (memoria larga de flujo, impacto transitorio).",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "endogenous noise"},
+        {"tipo": "MITIGA", "objeto": "Hawkes Process de-clustering"}
+      ],
+      "cita_textual": "Bouchaud shows that more than 90% of significant movements have no identifiable exogenous cause. Volatility is therefore not the reflection of a news flow but the product of the market's internal mechanics."
+    },
+    {
+      "nombre": "Hawkes Process de-clustering",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso puntual auto-excitante que descompone la intensidad condicional λ(t) en baseline exógeno µ(t) más kernel endógeno ϕ(t), permitiendo separar señal informativa de ruido de cascada.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "Market Endogeneity"},
+        {"tipo": "USA", "objeto": "branching ratio"}
+      ],
+      "cita_textual": "The formalism suited to this task is that of Hawkes processes, self-exciting point processes whose conditional intensity decomposes into λ(t) = µ(t) + Σ ϕ(t−ti)."
+    },
+    {
+      "nombre": "Branching Ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Parámetro n = ∫ϕ(τ)dτ que gobierna la estabilidad del sistema Hawkes; mercados modernos operan cerca de n≈0.95 (criticalidad), donde perturbaciones infinitesimales pueden generar respuestas macroscópicas.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market criticality"},
+        {"tipo": "PARTE_DE", "objeto": "Hawkes Process de-clustering"}
+      ],
+      "cita_textual": "Empirical studies place modern markets at n ≈ 0.95, confirming near-critical operation."
+    },
+    {
+      "nombre": "Contrastive Learning for Embedding Alignment",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Entrenamiento contrastivo inspirado en CLIP que alinea los espacios de embedding del encoder de mercado y del encoder semántico usando pares de entrenamiento construidos con un proxy de mercado observable a posteriori.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Microstructural Encoder"},
+        {"tipo": "APLICA_A", "objeto": "Semantic Encoder"}
+      ],
+      "cita_textual": "We use a shared projection layer trained by contrastive learning, in the spirit of Radford et al. on multimodal alignment."
+    },
+    {
+      "nombre": "Vector Database for Divergence Detection",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Base de datos vectorial (Milvus/Qdrant) que almacena tripletas (vmarket, vpublic, D(t)) con metadata, permite búsqueda ANN de precedentes históricos y calibración dinámica de umbrales de detección.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Informational Divergence Metric D(t)"},
+        {"tipo": "USA", "objeto": "Approximate Nearest Neighbor Search"}
+      ],
+      "cita_textual": "The Vector DB ensures not only storage but also inference, memory and contextualization."
+    },
+    {
+      "nombre": "Informational Gap",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Brecha estructural donde el mercado (vía microestructura) integra información antes de que esté reflejada en el consenso público. Su firma empírica es P(|rt+∆t|>kσ | D(t)>τ) ≫ P(|rt+∆t|>kσ).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Informational Divergence Metric D(t)"},
+        {"tipo": "CAUSA", "objeto": "abnormal returns"}
+      ],
+      "cita_textual": "The central empirical question is: does an increase of D(t) beyond a threshold τ statistically precede an abnormal return within a horizon ∆t?"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "En GameStop (enero 2021), el proxy de divergencia D̂(t) alcanzó 0.74 la noche del 27 de enero, 36 horas antes del crash del 28 de enero donde el retorno intradiario alcanzó −18.2σ (o −9.4σ close-to-close). La información oculta eran los requisitos de margen del DTCC y la acumulación en dark pools.",
+      "mercado": "GME (NYSE)",
+      "periodo": "13-29 enero 2021",
+      "magnitud": "D̂(t) max = 0.74; |r|/σ = 9.4σ (close-to-close), 18.2σ (intradiario); lead time = 36 h",
+      "condiciones": "Short interest 140% del float; proxy D̂(t) reconstruido con datos públicos (OBI, spread, dark pool volume, sentimiento Reddit/Twitter)",
+      "robustez": "media",
+      "cita_textual": "D̂(t) reaches 0.74 on the evening of January 27 ... The lead time between the first crossing of D̂(t) > 0.60 (evening of January 26) and the crash (morning of January 28) is approximately 36 hours."
+    },
+    {
+      "afirmacion": "En Terra/LUNA (mayo 2022), el proxy de divergencia D̂(t) saltó a 0.71 el 7 de mayo, 48 horas antes del colapso donde LUNA cayó 13.1σ en 2 días y UST perdió el peg 1,050σ relativo a su volatilidad histórica. Señales tempranas (S1, S2) desde el 3 de abril daban lead time potencial de 34 días.",
+      "mercado": "LUNA/UST (DeFi, on-chain)",
+      "periodo": "3 abril - 13 mayo 2022",
+      "magnitud": "D̂(t) max = 0.71; LUNA: −13.1σ en 48h; UST: −1,050σ relativo a volatilidad de stablecoin; lead times: 48h (D̂>0.60), 34 días (early signals)",
+      "condiciones": "Datos on-chain reconstruidos (Anchor TVL, Curve 3pool composición, whale withdrawals); proxy D̂(t) cualitativo",
+      "robustez": "media",
+      "cita_textual": "LUNA return from May 7 to May 9: r = −0.758, that is |r|/σ = 13.1σ over 48 hours ... The lead time between the first significant crossing of D̂(t) > 0.60 (May 7) and the collapse (May 9) is approximately 48 hours."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Pipeline diseñado para computar D(t) en tiempo real con snapshots de LOB cada 1-5 minutos y actualización de consenso público cada 10-15 minutos; detección de divergencia intradiaria."}
+}

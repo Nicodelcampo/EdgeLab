@@ -1,0 +1,127 @@
+{
+  "doc_id": 208,
+  "titulo": "Limit Order Book Dynamics and Order Size Modelling Using Compound Hawkes Process",
+  "resumen_operativo": "El paper propone modelar la dinámica del Limit Order Book (LOB) mediante un Proceso de Hawkes Compuesto (Compound Hawkes Process) en 12 dimensiones, incorporando explícitamente la distribución de tamaños de órdenes (con preferencia por números redondos), restricciones mecánicas para garantizar un spread bid-ask estrictamente positivo, e intensidades condicionadas al momento del día (patrón en U). Utilizan un método de calibración no paramétrico para los kernels (con ajuste final a ley de potencia) que soporta excitaciones cruzadas inhibitorias. Calibrado con datos LOB de Nivel 2 de NASDAQ (ej. AAPL, INTC, TSLA, AMZN), el simulador logra replicar de forma superior hechos estilizados clave (tiempos de llegada, signature plots de volatilidad, distribución de retornos de colas pesadas) frente a baselines de tamaño constante o de Poisson. Además, el modelo reproduce el impacto de mercado cóncavo empíricamente observado.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Compound Hawkes Process",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Extensión del Proceso de Hawkes estándar donde cada evento de llegada incluye un tamaño de salto (orden) muestreado de una distribución calibrada, modelando de manera conjunta los tiempos de inter-llegada y los tamaños de las órdenes.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Hawkes Process"},
+        {"tipo": "APLICA_A", "objeto": "Limit Order Book"}
+      ],
+      "cita_textual": "Compound Hawkes process (CHP) is a special case of the CPP where N(t) is a counting process associated with a Hawkes Process."
+    },
+    {
+      "nombre": "spread-dependent intensity",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Formulación donde la intensidad de llegada de órdenes dentro del spread (in-spread) se modela como una ley de potencia (power law) del spread actual en ticks, forzando la intensidad a cero si el spread es cero, para asegurar spreads bid-ask siempre positivos.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Compound Hawkes Process"},
+        {"tipo": "MITIGA", "objeto": "negative spread"}
+      ],
+      "cita_textual": "To control the spread of the process (Prop 1), we formulate the intensities of LO_ask-1 and LO_bid+1 in the following manner as a function of the current spread-in-ticks (s)."
+    },
+    {
+      "nombre": "inhibitory cross-excitation kernels",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Funciones de influencia (kernels) entre diferentes eventos del libro de órdenes que en lugar de aumentar, reducen la probabilidad de ocurrencia mutua, con un piso en cero para evitar intensidades negativas.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Compound Hawkes Process"}
+      ],
+      "cita_textual": "Finally, to make sure the inhibitory kernels do not create negative intensities, we floor the total excitation to zero."
+    },
+    {
+      "nombre": "non-parametric calibration",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método de estimación que resuelve los parámetros del modelo Hawkes en una grilla espaciada de forma lineal-logarítmica para capturar el decaimiento prolongado de los kernels, sin forzar una forma funcional a priori.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "linear-log spaced grid"},
+        {"tipo": "APLICA_A", "objeto": "Compound Hawkes Process"}
+      ],
+      "cita_textual": "We follow the non-parametric method of calibration in Kirchner 2017 and take inspiration from Bacry et al. 2016 to create a time grid at both linear and log scales to account for the slowness of the decay kernels."
+    },
+    {
+      "nombre": "power-law kernel",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Función de decaimiento paramétrica ajustada sobre las estimaciones no paramétricas que captura la memoria larga en la llegada de órdenes mucho mejor que un kernel exponencial.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "exponential kernel"},
+        {"tipo": "PARTE_DE", "objeto": "non-parametric calibration"}
+      ],
+      "cita_textual": "We see that the power-law kernel is selected 100% of the time for this dataset."
+    },
+    {
+      "nombre": "time-of-day conditioning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Ajuste por estacionalidad intradía (patrón en U) multiplicando la intensidad base por un factor dependiente del momento del día en bins de 30 minutos, reflejando mayor actividad en apertura y cierre.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Compound Hawkes Process"}
+      ],
+      "cita_textual": "We model the intensity as a separable function of time-of-day and the Hawkes Intensities."
+    },
+    {
+      "nombre": "round numbers preference",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Tendencia empírica de los participantes de mercado de enviar cantidades de órdenes basadas en múltiplos de números redondos (ej. 100, 500).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Dirac delta functions"},
+        {"tipo": "CAUSA", "objeto": "order size distribution peaks"}
+      ],
+      "cita_textual": "A key observation is the preference of traders of round numbers in their order quantity. This is an important stylized fact of the order book dynamics so we make use of Dirac delta functions to add spikes in the distribution function."
+    },
+    {
+      "nombre": "market impact concavity",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Propiedad empírica y replicada en la simulación por la cual el desplazamiento del precio marginal decrece a medida que el tamaño total o la frecuencia de las órdenes incrementa.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market impact"}
+      ],
+      "cita_textual": "Varying the total quantity in the meta-order we find a concave relation between the MI observed and Q_T."
+    },
+    {
+      "nombre": "volatility signature plot",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Gráfico de los rendimientos observados frente a diferentes escalas temporales, utilizado como un 'hecho estilizado' clave para validar la capacidad del simulador LOB de modelar correctamente la microestructura.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "price process realism"}
+      ],
+      "cita_textual": "the Hawkes Process is able to replicate the shape of the Signature Plot, the presence of long auto-correlations of absolute returns, the long tail of returns’ distribution"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La inclusión de una distribución empírica calibrada para los tamaños de órdenes en lugar de asumir un tamaño constante es crítica para evitar la sobreestimación dramática de la volatilidad y distorsiones extremas en la distribución del spread.",
+      "mercado": "US Equities (NASDAQ Level 2: AAPL)",
+      "periodo": "2019",
+      "magnitud": "El modelo de tamaño constante sobreestima la volatilidad del signature plot por un factor de ~100x y presenta distribuciones de propagación significativamente más anchas y poco realistas.",
+      "condiciones": "Comparación del simulador de Hawkes Compuesto vs. una versión simplificada de tamaño constante.",
+      "robustez": "alta",
+      "cita_textual": "Our model with the calibrated order size distribution fits much better to the empirical data than the constant order size model - the signature plot and the returns distribution show that the volatility is heavily overestimated (by a magnitude of ~100)"
+    },
+    {
+      "afirmacion": "Existe una fuerte relación no lineal (ley de potencia) entre la intensidad de llegada de órdenes en el interior del spread (in-spread) y la anchura actual del spread en ticks, actuando como un mecanismo de reversión a la media.",
+      "mercado": "US Equities (NASDAQ Level 2: AAPL, INTC, TSLA, AMZN)",
+      "periodo": "2019 (3 meses evaluados para la regresión)",
+      "magnitud": "Exponente estimado para AAPL = 0.7479 con un R² de 0.85.",
+      "condiciones": "Regresión lineal de transformación log-log excluyendo spreads de 0 y 1.",
+      "robustez": "alta",
+      "cita_textual": "We fit a linear regressor on log-log transformation of these data points (excluding 0 and 1 spread) and find the best exponent to be 0.7479... We observe an R² of 0.85 for this regression."
+    },
+    {
+      "afirmacion": "El impacto de mercado en el simulador exhibe una concavidad realista tanto respecto al volumen total de la orden como respecto a la frecuencia y velocidad (POV), donde un incremento en la frecuencia de la orden impacta severamente en la degradación del precio.",
+      "mercado": "US Equities (NASDAQ Level 2), entorno simulado CHP",
+      "periodo": "N/A (Estudio de simulación con parámetros calibrados de 2019)",
+      "magnitud": "Comportamiento cualitativo cóncavo fuertemente correlacionado a las variaciones experimentales de cantidad y tiempo límite de la orden.",
+      "condiciones": "Estrategia TWAP ejecutada por un agente externo en el entorno artificial, promediando 100 paths para diversas configuraciones de Q_T, T y f.",
+      "robustez": "media",
+      "cita_textual": "Which implies a concavity of the MI function with respect to POV rate and number of order slices. This is again inline with empirically observed facts."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El paper ofrece modelado valioso y directamente aplicable de la microestructura del order book, como el condicionamiento horario y la preferencia por números redondos. Lo más relevante para la operativa intradía es el hallazgo riguroso de que la intensidad de llegada de órdenes in-spread sigue una relación de ley de potencia (exponente ~0.75) con la anchura del spread. Esto podría emplearse para crear un predictor estadístico del estrechamiento del spread usando datos L2 o incorporar la interdependencia estocástica de órdenes límite y volatilidad."
+  }
+}

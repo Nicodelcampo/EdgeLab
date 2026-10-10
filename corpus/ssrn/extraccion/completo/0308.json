@@ -1,0 +1,90 @@
+{
+  "doc_id": 308,
+  "titulo": "Semi-Markov Model for Market Microstructure",
+  "resumen_operativo": "Introduce un modelo de procesos de renovación de Markov (Markov Renewal Process) para describir fluctuaciones tick-by-tick del precio de un activo. Modela los timestamps de saltos como point process y los incrementos de precio como cadena de Markov que reproduce el microstructure noise (mean-reversion de retornos de alta frecuencia). Permite volatility clustering mediante dependencia entre incrementos y tiempos de salto, y demuestra comportamiento difusivo a escalas macroscópicas. Deriva fórmula cerrada para el signature plot y provee estimación paramétrica y no paramétrica. Validado con datos empíricos de futuros Euribor.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Markov Renewal Process (MRP) for Price Dynamics",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso marcado (T_n, J_n) donde T_n son tiempos de salto del precio y J_n son incrementos. Los saltos de dirección se modelan como cadena de Markov irreducible con matriz de transición 2×2 parametrizada por α+, α-. El tamaño absoluto del salto es i.i.d. independiente de la dirección.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Tick-by-Tick Price Process"},
+        {"tipo": "EQUIVALE_A", "objeto": "Marked Point Process"}
+      ],
+      "cita_textual": "We use a Markov renewal process (MRP) for modeling the marked point process. Markov renewal theory is largely studied in reliability for describing failure of systems and machines, and one purpose of this paper is to show how it can be applied for market microstructure."
+    },
+    {
+      "nombre": "Microstructure Noise as Markov Chain Mean-Reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Los retornos de alta frecuencia muestran fuerte anti-correlación (mean-reversion de corto plazo) explicada mecánicamente por la estructura del limit order book. El modelo MRP reproduce esto mediante la cadena de Markov de dirección de saltos con parámetro α ∈ [-1,1).",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Increasing Signature Plot"},
+        {"tipo": "USA", "objeto": "Limit Order Book Structure"}
+      ],
+      "cita_textual": "Microstructure noise: high-frequency returns are extremely anticorrelated, leading to a short-term mean reversion effect, which is mechanically explicable by the structure of the limit order book."
+    },
+    {
+      "nombre": "Signature Plot",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Gráfico de volatilidad realizada en función de la frecuencia de muestreo. El microstructure noise se manifiesta como un aumento de la volatilidad estimada al disminuir la frecuencia de observación (de escalas finas a gruesas). El modelo MRP produce fórmula cerrada para el signature plot medio.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Microstructure Noise"},
+        {"tipo": "USA", "objeto": "Realized Volatility"}
+      ],
+      "cita_textual": "This effect manifests through an increase of the realized volatility estimator (signature plot) when the observation frequency decreases from large to fine scales."
+    },
+    {
+      "nombre": "Volatility Clustering via MRP",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El counting process N_t, que puede depender de la cadena de Markov de saltos, modela la presencia de spikes en la intensidad de actividad de mercado. Esto reproduce el alternating de fases de alta y baja actividad características del volatility clustering intradiario.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Spikes in Trading Intensity"},
+        {"tipo": "SE_OPONE_A", "objeto": "Hawkes Process Approach"}
+      ],
+      "cita_textual": "The counting process (N_t), which may depend on the Markov chain, models the volatility clustering, i.e. the presence of spikes in the volatility of the stock price."
+    },
+    {
+      "nombre": "Diffusive Limit at Macroscopic Scale",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "A escalas grandes (macroscópicas), el proceso de precio converge a un movimiento Browniano. Esto asegura que el modelo MRP es consistente con los modelos estándar de difusión usados para pricing y risk management a frecuencias bajas.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Brownian Motion"},
+        {"tipo": "REQUIERE", "objeto": "Functional Central Limit Theorem"}
+      ],
+      "cita_textual": "At large scale, the price process displays a diffusion behaviour. We preserve a Brownian motion behaviour of the price process at macroscopic scales."
+    },
+    {
+      "nombre": "Symmetric Direction Transition",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Caso simétrico α+ = α- = α donde la cadena de Markov de dirección es simétrica. La distribución invariante es π̂ = (1/2, 1/2) y la autocorrelación de saltos de dirección es ρ_n = α^n. α mide la velocidad de mean-reversion: α cercano a -1 implica fuerte reversión.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Mean-Reversion Speed"},
+        {"tipo": "APLICA_A", "objeto": "Microstructure Noise"}
+      ],
+      "cita_textual": "In the symmetric case, we have a nice interpretation of the parameter α. The autocorrelation of price returns at lag n is proportional to α^n."
+    },
+    {
+      "nombre": "Semi-Markov Property",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Propiedad que permite embeber el proceso de precio en un sistema de Markov añadiendo pocas variables de estado adicionales observables. Esto asegura la tratabilidad del modelo para aplicaciones de market making y statistical arbitrage.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Stochastic Control"},
+        {"tipo": "APLICA_A", "objeto": "Optimal High-Frequency Trading"}
+      ],
+      "cita_textual": "An important feature of the MRP approach is the semi Markov property, meaning that the price process can be embedded into a Markov system with few additional and observable state variables."
+    },
+    {
+      "nombre": "Uncertainty Zones Connection",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Conexión del modelo MRP con modelos de zonas de incertidumbre para microstructure noise endógeno y tiempos de trading, como los desarrollados en Robert y Rosenbaum (2011). Esto vincula el enfoque micro-to-macroscopic con la literatura de estimación robusta de volatilidad.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Endogenous Microstructure Noise"},
+        {"tipo": "APLICA_A", "objeto": "Macro-to-Microscopic Approach"}
+      ],
+      "cita_textual": "There is an interesting connection of our MRP approach with model with uncertainty zones for endogenous microstructure noise and trading times."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Modelo diseñado específicamente para datos tick-by-tick; reproduce microstructure noise, volatility clustering y comportamiento difusivo a macro-escala. Directamente aplicable a HFT."}
+}

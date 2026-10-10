@@ -1,0 +1,128 @@
+{
+  "doc_id": 299,
+  "titulo": "Revisiting the Trading Activity of High-Frequency Trading Firms Around Ultra-Fast Flash Events",
+  "resumen_operativo": "Investiga el comportamiento de HFTs durante los eventos de precio extremos más rápidos (ultra-fast flash events). Introduce una nueva metodología llamada Sequence-Based Flash Events (SFEs) que identifica crashes mediante secuencias de ticks en lugar de intervalos de tiempo fijos, permitiendo precisar el momento exacto del crash. Compara SFEs con mini flash crashes (Nanex) y extreme price movements (Brogaard et al., 2018) usando datos tick-by-tick de 74 acciones entre 2008-2010. No encuentra evidencia de que HFTs causen los shocks pero sí que los exacerban aumentando el desbalance neto en la dirección del crash.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Sequence-Based Flash Events (SFEs)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Metodología de identificación de flash events basada en secuencias de ticks: mientras la curva de equity no revierta se permanece en la misma secuencia. Captura crash completo sin depender de intervalos fijos. Requiere duración <1.5s con 100% de retracement para excluir shocks informativos.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Mini Flash Crashes (MFCs)"},
+        {"tipo": "MEJORA_A", "objeto": "Extreme Price Movements (EPMs)"}
+      ],
+      "cita_textual": "Our methodology consists in thinking in terms of sequences rather than in terms of interval. As long as the equity curve does not reverse, we stay in the same sequence."
+    },
+    {
+      "nombre": "Mini Flash Crashes (MFCs)",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Caídas de precio abruptas definidas por cambio >0.8%, al menos 10 ticks consecutivos en la misma dirección y duración <1.5 segundos (Nanex, 2010). En la muestra se identifican 419 MFCs con retorno logarítmico absoluto medio de 0.5577%.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Ultra-Fast Flash Events"},
+        {"tipo": "SE_OPONE_A", "objeto": "Extreme Price Movements (EPMs)"}
+      ],
+      "cita_textual": "An MFC must include at least 10 tick movements in the same direction before ticking in the other direction, all within 1.5 seconds, and with an absolute price change exceeding 0.8%."
+    },
+    {
+      "nombre": "Extreme Price Movements (EPMs)",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Movimientos de precio definidos como retornos de midquote en intervalos de 10 segundos que superan el percentil 99.9 de la distribución absoluta de retornos. En la muestra: 28,825 OC-EPMs con retorno absoluto medio de 0.4241%. Crítica: subestiman crash al usar open-to-close en intervalos fijos.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Sequence-Based Flash Events (SFEs)"},
+        {"tipo": "USA", "objeto": "NBBO Midquotes"}
+      ],
+      "cita_textual": "EPMs are computed as returns above the 99.9th percentile of the empirical distribution of absolute returns."
+    },
+    {
+      "nombre": "HFT Net Imbalance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de desbalance neto de HFTs: suma de liquidez demandada y ofrecida en dirección del crash menos la del sentido opuesto. Un net imbalance positivo indica actividad en dirección del crash (desestabilizadora); negativo indica actividad contraria (estabilizadora).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "HFT Destabilizing Behavior"},
+        {"tipo": "USA", "objeto": "Nasdaq HFT Flag (HH, HN, NH, NN)"}
+      ],
+      "cita_textual": "Net imbalance informs us on the direction of net trading activity vis-a-vis the crash direction. A positive net imbalance implies trading activity in the direction of the crash."
+    },
+    {
+      "nombre": "HL-EPMs (High-Low EPMs)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Variante mejorada de EPMs que usa precios high y low del intervalo en lugar de open/close. Captura la amplitud verdadera del shock dentro del mismo intervalo fijo. Reduce la subestimación pero no elimina el problema si el shock cruza dos intervalos.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Extreme Price Movements (EPMs)"},
+        {"tipo": "SE_OPONE_A", "objeto": "Sequence-Based Flash Events (SFEs)"}
+      ],
+      "cita_textual": "HL-EPMs capture the true amplitude of the shock while still being within the same fixed-time interval."
+    },
+    {
+      "nombre": "HFT Liquidity Provision During Stress",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Comportamiento ambivalente de HFTs: en condiciones normales proveen liquidez y mejoran el mercado, pero durante flash events tienden a consumir liquidez en lugar de proveerla, exacerbando los shocks. Esta dualidad genera un trade-off regulatorio.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Market Destabilization"},
+        {"tipo": "CONTRADICE_A", "objeto": "HFT Beneficial Role Hypothesis"}
+      ],
+      "cita_textual": "We find that HFTs exacerbate SFEs by increasing net imbalance in the direction of these shocks as they occur."
+    },
+    {
+      "nombre": "Methodology-Dependent Conclusions",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Hallazgo crítico: las conclusiones sobre el rol de HFTs en la estabilidad del mercado dependen de la metodología de identificación de shocks usada. MFCs retratan HFTs como perjudiciales; EPMs los retratan como beneficiosos. Esto urge cautela regulatoria.",
+      "relaciones": [
+        {"tipo": "CONTRADICE_A", "objeto": "Brogaard et al. (2018) Findings"},
+        {"tipo": "APLICA_A", "objeto": "Regulatory Policy"}
+      ],
+      "cita_textual": "We urge regulators to exercise caution and avoid hasty conclusions regarding the contribution of HFTs to price stability in stressful market conditions."
+    },
+    {
+      "nombre": "Nasdaq HFT Dataset",
+      "tipo": "dato",
+      "definicion_en_contexto": "Base de datos tick-by-tick de Nasdaq con flags HH, HN, NH, NN que identifican si el demandante/proveedor de liquidez es HFT o no-HFT. Usado por Carrion (2013), Brogaard et al. (2018), Hirschey (2021). Nasdaq representa 36% del market share en trades de las 74 acciones.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Non-Disclosure Agreement"},
+        {"tipo": "USA", "objeto": "HFT Net Imbalance"}
+      ],
+      "cita_textual": "A code (HH, HN, NH, NN) is indeed associated with each transaction on Nasdaq. The first letter refers to the liquidity seeker and the second letter refers to the liquidity supplier."
+    },
+    {
+      "nombre": "Tickdata NBBO Data",
+      "tipo": "dato",
+      "definicion_en_contexto": "Datos tick-by-tick con timestamp al milisegundo del National Best Bid and Offer para 74 acciones (32 large-cap, 30 mid-cap, 12 small-cap) en todos los exchanges de EE.UU. Usado para identificar los price shocks agregados antes de analizar comportamiento HFT en Nasdaq.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Sequence-Based Flash Events (SFEs)"},
+        {"tipo": "APLICA_A", "objeto": "Ultra-Fast Flash Events Identification"}
+      ],
+      "cita_textual": "We use tick-by-tick data timestamped to the millisecond on the NBBO from Tickdata for 74 stocks."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El retorno logarítmico absoluto medio de MFCs es 0.5577%, 46 veces mayor que el retorno medio de la muestra completa (0.0119%). El número de trades durante MFCs promedia 99 por intervalo de 1.5s versus 4 trades en la muestra general (25x más).",
+      "mercado": "74 acciones U.S. (NYSE, Nasdaq, y otros exchanges)",
+      "periodo": "2008-2010",
+      "magnitud": "Retorno MFC 0.5577% vs muestra 0.0119% (46x); trades 99 vs 4 (25x); share volume 65x mayor",
+      "condiciones": "419 MFCs identificados según reglas Nanex (2010); 74 acciones; datos Tickdata",
+      "robustez": "alta",
+      "cita_textual": "The mean absolute MFC log return is 0.5577% while the full sample mean absolute log return is only 0.0119%. As such, the mean absolute MFC log return is more than 46 times larger."
+    },
+    {
+      "afirmacion": "Se identifican 5,491 SFEs con retorno logarítmico absoluto medio de 0.63%, 53 veces mayor que el retorno medio de la muestra completa. El número de trades promedio es 21 por intervalo de 1.5s (5x la muestra).",
+      "mercado": "74 acciones U.S.",
+      "periodo": "2008-2010",
+      "magnitud": "SFEs: retorno 0.63% (53x muestra); trades 21 (5x muestra); share volume 10x mayor; dollar volume 11x mayor",
+      "condiciones": "5,491 SFEs identificados con la metodología propuesta; 1.5s duración máxima; 100% retracement requerido",
+      "robustez": "alta",
+      "cita_textual": "The average absolute SFE log return is 0.63%, that is 53 times larger than the mean absolute full sample log return."
+    },
+    {
+      "afirmacion": "La proporción de trades HFT-HFT durante MFCs es 61.95% versus 18.21% en la muestra completa, indicando dominancia de HFTs durante estos eventos extremos.",
+      "mercado": "Nasdaq (74 acciones U.S.)",
+      "periodo": "2008-2010",
+      "magnitud": "Proporción HFT trades 61.95% en MFCs vs 18.21% muestra completa",
+      "condiciones": "419 MFCs; datos Nasdaq HFT con flags HH/HN/NH/NN",
+      "robustez": "alta",
+      "cita_textual": "Proportion HFT trades (Nasdaq)... 0.6195*** vs full sample 0.1821."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Usa datos tick-by-tick con timestamp al milisegundo; metodología SFE diseñada específicamente para eventos intradiarios ultra-rápidos (<1.5s)."}
+}

@@ -1,0 +1,646 @@
+ Electronic copy available at: https://ssrn.com/abstract=2912247 
+Algorithmic Trading of Portfolios
+Sanghyun Park∗
+Kapil Phadnis†
+January 24, 2017
+Abstract
+We develop a portfolio trading strategy that aims to achieve optimal performance against
+arrival prices by minimizing market impact and risk. We ﬁrst lay the groundwork by
+formulating a single-security trading strategy and then generalize the framework to the
+portfolio trading context. Correlations between securities are incorporated via a multi-factor
+risk model, and the resulting optimization problem is solved numerically by quadratic
+programming. Comparing the efﬁcient frontier and the early-end VWAP (volume-weighted
+average price) strategies leads to an intuitive method to determine the risk aversion
+parameter. We also present an efﬁcient way to identify securities for which block trading
+opportunities can be pursued without compromising the risk structure of the portfolio.
+1
+Introduction
+Portfolio trading is much more than simply trading multiple securities at the same time.
+Securities in a portfolio are correlated with each other, and this correlation must be taken into
+account in ﬁnding an optimal trading schedule for each security.
+A trading algorithm attempts to optimize performance measured against a benchmark. The
+behavior of an algorithm varies widely depending on which benchmark is being used. Here we
+are concerned with the arrival price benchmark. Arrival-price algorithms operate in ways to ﬁnd
+the balance between market impact and market risk, or equivalently, between slow and fast
+trading paces.
+∗Bloomberg Tradebook. spark160@bloomberg.net
+†Bloomberg Tradebook. kphadnis3@bloomberg.net
+1
+Electronic copy available at: https://ssrn.com/abstract=2912247
+
+ Electronic copy available at: https://ssrn.com/abstract=2912247 
+This is already evident in trading of a single security. With slow trading, market impact may be
+reduced but the risk increases that the market may move away. With fast trading, market risk is
+small but the algorithm itself may move the market considerably, hence causing big market
+impact. An arrival price algorithm minimizes a combination of market impact and market risk,
+typically with a parameter controlling the balance between the two. This parameter is called risk
+aversion level or urgency level.
+When it comes to trading a portfolio, the impact-risk trade-off becomes more involved. Because
+of the correlation among the securities in the portfolio, the risk terms of the securities may cancel
+one another out, leading to much lower risk for the entire portfolio. This is essentially the same
+idea as diversiﬁcation or hedging. A portfolio arrival-price algorithm takes advantage of this
+important idea in order to minimize the market impact and risk.
+Part I
+Single-security trading
+Before we get to trading of portfolios, we will formulate an arrival-price algorithm for a single
+security.
+2
+Model
+In order to quantify market impact and risk, we need to model how the security prices move and
+how our trading impact the movement.
+We deﬁne the equilibrium price of the security to be the market price without our participation.
+Using the volume time u that measures the expected market volume from now (u = 0) to the end
+(u = U), we assume that the equilibrium price s(u) evolves according to
+s(u) = S + σSW(u)
+(1)
+where W(u) is a standard Brownian motion and S = s(0). σ is the volatility per share.
+2
+Electronic copy available at: https://ssrn.com/abstract=2912247
+
+We specify a trading schedule via the remaining quantity x(u), which is to vary monotonically
+from X at u = 0 to zero at u = U. The order quantity X is positive for buys and negative for sells.
+We consider only the strategies that target to complete, i.e. x(U) = 0.
+With a given trading schedule, we assume that the execution price will deviate from the
+equilibrium price as
+ˆs(u) = s(u) + γSv(u) ,
+(2)
+where v(u) = −dx(u)/du is the trading speed in volume time and γ is the market impact
+parameter. In this model, the market impact is essentially proportional to the trading rate and the
+impact is only temporary, not affecting the equilibrium price. Many market impact models of
+various degrees of complexity are out there, but here we choose a simple linear model for the
+sake of efﬁcient optimization. In view of the extremely noisy nature of market impact, it is
+unclear whether more complex models will offer enough beneﬁt to offset the more demanding
+optimization that they require.
+3
+Objective Function
+We deﬁne the trading cost
+C =
+Z U
+0
+ˆs(u)v(u)du −XS
+(3)
+to be the difference between the total execution value and the benchmark value XS. Using the
+price dynamics (Eq 1) and the market impact model (Eq 2), we rewrite the cost as
+C = σS
+Z U
+0
+x(u)dW(u) + γS
+Z U
+0
+v2(u)du .
+(4)
+Following the famed mean-variance framework [1, 2], we aim to minimize the objective function
+Ω= E[C] + λ Var[C]
+(5)
+where λ is a parameter that represents the level of risk aversion. The expectation and the
+variance can be further worked out:
+E[C] = γS
+Z U
+0
+v2(u)du
+(6)
+Var[C] = σ2S2
+Z U
+0
+x2(u)du .
+(7)
+3
+Electronic copy available at: https://ssrn.com/abstract=2912247
+
+The expectation and the variance terms represent the market impact and the market risk,
+respectively. Using the variance, as opposed to the standard deviation, for the risk term allows
+efﬁcient optimization techniques, such as closed-form solutions for single-security trading and
+quadratic programming for portfolio trading.
+4
+Optimization
+Using calculus of variation we ﬁnd that the optimal solution x(u) must satisfy
+d2x(u)
+du2
+= α2x(u)
+(8)
+α = σ
+s
+λS
+γ .
+(9)
+This differential equation has a closed-form solution for the optimal allocation:
+x(u) = Xsinh(αU −αu)
+sinh(αU)
+(10)
+v(u) = αXcosh(αU −αu)
+sinh(αU)
+.
+(11)
+Notice that even though we did not explicitly impose the condition of monotonicity, the solution
+comes out to be monotonic. This will not be the case for portfolio trading, as we will discuss later.
+In the limit of zero risk aversion (λ = 0), the optimal strategy reduces to a VWAP strategy:
+x(u) = XU −u
+U
+(12)
+v(u) = X
+U .
+(13)
+In the opposite limit of extreme risk aversion (λ →∞), the optimal strategy converges to
+x(0) = X
+(14)
+x(u > 0) = 0 ,
+(15)
+which indicates that all the shares are to be traded immediately.
+5
+Efﬁcient Frontier
+In the two-dimensional space of expected cost vs variance of cost, an efﬁcient frontier divides the
+space into feasible and infeasible regions (Figure 1). Optimal strategies, parametrized with λ,
+4
+Electronic copy available at: https://ssrn.com/abstract=2912247
+
+span the efﬁcient frontier curve.
+0
+1000
+2000
+3000
+4000
+5000
+Variance of cost (bp2)
+0
+10
+20
+30
+40
+50
+60
+Expected cost (bp)
+A
+B
+Optimal strategies (efficient frontier)
+Early-end VWAP strategies
+Figure 1: Efﬁcient frontier of optimal strategies. The slope along the efﬁcient frontier at point B is the same
+as the slope along the early-end VWAP curve at point A. U = 4 × 106, Q = 2 × 105, γ = 0.01, σ = 6 × 10−6.
+With the optimal solution of Eq 10, the mean and the variance of the cost are
+E[C] =
+γSX2α
+2 sinh2(αU)
+[sinh(αU) cosh(αU) + αU]
+(16)
+Var[C] =
+σ2S2X2
+2α sinh2(αU)
+[sinh(αU) cosh(αU) −αU] .
+(17)
+As the risk aversion parameter λ varies, the optimal solution moves along the efﬁcient frontier
+curve, with the two end points:
+λ →0
+(18)
+E[C] →γSX2
+U
+(19)
+Var[C] →σ2S2X2U
+3
+(20)
+and
+λ →∞
+(21)
+E[C] →∞
+(22)
+Var[C] →0 .
+(23)
+5
+Electronic copy available at: https://ssrn.com/abstract=2912247
+
+A simple way for benchmarking the arrival price is to use a VWAP strategy that ends at a time
+earlier than the end time U. Consider an early-end VWAP strategy ending at w (0 ≤w ≤U):
+x(u) = X w −u
+w
+,
+0 ≤u ≤w .
+(24)
+The expected value and the variance of the cost for this strategy are
+E[C] = γSX2
+w
+(25)
+Var[C] = σ2S2X2w
+3
+.
+(26)
+When w = U, the early-end VWAP strategy coincides with the optimal strategy at λ = 0. And
+when w = 0 (all shares are traded immediately), it is the same as the optimal strategy at λ = ∞.
+In between these two points, however, the early-end VWAP strategy is sub-optimal as illustrated
+in Figure 1. An analogous argument can be made between the optimal closing-price strategies
+and the late-start VWAP strategies [3].
+6
+The Risk Aversion Parameter
+Setting the risk aversion parameter λ is a challenge. It is a parameter that determines the balance
+between the impact and the risk terms in the objective function. But it is unclear how to interpret
+the value of λ in an intuitive way. Here we propose a heuristic method based on the overall
+trading rate, using the early-end VWAP strategy as an intermediary. Even though the early-end
+VWAP strategy does not have its own risk aversion level, we can still deﬁne one by extending the
+idea, that on the efﬁcient frontier curve, λ is the negative slope of the tangential line (Figure 1).
+For an early-end VWAP strategy with an end time w, we deﬁne λ to be the negative slope along
+the curve spanned by the family of early-end VWAP strategies (dashed curve in Figure 1):
+λ = −dE[C]
+dw
+dVar[C]
+dw
+=
+3γ
+w2σ2S .
+(27)
+In Figure 1, point A and B correspond to an early-end VWAP strategy and an optimal strategy
+that share the same λ value.
+Given a trading rate R, the early-end VWAP will ﬁnish at w = |Q|/R. By connecting the two
+strategies, λ is determined to be
+λ = 3γR2
+σ2SQ2 .
+(28)
+6
+Electronic copy available at: https://ssrn.com/abstract=2912247
+
+Although there is no early-end VWAP strategy for R < |Q|/U, the above equation can still be
+used as a heuristic R-to-λ mapping to cover the entire range of λ. An example of the R-to-λ
+mapping is shown in Figure 2.
+0
+10
+20
+30
+40
+50
+Trading rate R (%)
+10-9
+10-8
+10-7
+10-6
+10-5
+10-4
+Risk aversion parameter λ
+Figure 2: The risk aversion parameter λ determined via the trading rate R of the early-end VWAP strategy.
+Q = 2 × 105, γ = 0.01, σ = 6 × 10−6.
+7
+Block Trading
+What if there is an opportunity to get a block of shares without market impact? Clearly, such
+block trading does not follow the market impact model of Eq 2. Assuming it has no impact on
+the subsequent trading, getting a block ﬁll is always beneﬁcial because it decreases the risk by
+reducing the remaining quantity. Therefore, we should combine the scheduled trading with
+opportunistic block trading. The schedule can be re-optimized periodically or whenever we get a
+big block ﬁll. If we get no blocks, we still ﬁnish according to the schedule. If we get lucky and get
+big blocks, we will ﬁnish sooner with lower risk.
+7
+Electronic copy available at: https://ssrn.com/abstract=2912247
+
+Part II
+Portfolio trading
+We strive to follow the main ideas presented above for single-security trading, but portfolio
+trading raises new challenges that require different approaches.
+8
+Model
+Now we use the regular time t, instead of the volume time u, because we need a common time
+axis for all the securities in the portfolio. Under the regular time, the security prices si(t) evolve
+according to
+si(t) = Si + σiSiWi(t)
+(29)
+where Wi(t) are standard Brownian motions and Si = si(0). The index i = 1, . . . , n labels the
+securities in the portfolio. Notice that σi are now volatilities per time, not per share. The price
+moves are generally not independent, and we suppose they are correlated as
+σiσjE[dWi(t)dWj(t′)] = Ψijδ(t −t′)dtdt′
+(30)
+where Ψij is a covariance matrix.
+We further assume a factor model in which the covariance matrix can be decomposed as
+Ψij =
+m
+∑
+a=1
+m
+∑
+b=1
+ΘiaΦabΘT
+bj + δijζ2
+i .
+(31)
+The indexes a and b label the factors from 1 to m. Φab is the covariance matrix among the factors.
+Φia is the exposure of security i to factor a. And ζ2
+i is the non-factor variance of security i. This
+decomposition greatly facilitates numerical optimization as we will see later.
+Given a trading schedule speciﬁed via remaining quantities xi(t), we assume the following ﬁll
+prices:
+ˆsi(t) = si(t) + γiSi
+vi(t)
+yi(t) .
+(32)
+vi(t) = −dxi(t)/dt is the trading speed and yi(t) is the market’s expected trading speed, i.e. total
+trading volume per time.
+8
+Electronic copy available at: https://ssrn.com/abstract=2912247
+
+9
+Objective Function
+Using the price dynamics (Eq 29) and the market impact model (Eq 32), we write the trading cost
+as
+C =
+n
+∑
+i=1
+Ci
+Ci =
+Z T
+0
+ˆsi(t)vi(t)dt −XiSi
+= σiSi
+Z T
+0 xi(t)dWi(t) + γiSi
+Z T
+0
+v2
+i (t)
+yi(t) dt .
+(33)
+Then its expectation and variance are given as
+E[C] =
+n
+∑
+i=1
+E[Ci] =
+n
+∑
+i=1
+γiSi
+Z T
+0
+v2
+i (t)
+yi(t) dt
+(34)
+Var[C] =
+n
+∑
+i=1
+n
+∑
+j=1
+Cov[Ci, Cj] =
+n
+∑
+i=1
+n
+∑
+j=1
+SiSjΨij
+Z T
+0 xi(t)xj(t)dt .
+(35)
+The objective function for portfolio trading is typically written as
+Ω= E[C] + λ Var[C]
+=
+n
+∑
+i=1
+E[Ci] + λ
+n
+∑
+i=1
+n
+∑
+j=1
+Cov[Ci, Cj]
+(36)
+with λ representing the level of urgency or risk aversion.
+This objective function, however, has an unappealing consequence. Consider two securities,
+labeled 1 and 2, that are completely uncorrelated. First, suppose we are trading them separately
+using the medium urgency level under the arrival-price framework. Let λ1 and λ2 be the values
+of the urgency level parameter that corresponds to the medium level for each security.
+Depending on the properties of the securities and the orders, λ1 and λ2 may be drastically
+different from each other. Now suppose we are trading them as a portfolio. Because the two
+securities are uncorrelated, the objective function can be decomposed as
+Ω= E[C] + λ Var[C] = Ω1 + Ω2
+(37)
+Ω1 = E[C1] + λ Var[C1]
+(38)
+Ω2 = E[C2] + λ Var[C2] .
+(39)
+The trading schedule of the two securities are determined by minimizing their own objective
+functions, without any interaction between them. It is as if we are trading them separately, but
+9
+Electronic copy available at: https://ssrn.com/abstract=2912247
+
+with a new urgency level. This is a disturbing result. Even with completely uncorrelated
+securities, the mere act of putting them in a portfolio may distort their optimal schedules
+drastically. This is essentially because λ is not a universal parameter. As long as we have to
+choose a single λ for a portfolio, this problem is unavoidable.
+Therefore, we modify the objective function to be
+Ω=
+n
+∑
+i=1
+1
+λi
+E[Ci] +
+n
+∑
+i=1
+n
+∑
+j=1
+Cov[Ci, Cj] ,
+(40)
+where λi is the value of λ if we were trading the i-th security separately with the given urgency
+level. In case all the securities are uncorrelated, this objective function reduces to
+Ω=
+n
+∑
+i=1
+ 1
+λi
+E[Ci] + Var[Ci]
+
+,
+(41)
+and we recover the solo trading schedules. The modiﬁed objective function still embodies the
+correlations, and in the presence of correlations will produce trading schedules that reduce the
+risk by means of cancellations.
+With this modiﬁed form, the meaning of the objective function has perhaps become less
+transparent. Considering that variance was already not the most direct representation of risk, this
+does not seem to be a severe degradation. Also notice that by constructing the objective function
+this way, we have solved the problem of choosing λ for portfolios.
+10
+Optimization
+Unfortunately, the closed-form solution for the single-security trading cannot be generalized to
+the portfolio context. Recall that the closed-form solution was derived without the monotonicity
+constraint. That was not an issue because the solution comes out to be monotonic anyway. For
+portfolio trading, without that constraint, the optimal solution may not be monotonic. For
+example, initially selling a buy order may actually reduce the objective function if it quickly
+makes the portfolio risk neutral. Non-monotonic trading schedules are not allowed in most
+practical applications, and we must impose the constraint explicitly. With the monotonicity
+constraint, closed-form solutions are no longer available and we have to perform numerical
+optimization.
+10
+Electronic copy available at: https://ssrn.com/abstract=2912247
+
+To cast the problem into numerical optimization, we discretize time as t0, t1, . . . , tN, with t0 = 0
+and tN = T. Our goal is then to ﬁnd an optimal schedule on this time grid, described by
+Zik ≡xi(tk)/Xi. Notice that Zik is scaled to be between 0 and 1, which is beneﬁcial for the
+stability of the numerical optimization. By assuming a constant trading speed within each time
+interval, the mean (Eq 34) and the covariance (Eq 35) can be expressed as
+E[Ci] = γiSi
+N
+∑
+k=1
+Z tk
+tk−1
+v2
+i (t)
+yi(t) dt
+= γiSiX2
+i
+N
+∑
+k=1
+(Zik −Zi,k−1)2
+gik
+(42)
+Cov[Ci, Cj] = SiSjΨij
+N
+∑
+k=1
+Z tk
+tk−1
+xi(t)xj(t)dt
+= SiSjΨijXiXj
+N
+∑
+k=1
+τk
+3
+ Zi,k−1Zj,k−1 + ZikZjk + Zi,k−1Zjk
+
+,
+(43)
+where τk = tk −tk−1 and gik is the expected market volume between tk−1 and tk.
+Combining Eqs 40, 42, and 43, we have an objective function expressed in terms of the variables
+Zik. And the monotonicity is imposed as
+Zi,k−1 ≥Zik
+for
+k = 1, . . . , N .
+(44)
+Notice that the optimization variables are Zik(k = 1, . . . , N −1) because Zi0 = 1 and ZiN = 0 are
+ﬁxed. With a quadratic objective function and linear constraints, this problem can be solved by
+quadratic programming. However, this problem often becomes numerically unstable as the
+number of securities increases. This is mainly due to that the cross terms are densely populated.
+The cross terms between different times are sparse enough, but the different securities are all
+coupled through Ψij.
+The factor model comes to rescue. Using Eq 31, we rewrite the covariance term as
+n
+∑
+i=1
+n
+∑
+j=1
+Cov[Ci, Cj] =
+m
+∑
+a=1
+m
+∑
+b=1
+Φab
+N
+∑
+k=1
+τk
+3 (Fa,k−1Fb,k−1 + FakFbk + Fa,k−1Fbk)
++
+n
+∑
+i=1
+ζ2
+i S2
+i X2
+i
+N
+∑
+k=1
+τk
+3
+ Z2
+i,k−1 + Z2
+ik + ZikZi,k−1
+
+(45)
+by introducing factor variables
+Fak =
+n
+∑
+i=1
+ΘT
+aiZikSiXi .
+(46)
+11
+Electronic copy available at: https://ssrn.com/abstract=2912247
+
+In this new formulation, the security variables are decoupled and only the factor variables are
+coupled with each other. The trade-off is that the variable space has expanded to include Fak and
+that we have additional constraints of Eq 46. Even with additional variables and constraints, this
+is considerably more stable and efﬁcient than having dense couplings. Our ﬁnal formulation of
+the optimization therefore consists of the objective function given by Eqs 40, 42, and 45 and the
+inequality constraints of Eq 44 and the equality constraints of Eq 46.
+11
+Block Trading
+We saw that getting block ﬁlls, in addition to the scheduled trading, is always beneﬁcial for
+single-security trading. For portfolio trading, however, block ﬁlls are not always favorable. Block
+ﬁlls reduce remaining quantities, which in turn may decrease or increase the risk depending on
+the correlations between the securities in the portfolio. Here we present an algorithm to
+incorporate block trading into the portfolio context by selectively pursuing only favorable blocks.
+First, we rank the securities in the portfolio according to their marginal contributions to the
+objective function. The marginal contribution ∆Ωi is deﬁned to be the amount that will be
+reduced if we remove the security i from the portfolio:
+∆Ωi = 1
+λi
+E[Ci] + 2∑
+j
+Cov[Ci, Cj] −Var[Ci] .
+(47)
+Since the portfolio can be re-optimized after removing the security, this is in fact an
+underestimate.
+If the ﬁrst security in the ranking (the one with the highest marginal contribution) has a positive
+marginal contribution, we route all of its remaining quantity to dark pools and crossing venues
+to pursue blocks. Due to the opportunistic nature of block trading, the ﬁlls can be anywhere
+between 0 and 100%. With zero ﬁlls, the change in the objective function is obviously zero. With
+100% ﬁlls, the objective function decreases by the amount of the marginal contribution M1 (or
+even more with re-optimization). With any ﬁll quantity in between, the objective function cannot
+increase because of its convexity with respect to the order quantities.
+For the second security in the ranking, if the ﬁrst security was selected for block trading, we need
+to examine the two-dimensional space of possible block ﬁlls for the two securities. Because of the
+convexity, however, we only need to check the corners of the rectangle: (0%, 0%), (0%, 100%),
+12
+Electronic copy available at: https://ssrn.com/abstract=2912247
+
+(100%, 0%), and (100%, 100%). If the objective function is non-increasing at all the corners, it is
+non-increasing everywhere within the rectangle. As we walk down the ranking, if p securities
+were already chosen for block trading, the next one is picked only if the objective function is
+non-increasing at all the corners of a p + 1 dimensional box. This may appear to be a
+combinatorial problem. But, because we only need to check the worst cases, an efﬁcient
+algorithm exists as follows.
+Let B the list of securities selected for block trading. Start with an empty B.
+For each security i in the ranking:
+Let D1 = λ−1
+i
+E[Ci].
+Let D2 = 2 ∑j̸∈B Cov[Ci, Cj] −Var[Ci].
+Let D3 = 2 ∑j∈B min
+
+0, Cov[Ci, Cj]
+	
+.
+If D1 + D2 + D3 > 0, insert i into B.
+When we are considering security i for block trading, there are three different sorts of
+contributions to the potential change in the objective function. D1 is the average cost associated
+with security i. D2 is the sum of the covariance terms between security i and the ones that have
+not been selected for block trading. And, D3 is the worst-case sum of the covariance terms
+between security i and the ones already chosen for block trading. Because we are considering the
+worst case, only the negative terms are included in the sum for D3. The condition
+D1 + D2 + D3 > 0 implies that removing security i from the portfolio will never hurt the
+objective.
+References
+[1] H. M. Markowitz. Portfolio selection. Journal of Finance, 7:77–91, 1952.
+[2] R. Almgren and N. Chriss. Optimal execution of portfolio transactions. Journal of Risk, 3:5–40,
+2001.
+[3] Yu Hang Kan and Sanghyun Park. Optimal closing-price strategy: Peculiarities and
+practicalities. Journal of Investment Strategies, 6:69–85, 2016.
+13
+Electronic copy available at: https://ssrn.com/abstract=2912247

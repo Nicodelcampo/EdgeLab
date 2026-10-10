@@ -1,0 +1,161 @@
+{
+  "doc_id": 210,
+  "titulo": "Limitations of Quantitative Claims About Trading Strategy Evaluation",
+  "resumen_operativo": "El paper demuestra con dos ejemplos empíricos en el S&P 500 que el análisis cuantitativo tradicional (correcciones por múltiples trials, t-statistic, bootstrap, SPP) falla en predecir el fracaso de estrategias genuinas cuando cambian las condiciones de mercado. Una estrategia de momentum con moving average funcionó excepcionalmente por 48 años (Sharpe 1.90, t-stat 13.16) y luego fracasó completamente en el OOS (Sharpe -0.13); una estrategia de mean-reversion fue no rentable por 48 años y luego superó al buy-and-hold (Sharpe 0.47 vs 0.21). El mensaje central: detectar cambios en el régimen de mercado es más importante que los ajustes estadísticos convencionales.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "El sobreajuste a datos históricos que produce estrategias con alto rendimiento in-sample pero que fallan en out-of-sample. El paper argumenta que incluso estrategias con backtests muy largos (48 años) pueden sobreajustarse a condiciones de mercado específicas y fallar cuando éstas cambian.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "walk-forward validation"},
+        {"tipo": "CAUSA", "objeto": "data snooping"}
+      ],
+      "cita_textual": "the results in these papers deal only with the part of the problem related to overfitting and selection bias but not with the more important problem of the effect of changing market conditions on genuine strategies that overfit on persisting market conditions."
+    },
+    {
+      "nombre": "changing market conditions",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Cambios estructurales en la dinámica del mercado que invalidan estrategias previamente rentables. El paper documenta un shift estructural en la autocorrelación de retornos diarios del S&P 500 alrededor de 1997, pasando de positiva y significativa a mayormente negativa, lo que quebró una estrategia de momentum que funcionó 48 años y activó una de mean-reversion.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "backtest overfitting"},
+        {"tipo": "SE_OPONE_A", "objeto": "data snooping"}
+      ],
+      "cita_textual": "after about 1997, autocorrelation falls below the upper significance band and it is mostly negative."
+    },
+    {
+      "nombre": "data snooping",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo introducido por el uso repetido de los mismos datos en múltiples pruebas. El paper señala que combina tres procesos: optimización de parámetros (overfitting), selección y rechazo de modelos (survivorship bias), y reutilización de datos (data-snooping bias).",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "backtest overfitting"},
+        {"tipo": "SE_OPONE_A", "objeto": "walk-forward validation"}
+      ],
+      "cita_textual": "Bias arises from three processes: optimization of parameters, selection and rejection of models, and reuse of data. Optimization can result in overfitting to noise. Selection and rejection introduce survivorship bias, and data reuse introduces data-snooping bias."
+    },
+    {
+      "nombre": "Type I error",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Error de falsa detección (false discovery) en la evaluación de estrategias: concluir que una estrategia es rentable cuando en realidad no lo es. El paper muestra que la estrategia de moving average genera un Type I error masivo en el OOS a pesar de tener t-statistics extremadamente altos in-sample.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Type II error"},
+        {"tipo": "CAUSA", "objeto": "changing market conditions"}
+      ],
+      "cita_textual": "The quantitative analysis would have failed to predict the failure and would have resulted in a Type I error (false discovery)."
+    },
+    {
+      "nombre": "Type II error",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Error de falso rechazo (missed discovery): descartar una estrategia que sí es genuinamente rentable. El paper muestra que descartar la estrategia de mean-reversion basándose en 48 años de mal rendimiento habría sido un Type II error, ya que luego rindió Sharpe 0.47 en OOS.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Type I error"},
+        {"tipo": "CAUSA", "objeto": "changing market conditions"}
+      ],
+      "cita_textual": "Application of quantitative analysis in the in-sample would have led to a Type II error (missed discovery) and an opportunity loss."
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de rendimiento ajustado por riesgo. El paper muestra que el haircut Sharpe ratio propuesto por Harvey y Liu (2015) para corregir por múltiples trials no habría evitado el fracaso de la estrategia, ya que el problema no es de significancia estadística sino de cambio estructural.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "backtest overfitting"},
+        {"tipo": "USA", "objeto": "deflated Sharpe ratio"}
+      ],
+      "cita_textual": "Methods for adjusting the Sharpe ratio, called the haircut Sharpe ratio, to account for multiple trials are discussed in Harvey and Liu (2015). As we shall demonstrate with an example, these adjustments cannot guard against Type I errors (false discoveries) when a genuine strategy is used but there is a change in market conditions."
+    },
+    {
+      "nombre": "momentum",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de trend-following basada en moving average: comprar cuando el precio está por encima de la MA y vender cuando está por debajo. El paper la backtestea en el S&P 500 diario de 1950-1997 con períodos m de 2 a 20 días, obteniendo Sharpe máximo de 1.90 para m=2.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "moving average"},
+        {"tipo": "SE_OPONE_A", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "Simple moving average smoothing is used in popular strategies that attempt to capture price trends. In academic papers, these strategies are classified under price series momentum."
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia donde dos retornos simples negativos consecutivos disparan una compra (esperando reversión al alza) y dos positivos consecutivos disparan una venta. Backtesteada en S&P 500 diario de 1950-1997 resultó no rentable (Sharpe -0.04), pero en el OOS 1998-2016 rindió Sharpe 0.47 superando al buy-and-hold (0.21).",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "momentum"},
+        {"tipo": "USA", "objeto": "autocorrelation"}
+      ],
+      "cita_textual": "after two consecutive negative simple returns, the strategy expects a reversion to higher prices."
+    },
+    {
+      "nombre": "selection bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo que surge al elegir parámetros o modelos entre múltiples opciones. En el ejemplo de moving average, elegir m=2 (mejor rendimiento) o m=11 (mediana) implica selection bias. El paper argumenta que el sesgo de selección es a menudo el principal contribuyente al data-mining bias.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "data snooping"},
+        {"tipo": "CAUSA", "objeto": "Type I error"}
+      ],
+      "cita_textual": "In many cases, selection bias is the main contributor to data mining bias, for example when strategies have no parameters to vary."
+    },
+    {
+      "nombre": "bootstrap",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método de Monte Carlo usado para generar distribuciones muestrales de retornos de trading, centradas en media cero, para testear hipótesis nulas de rentabilidad. El paper lo aplica a la estrategia de moving average con m=11 y encuentra que la media in-sample está a más de 7 desviaciones estándar del cero, pero esto no predice el fracaso OOS.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "backtest overfitting"},
+        {"tipo": "USA", "objeto": "Monte Carlo simulation"}
+      ],
+      "cita_textual": "A bootstrap of the in-sample trade returns of the moving average strategy with m = 11 generated the sampling distribution shown in Figure 1. The distribution was centered at zero mean."
+    },
+    {
+      "nombre": "walk-forward validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Validación out-of-sample secuencial donde la estrategia se prueba en datos posteriores a los de entrenamiento. El paper argumenta que incluso la validación OOS es insuficiente porque la no estacionariedad de las series de precios y las colas gruesas implican que la significancia estadística es una variable aleatoria.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"},
+        {"tipo": "REQUIERE", "objeto": "changing market conditions"}
+      ],
+      "cita_textual": "Usually, a trading strategy is developed on in-sample data and validated on out-of-sample data. Although the academic community has been aware of the limited effectiveness of out-of-sample validation when multiple trials are involved, the practitioner community has been slow in recognizing these problems."
+    },
+    {
+      "nombre": "autocorrelation",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Correlación serial de retornos. El paper documenta que la autocorrelación rolling de 252 días de los retornos simples diarios del S&P 500 fue positiva y significativa de 1950 a 1997, pero se volvió no significativa y mayormente negativa después de 1997, causando el fracaso de estrategias de momentum y el éxito de mean-reversion.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "momentum"},
+        {"tipo": "CAUSA", "objeto": "changing market conditions"}
+      ],
+      "cita_textual": "autocorrelation was overall positive from 1950 to 1997 and also significant from about 1966 to 1988. However, the autocorrelation became non-significant afterward and mostly negative."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Una estrategia long-only de moving average sobre el S&P 500 diario rindió Sharpe 1.90 (m=2) y t-stat 13.16 en el período in-sample 1950-1997, pero en el forward sample 1998-2016 fracasó completamente con Sharpe -0.13 para m=11 y rendimiento negativo para todos los valores de m entre 2 y 20.",
+      "mercado": "US equities (S&P 500 index)",
+      "periodo": "In-sample: 1950-1997; Out-of-sample: 1998-2016",
+      "magnitud": "In-sample Sharpe max: 1.90 (m=2), Sharpe mediana (m=11): ~1.10, t-stat: 8.52; OOS Sharpe m=11: -0.13; OOS buy-and-hold Sharpe: 0.21",
+      "condiciones": "Comisión $0.01/share; daily timeframe; closing prices; long-only; estrategia de momentum con MA(m) para m=2 a 20",
+      "robustez": "alta",
+      "cita_textual": "Table 2 shows the forward performance of the strategy for m = 11. The annualized return is negative, worst drawdown is in excess of 55% and Sharpe is -0.13, i.e., the strategy fails in the forward sample."
+    },
+    {
+      "afirmacion": "Una estrategia de mean-reversion simple (comprar tras dos retornos negativos consecutivos, vender tras dos positivos) fue no rentable en 1950-1997 (Sharpe -0.04, drawdown 74%) pero altamente rentable en 1998-2016 (Sharpe 0.47 vs 0.21 del buy-and-hold, outperformance de ~300 bps, t-stat 2.02).",
+      "mercado": "US equities (S&P 500 index)",
+      "periodo": "In-sample: 1950-1997; Out-of-sample: 1998-2016",
+      "magnitud": "OOS Sharpe: 0.47 (estrategia) vs 0.21 (buy-and-hold); annualized return OOS: 7.0% vs 4.2% buy-and-hold; worst drawdown OOS: 32.3% vs 56.8%",
+      "condiciones": "Comisión $0.01/share; daily timeframe; closing prices; regla de dos retornos consecutivos del mismo signo",
+      "robustez": "alta",
+      "cita_textual": "The strategy annualized return outperforms that of buy and hold by nearly 300 basis point and worst drawdown is about 40% lower. Volatility is also lower and Sharpe is 0.47 for the strategy as compared to 0.21 for buy and hold."
+    },
+    {
+      "afirmacion": "El cambio de rendimiento de ambas estrategias se explica por un shift estructural en la autocorrelación de retornos diarios del S&P 500: positiva y significativa antes de 1997, no significativa y mayormente negativa después. Esto demuestra que el cambio en condiciones de mercado, no el overfitting, es la causa principal de fracaso de estrategias.",
+      "mercado": "US equities (S&P 500 index)",
+      "periodo": "1950-2016",
+      "magnitud": "Autocorrelación positiva y significativa de 1966 a 1988; shift estructural cerca de finales de 1997",
+      "condiciones": "Autocorrelación rolling de 252 días de retornos simples diarios; bandas de confianza al 95%",
+      "robustez": "alta",
+      "cita_textual": "Specifically, autocorrelation was overall positive from 1950 to 1997 and also significant from about 1966 to 1988. However, the autocorrelation became non-significant afterward and mostly negative. That caused a major change in market dynamics that impacted the profitability of certain trading strategies."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El mensaje central de que los cambios de régimen invalidan backtests es directamente aplicable a estrategias intradía en ES: un sistema rentable en un régimen de baja volatilidad puede fracasar cuando el mercado cambia a alta volatilidad o viceversa. El monitoreo de métricas como la autocorrelación intradía podría servir como alerta temprana."
+  }
+}

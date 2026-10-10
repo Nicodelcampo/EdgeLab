@@ -1,0 +1,39 @@
+{
+  "doc_id": 240,
+  "titulo": "Multi-Level Order Flow Imbalance in a Limit Order Book",
+  "resumen_operativo": "Analiza el order flow imbalance en múltiples niveles del libro de órdenes, extendiendo el concepto de OBI tradicional (nivel 1) a niveles más profundos. Investiga cómo la información contenida en desbalances de flujo de órdenes a distintas profundidades del LOB puede mejorar la predicción de movimientos de precio y la caracterización del estado de microestructura.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Multi-Level Order Flow Imbalance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Extensión del order flow imbalance tradicional más allá del nivel 1 del LOB, capturando desbalances entre flujo de compra y venta en múltiples niveles de profundidad del libro de órdenes.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Order Flow Imbalance"},
+        {"tipo": "PREDICE", "objeto": "price movements"}
+      ],
+      "cita_textual": "Multi-Level Order Flow Imbalance in a Limit Order Book."
+    },
+    {
+      "nombre": "Order Flow Imbalance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre el flujo de órdenes de compra y venta en el LOB, tradicionalmente medida al mejor nivel (top-of-book). Señal de microestructura que indica presión direccional y tiene poder predictivo sobre movimientos de precio.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "directional order flow pressure"},
+        {"tipo": "PREDICE", "objeto": "short-term price direction"}
+      ],
+      "cita_textual": "Order flow imbalance captures whether buying or selling pressure dominates in the limit order book."
+    },
+    {
+      "nombre": "Limit Order Book Depth Levels",
+      "tipo": "dato",
+      "definicion_en_contexto": "Múltiples niveles de precios en el LOB (Level 1 = best bid/ask, Level 2 = second best, etc.) que contienen información granular sobre la intención de trading y la profundidad de liquidez. Los desbalances a distintos niveles pueden tener contenido informativo diferencial.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Multi-Level Order Flow Imbalance"}
+      ],
+      "cita_textual": "Multi-level order book data contains granular information about trading intentions at different price depths."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Concepto de OBI multi-nivel es inherentemente intradiario; explota información granular de LOB para predicción de movimientos de precio de corto plazo."}
+}

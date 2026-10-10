@@ -1,0 +1,129 @@
+{
+  "doc_id": 162,
+  "titulo": "High-Frequency Trading Synchronizes Prices in Financial Markets",
+  "resumen_operativo": "El autor demuestra empíricamente y mediante un modelo teórico que el trading de alta frecuencia (HFT) actúa sincronizando los precios entre activos relacionados a nivel de milisegundos. Esta actividad reduce la selección adversa y los costos de transacción al mejorar el price discovery cruzado, aunque introduce riesgos de fragilidad sistémica en episodios de estrés extremo.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Operativa algorítmica autónoma de alta velocidad que busca ganancias rápidas mediante conexiones de baja latencia a los exchanges, siendo responsable principal de sincronizar los precios en el mercado.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "transaction costs"},
+        {"tipo": "CAUSA", "objeto": "price synchronization"}
+      ],
+      "cita_textual": "autonomous computerized trading that seeks quick profits using high-speed connections to financial exchanges."
+    },
+    {
+      "nombre": "price synchronization",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Ajuste casi instantáneo del precio de un activo en respuesta a movimientos en los precios de otros activos económicamente relacionados.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "adverse selection"},
+        {"tipo": "CAUSA", "objeto": "price discovery"}
+      ],
+      "cita_textual": "making the values of related securities change contemporaneously. With a model, I demonstrate how price synchronization leads to increased efficiency"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El costo o concesión requerida para ejecutar una orden en el mercado, el cual disminuye drásticamente a medida que el HFT impone sincronía estructural en la información.",
+      "relaciones": [],
+      "cita_textual": "prices are more accurate and transaction costs are reduced."
+    },
+    {
+      "nombre": "adverse selection",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El costo originado por proveer liquidez frente a traders con información superior, mitigado cuando los algoritmos incorporan rápidamente señales cruzadas de múltiples activos.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "liquidity providers are more confident in market prices and require less of a price concession to transact with an order. In finance, this is known as a reduction in adverse selection costs"
+    },
+    {
+      "nombre": "informed trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Actividad de inversores que operan direccionalmente poseyendo predicciones de valor futuro; el paper demuestra que sus ganancias caen ante la competencia provocada por la rápida difusión algorítmica.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "price discovery"}
+      ],
+      "cita_textual": "informed investors – those who always submit a buy (sell) order when the price will be higher (lower) – make less profits."
+    },
+    {
+      "nombre": "liquidity provision",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "La acción de facilitar negociaciones absorbiendo órdenes agresivas; rol fundamental de la microestructura que ha sido adoptado de facto por los algoritmos HFT a través de diferentes exchanges.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "high-frequency trading"}
+      ],
+      "cita_textual": "HFT (now acting as the de facto liquidity providers) can easily perform this task."
+    },
+    {
+      "nombre": "lead-lag effect",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El retraso cronológico con el cual el precio de un instrumento reacciona al movimiento de otro fuertemente correlacionado; el paper demuestra empíricamente cómo esta ventana temporal colapsó a niveles de milisegundos.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "price synchronization"}
+      ],
+      "cita_textual": "I measure the average normalized price response of security i to a price movement in security j!=i... in 2010 it took less than 10 seconds."
+    },
+    {
+      "nombre": "price discovery",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Proceso mediante el cual la nueva información fluye y es incorporada en los precios exactos del libro de órdenes, el cual resulta sustancialmente amplificado por la sincronización algorítmica constante.",
+      "relaciones": [],
+      "cita_textual": "When prices are synchronized, information diffuses rapidly from security to security"
+    },
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Técnica implícita mediante la que firmas de alta frecuencia enlazan la liquidez y arbitran desviaciones de las correlaciones macroestructurales entre los instrumentos.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "high-frequency trading"}
+      ],
+      "cita_textual": "Keywords: algorithmic trading; automated trading; high-frequency trading; statistical arbitrage."
+    },
+    {
+      "nombre": "market making",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Postura tradicional de creación de mercado pasiva; el paper señala que actualmente esta provisión en valores y derivados contemporáneos se delega y domina vía máquinas con conectividad HFT.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "liquidity provision"}
+      ],
+      "cita_textual": "Of course, before HFT existed, human liquidity providers would have done their best to keep prices aligned. The point is that computers are much better than humans at performing this task."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La abrumadora mayoría de la adaptación inicial del precio de un activo a los movimientos de otro activo relacionado es propulsada de forma directa por transacciones exclusivas de firmas HFT.",
+      "mercado": "US equities (NASDAQ, 40 large-cap stocks)",
+      "periodo": "Febrero 2010 vs 2000 y 2005",
+      "magnitud": "Ventanas temporales decrecen de tomar varios minutos en el año 2000 a sub-10 segundos en el 2010",
+      "condiciones": "Analizado aislando algorítmicamente el tipo de participantes detrás de la orden causante del cambio de mid-price.",
+      "robustez": "alta",
+      "cita_textual": "As seen in the figure, an overwhelming majority of the initial price response is due to HFT activity."
+    },
+    {
+      "afirmacion": "Existe un nexo estructural fuerte que vincula directamente a la actividad algorítmica con la fuerza cohesiva del mercado: a mayor grado de penetración de HFT, más vigorosa es la correlación del activo.",
+      "mercado": "US equities (120 stocks representativos de distintos caps)",
+      "periodo": "Febrero 22-26, 2010",
+      "magnitud": "Correlación de Pearson de 0.80 y coeficiente de determinación de 0.64",
+      "condiciones": "Correlación transversal entre métricas estáticas utilizando franjas discretas de retornos en barras de 30 segundos.",
+      "robustez": "alta",
+      "cita_textual": "The correlation between these variables is 0.80, and the R2 from a linear fit is 0.64. HFT activity varies significantly from security to security, and synchronization explains the majority of this variance."
+    },
+    {
+      "afirmacion": "Una sincronía total de los precios neutraliza el edge aislado bajando consistentemente los costos transaccionales agregados, a la vez que fuerza a los flujos informados direccionales puros a licuar drásticamente sus expectativas de ganancia.",
+      "mercado": "Teórico (Modelo de Glosten-Milgrom multivariable)",
+      "periodo": "no especificado",
+      "magnitud": "Baja documentada en la ganancia por unidad transaccional simulada (ej. de 0.5 absoluto baja al entorno del 0.46875)",
+      "condiciones": "Estudiado algebraicamente condicionado en combinatoria simple de prioridades en el arribo estocástico de las órdenes.",
+      "robustez": "media",
+      "cita_textual": "When prices are synchronized, information diffuses rapidly from security to security and informed investors who trade different but related securities are forced to compete with one another. They make less profit as a result."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "Confirma de plano la necesidad ineludible de enmarcar al universo operativo intradía como un entorno unificado multi-activo, con gran provecho para señales predictivas rápidas de lead-lag explotando order flow y limit order book del NQ."
+  }
+}

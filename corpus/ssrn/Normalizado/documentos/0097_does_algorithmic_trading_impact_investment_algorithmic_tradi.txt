@@ -1,0 +1,3559 @@
+THE GOOD AND EVIL OF ALGOS: INVESTMENT-TO-PRICE SENSITIVITY
+AND THE LEARNING HYPOTHESIS
+NIHAD ALIYEV a,∗, FARIZ HUSEYNOV b,∗, AND KHALADDIN RZAYEV c, d, e,∗
+a Macquarie University
+b North Dakota State University
+c University of Edinburgh
+d Koc University
+e Systemic Risk Centre, London School of Economics
+Abstract. We investigate how firm managers’ learning from share prices is influenced
+by two different types of algorithmic trading (AT) activities in their shares. We find that
+liquidity-supplying AT enhances managers’ ability to learn from share prices by encouraging information acquisition in markets, leading to increased investment sensitivity to share
+prices. However, liquidity-demanding AT impairs this learning process by discouraging
+information acquisition.
+Firm operating performance correspondingly improves with
+liquidity-supplying AT and deteriorates with liquidity-demanding AT. To establish
+causality, we use NYSE’s Autoquote implementation as a source of exogenous variation in
+AT. Our findings demonstrate AT’s significant impact on real economic outcomes.
+Keywords: Managerial learning, investment-to-price sensitivity, algorithmic trading, real effects of algorithmic trading.
+(∗) Nihad Aliyev (nihad.aliyev@mq.edu.au), Fariz Huseynov (fariz.huseynov@ndsu.edu), Khaladdin
+Rzayev (khaladdin.rzayev@ed.ac.uk). We thank Inji Allahverdiyeva, Leonidas Barbopoulos, Thierry Foucault, Urzua Francisco, Gbenga Ibikunle, Albert Menkveld, Joshua Mollner, Marios Panayides, Tanseli
+Savaser, and conference/seminar participants of the 2022 Annual Financial Management Association Meeting, Atlanta, USA; 2022 Financial Management & Accounting Research Conference, Limassol, Cyprus for
+useful comments. The Online Appendix that accompanies this paper is appended to this version of the
+paper.
+1
+
+2
+1. Introduction
+Firm managers have access to rich internal information, including the firm’s operational
+metrics and strategic plans. Yet in a market-based economy where stock prices reflect the
+collective expectations of a broad set of investors, managers may also learn from the market. Stock prices aggregate the beliefs of diverse market participants, incorporate new
+information quickly, and can reveal insights that internal sources may overlook — particularly under uncertainty. Observing market prices offers a cost-effective way for managers
+to update their beliefs about investment opportunities when internal signals are noisy or
+incomplete. Even with detailed internal knowledge, market signals can serve as a valuable
+complement and help managers refine their expectations and improve decision-making.
+As managers increasingly rely on market signals, the evolving structure of markets plays
+a critical role in shaping the quality of this information. In recent decades, technological
+advancements have reshaped the trading mechanism in financial markets. Algorithmic
+trading (AT) is one of the examples of these technological changes that attracted most attention due to their prevalence in US equities trading volume.1 Motivated by their prevalence in equity markets, several studies have investigated the impact of AT on market quality and in particular, liquidity and price discovery.2
+In this paper we ask the following research question: does the proliferation of algorithmic trading (AT) produce real economic effects? According to the literature, on the one
+hand, ATs increase liquidity through processing public information quickly, decreasing
+bid-ask spread, and trading against transitory price pressures. For example, Menkveld
+(2016) argues that replacing market makers in standard microstructure models with AT
+would result in less adverse-selection cost and tighter bid-ask spread and encourage other
+1AT (also known as automated trading or algo-trading) uses a computer program that follows an algorithm to place and manage orders and trades. We take a broader definition of automated trading and define
+AT as all participants who use algorithms to submit and cancel orders, including high-frequency traders
+(HFT), which is a subset of AT with considerably higher trading speeds. Throughout this paper, we use
+the acronym AT interchangeably to refer to both algorithmic trading and algorithmic traders. ATs drive the
+most of trading in financial markets; for instance, a subset of AT, high-frequency trading (HFT), accounts
+for 55% of US equities daily trading volume in 2017. Furthermore, ATs are responsible for as much as 80%
+(90%) of trading volume in US stock (index) futures in 2018 (see CFTC 2019).
+2 See, for example, Brogaard, Hendershott and Riordan (2014, 2019), Hendershott, Jones and Menkveld
+(2011) and Weller (2018).
+
+3
+market participants to acquire information. On the other hand, the literature also shows
+that due to their back-running and order anticipation strategies, ATs crowd out the acquisition of new information by market participants and reduce stock price informativeness
+(e.g., Weller 2018; Yang and Zhu 2020).
+A potential reason for the mixed results is that most studies in this literature focus on
+AT as being homogeneous; however, some ATs can be “good” and others “bad” for the
+market. One important dimension of heterogeneity is whether the algorithm is designed
+to supply or demand liquidity. This heterogeneity is important for firm managers relying
+on stock prices for information about investment decisions — known as the “managerial
+learning hypothesis” — due to their impact on price informativeness.
+In this paper, we distinguish between these AT strategies and investigate how they
+impact managerial learning. Specifically, we investigate the empirical relation between
+liquidity-supplying and demanding AT strategies and the sensitivity of corporate investment to stock prices (investment-to-price sensitivity).
+While we expect liquiditysupplying ATs to foster the acquisition of fundamental information by market participants
+and help firm managers to learn more from stock prices, liquidity-demanding ATs are expected to deter it due to discouraging information acquisition.
+The relation between AT and investment-to-price sensitivity is important for several reasons. First, theory dating back to Hayek (1945) suggests that one of the main roles of financial markets is to aggregate information from many different market participants who
+do not have direct channels of communication with the firm outside the trading. Dow and
+Gorton (1997) argue that traders produce and trade on information about future investment decisions constructing the “prospective” role of stock market prices and hoping that
+managers’ investment decisions are guided by the price signals. As Luo (2005) argues, if
+managers maximize firm value, one would expect that the informational efficiency of the
+market contributes to the economic efficiency of investment decisions inside the company.
+Managers may feel pressure from stock prices to pursue a specific investment decision,
+hence observe stock prices to understand the stock market’s expectations.
+
+4
+Similarly, Subramanyam and Titman (1999) argue that the serendipitous nature of information accumulation process in stock markets can favor public markets as a source of
+valuable and complete information. Their model shows that such information is more
+likely to relate to issues outside of the firm regarding customers and competitors. Subsequent studies have shown that managers can learn valuable information about the value of
+their investment decisions by observing the stock prices (e.g., Chen, Goldstein and Jiang
+2007; Foucault and Fr´esard 2012). Thus, stock prices complement the information of firm
+managers and guide them in making investment decisions. Our study sheds light on the
+extent to which AT distorts the informational role of financial markets.
+Second, previous AT studies mainly focus on the impact of AT on different aspects of
+market quality (liquidity and price discovery). However, an AT-sourced liquidity or price
+discovery does not necessarily imply changes in firm managers’ investment because market quality in sub-second intervals may not be important for real investment decisionmaking. The economic effects of AT depend on the extent to which stock prices reveal
+information for real decision-making, not on the overall impact of AT on price discovery.
+These two notions of efficiency are distinguished by Bond, Edmans and Goldstein (2012):
+(i) forecasting price efficiency (FPE), defined as the extent to which the price of a given
+security accurately predicts the future value of that security and (ii) revelatory price efficiency (RPE), defined as the extent to which prices reveal information necessary for decision makers. While previous studies of AT mainly focus on the role of AT in driving the
+FPE, this paper focuses on the impact of AT on RPE.
+Third, ATs drive most of the trading in financial markets; for example, high frequency
+trading (HFT) as a subset of AT represents about 50% of US equities trading volume.
+Therefore, AT is at the very core of market design issues to promote market liquidity and
+attract trading volume. Budish, Cramton and Shim (2015) view the HFT arms race as a
+symptom of flawed market design and advocate for frequent batch auctions instead of the
+continuous limit order book to reduce the socially wasteful arms race between ATs/HFTs.
+Understanding the real economic effects of AT can help policymakers and market organizers to design rules that optimally balance the costs and benefits of AT.
+
+5
+This paper shows that the economic effects of AT extend beyond trading on secondary
+markets. We test the effects of liquidity-supplying and liquidity-demanding AT on firms’
+investment-to-price sensitivity. To proxy for liquidity-supplying AT, we calculate a normalized measure of electronic message traffic (quote-to-trade ratio, QT) for a large sample
+of US-listed stocks during 1996-2019. We measure the level of liquidity-demanding AT for
+a random sample of 120 stocks (given the massive size of high-frequency data) during the
+same period in the spirit of Budish, Cramton and Shim (2015) as the number of latency
+arbitrage opportunities (LAO) that ATs can exploit in high frequency for each stock separately for each year. We use capital expenditures, including and excluding research and
+development expenses, as measures of firms’ investment.
+We find that the amount of liquidity-supplying (resp. liquidity-demanding) AT activities in firms’ stocks significantly increases (resp. decreases) their investment-to-price
+sensitivity. As discussed, financial markets process available information of market participants and reflect that in stock prices, and firm managers have incentives to learn from
+stock prices for optimal investment decisions (e.g., Dow and Gorton 1997; Subrahmanyam
+and Titman 1999). Our findings suggest that different AT strategies impact managerial
+learning from stock prices differently.
+We begin our analysis with the empirical relation between two AT proxies (QT and
+LAO) and investment-to-price sensitivity in the ordinary least squares (OLS) setting. We
+find that, on average, liquidity-supplying AT (QT) increases the effect of a one standard
+deviation shock to the stock price on the next year’s capital expenditures including research and development expenses (CAPEXRND) by about 21% . We also find that, on
+average, liquidity-demanding AT (LAO) decreases the effect of a one standard deviation
+price shock on the next year’s CAPEXRND by about 6%. We also investigate the impact
+of LAO on our investment measures on a quarterly basis (with a larger sample size) and
+obtain consistent results. Our findings suggest that increased liquidity-supplying (resp.
+liquidity-demanding) AT activities in firms’ stocks make stock price signals more (resp.
+less) useful for firm managers to make investment decisions.
+
+6
+It is possible that the relationship between AT and investment-to-price sensitivity is not
+causal. For example, Biais and Foucault (2014) argue that ATs are inherently attracted to
+liquid stocks. This implies that some ATs may trade the stocks of the firms with greater
+investment-to-price sensitivity and benefit from their price informativeness, raising a reverse causality concern. There may also be omitted variables that affect the trading/order
+book activity and firms’ investment decisions. To establish causality, we use a two-stage
+least squares (2SLS) model that exploits the staggered implementation of Autoquote in
+2003 in NYSE as an instrumental variable (e.g., Hendershott, Jones and Menkveld 2011;
+Li, Ye and Zheng 2024). Autoquote replaced manual dissemination of the inside quote by
+specialists in NYSE with a new automated quote and provided quicker feedback to ATs.
+Therefore, it can serve as an instrument for both liquidity-demanding and supplying AT.
+Consistent with the OLS results, we find that there is a strong positive (negative) causal
+link between liquidity-supplying (demanding) AT and investment-to-price sensitivity.
+We link the relationship between AT strategies and investment-to-price sensitivity
+through the impact of AT on RPE which reveals information necessary for decision makers
+in two ways. First, we examine the impact of QT and LAO on the information acquisition
+of market participants as measured by the number of downloads of financial reporting
+data of firms from the SEC’s EDGAR (Electronic Data Gathering, Analysis, and Retrieval)
+database. The idea is that ATs impact RPE by influencing how other market participants
+acquire information. Although financial data of firms in EDGAR is not new to firm managers, information acquisition of market participants is likely to increase RPE as investors
+usually combine their private information with the information posted by firms to make
+their trading decisions (e.g., Edmans, Goldstein and Jiang 2015). Consistently, we find a
+positive (negative) association between QT (LAO) and EDGAR downloads, suggesting
+that liquidity-supplying (liquidity-demanding) ATs encourage (discourage) information
+acquisition in financial markets.
+Second, we examine the impact of AT on institutional traders’ turnover. We measure
+institutional traders’ turnover based on how frequently institutional investors rotate stock
+
+7
+positions in their portfolio following Gaspar, Massa and Matos (2005). The idea is that
+short-term institutions are better informed and that they trade actively to exploit their
+informational advantage (e.g., Yan and Zhang 2009). Consistent with our previous findings, we find that the effect of QT (resp. LAO) on institutional traders’ turnover is positive
+(resp. negative) and statistically significant in both the OLS and 2SLS models with Autoquote as an instrument. This further suggests that liquidity-supplying ATs encourage
+the acquisition of information in financial markets, whereas liquidity-demanding ATs discourage it.
+We extend our baseline tests in various directions. First, we investigate the impact of
+AT on the operating performance of firms as measured by the return on assets and sales
+growth. In both the OLS and 2SLS models, we find that liquidity-supplying ATs significantly improve firm performance and liquidity-demanding ATs harm it. This is intuitive given our previous findings that liquidity-supplying ATs increase the amount of information that managers can extract from stock prices and thus help them make better
+investment decisions, whereas it is the opposite for liquidity-demanding ATs. Second,
+we control for several additional factors to rule out explanations other than managerial
+learning for our main findings. We find that the association between the AT proxies and
+investment-to-price sensitivity remain unchanged after controlling for (i) managers‘ existing information, (ii) analyst coverage, (iii) firms’ capital constraints, and (iv) institutional
+trades. We also run several additional robustness tests and report them in the Online Appendix.
+The paper is structured as follows. Section 2 relates the paper to the literature by highlighting our contributions. Section 3 describes the sample selection, measures, and descriptive statistics. In Section 4, we present the main findings about the impact of AT on
+investment-to-price sensitivity and relate our findings to the impact of AT on RPE using
+EDGAR and institutional traders’ turnover. In Section 5, we present the extensions and
+robustness checks. Section 6 concludes. All other tests mentioned but not reported in the
+paper are included in the Online Appendix.
+
+8
+2. Contributions to related literature
+The paper makes several contributions to the literature. First, we extend the managerial
+learning literature by examining how AT affects the role of financial markets in economic
+decision-making. Prior research has established that informative stock prices enhance various corporate decisions, including capital investment (Durnev, Morck and Yeung 2004;
+Chen et al. 2007; Foucault and Fresard 2012; Dessaint, Foucault, Fr´esard and Matray 2019),
+labor investment (Ben-Nasr and Alshwer 2016), mergers and acquisitions (Luo 2005), and
+dividend policy (De Cesari and Huang-Meier, 2015). These studies primarily focus on
+markets dominated by human decision-makers. Given that modern financial markets are
+increasingly algo-driven, understanding whether and how AT impacts managerial learning from stock prices is critical. This question becomes even more critical given that AT’s
+impact on market quality depends on the specific trading strategies employed, yet we
+know little about how these strategies affect long-term economic outcomes.3
+Two related strands of research explore AT’s longer-term effects. The first examines AT’s
+impact on price informativeness, with conflicting results: while Chakrabarty, Moulton and
+Wang (2015) and Chordia and Miao (2020) find that AT enhances price informativeness
+around earnings announcements, Weller (2018) and Lee and Watts (2021) document that
+AT decreases fundamental information acquisition. The second strand investigates corporate finance implications, again with mixed findings: Hatch, Johnson, Wang and Zhang
+(2021) show AT increases firm value, while Ye, Zheng and Zhu (2023), using the SEC’s
+Tick Size Pilot Program, find that reduced AT activity is one channel through which larger
+tick sizes improve managerial learning.
+3 While much of the existing literature has concentrated on short-term market quality at second and
+millisecond frequencies (Menkveld 2016), these studies show mixed results both theoretically and empirically. Theoretically, on the one hand, Budish, Cramton and Shim (2015), Biais and Foucault (2014), and
+Biais, Foucault and Moinas (2015) document the socially wasteful arms race between ATs/HFTs (see also
+Aquilina, Budish and O’Neill 2022). On the other hand, Jovanovic and Menkveld (2016) argue that ATs
+improve gains from trade through their greater willingness to provide liquidity. Empirically, several studies show that AT increases liquidity through processing public information quickly, decreasing spread, and
+trading against transitory price pressures (Brogaard, Hendershott and Riordan 2019). In contrast, due to
+their back-running and order anticipation strategies, AT may also discourage the acquisition of new information and worsen price discovery (e.g., Dugast and Foucault 2018; Yang and Zhu 2020; Foucault, Kozhan
+and Tham 2017).
+
+9
+We extend this literature in two important ways. First, we reconcile the conflicting
+findings by demonstrating that AT’s impact on long-term price informativeness and corporate decisions depends on the trading strategies employed. Specifically, we find that
+while liquidity-supplying algorithmic strategies enhance the feedback loop between markets and corporate decisions, aggressive liquidity-demanding strategies impair it. This
+distinction, previously unexplored in the context of managerial learning, has important
+implications for understanding how technological changes in financial markets affect real
+economic outcomes.
+Second, we build on the findings of Ye, Zheng, and Zhu (2023) regarding the Tick Size
+Pilot Program and its impact on AT and corporate decision-making. Ye, Zheng, and Zhu
+(2023) find that increasing tick sizes during the program reduces AT activity and therefore
+improves managerial learning. However, Barardehi et al. (2024) question this interpretation, arguing that the observed effects of Tick Size Pilot studies on information acquisition
+are driven more by changes in liquidity rather than by AT activity itself. To overcome this
+limitation of Tick Size Pilot studies, our analysis focuses on specific AT strategies to offer
+a clearer picture of the underlying mechanisms.
+We confirm that certain types of AT can indeed impair managerial learning from
+stock prices, consistent with Ye, Zheng, and Zhu (2023), but this effect is concentrated in liquidity-demanding strategies. This finding also aligns with prior research by
+Hagstr¨omer and Nord´en (2013) and Menkveld (2013), which shows that larger tick sizes
+disproportionately discourage liquidity-demanding AT (which pays the spread) while
+having less impact on liquidity-supplying AT (which earns the spread). Our findings suggest that the benefits of larger tick sizes on investment-to-price sensitivity and managerial
+learning stem from a shift in the composition of AT strategies rather than an overall reduction in AT activity. Specifically, the reduction in liquidity-demanding AT appears to
+be the key channel through which larger tick sizes increase investment-to-price sensitivity
+and managerial learning.
+
+10
+3. Data and descriptive statistics
+3.1. Sample selection. We compile data from multiple sources. From Compustat, we obtain firms’ market value of equity, total assets, capital expenditures, research and development (R&D) expenses, sales, cash flows, and additional variables that serve as proxies for
+firm profitability and financial policy for the period of 1996–2019. We exclude financial
+firms (SIC codes between 6000 and 6999) and international affairs and non-operating establishments (SIC codes 9000–9999) as the financial statement numbers of these industries
+are dependent on statutory capital requirements. We also exclude firms with missing information on total assets, equity, and capital expenditures, as well as firms with less than
+3 years of observations and firms with market values less than $10 million.
+We use the quote-to-trade ratio (QT) and the number of latency arbitrage opportunities (LAO) as two proxies of AT. To calculate QT, we obtain hourly-aggregated intraday
+data on trades and quotes for all ordinary common shares listed on the NYSE, AMEX,
+and NASDAQ from 1996 to 2019 from Refinitiv Tick History (RTH). For LAO, we access
+transaction-level data and the first level of limit orders for a randomly selected sample of
+120 firms included in the widely-accepted NASDAQ HFT dataset, also provided by RTH,
+for the same period.
+In the models with Compustat and RTH data for the baseline analyses, our final sample
+consists of 57,656 firm-year observations with QT as the AT measure and 1,437 firm-year
+observations with LAO as the AT measure. Furthermore, for LAO, we also conduct a
+quarterly analysis with 7,504 firm-quarter observations using Compustat quarterly fundamentals data.
+We complement our main datasets with the daily data on stock prices, bid and ask
+quotes, trade volume, and shares outstanding from the Center for Research in Security
+Prices (CRSP), institutional ownership data obtained from Refinitiv, number of EDGAR
+downloads from the SEC, insider trading activities from Thomson Financial’s TFN database, and the number of analysts following the stock from I/B/E/S to run additional robustness tests.
+
+11
+3.2. AT measures. One needs to observe whether a particular order is generated and submitted by computer algorithms to measure AT activities. This data is not generally available, and therefore, researchers use various proxies for AT. A key challenge in using these
+proxies arises from the diverse strategies ATs use, particularly liquidity-supplying and
+liquidity-demanding strategies. It is important to distinguish between these strategies because they are expected to have contrasting impacts on market quality (e.g., Hagstr¨omer
+and Nord´en 2013).
+We follow Hendershott, Jones and Menkveld (2011) and Malceniece, Malcenieks and
+Putnins (2019) and use the ratio of number of quote messages to number of trades, QTi,t,
+as our proxy for liquidity-supplying strategies employed by AT.4 The intuition of this
+measure is that the majority of message activity is generated by liquidity-supplying ATs.
+Therefore, the variation in QTi,t primarily sources from limit order submissions and cancellations employed by liquidity-supplier ATs. This argument is explicitly noted by Hendershott, Jones and Menkveld (2011) as “...variation in our AT measure is driven mainly by
+variation in limit order submissions and cancellations. This means that, for the most part, our
+measure is picking up variation in algorithmic liquidity supply.”
+We measure the liquidity-demanding AT activities as the number of latency arbitrage
+opportunities or “stale” quotes in the spirit of Budish, Cramton and Shim (2015). They
+identify stale quotes using the jump size in mid-price. Specifically, the quote at time z −1
+is considered as stale if the absolute value of mid-price changes from time z −1 to z exceeds half-spread. The intuition is that such stale quotes can be exploited (“sniped”) by
+opportunistic ATs (or high frequency bandits, as Menkveld and Zoican 2017 label them)
+that demand liquidity before being cancelled. Budish, Cramton and Shim (2015) theoretically show that some ATs primarily engage in sniping as opposed to liquidity provision, and Aquilina, Budish and O’Neill (2022) empirically document that latency arbitrage
+races are very frequent and most of the activity in these races is aggressive (liquiditydemanding). Using the intuition of Budish, Cramton and Shim (2015) conservatively, we
+4 The number of quote messages is the sum of best bid and best ask updates during the hourly interval,
+where an update is a change to the price or quantity at either the best bid or offer. The quote messages
+capture all order submissions, amendments, and cancellations, at or within the best prevailing quotes.
+
+12
+measure the jump size based on the difference between the mid-price at time z and the
+ask and bid quotes at time z −1. Formally, if MidPricez > Askz−1 + ∆, where ∆= 0.01
+USD then there is a profitable latency arbitrage opportunity and a liquidity-demanding
+AT can submit a limit buy order at Askz−1 + ∆to exploit this opportunity at time z. Similarly, if MidPricez < Bidz−1 −∆, then an opportunistic AT can submit a limit sell order at
+Bidz−1 −∆to exploit this opportunity at time z.
+The main challenge of computing the number latency arbitrage opportunities is that it
+requires ultra high-frequency data. For this, we obtain the first-level of quote data from
+RTH. Our measure LAOi,t is the total number of first-level quotes satisfying the above
+criteria for each firm i in year t (or quarter q in the quarterly analysis). Given the massive
+size of this data, we use a random sample of 120 firms included in the widely-accepted
+NASDAQ HFT dataset (e.g., Brogaard, Hendershott and Riordan 2014).
+3.3. Investment and operating performance measures. We use two different investment
+measures to capture different aspects of firms’ investment activities. The first measure is
+CAPEXi,t+1, defined as the capital expenditure for year t + 1 divided by the total asset
+for year t. The second measure is CAPEXRNDi,t+1, defined as the sum of capital expenditures and R&D expenses for year t + 1 divided by the total asset for year t. We also
+use two operating performance measures: return on assets (ROAi,t+1) and sales growth
+(SGi,t+1). ROAi,t+1 is computed as the earnings before interest, taxes, depreciation, and
+amortization in year t + 1 (EBITDAi,t+1) divided by total assets in the same year. SGi,t+1
+is the percentage change in total revenue from year t to t + 1.
+3.4. Other variables. We use several other variables in our analysis. The normalized stock
+price (Tobin’s Q) for firm i in year t (Qi,t) is computed as the market value of equity plus
+the book value of assets minus the book value of equity, scaled by the book value of assets.5
+We control for the cash flow scaled by the book value of assets for firm i at time t (CFi,t)
+5 We calculate the book value of equity as the book value of the stockholder’s equity (Compustat item
+SEQ) plus balance sheet deferred taxes and investment tax credit (Compustat item TXDITC) minus the
+book value of preferred stocks. The book value of preferred stocks is the first non-missing value of redemption (Compustat item PSTKRV ), liquidation (Compustat item PSTKL), or par value (Compustat item
+PSTK) in that order (e.g., Fama and French 1993).
+
+13
+and the natural logarithm of total assets for firm i at time t (ln(Asseti,t)) in our regressions,
+following Fazzari, Hubbard, and Petersen (1988).
+We use two information acquisition measures that we argue is related to RPE. First, we
+use the number of non-robot viewership data (EDGARi,t) from the SEC’s EDGAR server
+(e.g., Ryans 2017). The number of non-robot viewership data (EDGARi,t) for firm i in
+year t is identified following Drake, Roulstone and Thornock (2015) and Ryans (2017)
+by removing downloads by computer programs (or robots) from the log files. We do this
+filtering by using a classification algorithm proposed in Ryans (2017).6 Drake et al. (2020)
+show that the number of EDGAR downloads is a reliable proxy for information acquisition
+(see also Gibbons, Iliev and Kalodimos 2021 and Brogaard and Pan 2022).
+Our second measure is the institutional traders’ turnover for firm i at time t (INSTRi,t).
+INSTRi,t is the weighted average of the quarterly churn rates of institutional investors.
+Following Gaspar, Massa and Matos (2005), we calculate the quarterly churn rate for each
+institutional investor as the absolute change in the dollar value of the investor’s position
+from the last quarter, scaled by the average dollar value of the investor’s position in that
+quarter. Thus, INSTRi,t shows how frequently institutional investors rotate stock positions in their portfolio. The selection of this variable is motivated from Yan and Zhang
+(2009), who show that short-term institutions (with high INSTRi,t) are more informed
+(see also Ke and Petroni 2004 and Puckett and Yan 2011).
+To rule out alternative explanations, we include additional controls for the informational
+and capital environment of firms. First, we include firm managers’ private information,
+proxied by the ratio of insider dollar volume to the total dollar volume (Insideri,t) for a
+given firm-year. The idea is that the managers with more private information will trade
+more (Chen, Goldstein and Jiang 2007). Second, we control for the average number of
+analysts issuing earnings forecasts (Analysti,t). Next, we control firms’ capital constraints
+using the four-variable version of the Kaplan-Zingales index (KZi,t) developed by Baker,
+Stein and Wurgler (2003). Lastly, we include the ratio of institutional holdings to total
+6 An IP address is considered to be a robot if the address (i) downloads more than 25 items in a single
+minute, (ii) downloads more than 3 different companies’ items in a single minute, and (iii) downloads more
+than 500 items in a single day. See Ryans (2017) for more details.
+
+14
+shares outstanding (INSi,t) to control for the real effects of institutional investors (Derrien,
+Kecsk´es and Thesmar 2013). Table 1 provides the definitions of variables, computation
+methods, and data sources.
+[Table 1 here]
+3.5. Summary statistics. Table 2 provides the summary statistics of all main (Panel A)
+and supplementary variables (Panel B). The mean of QTi,t is 11.51, indicating that, on average, 1 out of 11 quotes is executed. The average LAOi,t is 10.20, meaning that we have
+about 10,000 latency arbitrage opportunities for a given stock-day. The average Tobin’s Q
+is 1.94. The average CAPEXi,t and CAPEXRNDi,t are 5.86% and 11.06%, respectively.
+It shows that, on average, firms roughly spend 5.9% of their total assets on capital expenditure and 5.2% on R&D projects. In terms of firms’ operating performance, an average
+firm has 8.6% return on assets and 5.3% annual sales growth. The summary statistics of
+supplementary variables are also reported in Table 2.
+[Table 2 here]
+4. Main tests
+4.1. AT and investment-to-price sensitivity.
+4.1.1. Ordinary least squares (OLS). To measure the impact of the prevalence of AT activities in stocks on firms’ investment-to-price sensitivity, we estimate various specifications
+of the standard investment equation (e.g., Chen, Goldstein and Jiang 2007 and Foucault
+and Fr´esard 2012):
+Ii,t+1 = αi + γt + β1Qi,t + β2AT i,t + β3Qi,tAT i,t + δ1CF i,t + δ2 ln(Asseti,t) + εi,t,
+(1)
+where Ii,t+1 is the investment of firm i in year t + 1 proxied by CAPEXi,t+1 and
+CAPEXRNDi,t+1. ATi,t is proxied by QTi,t and LAOi,t in different versions of the model
+to capture the liquidity-supplying and demanding AT, respectively. αi and γt are firm and
+time fixed effects, Qi,t is the firm’s normalized stock price, CFi,t is the firm’s cash flow, and
+ln(Asseti,t) is the natural logarithm of the firm’s total assets.
+
+15
+Our primary interest in Eq. (1) is the investment-to-price sensitivity with and without
+AT, the difference of which captures the impact of AT on investment-to-price sensitivity.
+The investment-to-price sensitivity without AT (ATi,t = 0) is given by ∂Ii,t+1
+∂Qi,t = β1, whereas
+the investment-to-price sensitivity with AT is given by ∂Ii,t+1
+∂Qi,t
+= β1 + β3ATi,t. Therefore,
+the coefficient β3 measures the extent to which the association between investment Ii,t+1
+and price Qi,t differs due to AT (i.e., β3 =
+∂
+∂AT (∂Ii,t+1
+∂Qi,t )). If the prevalence of AT activities
+in stocks facilitates (impedes) firm managers’ ability to learn from stock price, we expect
+this coefficient to be positive (negative).
+Table 3 reports the findings for the model in Eq. (1). Standard errors are double clustered by firm and time (year or quarter) as defined in Petersen (2009), and all regressions
+are estimated with de-meaned variables to account for firm and time fixed effects in all
+models. Consistent with the literature, both investment measures are positively and significantly (at 1 percent level) associated with Qi,t. The classical explanation for this relationship given by Tobin (1969) and Von Furstenberg (1977) is that stock prices reflect
+the marginal product of capital. Alternatively, this association may arise because high
+stock prices may induce financially constrained firms to issue shares and undertake new
+investments with the proceeds (e.g., Baker, Stein and Wurgler 2003), or stock prices may
+allow firm managers to learn new information from stock prices (e.g., Bond, Edmans and
+Goldstein 2012).
+Our main goal is to examine whether AT helps the managerial learning process by
+encouraging fundamental information acquisition or impedes this learning process by
+crowding out new information acquisition by other market participants, estimated as the
+coefficient of the interaction term, (β3) in Eq. (1). Table 3 shows that, for both investment measures, the coefficient of the interaction term between Qi,t and QTi,t is positive
+and statistically significant at 1 percent level with t = 7.21 for CAPEXRNDi,t+1 and
+t = 11.51 for CAPEXi,t+1. In contrast, the coefficient of the interaction term between Qi,t
+and LAOi,t is negative and statistically significant at 1 and 5 percent level with t = 2.95 for
+CAPEXRNDi,t+1 and t = 2.47 for CAPEXi,t+1, respectively.
+
+16
+[Table 3 here]
+To put the economic significance into perspective, consider a one standard deviation
+shock to Qi,t = 1.43 (see Table 2). This shock, on average, is associated with an increase of
+2.686% (β1 · StdDev(Q) = 1.878 · 1.43) in the next year’s CAPEXRND without liquiditysupplying AT. However, an average level of liquidity-supplying AT increases this impact
+to 3.262% (β1 · StdDev(Q) + β3 · StdDev(Q) · Average(QT) = 1.878 · 1.43 + 0.035 · 1.43 ·
+11.51), increasing the previous increment by about 21%. This number is about 48% for the
+next year’s CAPEX. By similar calculation, a one standard deviation shock to Qi,t is, on
+average, associated with an increase of 2.577% in the next year’s CAPEXRND without
+liquidity-demanding AT and an average level of liquidity-demanding AT decreases this
+impact to 2.431%, decreasing the previous increment by about 6%. That is, an average
+level of liquidity-demanding AT decreases the impact of a one standard deviation price
+shock on the next year’s CAPEXRND by around 6%. This number is around 5% for the
+next year’s CAPEX, 3.7% for the next quarter’s CAPEX, and 4.2% for the next quarter’s
+CAPEXRND.
+4.1.2. Two-stage least squares (2SLS). There are two main challenges to establishing a causal
+link between AT and investment-to-price sensitivity. First, ATs are generally more active
+in liquid stocks, implying that ATs could choose to trade stocks of the firms that have a
+higher investment-to-price sensitivity due to their stocks’ greater price informativeness
+(e.g., Biais and Foucault 2014). While we use the first lag of independent variables in Eq.
+(1), this could still raise a concern of reverse causality (e.g., Bond, Edmans and Goldstein
+2012). Second, there may be variables that simultaneously affect the trading/order book
+activity (AT proxies are generally computed by using trading/order book data) and firms’
+investment decisions. It is not possible to control for all these variables, and hence, we may
+have an omitted variable issue. We directly control for additional factors that could explain
+the association between AT and investment-to-price sensitivity later in the paper.
+To establish a causal link between AT and investment-to-price sensitivity, we exploit
+the staggered implementation of Autoquote as an instrumental variable in a two-stage
+
+17
+least-squares (2SLS) model. Autoquote was an important innovation that allowed ATs
+to continuously monitor the market and automatically update their quotes in NYSE (see
+Hendershott, Jones and Menkveld 2011 and Chordia and Miao 2020 for a discussion).
+Thus, the introduction of Autoquote provides immediate feedback about the impacts of
+AT trades on firms’ investment decisions.
+For this analysis, following Hendershott, Jones and Menkveld (2011), we restrict our
+sample to the NYSE-listed stocks. The NYSE-listed stocks have been included in the Autoquote system from January 29, 2003 to May 27, 2003. To capture the staggered implementation of the Autoquote, we first build a daily panel data from 1 January, 2001 to 31
+December, 2005. In the first stage, we regress our daily AT measures (QT and LAO) on
+the Autoquote dummy that is set to zero before the introduction of NYSE Autoquote and
+one afterward along with control variables that capture the main market quality dynamics
+of the trading process. In the second stage, we use the yearly averages of daily fitted values
+of QT and both yearly and quarterly averages of daily fitted values of LAO in the baseline
+investment-to-price sensitivity model in Eq. (1).7 This approach is similar to the approach
+in Malceniece, Malcenieks and Putnins (2019). Consistent with the literature, we also use
+the yearly or quarterly averages of the daily control variables from the first-stage model in
+the second-stage estimation.
+The first stage results in Panel A of Table 4 show that the introduction of Autoquote
+in NYSE has increased both liqudity-supplying and liquidity-demanding AT. To confirm
+the validity of Autoquote dummy as an instrument, we use an F-test in the first stage regression. We obtain F-statistics of 112.96 and 67.53 when regressing QT and LAO on
+Autoquote, respectively. These values are above the threshold values in Stock and Yogo
+(2002), allowing us to reject the null of a weak instrument. Thus, Autoquote is a strong
+instrumental variable for both QT and LAO.
+7 Alternatively, the interaction between the AT proxy and Tobin’s Q could be regressed on the interaction between the Autoquote dummy and Tobin’s Q, and then used in the second stage. However, this is not
+suitable for our analysis because our first stage is at a daily frequency, whereas the Tobin’s Q proxy is available only at yearly or quarterly frequencies. While it is possible to use annual frequency in the first stage, this
+approach would prevent us from leveraging the daily staggered implementation of the Autoquote, which is
+a primary advantage of this shock.
+
+18
+The second stage results with the predicted values of QT (d
+QT) in Panel B show that the
+coefficient of the interaction term between Qi,t and d
+QT i,t is positive and statistically significant, with t = 3.59 for CAPEXRNDi,t+1 and t = 2.40 for CAPEXi,t+1. The coefficient
+of the interaction term between Qi,t and [
+LAOi,t is negative for both investment measures
+and statistically significant at 1 percent level for CAPEXi,t+1. The reduced statistical significance with [
+LAO is expected due to the lower sample size. Our sample period with the
+Autoquote instrument is smaller than the full sample, spanning from 2001 to 2005. To increase the sample size, in Panel C we run the second stage of the 2SLS model at a quarterly
+frequency. With the increased sample size, we find that the coefficient of the interaction
+term between Qi,t and [
+LAOi,t is negative and statistically significant at 1 percent level for
+both investment measures.8
+[Table 4 here]
+While the 2SLS approach allows us to provide causal interpretations, one limitation
+is that we restrict our sample to NYSE-listed stocks only. Therefore, following the final
+implementation date of May 27, 2003, all stocks are treated with the Autoquote shock,
+as in Hendershott, Jones and Menkveld (2011). An alternative approach would include
+NASDAQ-listed stocks as control firms, assigning the Autoquote dummy a value of 0 for
+all NASDAQ-listed stocks at all times, and 0 (1) for NYSE-listed stocks before (after) the
+Autoquote introduction. This would effectively give us a differences-in-differences (DiD)
+approach.
+However, a problem with this approach is that it fails to satisfy the parallel trends assumption required for a valid DiD analysis. This is because, in 2004, NASDAQ introduced a significant structural change by implementing a dual listing system, which allowed NYSE-listed firms to also list their shares on NASDAQ. The dual listing system likely
+altered market quality and AT behavior on NASDAQ. Confirming this, Hegde, Lin and
+Varshney (2010) demonstrate that the dual listing system significantly affected liquidity
+8 In the earlier version of this paper, we used lagged AT and the average of the peer group based on
+market capitalization as instrumental variables and obtained consistent results, further confirming the robustness of our findings.
+
+19
+in NASDAQ stocks. Thus, comparing NASDAQ-listed stocks with NYSE-listed stocks in a
+formal DiD setting would inevitably violate the parallel trends assumption. This methodological constraint explains why Hendershott, Jones and Menkveld (2011) use the daily
+staggered implementation of Autoquote while restricting their sample exclusively to NYSE
+stocks. The staggered implementation of Autoquote allows us to isolate and capture the
+variation in our AT measures for NYSE-listed stocks.
+One caveat of relying on the staggered implementation is that, in a DiD framework,
+causal interpretation requires treatment effects to be constant over time (e.g., GoodmanBacon 2021). Although our setting does not strictly follow a DiD model, this limitation
+may still influence our estimates. To address this concern, we implement an alternative
+specification that abstracts from the daily variation in Autoquote rollout. Rather than estimating daily regressions in the first stage and aggregating fitted AT values annually for
+the second stage, we instead run annual regressions in both stages. In this specification,
+the Autoquote dummy equals 0 before 2003 and 1 after for all NYSE-listed stocks, with
+2003 excluded due to the phased implementation during that year. We then regress annual AT measures on the Autoquote instrument, obtain the fitted values, and use these in
+the second stage to explain variation in our dependent variables.9
+The results, reported in Table A1 of the Online Appendix, confirm our baseline findings:
+there is a significant positive (negative) causal relationship between liquidity-supplying
+(liquidity-demanding) AT and investment-to-price sensitivity. This implies that while
+some ATs help managers learn more from stock prices to make investment decisions, others impede managerial learning from stock prices. Intuitively, managerial learning from
+stock prices should only occur if managers learn new information from stock prices—a
+concept known as ’revelatory price efficiency’ (RPE) in the literature (Bond, Edmans and
+Goldstein 2012). Thus, managerial learning increases with the level of RPE of prices (e.g.,
+Edmans, Jayaraman and Schneemeier 2017). Next, we examine the impact of AT strategies
+on the RPE of prices.
+9 We thank the anonymous referee for encouraging us to explore alternative specifications to address
+this concern.
+
+20
+4.2. AT and revelatory price efficiency. There is a strong conceptual foundation for why
+ATs should impact RPE. While firm managers may have more information about their
+firms, financial market participants acquire and incorporate valuable information about
+potential investment opportunities into stock prices. In addition, investment decisions depend not only on internal information of the firm, but also on external information such
+as the state of the economy, the position of competitors, and so on (see Bond, Edmans and
+Goldstein 2012 for more discussion). The role of ATs on managerial learning is conceptually not about how quickly they can parse through various pieces of existing information
+and incorporate that into prices, but more about on how they impact the acquisition of
+new information.
+AT strategies can either encourage or discourage market participants to acquire new
+information. On the one hand, Menkveld (2016) argue that replacing market makers in
+the standard microstructure model of Glosten and Milgrom (1985) would result in less
+adverse-selection cost and tighter bid-ask spread, encouraging other market participants
+to acquire information. On the other hand, Weller (2018) and Yang and Zhu (2020) argue that opportunistic ATs impede the acquisition of new information and result in lower
+information content in prices. Similarly, Biais, Foucault and Moinas (2015) argue that becoming an opportunistic AT is privately beneficial but socially costly, as it creates adverseselection cost for low-frequency market makers. Baldauf and Mollner (2020) show that
+increasing exchange speed stimulates cross-market opportunistic/order anticipation AT
+activity and decreases incentives to collect information.
+We study the impact of the AT strategies on information acquisition using two proxies
+for information acquisition: (i) the number of downloads of financial reporting data of
+firms from the SEC’s EDGAR server and (ii) institutional traders’ turnover. Both variables
+are related to the RPE of stock prices.
+4.2.1. Number of financial reporting data downloads. The EDGAR system is the main source
+of firms’ regulatory filings and the SEC maintains log files of all activities performed by
+users on EDGAR. We use the number of investors’ access to regulatory filings of financial
+
+21
+reporting data of firms through the SEC’s EDGAR system as our first information acquisition measure. Following Lee, Ma and Wang (2015), we first eliminate the requests made
+by computer programs or automated web crawlers (i.e., robots) and use only non-robot
+EDGAR downloads.10 From the data, we are able to directly observe investors’ information acquisition activity for a broad cross-section of firms.
+We are interested in the impact of AT on the new information acquisition of market
+participants. Although the information in EDGAR is not new to firm managers, the idea
+is that the increase in information acquisition of market participants is likely to increase
+RPE by improving the feedback effect from these market participants to firm managers
+(e.g., Edmans, Goldstein and Jiang 2015). This is because investors usually combine their
+private information with the information posted by companies to make their trading decisions. Therefore, the impact of AT strategies on the number of EDGAR downloads is
+related to whether firm managers extract new information from stock prices.
+To examine how AT strategies impact the new information acquisition of market participants, we regress the number of non-robot EDGAR downloads for firm i at time t + 1
+(EDGARi,t+1) on AT proxies as
+EDGARi,t+1 = αi + γt + β1AT i,t + Controls + εi,t,
+(2)
+where we control for inverse price (P −1
+i,t ), relative spread (Spreadi,t), natural logarithm of the firm’s market value (ln(MVi,t)), trading volume (V olumei,t), and volatility
+(V olatilityi,t). All these variables are defined in Table 1.
+We report the findings in Table 5. Panel A is based on the raw and predicted values of QTi,t and Panel B is for the raw and predicted values of LAOi,t. At a yearly frequency, the effect of QT (LAO) on EDGAR downloads is positive (negative) and statistically significant in both OLS and 2SLS models. On average, QTi,t increases EDGARi,t+1
+by about 3.6% (β1 · Average(QTi,t)/Average(EDGARi,t+1) = 0.057 · 11.51/18.33), and
+10 We use three different filtering algorithms proposed by Drake, Roulstone and Thornock (2015),
+Loughran and McDonald (2017) and Ryans (2017). The results are virtually the same with all three approaches. For brevity, we only report the results with Ryans (2017). See Ryans (2017) for more details on
+various classifications of robot and non-robot downloads procedure.
+
+22
+LAOi,t decreases EDGARi,t+1 by about 1% (β1·Average(LAOi,t)/Average(EDGARi,t+1) =
+0.015·10.20/18.33). This supports the role of AT in driving RPE— liquidity-supplying ATs
+help firm managers make investment decisions, whereas liquidity-demanding ATs harm
+managerial learning from stock prices.
+[Table 5 here]
+4.2.2. Institutional traders’ turnover. Institutions are generally considered as informed investors. In particular, Yan and Zhang (2009) show that short-term institutions are better
+informed and trade actively to exploit their informational advantage. We measure institutional traders’ turnover (INSTRi,t) for firm i at time t as the average of the quarterly churn
+rates of institutional investors as per Gaspar, Massa and Matos (2005). The churn rate for
+each institutional investor is the absolute change in the dollar value of the investor’s position from the last quarter, scaled by the average dollar value of the investor’s position in
+that quarter (see Table 1). Thus, INSTRi,t shows how frequently institutional investors
+rotate stock positions in their portfolio and a higher value of INSTRi,t indicates a greater
+presence of short-term institutional investors and more information acquisition.
+To investigate how different AT strategies impact institutional traders’ turnover, we replace EDGARi,t+1 in Eq. (2) with INSTRi,t+1 and run both OLS and 2SLS models. The
+results are consistent and even stronger with INSTRi,t+1 as information acquisition measure. Table 6 shows that the effect of QTi,t (LAOi,t) on INSTRi,t+1 is positive (negative)
+and significant at 1 percent level across all models. This again shows the heterogeneous
+impact of liquidity-supplying and demanding AT strategies on the information acquisition
+in the market and the RPE of prices.
+[Table 6 here]
+Tables 5 and 6 show that the OLS and 2SLS estimates are consistent, supporting a
+causal interpretation of the relationship between AT and both RPE measures (EDGAR
+and INSTR). In addition, across most specifications, the 2SLS coefficients are larger than
+their OLS counterparts. However, directly comparing OLS and 2SLS coefficients is not
+straightforward for two main reasons.
+
+23
+First, the 2SLS approach uses daily regressions in the first stage to exploit the staggered
+implementation of Autoquote, with fitted AT values aggregated to the annual level for
+the second stage. In contrast, OLS uses AT measures calculated directly at the annual
+frequency. This difference in construction affects the variation in the AT measures: for
+example, the annual standard deviation of QT is 13.81 in the OLS setting, but only 4.23
+when derived from aggregated daily 2SLS fitted values. When we re-estimate the 2SLS
+using annual regressions in both stages, the difference between OLS and 2SLS coefficients
+becomes much smaller.
+Second, the sample periods and scope differ between methods. The OLS regressions
+span 1996 to 2019 and include all U.S. listed common stocks, while the 2SLS approach is
+restricted to NYSE-listed stocks from 2001 to 2005 to isolate the impact of the Autoquote
+introduction. These differences in the sample period and composition, combined with the
+differing scales of the AT measures, lead to mechanical differences in coefficient magnitudes that limit direct comparability.
+Therefore, a more meaningful comparison lies in the economic magnitudes of the effects. For example, in Table 6, a one-standard deviation increase in liquidity-supplying
+AT (QTi,t) is associated with approximately a 5% increase in institutional traders’ turnover
+(INSTRi,t+1) in the OLS model (β1·Std(QTi,t)/Average(INSTRi,t+1) = 0.001·13.81/0.27),
+compared to a 7% increase in the 2SLS model. Similarly, a one-standard deviation increase
+in liquidity-demanding AT (LAOi,t) corresponds to a decrease INSTRi,t+1 by about 13%
+in the OLS model, compared to a 4% decrease in the 2SLS model.
+Jiang (2017) outlines three possible relationships between 2SLS and OLS estimates: OLS
+may overestimate the true effect, underestimate it, or yield results similar to 2SLS, depending on the nature of the endogeneity. However, as Jiang (2017) also notes, it is often
+difficult to determine whether OLS overestimates or underestimates the true effect because multiple offsetting forces may be at play. In our case, the direction of OLS bias is
+also theoretically unclear due to the presence of several unobserved factors that could
+influence both AT and RPE in different ways. For example, an increase in public information might reduce RPE by crowding out informed trading (e.g., Goldstein, Yang, and Zuo
+
+24
+2023) while increasing AT due to improved liquidity (e.g., Brogaard, Hendershott, and
+Riordan 2014). This would make the relationship between liquidity-supplying AT and
+RPE appear weaker than it actually is, causing OLS to underestimate the effect. Alternatively, a decrease in the cost of accessing market information (e.g., increased transparency,
+reduced data fees) may increase both liquidity-supplying AT and RPE by encouraging informed trading and making liquidity provision cheaper (e.g., Bai, Philippon and Savov
+2016), which could result in OLS overestimating the effect. Given these offsetting forces,
+it is difficult to predict the direction of OLS bias ex ante. Since the main objective of our
+study is not to resolve this issue, we do not investigate it further empirically.
+5. Extensions and robustness tests
+5.1. AT and operating performance. Our findings so far indicate that AT determines the
+amount of information firm managers can extract from stock prices and impacts firms’
+investment-to-price sensitivity. The practical implication of these findings is that AT can
+influence managers’ ability to identify good projects with positive NPV and abstain from
+those with negative NPV. We test this hypothesis by examining the impact of AT on firms’
+operating performance using the following OLS model:
+OPi,t+1 = αi + γt + β1ATi,t + δ1Qi,t + δ2CF i,t + δ3ln(Asset)i,t + εi,t,
+(3)
+where OP i,t+1 is the operating performance of firm i at time t + 1. We use one-year ahead
+return on assets (ROAi,t+1) and sales growth (SGi,t+1) as firms’ operating performance
+measures. We also use the average of the three-year ahead values of these performance
+measures to account for the time lag between the investment decision and its reflection in
+firm performance and report the results in the Online Appendix. We control for cash flow
+CF i,t and firm size ln(Asseti,t) and include both firm and time fixed effects as before.
+Table 7 reports the results. In Panel A, the coefficient estimates in the first and second
+columns indicate the impact of QT on the next year’s ROA and SG, respectively. The
+association between QTi,t and OPi,t+1 is positive for both performance measures, albeit
+
+25
+statistically significant only for SGi,t+1. The coefficient of QTi,t is 0.033, with t = 3.76 for
+SGi,t+1. This result is economically significant such that a one standard deviation shock
+to QT increases the next year’s SG by about 8.6% (0.033 · 13.81/5.28).
+[Table 7 here]
+Panel B reports the findings for the liquidity-demanding AT (LAOi,t), estimated at
+yearly and quarterly frequencies. Different from the effect of QTi,t, the association between LAOi,t and operating performance is negative for both ROAi,t+1 and SGi,t+1 at both
+yearly and quarterly frequencies. The negative coefficients are statistically significant for
+yearly sales growth (t = −2.02) and quarterly return on assets (t = −2.95). In terms of
+economic importance, a one standard deviation shock to LAO decreases the next year’s
+SG by about 10.9%. The magnitude of these findings further highlight the real economic
+consequences of various AT strategies.
+To establish a causal link between AT and firms’ operating performance, we again use
+the staggered implementation of Autoquote in NYSE as a source of exogenous variation
+in AT and report the second-stage results in Table 8. The coefficient of d
+QT i,t in Panel A
+is positive and statistically significant with t = 2.07 for ROAi,t+1 and t = 7.39 for SGi,t+1.
+In Panel B, the coefficient of [
+LAOi,t is negative and statistically significant (at 5 percent
+level for the yearly operating performance and 1 percent level for the quarterly operating
+performance).
+[Table 8 here]
+The findings from the 2SLS analysis align with those of the OLS model, offering further
+support for a robust positive (negative) causal relationship between liquidity-supplying
+(liquidity-demanding) AT and operating performance of firms. This also effectively completes the logical progression of our argument: AT strategies influence the information
+acquisition in the market and the level of RPE of prices. This, in turn, affects the extent to
+which managers extract information from stock prices, impacting the sensitivity of firms’
+investment to stock prices. Ultimately, this chain of effects influences firms’ operating performance, highlighting the real economic effects of various AT strategies.
+
+26
+5.2. Controlling for additional factors. We provide additional robustness tests to further
+strengthen the finding that AT impacts managerial learning from stock prices and rule out
+alternative channels. Specifically, we extend the baseline model in Eq. (1) by controlling
+for additional factors that may affect the association between AT and investment-to-price
+sensitivity.
+5.2.1. Managerial information. First, we control for managerial information. Firm managers
+with more accurate internal information may rely less on stock prices when making investment decisions, potentially affecting the impact of AT on investment-to-price sensitivity.11
+The intuition is that if AT does not impact new information acquisition in markets and only
+incorporates existing information that firm managers already know about (i.e., drives FPE
+but not RPE), then the impact of AT on investment-to-price sensitivity should disappear
+after controlling for managerial information.
+Following Chen, Goldstein and Jiang (2007), we measure managerial information using
+insiders’ trading activities (Insideri,t) from the Thomson Financial’s TFN database. The
+idea is that managers with greater private information will trade more. We control for
+both Insideri,t and Qi,tInsideri,t in Eq. (1) and report the results in column (i) of Table 9.
+We find that the impact of QT in Panel A (LAO in Panel B) on investment-to-price sensitivity is positive (negative) and statistically significant after controlling for managerial
+information. Thus, to the extent that Insideri,t captures managerial information, we rule
+out the possibility that the impact of AT on investment-to-price sensitivity stems from the
+existing information known to managers.
+[Table 9 here]
+5.2.2. Analyst coverage. Second, we control for analyst coverage in the model. Analyst coverage is sometimes considered as one of the important sources of information for firm
+managers. Therefore, when there is more coverage by analysts, managers may have less
+11 In a model where the firm manager extracts information from two normally distributed sources—stock
+price and managerial signal—to make optimal investment decision, one can show that the manager increases
+the weight of one source as the signal quality from that source increases (e.g., Foucault and Gehrig 2008;
+Edmans, Jayaraman and Schneemeier 2017).
+
+27
+incentive to learn from stock prices. There is also an alternative view that analyst coverage is simply a means of transferring information from managers to financial markets
+(e.g., Bailey et al. 2003).
+We measure the analyst coverage of a given firm by the annual average of the monthly
+number of earnings per share forecasts for the next fiscal year of the firm from the I/B/E/S
+database. We extend the model by adding ACoveragei,t and Qi,tACoveragei,t as additional
+control variables and report the results in column (ii) of Table 9. We find no significant
+association between analyst coverage and investment-to-price sensitivity. More importantly, we find that the impact of both AT strategies and investment-to-price sensitivity is
+unchanged after controlling for the analyst coverage.
+5.2.3. Capital constraints. We also control for the financial constraints of firms. It is welldocumented that firms with highly liquid stocks have lower expected returns (e.g., Amihud and Mendelson 1986; Amihud 2002; Acharya and Pedersen 2005) and less cost of raising external capital (e.g., Butler, Grullon and Weston 2005). Given that ATs are one of the
+main determinants of stock market liquidity (e.g., Hendershott, Jones and Menkveld 2011;
+Menkveld 2013), it is likely that liquidity supply (demand) by ATs decreases (increases)
+firms’ cost of capital and financial constraints. Consistently, Rosu, Sojli and Tham (2021)
+find that a large QT is associated with low expected returns.
+Higher liquidity or lower cost of capital then implies easier access to external equity
+finance, leading the firms with a lower cost of capital to be more equity dependent. Relatedly, Baker, Stein and Wurgler (2003) document that investment-to-price sensitivity is
+higher for firms with greater equity dependence. The cost of capital channel is a wellestablished channel that financial markets can affect investment decisions (e.g., Fischer
+and Merton 1984, Morck, Shleifer and Vishny 1990, Stein 1996, and Amihud and Levi
+2023). The association between AT and investment-to-price sensitivity could then be explained by the extent to which AT impacts the cost of capital and financial constraints. If
+this mechanism explains our findings, the relation between AT and investment-to-price
+sensitivity should disappear in the framework controlling for capital constraints.
+
+28
+We control for capital constraints of firms by including a four-variable version of the
+Kaplan-Zingales measure KZi,t constructed by Baker, Stein and Wurgler (2003) (as well
+as Qi,tKZi,t) in our model. KZi,t is a weighted sum of cash flow, cash dividend, cash balances (all scaled by lagged assets), and the leverage ratio.12 As reported in column (iii),
+the coefficient of the KZi,t is negative and statistically significant, indicating that more
+capital-constrained firms have a lower level of investment. The coefficient of Qi,tKZi,t is
+positive and statistically significant, suggesting that firms with more capital constraints
+have higher investment-to-price sensitivity as reported by Baker, Stein and Wurgler (2003).
+More importantly, the impact of AT strategies on investment-to-price sensitivity remains
+the same after controlling for firms’ capital constraints, ruling out the possibility that capital constraints are the driver of our results.
+5.2.4. Institutional trading. Lastly, we control for the fraction of institutional holdings to
+total shares outstanding (INSi,t) by including both INSi,t and Qi,tINSi,t in Eq. (1) to account for the impact of institutional investors on investment. Institutional investors usually
+use algorithms for trading, which may lead to a correlation between our AT measures and
+institutional trades. Consequently, the observed statistical association between AT and
+investment-to-price sensitivity could be driven by institutional trading. However, Table
+9 shows that the coefficient of Qi,tQTi,t in Panel A (Qi,tLAOi,t in Panel B) is still positive
+(negative) and statistically significant after controlling for INSi,t and Qi,tINSi,t. Thus, the
+finding that AT affects investment-to-price sensitivity cannot be attributed to the level of
+institutional ownership in a firm.
+5.3. Additional tests. We perform several additional tests to check the robustness of our
+findings and report them in the Online Appendix. These tests include: (i) a model that
+simultaneously incorporates both AT proxies (QT and LAO); (ii) a model that simultaneously incorporates all of the alternative channels (Insideri,t, ACoveragei,t, KZi,t, and
+INSi,t); (iii) a two-stage Heckman estimation approach to test for selection bias in how
+12 We use the following Compustat items to calculate the Kaplan-Zingales index: Cashi,t = CH/AT,
+DIVi,t = (DV P + DV C)/AT, Ci,t= CHE/AT, and LEVi,t = (DLTT + DLC)/(DLTT + DLC + SEQ).
+
+29
+ATs trade across stocks; (iv) a model where operating performance is measured by the
+average of three period ahead ROA and SG; (v) a falsification test where we show that
+the results of Qi,tATi,t do not replicate with CFi,tATi,t.
+6. Conclusion
+The real economic consequences of AT is an open question that lends itself to an ongoing
+discussion (e.g., Budish, Cramton and Shim 2015; Biais, Foucault and Moinas 2015). We
+contribute to this discussion by investigating the impact of the amount of AT activities in
+stocks on firms’ investment-to-price sensitivity. Our analysis incorporates a key dimension
+of heterogeneity in AT strategies—whether the algorithm supplies or demands liquidity.
+We exploit the staggered implementation of Autoquote in NYSE as a source of exogenous
+variation in AT to establish a causal relation.
+We find that liquidity-supplying (liquidity-demanding) ATs increase (decrease) firms’
+investment-to-price sensitivity. We rationalize the differential impact of these two AT
+strategies on firms’ investment-to-price sensitivity by investigating their effects on information acquisition in financial markets. Consistent with the managerial learning hypothesis, we find that liquidity-supplying (liquidity-demanding) ATs encourage (discourage)
+the information acquisition in financial markets. These findings help reconcile the mixed
+evidence in the literature regarding the impact of AT on market quality (e.g., Menkveld
+2016; Jovanovic and Menkveld 2016; Brogaard, Hendershott and Riordan 2019; Weller
+2018; Dugast and Foucault 2018; Yang and Zhu 2020).
+The practical implication of our findings is that AT strategies influence firm managers’
+ability to identify good investment projects. We study this by investigating the impact of
+AT strategies on firms’ operating performance. Consistent with our previous findings, we
+find that liquidity-supplying (liquidity-demanding) ATs improve (deteriorate) firms’ operating performance, further demonstrating the link between market microstructure and
+corporate finance outcomes. This highlights that AT is not merely a trading-layer phenomenon and it shapes corporate outcomes through its influence on information transmission
+in markets.
+
+30
+Our findings have several broader implications. First, they highlight the need to view
+AT as part of the financial market infrastructure that affects capital allocation efficiency at
+the firm level. Second, from a regulatory perspective, the distinction between types of AT
+matters. Market design and policy responses should move beyond treating AT as a homogeneous activity and instead account for its heterogeneous effects on price discovery and
+information production. Finally, for institutional and long-term investors, our results raise
+concerns about informational degradation in markets dominated by liquidity-demanding
+AT. Market quality, in this context, becomes a determinant of not just execution costs but
+also of long-term value creation.
+
+31
+References
+Acharya, V. V. and Pedersen, L. H. (2005), ‘Asset pricing with liquidity risk’, Journal of Financial Economics
+77(2), 375–410.
+Amihud, Y. (2002), ‘Illiquidity and stock returns: cross-section and time-series effects’, Journal of Financial
+Markets 5(1), 31–56.
+Amihud, Y. and Levi, S. (2023), ‘The effect of stock liquidity on the firm’s investment and production’, Review
+of Financial Studies 36(3), 1094–1147.
+Amihud, Y. and Mendelson, H. (1986), ‘Asset pricing and the bid-ask spread’, Journal of Financial Economics
+17(2), 223–249.
+Aquilina, M., Budish, E. and O’Neill, P. (2022), ‘Quantifying the high-frequency trading “arms race”’, Quarterly Journal of Economics 137(1), 493–564.
+Bai, J., Philippon, T. and Savov, A. (2016), ‘Have financial markets become more informative?’, Journal of
+Financial Economics 122(3), 625–654.
+Bailey, W., Li, H., Mao, C. X. and Zhong, R. (2003), ‘Regulation fair disclosure and earnings information:
+Market, analyst, and corporate responses’, Journal of Finance 58(6), 2487–2514.
+Baker, M., Stein, J. C. and Wurgler, J. (2003), ‘When does the market matter? Stock prices and the investment
+of equity-dependent firms’, Quarterly Journal of Economics 118(3), 969–1005.
+Baldauf, M. and Mollner, J. (2020), ‘High-frequency trading and market performance’, Journal of Finance
+75(3), 1495–1526.
+Barardehi, Y. H., Dixon, P., Liu, Q. and Lohr, A. (2024), ‘The tick size tradeoff: Implications for optimal tick
+sizes and causal inference’, Working Paper .
+Ben-Nasr, H. and Alshwer, A. A. (2016), ‘Does stock price informativeness affect labor investment efficiency?’, Journal of Corporate Finance 38, 249–271.
+Biais, B. and Foucault, T. (2014), ‘HFT and market quality’, Bankers, Markets & Investors 128, 5–19.
+Biais, B., Foucault, T. and Moinas, S. (2015), ‘Equilibrium fast trading’, Journal of Financial Economics
+116(2), 292–313.
+Bond, P., Edmans, A. and Goldstein, I. (2012), ‘The real effects of financial markets’, Annual Review of Financial
+Economics 4(1), 339–360.
+Brogaard, J., Hendershott, T. and Riordan, R. (2014), ‘High-frequency trading and price discovery’, Review
+of Financial Studies 27(8), 2267–2306.
+Brogaard, J., Hendershott, T. and Riordan, R. (2019), ‘Price discovery without trading: Evidence from limit
+orders’, Journal of Finance 74(4), 1621–1658.
+
+32
+Brogaard, J. and Pan, J. (2022), ‘Dark pool trading and information acquisition’, Review of Financial Studies
+35(5), 2625–2666.
+Budish, E., Cramton, P. and Shim, J. (2015), ‘The high-frequency trading arms race: Frequent batch auctions
+as a market design response’, Quarterly Journal of Economics 130(4), 1547–1621.
+Butler, A. W., Grullon, G. and Weston, J. P. (2005), ‘Stock market liquidity and the cost of issuing equity’,
+Journal of Financial and Quantitative Analysis 40(2), 331–348.
+CFTC (2019), ‘Impact of automated orders in futures markets’, Staff Report .
+Chakrabarty, B., Moulton, P. and Wang, X. (2015), ‘Attention effects in a high-frequency world’, Working
+Paper .
+Chen, Q., Goldstein, I. and Jiang, W. (2007), ‘Price informativeness and investment sensitivity to stock price’,
+Review of Financial Studies 20(3), 619–650.
+Chordia, T. and Miao, B. (2020), ‘Market efficiency in real time: Evidence from low latency activity around
+earnings announcements’, Journal of Accounting and Economics 70(2-3), 101335.
+De Cesari, A. and Huang-Meier, W. (2015), ‘Dividend changes and stock price informativeness’, Journal of
+Corporate Finance 35, 1–17.
+Derrien, F., Kecsk´es, A. and Thesmar, D. (2013), ‘Investor horizons and corporate policies’, Journal of Financial
+and Quantitative Analysis 48(6), 1755–1780.
+Dessaint, O., Foucault, T., Fr´esard, L. and Matray, A. (2019), ‘Noisy stock prices and corporate investment’,
+Review of Financial Studies 32(7), 2625–2672.
+Dow, J. and Gorton, G. (1997), ‘Stock market efficiency and economic efficiency: Is there a connection?’,
+Journal of Finance 52(3), 1087–1129.
+Drake, M. S., Johnson, B. A., Roulstone, D. T. and Thornock, J. R. (2020), ‘Is there information content in
+information acquisition?’, Accounting Review 95(2), 113–139.
+Drake, M. S., Roulstone, D. T. and Thornock, J. R. (2015), ‘The determinants and consequences of information
+acquisition via EDGAR’, Contemporary Accounting Research 32(3), 1128–1161.
+Dugast, J. and Foucault, T. (2018), ‘Data abundance and asset price informativeness’, Journal of Financial
+Economics 130(2), 367–391.
+Durnev, A., Morck, R. and Yeung, B. (2004), ‘Value-enhancing capital budgeting and firm-specific stock
+return variation’, Journal of Finance 59(1), 65–105.
+Edmans, A., Goldstein, I. and Jiang, W. (2015), ‘Feedback effects, asymmetric trading, and the limits to
+arbitrage’, American Economic Review 105(12), 3766–3797.
+Edmans, A., Jayaraman, S. and Schneemeier, J. (2017), ‘The source of information in prices and investmentprice sensitivity’, Journal of Financial Economics 126(1), 74–96.
+
+33
+Fama, E. F. and French, K. R. (1993), ‘Common risk factors in the returns on stocks and bonds’, Journal of
+Financial Economics 33(1), 3–56.
+Fazzari, S., Hubbard, R. G. and Petersen, B. (1988), ‘Financing constraints and corporate investment’, Brookings Papers on Economic Activity 1988(1), 141–2006.
+Fischer, S. and Merton, R. C. (1984), ‘Macroeconomics and finance: The role of the stock market’, CarnegieRochester conference series on public policy 21, 57–108.
+Foucault, T. and Fr´esard, L. (2012), ‘Cross-listing, investment sensitivity to stock price, and the learning
+hypothesis’, Review of Financial Studies 25(11), 3305–3350.
+Foucault, T. and Gehrig, T. (2008), ‘Stock price informativeness, cross-listings, and investment decisions’,
+Journal of Financial Economics 88(1), 146–168.
+Foucault, T., Kozhan, R. and Tham, W. W. (2017), ‘Toxic arbitrage’, Review of Financial Studies 30(4), 1053–
+1094.
+Gaspar, J.-M., Massa, M. and Matos, P. (2005), ‘Shareholder investment horizons and the market for corporate control’, Journal of Financial Economics 76(1), 135–165.
+Gibbons, B., Iliev, P. and Kalodimos, J. (2021), ‘Analyst information acquisition via EDGAR’, Management
+Science 67(2), 769–793.
+Glosten, L. R. and Milgrom, P. R. (1985), ‘Bid, ask and transaction prices in a specialist market with heterogeneously informed traders’, Journal of Financial Economics 14(1), 71–100.
+Goldstein, I., Yang, S. and Zuo, L. (2023), ‘The real effects of modern information technologies: Evidence
+from the edgar implementation’, Journal of Accounting Research 61(5), 1699–1733.
+Goodman-Bacon, A. (2021), ‘Difference-in-differences with variation in treatment timing’, Journal of Econometrics 225(2), 254–277.
+Hagstr¨omer, B. and Nord´en, L. (2013), ‘The diversity of high-frequency traders’, Journal of Financial Markets
+16(4), 741–770.
+Hatch, B. C., Johnson, S. A., Wang, Q. E. and Zhang, J. (2021), ‘Algorithmic trading and firm value’, Journal
+of Banking & Finance 125, 106090.
+Hayek, F. (1945), ‘The use of knowledge in society’, American Economic Review 35(4), 519–530.
+Hegde, S., Lin, H. and Varshney, S. (2010), ‘Competitive stock markets: Evidence from companies’ dual
+listings on the nyse and nasdaq’, Financial Analysts Journal 66(1), 77–87.
+Hendershott, T., Jones, C. M. and Menkveld, A. J. (2011), ‘Does algorithmic trading improve liquidity?’,
+Journal of Finance 66(1), 1–33.
+Jiang, W. (2017), ‘Have instrumental variables brought us closer to the truth’, Review of Corporate Finance
+Studies 6(2), 127–140.
+
+34
+Jovanovic, B. and Menkveld, A. J. (2016), ‘Middlemen in limit order markets’, Working Paper .
+Ke, B. and Petroni, K. (2004), ‘How informed are actively trading institutional investors? Evidence from
+their trading behavior before a break in a string of consecutive earnings increases’, Journal of Accounting
+Research 42(5), 895–927.
+Lee, C. M., Ma, P. and Wang, C. C. (2015), ‘Search-based peer firms: Aggregating investor perceptions
+through internet co-searches’, Journal of Financial Economics 116(2), 410–431.
+Lee, C. M. and Watts, E. M. (2021), ‘Tick size tolls: Can a trading slowdown improve earnings news discovery?’, The Accounting Review 96(3), 373–401.
+Li, X., Ye, M. and Zheng, M. (2024), ‘Price ceilings, market structure, and payout policies’, Journal of Financial
+Economics 155, 103818.
+Loughran, T. and McDonald, B. (2017), ‘The use of EDGAR filings by investors’, Journal of Behavioral Finance
+18(2), 231–248.
+Luo, Y. (2005), ‘Do insiders learn from outsiders? evidence from mergers and acquisitions’, Journal of Finance
+60(4), 1951–1982.
+Malceniece, L., Malcenieks, K. and Putnins, T. J. (2019), ‘High frequency trading and comovement in financial markets’, Journal of Financial Economics 134(2), 381–399.
+Menkveld, A. J. (2013), ‘High frequency trading and the new market makers’, Journal of Financial Markets
+16(4), 712–740.
+Menkveld, A. J. (2016), ‘The economics of high-frequency trading: Taking stock’, Annual Review of Financial
+Economics 8, 1–24.
+Menkveld, A. J. and Zoican, M. A. (2017), ‘Need for speed? Exchange latency and liquidity’, Review of
+Financial Studies 30(4), 1188–1228.
+Morck, R., Shleifer, A. and Vishny, R. W. (1990), ‘Do managerial objectives drive bad acquisitions?’, Journal
+of Finance 45(1), 31–48.
+Petersen, M. A. (2009), ‘Estimating standard errors in finance panel data sets: Comparing approaches’,
+Review of Financial Studies 22(1), 435–480.
+Puckett, A. and Yan, X. (2011), ‘The interim trading skills of institutional investors’, Journal of Finance
+66(2), 601–633.
+Rosu, I., Sojli, E. and Tham, W. W. (2021), ‘Quoting activity and the cost of capital’, Journal of Financial and
+Quantitative Analysis 56(8), 2764–2799.
+Ryans, J. (2017), ‘Using the EDGAR log file data set’, Working Paper .
+Ryans, J. P. (2021), ‘Textual classification of sec comment letters’, Review of Accounting Studies 26(1), 37–80.
+Stein, J. (1996), ‘Rational capital budgeting in an irrational world’, Journal of Business 69(4), 429–455.
+
+35
+Stock, J. H. and Yogo, M. (2002), ‘Testing for weak instruments in linear IV regression’, Working Paper .
+Subrahmanyam, A. and Titman, S. (1999), ‘The going-public decision and the development of financial
+markets’, Journal of Finance 54(3), 1045–1082.
+Tobin, J. (1969), ‘A general equilibrium approach to monetary theory’, Journal of Money, Credit and Banking
+1(1), 15–29.
+Von Furstenberg, G. M. (1977), ‘Corporate investment: Does market valuation matter in the aggregate?’,
+Brookings Papers on Economic Activity 1977(2), 347–408.
+Weller, B. M. (2018), ‘Does algorithmic trading reduce information acquisition?’, Review of Financial Studies
+31(6), 2184–2226.
+Yan, X. and Zhang, Z. (2009), ‘Institutional investors and equity returns: Are short-term institutions better
+informed?’, Review of Financial Studies 22(2), 893–924.
+Yang, L. and Zhu, H. (2020), ‘Back-running: Seeking and hiding fundamental information in order flows’,
+Review of Financial Studies 33(4), 1484–1533.
+Ye, M., Zheng, M. Y. and Zhu, W. (2023), ‘The effect of tick size on managerial learning from stock prices’,
+Journal of Accounting and Economics 75, 101515.
+
+36
+Table 1
+Definitions of variables
+This table reports the notation, description, and source of variables. The units of the variables are in parentheses following the variable names. Panel A reports the main model variables and Panel B reports the supplementary variables.
+Panel A: Main model variables
+Variable
+Description
+Data source
+CAPEXRNDi,t (%)
+Capital expenditure plus research and development expenditure (R&D) for firm
+i in year t is computed as capital expenditures plus R&D in year t scaled by total
+assets in year t −1.
+Compustat
+CAPEXi,t (%)
+Capital expenditure for firm i in year t is computed as capital expenditures in
+year t scaled by total assets in year t −1.
+Compustat
+ROAi,t (%)
+Return on assets for firm i in year t is computed as earnings before interest, tax,
+depreciation, and amortization (EBITDAi,t) in year t divided by total assets in
+year t.
+Compustat
+SGi,t (%)
+Sales growth for firm i in year t is computed as the percentage change in total
+revenue from year t −1 to year t.
+Compustat
+Qi,t
+The normalized stock price for firm i and year t is computed as the market value
+of the equity plus the book value of assets minus the book value of equity, scaled
+by the book value of assets.
+Compustat
+QTi,t
+Quote-to-trade ratio for firm i in year t is the number of quote messages divided
+by the number of transactions.
+Refinitiv
+LAOi,t (÷103)
+Latency arbitrage opportunities for firm i in year t is the total number of “stale”
+quotes (first-level quote updates with mid-price jump) as in Budish, Cramton
+and Shim (2015). The ask (resp. bid) quote at time z −1 is stale if
+MidPricez > Askz−1 + ∆(resp. MidPricez < Bidz−1 −∆), with ∆= 0.01$.
+Refinitiv
+CFi,t (%)
+Cash flow of firm i in year t scaled by book value of assets.
+Compustat
+ln(Asseti,t)
+Natural logarithm of the total assets in dollars for firm i in year t.
+Compustat
+Panel B: Supplementary variables
+Variable
+Description
+Data source
+EDGARi,t
+The average number of non-robot EDGAR filings downloads for firm i in year t
+calculated as the yearly average of daily non-robot EDGAR filings downloads.
+The non-robot classification is based on Ryans (2021), where IP addresses are
+considered as robot if they (i) download more than 25 items in a single
+minute, (ii) download more than 3 different companies’ items in a single
+minute, and (iii) download more than 500 items in a single day.
+SEC EDGAR
+INSTRi,t
+Institutional traders’ horizon measure for firm i in year t is computed as the
+weighted average of the quarterly churn rates of institutional investors. The churn
+rate for each institutional investor r and quarter q is computed following Gaspar,
+Massa and Matos (2005) as:
+CRr,q =
+P
+j∈Q |Nj,r,qPj,q −Nj,r,q−1Pj,q−1 −Nj,r,q−1∆Pj,q|
+P
+j∈Q
+Nj,r,qPj,q+Nj,r,q−1Pj,q−1
+2
+,
+where j is a company index and Q is the set of companies held by an institutional
+investor, Nj,r,q is the number of shares of company j held by institutional
+investor r at quarter q, and Pj,q is the price of share of company j for quarter q.
+Refinitiv
+INSi,t
+Institutional holdings measure for firm i in year t is computed as the fraction of
+institutional holdings to total shares outstanding.
+Refinitiv
+P −1
+i,t (1/$)
+Inverse price for firm i in year t is computed as the yearly average of monthly
+inverse price (1/price) for firm i.
+CRSP
+
+37
+Table 1
+Continued
+Variable
+Description
+Data source
+Spreadi,t (%)
+Relative spread for firm i in year t is the yearly average of the monthly relative
+spread for firm i in year t. Monthly relative spread is computed as the difference
+between closing ask and bid prices for each month divided by the midpoint of
+closing ask and bid prices.
+CRSP
+ln(MVi,t)
+Natural logarithm of the market value for firm i in year t.
+CRSP
+V olumei,t (÷106)
+The total volume of shares traded for firm i in year t.
+CRSP
+V olatilityi,t
+Absolute value of price changes for firm i in year t is computed as the yearly
+average of monthly price changes.
+CRSP
+Insideri,t (%)
+Insider volume rate for stock i in year t is computed as the ratio of insider dollar
+volume to the total dollar volume of all transactions for stock i in year t.
+TFN/CRSP
+ACoveragei,t
+Annual average of monthly number of analysts issuing earnings per share
+forecasts for the next year of firm i in year t.
+I/B/E/S
+KZi,t
+Kaplan-Zingales metric for firm i in year t is computed as the weighted sum of
+cash flow (CFi,t), cash dividend (DIVi,t), and cash balances (Ci,t) all scaled by
+lagged assets, and the leverage ratio following Baker, Stein and Wurgler (2003):
+KZi,t = −1.002CFi,t −39.368DIVi,t −1.315Ci,t + 3.139LEVi,t
+Compustat
+
+38
+Table 2
+Summary statistics
+This table reports the summary statistics (mean, median, and standard deviation) of main and supplementary model
+variables across all firms/stocks. Panel A reports the summary statistics for the main model variables and Panel B reports
+the supplementary variables. For the definitions and calculations of variables refer to Table 1. The units of variables
+are in parentheses following the variable names in the first column and the number of firm-year observations for each
+variable is in the last column.
+Panel A: Main model variables
+Mean
+Median
+Std. dev.
+N
+CAPEXi,t (%)
+5.86
+3.66
+6.75
+57,656
+CAPEXRNDi,t (%)
+11.06
+7.36
+11.75
+57,656
+ROAi,t (%)
+8.60
+10.90
+15.35
+57,656
+SGi,t (%)
+5.28
+4.71
+21.38
+57,656
+Qi,t
+1.94
+1.47
+1.43
+57,656
+QTi,t
+11.51
+7.09
+13.81
+57,656
+LAOi,t (÷103)
+10.20
+5.92
+11.96
+1,437
+CFi,t (%)
+9.34
+9.82
+12.76
+57,656
+ln(Asseti,t)
+6.41
+6.28
+2.01
+57,656
+Panel B: Supplementary variables
+EDGARi,t
+18.33
+10.24
+91.64
+34,176
+INSTRi,t
+0.27
+0.25
+0.14
+46,683
+INSi,t
+0.55
+0.59
+1.22
+52,728
+P −1
+i,t (1/$)
+0.15
+0.06
+0.33
+34,176
+Spreadi,t (%)
+0.61
+0.17
+1.16
+34,176
+ln(MVi,t)
+13.36
+13.30
+1.98
+34,176
+V olumei,t (÷106)
+1.22
+0.30
+3.66
+34,176
+V olatilityi,t
+0.43
+0.29
+0.62
+34,176
+Insideri,t (%)
+7.04
+0.20
+666.94
+44,247
+ACoveragei,t
+7.91
+5.58
+7.06
+43,284
+KZi,t
+-0.19
+0.05
+4.87
+50,543
+
+39
+Table 3
+AT and investment-to-price sensitivity: OLS
+This table reports the results for the estimation of the impact of AT on investment-to-price sensitivity using the following
+ordinary least squares (OLS) model:
+Ii,t+1 = αi + γt + β1Qi,t + β2AT i,t + β3Qi,tAT i,t + δ1CF i,t + δ2 ln(Asseti,t) + εi,t,
+where Ii,t+1 is the investment of firm i at time t + 1, defined as the capital expenditures plus R&D expenses divided by
+lagged total assets (CAPEXRNDi,t+1) and the capital expenditures divided by lagged total assets (CAPEXi,t+1).
+Across all specifications, Qi,t is the firm’s normalized stock price (Tobin’s Q), AT i,t is the AT proxy, CF i,t is the firm’s
+cash flow, and ln(Asseti,t) is the natural logarithm of the firm’s total assets. In Panel A, QTi,t is used as a measure of
+liquidity-supplying algorithmic trading per year, and regressions are estimated in yearly frequency. In Panel B, LAOi,t
+is used as a measure of liquidity-demanding algorithmic trading per year and quarter, and regressions are estimated in
+yearly frequency for columns 1 and 2 and quarterly frequency for columns 3 and 4. All versions of models include both
+firm and year (quarter for columns 3 and 4) fixed effects (αi and γt, respectively). The standard errors used to compute
+the t-statistics (in brackets) are double clustered by firm and year (quarter for columns 3 and 4). *, **, and *** denote
+the significance at 10%, 5%, and 1%, respectively. For detailed definitions of variables, refer to Table 1.
+Panel A: AT i,t=QT i,t
+CAPEXRND
+Yearly
+CAPEX
+Yearly
+Qi,t
+1.878***
+(38.62)
+0.885***
+(33.90)
+QT i,t
+-0.033***
+(-4.72)
+-0.053***
+(-11.15)
+Qi,tQTi,t
+0.035***
+(7.21)
+0.037***
+(11.51)
+CFi,t
+0.030***
+(6.91)
+0.037***
+(16.33)
+ln(Asseti,t)
+-2.931***
+(-44.62)
+-1.238***
+(-32.41)
+N obs.
+57,656
+57,656
+R2
+16%
+9%
+Panel B: AT i,t=LAOi,t
+CAPEXRND
+Yearly
+CAPEX
+Yearly
+CAPEXRND
+Quarterly
+CAPEX
+Quarterly
+Qi,t
+1.802***
+(6.92)
+0.813***
+(5.38)
+0.490***
+(9.80)
+0.278***
+(8.48)
+LAOi,t
+0.040***
+(3.93)
+0.024***
+(3.98)
+0.009***
+(4.27)
+0.006***
+(4.55)
+Qi,tLAOi,t
+-0.010***
+(-2.95)
+-0.004**
+(-2.47)
+-0.002***
+(-2.92)
+-0.001**
+(-2.12)
+CFi,t
+0.087***
+(2.85)
+0.049***
+(2.70)
+0.010**
+(2.29)
+0.010***
+(3.07)
+ln(Asseti,t)
+-2.682***
+(-5.87)
+-0.960***
+(-3.32)
+-0.445***
+(-6.01)
+-0.126**
+(-2.50)
+N obs.
+1,437
+1,437
+7,504
+7,504
+R2
+24%
+17%
+6%
+3%
+
+40
+Table 4
+AT and investment-to-price sensitivity: 2SLS
+This table reports the results for the estimation of the impact of AT on investment-to-price sensitivity using the following
+two-stage least squares (2SLS) model:
+AT i,d = αi + γd + β1Autoquotei,d + Controls + εi,d,
+Ii,t+1 = αi + γt + β1Qi,t + β2d
+AT i,t + β3Qi,td
+AT i,t + δ1CF i,t + δ2 ln(Asseti,t) + Controls∗+ εi,t.
+In the first stage, ATi,d is the daily AT measure proxied by QT and LAO, αi is firm and γd is day fixed effects,
+Autoquotei,d is a dummy variable that equals zero before the autoquote introduction and one afterward, and Controls
+consist of control variables including the daily values of the first lag values of inverse price, trading volume, relative
+spread, natural logarithm of market value, and the absolute value of price changes. Panel A reports the results of the
+first stage. In the second stage, Ii,t+1 is the investment of firm i at time t + 1, defined as the capital expenditures plus
+R&D expenses divided by lagged total assets (CAPEXRNDi,t+1) and the capital expenditures divided by lagged total
+assets (CAPEXi,t+1). Qi,t is the firm’s normalized stock price (Tobin’s Q), and d
+AT i,t is the average of daily predicted
+values of ATi,d, CF i,t is the firm’s cash flow, ln(Asseti,t) is the natural logarithm of the firm’s total assets, and Controls∗
+represent the averages of daily Controls. In Panel B, QT is used as a measure of liquidity-supplying algorithmic trading
+in year t, and the second stage regressions are estimated in yearly frequency. In Panel C, LAO is used as a measure of
+liquidity-demanding algorithmic trading per year and quarter, and the second stage regressions are estimated in yearly
+frequency for columns 1 and 2 and quarterly frequency for columns 3 and 4. The sample comprises only NYSE-listed
+stocks, and the sample period spans from 2001 to 2005. All versions of models include both firm and year (quarter for
+columns 3 and 4) fixed effects (αi and γt, respectively). The F-statistic tests the null hypothesis that the instrument
+does not affect the levels of QT and LAO. The standard errors used to compute the t-statistics (in brackets) are double
+clustered by firm and year (quarter for columns 3 and 4). *, **, and *** denote the significance at 10%, 5%, and 1%,
+respectively. For detailed definitions of variables, refer to Table 1.
+Panel A: First stage
+QT i,d
+LAOi,d
+Autoquotei,d
+16.62***
+(90.65)
+12.81***
+(9.96)
+Controls
+Yes
+Yes
+F-stat
+112.96
+67.53
+N obs.
+2,811,272
+160,350
+R2
+4%
+5%
+Panel B: Second Stage d
+AT i,t=d
+QT i,t
+CAPEXRND
+Yearly
+CAPEX
+Yearly
+Qi,t
+2.958***
+(4.50)
+1.388***
+(3.10)
+d
+QT i,t
+-0.066**
+(-2.31)
+-0.177***
+(-6.38)
+Qi,t d
+QTi,t
+0.032***
+(3.59)
+0.016**
+(2.40)
+CFi,t
+0.014
+(1.05)
+0.029**
+(2.23)
+ln(Asseti,t)
+-4.488***
+(-6.63)
+-3.482***
+(-5.62)
+Controls∗
+Yes
+Yes
+N obs.
+4,770
+4,770
+R2
+15%
+7%
+
+41
+Panel C: Second Stage d
+AT i,t= [
+LAOi,t
+CAPEXRND
+Yearly
+CAPEX
+Yearly
+CAPEXRND
+Quarterly
+CAPEX
+Quarterly
+Qi,t
+0.927
+(0.64)
+1.441**
+(2.10)
+1.446***
+(3.26)
+0.887***
+(2.83)
+[
+LAOi,t
+1.119*
+(1.72)
+1.150***
+(3.72)
+0.044***
+(2.79)
+0.040***
+(3.33)
+Qi,t\
+LAOi,t
+-0.023
+(-0.41)
+-0.052***
+(-2.60)
+-0.004***
+(-3.08)
+-0.003***
+(2.82)
+CFi,t
+-0.018
+(-0.37)
+-0.019
+(-0.86)
+0.08
+(1.29)
+0.010**
+(2.12)
+ln(Asseti,t)
+-10.391***
+(-5.48)
+-4.247***
+(-5.45)
+-1.954***
+(-6.57)
+-0.787***
+(-4.86)
+Controls∗
+Yes
+Yes
+Yes
+Yes
+N obs.
+376
+376
+2,284
+2,284
+R2
+29%
+32%
+9%
+6%
+
+42
+Table 5
+AT and non-robot EDGAR downloads
+This table reports the results for the estimation of the impact of AT on the number of non-robot EDGAR downloads
+using the following model:
+EDGARi,t+1 = αi + γt + β1AT i,t + δ1P −1
+i,t + δ2Spreadi,t + δ3ln(MV i,t) + δ4V olumei,t + δ5V olatilityi,t + εi,t,
+where EDGARi,t+1 is the number of non-robot EDGAR downloads, and AT i,t is the AT proxy, P −1
+i,t is the inverse
+of stock price, Spreadi,t is relative spread, ln(MV i,t) is the natural logarithm of market value, V olumei,t is the total
+trading volume, and V olatilityi,t is the volatility measure. In Panel A, QTi,t is used as a measure of liquidity-supplying
+algorithmic trading per year, and regressions are estimated in yearly frequency. In Panel B, LAOi,t is used as a measure
+of liquidity-demanding algorithmic trading per year and quarter, and regressions are estimated in yearly frequency for
+columns 1 and 2 and quarterly frequency for columns 3 and 4. In the 2SLS models, QT and LAO is predicted based on
+the Autoquote instrument and control variables defined in Table 4. All versions of models include both firm and year
+(quarter for columns 3 and 4) fixed effects (αi and γt, respectively). The standard errors used to compute the t-statistics
+(in brackets) are double clustered by firm and year (quarter for columns 3 and 4). *, **, and *** denote the significance
+at 10%, 5%, and 1%, respectively. For detailed definitions of variables, refer to Table 1.
+Panel A: AT i,t=QT i,t (d
+QT i,t in 2SLS model)
+OLS
+Yearly
+2SLS
+Yearly
+QTi,t
+0.057**
+(2.40)
+0.131***
+(2.91)
+P −1
+i,t
+5.554***
+(4.01)
+-1.612
+(-0.22)
+Spreadi,t
+0.627
+(0.96)
+0.795
+(0.33)
+ln(MV )i,t
+6.520***
+(3.37)
+9.196
+(0.24)
+V olumei,t
+-0.117
+(-0.24)
+0.100***
+(2.78)
+V olatilityi,t
+3.253
+(0.57)
+-2.271**
+(-2.32)
+N obs.
+34,176
+3,286
+R2
+0.7%
+5.9%
+Panel B: AT i,t=LAOi,t ( [
+LAOi,t in 2SLS model)
+OLS
+Yearly
+2SLS
+Yearly
+OLS
+Quarterly
+2SLS
+Quarterly
+LAOi,t
+-0.015**
+(2.08)
+-0.038**
+(2.02)
+0.000
+(0.61)
+-0.048**
+(2.03)
+P −1
+i,t
+4.800
+(1.45)
+2.705***
+(3.77)
+4.581
+(0.88)
+-0.546
+(-0.10)
+Spreadi,t
+0.275***
+(3.41)
+0.498
+(0.93)
+0.674***
+(7.61)
+1.857**
+(2.29)
+ln(MV )i,t
+4.440
+(0.91)
+9.658***
+(2.71)
+1.029
+(1.44)
+1.343***
+(2.79)
+V olumei,t
+0.052
+(0.62)
+-0.106**
+(-2.24)
+0.010**
+(2.35)
+0.001
+(1.29)
+V olatilityi,t
+1.930**
+(2.54)
+0.847
+(0.28)
+3.704**
+(2.24)
+0.684
+(0.33)
+N obs.
+1,137
+279
+5,126
+1,399
+R2
+12.8%
+4.8%
+7.3%
+2.6%
+
+43
+Table 6
+AT and institutional traders’ turnover
+This table reports the results for the estimation of the impact of AT on institutional investors’ turnover using the following
+model:
+INSTRi,t+1 = αi + γt + β1AT i,t + δ1P −1
+i,t + δ2Spreadi,t + δ3ln(MV i,t) + δ4V olumei,t + δ5V olatilityi,t + εi,t
+where INSTRi,t+1 is the institutional investors’ turnover, and AT i,t is the AT proxy, P −1
+i,t is the inverse of stock price,
+Spreadi,t is relative spread, ln(MV i,t) is the natural logarithm of market value, V olumei,t is the total trading volume,
+and V olatilityi,t is the volatility measure. In Panel A, QTi,t is used as a measure of liquidity-supplying algorithmic
+trading per year, and regressions are estimated in yearly frequency. In Panel B, LAOi,t is used as a measure of liquiditydemanding algorithmic trading per year and quarter, and regressions are estimated in yearly frequency for columns
+1 and 2 and quarterly frequency for columns 3 and 4. In the 2SLS models, QT and LAO is predicted based on the
+Autoquote instrument and control variables defined in Table 4. All versions of models include both firm and year
+(quarter for columns 3 and 4) fixed effects (αi and γt, respectively). The standard errors used to compute the t-statistics
+(in brackets) are double clustered by firm and year (quarter for columns 3 and 4). *, **, and *** denote the significance
+at 10%, 5%, and 1%, respectively. For detailed definitions of variables, refer to Table 1.
+Panel A: AT i,t=QT i,t (d
+QT i,t in 2SLS model)
+OLS
+Yearly
+2SLS
+Yearly
+QTi,t
+0.001***
+(5.89)
+0.003***
+(5.81)
+P −1
+i,t
+0.033***
+(4.18)
+0.002
+(0.09)
+Spreadi,t
+-0.004***
+(6.14)
+0.004*
+(1.85)
+ln(MV )i,t
+-0.009***
+(-6.19)
+0.008
+(1.50)
+V olumei,t
+0.002
+(0.74)
+-0.001
+(-0.41)
+V olatilityi,t
+-0.003**
+(-2.48)
+-0.026
+(-1.17)
+N obs.
+46,683
+4,830
+R2
+0.7%
+0.6%
+Panel B: AT i,t=LAOi,t ( [
+LAOi,t in 2SLS model)
+OLS
+Yearly
+2SLS
+Yearly
+OLS
+Quarterly
+2SLS
+Quarterly
+LAOi,t
+-0.003***
+(-3.38)
+-0.002***
+(-3.69)
+-0.004***
+(-4.24)
+-0.003***
+(-4.07)
+P −1
+i,t
+-0.015
+(-0.94)
+-0.039
+(-1.59)
+0.029
+(1.45)
+-0.033
+(-1.07)
+Spreadi,t
+-0.004**
+(-2.11)
+0.008***
+(6.83)
+-0.007
+(-1.46)
+0.011***
+(4.79)
+ln(MV )i,t
+0.002
+(1.06)
+0.003***
+(4.22)
+0.001***
+(3.84)
+0.007***
+(5.43)
+V olumei,t
+0.001
+(1.01)
+-0.001***
+(-6.80)
+-0.001
+(-0.81)
+-0.004*
+(-1.65)
+V olatilityi,t
+0.002***
+(2.63)
+0.002
+(0.18)
+0.004**
+(2.30)
+-0.001
+(-0.58)
+N obs.
+1,348
+450
+6,401
+2,171
+R2
+4.3%
+32%
+0.5%
+2.3%
+
+44
+Table 7
+AT and operating performance: OLS
+This table reports the results for the estimation of the impact of AT on the future operating performance of firms using
+the following model:
+OP i,t+1 = αi + γt + β1AT i,t + δ1Qi,t + δ2CF i,t + δ3ln(Assetsi,t) + εi,t
+where OP i,t+1 is the performance of firm i at time t + 1, defined as one period ahead return on assets (ROAi,t+1)
+and sales growth (SGi,t+1). Across all specifications, AT i,t is the AT proxy, Qi,t is the firm’s normalized stock price
+(Tobin’s Q), CF i,t is the firm’s cash flow, and ln(Asseti,t) is the natural logarithm of the firm’s total assets. In Panel A,
+QTi,t is used as a measure of liquidity-supplying algorithmic trading per year, and regressions are estimated in yearly
+frequency. In Panel B, LAOi,t is used as a measure of liquidity-demanding algorithmic trading per year and quarter,
+and regressions are estimated in yearly frequency for columns 1 and 2 and quarterly frequency for columns 3 and 4. All
+versions of models include both firm and year (quarter for columns 3 and 4) fixed effects (αi and γt, respectively). The
+standard errors used to compute the t-statistics (in brackets) are double clustered by firm and year (quarter for columns
+3 and 4). *, **, and *** denote the significance at 10%, 5%, and 1%, respectively. For detailed definitions of variables,
+refer to Table 1.
+Panel A: AT i,t=QT i,t
+ROA
+Yearly
+SG
+Yearly
+Qi,t
+1.158***
+(19.75)
+2.760***
+(30.73)
+QTi,t
+0.001
+(0.20)
+0.033***
+(3.76)
+CFi,t
+0.260***
+(37.14)
+-0.056***
+(-4.77)
+ln(Asset)i,t
+-0.295***
+(-3.86)
+-4.236***
+(-26.63)
+N obs.
+57,656
+57,656
+R2
+12%
+4%
+Panel B: AT i,t=LAOi,t
+ROA
+Yearly
+SG
+Yearly
+ROA
+Quarterly
+SG
+Quarterly
+Qi,t
+1.100***
+(4.46)
+1.750***
+(3.52)
+0.426***
+(8.41)
+0.167***
+(2.80)
+LAOi,t
+-0.011
+(-1.18)
+-0.048**
+(-2.02)
+-0.006***
+(-2.95)
+-0.001
+(-0.20)
+CFi,t
+0.270*
+(1.74)
+-0.094
+(-0.84)
+0.106***
+(9.24)
+-0.012
+(-1.61)
+ln(Asset)i,t
+1.178**
+(2.54)
+-3.057***
+(-2.98)
+0.314***
+(4.45)
+-0.322***
+(-3.48)
+N obs.
+1,437
+1,437
+7,504
+7,504
+R2
+20%
+5%
+1.8%
+0.6%
+
+45
+Table 8
+AT and operating performance: 2SLS
+This table reports the results for the estimation of the impact of AT on the future operating performance of firms using
+the following two-stage least squares (2SLS) model:
+AT i,d = αi + γd + β1Autoquotei,d + Controls + εi,d,
+OP i,t+1 = αi + γt + β1d
+AT i,t + δ1Qi,t + δ2Cashi,t + δ3ln(Asseti,t) + Controls∗+ εi,t.
+In the first stage, ATi,d is the daily AT measure proxied by QT and LAO, αi is firm and γd is day fixed effects,
+Autoquotei,d is a dummy variable that equals zero before the autoquote introduction and one afterward, and Controls
+consist of control variables including the daily values of the first lag values of inverse price, trading volume, relative
+spread, natural logarithm of market value, and the absolute value of price changes. In the second stage, OPi,t+1 is the
+performance of firm i at time t+1, defined as one period ahead return on assets (ROAi,t+1) and sales growth (SGi,t+1).
+Qi,t is the firm’s normalized stock price (Tobin’s Q), and d
+AT i,t is the average of daily predicted values of ATi,d, CF i,t is
+the firm’s cash flow, ln(Asseti,t) is the natural logarithm of the firm’s total assets, and Controls∗represent the averages
+of daily Controls. In Panel A, QT is used as a measure of liquidity-supplying algorithmic trading in year t, and the second stage regressions are estimated in yearly frequency. In Panel B, LAO is used as a measure of liquidity-demanding
+algorithmic trading per year and quarter, and the second stage regressions are estimated in yearly frequency for columns
+1 and 2 and quarterly frequency for columns 3 and 4. The sample comprises only NYSE-listed stocks, and the sample
+period spans from 2001 to 2005. All versions of models include both firm and year (quarter for columns 3 and 4) fixed
+effects (αi and γt, respectively). The standard errors used to compute the t-statistics (in brackets) are double clustered
+by firm and year (quarter for columns 3 and 4). *, **, and *** denote the significance at 10%, 5%, and 1%, respectively.
+For detailed definitions of variables, refer to Table 1.
+Panel A: d
+AT i,t=d
+QT i,t
+ROA
+Yearly
+SG
+Yearly
+Qi,t
+0.543
+(1.48)
+0.080
+(0.12)
+d
+QTi,t
+0.056**
+(2.07)
+0.609***
+(7.39)
+CFi,t
+0.012
+(0.45)
+-0.434***
+(-7.29)
+ln(Asset)i,t
+-1.856***
+(-3.09)
+-18.029***
+(-11.92)
+Controls∗
+Yes
+Yes
+N obs.
+4,770
+4,770
+R2
+13%
+11%
+Panel B: d
+AT i,t= [
+LAOi,t
+ROA
+Yearly
+SG
+Yearly
+ROA
+Quarterly
+SG
+Quarterly
+Qi,t
+0.951**
+(2.08)
+0.856
+(1.08)
+0.327***
+(4.05)
+0.129
+(1.05)
+\
+LAOi,t
+-0.115**
+(-2.31)
+-0.329**
+(-2.33)
+-0.055***
+(-3.30)
+-0.079***
+(-3.61)
+CFi,t
+0.098*
+(1.66)
+-0.477***
+(-4.80)
+0.096***
+(5.13)
+-0.010
+(-1.15)
+ln(Asset)i,t
+0.171
+(0.12)
+-9.330***
+(-3.38)
+-0.559**
+(-2.13)
+-0.908***
+(-2.62)
+Controls∗
+Yes
+Yes
+Yes
+Yes
+N obs.
+376
+376
+2,284
+2,284
+R2
+21%
+20%
+6%
+1.7%
+
+46
+Table 9
+AT and investment-to-price sensitivity: controlling for alternative explanations
+This table reports the results for the estimation of the impact of AT on investment-to-price sensitivity using the following
+ordinary least squares (OLS) model:
+CAPEXi,t+1 = αi + γt + β1Qi,t + β2AT i,t + β3Qi,tAT i,t + δ1CF i,t + δ2 ln(Asseti,t) + δ3ACi,t
++ δ4Qi,tACi,t + εi,t,
+where CAPEXi,t+1 is the capital expenditures divided by lagged total assets, Qi,t is the firm’s normalized stock price
+(Tobin’s Q), AT i,t is the yearly AT proxy, defined as QTi,t in Panel A and LAOi,t in Panel B, CF i,t is the firm’s cash
+flow, and ln(Asseti,t) is the natural logarithm of the firm’s total assets. ACi,t denotes different controls for alternative
+channels. From column (i) to (iv), we control for insider information (Insideri,t), analysts’ coverage (ACoveragei,t),
+capital constraints (KZi,t), and institutional trading (INSi,t) as well as their interaction with Tobin’s Q, respectively.
+All versions of models include both firm and year fixed effects (αi and γt, respectively). The standard errors used to
+compute the t-statistics (in brackets) are double clustered by firm and year. *, **, and *** denote the significance at 10%,
+5%, and 1%, respectively. For detailed definitions of variables, refer to Table 1.
+Panel A: AT i,t=QT i,t
+(i)
+Insideri,t
+(ii)
+ACoveragei,t
+(iii)
+KZi,t
+(iv)
+INSi,t
+Qi,t
+0.819***
+(28.97)
+0.844***
+(21.20)
+0.877***
+(31.86)
+0.921***
+(17.88)
+QT i,t
+-0.045***
+(-8.31)
+-0.057***
+(-9.05)
+-0.054***
+(-10.59)
+-0.055***
+(-10.72)
+Qi,tQTi,t
+0.031***
+(8.86)
+0.039***
+(9.65)
+0.038***
+(11.19)
+0.038***
+(11.26)
+ACi,t
+-0.001***
+(5.37)
+0.025**
+(2.54)
+-0.061***
+(-5.29)
+0.094
+(1.22)
+Qi,tACi,t
+0.001***
+(6.32)
+-0.001
+(-0.46)
+0.010***
+(4.21)
+-0.072
+(-1.05)
+Controlsi,t
+Yes
+Yes
+Yes
+Yes
+N obs.
+43,735
+43,284
+50,543
+52,728
+R2
+9%
+10%
+10%
+9%
+Panel B: AT i,t=LAOi,t
+(i)
+Insideri,t
+(ii)
+ACoveragei,t
+(iii)
+KZi,t
+(iv)
+INSi,t
+Qi,t
+0.797***
+(5.10)
+1.039***
+(4.33)
+0.906***
+(5.21)
+0.968**
+(2.40)
+LAOi,t
+0.027***
+(4.22)
+0.026***
+(4.03)
+0.024***
+(4.14)
+0.026***
+(4.17)
+Qi,tLAOi,t
+-0.005***
+(-2.61)
+-0.005**
+(-2.53)
+-0.004**
+(-2.50)
+-0.004***
+(-2.58)
+ACi,t
+0.019
+(1.07)
+0.084*
+(1.84)
+-0.346**
+(-2.27)
+0.281
+(0.26)
+Qi,tACi,t
+-0.001
+(-0.88)
+-0.014
+(-1.59)
+0.089***
+(2.65)
+-0.236
+(-0.50)
+Controlsi,t
+Yes
+Yes
+Yes
+Yes
+N obs.
+1,360
+1,371
+1,377
+1,364
+R2
+17%
+18%
+18%
+18%
+
+1 
+Online Appendix for  
+“The good and evil of algos: Investment-to-price sensitivity and the learning hypothesis” 
+June, 2025 
+
+ 
+2 
+ 
+In this Appendix, we perform the following tests for robustness, and all these tests are 
+referenced in the paper.  
+● Table A1 replicates the analysis presented in Table 4, with both first and second stages at 
+an annual frequency.  
+● Table A2 presents the regression results for the model that simultaneously incorporates both 
+AT proxies, QT, and LAO. 
+● Table A3 presents the regression results for the model encompassing proxies for all 
+alternative channels collectively. 
+● Table A4 reports the results for the two-stage Heckman model.  
+● Table A5 replicates Table 7 (operating performance OLS regressions) using the average of 
+three periods ahead return on assets (𝑅𝑂𝐴𝑖,𝑡+3) and sales growth (𝑆𝐺𝑖,𝑡+3). 
+● Table A6 replicates Table 8 (operating performance 2SLS regressions) using the average 
+of three periods ahead return on assets (𝑅𝑂𝐴𝑖,𝑡+3) and sales growth (𝑆𝐺𝑖,𝑡+3). 
+● Table A7 reports a falsification test that the result 𝑄𝑖,𝑡𝐴𝑇𝑖,𝑡 in Table 3 do not replicate with 
+𝐶𝐹𝑖,𝑡𝐴𝑇𝑖,𝑡. 
+● Table A8 reports a falsification test that the result 𝑄𝑖,𝑡𝐴𝑇𝑖,𝑡̂ in Table 4 do not replicate with 
+𝐶𝐹𝑖,𝑡𝐴𝑇𝑖,𝑡̂. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+3 
+ 
+Table A1 
+AT and investment-to-price sensitivity: 2SLS 
+This table reports the results for the estimation of the impact of AT on investment-to-price sensitivity using the 
+following two-stage least squares (2SLS) model: 
+ 
+𝐴𝑇𝑖,𝑡= 𝛼𝑖+ 𝛽1𝐴𝑢𝑡𝑜𝑞𝑢𝑜𝑡𝑒𝑖,𝑡+ 𝛿1𝐶𝐹𝑖,𝑡+ 𝛿2 ln(𝐴𝑠𝑠𝑒𝑡𝑖,𝑡) + 𝜀𝑖,𝑡 
+ 
+𝐼𝑖,𝑡+1 = 𝛼𝑖+ 𝛽1𝑄𝑖,𝑡+ 𝛽2𝐴𝑇𝑖,𝑡̂ + 𝛽3𝑄𝑖,𝑡𝐴𝑇𝑖,𝑡̂ + 𝛿1𝐶𝐹𝑖,𝑡+ 𝛿2 𝑙𝑛(𝐴𝑠𝑠𝑒𝑡𝑖,𝑡) + +𝜀𝑖,𝑡 
+ 
+In the first stage, 𝐴𝑇𝑖,𝑡 is the yearly AT measure proxied by 𝑄𝑇𝑖,𝑡 and 𝐿𝐴𝑂𝑖,𝑡. 𝐴𝑢𝑡𝑜𝑞𝑢𝑜𝑡𝑒𝑖,𝑡 is dummy variable that 
+equals zero before the Autoquote introduction (2003) and one afterward. 𝐼𝑖,𝑡+1 is the investment of firm 𝑖 at time 𝑡+ 1, 
+defined as the capital expenditures plus R&D expenses divided by lagged total assets (𝐶𝐴𝑃𝐸𝑋𝑅𝑁𝐷𝑖,𝑡+1) (column 1) 
+and the capital expenditures divided by lagged total assets (𝐶𝐴𝑃𝐸𝑋𝑖,𝑡+1) (column 2). Across all specifications, 𝑄𝑖,𝑡 is 
+the firm’s normalized stock price (Tobin’s Q), 𝐶𝐹𝑖,𝑡 is the firm’s cash flow, and ln(𝐴𝑠𝑠𝑒𝑡𝑖,𝑡) is the natural logarithm 
+of the firm’s total assets. We use two algorithmic measures: (i) 𝑄𝑇𝑖,𝑡 is used as a measure of liquidity-supplying 
+algorithmic trading per year and (ii) 𝐿𝐴𝑂𝑖,𝑡 is used as a measure of liquidity-demanding algorithmic trading per year. 
+All versions of the model include firm fixed effects only (α𝑖). In this model, we employ only firm fixed effect as the 
+𝐴𝑢𝑡𝑜𝑞𝑢𝑜𝑡𝑒𝑖,𝑡 dummy does not have time variation across stocks in the yearly first-stage model, i.e., all stocks were 
+introduced to the Autoquote system in 2003. The sample comprises only NYSE-listed stocks, and the sample period 
+spans from 2001 to 2005, with 2003 excluded due to the phased implementation during that year. The standard errors 
+used to compute the t-statistics (in brackets) are double clustered by firm and year. *, **, and *** denote the 
+significance at 10%, 5%, and 1%, respectively. For detailed definitions of variables, refer to Table 1. 
+ 
+ 
+ 
+𝐶𝐴𝑃𝐸𝑋𝑅𝑁𝐷 
+Yearly 
+ 
+ 
+𝐶𝐴𝑃𝐸𝑋 
+Yearly 
+ 
+𝐶𝐴𝑃𝐸𝑋𝑅𝑁𝐷 
+Yearly 
+ 
+ 
+𝐶𝐴𝑃𝐸𝑋 
+Yearly 
+𝑄𝑖,𝑡  
+ 
+2.112*** 
+(7.71) 
+ 
+ 
+1.677*** 
+(10.05) 
+ 
+1.362*** 
+(2.77) 
+ 
+ 
+0.728*** 
+(5.19) 
+𝑄𝑇𝑖,𝑡̂  
+ 
+-0.028 
+(-0.39) 
+ 
+ 
+-0.042 
+(-0.90) 
+ 
+ 
+ 
+ 
+ 
+𝑸𝒊,𝒕𝑸𝑻𝒊,𝒕̂  
+ 
+0.039** 
+(1.98) 
+ 
+ 
+0.046** 
+(2.17) 
+ 
+ 
+ 
+ 
+ 
+𝐿𝐴𝑂𝑖,𝑡̂  
+ 
+ 
+ 
+ 
+ 
+ 
+0.029*** 
+(2.66) 
+ 
+ 
+0.021*** 
+(3.80) 
+𝑸𝒊,𝒕𝑳𝑨𝑶𝒊,𝒕̂  
+ 
+ 
+ 
+ 
+ 
+ 
+-0.014* 
+(-1.68) 
+ 
+ 
+-0.003*** 
+(-3.64) 
+𝐶𝐹𝑖,𝑡  
+ 
+0.036*** 
+(5.10) 
+ 
+ 
+0.045*** 
+(6.41) 
+ 
+0.068 
+(0.58) 
+ 
+ 
+0.045 
+(0.74) 
+ln(𝐴𝑠𝑠𝑒𝑡𝑖,𝑡)  
+ 
+-2.611*** 
+(-3.10) 
+ 
+ 
+-1.464*** 
+(-3.35) 
+ 
+-1.563 
+(-0.29) 
+ 
+ 
+-0.814 
+(-0.33) 
+N obs. 
+ 
+3,972 
+ 
+ 
+3,972 
+ 
+306 
+ 
+ 
+306 
+𝑅2  
+ 
+11% 
+ 
+ 
+11% 
+ 
+22% 
+ 
+ 
+21% 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+4 
+ 
+Table A2 
+AT and investment-to-price sensitivity: OLS 
+This table reports the results for the estimation of the impact of AT on the investment-to-price sensitivity using the 
+following ordinary least squares (OLS) model: 
+𝐼𝑖,𝑡+1 = 𝛼𝑖+ 𝛾𝑡+ 𝛽1𝑄𝑖,𝑡+ 𝛽2𝑄𝑇𝑖,𝑡+ 𝛽3𝑄𝑖,𝑡𝑄𝑇𝑖,𝑡+ 𝛽4𝐿𝐴𝑂𝑖,𝑡+ 𝛽5𝑄𝑖,𝑡𝐿𝐴𝑂𝑖,𝑡+ 𝛿1𝐶𝐹𝑖,𝑡+ +𝛿2 ln(𝐴𝑠𝑠𝑒𝑡𝑖,𝑡) + 𝜀𝑖,𝑡 
+where 𝐼𝑖,𝑡+1 is the investment of firm 𝑖 at time 𝑡+ 1, defined as the capital expenditures plus R&D expenses divided 
+by lagged total assets (𝐶𝐴𝑃𝐸𝑋𝑅𝑁𝐷𝑖,𝑡+1) (column 1) and the capital expenditures divided by lagged total assets 
+(𝐶𝐴𝑃𝐸𝑋𝑖,𝑡+1) (column 2). Across all specifications, 𝑄𝑖,𝑡 is the firm’s normalized stock price (Tobin’s Q), 𝐶𝐹𝑖,𝑡 is the 
+firm’s cash flow, and ln(𝐴𝑠𝑠𝑒𝑡𝑖,𝑡) is the natural logarithm of the firm’s total assets. We use two algorithmic measures: 
+(i) 𝑄𝑇𝑖,𝑡 is used as a measure of liquidity-supplying algorithmic trading per year and (ii) 𝐿𝐴𝑂𝑖,𝑡 is used as a measure 
+of liquidity-demanding algorithmic trading per year. All versions of the model include both firm and year fixed effects 
+(α𝑖 and γ𝑡, respectively). The standard errors used to compute the t-statistics (in brackets) are double clustered by firm 
+and year. *, **, and *** denote the significance at 10%, 5%, and 1%, respectively. For detailed definitions of variables, 
+refer to Table 1. 
+ 
+ 
+ 
+𝐶𝐴𝑃𝐸𝑋𝑅𝑁𝐷 
+ 
+𝐶𝐴𝑃𝐸𝑋 
+ 
+𝑄𝑖,𝑡  
+ 
+1.791*** 
+(6.88) 
+ 
+0.809*** 
+(5.33) 
+ 
+𝑄𝑇𝑖,𝑡  
+ 
+-0.039 
+(-1.19) 
+ 
+-0.096*** 
+(-3.95) 
+ 
+𝑸𝒊,𝒕𝑸𝑻𝒊,𝒕  
+ 
+0.010 
+(0.49) 
+ 
+0.055*** 
+(3.79) 
+ 
+𝐿𝐴𝑂𝑖,𝑡  
+ 
+0.041*** 
+(3.99) 
+ 
+0.024*** 
+(3.94) 
+ 
+𝑸𝒊,𝒕𝑳𝑨𝑶𝒊,𝒕  
+ 
+-0.010*** 
+(-2.99) 
+ 
+-0.004** 
+(-2.46) 
+ 
+𝐶𝐹𝑖,𝑡  
+ 
+0.086*** 
+(2.79) 
+ 
+0.045*** 
+(2.47) 
+ 
+ln(𝐴𝑠𝑠𝑒𝑡𝑖,𝑡)  
+ 
+-2.718*** 
+(-5.94) 
+ 
+-0.993*** 
+(-3.42) 
+ 
+N obs. 
+ 
+1,437 
+ 
+1,437 
+ 
+𝑅2  
+ 
+24% 
+ 
+16% 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+5 
+ 
+Table A3 
+AT and investment-to-price sensitivity: controlling for alternative explanations 
+This table reports the results for the estimation of the impact of AT on the investment-to-price sensitivity using the 
+following ordinary least squares (OLS) model: 
+𝐶𝐴𝑃𝐸𝑋𝑖,𝑡+1 = 𝛼𝑖+ 𝛾𝑡+ 𝛽1𝑄𝑖,𝑡+ 𝛽2𝐴𝑇𝑖,𝑡+ 𝛽3𝑄𝑖,𝑡𝐴𝑇𝑖,𝑡+ 𝛿1𝐶𝐹𝑖,𝑡   
++ 𝛿2 ln(𝐴𝑠𝑠𝑒𝑡𝑖,𝑡) + ∑
+𝜃𝑘𝐴𝐶𝑘,𝑖,𝑡
+4
+𝑘=1
++ ∑
+𝜗𝑘𝑄𝑖,𝑡𝐴𝐶𝑘,𝑖,𝑡
+4
+𝑘=1
++ 𝜀𝑖,𝑡 
+where 𝐶𝐴𝑃𝐸𝑋𝑖,𝑡+1 is the capital expenditures divided by lagged total assets, 𝑄𝑖,𝑡 is the firm’s normalized stock price 
+(Tobin’s Q), 𝐴𝑇𝑖,𝑡 is the yearly AT proxy, defined as 𝑄𝑇𝑖,𝑡 in column (1) and 𝐿𝐴𝑂𝑖,𝑡 in column (2), 𝐶𝐹𝑖,𝑡 is the firm’s 
+cash flow, and ln(𝐴𝑠𝑠𝑒𝑡𝑖,𝑡) is the natural logarithm of the firm’s total assets. ∑
+𝐴𝐶𝑘,𝑖,𝑡
+4
+𝑘=1
+ denotes different controls 
+for alternative channels, including insider information (𝐼𝑛𝑠𝑖𝑑𝑒𝑟𝑖,𝑡), analysts’ coverage (𝐴𝐶𝑜𝑣𝑒𝑟𝑎𝑔𝑒𝑖,𝑡), capital 
+constraints (𝐾𝑍𝑖,𝑡), and institutional trading (𝐼𝑁𝑆𝑖,𝑡) as well as their interaction with Tobin's Q (∑
+𝑄𝑖,𝑡𝐴𝐶𝑘,𝑖,𝑡
+4
+𝑘=1
+). All 
+versions of models include both firm and year fixed effects (α𝑖 and γ𝑡, respectively). The standard errors used to 
+compute the t-statistics (in brackets) are double clustered by firm and year. *, **, and *** denote the significance at 
+10\%, 5\%, and 1\%, respectively. For detailed definitions of variables, refer to Table 1. 
+ 
+ 
+ 
+𝐶𝐴𝑃𝐸𝑋 
+ 
+𝐶𝐴𝑃𝐸𝑋 
+ 
+𝑄𝑖,𝑡  
+ 
+0.787*** 
+(11.69) 
+ 
+1.863*** 
+(3.11) 
+ 
+𝑄𝑇𝑖,𝑡  
+ 
+-0.056*** 
+(-8.12) 
+ 
+- 
+ 
+𝑸𝒊,𝒕𝑸𝑻𝒊,𝒕  
+ 
+0.035*** 
+(8.34) 
+ 
+- 
+ 
+𝐿𝐴𝑂𝑖,𝑡  
+ 
+- 
+ 
+0.025*** 
+(3.95) 
+ 
+𝑸𝒊,𝒕𝑳𝑨𝑶𝒊,𝒕  
+ 
+- 
+ 
+-0.004** 
+(-2.37) 
+ 
+𝐼𝑛𝑠𝑖𝑑𝑒𝑟𝑖,𝑡  
+ 
+-0.001 
+(-0.59) 
+ 
+0.043** 
+(1.99) 
+ 
+𝑄𝑖,𝑡𝐼𝑛𝑠𝑖𝑑𝑒𝑟𝑖,𝑡  
+ 
+0.001 
+(0.55) 
+ 
+-0.023** 
+(-2.26) 
+ 
+𝐴𝐶𝑜𝑣𝑒𝑟𝑎𝑔𝑒𝑖,𝑡  
+ 
+0.029*** 
+(2.72) 
+ 
+0.105** 
+(2.09) 
+ 
+𝑄𝑖,𝑡𝐴𝐶𝑜𝑣𝑒𝑟𝑎𝑔𝑒𝑖,𝑡  
+ 
+-0.000 
+(-0.04) 
+ 
+-0.020** 
+(-2.05) 
+ 
+𝐾𝑍𝑖,𝑡  
+ 
+-0.081*** 
+(-6.61) 
+ 
+-0.373** 
+(2.22) 
+ 
+𝑄𝑖,𝑡𝐾𝑍𝑖,𝑡  
+ 
+0.012*** 
+(5.06) 
+ 
+0.102*** 
+(2.78) 
+ 
+𝐼𝑁𝑆𝑖,𝑡  
+ 
+0.011 
+(0.13) 
+ 
+0.639 
+(0.52) 
+ 
+𝑄𝑖,𝑡𝐼𝑁𝑆𝑖,𝑡  
+ 
+-0.007 
+(-0.09) 
+ 
+-0.787 
+(-1.47) 
+ 
+N obs. 
+ 
+34,988 
+ 
+1,252 
+ 
+𝑅2  
+ 
+10% 
+ 
+20% 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+6 
+ 
+Table A4 
+AT and investment-to-price sensitivity: two-stage Heckman model 
+This table reports the results for the estimation of the impact of AT on the investment-to-price sensitivity using the 
+following two-stage Heckman model: 
+ 
+𝐴𝑇𝑖,𝑡= 𝛼𝑖+ 𝛾𝑡+ 𝛾1𝑆𝑝𝑟𝑒𝑎𝑑𝑖,𝑡+ 𝛾2𝑉𝑜𝑙𝑎𝑡𝑖𝑙𝑖𝑡𝑦𝑖,𝑡+ 𝛾3𝑃𝑖,𝑡
+−1 + 𝛾4ln (𝑉𝑜𝑙𝑢𝑚𝑒𝑖,𝑡) + 𝛾5𝑀𝑘𝑡𝐶𝑎𝑝𝑖,𝑡+ 𝜀𝑖,𝑡 
+𝐼𝑖,𝑡+1 = 𝛼𝑖+ 𝛾𝑡+ 𝛽1𝑄𝑖,𝑡+ 𝛽2𝐴𝑇𝑖,𝑡+ 𝛽3𝑄𝑖,𝑡𝐴𝑇𝑖,𝑡+ 𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠+ 𝛿1𝐼𝑀𝑅𝑖,𝑡+ 𝜀𝑖,𝑡 
+where 𝐼𝑖,𝑡+1 is the investment of firm 𝑖 in year 𝑡+ 1. In column (2), investment is defined as the capital expenditures 
+divided by lagged total assets (𝐶𝐴𝑃𝐸𝑋𝑖,𝑡+1) and in column (3), investment is defined as the capital expenditures plus 
+R&D expenses divided by lagged total assets (𝐶𝐴𝑃𝐸𝑋𝑅𝑁𝐷𝑖,𝑡+1). Across all specifications, 𝑄𝑖,𝑡 is the firm’s normalized 
+stock price, 𝐶𝐹𝑖,𝑡 is the firm’s cash flow, and ln(𝐴𝑠𝑠𝑒𝑡𝑖,𝑡) is the natural logarithm of the firm’s total assets. In Panel A, 
+𝑄𝑇𝑖,𝑡 is used as a measure of liquidity-supplying algorithmic trading per year, and regressions are estimated in yearly 
+frequency. In Panel B, 𝐿𝐴𝑂𝑖,𝑡 is used as a measure of liquidity-demanding algorithmic trading per year. In column (1) 
+of both panels, the results of the first-stage model (Probit estimation with continuous dependent variable) is provided. 
+In this model, dependent variables are 𝑄𝑇𝑖,𝑡 (Panel A) and 𝐿𝐴𝑂𝑖,𝑡 (Panel B) and independent variables are the relative 
+bid-ask spread (𝑆𝑝𝑟𝑒𝑎𝑑𝑖,𝑡), the standard deviation of stock returns (𝑉𝑜𝑙𝑎𝑡𝑖𝑙𝑖𝑡𝑦𝑖,𝑡), the inverse price (𝑃𝑖,𝑡
+−1), the natural 
+logarithm of trading volume (ln (𝑉𝑜𝑙𝑢𝑚𝑒𝑖,𝑡)), and the market value of stock 𝑖 in year 𝑡 (𝑀𝑘𝑡𝐶𝑎𝑝𝑖,𝑡). 𝐼𝑀𝑅𝑖,𝑡 is the 
+Inverse Mills Ratio computed using the first-stage estimation results and included in the second-stage estimations. All 
+models include both firm and year fixed effects (𝛼𝑖 and 𝛾𝑡, respectively). The standard errors used to compute the t -
+statistics (in brackets) are double clustered by firm and year. *, **, and *** denote the significance at 10%, 5%, and 
+1%, respectively. For the detailed definitions of variables refer to Table 1. 
+ 
+Panel A: 𝐴𝑇𝑖,𝑡 = 𝑄𝑇𝑖,𝑡 
+ 
+ 
+(1) 
+First Stage 
+(Probit) 
+ 
+(2) 
+Second Stage 
+𝐶𝐴𝑃𝐸𝑋 
+ 
+(3) 
+Second Stage 
+𝐶𝐴𝑃𝐸𝑋𝑅𝑁𝐷 
+ 
+𝑄𝑖,𝑡  
+ 
+ 
+0.841*** 
+(29.85) 
+ 
+1.856*** 
+(34.88) 
+ 
+𝑄𝑇𝑖,𝑡 
+ 
+ 
+-0.050*** 
+(-9.02) 
+ 
+-0.030*** 
+(-3.61) 
+ 
+𝑸𝒊,𝒕𝑸𝑻𝒊,𝒕 
+ 
+ 
+0.033*** 
+(9.21) 
+ 
+0.034*** 
+(5.96) 
+ 
+𝐶𝐹𝑖,𝑡  
+ 
+ 
+0.039*** 
+(15.85) 
+ 
+0.032*** 
+(6.62) 
+ 
+ln(𝐴𝑠𝑠𝑒𝑡𝑖,𝑡)  
+ 
+ 
+-1.219*** 
+(-28.68) 
+ 
+-3.144*** 
+(-41.61) 
+ 
+𝑰𝑴𝑹𝒊,𝒕 
+ 
+ 
+0.019 
+(0.78) 
+ 
+0.010 
+(0.57) 
+ 
+𝑆𝑝𝑟𝑒𝑎𝑑𝑖,𝑡 
+0.062** 
+(1.98) 
+ 
+ 
+ 
+ 
+ 
+𝑉𝑜𝑙𝑎𝑡𝑖𝑙𝑖𝑡𝑦𝑖,𝑡 
+-0.037*** 
+(-4.15) 
+ 
+ 
+ 
+ 
+ 
+𝑃𝑖,𝑡
+−1 
+0.419*** 
+(3.19) 
+ 
+ 
+ 
+ 
+ 
+ln (𝑉𝑜𝑙𝑢𝑚𝑒𝑖,𝑡) 
+-0.009 
+(-0.38) 
+ 
+ 
+ 
+ 
+ 
+𝑀𝑘𝑡𝐶𝑎𝑝𝑖,𝑡 
+-0.000*** 
+(-11.45) 
+ 
+ 
+ 
+ 
+ 
+Fixed effect 
+Firm and Year 
+ 
+Firm and Year 
+ 
+Firm and Year 
+ 
+N obs. 
+46,360 
+ 
+46,360 
+ 
+46,360 
+ 
+Pseudo-𝑅2/ 𝑅2  
+24% 
+ 
+9% 
+ 
+16% 
+ 
+ 
+ 
+ 
+ 
+
+ 
+7 
+ 
+Panel B: 𝐴𝑇𝑖,𝑡 = 𝐿𝐴𝑂𝑖,𝑡 
+ 
+ 
+(1) 
+First Stage 
+(Probit) 
+ 
+(2) 
+Second Stage 
+𝐶𝐴𝑃𝐸𝑋 
+ 
+(3) 
+Second Stage 
+𝐶𝐴𝑃𝐸𝑋𝑅𝑁𝐷 
+ 
+𝑄𝑖,𝑡  
+ 
+ 
+0.811*** 
+(5.27) 
+ 
+1.798*** 
+(6.83) 
+ 
+𝐿𝐴𝑂𝑖,𝑡 
+ 
+ 
+0.025*** 
+(3.97) 
+ 
+0.040*** 
+(3.86) 
+ 
+𝑸𝒊,𝒕𝑳𝑨𝑶𝒊,𝒕 
+ 
+ 
+-0.005** 
+(-2.51) 
+ 
+-0.010*** 
+(-2.97) 
+ 
+𝐶𝐹𝑖,𝑡  
+ 
+ 
+0.050*** 
+(2.68) 
+ 
+0.089*** 
+(2.88) 
+ 
+ln(𝐴𝑠𝑠𝑒𝑡𝑖,𝑡)  
+ 
+ 
+-0.960*** 
+(-3.27) 
+ 
+-2.723*** 
+(-5.89) 
+ 
+𝑰𝑴𝑹𝒊,𝒕 
+ 
+ 
+-0.127 
+(-0.90) 
+ 
+-0.098 
+(-0.42) 
+ 
+𝑆𝑝𝑟𝑒𝑎𝑑𝑖,𝑡 
+0.017 
+(0.86) 
+ 
+ 
+ 
+ 
+ 
+𝑉𝑜𝑙𝑎𝑡𝑖𝑙𝑖𝑡𝑦𝑖,𝑡 
+0.054*** 
+(5.83) 
+ 
+ 
+ 
+ 
+ 
+𝑃𝑖,𝑡
+−1 
+-0.354*** 
+(-8.03) 
+ 
+ 
+ 
+ 
+ 
+ln (𝑉𝑜𝑙𝑢𝑚𝑒𝑖,𝑡) 
+0.040*** 
+(3.49) 
+ 
+ 
+ 
+ 
+ 
+𝑀𝑘𝑡𝐶𝑎𝑝𝑖,𝑡 
+0.000** 
+(2.56) 
+ 
+ 
+ 
+ 
+ 
+Fixed effect 
+Firm and Year 
+ 
+Firm and Year 
+ 
+Firm and Year 
+ 
+N obs. 
+1,407 
+ 
+1,407 
+ 
+1,407 
+ 
+Pseudo-𝑅2/ 𝑅2  
+17% 
+ 
+16% 
+ 
+24% 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+8 
+ 
+Table A5 
+AT and operating performance (average of three periods ahead values): OLS 
+This table reports the results for the estimation of the impact of AT on the future operating performance of firms using 
+the following model: 
+𝑂𝑃𝑖,𝑡+3 = α𝑖+ γ𝑡+ β1𝐴𝑇𝑖,𝑡+ δ1𝑄𝑖,𝑡+ δ2𝐶𝐹𝑖,𝑡+ δ3ln(𝐴𝑠𝑠𝑒𝑡𝑠𝑖,𝑡) + ε𝑖,𝑡 
+where 𝑂𝑃𝑖,𝑡+3 is the average of the next three years operating performance of firm 𝑖, defined as the average of three 
+period ahead return on assets (𝑅𝑂𝐴𝑖,𝑡+1) and sales growth (𝑆𝐺𝑖,𝑡+1). Across all specifications, 𝐴𝑇𝑖,𝑡 is the AT proxy, 
+𝑄𝑖,𝑡 is the firm’s normalized stock price (Tobin’s Q), 𝐶𝐹𝑖,𝑡 is the firm’s cash flow, and ln(𝐴𝑠𝑠𝑒𝑡𝑖,𝑡) is the natural 
+logarithm of the firm’s total assets. In Panel A, 𝑄𝑇𝑖,𝑡 is used as a measure of liquidity-supplying algorithmic trading 
+per year, and regressions are estimated in yearly frequency. In Panel B, 𝐿𝐴𝑂𝑖,𝑡 is used as a measure of liquiditydemanding algorithmic trading per year and quarter, and regressions are estimated in yearly frequency for columns (1) 
+and (2) and quarterly frequency for columns (3) and (4). All versions of models include both firm and year (quarter for 
+columns 3 and 4) fixed effects (α𝑖 and γ𝑡, respectively). The standard errors used to compute the t-statistics (in brackets) 
+are double clustered by firm and year (quarter for columns 3 and 4). *, **, and *** denote the significance at 10%, 
+5%, and 1%, respectively. For detailed definitions of variables, refer to Table 1. 
+ 
+Panel A: 𝐴𝑇𝑖,𝑡 = 𝑄𝑇𝑖,𝑡 
+ 
+ 
+𝑅𝑂𝐴 
+Yearly 
+ 
+ 
+𝑆𝐺 
+Yearly 
+ 
+ 
+ 
+ 
+ 
+𝑸𝑻𝒊,𝒕  
+ 
+-0.000 
+(-0.44) 
+ 
+ 
+0.035*** 
+(6.21) 
+ 
+ 
+ 
+ 
+ 
+𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠 
+ 
+Yes 
+ 
+ 
+Yes 
+ 
+ 
+ 
+ 
+ 
+N obs. 
+ 
+57,656 
+ 
+ 
+57,656 
+ 
+ 
+ 
+ 
+ 
+𝑅2  
+ 
+7% 
+ 
+ 
+6% 
+ 
+ 
+ 
+ 
+ 
+Panel B: 𝐴𝑇𝑖,𝑡 = 𝐿𝐴𝑂𝑖,𝑡 
+ 
+ 
+𝑅𝑂𝐴 
+Yearly 
+ 
+ 
+𝑆𝐺 
+Yearly 
+ 
+𝑅𝑂𝐴 
+Quarterly 
+ 
+ 
+𝑆𝐺 
+Quarterly 
+𝑳𝑨𝑶𝒊,𝒕  
+ 
+-0.018** 
+(-2.02) 
+ 
+ 
+-0.052*** 
+(-3.43) 
+ 
+-0.007** 
+(-2.03) 
+ 
+ 
+-0.001 
+(-0.37) 
+𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠 
+ 
+Yes 
+ 
+ 
+Yes 
+ 
+Yes 
+ 
+ 
+Yes 
+N obs. 
+ 
+1,437 
+ 
+ 
+1,437 
+ 
+7,504 
+ 
+ 
+7,504 
+𝑅2  
+ 
+16% 
+ 
+ 
+8% 
+ 
+2% 
+ 
+ 
+3% 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+9 
+ 
+Table A6 
+AT and operating performance (average of three periods ahead values): 2SLS 
+This table reports the results for the estimation of the impact of AT on the future operating performance of firms using 
+the following two-stage least squares (2SLS) model: 
+𝐴𝑇𝑖,𝑑= α𝑖+ γ𝑑+ β1𝐴𝑢𝑡𝑜𝑞𝑢𝑜𝑡𝑒𝑖,𝑑+ 𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠+ ε𝑖,𝑑 
+𝑂𝑃𝑖,𝑡+1 = α𝑖+ γ𝑡+ β1𝐴𝑇𝑖,𝑡̂ + δ1𝑄𝑖,𝑡+ δ2𝐶𝑎𝑠ℎ𝑖,𝑡+ δ3ln(𝐴𝑠𝑠𝑒𝑡𝑖,𝑡) + 𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠∗+ ε𝑖,𝑡 
+ 
+In the first stage, 𝐴𝑇𝑖,𝑑 is the daily AT measure proxied by 𝑄𝑇 and 𝐿𝐴𝑂, α𝑖 is firm and γ𝑑 is day fixed effects, 
+𝐴𝑢𝑡𝑜𝑞𝑢𝑜𝑡𝑒𝑖,𝑑 is a dummy variable that equals zero before the autoquote introduction and one afterward, and 𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠 
+consist of control variables including the daily values of the first lag values of inverse price, trading volume, relative 
+spread, natural logarithm of market value, and the absolute value of price changes. In the second stage, 𝑂𝑃𝑖,𝑡+3 is the 
+average of the next three years operating performance of firm 𝑖, defined as three period ahead return on assets 
+(𝑅𝑂𝐴𝑖,𝑡+3) and sales growth (𝑆𝐺𝑖,𝑡+3).  𝑄𝑖,𝑡 is the firm’s normalized stock price (Tobin’s Q), and 𝐴𝑇𝑖,𝑡̂ is the average 
+of daily predicted values of 𝐴𝑇𝑖,𝑑, 𝐶𝐹𝑖,𝑡 is the firm’s cash flow, ln(𝐴𝑠𝑠𝑒𝑡𝑖,𝑡) is the natural logarithm of the firm’s total 
+assets, and 𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠∗ represent the averages of daily 𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠. In Panel A, 𝑄𝑇 is used as a measure of liquiditysupplying algorithmic trading in year 𝑡, and the second stage regressions are estimated in yearly frequency. In Panel 
+B, 𝐿𝐴𝑂 is used as a measure of liquidity-demanding algorithmic trading per year and quarter, and the second stage 
+regressions are estimated in yearly frequency for columns (1) and (2) and quarterly frequency for columns (3) and (4). 
+The sample comprises only NYSE-listed stocks, and the sample period spans from 2001 to 2005. All versions of 
+models include both firm and year (quarter for columns 3 and 4) fixed effects (α𝑖 and 𝛾𝑡, respectively). The standard 
+errors used to compute the t-statistics (in brackets) are double clustered by firm and year (quarter for columns 3 and 
+4). *, **, and *** denote the significance at 10%, 5%, and 1%, respectively. For detailed definitions of variables, refer 
+to Table 1. 
+ 
+Panel A: 𝐴𝑇𝑖,𝑡 = 𝑄𝑇𝑖,𝑡̂ 
+ 
+ 
+𝑅𝑂𝐴 
+Yearly 
+ 
+ 
+𝑆𝐺 
+Yearly 
+ 
+ 
+ 
+ 
+ 
+𝑸𝑻𝒊,𝒕̂  
+ 
+0.081*** 
+(4.95) 
+ 
+ 
+0.245*** 
+(5.47) 
+ 
+ 
+ 
+ 
+ 
+𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠 
+ 
+Yes 
+ 
+ 
+Yes 
+ 
+ 
+ 
+ 
+ 
+N obs. 
+ 
+4,770 
+ 
+ 
+4,770 
+ 
+ 
+ 
+ 
+ 
+𝑅2  
+ 
+9% 
+ 
+ 
+12% 
+ 
+ 
+ 
+ 
+ 
+Panel B: 𝐴𝑇𝑖,𝑡 = 𝐿𝐴𝑂𝑖,𝑡̂ 
+ 
+ 
+𝑅𝑂𝐴 
+Yearly 
+ 
+ 
+𝑆𝐺 
+Yearly 
+ 
+𝑅𝑂𝐴 
+Quarterly 
+ 
+ 
+𝑆𝐺 
+Quarterly 
+𝑳𝑨𝑶𝒊,𝒕̂  
+ 
+-0.129*** 
+(-4.78) 
+ 
+ 
+-0.097 
+(-1.29) 
+ 
+-0.010 
+(-0.45) 
+ 
+ 
+-0.021*** 
+(-3.08) 
+𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠 
+ 
+Yes 
+ 
+ 
+Yes 
+ 
+Yes 
+ 
+ 
+Yes 
+N obs. 
+ 
+376 
+ 
+ 
+376 
+ 
+2,284 
+ 
+ 
+2,284 
+𝑅2  
+ 
+19% 
+ 
+ 
+15% 
+ 
+6% 
+ 
+ 
+5% 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+10 
+ 
+Table A7 
+AT and investment-to-price sensitivity: OLS 
+This table reports the results for the estimation of the impact of AT on investment-to-price sensitivity using the 
+following ordinary least squares (OLS) model: 
+𝐼𝑖,𝑡+1 = α𝑖+ γ𝑡+ β1𝑄𝑖,𝑡+ β2𝐴𝑇𝑖,𝑡+ β3𝑄𝑖,𝑡𝐴𝑇𝑖,𝑡+ δ1𝐶𝐹𝑖,𝑡+ δ2 ln(𝐴𝑠𝑠𝑒𝑡𝑖,𝑡) + 𝛿3𝐶𝐹𝑖,𝑡𝐴𝑇𝑖,𝑡+ ε𝑖,𝑡 
+where 𝐼𝑖,𝑡+1 is the investment of firm 𝑖 at time 𝑡+ 1, defined as the capital expenditures plus R&D expenses divided 
+by lagged total assets (𝐶𝐴𝑃𝐸𝑋𝑅𝑁𝐷𝑖,𝑡+1) and the capital expenditures divided by lagged total assets (𝐶𝐴𝑃𝐸𝑋𝑖,𝑡+1). 
+Across all specifications, 𝑄𝑖,𝑡 is the firm’s normalized stock price (Tobin’s Q), 𝐴𝑇𝑖,𝑡 is the AT proxy, 𝐶𝐹𝑖,𝑡 is the firm’s 
+cash flow, and ln(𝐴𝑠𝑠𝑒𝑡𝑖,𝑡) is the natural logarithm of the firm’s total assets. In Panel A, 𝑄𝑇𝑖,𝑡 is used as a measure of 
+liquidity-supplying algorithmic trading per year, and regressions are estimated in yearly frequency. In Panel B, 𝐿𝐴𝑂𝑖,𝑡 
+is used as a measure of liquidity-demanding algorithmic trading per year and quarter, and regressions are estimated in 
+yearly frequency for columns 1 and 2 and quarterly frequency for columns 3 and 4. All versions of models include 
+both firm and year (quarter for columns 3 and 4) fixed effects (α𝑖 and γ𝑡, respectively). The standard errors used to 
+compute the t-statistics (in brackets) are double clustered by firm and year (quarter for columns 3 and 4). *, **, and 
+*** denote the significance at 10%, 5%, and 1%, respectively. For detailed definitions of variables, refer to Table 1.  
+ 
+Panel A: 𝐴𝑇𝑖,𝑡 = 𝑄𝑇𝑖,𝑡 
+ 
+ 
+𝐶𝐴𝑃𝐸𝑋𝑅𝑁𝐷 
+Yearly 
+ 
+ 
+𝐶𝐴𝑃𝐸𝑋 
+Yearly 
+ 
+ 
+ 
+ 
+ 
+𝑸𝒊,𝒕𝑸𝑻
+𝒊,𝒕  
+ 
+0.036*** 
+(7.20) 
+ 
+ 
+0.038*** 
+(11.49) 
+ 
+ 
+ 
+ 
+ 
+𝐶𝐹𝑖,𝑡𝑄𝑇𝑖,𝑡 
+ 
+-0.001 
+(-1.31) 
+ 
+ 
+-0.000 
+(-1.46) 
+ 
+ 
+ 
+ 
+ 
+𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠 
+ 
+Yes 
+ 
+ 
+Yes 
+ 
+ 
+ 
+ 
+ 
+N obs. 
+ 
+57,656 
+ 
+ 
+57,656 
+ 
+ 
+ 
+ 
+ 
+𝑅2  
+ 
+16% 
+ 
+ 
+9% 
+ 
+ 
+ 
+ 
+ 
+Panel B: 𝐴𝑇𝑖,𝑡 = 𝐿𝐴𝑂𝑖,𝑡 
+ 
+ 
+𝐶𝐴𝑃𝐸𝑋𝑅𝑁𝐷 
+Yearly 
+ 
+ 
+𝐶𝐴𝑃𝐸𝑋 
+Yearly 
+ 
+𝐶𝐴𝑃𝐸𝑋𝑅𝑁𝐷 
+Quarterly 
+ 
+ 
+𝐶𝐴𝑃𝐸𝑋 
+Quarterly 
+𝑸𝒊,𝒕𝑳𝑨𝑶
+𝒊,𝒕  
+ 
+-0.010** 
+(-2.30) 
+ 
+ 
+-0.005** 
+(-2.18) 
+ 
+-0.003*** 
+(-3.11) 
+ 
+ 
+-0.001** 
+(-2.53) 
+𝐶𝐹𝑖,𝑡𝐿𝐴𝑂𝑖,𝑡  
+ 
+-0.000 
+(-0.16) 
+ 
+ 
+0.000 
+(0.38) 
+ 
+0.001 
+(1.60) 
+ 
+ 
+0.000 
+(1.49) 
+𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠 
+ 
+Yes 
+ 
+ 
+Yes 
+ 
+Yes 
+ 
+ 
+Yes 
+N obs. 
+ 
+1,437 
+ 
+ 
+1,437 
+ 
+7,504 
+ 
+ 
+7,504 
+𝑅2  
+ 
+24% 
+ 
+ 
+17% 
+ 
+6% 
+ 
+ 
+3% 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+11 
+ 
+Table A8 
+AT and investment-to-price sensitivity: 2SLS 
+This table reports the results for the estimation of the impact of AT on investment-to-price sensitivity using the 
+following two-stage least squares (2SLS) model: 
+𝐴𝑇𝑖,𝑑= α𝑖+ γ𝑑+ β1𝐴𝑢𝑡𝑜𝑞𝑢𝑜𝑡𝑒𝑖,𝑑+ 𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠+ ε𝑖,𝑑 
+𝐼𝑖,𝑡+1 = α𝑖+ γ𝑡+ β1𝑄𝑖,𝑡+ β2𝐴𝑇𝑖,𝑡̂ + β3𝑄𝑖,𝑡𝐴𝑇𝑖,𝑡̂ + δ1𝐶𝐹𝑖,𝑡+ δ2 ln(𝐴𝑠𝑠𝑒𝑡𝑖,𝑡) + 𝛿3𝐶𝐹𝑖,𝑡𝐴𝑇𝑖,𝑡̂ + 𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠∗+ ε𝑖,𝑡 
+ 
+In the first stage, 𝐴𝑇𝑖,𝑑 is the daily AT measure proxied by 𝑄𝑇 and 𝐿𝐴𝑂, α𝑖 is firm and γ𝑑 is day fixed effects, 
+𝐴𝑢𝑡𝑜𝑞𝑢𝑜𝑡𝑒𝑖,𝑑 is a dummy variable that equals zero before the autoquote introduction and one afterward, and 𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠 
+consist of control variables including the daily values of the first lag values of inverse price, trading volume, relative 
+spread, natural logarithm of market value, and the absolute value of price changes. In the second stage, 𝐼𝑖,𝑡+1 is the 
+investment of firm 𝑖 at time 𝑡+ 1, defined as the capital expenditures plus R&D expenses divided by lagged total 
+assets (𝐶𝐴𝑃𝐸𝑋𝑅𝑁𝐷𝑖,𝑡+1) and the capital expenditures divided by lagged total assets (𝐶𝐴𝑃𝐸𝑋𝑖,𝑡+1). 𝑄𝑖,𝑡 is the firm’s 
+normalized stock price (Tobin’s Q), and 𝐴𝑇𝑖,𝑡̂ is the average of daily predicted values of 𝐴𝑇𝑖,𝑑, 𝐶𝐹𝑖,𝑡 is the firm’s cash 
+flow, 𝑙𝑛(𝐴𝑠𝑠𝑒𝑡𝑖,𝑡) is the natural logarithm of the firm’s total assets, and 𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠∗ represent the averages of daily 
+𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠. In Panel A, 𝑄𝑇 is used as a measure of liquidity-supplying algorithmic trading in year 𝑡, and the second 
+stage regressions are estimated in yearly frequency. In Panel B, 𝐿𝐴𝑂 is used as a measure of liquidity-demanding 
+algorithmic trading per year and quarter, and the second stage regressions are estimated in yearly frequency for 
+columns 1 and 2 and quarterly frequency for columns 3 and 4. The sample comprises only NYSE-listed stocks, and 
+the sample period spans from 2001 to 2005. All versions of models include both firm and year (quarter for columns 3 
+and 4) fixed effects (α𝑖 and 𝛾𝑡, respectively). The standard errors used to compute the t-statistics (in brackets) are 
+double clustered by firm and year (quarter for columns 3 and 4). *, **, and *** denote the significance at 10%, 5%, 
+and 1%, respectively. For detailed definitions of variables, refer to Table 1. 
+ 
+Panel A: 𝐴𝑇𝑖,𝑡 = 𝑄𝑇𝑖,𝑡̂ 
+ 
+ 
+𝐶𝐴𝑃𝐸𝑋𝑅𝑁𝐷 
+Yearly 
+ 
+ 
+𝐶𝐴𝑃𝐸𝑋 
+Yearly 
+ 
+ 
+ 
+ 
+ 
+𝑸𝒊,𝒕𝑸𝑻𝒊,𝒕̂  
+ 
+0.030*** 
+(3.05) 
+ 
+ 
+0.014* 
+(1.70) 
+ 
+ 
+ 
+ 
+ 
+𝐶𝐹𝑖,𝑡𝑄𝑇𝑖,𝑡̂ 
+ 
+0.000 
+(0.54) 
+ 
+ 
+0.001 
+(0.62) 
+ 
+ 
+ 
+ 
+ 
+𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠 
+ 
+Yes 
+ 
+ 
+Yes 
+ 
+ 
+ 
+ 
+ 
+N obs. 
+ 
+4,770 
+ 
+ 
+4,770 
+ 
+ 
+ 
+ 
+ 
+𝑅2  
+ 
+15% 
+ 
+ 
+7% 
+ 
+ 
+ 
+ 
+ 
+Panel B: 𝐴𝑇𝑖,𝑡 = 𝐿𝐴𝑂𝑖,𝑡̂ 
+ 
+ 
+𝐶𝐴𝑃𝐸𝑋𝑅𝑁𝐷 
+Yearly 
+ 
+ 
+𝐶𝐴𝑃𝐸𝑋 
+Yearly 
+ 
+𝐶𝐴𝑃𝐸𝑋𝑅𝑁𝐷 
+Quarterly 
+ 
+ 
+𝐶𝐴𝑃𝐸𝑋 
+Quarterly 
+𝑸𝒊,𝒕𝑳𝑨𝑶𝒊,𝒕̂  
+ 
+-0.021 
+(-0.37) 
+ 
+ 
+-0.053*** 
+(-2.60) 
+ 
+-0.003** 
+(-2.55) 
+ 
+ 
+-0.002** 
+(-2.33) 
+𝐶𝐹𝑖,𝑡𝐿𝐴𝑂𝑖,𝑡̂  
+ 
+-0.001 
+(-0.09) 
+ 
+ 
+0.000 
+(0.08) 
+ 
+-0.001*** 
+(-3.16) 
+ 
+ 
+-0.000*** 
+(-3.12) 
+𝐶𝑜𝑛𝑡𝑟𝑜𝑙𝑠 
+ 
+Yes 
+ 
+ 
+Yes 
+ 
+Yes 
+ 
+ 
+Yes 
+N obs. 
+ 
+376 
+ 
+ 
+376 
+ 
+2,284 
+ 
+ 
+2,284 
+𝑅2  
+ 
+29% 
+ 
+ 
+32% 
+ 
+9% 
+ 
+ 
+6% 
+ 

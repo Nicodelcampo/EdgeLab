@@ -1,0 +1,125 @@
+{
+  "doc_id": 148,
+  "titulo": "The Intersectionality of High Frequency Trading (HFT) and Market Fragmentation, and their Impact on Liquidity: New Evidence",
+  "resumen_operativo": "Este paper empírico investiga el impacto conjunto del High-Frequency Trading (HFT) y la fragmentación del mercado (LSE vs MTFs) en la liquidez de acciones europeas. Concluye que el HFT mejora la liquidez reduciendo spreads y costos de selección adversa, mientras que la fragmentación pura la deteriora; para un trader cuantitativo, resalta cómo las dinámicas intradiarias varían significativamente según la interacción entre la velocidad operativa y la dispersión del volumen.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia algorítmica de baja latencia donde los operadores proveen y consumen liquidez continuamente mediante rápidas actualizaciones del libro de órdenes.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "market making"},
+        {"tipo": "MITIGA", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "Modern technology enables HFTs to, (i) get fastest access to the market; (ii) acquire and processes information in almost real time; and (iii) watch and routes orders across markets."
+    },
+    {
+      "nombre": "market fragmentation",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Dispersión del volumen operado de un activo a través de múltiples exchanges y plataformas alternativas de trading (MTFs).",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "Market fragmentation refers to the extent to which order flow of a security is split across exchanges."
+    },
+    {
+      "nombre": "electronic message rate",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Proxy indirecto utilizado para cuantificar la intensidad del HFT, basado en el número promedio de actualizaciones del libro de órdenes por minuto en los mejores 5 niveles de precio.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "high-frequency trading"},
+        {"tipo": "USA", "objeto": "limit order book"}
+      ],
+      "cita_textual": "We measure the speed of limit order book updates for the best 5 levels of market depth. We define the electronic message rate proxy is defined for stock i on day t"
+    },
+    {
+      "nombre": "Herfindahl-Hirschman Index",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica basada en participaciones de volumen para cuantificar el nivel en el que las transacciones están divididas entre los mercados primarios y alternativos.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market fragmentation"}
+      ],
+      "cita_textual": "We use the Herfindahl-Hirschman Index (HHI)—the most commonly used definition of market concentration in literature—as the proxy of market fragmentation."
+    },
+    {
+      "nombre": "effective spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Costo transaccional real para los demandantes de liquidez, medido como la desviación del precio del trade respecto al punto medio (midprice).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "We use the relative quoted spread and the effective-half spread which measure the transaction costs dimension of liquidity."
+    },
+    {
+      "nombre": "price impact",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Componente del spread que captura el costo de selección adversa derivado de la alteración permanente del midprice generada por una orden.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "adverse selection"},
+        {"tipo": "PARTE_DE", "objeto": "effective spread"}
+      ],
+      "cita_textual": "The price impact measures the gross losses to liquidity demanders which is also known as the adverse selection cost."
+    },
+    {
+      "nombre": "realized spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ingreso neto retenido por los proveedores de liquidez tras descontar el impacto en el precio posterior a la transacción.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "effective spread"}
+      ],
+      "cita_textual": "On the other hand, realized spreads measures the revenue earned by liquidity providers."
+    },
+    {
+      "nombre": "trade sign",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso algorítmico utilizado para determinar si un trade fue agresivo en compra o en venta, fundamental para medir costos transaccionales.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "tick data"}
+      ],
+      "cita_textual": "Academics often find the studying effective spreads challenging due to the trade signing requirements. This becomes even more complicated in the low-latency environment"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La actividad de trading de alta frecuencia (HFT) mejora la liquidez al reducir de manera sistémica tanto los spreads cotizados como los spreads efectivos.",
+      "mercado": "Equities europeos (LSE y MTFs)",
+      "periodo": "2005-2016",
+      "magnitud": "1% de incremento en HFT reduce el spread base en aproximadamente 0.27%, estadísticamente robusto en OLS e IV-GMM.",
+      "condiciones": "Basado en tick data de milisegundos aislando el efecto cruzado temporal.",
+      "robustez": "alta",
+      "cita_textual": "The results showing the individual effect suggest that HFT improves liquidity, whereas market fragmentation is detrimental to the same."
+    },
+    {
+      "afirmacion": "La fragmentación pura de órdenes en distintos mercados (lit) erosiona la liquidez disponible, penalizando tanto los spreads de mercado como las profundidades.",
+      "mercado": "Equities europeos",
+      "periodo": "2005-2016",
+      "magnitud": "Estimador IV-GMM confirma que el aumento del HHI expande los costos (efecto neto ~+0.045 en spreads efectivos).",
+      "condiciones": "Analizando cuotas de mercado independientes y aislando el crecimiento del HFT.",
+      "robustez": "alta",
+      "cita_textual": "higher fragmentation is associated with higher quoted and effective spreads. In fact, the estimates appear to be stronger for IV-GMM."
+    },
+    {
+      "afirmacion": "El HFT interacciona positivamente con la fragmentación: la inyección adicional de liquidez por algoritmos es mayor en aquellos activos cuyas transacciones están muy fragmentadas entre plataformas.",
+      "mercado": "Equities europeos",
+      "periodo": "2005-2016",
+      "magnitud": "Significancia negativa del término interactivo HFT*LFrag, indicando reducción adicional del spread.",
+      "condiciones": "Este efecto se intensifica especialmente en las acciones de gran capitalización bursátil.",
+      "robustez": "alta",
+      "cita_textual": "The evidence suggests that a rise in HFT in a highly fragmented stock improves liquidity more than that of its low fragmented counterpart."
+    },
+    {
+      "afirmacion": "A diferencia de la creencia general de que el HFT seca el mercado durante el pánico, las evidencias muestran que aportó liquidez extra durante los shocks volátiles.",
+      "mercado": "Equities europeos",
+      "periodo": "2008-2010",
+      "magnitud": "Coeficiente dummy de interacción confirma una reducción incremental de 0.03% adicional en spreads.",
+      "condiciones": "Medido durante la crisis global caracterizada por altas caídas y volatilidad.",
+      "robustez": "alta",
+      "cita_textual": "HFT even appears to provide liquidity in a high volatility period of financial crisis, 2008-2010 , an evidence which goes against the popular belief."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "Crucial para incorporar la velocidad de reabastecimiento en simulaciones L3 del ES y dimensionar costos reales ante fragmentación de liquidez en ventanas algorítmicas volátiles."
+  }
+}

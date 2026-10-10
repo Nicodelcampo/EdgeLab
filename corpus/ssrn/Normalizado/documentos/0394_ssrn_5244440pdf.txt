@@ -1,0 +1,1457 @@
+Edge-bipancyclicity of hypercubes with faulty edges ∗
+1
+Qianhong Liu1, Fan Wang1,†
+1. School of Mathematics and Computer Sciences, Nanchang University,
+Nanchang, Jiangxi 330000, P. R. China
+E-mail addresses: liuqianhong2000@163.com, wangfan@ncu.edu.cn
+2
+Abstract
+3
+In this paper, we consider the edge-bipancyclicity property of hypercubes with
+4
+faulty edges. For n ≥4, let Qn be an n-dimensional hypercube, and let F be a set
+5
+of faulty edges in Qn such that |F| ≤3n−11. If every vertex in Qn −F has a degree
+6
+of at least 2 and no 4-cycle in Qn −F has a pair of non-adjacent vertices both of
+7
+degree 2, then every edge e in Qn −F lies on a fault-free cycle of every even length
+8
+from 8 to 2n, with two exceptions: (1) there exists a 4-cycle in Qn −F containing
+9
+the edge e such that the vertices on the 4-cycle which are not incident with e both
+10
+have a degree of 2; (2) there exist two vertices of degree 2 which are not endpoints
+11
+of edge e but are adjacent to the same endpoint of e in Qn−F. This result improves
+12
+some known results on edge-bipancyclicity of hypercubes with faulty edges.
+13
+Keywords: Interconnection networks; Hypercubes; Bipancyclicity; Edge-bipancyclicity;
+14
+Fault tolerance
+15
+Mathematics Subject Classiﬁcation: 05C38; 05C45
+16
+1
+Introduction
+17
+Pancyclicity is a crucial graph property that necessitates excellent connectivity within
+18
+the graph. This property is highly signiﬁcant in ﬁelds such as network design, routing
+19
+algorithms, and parallel computing, as it ensures that information or data of arbitrary
+20
+∗This work is supported by National Natural Science Foundation of China (grant no. 12061047), and
+supported by Natural Science Foundation of Jiangxi Province (no. 20212BAB201027.)
+†Corresponding author.
+1
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244440
+Preprint not peer reviewed
+
+lengths can be transmitted within the network or system. Therefore, pancyclicity can
+21
+be used to evaluate aspects such as network connectivity and reliability. The concept
+22
+of pancyclicity can be extended to edge-pancyclicity and panconnectivity, which further
+23
+enhance the robustness and ﬂexibility of network structures. These properties are par24
+ticularly important in ensuring that networks can withstand various types of failures or
+25
+attacks while maintaining eﬃcient communication paths.
+26
+Pancyclicity, edge-pancyclicity, and panconnectivity are actively studied across a vari27
+ety of key graph families and interconnection topologies, such as bipartite graphs [12,
+28
+13, 24], hypercubes [4, 26], balanced hypercubes [6, 16], bubble-sort star graphs [9],
+29
+Eisenstein-Jacobi networks [1], data center networks [10], split-star networks [14].
+30
+The n-dimensional hypercube is a highly popular and eﬃcient interconnection network,
+31
+widely recognized for its signiﬁcant role in various areas of computer science. Deﬁne [n]
+32
+as the set {1, 2, . . . , n}.
+An n-dimensional hypercube Qn is a graph with vertex set
+33
+V (Qn) = {v : v = v1 · · · vn and vi ∈{0, 1} for every i ∈[n]} and edge set E(Qn) = {uv |
+34
+u, v ∈V (Qn) and the binary strings of u and v diﬀer in exactly one bit}. Notably, the
+35
+hypercube is a bipartite graph.
+36
+It is well-known that any bipartite graph contains no odd cycles. A bipartite graph G
+37
+is bipancyclic if it contains cycles of every even length from 4 to |V (G)|. Similarly, it is
+38
+edge-bipancyclic if every edge of G lies on a cycle of every even length from 4 to |V (G)|.
+39
+A bipartite graph G is bipanconnected if, for any pair of distinct vertices u and v with
+40
+distance d, there exists a path from u to v of length l, where d ≤l ≤|V (G)|−1 and l ≡d
+41
+(mod 2).
+42
+Fault tolerance is a key measure of network stability, as networks are susceptible to
+43
+node or link failures. In parallel computing, the ability of a network to tolerate faults is
+44
+especially critical, driving extensive research into various networks with faulty elements
+45
+[4, 5, 8, 11, 22, 23, 25].
+46
+Li et al. [15] explored the edge-bipancyclicity of the hypercube Qn with some faulty
+47
+edges, and proved for n ≥2 that the hypercube Qn is edge-bipancyclic even if it has up
+48
+to n −2 faulty edges. Sun et al. [18] proved for n ≥2 that if Qn has at most n −2 faulty
+49
+edges, then for any two distinct vertices u and v with distance d, there exist fault-free
+50
+uv-paths of length l for every l with d + 2 ≤l ≤2n −1 and l ≡d (mod 2).
+51
+If Qn has up to 2n −5 faulty edges and each vertex is incident with at least two fault52
+free edges, then for n ≥3, Tsai [19] and Yang [27] showed that Qn contains fault-free
+53
+cycles of every even length from 4 to 2n; additionally, Tsai and Lai [20] proved for n ≥4,
+54
+and Shih et al. [17] proved for n ≥3, that each fault-free edge in Qn lies on fault-free
+55
+2
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244440
+Preprint not peer reviewed
+
+cycles of every even length from 6 to 2n, respectively; furthermore, for n ≥3, Wang et
+56
+al. [21] showed that for any two distinct vertices u and v with distance d, there exist
+57
+fault-free uv-paths of length l for every l with d + 4 ≤l ≤2n −1 and l ≡d (mod 2).
+58
+For more faulty edges, Cheng and Hao [7] proved for n ≥5 that Qn with at most
+59
+3n−8 faulty edges is bipancyclic under the following two additional conditions: (1) every
+60
+vertex in Qn is incident with at least two fault-free edges, and (2) every 4-cycle in Qn does
+61
+not have any pair of non-adjacent vertices whose degrees are both two after removing the
+62
+faulty edges.
+63
+In this paper, we consider the edge-bipancyclicity of the hypercube Qn, where n ≥4,
+64
+with at most 3n−11 faulty edges under the above conditions (1) and (2). Let F be the set
+65
+of faulty edges in Qn, and let e be a given edge in Qn −F, where Qn −F is the resulting
+66
+graph after removing the faulty edges.
+67
+In Qn −F, we observe that if there exists a 4-cycle containing the edge e such that
+68
+the vertices on the 4-cycle which are not incident with e both have a degrees of 2, then
+69
+there exists no Hamiltonian cycle (the longest cycle of length 2n) passing through e in
+70
+Qn −F. We denote this forbidden structure by (FS-I), see Fig 1(1). Also, in Qn −F, if
+71
+there exist two vertices of degree 2 which are not endpoints of edge e but are adjacent
+72
+to the same endpoint of e, then there exists no Hamiltonian cycle passing through e in
+73
+Qn −F. We denote this forbidden structure by (FS-II), see Fig 1(2). Furthermore, we
+74
+prove that if Qn −F contains no (FS-I) or (FS-II), then every edge e lies on a cycle of
+75
+every even length from 8 to 2n in Qn −F.
+76
+1
+e
+1
+n 2
+-
+e
+{
+n 2
+- !
+{
+n 2
+- !
+（）
+-
+1
+FS I
+（）
+-
+2
+FS II
+n 2
+-
+Fig 1. The forbidden subgraphs in which faulty edges are represented by dashed lines.
+The remainder of this paper is organized as follows. In Section 2, we introduce some
+77
+crucial deﬁnitions and preliminaries. In Section 3, we demonstrate a speciﬁc scenario
+78
+where the cycle of length 6 is shown to be non-existent. In Section 4, ﬁnally, we provide
+79
+3
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244440
+Preprint not peer reviewed
+
+detailed proofs for the main lemmas that support our ﬁndings.
+80
+2
+Deﬁnitions and preliminaries
+81
+Terminology and notation used in this paper but undeﬁned below can be found in [2].
+82
+The vertex set and edge set of a graph G are denoted by V (G) and E(G), respectively.
+83
+In a graph G, the number of edges incident with a vertex v is referred to as its degree,
+84
+denoted by dG(v). A vertex of degree k is called a k-degree vertex. The minimum degree
+85
+of a graph G, denoted by δ(G), is the minimum value of the degrees of all vertices. The
+86
+distance of vertices u and v in a graph G, denoted by dG(u, v), is the number of edges in
+87
+a shortest path joining u and v.
+88
+Let H and H′ denote two subgraphs of a graph G, and let F be a subset of E(G).
+89
+We use H + H′ to represent a graph with the vertex set V (H) ∪V (H′) and edge set
+90
+E(H)∪E(H′). We deﬁne H +F as the subgraph of G induced by the edge set E(H)∪F.
+91
+Also, we deﬁne G −F as the subgraph of G obtained by removing all edges in F from G.
+92
+Let S ⊆V (G), we denote by G −S the subgraph of G obtained by removing all vertices
+93
+in S and all edges incident with vertices in S. When S = {s} and F = {f}, we simply
+94
+write G −S, G −F, and H + F as G −s, G −f, and H + f.
+95
+For a vertex v = v1 · · · vn ∈V (Qn), we use vj to denote the neighbor of v that diﬀers
+96
+from v in exactly the jth bit position. We call the edge vvj a j-dimensional edge in Qn,
+97
+and deﬁne the dimension of vvj as j, denoted by dim(vvj) = j. Let Ej be the set of all
+98
+j-dimensional edges in Qn.
+99
+For every j ∈[n], let QL
+n−1,j and QR
+n−1,j, with the subscripts j being omitted when the
+100
+context is clear, be the (n−1)-dimensional subcubes of Qn induced by the vertex sets {v ∈
+101
+V (Qn) : vj = 0} and {v ∈V (Qn) : vj = 1}, respectively. Thus, Qn −Ej = QL
+n−1 + QR
+n−1.
+102
+We say that Qn is split into two (n −1)-cubes QL
+n−1 and QR
+n−1 by dimension j. Note that
+103
+both QL
+n−1 and QR
+n−1 are isomorphic to Qn−1, and every vertex v in one subcube has a
+104
+unique neighbor vj in the other subcube. Given F ⊆E(Qn), let Fα,j = F ∩E(Qα
+n−1,j),
+105
+where α ∈{L, R}. Similarly, when the context is clear, we omit the subscripts j.
+106
+The parity p(v) of a vertex v ∈V (Qn) is deﬁned by p(v) = ∑n
+i=1 vi (mod 2). There
+107
+are 2n vertices in Qn, where 2n−1 vertices have parity 0 and 2n−1 vertices have parity 1.
+108
+Vertices with parities 0 and 1 are called black vertices and white vertices, respectively.
+109
+Observe that Qn is bipartite and the color classes form bipartite sets of Qn. Consequently,
+110
+p(u) = p(v) if and only if dQn(u, v) is even.
+111
+The following preliminary results provide a suﬃcient foundation for establishing our
+112
+4
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244440
+Preprint not peer reviewed
+
+main results.
+113
+Theorem 2.1. [15] For n ≥2, Qn is bipanconnected.
+114
+Theorem 2.2. [15] For n ≥2, let F ⊆E(Qn) be such that |F| ≤n −2. Then, each edge
+115
+in Qn −F lies on a fault-free cycle of every even length from 4 to 2n.
+116
+For any two vertices u and v in V (Qn), let Pu,v denote a path from u to v.
+117
+Theorem 2.3. [18] Let n ≥2, and let F ⊆E(Qn) be such that |F| ≤n −2. For any two
+118
+vertices u and v with distance d, there exists a path Pu,v in Qn −F of length l such that
+119
+(1) d ≤l ≤2n −1 and l ≡d (mod 2), if |F| < d.
+120
+(2) d + 2 ≤l ≤2n −1 and l ≡d (mod 2), if |F| ≥d.
+121
+Theorem 2.4. [17] For n ≥3, let F ⊆E(Qn) be such that |F| ≤2n−5. If δ(Qn−F) ≥2,
+122
+then each edge in Qn −F lies on a fault-free cycle of every even length from 6 to 2n.
+123
+Theorem 2.5. [7] For n ≥5, let F ⊆E(Qn) be such that |F| ≤3n−8. If δ(Qn −F) ≥2
+124
+and every 4-cycle in Qn −F does not have any pair of non-adjacent vertices whose degrees
+125
+are both two, then there exists a cycle of every even length from 4 to 2n in Qn −F.
+126
+A forest is linear if each component of it is a path.
+127
+Lemma 2.6. [3] For n > h ≥2, let F ⊆E(Qn) with |F| ≤n−h and let E ⊆E(Qn −F)
+128
+with |E| = h. If the subgraph induced by E is a linear forest, then all edges in E lie on a
+129
+cycle in Qn −F of every even length from 2h−1(n + 1 −h) + 2(h −1) to 2n.
+130
+In Lemma 2.6, when h = 2, the lower bound 2h−1(n + 1 −h) + 2(h −1) is equal to 2n.
+131
+Next, we present a conclusion about the decomposition of the hypercube Qn, which
+132
+will be used in the proof of the main results. In the following lemma, for every j ∈[n],
+133
+the notations QL
+n−1,j and QR
+n−1,j represent the (n−1)-dimensional subcubes of Qn induced
+134
+by the vertex sets {v ∈V (Qn) : vj = 0} and {v ∈V (Qn) : vj = 1}, respectively. Given
+135
+F ⊆E(Qn), let Fα,j = F ∩E(Qα
+n−1,j), where α ∈{L, R}.
+136
+Lemma 2.7. For n ≥7, let F ⊆E(Qn) be such that |F| ≤3n −11, δ(Qn −F) ≥2,
+137
+and there is at most one vertex of degree 2 in Qn −F. If the edges in F lie in at least
+138
+two dimensions, then there exist two dimensions j1, j2 ∈[n] such that |F ∩Ej| ≥1,
+139
+δ(Qα
+n−1,j −Fα,j) ≥2, and there is at most one vertex of degree 2 in Qα
+n−1,j −Fα,j, where
+140
+j ∈{j1, j2} and α ∈{L, R}.
+141
+5
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244440
+Preprint not peer reviewed
+
+Proof. Note that every vertex v in one subcube has a unique neighbor vj in the oth142
+er subcube, and the crossing edge vvj could be a faulty edge, or it could be a good
+143
+edge. If vvj is a faulty edge, then dQα
+n−1,j−Fα,j(v) = dQn−F(v). If vvj is a good edge,
+144
+then dQα
+n−1,j−Fα,j(v) = dQn−F(v) −1.
+Thus, for every vertex v ∈V (Qα
+n−1,j), we have
+145
+dQα
+n−1,j−Fα,j(v) ≥dQn−F(v) −1, where α ∈{L, R} and j ∈[n]. So, δ(Qα
+n−1,j −Fα,j) ≥
+146
+δ(Qn−F)−1. Clearly, we have F̸ = ∅because the edges in F lie in at least two dimensions.
+147
+Let dim(F) = {dim(f) | f ∈F}. So, |dim(F)| ≥2.
+148
+Case 1. There exists no 2-degree vertex in Qn −F.
+149
+Now, δ(Qn −F) ≥3. So for any dimension j ∈[n], we have δ(Qα
+n−1,j −Fα,j) ≥2,
+150
+where α ∈{L, R}. Since |F| ≤3n−11 = 3(n−3)−2, there exists at most three 3-degree
+151
+vertices in Qn −F. We distinguish three subcases to consider.
+152
+Subcase 1.1. There is at most one 3-degree vertex in Qn −F.
+153
+In this case, for any dimension j ∈[n], there is at most one 2-degree vertex in Qα
+n−1,j −
+154
+Fα,j, where α ∈{L, R}. Thus, we only need to choose a dimension j ∈dim(F) arbitrarily.
+155
+Now, |F ∩Ej| ≥1 and there is at most one vertex of degree 2 in Qα
+n−1,j −Fα,j, where
+156
+α ∈{L, R}. Since |dim(F)| ≥2, there exists at least two choices of such dimension j.
+157
+Subcase 1.2. There are two 3-degree vertices in Qn −F.
+158
+Denote the two 3-degree vertices in Qn −F by u and v. Now, all other vertices except
+159
+u and v have degree at least 4 in Qn −F. Arbitrarily choose a dimension j ∈[n] such that
+160
+uuj ∈F. Clearly, |F ∩Ej| ≥1. In the two faulty subcubes QL
+n−1,j −FL,j and QR
+n−1,j −FR,j,
+161
+u is a 3-degree vertex, v is a vertex of degree at least 2, and all other vertices have degree
+162
+at least 3. Thus, δ(Qα
+n−1,j −Fα,j) ≥2 and there is at most one vertex of degree 2 in
+163
+Qα
+n−1,j −Fα,j, where α ∈{L, R}. Since u is a 3-degree vertex, there exists n−3 (obviously
+164
+≥2 for n ≥7) choices of such dimension j.
+165
+Subcase 1.3. There are three 3-degree vertices in Qn −F.
+166
+Denote the three 3-degree vertices in Qn −F by u, v and w. Now, all other vertices
+167
+except u, v and w have degree at least 4 in Qn−F. Since |F| ≤3n−11 = 3(n−3)−2, there
+168
+exist exactly two faulty edges joining the three vertices u, v, w. Without loss of generality,
+169
+assume uv ∈F and vw ∈F. Let j = dim(uv) or dim(vw). Clearly, |F ∩Ej| ≥1. In
+170
+the two faulty subcubes QL
+n−1,j −FL,j and QR
+n−1,j −FR,j, v is always a 3-degree vertex,
+171
+one of u and w is a 3-degree vertex and the other is a vertex of degree at least 2, and all
+172
+other vertices have degree at least 3. Thus, δ(Qα
+n−1,j −Fα,j) ≥2 and there is at most one
+173
+vertex of degree 2 in Qα
+n−1,j −Fα,j, where α ∈{L, R}. Since dim(uv)̸ = dim(vw), there
+174
+exist two choices of such dimension j.
+175
+Case 2. There is one vertex of degree 2 in Qn −F.
+176
+6
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244440
+Preprint not peer reviewed
+
+Denote the 2-degree vertex in Qn−F by u. Since (n−2)+2(n−3)−2 = 3n−10 > |F|,
+177
+then Qn −F has at most one 3-degree vertex.
+178
+Subcase 2.1. There is no 3-degree vertex in Qn −F.
+179
+Now, all other vertices except u have degree at least 4 in Qn −F. Arbitrarily choose
+180
+a dimension j ∈[n] such that uuj ∈F. Clearly, |F ∩Ej| ≥1. In the two faulty subcubes
+181
+QL
+n−1,j −FL,j and QR
+n−1,j −FR,j, u is a 2-degree vertex and all other vertices have degree
+182
+at least 3. Thus, δ(Qα
+n−1,j −Fα,j) ≥2 and there is at most one vertex of degree 2 in
+183
+Qα
+n−1,j −Fα,j, where α ∈{L, R}. Since u is a 2-degree vertex, there exist n −2 (obviously
+184
+≥2 for n ≥7) choices of such dimension j.
+185
+Subcase 2.2. There is a 3-degree vertex in Qn −F.
+186
+Denote the 3-degree vertex in Qn −F by v. Now, all other vertices except u and v
+187
+have degree at least 4 in Qn −F. Choose a dimension j ∈[n] such that uuj ∈F and
+188
+vvj ∈F. Clearly, |F ∩Ej| ≥1. In the two faulty subcubes QL
+n−1,j −FL,j and QR
+n−1,j −FR,j,
+189
+u is a 2-degree vertex, v is a 3-degree vertex, and all other vertices have degree at least 3.
+190
+Thus, δ(Qα
+n−1,j −Fα,j) ≥2 and there is at most one vertex of degree 2 in Qα
+n−1,j −Fα,j,
+191
+where α ∈{L, R}. Since u is a 2-degree vertex and v is a 3-degree vertex in Qn −F, there
+192
+are (n −2) −3 (also ≥2 for n ≥7) choices of such dimension j.
+193
+3
+The cycles of length 6
+194
+In this section, we discuss the existence of a cycle of length 6 passing through edge e in
+195
+the hypercube Qn with faulty edges. We illustrate through an example that a cycle of
+196
+length 6 passing through edge e may not exist when the number of faulty edges is 3n−11.
+197
+In Qn, for any two vertices u = u1 · · · un and v = v1 · · · vn, the Hamming distance
+198
+H(u, v) is deﬁned as the number of indices i ∈[n] for which ui̸ = vi. Clearly, dQn(u, v) =
+199
+H(u, v).
+200
+Let e = uv. Assume dim(e) = n. Suppose the situation of the 2(n−1) edges (excluding
+201
+e) incident with u and v is as follows: uu1 is a good edge, vv2 is a good edge, and all
+202
+other edges are faulty; see Fig 2. Then, in this case, all cycles of length 6 passing through
+203
+edge e must traverse the path u1uvv2. Denote this path by P. In other words, to ﬁnd a
+204
+cycle of length 6 passing through edge e, we need to identify a path of length 3 between
+205
+vertices u1 and v2 that does not intersect with any edges in path P.
+206
+Since dim(uv) = n, dim(uu1) = 1, and dim(vv2) = 2, the binary strings of u1 and v2
+207
+diﬀer in exactly three bit positions: 1, 2, and n. Thus, H(u, v) = 3 and there exist 3! = 6
+208
+paths of length 3 between u1 and v2 in Qn. Among them, one path is exactly the path P,
+209
+7
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244440
+Preprint not peer reviewed
+
+one intersects P at edge u1u, and another intersects P at edge vv2. Therefore, only three
+210
+paths can form a 6-cycle passing through edge e with P. These three paths may share
+211
+common edges. This does not aﬀect our discussion. If there is a faulty edge on each of
+212
+these three paths, then there does not exist a fault-free 6-cycle passing through edge e in
+213
+Qn. Since 3n −11 −2(n −2) = n −7 ≥3 for n ≥10, this situation may occur, i.e., the
+214
+fault-free cycle of length 6 passing through edge e may not exist in Qn. Therefore, in this
+215
+paper, we discuss the lower bound for cycles starts from 8.
+216
+e
+u
+v
+u 2
+u1
+v2
+v1
+n
+n
+n
+1
+1
+2
+2
+Fig 2. The construction of the counterexample where the numbers marked on the edges
+represent the dimension of that edge.
+4
+The main results
+217
+In this section, we consider the edge-bipancyclicity of the hypercube Qn, where n ≥4,
+218
+with at most 3n−11 faulty edges under the following two additional conditions: (1) every
+219
+vertex in Qn is incident with at least two fault-free edges, and (2) every 4-cycle in Qn does
+220
+not have any pair of non-adjacent vertices whose degrees are both two after removing the
+221
+faulty edges.
+222
+Denote the set of faulty edges in Qn by F and the given edge in Qn −F by e. Since
+223
+|F| ≤3n −11, there are at most two vertices of degree 2 in Qn −F. If there are three
+224
+vertices of degree 2 in Qn −F, then |F| ≥3(n −2) −2 = 3n −8 > 3n −11 for n ≥4. A
+225
+contradiction occurs. Thus, we distinguish two cases to consider: there are two vertices
+226
+of degree 2 in Qn −F and there is at most one vertex of degree 2 in Qn −F.
+227
+Recall that if Qn −F contains two vertices of degree 2, then there exist two forbidden
+228
+structures, namely (FS-I) and (FS-II), in Qn −F, which result in the absence of any
+229
+Hamiltonian cycle in Qn −F that passes through the edge e.
+230
+8
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244440
+Preprint not peer reviewed
+
+Lemma 4.1. For n ≥4, let F ⊆E(Qn) be such that |F| ≤3n −11, δ(Qn −F) ≥2,
+231
+and every 4-cycle in Qn −F does not have a pair of non-adjacent vertices of degree 2. If
+232
+Qn −F contains two vertices of degree 2 but no (FS-I) or (FS-II), then every edge e in
+233
+Qn −F lies on a fault-free cycle of every even length from 8 to 2n.
+234
+Proof. We prove this lemma by induction on n. For 4 ≤n ≤6, since 3n −11 ≤2n −5,
+235
+the lemma holds by Theorem 2.4. Assume the lemma holds for n −1 ≥6. We will show
+236
+that the lemma holds for n ≥7.
+237
+Denote the two 2-degree vertices in Qn−F by x and y. Note that all the other vertices,
+238
+except x and y, of Qn −F are of degree at least 5. If there is another vertex of degree 2,
+239
+3, or 4 in Qn −F, then |F| ≥2(n −2) + (n −4) −2 = 3n −10. A contradiction occurs.
+240
+Let D(x) = {j ∈[n] | xxj ∈F} and D(y) = {j ∈[n] | yyj ∈F}. So, |D(x)| =
+241
+|D(y)| = n −2. Since (n −2) −2 −1 ≥2 for n ≥7, there exists a j ∈D(x) ∩D(y) such
+242
+that j̸ = dim(e). Moreover, when xy is an edge in Qn, we may choose the above j such
+243
+that j̸ = dim(xy). Split Qn into two subcubes QL
+n−1 and QR
+n−1 by dimension j. Thus,
+244
+e /∈Ej and |F ∩Ej| ≥2. Assume that x ∈V (QL
+n−1). Let e = uv.
+245
+Case 1. y ∈V (QR
+n−1).
+246
+Now, dQL
+n−1−FL(x) = dQR
+n−1−FR(y) = 2 and all the other vertices of Qα
+n−1 −Fα are of
+247
+degree of at least 4 for α ∈{L, R}. Thus, n −3 ≤|Fα| ≤2n −10 for α ∈{L, R} and
+248
+2 ≤|F ∩Ej| ≤n −5. By symmetry, we may assume that e ∈E(QL
+n−1).
+249
+Since δ(QL
+n−1 −FL) ≥2 and |FL| < 2(n −1) −5, by Theorem 2.4 there exists a cycle
+250
+C passing through e of every even length from 8 to 2n−1 in QL
+n−1 −FL. Let CL be the
+251
+cycle of even length lL with 2n−1 −4 ≤lL ≤2n−1. Since |E(CL) \ {e}| −2|F ∩Ej| ≥
+252
+2n−1 −5 −2(n −5) = 2n−1 −2n + 5 > 1 for n ≥7, there exists an edge st ∈E(CL) \ {e}
+253
+such that {ssj, ttj} ∩F = ∅. Since δ(QR
+n−1 −FR) ≥2 and |FR \ {sjtj}| < 2(n −1) −5, by
+254
+Theorem 2.4 there exists a cycle CR passing through sjtj in QR
+n−1 −(FR \ {sjtj}) of every
+255
+even length lR with 6 ≤lR ≤2n−1. Hence, C = CL −st + CR −sjtj + ssj + ttj is a cycle
+256
+passing through e in Qn −F of every even length l, where 2n−1 + 2 ≤l = lL + lR ≤2n.
+257
+Case 2. y ∈V (QL
+n−1).
+258
+Now, dQL
+n−1−FL(x) = dQL
+n−1−FL(y) = 2 and all the other vertices of Qα
+n−1 −Fα are of
+259
+degree of at least 4 for α ∈{L, R}. Recall that |F ∩Ej| ≥2. Thus, 2n−7 ≤|FL| ≤3n−13,
+260
+2 ≤|F ∩Ej| + |FR| ≤n −4, and |FR| ≤n −6.
+261
+Subcase 2.1. e ∈E(QR
+n−1).
+262
+Since δ(QR
+n−1 −FR) ≥4 and |FR| ≤n −6, by Theorem 2.2 there exists a cycle C
+263
+passing through e of every even length from 8 to 2n−1 in QR
+n−1 −FR. Next, we ﬁnd the
+264
+9
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244440
+Preprint not peer reviewed
+
+cycle passing through e of every even length from 2n−1 + 2 to 2n in Qn −F.
+265
+Since n ≥7, we have 2n > 4. Since |FL| ≤3n−13 < 3(n−1)−8, by Theorem 2.5 there
+266
+exists a cycle CL of every even length lL in QL
+n−1 −FL with 2n ≤lL ≤2n−1. Note that
+267
+|F ∩Ej|+|FR| ≤n−4. Since |E(CL)\{ujvj}|−2|F ∩Ej|−|FR| ≥1, there exists an edge
+268
+st ∈E(CL) such that {ssj, ttj, sjtj} ∩F = ∅and sjtj̸ = e. Now, {sjtj, e} is a linear forest
+269
+of size 2. Note that 2n−1−2n+2 > 2(n−1) for n ≥7. Since |FR| ≤(n−1)−5 < (n−1)−2,
+270
+by Lemma 2.6 there exists a cycle CR passing through {sjtj, e} of every even length from
+271
+2n−1 −2n + 2 to 2n−1 in QR
+n−1 −FR. Hence, C = CL −st + CR −sjtj + ssj + ttj is a cycle
+272
+passing through e in Qn −F of every even length from 2n−1 + 2 to 2n.
+273
+Subcase 2.2. e ∈E(QL
+n−1).
+274
+By the choice of j, we have {xxj, yyj} ⊆F. We claim that QL
+n−1 −FL contains no
+275
+(FS-I) or (FS-II). If not, then Qn −F contains (FS-I) or (FS-II). A contradiction occurs.
+276
+Subcase 2.2.1. |FL| ≤3n −14.
+277
+By induction hypothesis, there exists a cycle C passing through e in QL
+n−1 −FL of
+278
+every even length from 8 to 2n−1.
+279
+Let CL be the cycle passing through e of length lL in QL
+n−1 −FL, where lL = 2n−1 −2
+280
+or 2n−1. Since |E(CL) \ {e}| −2|F ∩Ej| −|FR| ≥2n−1 −3 −2(n −4) > 1 for n ≥7, there
+281
+exists an edge st ∈E(CL) \ {e} such that {ssj, ttj, sjtj} ∩F = ∅. Since |FR| ≤n −6,
+282
+by Theorem 2.2 there exists a cycle CR passing through sjtj of every even length lR in
+283
+QR
+n−1 −FR, where 4 ≤lR ≤2n−1. Hence, C = CL −st + CR −sjtj + ssj + ttj is a cycle
+284
+passing through e in Qn −F of every even length l, where 2n−1 + 2 ≤l = lL + lR ≤2n.
+285
+Subcase 2.2.2. |FL| = 3n −13.
+286
+Now, F ∩Ej = {xxj, yyj} and FR = ∅. Let Fx = {xxi | xxi ∈FL} and Fy = {yyi |
+287
+yyi ∈FL}. Let l be any even integer with 8 ≤l ≤2n. Next, we construct a cycle in
+288
+Qn −F of length l passing through e.
+289
+Subcase 2.2.2.1. Suppose that 8 ≤l ≤2n−1.
+290
+Recall that dQL
+n−1−FL(x) = dQL
+n−1−FL(y) = 2 and all the other vertices of QL
+n−1 −FL are
+291
+of degree of at least 4.
+292
+When {u, v} = {x, y}, by symmetry we may assume u = x and v = y. Let a and
+293
+b be the neighbors of x and y in QL
+n−1 −FL, respectively, such that a̸ = y and b̸ = x.
+294
+When {u, v} ∩{x, y} = ∅, now dQL
+n−1−FL(u) ≥4 and dQL
+n−1−FL(v) ≥4. Thus, we may
+295
+choose neighbors a and b of u and v in QL
+n−1 −FL, respectively, such that a /∈{v, x, y} and
+296
+b /∈{u, x, y}. In the above two cases, the subgraph induced by the edge set {au, uv, vb} is
+297
+a path, denoted by PL, of length 3 in QL
+n−1−FL; see Fig 3(1)(2). Since F ∩Ej = {xxj, yyj},
+298
+we have {aaj, bbj} ∩F = ∅.
+299
+10
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244440
+Preprint not peer reviewed
+
+When |{u, v} ∩{x, y}| = 1, by symmetry we may assume v = x and u /∈{x, y}. Let
+300
+a = u. Since F ∩Ej = {xxj, yyj}, we have aaj /∈F. Let c be the neighbor of x in
+301
+QL
+n−1 −FL such that c̸ = u. If c = y, then let b be the neighbor of c in QL
+n−1 −FL such
+302
+that b̸ = x. Now, bbj /∈F. If c̸ = y, then since dQL
+n−1−FL(c) ≥4, we may choose a neighbor
+303
+b of c in QL
+n−1 −FL such that b /∈{x, y}. Now, we also have bbj /∈F. In this case, the
+304
+subgraph induced by the edge set {uv, vc, cb} is also a path, denoted by PL, of length 3
+305
+in QL
+n−1 −FL; see Fig 3(3).
+306
+x
+v
+=
+a
+j
+b
+j
+c
+a u
+=
+b
+j
+j
+e
+u
+a
+v
+b
+a
+j
+b
+j
+e
+x
+u
+=
+a
+y v
+=
+b
+a
+j
+b
+j
+e
+( )
+1
+( )
+2
+( )
+3
+Fig 3. The constructions of the path PL and the vertices aj and bj.
+Since l is an even integer and 8 ≤l ≤2n−1, we have l −5 is an odd integer and
+307
+3 ≤l −5 ≤2n−1 −5. Recall that FR = ∅. Since dQR
+n−1−FR(aj, bj) = dQL
+n−1−FL(a, b) ≤3, by
+308
+Theorem 2.1 there exists a path Paj,bj of length l −5 in QR
+n−1. Hence, C = PL + Paj,bj +
+309
+aaj + bbj is a cycle passing through e of length l in Qn −F.
+310
+Subcase 2.2.2.2. Suppose that 2n−1 + 2 ≤l ≤2n.
+311
+Recall that dQL
+n−1−FL(x) = dQL
+n−1−FL(y) = 2. Let a and b be the two neighbors of x in
+312
+QL
+n−1 −FL, and let c and d be the two neighbors of y in QL
+n−1 −FL.
+313
+Claim. The subgraph induced by the edge set {xa, xb, yc, yd, e} is a linear forest.
+314
+Note that {xa, xb} forms a path of length 2, {yc, yd} forms a path of length 2, and
+315
+x̸ = y. So, |{xa, xb} ∩{yc, yd}| ≤1. If |{xa, xb} ∩{yc, yd}| = 1, then now x and y
+316
+are adjacent in QL
+n−1 −FL. Without loss of generality, we may assume xb = cy. Thus,
+317
+{xa, xb, yc, yd} forms a path axyd of length 3, which is obviously a linear forest; see Fig
+318
+4(1). If {xa, xb} ∩{yc, yd} = ∅, then xa, xb, yc, and yd are four distinct edges. Since x
+319
+and y are both 2-degree vertices in QL
+n−1 −FL, we have x and y are not adjacent to any
+320
+other vertices in QL
+n−1 −FL. Thus, we discuss the possibilities for {xa, xb, yc, yd} based
+321
+on the situation of {a, b} ∩{c, d}.
+322
+If {a, b} ∩{c, d} = ∅, then {xa, xb, yc, yd} forms a linear forest which consists of two
+323
+paths of length 2; see Fig 4(2). Note that in this case, it may be that p(y) = p(x), or it may
+324
+11
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244440
+Preprint not peer reviewed
+
+be that p(y)̸ = p(x). Either way, this does not aﬀect our proof. If |{a, b}∩{c, d}| = 1, then
+325
+without loss of generality, we may assume b = c and a̸ = d. Thus, {xa, xb, yc, yd} forms
+326
+a path of length 4, which is obviously a linear forest; see Fig 4(3). If |{a, b} ∩{c, d}| = 2,
+327
+then we may assume a = c and b = d. Now, {xa, xb, yc, yd} forms a cycle of length 4; see
+328
+Fig 4(4). Thus, QL
+n−1 −FL contains a 4-cycle which has a pair of non-adjacent vertices of
+329
+degree 2. A contradiction occurs.
+330
+x
+a
+y
+b c
+=
+d
+c
+x
+=
+a
+b y
+=
+d
+x
+a
+b
+c
+y
+d
+x
+y
+a c
+=
+b d
+=
+( )
+1
+( )
+2
+( )
+3
+( )
+4
+Fig 4. (1)-(3) Three possibilities for {xa, xb, yc, yd} up to isomorphism; (4) A 4-cycle in
+QL
+n−1 −FL which has a pair of non-adjacent vertices of degree 2.
+Hence, there are three possibilities for {xa, xb, yc, yd} up to isomorphism; see Fig
+331
+4(1)-(3). Next, we prove that {xa, xb, yc, yd, e} also forms a linear forest.
+332
+Recall that e = uv. If e ∈{xa, xb, yc, yd}, then {xa, xb, yc, yd, e} = {xa, xb, yc, yd},
+333
+which obviously forms a linear forest. If e /∈{xa, xb, yc, yd}, then we discuss based on the
+334
+situation of the common vertices of {u, v} and {x, a, b, y, c, d}. Since x and y are both 2335
+degree vertices in QL
+n−1−FL, we have e is not incident with x or y, i.e., {u, v}∩{x, y} = ∅.
+336
+If {u, v} ∩{a, b, c, d} = ∅, then {xa, xb, yc, yd, e} also forms a linear forest. It remains to
+337
+consider the case that {u, v} ∩{a, b, c, d}̸ = ∅.
+338
+For the case (1) in Fig 4, if |{u, v} ∩{a, b, c, d}| = 1, then |{u, v} ∩{a, d}| = 1. We
+339
+may assume u = a and v̸ = d. Thus, {xa, xb, yc, yd, e} forms a path vaxyd of length 4.
+340
+If |{u, v} ∩{a, b, c, d}| = 2, then {u, v} = {a, d}. Now, QL
+n−1 −FL contains the (FS-I). A
+341
+contradiction occurs.
+342
+For the case (2) in Fig 4, if |{u, v} ∩{a, b, c, d}| = 1, then we may assume u = a and
+343
+v /∈{a, b, c, d}. Thus, {xa, xb, yc, yd, e} forms a linear forest which consists of two paths
+344
+vaxb and cyd. If |{u, v}∩{a, b, c, d}| = 2, then since p(a) = p(b) and p(c) = p(d), we have
+345
+|{u, v} ∩{a, b}| = |{u, v} ∩{c, d}| = 1 and p(a) = p(b)̸ = p(c) = p(d). We may assume
+346
+u = a and v = c. Thus, {xa, xb, yc, yd, e} forms a path bxuvyd of length 5.
+347
+For the case (3) in Fig 4, since p(a) = p(b) = p(c) = p(d), we have |{u, v}∩{a, b, c, d}| =
+348
+12
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244440
+Preprint not peer reviewed
+
+1. We may assume u ∈{a, b, c, d} and v /∈{a, b, c, d}. When u = a or u = d, we have
+349
+{xa, xb, yc, yd, e} forms a path of length 5. When u = b, QL
+n−1 −FL contains the (FS-II).
+350
+A contradiction occurs.
+351
+In conclusion, the edge set {xa, xb, yc, yd, e} forms a linear forest.
+352
+The Claim is proved.
+353
+Since |{xa, xb, yc, yd, e}| ≤5 and |FL\(Fx∪Fy)| ≤3n−11−(2(n−2)−1) = (n−1)−5.
+354
+By Lemma 2.6, {xa, xb, yc, yd, e} lies on a cycle CL of length 2n−1 in QL
+n−1 −(FL \ (Fx ∪
+355
+Fy)).
+Obviously, E(CL) ∩(Fx ∪Fy) = ∅.
+Thus, CL is a cycle in QL
+n−1 −FL.
+Since
+356
+|E(CL) \ {xa, xb, yc, yd, e}| ≥2n−1 −5 > 1 for n ≥7, there exists an edge st ∈E(CL) \
+357
+{xa, xb, yc, yd, e}. Since F ∩Ej = {xxj, yyj}, we have {ssj, ttj} ∩F = ∅. Since l is
+358
+an even integer and 2n−1 + 2 ≤l ≤2n, we have l −2n−1 −1 is an odd integer and
+359
+1 ≤l −2n−1 −1 ≤2n−1 −1. Since FR = ∅, by Theorem 2.1 there exists a path Psj,tj of
+360
+length l −2n−1 −1 in QR
+n−1. Hence, C = CL −st + Psj,tj + ssj + ttj is a cycle passing
+361
+through e in Qn −F of length l.
+362
+Lemma 4.2. For n ≥4, let F ⊆E(Qn) be such that |F| ≤3n −11 and δ(Qn −F) ≥2.
+363
+If Qn −F contains at most one vertex of degree 2, then every edge e in Qn −F lies on a
+364
+fault-free cycle of every even length from 8 to 2n.
+365
+Proof. We prove this lemma by induction on n. For 4 ≤n ≤6, since 3n −11 ≤2n −5,
+366
+the lemma holds by Theorem 2.4. Assume the lemma holds for n −1 ≥6. We will show
+367
+that the lemma holds for n ≥7. Let e = uv.
+368
+Case 1. All the edges in F have the same dimension, say F ⊆Ej.
+369
+Split Qn into two subcubes QL
+n−1 and QR
+n−1 by dimension j. Now, FL = FR = ∅.
+370
+Subcase 1.1. e /∈Ej.
+371
+By symmetry, we may assume that e ∈E(QL
+n−1). By Theorem 2.2, there exists a cycle
+372
+C passing through e in QL
+n−1 of every even length from 8 to 2n−1.
+373
+Let CL be the cycle passing through e in QL
+n−1 of length 2n−1. Since |E(CL) \ {e}| −
+374
+2|F ∩Ej| ≥2n−1 −1 −2(3n −11) = 2n−1 −6n + 21 > 1 for n ≥7, there exists an
+375
+edge st ∈E(CL) \ {e} such that {ssj, ttj} ∩F = ∅. By Theorem 2.1, there exists a
+376
+path Psj,tj in QR
+n−1 of every odd length lR, where 1 ≤lR ≤2n−1 −1.
+Hence, C =
+377
+CL −st + Psj,tj + ssj + ttj is a cycle passing through e in Qn −F of every even length l,
+378
+where 2n−1 + 2 ≤l = 2n−1 + lR + 1 ≤2n.
+379
+Subcase 1.2. e ∈Ej.
+380
+By symmetry, we may assume that u ∈V (QL
+n−1) and v ∈V (QR
+n−1). Note that there are
+381
+C3
+n−1 vertices which have distance 3 from the vertex u in QL
+n−1. Since C3
+n−1 > 3n−11 ≥|F|
+382
+13
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244440
+Preprint not peer reviewed
+
+for n ≥7, there exists a vertex s in QL
+n−1 such that dQL
+n−1(u, s) = 3 and ssj /∈F. Clearly,
+383
+dQR
+n−1(v, sj) = 3. Recall that FL = FR = ∅. By Theorem 2.1, there exists a path Pu,s of
+384
+every odd length lL in QL
+n−1, where 3 ≤lL ≤2n−1−1. Similarly, there exists a path Pv,sj of
+385
+every odd length lR in QR
+n−1, where 3 ≤lR ≤2n−1 −1. Hence C = Pu,s +Pv,sj +uv +ssj is
+386
+a cycle passing through e of every even length l in Qn −F, where 8 ≤l = lL +lR +2 ≤2n.
+387
+Case 2. Not all edges in F are of the same dimension.
+388
+By Lemma 2.7, there exists a dimension j ∈[n] \ dim(e) such that |F ∩Ej| ≥1,
+389
+δ(Qα
+n−1,j −Fα,j) ≥2 and there is at most one vertex of degree 2 in Qα
+n−1,j −Fα,j, for every
+390
+α ∈{L, R}. In the following proof, we split Qn into two subcubes QL
+n−1,j and QR
+n−1,j
+391
+by dimension j. For every α ∈{L, R}, we simplify Qα
+n−1,j to Qα
+n−1 and Fα,j to Fα. By
+392
+symmetry, we may assume that e ∈E(QL
+n−1 −FL). Note that |Fα| ≤3n −12 for every
+393
+α ∈{L, R}.
+394
+Subcase 2.1. |FL| ≤3n −14 and |FR| ≤3n −14.
+395
+By the induction hypothesis, there exists a cycle C passing through e in QL
+n−1 −FL
+396
+of every even length from 8 to 2n−1. Let CL be the cycle passing through e in QL
+n−1 −FL
+397
+of even length lL, where 2n−1 −6 ≤lL ≤2n−1. Since |E(CL) \ {e}| −2|F ∩Ej| −|FR| ≥
+398
+2n−1 −7−2(3n−11) = 2n−1 −6n+15 > 1 for n ≥7, there exists an edge st ∈E(CL)\{e}
+399
+such that {ssj, ttj, sjtj} ∩F = ∅. Since |FR| ≤3n −14, by the induction hypothesis
+400
+there exists a cycle CR passing through sjtj of every even length lR in QR
+n−1 −FR, where
+401
+8 ≤lR ≤2n−1. Hence, C = CL −st + CR −sjtj + ssj + ttj is a cycle passing through e in
+402
+Qn −F of every even length l, where 2n−1 + 2 ≤l = lL + lR ≤2n.
+403
+Subcase 2.2. 3n −13 ≤|FR| ≤3n −12.
+404
+Now, 1 ≤|F ∩Ej| + |FL| ≤2. Recall that |F ∩Ej| ≥1. So, |FL| ≤1. Note that
+405
+e ∈E(QL
+n−1). By Theorem 2.2, there exists a cycle C passing through e in QL
+n−1 −FL of
+406
+every even length from 8 to 2n−1. Next, we ﬁnd the cycle passing through e of every even
+407
+length from 2n−1 + 2 to 2n.
+408
+Since |FR| ≤3n−12 < 3(n−1)−8, by Theorem 2.5 there exists a cycle CR in QR
+n−1−FR
+409
+of every even length lR, where 8 ≤lR ≤2n−1. Since |E(CR)| ≥8 > 2|F ∩Ej| + |FL| + 1,
+410
+there exists an edge st ∈E(CR) such that {ssj, ttj, sjtj} ∩F = ∅and sjtj̸ = e. Now,
+411
+{e, sjtj} forms a linear forest of size 2. Note that 2n−1 −6 > 2(n −1) for n ≥7. Since
+412
+|FL| ≤1 < (n −1) −2 for n ≥7, by Lemma 2.6 there exists a cycle CL passing through
+413
+{e, sjtj} of every even length lL in QL
+n−1 −FL, where 2n−1 −6 ≤lL ≤2n−1. Hence,
+414
+C = CL −sjtj + CR −st + ssj + ttj is a cycle passing through e in Qn −F of every even
+415
+length l, where 2n−1 + 2 ≤l = lL + lR ≤2n.
+416
+Subcase 2.3. 3n −13 ≤|FL| ≤3n −12.
+417
+14
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244440
+Preprint not peer reviewed
+
+Now, 1 ≤|F ∩Ej| + |FR| ≤2, |F ∩Ej| ≥1, and |FR| ≤1. Let l be any even integer
+418
+with 8 ≤l ≤2n. Next, we construct a cycle in Qn −F of length l passing through e.
+419
+Subcase 2.3.1. Suppose that 8 ≤l ≤2n−1 + 2.
+420
+Subcase 2.3.1.1. {uuj, vvj} ∩F = ∅.
+421
+Note that dQR
+n−1(uj, vj) = 1 and l −3 is an odd integer with 5 ≤l −3 ≤2n−1 −1.
+422
+Since |FR| ≤1 < (n−1)−2 for n ≥7, by Theorem 2.3 there exists a path Puj,vj of length
+423
+l −3 in QR
+n−1 −FR. Hence, C = uv + Puj,vj + uuj + vvj is a cycle passing through e of
+424
+length l in Qn −F.
+425
+Subcase 2.3.1.2. {uuj, vvj} ∩F̸ = ∅.
+426
+If |{uuj, vvj} ∩F| = 2, then F ∩Ej = {uuj, vvj}. Since δ(QL
+n−1 −FL) ≥2, we may
+427
+choose neighbors a and b of u and v in QL
+n−1 −FL, respectively, such that a̸ = v and b̸ = u.
+428
+Since F ∩Ej = {uuj, vvj}, we have {aaj, bbj}∩F = ∅. In this case, the subgraph induced
+429
+by the edge set {au, uv, vb} is a path, denoted by PL, of length 3 in QL
+n−1 −FL. Now,
+430
+dQR
+n−1(aj, bj) = dQL
+n−1(a, b) ≤3.
+431
+If |{uuj, vvj} ∩F| = 1, then by symmetry we may assume that uuj /∈F and vvj ∈F.
+432
+Let a = u. So, aaj /∈F. Recall that δ(QL
+n−1 −FL) ≥2, and there is at most one 2-degree
+433
+vertex in QL
+n−1 −FL. When dQL
+n−1−FL(v) = 2, let c be the neighbor of v in QL
+n−1 −FL such
+434
+that c̸ = u. Note that dQL
+n−1−FL(c) ≥3. When dQL
+n−1−FL(v) ≥3, we choose a neighbor c
+435
+of v in QL
+n−1 −FL such that c̸ = u and dQL
+n−1−FL(c) ≥3. For the above two cases, since
+436
+|(F ∩Ej) \ {vvj}| ≤1, there exists a neighbor b of c in QL
+n−1 −FL such that b̸ = v and
+437
+bbj /∈F. In this case, the subgraph induced by the edge set {uv, vc, cb} is a path, also
+438
+denoted by PL, of length 3 in QL
+n−1 −FL. Now, dQR
+n−1(aj, bj) = dQL
+n−1(a, b) ≤3.
+439
+Since l is an even integer and 8 ≤l ≤2n−1, we have l −5 is an odd integer and
+440
+3 ≤l −5 ≤2n−1 −3. Since |FR| ≤1 < (n −1) −2 for n ≥7, by Theorem 2.3 there exists
+441
+a path Paj,bj of length l −5 in QR
+n−1 −FR. Hence, C = PL + Paj,bj + aaj + bbj is a cycle
+442
+passing through e of length l in Qn −F.
+443
+Subcase 2.3.2. Suppose that 2n−1 + 4 ≤l ≤2n.
+444
+Subcase 2.3.2.1. |FL| = 3n −13.
+445
+Now, 1 ≤|F ∩Ej|+|FR| ≤2, |F ∩Ej| ≥1, and |FR| ≤1. Recall that δ(QL
+n−1−FL) ≥2
+446
+and there is at most one 2-degree vertex in QL
+n−1 −FL. Since |F ∩Ej| ≤2, the edges in
+447
+F ∩Ej are adjacent to at most (n−3)+(n−4) = 2n−7 edges in FL. Since |FL|−(2n−7) =
+448
+n −6 ≥1 for n ≥7, there exists an edge st ∈FL such that {ssj, ttj} ∩F = ∅. Since
+449
+|FL \ {st}| = 3n −14 = 3(n −1) −11, by the induction hypothesis there exists a cycle CL
+450
+of length 2n−1 passing through e in QL
+n−1 −(FL \ {st}).
+451
+If st /∈E(CL), then we choose an edge rw ∈E(CL)\{e} such that {rrj, wwj}∩F = ∅.
+452
+15
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244440
+Preprint not peer reviewed
+
+Since |E(CL) \ {e}| −2|F ∩Ej| −|FR| ≥2n−1 −1 −2 × 2 = 2n−1 −5 > 1, the above edge
+453
+rw exists. If st ∈E(CL), then let rw = st. Now, we also have {rrj, wwj} ∩F = ∅. Since
+454
+l is an even integer and 2n−1 + 4 ≤l ≤2n, we have l −2n−1 is an even integer and 4 ≤
+455
+l −2n−1 ≤2n−1. Since |FR| ≤1, by Theorem 2.2 there exists a cycle CR of length l −2n−1
+456
+passing through rjwj in QR
+n−1−(FR\{rjwj}). Hence, C = CL−rw+CR−rjwj +rrj +wwj
+457
+is a cycle passing through e of length l in Qn −F.
+458
+Subcase 2.3.2.2. |FL| = 3n −12.
+459
+Now, |F ∩Ej| = 1 and FR = ∅. Since |FL| = 3n −12 < 3(n −1) −8 , by Theorem 2.5
+460
+there exists a cycle CL of length 2n−1 in QL
+n−1 −FL.
+461
+When e ∈E(CL), we choose an edge st ∈E(CL) \ {e} such that {ssj, ttj} ∩F = ∅.
+462
+Since |E(CL) \ {e}| −2|F ∩Ej| = 2n−1 −3 > 1 for n ≥7, the above edge st exists.
+463
+Let PL = CL −st. Thus, PL is a path of length 2n−1 −1 from s to t passing through e
+464
+in QL
+n−1 −FL. When e /∈E(CL), note that there are two subpaths on CL from u to v.
+465
+Choose neighbors s and t of u and v, respectively, on CL such that s lies on one subpath
+466
+from u to v on CL and t lies on the other. Note that there are two choices of the above
+467
+vertices s and t, and the four vertices are distinct because QL
+n−1 is a bipartite graph. Since
+468
+|F ∩Ej| = 1, we can choose the above vertices s and t such that {ssj, ttj} ∩F = ∅. Let
+469
+PL = CL −us −vt + uv. Now, PL is also a path of length 2n−1 −1 from s to t passing
+470
+through e in QL
+n−1 −FL.
+471
+Since l is an even integer and 2n−1+4 ≤l ≤2n, we have l−2n−1−1 is an odd integer and
+472
+3 ≤l −2n−1 −1 ≤2n−1 −1. Since FR = ∅and dQR
+n−1(sj, tj) = dQL
+n−1(s, t) ≤3, by Theorem
+473
+2.1 there exists a path Psj,tj of length l−2n−1−1 in QR
+n−1. Hence, C = PL+Psj,tj +ssj+ttj
+474
+is a cycle passing through e of length l in Qn −F.
+475
+From Lemmas 4.1 and 4.2, we can obtain the following theorem.
+476
+Theorem 4.3. For n ≥4, let F ⊆E(Qn) be such that |F| ≤3n −11, δ(Qn −F) ≥2,
+477
+and every 4-cycle in Qn −F does not have a pair of non-adjacent vertices of degree 2. If
+478
+Qn −F contains no (FS-I) or (FS-II), then every edge e in Qn −F lies on a fault-free
+479
+cycle of every even length from 8 to 2n.
+480
+Proof. Since |F| ≤3n −11, there are at most two vertices of degree 2 in Qn −F. If there
+481
+are two vertices of degree 2 in Qn −F, then the theorem holds by Lemma 4.1. If there is
+482
+at most one vertex of degree 2 in Qn −F, then the theorem holds by Lemma 4.2.
+483
+16
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244440
+Preprint not peer reviewed
+
+5
+Conclusion
+484
+Let Qn be an n-dimensional hypercube with at most 3n−11 faulty edges for n ≥4, where
+485
+every vertex in Qn −F has a degree of at least 2 and no 4-cycle in Qn −F has a pair of
+486
+non-adjacent vertices both of degree 2. Excluding the speciﬁc fault structures (FS-I) and
+487
+(FS-II), in this paper, we prove that every fault-free edge in Qn lies on a fault-free cycle
+488
+of every even length from 8 to 2n. This result signiﬁcantly extends the ﬁndings in [17].
+489
+Bipanconnectivity under these constraints remains open, requiring novel methods.
+490
+Acknowledgements This work is supported by National Natural Science Foundation of
+491
+China (grant no. 12061047), and supported by Natural Science Foundation of Jiangxi
+492
+Province (no. 20212BAB201027).
+493
+Data Availability No data was used for the research described in the article.
+494
+Declarations
+495
+Conﬂict of interest The authors declare that they have no known competing ﬁnancial
+496
+interests or personal relationships that could have appeared to inﬂuence the work reported
+497
+in this paper.
+498
+References
+499
+[1] M. Awadh, Z. Hussain, H. Almansouri, Panconnectivity algorithm for Eisenstein500
+Jacobi networks, Kuwait Journal of Science, 50 (4) (2023) 485-491.
+501
+[2] J. Bondy, U. Murty, Graph Theory with Applications, Macmillan Press, London, 1976.
+502
+[3] X.B. Chen, Cycles passing through prescribed edges in a hypercube with some faulty
+503
+edges, Information Processing Letters, 104 (6) (2007) 211-215.
+504
+[4] X.B. Chen, Edge-fault-tolerant diameter and bipanconnectivity of hypercubes, Infor505
+mation Processing Letters, 110 (24) (2010) 1088-1092.
+506
+[5] X.B. Chen, Paired many-to-many disjoint path covers of hypercubes with faulty edges,
+507
+Information Processing Letters, 112 (3) (2012) 61-66.
+508
+[6] D.Q. Cheng, Cycles embedding in balanced hypercubes with faulty edges and vertices,
+509
+Discrete Applied Mathematics, 238 (2018) 56-69.
+510
+17
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244440
+Preprint not peer reviewed
+
+[7] D.Q. Cheng, R.X. Hao, Fault-tolerant cycles embedding in hypercubes with faulty
+511
+edges, Information Sciences, 282 (2014) 57-69.
+512
+[8] J. Dybizbaski, A. Szepietowski, Hamiltonian cycles and paths in hypercubes with
+513
+disjoint faulty edges, Information Processing Letters, 172 (2021) 106-157.
+514
+[9] J. Guo, M. Lu, Edge-bipancyclicity of bubble-sort star graphs, IEEE Access, 7 (2019)
+515
+134158-134163.
+516
+[10] R.X. Hao, X.W. Qin, H. Zhang, J.M. Chang, Two-disjoint-cycle-cover pancyclicity
+517
+of data center networks, Applied Mathematics and Computation, 475 (2024) 128716.
+518
+[11] S.Y. Hsieh, T.H. Shen, Edge-bipancyclicity of a hypercube with faulty vertices and
+519
+edges, Discrete Applied Mathematics, 156 (10) (2008) 1802-1808.
+520
+[12] J. Hu, L.Y. Li, X.L. Li, N.Y. Xu, Vertex-bipancyclicity in a bipartite graph collection,
+521
+Discrete Mathematics, 347 (7) (2024) 113980.
+522
+[13] Z.Q. Hu, Y. Zou, Bipancyclicism and bipanconnectivity in bipartite graphs, Applied
+523
+Mathematics and Computation, 377 (2020) 125149.
+524
+[14] H. Li, L.T. Chen, M. Lu, Two-disjoint-cycle-cover pancyclicity of split-star networks,
+525
+Applied Mathematics and Computation, 487 (2025) 129085.
+526
+[15] T.K. Li, C.H. Tsai, J.J.M. Tan, L.H. Hsu, Bipanconnectivity and edge-fault-tolerant
+527
+bipancyclicity of hypercubes, Information Processing Letters, 87 (2) (2003) 107-110.
+528
+[16] P.S. Li, M. Xu, Edge-fault-tolerant edge-bipancyclicity of balanced hypercubes, Ap529
+plied Mathematics and Computation, 307 (2017) 180-192.
+530
+[17] L.M. Shih, J.J.M. Tan, L.H. Hsu, Edge-bipancyclicity of conditional faulty hyper531
+cubes, Information Processing Letters, 105 (2007) 20-25.
+532
+[18] C.M. Sun, Bipanconnectivity of faulty hypercubes with minimum degree, Applied
+533
+Mathematics and Computation, 218 (9) (2012) 5518-5523.
+534
+[19] C.H. Tsai, Linear array and ring embeddings in conditional faulty hypercubes, The535
+oretical Computer Science, 314 (3) (2004) 431-443.
+536
+[20] C.H. Tsai, Y.C. Lai, Conditional edge-fault-tolerant edge-bipancyclicity of hyper537
+cubes, Information Sciences, 177 (2007) 5590-5597.
+538
+18
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244440
+Preprint not peer reviewed
+
+[21] H.L. Wang, J.W. Wang, J.M. Xu, Edge-fault-tolerant bipanconnectivity of hyper539
+cubes, Information Sciences, 179 (4) (2009) 404-409.
+540
+[22] F. Wang, H.P. Zhang, Small matchings extend to Hamiltonian cycles in hypercubes,
+541
+Graphs and Combinatorics, 32 (2016) 363-376.
+542
+[23] F. Wang, H.P. Zhang, Hamiltonian laceability in hypercubes with faulty edges, Dis543
+crete Applied Mathematics, 236 (2018) 438-445.
+544
+[24] R.X. Wang, Z.Y. Zhou, Degree sum condition on distance 2 vertices for hamiltonian
+545
+cycles in balanced bipartite graphs, Discrete Mathematics, 346 (7) (2023) 113446.
+546
+[25] X.F. Yang, Q. Dong, E. Yang, J.Q. Cao, Hamiltonian properties of twisted
+547
+hypercube-like networks with more faulty elements, Theoretical Computer Science,
+548
+412 (22) (2011) 2409-2417.
+549
+[26] D.W. Yang, M.M. Gu, Conditional fault-tolerant edge-bipancyclicity of hypercubes
+550
+with faulty vertices and edges, Theoretical Computer Science, 627 (2016) 82-89.
+551
+[27] M.C. Yang, J.M. Tan, L.H. Hsu, Highly fault-tolerant cycle embeddings of hyper552
+cubes, Journal of Systems Architecture, 53 (4) (2007) 227-232.
+553
+19
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5244440
+Preprint not peer reviewed

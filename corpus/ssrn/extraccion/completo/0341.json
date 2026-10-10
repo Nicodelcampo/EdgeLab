@@ -1,0 +1,89 @@
+{
+  "doc_id": 341,
+  "titulo": "The Market Microstructure of Central Bank Intervention",
+  "resumen_operativo": "Usa datos intraday de alta frecuencia del mercado spot FX (Reuters FXFX) para examinar la relación entre la eficacia de intervenciones cambiarias de la Fed y el 'estado del mercado' al momento de la operación (1987-1995). Encuentra que algunos traders conocen la intervención al menos una hora antes del reporte público en Reuters. Las intervenciones tienen mayor impacto cuando ocurren durante alto volumen de trading, cerca de anuncios macroeconómicos programados, y cuando son coordinadas con otros bancos centrales. Cubre 273 días de intervención de la Fed en USD-DEM y USD-JPY.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Central bank FX intervention",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Operaciones de compra/venta de divisas por bancos centrales del G-3 (Fed, Bundesbank, BOJ) para influir en niveles y varianza de tipos de cambio. La Fed intervino 273 días entre 1987-1995. Aunque oficialmente anónimas, los bancos centrales informan al mercado vía dealers en minutos. Cuatro motivos: influir tendencias, calmar mercados desordenados, rebalancear reservas, apoyar a otros bancos centrales.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Exchange rate level and variance"},
+        {"tipo": "USA", "objeto": "Portfolio balance channel"}
+      ],
+      "cita_textual": "The G-3 central banks intervened sporadically over the period 1987 through 1995. There are 273 days in the nine-year sample when the Fed intervened in the USD-DEM or the USD-JPY market."
+    },
+    {
+      "nombre": "Pre-announcement information leakage",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Evidencia de que algunos traders conocen la intervención de la Fed al menos una hora antes de que Reuters publique la noticia. El trading desk del primer banco con el que el banco central opera conoce la intervención antes que el resto del mercado, resultando en movimientos de precio previos al timestamp de Reuters.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Price moves before Reuters reports"},
+        {"tipo": "SE_OPONE_A", "objeto": "Market fairness"}
+      ],
+      "cita_textual": "Some traders typically know that the Fed is intervening at least one hour prior to the public release of the information in newswire reports."
+    },
+    {
+      "nombre": "State of the market effects",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Tres condiciones de mercado que amplifican el impacto de intervenciones: (1) alto volumen de trading, (2) proximidad temporal a anuncios macro, y (3) coordinación con otros bancos centrales. Intervenciones durante alto volumen y cerca de macro announcements son las que mayor efecto en precios tienen.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Intervention effectiveness"},
+        {"tipo": "REQUIERE", "objeto": "Central bank FX intervention"}
+      ],
+      "cita_textual": "Interventions that occur during heavy trading volume and that are closely timed to scheduled macro announcements are the most likely to have large effects."
+    },
+    {
+      "nombre": "Reuters FXFX tick-by-tick quotes",
+      "tipo": "dato",
+      "definicion_en_contexto": "Serie de cotizaciones indicativas tick-by-tick de Reuters que incluye nombres y ubicaciones de bancos cotizantes. Cubre días de intervención de la Fed más muestra de control de 25 días sin intervención. Limitación: son quotes, no transacciones, por lo que no incluyen volumen.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Intraday event study"},
+        {"tipo": "PARTE_DE", "objeto": "FX market microstructure data"}
+      ],
+      "cita_textual": "The exchange rate data used in this paper are the Reuter's FXFX series tick-by-tick indicative quotes on Fed intervention days as well as a control sample of 25 days with no interventions."
+    },
+    {
+      "nombre": "Coordinated intervention effect",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Intervenciones coordinadas entre múltiples bancos centrales (Fed con Bundesbank y/o BOJ) tienen el mayor price impact. La señal de acción coordinada es más creíble para el mercado que intervenciones unilaterales, amplificando el efecto sobre el tipo de cambio.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Intervention price impact"},
+        {"tipo": "REQUIERE", "objeto": "Multi-central bank coordination"}
+      ],
+      "cita_textual": "Results indicate that interventions that are coordinated with another central bank have the largest price impact."
+    },
+    {
+      "nombre": "Reuters time-stamped intervention reports",
+      "tipo": "dato",
+      "definicion_en_contexto": "Reportes de Reuters AAMM Page News (Money Market Headline News) con timestamp que anuncian intervenciones cambiarias, disponibles desde 1989. Permiten identificar el momento exacto en que la información de intervención se hace pública a todos los traders del mercado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Public information release time"},
+        {"tipo": "USA", "objeto": "Pre-announcement information leakage"}
+      ],
+      "cita_textual": "On most days when central banks are in the market, Reuters reports the timing of their interventions and the time-stamped history of these reports are also available from Olsen and Associates."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Algunos traders conocen que la Fed está interviniendo al menos una hora antes de la publicación de la información en reportes de Reuters. Los precios del FX se mueven antes del timestamp de Reuters, indicando fuga de información a través de los dealing desks de los bancos contraparte.",
+      "mercado": "FX spot - USD-DEM y USD-JPY",
+      "periodo": "1987-1995 (273 días de intervención de la Fed)",
+      "magnitud": "Movimientos de precio observables 1+ hora antes del timestamp de Reuters; magnitud exacta requiere lectura completa.",
+      "condiciones": "Datos Reuters FXFX tick-by-tick; timestamps de Reuters como proxy de información pública; muestra control de 25 días sin intervención",
+      "robustez": "alta",
+      "cita_textual": "Some traders typically know that the Fed is intervening at least one hour prior to the public release of the information in newswire reports."
+    },
+    {
+      "afirmacion": "Intervenciones que ocurren durante períodos de alto volumen de trading, cercanas a anuncios macroeconómicos programados, y coordinadas con otros bancos centrales son las que tienen mayor probabilidad de generar grandes efectos en el tipo de cambio.",
+      "mercado": "FX spot - USD-DEM, USD-JPY",
+      "periodo": "1987-1995",
+      "magnitud": "Mayor price impact para intervenciones en alto volumen + cerca de macro announcements + coordinadas (magnitudes exactas requieren lectura de tablas econométricas).",
+      "condiciones": "Tres dimensiones del 'state of the market'; control por otros news vía Reuters time-stamped headlines desde 1989; hora promedio intervención: Fed 10am EST, Bundesbank 12:30pm Frankfurt, BOJ alrededor del lunch hour de Tokyo",
+      "robustez": "alta",
+      "cita_textual": "Interventions that occur during heavy trading volume, that are closely timed to scheduled macro announcements, and that are coordinated with another central banks are the most likely to have large effects."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Estudio intraday con datos tick-by-tick de FX; modela timing óptimo de intervenciones learning sobre price impact intradiario según condiciones de mercado."}
+}
