@@ -26,11 +26,21 @@ def main() -> int:
     search.add_argument("query")
     search.add_argument("-k", "--limit", type=int, default=6)
     search.add_argument("--max-chars", type=int, default=12000)
+    papers = subs.add_parser("papers", help="que papers leer (castellano o ingles), con calidad y aplicabilidad")
+    papers.add_argument("corpus_root")
+    papers.add_argument("query")
+    papers.add_argument("-k", "--limit", type=int, default=8)
+    papers.add_argument("--relevance-only", action="store_true", help="sin empuje por calidad/aplicabilidad")
     ingest = subs.add_parser("ingest")
     ingest.add_argument("corpus_root")
     ingest.add_argument("ledger_path")
     ingest.add_argument("--created-at-utc", default="2026-09-21T13:00:00Z")
     ingest.add_argument("--overwrite", action="store_true")
+    recall = subs.add_parser("recall", help="memoria unificada: ledger propio + hallazgos SSRN + pasajes")
+    recall.add_argument("corpus_root")
+    recall.add_argument("query")
+    recall.add_argument("--ledger", help="ledger DurableHippocampus del brain (opcional)")
+    recall.add_argument("--k", type=int, default=5)
     custody = subs.add_parser("custody-manifest")
     custody.add_argument("corpus_root")
     custody.add_argument("out_path")
@@ -50,6 +60,20 @@ def main() -> int:
         return 0 if result["status"] == "VERIFIED_COMPLETE" else 1
     if args.command == "search":
         print(json.dumps(cortex.context_pack(args.query, args.limit, args.max_chars), indent=2, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.command == "papers":
+        hits = cortex.find_papers(args.query, limit=args.limit, prefer_useful=not args.relevance_only)
+        print(json.dumps({"query": args.query, "claims_are_evidence": False, "papers": hits},
+                         indent=2, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.command == "recall":
+        import tempfile
+        from edgelab.edge_brain.hippocampus_store import DurableHippocampus
+        from edgelab.edge_brain.literature_bridge import EdgeBrainMemory
+        ledger = args.ledger or str(Path(tempfile.mkdtemp()) / "empty.jsonl")
+        rec = EdgeBrainMemory(DurableHippocampus(ledger), cortex).recall(
+            args.query, k_own=args.k, k_findings=args.k, k_passages=args.k)
+        print(json.dumps(rec.to_dict(), indent=2, ensure_ascii=False, sort_keys=True))
         return 0
     if args.command == "ingest":
         result = cortex.ingest_ledger(args.ledger_path, created_at_utc=args.created_at_utc, overwrite=args.overwrite)

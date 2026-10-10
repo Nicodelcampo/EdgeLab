@@ -205,6 +205,188 @@ class SSRNBibliographicCortex:
         hits.sort(key=lambda item: (-item.score, item.doc_id, item.source_file))
         return hits[: max(1, int(limit))]
 
+    # -- busqueda rankeada bilingue (FTS5/BM25, 2026-10-09) -----------------------------------
+    #
+    # Indice derivado y determinista (Normalizado/passages_fts.sqlite, ~90 MB, se arma en ~3 s y NO se versiona):
+    #   fts           pasajes en ingles + titulo del paper
+    #   papers_fts    ficha por paper: titulo (en) + resumen_operativo / hallazgos / nota de aplicabilidad (es)
+    #   findings_fts  los 771 hallazgos (es) + titulo del paper (en)
+    # La ficha en castellano es el puente de idioma: una consulta en castellano encuentra el paper aunque sus
+    # pasajes esten en ingles, y el glosario (trading_glossary) agrega la traduccion para los pasajes.
+
+    FTS_FILE = "Normalizado/passages_fts.sqlite"
+    FTS_SCHEMA_VERSION = "2"
+    _LEVEL = {"alta": 2, "media": 1, "baja": 0}
+
+    @property
+    def fts_path(self) -> Path:
+        return self.root / self.FTS_FILE
+
+    def _paper_card(self, doc_id: int) -> dict[str, Any]:
+        meta = self.docs_meta.get(str(doc_id), {}) if isinstance(self.docs_meta, dict) else {}
+        app = meta.get("aplicabilidad_es_intradia") or {}
+        if not isinstance(app, dict):
+            app = {"nivel": str(app), "nota": ""}
+        return {"title": self._text(meta.get("titulo")), "summary": self._text(meta.get("resumen_operativo")),
+                "quality": self._text(meta.get("calidad_paper")).lower(),
+                "applicability": self._text(app.get("nivel")).lower(), "applicability_note": self._text(app.get("nota"))}
+
+    def _finding_rows(self) -> list[tuple[str, int, str]]:
+        """(claim_id, doc_id, texto) con la misma numeracion CLAIM-SSRN-FINDING-nnnn que ingest_ledger."""
+        out = []
+        for index, f in enumerate(self.findings, start=1):
+            try:
+                doc_id = int(f.get("doc_id"))
+            except (TypeError, ValueError):
+                continue
+            text = " | ".join(f"{k}: {self._text(f.get(k))}" for k in
+                              ("afirmacion", "mercado", "periodo", "magnitud", "condiciones", "robustez") if f.get(k))
+            out.append((f"CLAIM-SSRN-FINDING-{index:04d}", doc_id, text))
+        return out
+
+    def fts_status(self) -> str:
+        if not self.fts_path.is_file():
+            return "MISSING"
+        try:
+            with sqlite3.connect(f"file:{self.fts_path}?mode=ro", uri=True) as con:
+                row = con.execute("SELECT value FROM meta WHERE key='schema_version'").fetchone()
+        except sqlite3.Error:
+            return "STALE"
+        return "READY" if row and row[0] == self.FTS_SCHEMA_VERSION else "STALE"
+
+    def ensure_fts_index(self) -> bool:
+        """Arma el indice si falta o es de otra version. Devuelve True si quedo listo."""
+        if self.fts_status() == "READY":
+            return True
+        if not (self.root / "Normalizado/chunks.sqlite").is_file():
+            return False
+        self.build_fts_index()
+        return True
+
+    def build_fts_index(self) -> dict[str, Any]:
+        """Indice derivado y determinista. Solo lee chunks.sqlite / grafo; escribe atomico via .tmp."""
+        target = self.fts_path
+        tmp = target.with_suffix(".tmp")
+        tmp.unlink(missing_ok=True)
+        src = f"file:{self.root / 'Normalizado/chunks.sqlite'}?mode=ro"
+        with sqlite3.connect(src, uri=True) as con:
+            rows = con.execute("""SELECT p.id, p.doc_id, c.doc_titulo, c.archivo_fuente, p.texto
+                                  FROM passages p JOIN chunks c ON c.id = p.chunk_id ORDER BY p.id""").fetchall()
+        tok = "tokenize='porter unicode61 remove_diacritics 2'"
+        out = sqlite3.connect(tmp)
+        out.execute(f"CREATE VIRTUAL TABLE fts USING fts5(title, body, doc_id UNINDEXED, source_file UNINDEXED, {tok})")
+        out.executemany("INSERT INTO fts(rowid, title, body, doc_id, source_file) VALUES (?,?,?,?,?)",
+                        [(pid, title, text, doc_id, sf) for pid, doc_id, title, sf, text in rows])
+        findings = self._finding_rows()
+        by_doc: dict[int, list[str]] = {}
+        for _cid, doc_id, text in findings:
+            by_doc.setdefault(doc_id, []).append(text)
+        out.execute(f"CREATE VIRTUAL TABLE findings_fts USING fts5(body, title, claim_id UNINDEXED, doc_id UNINDEXED, {tok})")
+        out.executemany("INSERT INTO findings_fts(body, title, claim_id, doc_id) VALUES (?,?,?,?)",
+                        [(text, self._paper_card(doc_id)["title"], cid, doc_id) for cid, doc_id, text in findings])
+        out.execute(f"CREATE VIRTUAL TABLE papers_fts USING fts5(title, summary, findings, note, doc_id UNINDEXED, {tok})")
+        doc_ids = sorted({int(d) for _p, d, *_ in rows} | {int(k) for k in self.docs_meta if str(k).isdigit()})
+        for doc_id in doc_ids:
+            card = self._paper_card(doc_id)
+            out.execute("INSERT INTO papers_fts(rowid, title, summary, findings, note, doc_id) VALUES (?,?,?,?,?,?)",
+                        (doc_id, card["title"], card["summary"], " ".join(by_doc.get(doc_id, [])),
+                         card["applicability_note"], doc_id))
+        out.execute("CREATE TABLE meta(key TEXT PRIMARY KEY, value TEXT)")
+        out.executemany("INSERT INTO meta VALUES (?,?)", [("schema_version", self.FTS_SCHEMA_VERSION),
+                                                          ("passages", str(len(rows))), ("findings", str(len(findings))),
+                                                          ("papers", str(len(doc_ids)))])
+        for table in ("fts", "findings_fts", "papers_fts"):
+            out.execute(f"INSERT INTO {table}({table}) VALUES('optimize')")
+        out.commit()
+        out.close()
+        tmp.replace(target)
+        return {"passages_indexed": len(rows), "findings_indexed": len(findings), "papers_indexed": len(doc_ids),
+                "path": str(target)}
+
+    @staticmethod
+    def _match_expr(query: str) -> str:
+        from .trading_glossary import expand_phrases, expand_query
+        terms = expand_query(query)
+        if not terms:
+            raise BibliographicCortexError("Query has no searchable terms")
+        # frases repetidas = mas peso en BM25 (cada coincidencia de frase suma ademas de sus palabras)
+        phrases = expand_phrases(query)
+        return " OR ".join([f'"{p}"' for p in phrases] * 2 + [f'"{t}"' for t in terms])
+
+    def _fts_rows(self, sql: str, params: tuple) -> list[tuple]:
+        with sqlite3.connect(f"file:{self.fts_path}?mode=ro", uri=True) as con:
+            return con.execute(sql, params).fetchall()
+
+    def search_passages_ranked(self, query: str, limit: int = 6, per_doc: int = 2,
+                               title_weight: float = 3.0) -> list[PassageHit]:
+        """BM25 (FTS5) con expansion bilingue es<->en y diversidad por paper. Arma el indice derivado si falta;
+        si no puede (sin chunks.sqlite) cae a `search_passages`."""
+        match = self._match_expr(query)
+        if not self.ensure_fts_index():
+            return self.search_passages(query, limit=limit)
+        rows = self._fts_rows("SELECT doc_id, title, source_file, body, bm25(fts, ?, 1.0) AS r FROM fts "
+                              "WHERE fts MATCH ? ORDER BY r, rowid LIMIT ?", (title_weight, match, max(50, limit * 20)))
+        hits: list[PassageHit] = []
+        seen: dict[int, int] = {}
+        for doc_id, title, source_file, body, rank in rows:
+            doc_id = int(doc_id)
+            if seen.get(doc_id, 0) >= per_doc:
+                continue
+            seen[doc_id] = seen.get(doc_id, 0) + 1
+            hits.append(PassageHit(doc_id, str(title), str(source_file), str(body), int(round(-rank * 1000))))
+            if len(hits) >= limit:
+                break
+        return hits
+
+    def search_findings_ranked(self, query: str, limit: int = 5) -> list[dict[str, Any]]:
+        """Hallazgos (es) rankeados con la misma expansion bilingue. Requiere el indice derivado."""
+        match = self._match_expr(query)
+        if not self.ensure_fts_index():
+            raise BibliographicCortexError("FTS index unavailable (run tools/ssrn_corpus_bootstrap.py)")
+        rows = self._fts_rows("SELECT claim_id, doc_id, title, body, bm25(findings_fts, 1.0, 2.0) AS r "
+                              "FROM findings_fts WHERE findings_fts MATCH ? ORDER BY r, claim_id LIMIT ?",
+                              (match, max(1, int(limit))))
+        return [{"claim_id": cid, "doc_id": int(d), "title": t, "text": body, "score": round(-r, 6)}
+                for cid, d, t, body, r in rows]
+
+    def find_papers(self, query: str, limit: int = 8, prefer_useful: bool = True) -> list[dict[str, Any]]:
+        """Que papers leer: relevancia (ficha es + titulo en + pasajes en) y, si `prefer_useful`, un empuje
+        explicito y acotado por calidad del paper y aplicabilidad a intradia ES (metadatos del corpus, no evidencia).
+
+        relevance = bm25(ficha) normalizado + 0.5 * media de los 2 mejores pasajes normalizados (ambos en [0, 1]).
+        usefulness = 0.85 + 0.1 * nivel_aplicabilidad + 0.05 * nivel_calidad   (rango 0.85..1.15)
+        """
+        match = self._match_expr(query)
+        if not self.ensure_fts_index():
+            raise BibliographicCortexError("FTS index unavailable (run tools/ssrn_corpus_bootstrap.py)")
+        cards = self._fts_rows("SELECT doc_id, bm25(papers_fts, 3.0, 2.0, 1.5, 0.5) AS r FROM papers_fts "
+                               "WHERE papers_fts MATCH ? ORDER BY r, doc_id LIMIT 200", (match,))
+        passages = self._fts_rows("SELECT doc_id, rowid, body, bm25(fts, 3.0, 1.0) AS r FROM fts WHERE fts MATCH ? "
+                                  "ORDER BY r, rowid LIMIT 600", (match,))
+        card_score = {int(d): -r for d, r in cards}
+        top = max(card_score.values(), default=0.0) or 1.0
+        per_doc: dict[int, list[tuple[float, str]]] = {}
+        for d, _rowid, body, r in passages:
+            per_doc.setdefault(int(d), []).append((-r, body))
+        ptop = max((s for v in per_doc.values() for s, _ in v), default=0.0) or 1.0
+        out = []
+        for doc_id in set(card_score) | set(per_doc):
+            best = sorted(per_doc.get(doc_id, []), key=lambda x: -x[0])[:2]
+            p_rel = (sum(s for s, _ in best) / 2) / ptop if best else 0.0
+            relevance = card_score.get(doc_id, 0.0) / top + 0.5 * p_rel
+            card = self._paper_card(doc_id)
+            usefulness = 0.85 + 0.1 * self._LEVEL.get(card["applicability"], 0) + 0.05 * self._LEVEL.get(card["quality"], 0)
+            score = relevance * (usefulness if prefer_useful else 1.0)
+            out.append({"doc_id": doc_id, "source_id": f"SRC-SSRN-{doc_id:04d}", "title": card["title"],
+                        "score": round(score, 6), "relevance": round(relevance, 6), "usefulness": round(usefulness, 3),
+                        "quality": card["quality"], "applicability_intraday_es": card["applicability"],
+                        "summary": card["summary"][:600], "applicability_note": card["applicability_note"][:300],
+                        "matched_passages": len(per_doc.get(doc_id, [])),
+                        "best_passage": best[0][1][:500] if best else "",
+                        "authority_status": "LITERATURE_CLAIM_UNVERIFIED"})
+        out.sort(key=lambda x: (-x["score"], x["doc_id"]))
+        return out[: max(1, int(limit))]
+
     def custody_manifest(self, archive_sha256: str, created_at_utc: str) -> dict[str, Any]:
         papers = []
         aggregate = hashlib.sha256()
@@ -340,7 +522,7 @@ class SSRNBibliographicCortex:
     def context_pack(self, query: str, limit: int = 6, max_chars: int = 12000) -> dict[str, Any]:
         items = []
         used = 0
-        for hit in self.search_passages(query, limit=limit):
+        for hit in self.search_passages_ranked(query, limit=limit):
             remaining = max_chars - used
             if remaining <= 0:
                 break
