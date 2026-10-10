@@ -98,3 +98,10 @@ P2 requiere censo/política/protocolo revisados; P4 permanece prohibida.
 [AVZVOL: causalidad de zonas y controles](research/AVZVOL_ZONE_CAUSAL_REVIEW_20261010.md):
 revisión de fuente fijada y ejemplos inventados. Pseudo no acredita control sin
 racimo; censo as-of y política de sesiones siguen pendientes, sin outcomes nuevos.
+
+## Uso acotado de datos disponibles, solicitado posteriormente
+
+[Revisión descriptiva de O5 expuesto](research/AVZVOL_EXPOSED_O5_REVIEW_20261010.md): se reutilizaron los seis
+exports existentes con hashes y faltantes explícitos. No es réplica ciega,
+contraste incremental zone-free, certificación de raw ni promoción. No se
+alteran los gates/pins pendientes de P1–P3; P4 permanece prohibida.
