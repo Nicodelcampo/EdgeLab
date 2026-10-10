@@ -1,0 +1,302 @@
+{
+  "metadata": {
+    "scope": "metadata only: fixed catalog and published aggregate plan",
+    "dataset_ref": "nicolasbuttaro/edgelab-es-nq-aggregates-20261009/1",
+    "catalog_ref": "nicolasbuttaro/edgelab-data-catalog/15",
+    "holdout_first_trade_date": "2026-10-01",
+    "catalog_hashes_verified": true,
+    "published_manifest_externally_pinned": true,
+    "leader_policy_declared": "previous session volume",
+    "leader_policy_independently_recomputed": false,
+    "liquidity_mask_causal": false,
+    "liquidity_mask_note": "rules use contract/instrument full-sample medians and current-session minutes; retrospective availability filter, not causal opening-time eligibility",
+    "absolute_root_specific_liquidity_limits_found": false,
+    "tick_level_sanitation_certificates_found": false,
+    "instruments": {
+      "ES": {
+        "verdict": "CON_SALVEDADES",
+        "approved_sessions": 243,
+        "published_sessions": 243,
+        "plan_matches_approved_primary": true,
+        "source_conflict_caveat_sessions": 58,
+        "other_caveat_sessions": 0,
+        "nonpositive_selected_volume_sessions": 0,
+        "backward_expiry_transitions": 0,
+        "contracts": [
+          "ES_03-26",
+          "ES_06-26",
+          "ES_09-25",
+          "ES_09-26",
+          "ES_12-25",
+          "ES_12-26"
+        ],
+        "declared_rolls_metadata_consistent": true,
+        "declared_rolls_reviewed": 5,
+        "prior_complete_calendar_and_all_challenger_volumes_verified": false
+      },
+      "NQ": {
+        "verdict": "CON_SALVEDADES",
+        "approved_sessions": 278,
+        "published_sessions": 278,
+        "plan_matches_approved_primary": true,
+        "source_conflict_caveat_sessions": 91,
+        "other_caveat_sessions": 0,
+        "nonpositive_selected_volume_sessions": 0,
+        "backward_expiry_transitions": 0,
+        "contracts": [
+          "NQ_03-26",
+          "NQ_06-26",
+          "NQ_09-25",
+          "NQ_09-26",
+          "NQ_12-25",
+          "NQ_12-26"
+        ],
+        "declared_rolls_metadata_consistent": true,
+        "declared_rolls_reviewed": 5,
+        "prior_complete_calendar_and_all_challenger_volumes_verified": false
+      }
+    },
+    "status": "BLOCKED_FOR_RESEARCH_QUALITY_AND_LIQUIDITY_UNCERTIFIED",
+    "promotion_allowed": false,
+    "market_price_rows_read": 0,
+    "catalog_inventory_sha256": "dc00e09b440e58d5e8be0918bd3b9de6fdb3da8a748df03f106234d218559efd",
+    "inventory_pin_scope": "downloaded dataset v15 metadata; independent raw-file hash/certification not supplied"
+  },
+  "aggregate_structure": {
+    "scope": "aggregate structural QA only; not raw-tick sanitation or independent liquidity review",
+    "manifest_sha256": "71862f0d2201cddc69db4ee7ba2cb45cb2b65a69980f99377500b54137e1e2c2",
+    "resolver_sha256": "9b21eeff751d4397465fcc6831ea615b7dd401a5605a5997f52c8bfd9248117c",
+    "holdout_first_trade_date": "2026-10-01",
+    "selected_sessions": 521,
+    "price_outcomes_computed": false,
+    "promotion_allowed": false,
+    "research_allowed": false,
+    "liquidity_certified": false,
+    "raw_ticks_audited": false,
+    "files": [
+      {
+        "file": "ES__1s.parquet",
+        "rows": 11604740,
+        "sessions": 243,
+        "sha256": "863847cc3a66a25bd5cb7c02d7c8651fbc997220b578f790e1c82581e1d242c7",
+        "errors": {
+          "null_required_rows": 0,
+          "nonfinite_required_rows": 0,
+          "negative_volume_rows": 0,
+          "nonpositive_trades_rows": 0,
+          "nonpositive_price_rows": 0,
+          "invalid_ohlc_rows": 0,
+          "volume_decomposition_rows": 0,
+          "signed_volume_rows": 0,
+          "invalid_bar_time_rows": 0,
+          "unplanned_contract_rows": 0,
+          "session_timestamp_mismatch_rows": 0,
+          "duplicate_or_unsorted_keys": 0,
+          "nonfinite_quote_rows": 0,
+          "fractional_quote_rows": 0,
+          "nonpositive_quote_rows": 0,
+          "crossed_quote_rows": 0,
+          "session_coverage_mismatch": 0,
+          "catalog_totals_mismatch_sessions": 0
+        },
+        "warnings": {
+          "missing_quote_rows": 0,
+          "locked_quote_rows": 761
+        },
+        "schema_integer_fields_verified": true,
+        "footer_preflight_passed": true
+      },
+      {
+        "file": "ES__30s.parquet",
+        "rows": 667752,
+        "sessions": 243,
+        "sha256": "1c6779fef83b47e18106d55f42fde48a9b0e444d8cae280c7ead49c0de3b0530",
+        "errors": {
+          "null_required_rows": 0,
+          "nonfinite_required_rows": 0,
+          "negative_volume_rows": 0,
+          "nonpositive_trades_rows": 0,
+          "nonpositive_price_rows": 0,
+          "invalid_ohlc_rows": 0,
+          "volume_decomposition_rows": 0,
+          "signed_volume_rows": 0,
+          "invalid_bar_time_rows": 0,
+          "unplanned_contract_rows": 0,
+          "session_timestamp_mismatch_rows": 0,
+          "duplicate_or_unsorted_keys": 0,
+          "nonfinite_quote_rows": 0,
+          "fractional_quote_rows": 0,
+          "nonpositive_quote_rows": 0,
+          "crossed_quote_rows": 0,
+          "session_coverage_mismatch": 0,
+          "catalog_totals_mismatch_sessions": 0
+        },
+        "warnings": {
+          "missing_quote_rows": 0,
+          "locked_quote_rows": 75
+        },
+        "schema_integer_fields_verified": true,
+        "footer_preflight_passed": true
+      },
+      {
+        "file": "ES__60s.parquet",
+        "rows": 334478,
+        "sessions": 243,
+        "sha256": "8c2ce15c850b9da05f060a61921308935600145396ab487ecfadc0e3f9283bbf",
+        "errors": {
+          "null_required_rows": 0,
+          "nonfinite_required_rows": 0,
+          "negative_volume_rows": 0,
+          "nonpositive_trades_rows": 0,
+          "nonpositive_price_rows": 0,
+          "invalid_ohlc_rows": 0,
+          "volume_decomposition_rows": 0,
+          "signed_volume_rows": 0,
+          "invalid_bar_time_rows": 0,
+          "unplanned_contract_rows": 0,
+          "session_timestamp_mismatch_rows": 0,
+          "duplicate_or_unsorted_keys": 0,
+          "nonfinite_quote_rows": 0,
+          "fractional_quote_rows": 0,
+          "nonpositive_quote_rows": 0,
+          "crossed_quote_rows": 0,
+          "session_coverage_mismatch": 0,
+          "catalog_totals_mismatch_sessions": 0
+        },
+        "warnings": {
+          "missing_quote_rows": 0,
+          "locked_quote_rows": 37
+        },
+        "schema_integer_fields_verified": true,
+        "footer_preflight_passed": true
+      },
+      {
+        "file": "NQ__1s.parquet",
+        "rows": 14238435,
+        "sessions": 278,
+        "sha256": "b481e59869dc2618e961a9d3ab80a7e92e9c0b7386e995a1ac6d615d994e4a7f",
+        "errors": {
+          "null_required_rows": 0,
+          "nonfinite_required_rows": 0,
+          "negative_volume_rows": 0,
+          "nonpositive_trades_rows": 0,
+          "nonpositive_price_rows": 0,
+          "invalid_ohlc_rows": 0,
+          "volume_decomposition_rows": 0,
+          "signed_volume_rows": 0,
+          "invalid_bar_time_rows": 0,
+          "unplanned_contract_rows": 0,
+          "session_timestamp_mismatch_rows": 0,
+          "duplicate_or_unsorted_keys": 0,
+          "nonfinite_quote_rows": 0,
+          "fractional_quote_rows": 0,
+          "nonpositive_quote_rows": 0,
+          "crossed_quote_rows": 0,
+          "session_coverage_mismatch": 0,
+          "catalog_totals_mismatch_sessions": 0
+        },
+        "warnings": {
+          "missing_quote_rows": 0,
+          "locked_quote_rows": 1
+        },
+        "schema_integer_fields_verified": true,
+        "footer_preflight_passed": true
+      },
+      {
+        "file": "NQ__30s.parquet",
+        "rows": 767268,
+        "sessions": 278,
+        "sha256": "963226d28f9fd9a133941bbf9ef5671fb838a1e541125a3ef7fe50d80b59cb14",
+        "errors": {
+          "null_required_rows": 0,
+          "nonfinite_required_rows": 0,
+          "negative_volume_rows": 0,
+          "nonpositive_trades_rows": 0,
+          "nonpositive_price_rows": 0,
+          "invalid_ohlc_rows": 0,
+          "volume_decomposition_rows": 0,
+          "signed_volume_rows": 0,
+          "invalid_bar_time_rows": 0,
+          "unplanned_contract_rows": 0,
+          "session_timestamp_mismatch_rows": 0,
+          "duplicate_or_unsorted_keys": 0,
+          "nonfinite_quote_rows": 0,
+          "fractional_quote_rows": 0,
+          "nonpositive_quote_rows": 0,
+          "crossed_quote_rows": 0,
+          "session_coverage_mismatch": 0,
+          "catalog_totals_mismatch_sessions": 0
+        },
+        "warnings": {
+          "missing_quote_rows": 0,
+          "locked_quote_rows": 0
+        },
+        "schema_integer_fields_verified": true,
+        "footer_preflight_passed": true
+      },
+      {
+        "file": "NQ__60s.parquet",
+        "rows": 383930,
+        "sessions": 278,
+        "sha256": "11c64abaf56ad13a7b9d6a41a431d9a147590e3a0b99640cc92d22fc194b50b2",
+        "errors": {
+          "null_required_rows": 0,
+          "nonfinite_required_rows": 0,
+          "negative_volume_rows": 0,
+          "nonpositive_trades_rows": 0,
+          "nonpositive_price_rows": 0,
+          "invalid_ohlc_rows": 0,
+          "volume_decomposition_rows": 0,
+          "signed_volume_rows": 0,
+          "invalid_bar_time_rows": 0,
+          "unplanned_contract_rows": 0,
+          "session_timestamp_mismatch_rows": 0,
+          "duplicate_or_unsorted_keys": 0,
+          "nonfinite_quote_rows": 0,
+          "fractional_quote_rows": 0,
+          "nonpositive_quote_rows": 0,
+          "crossed_quote_rows": 0,
+          "session_coverage_mismatch": 0,
+          "catalog_totals_mismatch_sessions": 0
+        },
+        "warnings": {
+          "missing_quote_rows": 0,
+          "locked_quote_rows": 0
+        },
+        "schema_integer_fields_verified": true,
+        "footer_preflight_passed": true
+      }
+    ],
+    "errors": {},
+    "status": "PASS_AGGREGATE_STRUCTURE_ONLY",
+    "research_status": "BLOCKED_UNCERTIFIED_QUALITY_AND_CAUSAL_LIQUIDITY",
+    "independent_arrow_totals_check": true,
+    "profiler_note": "Bundled generic profiler did not parse nested JSON/Parquet; bounded Arrow schema, null/type/identity/time/order and field checks used explicitly instead.",
+    "first_and_last_timestamp_footer_check_supplement": true,
+    "row_audit_code_sha256": "90d5f694a6b9b7b383135249d303b1e66c7e54109a1ab86b73c4ea404e219943",
+    "current_code_delta": "same full streamed audit plus stricter first_ts footer guard; supplemented independently against all real footers; synthetic regression added",
+    "total_bar_rows": 27996603
+  },
+  "overall_status": "BLOCKED_FOR_CAUSAL_RESEARCH_NOT_SANITIZED_LIQUID_CERTIFIED",
+  "new_certificates_issued": false,
+  "raw_tick_rows_read": 0,
+  "holdout_rows_deserialized": 0,
+  "primary_files_only": true,
+  "private_raw_data_published": false,
+  "causal_research_guard_blocks_current_resolver": true,
+  "limitations": [
+    "aggregate QA cannot certify raw tick sequencing, duplicate identity, complete prior sessions or every intrabar quote",
+    "prior-session leader policy is declared; roll summary consistency checked, full independent challenger/calendar reconstruction unavailable",
+    "full-sample/current-session eligibility mask not causal; 149 approved instrument-sessions carry source conflicts",
+    "root-specific approved liquidity thresholds/certificates not found; no arbitrary thresholds or new approvals fabricated"
+  ],
+  "raw_inventory_metadata": {
+    "primary_files_matched": 18,
+    "scope": "reported by catalog inventory v15 only; no independent raw-file/row audit",
+    "independently_certified": false,
+    "unsorted_events_reported": 0,
+    "crossed_book_reported": 0,
+    "nonpositive_book_reported": 0,
+    "post_holdout_sessions_reported": 0
+  }
+}

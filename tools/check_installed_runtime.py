@@ -4,7 +4,7 @@ import importlib.metadata
 import json
 from pathlib import Path
 
-MODULES = ("edgelab.data.research_data_gate", "edgelab.data.research_session", "edgelab.engine", "edgelab.config", "edgelab.bridge.ticks", "edgelab.bridge.store", "edgelab.bridge.kernels.bigtrap2_port", "edgelab.bridge.indicators.hftzones_universal", "edgelab.data.nt8_contract", "edgelab.data.nt8_reader", "edgelab.data.nt8_timezone", "edgelab.data.event_identity", "edgelab.edge_brain.hippocampus_store", "edgelab.edge_brain.retrieval", "edgelab.edge_brain.typed_registry", "edgelab.edge_brain.schema_validator", "edgelab.funnel.runner", "validation.harness")
+MODULES = ("edgelab.data.research_data_gate", "edgelab.data.research_session", "edgelab.kaggle.aggregate_audit", "edgelab.kaggle.research_access", "edgelab.engine", "edgelab.config", "edgelab.bridge.ticks", "edgelab.bridge.store", "edgelab.bridge.kernels.bigtrap2_port", "edgelab.bridge.indicators.hftzones_universal", "edgelab.data.nt8_contract", "edgelab.data.nt8_reader", "edgelab.data.nt8_timezone", "edgelab.data.event_identity", "edgelab.edge_brain.hippocampus_store", "edgelab.edge_brain.retrieval", "edgelab.edge_brain.typed_registry", "edgelab.edge_brain.schema_validator", "edgelab.funnel.runner", "validation.harness")
 
 
 def main():

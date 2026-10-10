@@ -29,6 +29,15 @@ La [matriz de comparación](../config/module_reconciliation_20261009.json) descr
 
 ## Fase 3 — Datos y ejecución
 
+### Avance Kaggle técnico y QA (2026-10-10)
+
+Port selectivo de PR 68 a main: runner/spec técnico, shards/merge/consumidor y adaptador
+durable bajo imports reales. No se mergea foundation completa. QA del dataset publicado
+confirma estructura/hashes/conservación, pero no certifica ticks ni liquidez causal.
+El guard de research bloquea el resolver v15 por máscara retrospectiva; 149 sesiones
+instrumento-fecha tienen conflictos y falta evidencia/umbrales aprobados. [Contrato](COMPONENT_KAGGLE.md).
+Attach MCP fiable, scheduler, saneamiento/adjudicación y adaptadores económicos siguen pendientes.
+
 ### Avance gate y lector de sesión (2026-10-10)
 
 Port selectivo de PR 65: gate de metadatos reforzado, hashes de límites fijados,
@@ -43,7 +52,7 @@ está resuelto por completo y no se cambia por una declaración global de saneam
 Se integra el alcance acotado del aislamiento de PR 63: recortes por D0/D1, horizonte completo, presupuesto float64 y oráculo sintético. Se fortalece el batching público, split congelado en CLI, compatibilidad inverse/reverse y preservación de outputs. La route del runner queda CPU-only; upstream/features, data gate 65 y paridad GPU end-to-end siguen pendientes. No se mergea 64 ni se cierran 63/64 como totalmente resueltos.
 
 
-Revisar PR 65 (gate no conectado a todos los consumidores), 63 (aislamiento de arrays y parity), y la infraestructura de 64 separada de campañas. Adaptar PR 68 a la base elegida, con preflight, shards por contrato, merge fijo y evidencia verificable. El título/body de 68 está desactualizado respecto de su evidencia final: reconciliarlo antes de usarlo como estado.
+Revisar PR 65 (gate no conectado a todos los consumidores), 63 (aislamiento de arrays y parity), y la infraestructura de 64 separada de campañas. Infra técnica de PR 68 portada selectivamente; no cerrar el PR como totalmente resuelto ni certificar fuentes por el port. Su título/body ya distingue publicación histórica de integración.
 
 ## Fase 4 — Memoria, bibliografía y Brain
 

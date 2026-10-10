@@ -312,30 +312,38 @@
     {
       "id": "kaggle-execution",
       "name": "Ejecución Kaggle y agregados",
-      "purpose": "Resolver spec, datasets y shards por contrato; verificar evidencia.",
-      "category": "integration_pending",
-      "location": "other_branch",
+      "purpose": "Materializar agregados técnicos offline, auditar evidencia y bloquear research sin calidad/liquidez causal revisada.",
+      "category": "experimental",
+      "location": "local",
       "paths": [
-        "edgelab/kaggle"
+        "tools/kaggle_spec_v2.py",
+        "tools/audit_kaggle_aggregates.py",
+        "tools/kaggle_hippocampus_ingest.py",
+        "edgelab/kaggle/aggregate_audit.py",
+        "edgelab/kaggle/research_access.py",
+        "docs/COMPONENT_KAGGLE.md"
       ],
       "inputs": [
         "spec y catálogo fijados",
         "datasets aprobados"
       ],
       "outputs": [
-        "agregados 1s/30s/60s",
-        "manifest",
-        "attestation",
-        "zip y hashes"
+        "resultados técnicos, attestation/manifest/zip+SHA",
+        "reporte QA sin valores de precio",
+        "evidencia técnica durable no adjudicada; no certificados/trials"
       ],
       "dependencies": [
-        "Kaggle privado",
-        "catálogo versionado"
+        "entorno CPU con PyArrow/Pandas",
+        "catálogo y fuentes privadas fijadas",
+        "aprobación independiente antes de research"
       ],
       "limitations": [
-        "La infraestructura está en PR 68, no integrada en esta base; adaptadores económicos/scheduler universal no se declaran terminados."
+        "Infra v2 técnica local; dataset v15/v1 NO certificado para research causal.",
+        "Catálogo con máscara retrospectiva y conflictos de fuentes; PASS de barras no certifica ticks.",
+        "Attach MCP fiable/scheduler remoto no implementados; generación no prueba mounts.",
+        "Research guard opt-in exige pins/revisión/límites externos y autoridad sobre todas las sesiones del archivo, incluyendo restricciones D2."
       ],
-      "entrypoint": null,
+      "entrypoint": "python tools/audit_kaggle_aggregates.py --help",
       "related_prs": [
         68,
         24

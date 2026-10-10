@@ -18,6 +18,7 @@ Este archivo organiza el acceso al proyecto. No sustituye specs congeladas, cont
 - No promover claims bibliográficos, paridad, screening o supervivencia parcial como edge confirmado.
 - Preservar negativos, invalidaciones, manifests y evidencia. No borrar historia para ordenar.
 - No mergear foundation entera ni duplicar módulos que ya se portaron. Comparar semántica y tests.
+- Kaggle: `docs/COMPONENT_KAGGLE.md` es la entrada. `approved` del resolver y PASS técnico no certifican saneamiento/liquidez; v15 bloqueado para research causal. No usar el loader técnico como bypass del guard.
 - Para datos: consultar `docs/DATA_CONSUMER_MATRIX.md`. El gate/lector nuevo es opt-in; no protege rutas legacy ni autentica permisos. No usar hashes autoemitidos como aprobación.
 - El catálogo no ejecuta operaciones y no es un control de seguridad de datos.
 - El trabajo local de ccbus y planeación autónoma no está pusheado: no inferir su implementación ni crear un reemplazo.

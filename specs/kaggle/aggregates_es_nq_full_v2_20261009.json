@@ -1,0 +1,43 @@
+{
+  "schema": "edgelab_kaggle_spec_v2",
+  "run_id": "edgelab-aggregates-es-nq-20261009",
+  "mode": "aggregate",
+  "hypothesis": "Verificar conservación de trades/volumen y disponibilidad causal de barras; no medir retornos ni P&L.",
+  "metrics": [
+    "input_integrity",
+    "bar_conservation"
+  ],
+  "verdict_rule": "PASS_INTEGRITY_NOT_EDGE",
+  "holdout_first_trade_date": "2026-10-01",
+  "frequencies_seconds": [
+    1,
+    30,
+    60
+  ],
+  "max_shards": 4,
+  "requests": [
+    {
+      "instrument": "ES",
+      "start": "2025-07-01",
+      "end": "2026-09-30"
+    },
+    {
+      "instrument": "NQ",
+      "start": "2025-07-01",
+      "end": "2026-09-30"
+    }
+  ],
+  "catalog": {
+    "ref": "nicolasbuttaro/edgelab-data-catalog/15",
+    "sha256": {
+      "edgelab_data.py": "0211e190f64437e20e5cdee3523fc86b155240b3613d7ed48767da73982cb3e8",
+      "RESOLVER.json": "9b21eeff751d4397465fcc6831ea615b7dd401a5605a5997f52c8bfd9248117c"
+    }
+  },
+  "dataset_versions": {
+    "edgelab-nt8-historical-missing-20261001": "nicolasbuttaro/edgelab-nt8-historical-missing-20261001/1",
+    "edgelab-ticks-es-nq-2026q3-ext": "nicolasbuttaro/edgelab-ticks-es-nq-2026q3-ext/1",
+    "edgelab-ticks-nq-preholdout": "nicolasbuttaro/edgelab-ticks-nq-preholdout/6",
+    "edgelab-ticks-nt8-reexport-20261005": "nicolasbuttaro/edgelab-ticks-nt8-reexport-20261005/2"
+  }
+}
