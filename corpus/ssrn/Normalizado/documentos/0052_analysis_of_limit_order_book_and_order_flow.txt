@@ -1,0 +1,5997 @@
+Analysis of Limit Order Book and Order Flow 
+Nuttawat Visaltanachoti* 
+Department of Commerce, Massey University,  
+Private Bag 102 904, North Shore Mail Centre, 
+Auckland, New Zealand  
+Email: N.Visaltanachoti@massey.ac.nz 
+and  
+Charlie Charoenwong and David Ding  
+Division of Banking and Finance, Nanayang Business School, 
+ Nanyang Technological University, Singapore  
+ 
+“A draft version, please do not quote without permission” 
+Abstract 
+This paper extensively employs the order and trade data to analyze the shape of limit 
+order book and the behavior of strategic order submission.  The order book of stocks 
+exhibits weakly convex pattern on the bid side due to wide price spreads away from 
+the market.  This characteristic of liquidity is particularly strong for the small stocks 
+with large minimum tick size.  In addition, the same order type occurs more 
+frequently after the event had occurred than it would unconditionally.  This diagonal 
+effect is not fully explained by the order splitting.  Moreover, the determinants driving 
+order aggressiveness include bid-ask spread, market depths, other price spreads and 
+depths away from the market, and market sentiment.  Responding to the limit order 
+book movement, an order aggressiveness revision behavior of market order traders is 
+opposite to limit order traders, and contrarian traders react stronger than momentum 
+traders.   
+ 
+Keywords: limit order book, order flow, Thailand 
+JEL Classifications: G10; G82 
+Version: July, 2003 
+The usual disclaimer applies. 
+___________________ 
+*Corresponding Author 
+ 
+ 
+1
+
+Analysis of Limit Order Book and Order Flow 
+ 
+1 Introduction 
+A limit order book represents the remaining orders standing at various price 
+limits after netting for the execution and cancellation.  Many exchanges around the 
+world have operated under the pure limit order driven system including Euronext, 
+Tokyo Stock Exchange, HongKong Stock Exchange, Australian Stock Exchange, for 
+instance.  The NYSE recently has begun to disclose the real-time specialist’s order 
+book and all liquidity quote information through the membership subscription since 
+June 13, 2003.  Bondarenko and Sung (2003) developed the model showing the 
+impacts of NYSE’s move to reveal the real-time specialist’s order book.  The 
+transparency of specialist’s order book could result in a reduction in the specialist’s 
+participation and profits, a reduction in the bid-ask spreads, an increase in trading 
+volume, and a reduction in the price volatility.  These suggest that the order book 
+information beyond the best quote would affect the price discovery process and the 
+behavior of traders.   
+The shares standing on the order book may not necessarily be distributed 
+uniformly.  In the presence of informed trading, liquidity providers are concerned 
+about the picked off risk, so the depths of the order book would be thin at the market 
+compared with other depths away from the market.  Moreover, a tick size rule could 
+affect the shape of order book.  The small tick size might not be enough compensation 
+for the cost of liquidity provision.  As a result, the order book is relatively thin at the 
+market.  Interestingly, past literature on the pure order driven market do not report the 
+same shape of order book.  Biais, Hillion, and Spatt (1995) found that the order book 
+on the Paris Bourse is weakly concave, while Niemeyer and Sandas (1993) showed 
+that the order book on the Stockholm Stock Exchange (SSE) is convex.  Al-Suhaibani 
+and Kryzanowski (2000) reported that the order book of Saudi Stock Exchange (SSM) 
+did not significantly deviate from linearity.  The concavity and the convexity of order 
+book refer to the degree of the curvature of the graph, which plots the depth at each 
+quote in the order book on the x-axis against the distance of price limit from the quote 
+midpoint on the y-axis.  The convexity is associated with the availability of liquidity 
+and the small price spreads at the market compared to further away from the market.  
+So far the determinants of the shape of limit order book are not yet fully understood.   
+Hence, this study exploits the order and trade data on the Stock Exchange of 
+Thailand (SET) to recreate the limit order book and analyze its shape.  The findings 
+show that the cross-sectional order book of the SET is weakly convex on the bid side 
+of order book while the ask side is uniformly distributed.  Further investigation on the 
+determinants of the shape of order book reveals that a difference between the 
+curvature of order book between the Paris Bourse and the SET could arise from the 
+higher minimum relative spread, and the higher asymmetric information on the SET.  
+On average, the tick size on the SET is larger than those in the Paris Bourse, SSE and 
+SSM.  Moreover, the order books of small and high price volatility firms are more 
+concave compared to large and low price volatility firms.  
+Biais et al (1995) report that the order sequences do not arrive at random, but 
+instead the most likely incoming order type would be the same order type that just 
+arrived.  This phenomenon is named as the diagonal effect, which may be a result of 
+an order splitting, a trading imitation, and a same response to the information.  The 
+diagonal effect is prevalent on the SET.  We computed the time interval between 
+orders and it showed that the order splitting should not be the sole reason of the 
+diagonal effect.     
+ 
+2
+
+Parlour (1998) used the one-tick dynamic model in which the placement 
+decision of trader is influenced from the past order, and the probability of execution 
+and the cost of execution are endogeneous to show that the order flow patterns could 
+exist even in absence of asymmetric information.  Ranaldo (2003) has reported that 
+not all of his findings are consistent with the Parlour (1998)’s predictions.  For 
+example, Parlour (1998)’s model predicted that the probability of successive limit buy 
+order, Pr[LBt|LBt-1], should be less than the probability of limit sell order followed by 
+limit buy order, Pr[LBt|LSt].  Intuitively, after the limit sell order arrival, there is no 
+change in the length of the queue on the bid, while after the limit buy order arrival, 
+the length of the queue on the bid is longer.  Consequently, as execution probability 
+falls, so a limit buy order arrival is less likely to follow the limit buy order compared 
+to follow the limit sell order.  Interestingly, Ranaldo (2003) find the opposite results 
+on the Swiss Stock Exchange (SWX).  
+The study shows that the order sequences on the SET are different from the 
+predictions of Parlour (1998)’s model which does not take into account the effect of 
+asymmetric information.  During the period of study, the asymmetric information on 
+the SET is high because Thailand underwent the 1997 currency crisis, where many 
+financial institutions were shut down.  High adverse selection cost affects the 
+placement strategy.  The SET has a different order flow patterns from the findings of 
+Ranaldo (2003) on the SWX, which was in the bullish market.  This might indicate 
+the effect of market sentiment to the order flow pattern. 
+Therefore, we further conducted an analysis on the association of the state of 
+limit order book, market sentiment, and the order aggressiveness.  In the related work, 
+Griffiths et al (2000) and Ranaldo (2003), they focused on the impact of bid-ask 
+spread and market depth on the order aggressiveness decision.  This study however 
+aims to show that, not only the best quote, the price spread and depth away from the 
+market also influence the placement strategy of trader.  We found that the same 
+spread, the relative price spread between price at the best quote and the price at the 
+third quote, are positively associated with the order aggressiveness because trader 
+pays a small cost to move up the queue in the limit order book.  Order aggressiveness 
+is positively associated with the same depth away from the market, which is 
+consistent to the crowding out effect that the liquidity providers compete against each 
+other to increase their execution probability.  Moreover, limit order traders and market 
+order traders oppositely response to the change in the state of limit order book.  When 
+the bid-ask spread is wider, limit order traders have the higher likelihood to submit 
+the more aggressive order because of the higher compensation, while market order 
+traders are likely to submit less aggressive order due to the higher execution cost.   
+Furthermore, the study compared the behavior of buyers and sellers under the 
+bullish and bearish period.  We showed that the buyers (sellers) in the bearish 
+(bullish) market response to the change of state of limit order book stronger than the 
+buyers (sellers) in the bullish (bearish) market.  Moreover, the buyers in the bullish 
+market are more sensitive to the marginal change of order book components than the 
+sellers in the bearish market.  This is consistent to the findings that buyers are most 
+likely to be more informative than the sellers as documented in Griffiths et al (2000) 
+and Saar (2002). 
+The rest of the chapter is organized as follows.  Section 2 reviews relevant 
+literatures and formulates the hypotheses.  Section 3 presents the descriptive statistics 
+of trades, orders, and limit order book, and shows the shape of limit order book and its 
+intraday pattern.  Section 4 examines the order sequence, order flow symmetry and 
+determination of order aggressiveness. Section 5 summarizes the chapter. 
+ 
+3
+
+ 
+2 Literature Review and Hypotheses  
+ 
+2.1 Shape of Limit Order Book 
+Biais, Hillion, and Spatt (1995) examined the spread and the depth between 
+adjacent quotes in the order book on the Paris Bourse.  They found that the spreads, 
+excluding the bid-ask spread, on each side of the book were relatively constant, but 
+the bid-ask spread was more than twice as large as other spreads.  Furthermore, the 
+depth at the market was lower than the depth away from the market.  Market depth on 
+the Paris Bourse only reflected a small portion of overall liquidity, and the other 
+depths away from the market were not significantly different.  Al-Suhaibani and 
+Kryzanowski (2000) found that the shape of order book of the SSM was weakly 
+concave near the second quote and convex thereafter.  They reasoned that the order 
+book at the market had a more pronounced adverse selection problem, resulting to a 
+wide inside spread and small depth at the market.   
+Niemeyer and Sandas (1993) nonetheless reported the nonlinearity price 
+schedule on the SSE.  The average quoted volume was higher near the market and 
+lower volume away from the market on the bid and ask side.  Unlike the Paris Bourse 
+and the SSM, the spread at the market was lower than other spreads away from the 
+market.  This result showed that the price schedule of Paris Bourse was weakly 
+concave, a narrow spread and large volume away from the market, but the order book 
+of the SSE is convex, a wide spread and small volume away from the market.  
+Niemeyer and Sandas (1993) argued that the opposing result between the SSE and the 
+Paris Bourse came from a large minimum tick size on the SSE.  Swedish and NYSE 
+stocks have a similar minimum relative spread.  Most Swedish stocks trade at prices 
+between SEK 20 and SEK 500 and have minimum relative spread between 0.20 and 
+2.5 percent, while Harris (1991) reported that most NYSE stocks traded at prices 
+between 5 USD and 50 USD, implying a minimum relative spread of 0.25 and 2.5 per 
+cent.  However, tick sizes at the most relevant price range on the Paris Bourse are 
+only a tenth of ones on the Stockholm Stock Exchange.   
+According to Harris (1991, 1994), the minimum tick size reflects a trade-off 
+between the costs and benefits of nonzero tick.  The minimum tick size causes the 
+discrete price spreads and increases the execution cost of the liquidity demanders.  
+However, the minimum tick size motivates limit order traders to provide the liquidity 
+by enforcing a minimum compensation, and order precedence rules for the liquidity 
+suppliers.  Furthermore, the minimum tick size simplifies the information sets and 
+decreases the negotiation cost.  
+The limit order traders provide the liquidity and earn the spread to offset for an 
+asymmetric information risk when they trade against an informed trader.  The limit 
+order traders may choose to provide less liquidity at the market to avoid being 
+“picked-off” by the more informed trader. Consequently, the high information 
+asymmetry results in the concave price schedule with the wide spread and small 
+volume at the best quote.  Hence, the large tick size should be attractive to the 
+liquidity trader in the strict time priority limit order market because the limit order 
+trader receives a higher payment for liquidity supplying and compensates for the 
+adverse selection cost.  Harris (1994) showed that the depth is positively associated 
+with the minimum tick size.  As a result, the SSE has a narrow bid ask spread and 
+large market depth which is opposite to the Paris Bourse.  This argument is also 
+applied to the SSM, which has a relatively lower minimum tick size similar to the 
+SSE.  Al-Suhaibani and Kryzanowski (2000) showed that a cross sectional mean and 
+ 
+4
+
+median transaction price are SR 196.07 and SR 111.81, while the minimum tick size 
+for all stocks on the SSM is SR 1, which is approximately transformed into a 
+minimum relative spread of 0.51 per cent and 0.89 per cent of trade price. 
+This paper aims to provide further evidence regarding the impact of 
+asymmetric information, and minimum tick size to the curvature of the order book. 
+During a period of study, the 57% of total trades on the SET are transacted between 
+Baht 10 and Baht 50 baht or a minimum relative spread of 0.50% to 2.5%.  The mean 
+and median of trade price of 141 stocks are Baht 50.75 and Baht 24.08, with the 
+cross-sectional minimum relative spread of 0.99 per cent and 1.04 per cent 
+respectively.  Comparatively, the observed minimum relative spread on the SET is 
+wider than many other limit order markets.  Angel (1997) reported that the relative 
+tick size for 2,517 stocks covered by Morgan Stanley Capital International’s 
+perspective was 0.38%.  Comparing to the SET, New Zealand is the only other 
+country out of 22 countries where its stocks have the larger relative tick size of 
+1.83%.  Consequently, this study aims to shed some light on the role of asymmetric 
+information, and the minimum tick size to explain the shape of the limit order book.  
+The order book characteristic on the SET should be consistent with the following 
+hypotheses.   
+ 
+Hypothesis 1: Bid-ask spread is wider than other spreads away from the market. 
+ 
+Hypothesis 2: Depth at the best quote is thinner than the depth away from the market. 
+ 
+Hypothesis 3: Convexity of price schedule of the order book is positively associated 
+with the size of minimum tick size and negatively associated to degree of asymmetric 
+information.  
+ 
+2.2 Intraday Variation of Order Book 
+It is well-known that a bid ask spread on the NYSE exhibits a U-shape pattern 
+as shown in McInish and Wood (1992).  An intraday variation of spread infers the 
+variation of either an inventory or an asymmetric information cost.  As mentioned by 
+Madhavan (1992), trade incorporates information into price, so adverse selection 
+problem should be alleviated over the trading day.  Therefore, the portion of 
+asymmetric information cost included in the bid-ask spread should decline, and 
+consequently makes the total bid-ask spread fall throughout trading day.  However, a 
+higher spread in NYSE at the closing reflects the monopolist power of a specialist.  
+Chan, Chung and Johnson (1995) compared the intraday pattern of spreads for 
+actively traded CBOE options and their NYSE traded underlying stocks.  They found 
+that while both options and their underlying stocks have a wide spread at the open, the 
+option spreads are narrowest at the close while stock spreads become wide again.  
+Such results arise from the differences in the underlying market architecture, where 
+the CBOE has competing market makers whereas the NYSE has monopolist market 
+makers.  Market makers use spread to manage an imbalance in their inventory by 
+increasing bid or lowering ask quotes to attract orders from other dealers thereby 
+decrease the inside spread.  Chan, Christie and Schultz (1995) also found that the bidask spread for NASDAQ stocks declines throughout the day.  This leads to the 
+following hypotheses. 
+Depth in the order book reflects the level of liquidity to trade. Liquidity 
+providers, although receive spread to compensate for their inventory costs and the 
+adverse selection risk, usually lost when they trade with the informed traders.  
+ 
+5
+
+Consequently, the depth at different price limits in an order book should increase 
+throughout the trading day because the degree of asymmetric information declines 
+over the course of trading.  The following hypotheses should hold.   
+ 
+Hypothesis 4: Spread is the widest at the opening and continually declines to the 
+narrowest at the closing.   
+ 
+Hypothesis 5: Depth is the smallest at the opening and continually increases to the 
+largest at the closing.   
+ 
+Hypothesis 6: Length of order book is the shortest at the opening and continually 
+increases to the longest at the closing. 
+ 
+2.3 Order Sequences  
+Previous studies have documented a conditional order flow pattern so called a 
+diagonal effect, referring to a higher likelihood to observe a given type of order after 
+the event just occurred than it would be unconditionally.  After an arrival of limit buy 
+order submitted at the best bid price, an incoming order is most likely to be the same 
+order type, for instance.  This result was firstly documented in Biais, Hillion and Spatt 
+(1995) in Paris Bourse, followed by Al-Suhaibani and Kryznowski (2000) on the 
+Saudi Stock Market.  Biais, et al (1995) offered three explanations to the diagonal 
+effect: a strategic order splitting, a trade imitation, or a similar reaction to information 
+event.  These explanations apply to the continuation in the large marketable limit 
+order and new orders at or away from the quotes on one side of the book.  Diagonal 
+effect of a new limit order within the quote reflects the front running among liquidity 
+suppliers.  It is very likely to observe the diagonal effect on the SET.    
+ 
+Hypothesis 7: Diagonal effect is prevalent across the market/limit and buy/sell 
+orders.  
+ 
+A liquidity trader may prefer using a series of small orders to one large order 
+to reduce the price impact.  Insiders split their orders to minimize an informational 
+disclosure.  When splitting order, traders pause after submitting their orders and wait 
+either for additional liquidity or wait to conceal their intentions.  After waiting for the 
+re-filled liquidity, they may resume the order submission if the expected benefit 
+exceeds the cost of doing so, or until the private information is fully incorporated to 
+the price.  Biais, et al (1995) therefore proposed that long order time elapse during the 
+period of wide spread would be consistent with the splitting hypothesis, and the short 
+order time elapse would be consistent with trading replication, and similar reactions.  
+In addition, Hedvall and Niemeyer (1996) employed the dataset that includes dealer 
+identities to investigate the order flows dynamic on the Helsinki Stock Exchange.  
+Their empirical results are in line with an order splitting hypothesis more than a 
+strategy replication. 
+The diagonal effect may occur because of trade imitation, in which a trader 
+follows a strategy used by other traders, who are presumed to be informed traders.  
+On the emerging stock market such as the SET, foreign investors are usually 
+perceived to have superior information compared to local investors.  Froot, 
+O’Connell, and Seasholes (2001) found that daily international portfolio flows in 44 
+countries have a strong association with the past return.  Moreover, local emerging 
+stock markets are positively associated to the inflow of the fund.  Choe, Kho, and 
+ 
+6
+
+Stulz (1999) examined positive feedback trading and herding by foreign investors 
+before and after the period of the 1997 Korea's economic crisis.  Although foreign 
+investor exhibit a positive feedback effect prior to the crisis, they find that the herding 
+falls during the crisis and the market adjusted quickly and efficiently to large sales by 
+foreign investors. 
+A diagonal effect could be a result of a same reaction to an information event. 
+Wermers (1999) showed that the degree of herding among institutional investors is 
+higher to buy (sell) stocks in the US that have experienced extreme positive (negative) 
+returns in the previous quarter.  Al-Suhaibani and Kryznowski (2000), although could 
+not observe traders’ identification, inferred the proportion of the same trader 
+participated in two subsequent events from the order originated from the same 
+package, which should belong to one trader.  They found that this proportion accounts 
+for 28.94% of all the order flow events, and the percentages of the same trader 
+subsequent events are larger for most events, which is consistent with the order 
+splitting hypothesis.  Furthermore, they showed that the hidden order also has a 
+diagonal effect.  This result suggests that a similar reaction to information events is 
+the explanation of diagonal effect because the hidden order is unobserved so it is 
+impossible to mimic a hidden order placement.   
+The database does not contain a trader’s identification that would allow for a 
+direct test of the trade imitation and the similar response of trader.  However, a 
+comparison of the conditional order time interval could shed some light on the order 
+splitting hypothesis.  Informed traders are likely to trade fast, break a large order to 
+conceal themselves, and submit aggressive orders to increase the probability of 
+execution to get the most out of their private information.  Hence, the time interval 
+conditional on the less aggressive order should be longer than the time interval 
+conditional on the aggressive order.  Uninformed traders decide to break the order 
+volume to reduce the price impact, so the order time interval conditional on the wide 
+spread should be longer than unconditional time because they are waiting for an 
+additional liquidity. 
+ 
+Hypothesis 8: The order submission sequence exhibits the diagonal effect.  
+ 
+Hypothesis 9: The order waiting time conditioned on the small bid-ask spread and 
+the arrival of aggressive order event are smaller than the order waiting time 
+conditioned on the large bid-ask spread and the arrival of non-aggressive order 
+event.  
+ 
+2.4 Determinants of Order Aggressiveness 
+Under the market maker system, traders only decide whether to trade at the 
+single price quoted by the market maker and how many shares to trade.  However, the 
+limit order market allows traders to place the order price and order volume that suits 
+their strategy.  The order submission decision in the limit order market therefore 
+becomes a very important issue for the trader.  An optimal trading strategy depends 
+on several things including the state of limit order book, the order flows, the 
+sentiment, and the utility function of investor.   
+Seppi (1997) applied a static games model to investigate the creation of limit 
+order book from a competition between the monopolist specialists on the NYSE, limit 
+order traders, and floor-traders, and how market order traders behave in response to 
+such relationship.  Parlour (1998) pointed out that the likelihood of limit order 
+execution depends both on the state of the book and the expected market orders over 
+ 
+7
+
+the rest of the day.  She used a dynamic model of order book in a one-tick market, 
+where a trader determines a placement strategy conditional on the previous order 
+submission and the state of the limit order book to show that, even in the absence of 
+asymmetric information and a random arrival of trader types, several order sequence 
+patterns still exist.  She argued that the existence of order sequence patterns can be 
+explained by a “crowding out” mechanism, which arises from the price and priority 
+rule.  Specifically, a volume at each price in the limit order book represents the queue 
+of limit order traders according to the arrival time.  After a trader places a buy (sell) 
+limit order, a subsequent buy (sell) limit order trader would find it unattractive to 
+place the limit buy (sell) order at the same price or lower (higher) price because a long 
+queue results in a lower chance of execution.  Handa, Swartz, and Taiwari (2003) 
+used the thickness of the bids and offers to proxy for the proportion of high and lowvaluation traders.  When the buy competition is higher from the higher proportion of 
+high-value investors, the uncertainty of a limit buy order execution declines, and 
+market buy order is more attractive.  The crowding out mechanism infers the 
+following hypothesis.      
+ 
+Hypothesis 10: Order aggressiveness is positively associated with the thickness of 
+market depth on the same side of the book, and negatively associated with the 
+thickness of market depth on the opposite side of the book. 
+On one hand, bid-ask spread is the cost for trader who demands an immediate 
+transaction.  On the other hand, limit order trader receives the bid-ask spread to 
+compensate for his/her inventory and adverse selection cost.  Wider bid-ask spread 
+therefore encourages both liquidity and informed trader to use limit order.    
+ 
+Hypothesis 11: Bid-ask spread is negatively associated with the order 
+aggressiveness.  
+ 
+Unlike the trading in the market maker system, where trader only observes the single 
+quote of spread and depth, the trader in the limit order market can observe more than 
+a single quote.  For example on the Paris Bourse, Swiss Stock Exchange, or 
+Australian Stock Exchange, the trader is able to see the whole limit order book.  
+However, in some limit order markets, the electronic limit order book is not fully 
+visible to investors such as the SET which allows the three best bids and asks, the 
+Saudi Stock Exchange allows two best bids and asks.  The trader in the limit order 
+market is likely to make use of information beyond the bid-ask spread and market 
+depth to decide the submission strategy.  Harris (1994) pointed out that due to a 
+discrete tick size and time priority, there is a first mover advantage.  Additionally, due 
+to the crowding out and front-running mechanism, limit order traders compete against 
+each other to move up in the queue.  Consequently, the following hypotheses should 
+hold.  
+ 
+Hypothesis 12: Displayed depths which are away from the best quote in both sides of 
+the order book are positively associated with the order aggressiveness.     
+ 
+Hypothesis 13: Displayed price spreads excluding bid-ask spreads in both sides of 
+the book are positively associated with the order aggressiveness. 
+ 
+Past literatures show that different traders utilize different placement 
+strategies.  Griffiths et al. (2000) compared the excess returns on stocks of executed 
+ 
+8
+
+orders according to the degree of aggressiveness over three-months after execution.  
+They found that the information-based trades are more likely to associate with the 
+aggressive buyers than sellers.  Similarly, Saar (2001) showed that institutional 
+trading on the buy side of the book is more likely to be information-motivated trade.  
+Hedvall, Niemeyer, and Rosenqvist (1997) pointed out that while the order 
+submission of buyers and sellers are symmetrical in general, the order submission for 
+the most aggressive traders of buyers and sellers are not symmetrical.  Large buy 
+trades are more often split into smaller trades than sell trade.   
+Ranaldo (2003) found that the market order traders and limit order traders 
+have opposite responses to changes in the bid-ask spread, market depth, time elapsed 
+and volatility.  Limit (Market) order traders become more (less) aggressive when the 
+bid-ask spread is wide, and the opposite market depth is thick, and the stock price is 
+volatile.  However, when the same-side market depth is thick and the order wait time 
+is long, the limit (market) order traders are less (more) aggressive. Ranaldo (2003) 
+further argued that a market sentiment should play a significant impact on the order 
+placement strategy.  He found that during the bullish (bearish) market, sellers (buyers) 
+become less concerned about the bid (ask) side of the order book.  In addition, the 
+strong association between buyers’ (sellers’) aggressiveness and spread occur during 
+the bearish (bullish) markets.  In addition, buyers are more responsive to adjust their 
+placement strategy with respect to the available liquidity supply then the sellers.   
+This study examines how the buyers and sellers adjust their order 
+aggressiveness submission with respect to the limit order book both at the best quote 
+and the displayed quote during the bullish and bearish markets.  We compare the 
+responsiveness of momentum traders and contrarian traders to the change of limit 
+order book.  When the price is increasing, contrarian traders are the sellers, and when 
+the price is falling, contrarian traders are buyers.  As mention above, momentum 
+traders could be the noise traders who imitate the submission strategy of informed 
+traders or the uninformed index traders who replicate the index movement.  In 
+contrast, Griffith et al. (2000), who concluded that buyers are more informative than 
+sellers, examined the Toronto Stock Exchange during June to September 1997, and 
+the return of TSE 200, which is comprised of small and mid cap stocks, is 18.09%, 
+while the large-cap TSE 100 index gains 8.45%.  In other words, the finding suggests 
+that momentum traders are more informed.  Uninformed trader should respond 
+stronger to the change of limit order book than the informed trader because it is the 
+only information they have.  As discussed above, we expect the following hypotheses. 
+ 
+Hypothesis 14: Buyers and Sellers have different order placement strategies with 
+respect to the state of limit order book and the market sentiment. 
+ 
+Hypothesis 15: Limit order traders and market order traders oppositely respond to 
+the change in limit order book.  
+ 
+Hypothesis 16: Contrarian traders are more responsive to the change in limit order 
+book than the momentum traders.  
+ 
+3 Analysis of Limit Order Book  
+ 
+3.1 Data Description  
+We use the data of the trade and order file of all listed stocks on the SET 
+during the year 1997.  The limit order book of illiquid securities is more likely not as 
+ 
+9
+
+informative as the actively traded security.  As shown in Ding and Chareonwong 
+(2003), the bid-ask spreads of thinly traded futures contract computed from days with 
+trades are more informative than those computed from days without trades.  Hence, 
+we require that the selected stocks must have at least 120 trading days with a 
+minimum of 20 trades a day in order to ascertain that a limit order book consists of at 
+least the bid-ask quote in most of the trading period.  These criteria reduce the data 
+from 457 stocks to 141 stocks.   Although the number of selected stocks consists of 
+only less than one-third of the whole number of stocks, the market capitalization and 
+trading volume of the selected stocks comprises of 80.57% and 83.75% of the whole 
+stock market during the year 1997 respectively.  Past studies on the pure limit order 
+market explored a small number of stocks, covered a short period of time, or only 
+examined a specific part in the order book especially the quote at the market.  Biais, 
+Hillion and Spatt (1995) performed an early study on the price schedule of the limit 
+order book and the successive order flow pattern on the Paris Bourse.  Their dataset 
+covered 19 trading days of 40 stocks listed on the CAC 40 index; Al-Suhaibani and 
+Kryznowski (2000) and Niemeyer and Sandas (1993) performed a similar analysis 
+with only 56 stocks and 30 stocks on the Saudi Stock Market (SSM) and on the 
+Stockholm Stock Exchange (SSE) respectively. 
+ 
+ [Insert Table 1 here] 
+ 
+Table 1 Panel A compares the cross-sectional statistics of trades in the 
+morning and afternoon session.  On average, there are 333 orders arrival a day, 
+equivalent to 1.83 million shares, or 65 million baht.  Trading volume is 
+approximately half of order volume in terms of number of trade, and only one-fourth 
+in term of shares traded.  Large stocks have higher trading volume and lower return 
+volatility compared with small stocks.  The number of buy order is almost equal to 
+number of sell order.  About one-third of total order results in an immediate 
+execution.  The proportion of sell and immediate executed orders are higher for small 
+stocks.  In addition, the price conditional order, e.g. fill or kill, immediate-or-cancel, 
+at the market opening, is only 0.14% of total order.  Canceled orders comprise of 
+21.17% of total order, and most of them are canceled by firm, not by the ASSET.  
+Large stocks have higher canceled order than small stocks.   
+In the panel B of Table 1, the limit order book on both bid and ask quotes on 
+the SET is prevalent 92.27% of the trading time, and the non-empty order book is 
+likely to occur in a large stock.  Saudi Stock Market however has only 1.51% and 
+1.19% of total trading time when the first best bid or ask is unavailable.  The relative 
+spread is 3.38%, while the cross-sectional average of minimum relative spread is 1%.  
+The absolute spread is 1.13 baht.  Large stocks have lower relative spread, but higher 
+absolute spread.  This is because large stocks usually have a higher price and larger 
+minimum tick size, measured in baht.  The market depth, displayed depth, and total 
+depth is higher for large stock compared to small stock.  The length of book, length of 
+bid and ask side are 13.90, 6.40, and 7.50 respectively.  Large stocks have longer 
+length of book in both bid and ask side.        
+ 
+3.2 Shape of Limit Order Book 
+The SET displays up to three quotes on both sides of the order book to the 
+public investor, while only the market surveillance can see the entire order book.  The 
+order book is reconstructed using the data from the order and trade file.  We report the 
+ 
+10
+
+spreads between adjacent quotes and the depths at the three displayed quotes and the 
+next three un-displayed quotes.     
+ 
+[Insert Table 2 here] 
+ 
+Table 2 shows the cross-sectional mean, median, and standard deviation of time-series 
+average of relative spread, absolute spread, and depth.  The relative and absolute bidask spreads of the sample are 3.38% and 1.13 baht, higher than 1.79% on the SSM, 
+and 1.36% on the SSE, see Al-Suhaibani and Kryzanowski (2000) and Niemeyer and 
+Sandas (1993).  Angel (1997) reported that the median of relative bid ask spread in 
+fifteen major market indices is only 0.65%.  The wide relative spread on the SET is 
+partially due to a large minimum tick size rule.  The minimum tick size on the SET is 
+approximately 1% on average trade price, which is twice of 0.51% minimum tick size 
+on the Saudi Stock Exchange.  In addition, Thailand faced a currency crisis during 
+1997 and the SET index fell more than 50%.  The bid-ask spread is the widest 
+compared with all other spreads on both sides of the order book.  Bid price spreads 
+away from the quote are wider than the spread near the quote, but the ask price 
+spreads are relatively constant.  The relative (absolute) spreads are 2.14% (0.66 baht) 
+for the first bid spread, and 4.07% (0.74 baht) for the fifth bid spread, but the relative 
+(absolute) spreads are 1.86% (0.57 baht) for the first ask spread and 1.66% (0.59 baht) 
+for the fifth ask spread.   
+The depth at the best bid is 33,880 shares, the highest on the bid side, while 
+the depth at the best ask is 20,414 shares, the lowest on the ask side.  This result is 
+quite surprising because it indicates that a limit order buyer is willing to submit more 
+aggressive order than a limit order seller even on the bearish market.  Depths at other 
+price limits are not much different from their best quote depth.  Depths at the sixth bid 
+(ask) quote are 31,932 shares and 24,400 shares on average.  We test the equality of 
+price spreads and depths quotes by regressing the time-series average value with the 
+sets of dummy variables that represents the quote order as follows. 
+   
+i
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+B
+A
+B
+A
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+i
+D
+D
+D
+D
+D
+D
+D
+D
+D
+D
+D
+Spread
+ε
+β
+β
+β
+β
+β
+β
+β
+β
+β
+β
+β
++
++
++
++
++
++
++
++
++
++
++
+=
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+5
+6
+5
+6
+4
+5
+4
+5
+3
+4
+3
+4
+2
+3
+2
+3
+1
+2
+1
+2
+1
+1
+1
+1
+2
+1
+2
+1
+3
+2
+3
+2
+4
+3
+4
+3
+5
+4
+5
+4
+6
+5
+6
+5
+      
+          
+      
+          
+ 
+ 
+(1) 
+i
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+j
+D
+D
+D
+D
+D
+D
+D
+D
+D
+D
+D
+D
+Depth
+ε
+β
+β
+β
+β
+β
+β
+β
+β
+β
+β
+β
+β
++
++
++
++
++
++
++
++
++
++
++
++
+=
+6
+6
+5
+5
+4
+4
+3
+3
+2
+2
+1
+1
+1
+1
+2
+2
+3
+3
+4
+4
+5
+5
+6
+6
+     
+          
+ 
+(2) 
+ 
+where Spreadi is the time-series average value of price spread computed from the 
+difference in the price limits at successive quotes. Depthj is the number of shares at a 
+particular quote in the order book.  The explanatory variables are the group of dummy 
+variables that equal to one if the observations of the dependent variable belong to the 
+certain quote in the order book.  The number of observations in equation 1 and 2 are 
+1,551 (141x11) and 1,692 (141x12) respectively. 
+   
+[Insert Table 3 here] 
+ 
+Table 3 presents the Wald statistics of the equality of spreads and depths at all six 
+successive quotes.  Although the hypothesis that displayed spreads including bid-ask 
+spread are equal is rejected, we can not reject the equality hypothesis of displayed 
+price spreads excluding bid-ask spread.  In other words, the bid-ask spread is wider 
+ 
+11
+
+than other price spread, and the size of displayed bid spread is not statistically 
+different from the displayed ask spread.  In contrast, the best bid and the best ask 
+depths are not significantly different from the depth at other displayed quotes.  
+Comparing the displayed and undisplayed spread and depth, we find that the 
+displayed and undisplayed spread are statistically different on the bid side but they are 
+indifferent on the ask side.  In other words, the price spread further away from the 
+best quote is wider only on the bid side and the spreads are constant on the ask side.  
+The depths of displayed and undisplayed quote on both sides of order book are not 
+significantly different.    
+ 
+The distribution of the liquidity within the limit order book could be visualized 
+through the plot of the price limit deviation from the best quote mid point on the 
+vertical axis against the cumulative depth from the best quote on the horizontal axis.  
+The positive (negative) value of price limit deviation and the cumulative depth refers 
+to the bid (ask) side of the order book.  If the price spreads between successive price 
+limits and the depths are equal across the limit order book, the order book would then 
+exhibit a straight line relationship.     
+ 
+[Insert Figure 1, Figure 2, and Figure 3 here] 
+ 
+Figure 1 and Figure 2 present the hypothetical convex and concave order book 
+respectively.  The hypothetical convex order book is plotted from the book that has 
+the price spreads monotonically increase and depths monotonically decrease away 
+from the market.  In other words, the liquidity distribution of convex order book is 
+concentrated near the best quotes than away from the market, and the execution cost 
+per shares traded is positively associated with the size of market order.  From figure 3, 
+the limit order book of SET is approximately linear on the sell side and weakly 
+convex on the buy side.  The displayed bid and ask side of the order book are 
+approximately linear.  Nevertheless, the undisplayed bid side exhibits a weakly 
+convex shape as a result of wider spreads further away from the best quote, but the 
+undisplayed ask side is not significantly deviated from the linearity.  Wide 
+undisplayed bid spreads might reflect the high degree of asymmetric information for 
+the buyers on the bearish market.  Since the buyers are concerned about being picked 
+off by the informed traders, they either submit a more aggressive limit buy order, 
+expecting quick execution or submit a more conservative order, expecting to receive a 
+larger spread to compensate for higher asymmetric information risks.      
+ 
+Biais, et al. (1995) reported that the order book on the Paris Bourse is slightly 
+concave, where the depth at the market is smaller than the depth away from the 
+market.  One may argue that the degree of transparency of the market could affect the 
+shape of the order book.  This argument is not likely because both Stockholm Stock 
+Exchange and Paris-Bourse show all the five best quotes, compared to the two and 
+three best quotes on the Saudi Stock Exchange and the SET.  Nevertheless, our 
+dataset does not allow for a direct test of the transparency impact and the shape of 
+limit order book.  Niemeyer and Sandas (1993) reconciled their results to those of 
+Biais, et al. (1995) by arguing that a larger tick size on the Stockholm Stock Exchange 
+compared to the Paris Bourse is the reason.  The five displayed quotes of order book 
+at the Stockholm Stock Exchange should cover a wider relative price range than the 
+corresponding levels at the Paris Bourse.  Consequently, large tick size should be 
+profitable to liquidity supplier.   
+Apart from the tick size, the asymmetric information could affect the order 
+placement behavior of liquidity providers and so does the shape of limit order book.  
+ 
+12
+
+Liquidity providers are most likely facing a loss when trading against the informed 
+trader, so they would shift the limit order placed at the market away from the market 
+to receive wider price spreads as a cushion against the loss.  Lee, Mucklow and Ready 
+(1993) found the wide bid-ask spread and thin market depths during the earning 
+announcement period, when the degree of adverse selection is high.   
+This study therefore examines how the relative tick size and degree of 
+asymmetric information influences the distribution of liquidity within the order book.  
+As mentioned in Amihud (2002), liquidity is an elusive concept, because it can not be 
+directly observed and a single measure is unlikely to capture all aspects of liquidity.  
+Spread and depth are widely used as a measure of liquidity.  In addition, the liquidity 
+distribution should reflect the variation of the price spreads and depths across price 
+limits on the order book.  To combine these aspects of liquidity together, we define 
+the new variable so called “convexity”, which could be defined as follows.  
+ 
+K
+Slope
+Convexity
+D
+D
+S
+S
+D
+D
+S
+S
+D
+D
+S
+S
+D
+D
+S
+S
+Slope
+K
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+ASK
+BID
+k
+∑
+=
++
++
++
++
++
++
++
++
++
++
++
++
+∆
+=
+
+
+
+
+
+
+
+
+
+
+
+
+−
+−
++
+−
+−
+
+
+
+
+
+
+−
+−
+−
+−
+−
+=
+∆
+1
+1
+1
+1
+2
+1
+2
+1
+1
+1
+2
+1
+2
+)
+(
+2
+ 
+(3) 
+ 
+where Sk and Dk are the limit price differences from the mid quote and the cumulative 
+depth at the kth away from the market.  ∆Slopek is the change in price schedule slope 
+at the kth away from the market. Convexity is the average of ∆Slopek.  The zero 
+convexity indicates a linear relationship between the limit price difference from the 
+mid quote and the cumulative depth.  In other words, the depths and prices spread at 
+the market are approximately the same as those away from the market.   
+The positive convexity implies either the spread away from the market is 
+wider than the spread at the market, or the depth away from the market is smaller than 
+the depth at the market.  The negative convexity or the concavity implies either the 
+spread away from the market is narrower than the spread at the market, or the depth 
+away from the market is larger than the depth at the market.  The majority of the 
+stocks in the dataset, 95 stocks out of 141 stocks, have a positive convexity.  When 
+the convexity on the bid side and on the ask side are computed separately, the number 
+of positive convexity securities are 108 stocks on the bid side and 47 stocks on the ask 
+side.  This indicates that the positive convexity of the order book comes from the bid 
+side, because the price spreads on the bid side continually increase further away from 
+the market.   
+We investigate the relationship between the shape of order book, the tick size 
+and the degree of asymmetric information through the following regression.  
+  
+i
+i
+i
+i
+i
+i
+Volume
+Volatility
+FirmSize
+TickSize
+Convexity
+ε
+β
+β
+β
+β
+β
++
++
++
++
++
+=
+4
+3
+2
+1
+0
+ 
+(4) 
+ 
+where Convexityi is the average of the slope difference of the price schedule; TickSizei 
+is the minimum relative price spread; FirmSizei is the market capitalization; Volatilityi 
+is the trade price volatility; Volumei  is the trading volume.  All the variables are 
+ 
+13
+
+standardized by subtracting the cross-sectional mean and divided by the standard 
+deviation. 
+ 
+[Insert Table 4 here] 
+ 
+Table 4 presents the determinants of the liquidity distribution within the limit order 
+book.  Minimum tick size is negatively associated with the market capitalization, -
+0.26, and positively associated with the daily volatility, 0.57.  Firm size is negatively 
+associated with the daily volatility, -0.39.  The results indicated the positive 
+coefficients for minimum tick size and firm size, and the negative coefficient for 
+volatility.  Such relationships are consistent to the hypotheses discussed in section 2.1.  
+Securities with large tick size have more convex order books compared to the 
+securities with small tick size.  In other words, the findings support the argument of 
+Niemeyer and Sandas (1993) that the difference in the shape of order book is 
+influenced by a difference in minimum tick size rule.  Moreover, high information 
+asymmetry securities e.g. small firms, and high volatility are likely to have a concave 
+order book compared to the low information asymmetry securities.  This shows that 
+the liquidity distribution within the order book is sensitive to the degree of 
+asymmetric information.   
+We perform a robustness check by separating the dataset into two sub-samples 
+according to the market capitalization and the relative tick size.  The findings 
+indicated that the impact of minimum tick size to the convexity of order book only 
+occurred in small firms, and was insignificant for large firms.  Moreover, the study 
+examined whether the determinants of order convexity on the bid side would be 
+different from the ask side, and the findings indicated no different relationship 
+between the bid side and the ask side.   
+     
+3.3 Intraday Variation of Limit Order Book  
+We investigated intraday patterns of order book from the regression of the variables 
+of interest with the time of the day and the day of the week dummies as follows.  
+ 
+t
+k
+t
+k
+k
+h
+t
+h
+h
+k
+t
+dweek
+dtime
+Y
+ε
+γ
+β
+α
+ˆ
+ˆ
+ˆ
+ˆ
+5
+1
+,
+9
+1
+,
++
++
++
+=
+∑
+∑
+=
+=
+, subjected to 
+ (5) 
+0
+  ,0
+5
+1
+9
+1
+=
+=
+∑
+∑
+=
+=
+k
+k
+h
+h
+γ
+β
+ 
+where Yk
+t denotes the variables of interest which consist of Complete Quote, Length 
+of Order Book, Length of Bid, Length of Ask, Bid-Ask Spread, Price Spread of the 
+Best Bid Price and Last Displayed Bid price (B1-B3), Price Spread of Best Ask price 
+and the Last Displayed Ask Price (A3-A1), Market Depth, Displayed Depth, Total 
+Depth, Proportion of Displayed Depth. Note that B1 (A1), B2 (A2), B3 (A3) are the 
+price limit at the first, second and third best quote on the bid (ask) side.  The length of 
+an order book refers to the number of different price limits in the order book with 
+shares quoted.       
+ 
+[Insert Table 5 here] 
+ 
+Table 5 exhibits that the existence of an intraday pattern of order book.  The order 
+book is more likely to consist of both bid and ask quote in the morning session or on 
+Monday than in the afternoon session or a later day of the week.  This finding 
+indicated that after trade occurred and took liquidity away from the order book, a new 
+liquidity is not refilled immediately.  The length of order book, bid side, and ask side 
+ 
+14
+
+are the lowest after the market opens, the highest before the market closes. This 
+suggests that a limit order trader who provides liquidity at a later time of the day 
+submits his quote further away from the best quote.  The placement strategy of this 
+trader group is likely to hedge the position or set up a cut-loss limit in case of 
+unfavorable price movement, and they do these placements after trading takes place 
+for a while.   
+Furthermore, the results show that all displayed spreads become narrower as 
+the trading time goes by.  Bid ask spread exhibits a downward intraday pattern, where 
+it is highest in the first 30 minute interval and lowest in the last 30 minute interval.  
+Other displayed spreads on both bid and ask sides such as the first and second bid 
+spread, (B1-B2) and (B2-B3), show a similar downward pattern.  The findings are 
+consistent to the argument of Madhavan (1992) that asymmetric information cost is 
+alleviated after trading because more information is incorporated into the price.  In a 
+period of high adverse selection cost, limit order traders would make a loss if they 
+trade against a better informed trader.  Consequently, the liquidity supplier is 
+unwilling to provide the liquidity during a period of high asymmetric information.    
+The intraday variation of liquidity in the order book shown in table 4 supports 
+this argument.  The market depth, displayed depth, and total depth are at the minimum 
+in the first 30 minutes of trading day, and they increase as trade continues.  The level 
+of liquidity reaches its maximum during the last 30 minutes of trading day.  Volumes 
+in the order book, which are bid and ask volumes and at the market and away from the 
+market volumes, follow an upward pattern.         
+ 
+4 Analysis of Order Flow 
+An investigation of the order flow pattern on the SET is done by considering 
+an order in 3 different characteristics: buy or sell order, market or limit order, and the 
+aggressiveness level.  The total number of buy and sell orders for 141 stocks are 
+approximately equal at 4.69 million orders, while the number of market and limit 
+orders are 2.76 and 6.62 million orders respectively.  We classify an incoming order 
+as a market order if the order results in an execution immediately or the order entering 
+time stamp are less than the trade time stamp within one-tenth of a second.  Orders are 
+categorized into 9 aggressiveness levels according to the order price and volume 
+relative to the price limit and shares available in the order book.  The aggressiveness 
+of limit order starts from the least aggressive level 1 to level 5, and the market order 
+which results in an immediate execution has the aggressive level starting from 6 to the 
+most aggressive level 9.  The proportion of each aggressive category is reported in 
+table 6.    
+ 
+[Insert Table 6 here] 
+ 
+The most aggressive order, level 9, is the market buy (sell) order with an order 
+price higher (lower) than the best ask (bid) price and the order size larger than the 
+shares available in the ask (bid) side of the order book prior to the entering.  Only 
+0.43% and 0.38% of total buy and sell orders are in the level 9.  The second most 
+aggressive order, level 8, is the large market buy (sell) order, that its price equal to the 
+best ask (bid) price and its size is larger than the available best quote in the order 
+book.  Orders at this level represent 8.15% of total buy orders and 8% of total sell 
+orders.  These two order types are considered as market orders even though after 
+execution the remaining shares become limit order in the order book.  Order 
+aggressiveness level 7 is the market buy (sell) order with the order price higher than 
+ 
+15
+
+the prevailing ask (bid) side but its volume is smaller than the prevailing offer (bid) 
+quote volume. These order types represent only 0.68% and 0.57% of the total buy and 
+sell orders.  The least market order aggressiveness is level 6, which are market buy 
+(sell) order with order price equal to the best ask (bid) price and its volume less than 
+prevailing ask (bid) shares.  These orders are the major portion of market orders 
+because they consist of 21.17% and 19.51% of total buy and sell orders.   
+For the limit order, aggressive order at level 5 is limit buy (sell) order that 
+narrow the bid-ask spread because its price is higher than the best bid (offer) price.  
+They represent 7.41% and 7.62% of total orders.  The limit buy (sell) order that 
+arrives when the limit order book on bid (ask) side is empty has the aggressiveness 
+level 4.  Only 0.31% and 0.27% of total buy and sell orders is of this order type.  
+Order aggressiveness at level 3 is limit buy (sell) orders with order price equal to the 
+best bid (ask) price.  These orders contain 26.70% and 24.77% of total buy and sell 
+orders, and this order class is the majority of limit orders.  Order aggressiveness at 
+level 2 is limit buy (sell) order with order price lower (higher) than the best bid (ask) 
+price but higher (lower) than the third bid (ask) price.  The proportions of this order 
+type are 19.77% and 21.16% for the buy and sell orders.  The least order 
+aggressiveness, level 1 order, is the limit buy (sell) order with order price lower 
+(higher) than the third bid (ask) price.  The orders in this class represent 15.38% and 
+17.71% of total buy and sell orders.  The empirical frequencies are computed based 
+on all orders of 141 stocks.     
+ 
+4.1 Order Sequences 
+Table 5 shows the conditional likelihood of order arrival according to the level 
+of order aggressiveness.  We observe the “diagonal effect” in the conditional order 
+arrival as reported in Biais, et al. (1995).  An incoming order is likely to be the same 
+aggressiveness level and the same buy/sell order as the previous order, especially for 
+the limit order.  For instance, after the limit buy order with the best bid price is 
+submitted, the likelihood that the same limit buy order type will arrive is higher than 
+other order types.  The diagonal effect is very strong for the limit order, and the least 
+aggressive for the market order.  For the limit orders further away from the displayed 
+quotes, LB1 and LS1, the following order is likely to be the same order type with a 
+conditional probability of 21.47% and 19.43% for buy and sell orders respectively.  
+Probabilities of observing market buy (sell) order with order price higher (lower) than 
+the ask (bid) price and the volume less than the best quote conditional on the same 
+order type are the highest among other types, and they equal to 33.60% and 31.72% 
+for the buy and sell orders.      
+ 
+4.2 Order Flow Symmetry  
+An order arrival conditional on buy order is likely to be a buy order rather than 
+a sell order for 140 stocks.  Due to the diagonal effect, the probability of a buy order 
+followed by a sell order, Pr[St|Bt-1], equals to 0.42, and it is less than the probability of 
+a buy order followed by a buy order, Pr[Bt|Bt-1], which equals to 0.58.  Similarly, for 
+all 141 stocks, the probability of a sell order followed by a buy order, Pr[Bt|St-1], 
+equals to 0.40, lower than the probability of sell order continuation, Pr[St|St-1], which 
+equals to 0.60.  Furthermore, the probability of sell continuation is higher than the 
+probability of buy continuation in 106 stocks out of 141 stocks.  The higher sell 
+continuation may simply be a result of the SET downturn during 1997.  Ranaldo 
+(2003) reported that, on the SWX, the probability of a market and limit sell order 
+ 
+16
+
+continuation were lower than the probability of a market and limit buy order 
+continuation, and the SWX during that period was a bullish market.  
+An alternative explanation is that sellers are more likely to have herding 
+behavior, resulting in a panic sell.  In other words, buy order is more informative than 
+the sell order. Griffiths et al. (2001) proved that buy initiated trade is more 
+informative than sell initiated trade.  This paper examines the informativeness of a 
+buy order through a comparison of a proportion of incoming buy order and sell order 
+conditional on the size of spread.  From Panel B, table 6, the proportion of buy order 
+is higher under the wide spread.  The buy order arrival conditional on the small spread 
+is 47.85%, and this proportion increases to 49.05% for the large spread.  This 
+indicates that during a high  bid-ask spread which has a high adverse selection cost, 
+buyers on average are slightly more informed than the sellers, so they are willing to 
+trade-off between the higher execution cost and their private information.  An 
+investigation of market and limit order combined with the buy and sell order provides 
+the additional support of the informativeness of buy order.  A proportion of market 
+order is inversely related to the spread size. Large spread increases the execution cost, 
+and makes a limit order more attractive.  In addition, even on the bearish market, the 
+proportion of market buy order is larger than the market sell order for all spread sizes.  
+This shows that an informed trader is likely to be a buy trader, because they are 
+willing to pay for the spread to get the fast execution due to the short-life of private 
+information.  Owing to the bearish market, the limit sell order occurs more frequently 
+than a limit buy order.  
+ 
+[Insert Table 7 here] 
+ 
+Based on the crowding out mechanism without considering the impact of 
+asymmetric information, Parlour (1998) made several predictions, as shown in table 7 
+panel B, regarding the order sequences.  Ranaldo (2003) found that the empirical 
+order sequences on the SWX were consistent with 5 out of 8 predictions made by 
+Parlour (1998).  The order sequences patterns on the SET are consistent with only half 
+of Parlour (1998)’s predictions.  Furthermore, there is only one out of eight order 
+sequences pattern that is consistent between the SET, Ranaldo (2003), and Parlour 
+(1998).  The prediction that the probability of market sell order followed by market 
+buy order, Pr[MBt|MSt-1], is lower than the probability of market buy order 
+continuation.  The different findings on the SET from what Parlour (1998) predicted 
+might be because of trader concern about the asymmetric information during a severe 
+market downturn.  Additionally, the differences of our results and Ranaldo (2003) 
+could reflect that traders place order differently in the bullish and bearish markets.  
+We further analyze this issue in the determinants of order aggressiveness section.  
+ 
+4.3 Order Time Interval 
+Biais et al. (1995) explained that the diagonal effect could occur from an order 
+splitting, a trading imitation and a similar reaction to the information.  As mentioned 
+earlier, the record of trader type is unavailable in the dataset, so only the order 
+splitting hypothesis is examined here.  Traders split the order to reduce a price impact 
+or to conceal their private information.  To investigate the splitting order hypothesis, 
+we compare the time interval of order submission when the period that a price impact 
+or the degree of asymmetric information is high, which is the period of wide bid-ask 
+spread.  If investors split the order submission, the time interval of order arrival when 
+the spread is wide should be longer than the unconditional case because traders are 
+ 
+17
+
+waiting for the additional liquidity in the order book to absorb the price impact or 
+conceal the information. 
+ 
+[Insert Table 8 here] 
+ 
+Table 8 shows the time interval between orders conditional on the size of 
+spread.  The unconditional time interval is 332.5 seconds.  The Wald statistics rejects 
+the null hypothesis that the time intervals conditional on the spread size are equal.  
+When the spread is large, the time interval is 378.1 seconds, larger than the 
+unconditional case.  Furthermore, the time interval is shortened when the spread is 
+narrow.  In other words, when the degree of asymmetric information is high, traders 
+wait for a longer period than the unconditional case before placing the next order.  
+Nevertheless, Biais et al. (1995) found the opposite result that the time interval of 
+subsequent orders is lowest when the spread is wide in the Paris Bourse.  In addition, 
+the average time of new ask or bid within quotes after large spread is lower than the 
+unconditional case.  Biais et al. (1995) explained that after large liquidity shock, 
+traders quickly supply the liquidity to gain the price and time priority.  We expect the 
+difference between the SET and Paris Bourse arises from the bearish market and high 
+information asymmetry on the SET.  
+However, the longer time interval under the wide spread is not necessarily 
+consistent with the order splitting hypothesis.  Usually, when the spread is high, the 
+liquidity trader is likely to react quickly to maintain a time priority, while insiders, in 
+order to maintain their private information, are willing to wait and observe the order 
+book.  Easley and O’Hara (1992) showed that liquidity traders are more sensitive to 
+the spread than the informed traders.  This is because spread is the direct cost to 
+acquire the liquidity, while informed traders can offset the execution cost with their 
+private information value.  As a result, a longer time interval period during the wide 
+spread may simply reflect the waiting time of a liquidity trader.  To further examine 
+the splitting hypothesis, we compute the time interval conditional on the order 
+aggressiveness.  Because the information is short-lived, the order aggressiveness level 
+should be positively associated with the informed trading.  The findings show that 
+when the order becomes more aggressive, the time intervals are shortened for both a 
+buy order and a sell order.  One may interpret this evidence as either the informed 
+traders are clustering their orders not splitting the orders, or the liquidity trader are 
+trying to imitate the informed trader.  In summary, this section does not find any 
+evidence to support the order splitting hypothesis.   
+ 
+5. Determinants of Order Aggressiveness 
+This section aims to examine the impact of the order book beyond the best 
+quote on the order aggressiveness.  Following Hausman, Lo, and MacKinlay (1992), 
+Griffiths et al. (2000) and Ranaldo (2003), an ordered probit model is used to 
+investigate the determinants of order aggressiveness.  The ordered probit model is 
+appropriate because it is a generalization of linear regression model where the 
+dependent variable consists of a finite number of values possessing a natural ordering.  
+The model is shown in equation 6 below.  The equation is regressed separately for the 
+case of positive and negative stock performance, where the price change during the 
+last ten trades are positive and negative respectively.  
+ 
+t
+K
+k
+t
+k
+k
+t
+X
+Y
+ε
+β
+ˆ
+1
+,
+*
++
+= ∑
+=
+ 
+ 
+ 
+ 
+ 
+ 
+18
+
+    
+Y
+if
+Y
+if
+γ
+Y
+ -
+   if
+Y
+t
+m
+t
+m
+t
+t
+∞
+<
+<
+≤
+<
+≤
+<
+∞
+=
+−
+*
+5
+*
+1
+1
+*
+   
+   
+5
+       
+ 
+    
+        
+   
+   
+m
+       
+   
+1
+γ
+γ
+γ
+#
+#
+ 
+ 
+ 
+ 
+(6)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+where m starts from 2, 3, …, 5.  γm is the partition boundaries on the density function 
+of Yt
+*, which is the normal distribution function.  Yt refers to the level of order 
+aggressiveness.  Previous section has shown that with nine categories of order 
+aggressive, some categories result in too few observations.  Hence, in this section we 
+reduce the number of classifications to six levels.  Yt =1, 2, 3, and 4 for limit order 
+placed behind the displayed quote, within the displayed quote, at the best quote, and 
+improve the quote respectively; Yt = 5 and 6 for the market order at the best quote and 
+the market order with trade size larger than the best quote or the price better than the 
+best quote.  The explanatory variables are the standardized variables that represent the 
+state of limit order book and market sentiment at the time prior to the order arrival.  
+These variables are bid-ask spread, same and opposite spread, same and opposite 
+market depth, same and opposite 2nd and 3rd depth, trade volatility, trade time elapsed, 
+and order volume.  Bid-ask spread is the percentage relative spread.  Same (Opposite) 
+spread is the percentage price difference between price at the best quote and price at 
+the third best quote on the same (opposite) side of order type.  Same (Opposite) 
+market depth is the number of shares available at the best bid (ask) side for buy order, 
+and at the best ask (bid) side for sell order.  Same (Opposite) 2nd and 3rd depth is the 
+shares at the second and best bid (ask) side for buy (sell) order.  Trade volatility is the 
+standard deviation of the last 10 price changes.  Trade time elapsed is the average 
+time interval between the last 10 trades.  Order volume is the number of shares in the 
+order.   
+ 
+ [Insert Table 9 here] 
+ 
+Table 9 shows that the order book has the same direction impact on the order 
+aggressiveness for the buyers and sellers, and the impacts are not much difference 
+under the bullish and the bearish markets.  The bid-ask spread is negatively associated 
+with the degree of order aggressiveness for both buyers and sellers and for both 
+positive and negative sentiment markets.  While the large spread is costly for the 
+market order, and it indicates high asymmetric information, a liquidity trader may find 
+it optimal to submit less aggressive order such as a limit order instead of a market 
+order.  Furthermore, the same spread is positively associated with the aggressiveness.  
+According to the crowding out effect, the wide same spread indicates that there is still 
+a room for a limit order to be placed a little ahead of the queue while and still expect 
+to receive a high price spread if executed.  The size of opposite spread should affect 
+the aggressiveness of a market order.  A wide opposite spread indicates high 
+asymmetric information, signaled from the opposite side of the book, and it causes a 
+market order trader to be more cautious and submit a less aggressive order.        
+ 
+The same market depth and other displayed depths are positively associated 
+with the order aggressiveness. This crowding out effect forces a trader to compete for 
+an execution.  High market depth on the same submission side indicates the long 
+queue for the execution.  Trader therefore has to become more aggressive in order to 
+gain a better chance of execution.  The opposite market depth is inversely associated 
+ 
+19
+
+with the order aggressiveness.  Large opposite market depth indicates the higher 
+chance of execution, which will shorten the order queue.  The trader therefore 
+hesitates to use an aggressive strategy.   
+ 
+We perform a robustness check of order placement determination through the 
+sub samples of the dataset categorized according to minimum tick size and market 
+capitalization.  The results in all sub samples, e.g. large tick size security, small tick 
+size security, large security and small security, are not significantly different and are 
+consistent with the case of full dataset.  However, we hypothesize that different trader 
+types should behave differently.  Ranaldo (2003) showed that the changes in the order 
+flow components do not symmetrically affect the order placement of market order 
+traders and limit order traders.  The marginal likelihood of a limit (market) buy order 
+reacts negatively (positively) to an incremental volume on the bid side.  Moreover, 
+buyers exhibit a stronger reaction to adjust their order aggressiveness submission than 
+the sellers.  These analyses are done by computing the marginal probability of each 
+order placement choice with respect to the trader types and change in the state of limit 
+order book as follows.   
+ 
+(
+)
+(
+)
+[
+](
+)
+k
+k
+k
+k
+t
+X
+E
+X
+Y
+β
+β
+γ
+φ
+ˆ
+ 
+ˆ
+ˆ
+1
+Pr
+1
+−
+−
+=
+∂
+=
+∂
+ 
+(
+)
+(
+)
+[
+]
+(
+)
+[
+]
+{
+}(
+)
+k
+k
+k
+m
+k
+k
+m
+k
+t
+X
+E
+X
+E
+X
+m
+Y
+β
+β
+γ
+φ
+β
+γ
+φ
+ˆ
+  
+ˆ
+ˆ
+- 
+ˆ
+ˆ
+Pr
+1
+−
+−
+−
+=
+∂
+=
+∂
+−
+, for m = 2, 3, 4, 5  
+(7) 
+(
+)
+(
+)
+[
+](
+)
+k
+k
+k
+k
+t
+X
+E
+X
+Y
+β
+β
+γ
+φ
+ˆ
+ 
+ˆ
+ˆ
+6
+Pr
+5
+−
+−
+−
+=
+∂
+=
+∂
+ 
+ 
+where 
+]
+[⋅
+φ
+ is the normal probability density function.  
+ , for k = 1, …, 10, is the 
+estimated coefficients from equation 6.  
+k
+βˆ
+(
+)
+k
+X
+E
+ is the unconditional mean of 
+explanatory variables. 
+ 
+[Insert Table 10 here] 
+ 
+Table 10 shows the marginal probability of different trader types in each order 
+submission.  The findings show that limit order traders and market order traders 
+respond oppositely to the change of limit order book, and these reactions are 
+monotonic with the order aggressiveness.  When the bid-ask spread is wide, the 
+likelihood of limit order traders’ submission increases because of the higher 
+compensation for liquidity provision, while the likelihood of market order traders’ 
+submission falls.  However, we would observe that the negative marginal probabilities 
+of limit order traders become the positive marginal probabilities for market order 
+traders when the price spreads between price at the best quote and at the third best 
+quote on the same side increase, the market depth and the displayed depth on the same 
+side increase.   
+Moreover, the marginal probabilities of buyers are higher in the bearish period 
+than in the bullish period.  Similarly, sellers have higher marginal probabilities in the 
+bullish period than in the bearish period.  In other words, contrarian traders have a 
+stronger response to the change in limit order book than momentum traders.  This 
+result indicates that market movement puts pressure to traders on the opposite side of 
+the market.  Additionally, the responses of momentum and contrarian traders are 
+stronger in the bullish market than in the bearish market.     
+ 
+20
+
+ 
+6. Conclusion  
+An order book at any point in time represents an accumulation of limit orders 
+after the market orders matching.  A change in the order book reflects the information 
+flow, liquidity change, and trader expectation.  The order book therefore becomes an 
+indispensable source of information for a trader to design an appropriate submission 
+strategy.  The order book under a period of thin depth and wide spread may be a result 
+of the liquidity shock or the high degree of information asymmetry.  Under this 
+situation, market order submission is considered to be a costly strategy.  Uninformed 
+trader should offer liquidity when it is expensive and consume liquidity when it is 
+cheap.  Informed trader, on the other hand, carefully submits the order to maximize 
+the private information value by either fast trade, hide their interests, or reduce price 
+impact.  An understanding of the price schedules in the limit order book and how it 
+relates to the order flow should be appreciated by all market participants. 
+This study analyzes the shape of limit order book and order placement strategy 
+on the SET.  We show that the order book of the SET exhibits a weakly convex shape 
+on the bid side and relatively linear on the ask side.  Bid-ask spread is larger than 
+other spreads away from the market.  Spreads away from the market are larger than 
+the spread near the market on the bid side, but they are approximately equal on the 
+ask side.  On the bid side, the depth at the market is the largest compared with the 
+other depths away from the market, but on the ask side the depth at the market is the 
+smallest.  Excluding the depths at the market, depths away from the market are not 
+statistically different.   
+We show that the variation of liquidity distribution within the order book is 
+affected by the minimum tick size and the degree of adverse selection.  Consistent to 
+the argument of Niemeyer and Sandas (1993), the order book of stocks with large 
+minimum tick size are more convex than the order book of stocks with lower 
+minimum tick size.  Moreover, the degree of convexity is negatively associated with 
+the firm size, as proxy for the asymmetric information.   
+While previous studies showed the existence of the intraday variation of bidask spread and market depth, this study shows that the spread and depth away from 
+the market have a similar intraday pattern as the spread and depth at the market.  The 
+bid-ask spread and other price spread between the successive quotes are the widest at 
+the opening period and become the narrowest at the closing period.  The market depth 
+and other depths away from the market have an upward pattern, where they are at the 
+lowest at the opening and increase to the highest at the closing. 
+The order sequences of the SET also exhibit the diagonal effect, in which the 
+probability that the same order type is likely to occur after this order type has just 
+occurred than it would be unconditionally.  The time interval of orders conditional on 
+the large spread is larger than unconditional time intervals which could be that 
+uninformed traders split the order to avoid high price impact.  Time intervals 
+subsequent to the aggressive order are smaller than the unconditional time interval 
+may be either the splitting order from informed traders to camouflage themselves, the 
+trading imitation of noise traders, or the herding behavior among traders, as pointed 
+out by Biais et al. (1995).  A further study in the source of diagonal effect is called 
+for.   
+Lastly, we study how the limit order book determines the choice of order 
+aggressivenss.  Consistent to the crowding out mechanism, the price spreads and 
+depths at the best quote and the other displayed quotes are informative: order 
+placement becomes aggressive during the period of narrow bid-ask spread, wide other 
+ 
+21
+
+price spreads on the same and opposite side, thick market depths on the same side, 
+thin market depths on the opposite side, and thick displayed depths on the same side.  
+Moreover, we find that limit order traders respond to the limit order book in an 
+opposite direction compared to market order traders, and the market movement 
+usually forces traders in a counter direction to react more aggressively than traders in 
+a same direction.  
+ 
+ 
+ 
+22
+
+References 
+Admati, A., and Pfleiderer, P., 1988, “A Theory of Intraday Patterns: Volume and 
+Price Variability,” Review of Financial Studies 1, 3-40. 
+Affleck-Graves, J., Hedge, S. P., and Miller, R. E., 1994, “Trading Mechanisms and 
+the Components of the Bid-Ask Spread,” Journal of Finance 49, 1471-1488.  
+Ahn, H.-J., Cai, J., Hamao, Y., Ho, R., 2002, “The Components of the Bid-Ask 
+Spread in A Limit-Order Market: Evidence from the Tokyo Stock Exchange,” 
+Journal of Empirical Finance 9, 399-430. 
+Ahn, H.-J., Bae, K.-H., and Chan, K., 2000, “Limit Orders, Depth and Volatility,” 
+Journal of Finance 55, 769-790. 
+Ahn, H.-J., Cheung Y.-L., 1999, “The Intraday Patterns of the Spread and Depth in a 
+Market Without Market Makers: The Stock Exchange of Hong Kong,” PacificBasin Finance Journal 7, 539-556. 
+Al-Suhaibani, M., and Kryzanowski, L., 2000, “An Exploratory Analysis of the Order 
+Book, and Order Flow and Execution on the Saudi Stock Market,” Journal of 
+Banking and Finance 24, 1323-1357. 
+Amihud, Y., 2002, “Illiquidity and Stock Returns: Cross-Section and Time-Series 
+Effects,” Journal of Financial Markets 5, 31-56. 
+Amihud, Y., and Mendelson, H., 1980, “Dealership Market: Market Making with 
+Inventory,” Journal of Financial Economics 8, 31-53. 
+Amihud, Y., and Mendelson, H., 1987, “Trading Mechanisms and Stock Returns: An 
+Empirical Investigation,” Journal of Finance 42, 533-553. 
+Anthony, J., 1988, “The Interrelationship of Stock and Option Market Trading 
+Volume Data,” Journal of Finance 43, 949-961. 
+Atkins, A. B., and Dyl, E. A., 1997, “Transactions Costs and Holding Periods for 
+Common Stocks,” Journal of Finance 52, 1997. 
+Back, K., 1993, “Asymmetric Information and Options,” Review of Financial Studies 
+6, 435-472. 
+Bae, K.-H., Jang, H., and Park, K., 2003, “Traders’ choice between limit and market 
+orders: evidence from NYSE stocks,” Journal of Financial Markets, forthcoming. 
+Bailey, W., and Jagtiani, J., 1994, “Foreign Ownership Restrictions and Stock Prices 
+in the Thai Capital Market,” Journal of Financial Economics 36, 57-87.  
+Becidore, J., Ross, K., and Sofianos, G., 2003, “Quantifying Market Order Execution 
+Quality at the New York Stock Exchange,” Journal of Financial Markets 6, 281307. 
+ 
+23
+
+Bhattacharya, U., and Spiegel, M., 1991, “Insiders, Outsiders, and Market 
+Breakdowns,” Review of Financial Studies 4, 255-282. 
+Biais, B., and Hillion, P., 1994, “Insider and Liquidity Trading in Stock and Options 
+Markets,” Review of Financial Studies 4, 743-780. 
+Biais, B., Hillion, P., Spatt, C., 1995, “An Empirical Analysis of the Limit Order 
+Book and the Order Flow in the Paris Bourse,” Journal of Finance 50, 1655-1689. 
+Biais, B., D. Martimort, and J-C. Rochet, 2000, “Competing Mechanisms in a 
+Common Value Environment,” Econometrica 68, 799-838. 
+Black, F., 1975, “Fact and Fantasy in Use of Options,” Financial Analysts Journal 31, 
+36-41. 
+Blume, M., MacKinlay, C., and Terker, B., 1989, “Order Imbalances and Stock Price 
+Movements on October 19 and 20, 1987,” Journal of Finance 44, 827-848. 
+Brock, W., and Kleidon, A., “Periodic market Closure and Trading Volume: A Model 
+of Intraday Bids and Asks,” Journal of Economic Dynamics and Control 16, 451489. 
+Brooks, R. and Chiou, S., 1995, “A Bias in Closing Prices: The Case of When-Issued 
+Pricing Anomaly,” Journal of Financial Quantitative and Analysis 30, 441-454.  
+Brown, P., Thomson, N., and Walsh, D., 1999, “Characteristics of the Order Flow 
+Through an Electronic Open Limit Order Book,” Journal of International 
+Financial Markets, Institutions, and Money 9, 335-357. 
+Cao, Chen, and Griffin, 2000, “The Informational Content of Option Volume Prior to 
+Takeovers,” Working Paper. 
+Chan, K., and Fong, W., 2000, “Trade Size, Order Imbalance, and the VolatilityVolume Relation,” Journal of Financial Economics 57, 247-273. 
+Chan, K., W.-M. Fong, and B.-C. Kho, Stulz R., 1996, “Information, Trading and 
+Stock Returns: Lessons From Dually-Listed Securities,”, Journal of Banking and 
+Finance 10, 1161-1187. 
+Chan, K., Chung, P. and Johnson, H., 1993, “Why Option Prices Lag Stock Prices: A 
+Trading-Based Explanation,” Journal of Finance 48, 1957-1967. 
+Chan, K., Chung P. Y., and Johnson, H., 1995, “The Intraday Behavior of Bid-Ask 
+Spreads for NYSE Stocks and CBOE Options,” Journal of Financial and 
+Quantitative Analysis 30, 329-346.   
+Chan, K., Christie, W. G., Schultz, P. H., 1995, “Market Structure and the Intraday 
+Pattern of Bid-Ask Spreads for NASDAQ Securities,” Journal of Business 68, 3560. 
+Chan, K., Chung, P., Fong, W.M., 2002, “The Informational Role of Stock and 
+Option Volume,” Review of Financial Studies 15, 1049-1075. 
+ 
+24
+
+Cheung Y., 1995, “Intraday Returns and the Day-End Effect: Evidence from the Hong 
+Kong Equity Market”, Journal of Business, Finance and Accounting, October, 
+1023-1035. 
+Cho, J-W., and E. Nelling, 2000, “The Probability of Limit-Order Execution,” 
+Financial Analysts Journal 56, 28-34. 
+Choe, H., Shin H., 1993, “An Analysis of Interday and Intraday Return Volatility: 
+Evidence from the Korean Stock Exchange”, Pacific-Basin Finance Journal, 
+May, 175-188. 
+Chordia, T., Roll, R., and Subrahmanyam, A., 2002, “Order Imbalance, Liquidity, and 
+Market Returns,” Journal of Financial Economics 65, 111-130. 
+Chung K.-H., Van Ness, B., and Van Ness, R., 1999, “Limit Orders and Bid-Ask 
+Spread,” Journal of Financial Economics 53, 255-287. 
+Copeland, T., and Galai, D., 1983, “Information Effects on the Bid-Ask Spread,” 
+Journal of Finance 38, 1457-1469. 
+Coppejans, M., Domowitz, I., and Madhavan, A., 2002, “Dynamics of Liquidity in an 
+Electronic Limit Order Book Market,” Working paper, Duke University. 
+Ding, D. K., and Charoenwong, C., 2003, “Bid-Ask Spreads, Volatility, Quote 
+Revisions, and Trades of Thinly Traded Futures Contracts,” Journal of Futures 
+Market 23, 455-486.  
+De Jong, F., Nijman, T., and Roell, A., 1996, “Price Effects of Trading and 
+Components of the Bid-Ask Spread on the Paris Bourse,” Journal of Empirical 
+Finance 3, 193-213. 
+Donowitz, I., Glen, J., and Madhavan, A., 1997, “Market Segmentation and Stock 
+Prices: Evidence from an Emerging Market,” Journal of Finance 52, 1059-1085. 
+Easley, D., and O’Hara, M., 1987, “Price, Trade Size and Information in Securities 
+Markets”, Journal of Financial Economics 19, 69-90. 
+Easley, D., Keifer, N., O’Hara, M., 1997a, “One Day in the Life of a Very Common 
+Stock,” Review of Financial Studies 10, 805-835. 
+Easley, D., Keifer, N., O’Hara, M., 1997b, “The Information Content of the Trading 
+Process,” Journal of Empirical Finance 4, 159-186. 
+Easley, D., O’Hara, M., and Srinivas, P.S., 1998, “Option Volume and Stock Prices: 
+Evidence on Where Informed traders Trade,” Journal of Finance 53, 431-465. 
+Foster, F.D., and Viswanathan, S., 1990, “A Theory of Interday Variations in 
+Volumes, Variances and Trading Costs in Securities Markets,” Review of 
+Financial Studies 3, 593-624. 
+ 
+25
+
+Foster, F.D., and Viswanathan, S., 1993, “Variations in Trading Volume, Return 
+Volatility and Trading Costs: Evidence on Recent Price Formation Models”, 
+Journal of Finance 48, 187-211. 
+George, T. H., Kaul, G., and Nimalendran, M., 1991, “Estimation of the Bid-Ask 
+Spread and Its Components: A New Approach,” Review of Financial Studies 4, 
+623-656. 
+Gerety, M., and Mulherin, J., 1994, “Price Formation On Stock Exchanges: The 
+evolution of Trading Within the day,” Review of Financial Studies 7, 609-629. 
+Glosten, L., 1989, “Insider Trading, Liquidity, and the role of the Monopolist 
+Specialist,” Journal of Business 62, 211-235. 
+Glosten, L., 1994, “Is the Electronic Limit Order Book Inevitable?,” Journal of 
+Finance 49, 1127-1161. 
+Glosten, L. R., and Harris, L., 1988, “Estimating the Components of the Bid-Ask 
+Spread,” Journal of Financial Economics 21, 123-142. 
+Glosten, L. and Milgrom, P.R., 1985, “Bid, Ask and Transaction Prices in a Specialist 
+Market with Heterogenously Informed Traders,” Journal of Financial Economics 
+14, 71-100.  
+Griffiths, M., Smith, B., Turnbull, A., and White, R., 2000, “The Costs and 
+Determinants of Order Aggressiveness,” Journal of Financial Economics 56, 6588. 
+Grossman, S., and M. Miller, 1988, “Liquidity and Market Structure,” Journal of 
+Finance 43, 617-633. 
+Handa, P., and Schwartz, R., 1996, “Limit Order Trading,” Journal of Finance 51, 
+1835-1861. 
+Harris, L., 1986, “A Transactions Data Study of Weekly and Intradaily Patterns in 
+Stock Returns,” Journal of Financial Economics 16, 99-117. 
+Harris, L., 1989, “The October 1987 S&P500 stock-futures bases,” Journal of 
+Finance 44, 77-99. 
+Harris, L., 1994, “Minimum Price Variations, Discrete Bid/Ask Spreads and 
+Quotation Sizes,” Review of Financial Studies 7, 149-178. 
+Harris, L., 2002, “Trading and Exchanges: Market Microstructure for Practitioners”, 
+Oxford University Press. 
+Harris, L., and Hasbrouck, J., 1996, “Market vs. Limit Orders: the SuperDOT 
+Evidence on Order Submission Strategy,” Journal of Financial and Quantitative 
+Analysis 31, 213-231. 
+Harvey, C. R., and Huang R. D., 1991, “Volatility in the Foreign Currency Futures 
+Market,” Review of Financial Studies 4, 543-569. 
+ 
+26
+
+Hasbrouck, J., 1988, “Trades, Quotes, Inventories and Information,” Journal of 
+Financial Economics 22, 229-252. 
+Hasbrouck, J., 1991, “Measuring the Information Content of Stock Trades,” Journal 
+of Finance 46, 179-207. 
+Hasbrouck, J., 1995, “One Security, Many Markets: Determining the Contributions to 
+Price Discovery,” Journal of Finance 50, 1175-1199. 
+Hausman, J., Lo, A., MacKinlay, A., 1992, “An Ordered Probit Analysis of 
+Transaction Stock Prices,” Journal of Financial Economics 31, 319-379. 
+Hegde, S. P., and McDermott, J. B., 2003, “ The Liquidity Effects of Revisions to the 
+S&P 500 Index: An Empirical Analysis,” Journal of Financial Markets 6, 413459. 
+Hedvall, K., Niemeyer, J., Rosenqvist, G., “ Do Buyers and Sellers Behave Similarly 
+in a Limit Order Book? A High-Frequency Data Examination of the Finnish Stock 
+Exchange,” Journal of Empirical Finance 4, 279-293. 
+Heidle, H., and Huang R., 2002, “Information-Based Trading in Dealer and Auction 
+Markets: An Analysis of Exchange Listings,” Journal of Financial and 
+Quantitative Analysis 37, 2002. 
+Hollifield, B., Miller, R., and Sandas, P., 1999, “An Empirical Analysis of a Pure 
+Limit Order Market,” Working Paper. 
+Huang, R., and Stoll, H. R., 1994, “Market Microstructure and Stock Return 
+Predictions,” Review of Financial Studies 7, 179-213. 
+Huang, R., and Stoll, H. R., 1996, “Dealer Versus Auction Markets: A Paired 
+Comparison of Execution Costs on NASDAQ and the NYSE,” Journal of 
+Financial Economics 41, 313-357. 
+Huang, R. and Stoll, H. R., 1997, “The Components of the Bid-Ask Spread: A 
+General Approach,” Review of Financial Studies 10, 995-1034.  
+Jain, P., and Joh, G., 1988, “The Dependence Between Hourly Prices and Trading 
+Volume,” Journal of Financial and Quantitative Analysis 23, 269-283. 
+Karpoff, J. M., 1987, “The Relation Between Price Changes and Trading Volume: A 
+Survey”, Journal of Financial and Quantitative Analysis 22, 109-126. 
+Kavajecz, K. A., 1999, “A Specialist’s Quoted Depth, and the Limit Order Book,” 
+Journal of Finance 54, 747-771. 
+Keim, D., and Madhavan, A., 1995, “Anatomy of the Trading Process: Empirical 
+Evidence on the Behavior of Institutional Traders,” Journal of Financial 
+Economics 37, 371-398. 
+King, M., and Wadhwani, S., 1990, “Transmission of Volatility between Stock 
+Markets,” Review of Financial Studies 3, 5-33. 
+ 
+27
+
+Krinsky I., and Lee, J., 1996, “Earnings Announcements and the Components of the 
+Bid-Ask Spread,” Journal of Finance 51, 1523-1535. 
+Kuserk, G., Locke, P., 1993, “Scalper Behavior in Futures Markets: An Empirical 
+Examination,” Journal of Futures Markets 13, 400-431. 
+Klye, A., 1985, “Continuous Auctions and Insider Trading,” Econometrica 53, 13151335. 
+Lee, C., Mucklow, B., Ready, M., 1993, Spreads, Depths, and the Impact of Earnings 
+Information: An Intraday Analysis,” Review of Financial Studies 6, 345-374. 
+Lehmann, B., and Modest, D., 1994, “Trading and Liquidity on the Tokyo Stock 
+Exchange: A Bird’s Eye View,” Journal of Finance 49, 951-984. 
+Lin, J. C., Sanger, G. C., and Booth, G. G., 1995, “Trade Size and Components of the 
+Bid-Ask Spreads,” Review of Financial Studies 8, 1153-1183. 
+Lo, A. W., MacKinlay, A. C., and Zhang, J., 2002, “Econometric Models of LimitOrder Executions,” Journal of Financial Economics 65, 31-71. 
+Madhavan, A., 1992, “Trading Mechanisms in Securities Market,” Journal of Finance 
+47, 607-642.  
+Madhavan, A., Richardson, M., and Roomans, M., 1997, “Why Do Security Prices 
+Change? A Transaction-Level Analysis of NYSE stocks,” Review of Financial 
+Studies 10, 1035-1064. 
+Manaster, S., and Rendleman, R. J., 1982, “Option Prices As Predictors of 
+Equilibrium Stock Prices,” Journal of Finance 37, 1043-1057. 
+Masulis, R., and Shivakumar, L., 2002, “Does Market Structure Affect the Immediacy 
+of Stock Price Responses to News?,” Journal of Financial and Quantitative 
+Analysis 37, 617-648. 
+Mayhew, S., 2002, “Competition, Market Structure, and Bid-Ask Spreads in Stock 
+Option Markets,” Journal of Finance 57, 931-958. 
+McInish, T. and R. Wood, 1992, “An Analysis of Intraday Patterns in Bid/Ask 
+Spreads for NYSE Stocks,” Journal of Finance 47, 753-764. 
+Neal, R., 1992, “A Comparison of Transaction Costs between Competitive Market 
+Maker and Specialist Market Structures,” Journal of Business 65, 317-334. 
+Neuberger, A., and Hodges, S., 2002, “How Large are the Benefits from Using 
+Options,” Journal of Financial and Quantitative Analysis 37, 201-220. 
+Niemeyer, J., and Sandas, P., 1993, “An Empirical Analysis of the Trading Structure 
+at the Stockholm Stock Exchange,” Journal of Multinational Financial 
+Management 3, 63-101. 
+ 
+28
+
+Nukul Commission Report, 1998, “Analysis and Evaluation on Facts Behind 
+Thailand's Economic Crisis”, Commission Tasked with Making Recommendations 
+to Improve the Efficiency and Management of Thailand’s Financial System, In 
+Thai Language. 
+O’Hara, Maureen, 1995, “Market Microstructure Theory,” Blackwell Publishers. 
+Parlour, C., 1998, “Price Dynamics in Limit Order Markets,” Review of Financial 
+Studies 11, 789-816. 
+Parlour, C., and D. Seppi, 2003, “Liquidity-Based Competition for Order Flow,” 
+Review of Financial Studies 16, 301-343. 
+Ranaldo, A., 2003, “Order Aggressiveness in Limit Order Book Markets,” Journal of 
+Financial Markets, forthcoming. 
+Saar, G., 2001, “Price Impact Asymmetry and Block Trades: An Institutional Trading 
+Explanation,” Review of Financial Studies 14, 1153-1181. 
+Sandas, P., 2001, “Adverse Selection and Competitive Market Making: Empirical 
+Evidence from a Pure Limit Order Market,” Review of Financial Studies 14, 705734. 
+Seppi, D., 1997, “Liquidity Provision with Limit Orders and a Strategic Specialist,” 
+Review of Financial Studies 10, 103-150.  
+SCB Research Institute, 1998, “2540: A Year of Thailand Financial Market 
+Turbulence”, In Thai Language. 
+Silber, W., 1984, “Market maker Behavior in an Auction Market: An Analysis of 
+Scalpers in Futures Markets,” Journal of Finance 39, 937-953. 
+Skinner, D., 1997, “Do Option Markets Improve Informational Efficiency?,” 
+Contemporary Accounting Research 14, 193-201. 
+Srinivas, P., 1993, “Trade Size and the Information Content of Option Trades,” 
+Working Paper, Cornell University. 
+Stephan, J., and Whaley, R., 1990, “Intraday Price Change and Trading Volume 
+Relations in the Stock and Stock Option Markets,” Journal of Finance 45, 191220. 
+Stoll H. R., 1989, “Inferring the Components of the Bid-Ask Spread: Theory and 
+Empirical Tests,” Journal of Finance 44, 115-134. 
+Stock Exchange of Thailand, 1997, “Stock Exchange of Thailand Fact Book,” Stock 
+Exchange of Thailand, Bangkok, Thailand. 
+Stock Exchange of Thailand, 2003, “About the Exchange,” http://www.set.or.th. 
+ 
+29
+
+Taylor, N., 2002, “The Economic and Statistical Significance of Spread Forecasts: 
+Evidence from the London Stock Exchange,” Journal of Banking and Finance 26, 
+795-818. 
+Vijh, A., 1988, “Potential Biases from Using Only Trade Prices of Related Securities 
+on Different Exchanges,” Journal of Finance 43, 1049-1055. 
+Vijh, A., 1990, “Liquidity of the CBOE Equity Options,” Journal of Finance 45, 
+1157-1179. 
+Wermers, R., 1999, “Mutual Fund Herding and the Impact on Stock Prices,” Journal 
+of Finance 54, 581-622. 
+Wood, R., McInish, T., and Ord, J., 1985, “An Investigation of Transaction Data for 
+NYSE Stocks”, Journal of Finance 40, 723-741. 
+ 
+30
+
+Table 1. Descriptive Statistics of Order File, Trade File, and Limit Order Book  
+This Table shows the cross-sectional descriptive statistics of order file, limit order 
+book, and trade file of stocks listed on the SET.  Stock selection is based on two 
+criteria.  First, an active trading day must have at least 10 trades.  Second, a selected 
+stock must have the number of active trading days of at least 120 active trading days.  
+The filtered dataset contains 141 stocks from the total 457 stocks.   
+ 
+Mean 
+Median 
+SD 
+Min 
+Max 
+Corr. 
+with 
+firm 
+size 
+Panel A: Order File 
+ 
+ 
+ 
+ 
+ 
+ 
+Number of order  
+333 
+175 
+432 
+34 
+2785 
+0.5261 
+Order size (thousand shares) 
+1,831 
+827 
+2,812 
+67 
+19,635 
+0.3841 
+Order value (million baht) 
+65.44 
+18.04 
+134.78 
+1.13 
+1,009.79 
+0.8195 
+Buy order  
+0.5051 
+0.5139 
+0.0667 
+0.2597 
+0.7178 
+0.1508 
+Limit order  
+0.7429 
+0.7426 
+0.0310 
+0.6316 
+0.8306 
+0.1555 
+Matched orders 
+0.4627 
+0.4646 
+0.0474 
+0.3429 
+0.5749 
+0.0883 
+Price conditional order  
+0.0014 
+0.0011 
+0.0012 
+0.0002 
+0.0102 
+0.0911 
+Canceled order  
+0.2117 
+0.2098 
+0.0367 
+0.1019 
+0.2959 
+0.3052 
+ 
+Panel B: Limit Order Book 
+Complete quote   
+0.9227 
+0.9413 
+0.0617 
+0.6117 
+0.9936 
+0.3234 
+Relative spread  
+0.0338 
+0.0298 
+0.0184 
+0.0084 
+0.1026 
+-0.4195 
+Absolute spread (baht) 
+1.13 
+0.58 
+1.49 
+0.11 
+11.60 
+0.2702 
+Quote midpoint (baht) 
+51.11 
+24.04 
+71.99 
+1.55 
+504.21 
+0.5215 
+Market depth (thousand 
+shares) 
+54.29 
+28.31 
+63.15 
+1.78 
+376.42 
+0.2781 
+Displayed depth (thousand 
+shares)  
+170.59 
+75.07 
+191.62 
+7.18 
+1,070.05 
+0.1997 
+Total depth (thousand shares) 
+351.73 
+170.78 
+480.17 
+18.07 
+3,303.28 
+0.3405 
+Length of book  
+13.90 
+13.32 
+5.12 
+4.14 
+29.09 
+0.6943 
+Length of bid   
+6.40 
+5.86 
+2.69 
+1.59 
+14.81 
+0.6807 
+Length of ask   
+7.50 
+7.15 
+2.59 
+2.17 
+14.46 
+0.6642 
+ 
+Panel C: Trade File 
+No. active trading days 
+200 
+215 
+46 
+120 
+247 
+0.3937 
+Number of trades  
+159 
+82 
+211 
+17 
+1,281 
+0.5027 
+Trade size (thousand shares) 
+417 
+201 
+661 
+12 
+4,615 
+0.3870 
+Trade value (million baht) 
+15.10 
+4.01 
+31.61 
+0.25 
+230.05 
+0.8056 
+Price (baht) 
+50.75 
+24.08 
+71.95 
+1.56 
+503.64 
+0.5228 
+Daily return  
+0.0049 
+0.0032 
+0.0104 
+-0.0165 
+0.0480 
+-0.2767 
+SD of return  
+0.0122 
+0.0099 
+0.0082 
+0.0030 
+0.0404 
+-0.3851 
+Mean absolute return  
+0.0068 
+0.0045 
+0.0063 
+0.0007 
+0.0310 
+-0.3585 
+Hi-Lo return  
+0.0608 
+0.0595 
+0.0172 
+0.0229 
+0.1093 
+-0.0179 
+ 
+ 
+31
+
+Table 2. Successive Price Spreads and Depths of Limit Order Book 
+This Table shows the cross-sectional descriptive statistics of price spreads and depths.  Price spreads are the difference of prices at successive 
+levels of limit order book divided by the average of the successive prices.  For example, A1-B1 is the best bid price minus the best ask price and 
+divided by the quote mid point.  Depths are the number of shares at each limit prices in the limit order book.  For example, B1 is the number of 
+shares at the best bid price. 
+ 
+Panel A Spread between Adjacent Levels of Limit Order Book  
+ 
+ 
+B5-B6 
+B4-B5
+B3-B4
+B2-B3
+B1-B2
+A1-B1 
+A2-A1
+A3-A2
+A4-A3
+A5-A4
+A6-A5
+Relative spread  
+ 
+Mean
+0.0407 
+0.0346
+0.0284
+0.0222
+0.0214
+0.0338 
+0.0186
+0.0170
+0.0167
+0.0166
+0.0166 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Median
+0.0204
+0.0199
+0.0184
+0.0178
+0.0185
+0.0298
+0.0165
+0.0147
+0.0143
+0.0138
+0.0138
+SD
+0.0854 
+0.0699
+0.0470
+0.0205
+0.0143
+0.0184 
+0.0114
+0.0100
+0.0103
+0.0116
+0.0131
+Absolute spread (baht) 
+ 
+Mean
+0.74
+0.71
+0.66
+0.62
+0.66
+1.13
+0.57
+0.54
+0.55
+0.57
+0.59
+Median
+0.38
+0.37
+0.34
+0.33
+0.33
+0.58
+0.31
+0.30
+0.31
+0.32
+0.32
+SD
+0.89 
+0.88
+0.82
+0.77
+0.89
+1.49 
+0.65
+0.61
+0.64
+0.65
+0.68
+ 
+Panel B Depth at Six Levels of Limit Order Book  
+ 
+ 
+B6 
+B5 
+B4
+B3
+B2
+B1
+A1
+A2
+A3
+A4
+A5
+A6
+Depth (shares) 
+ 
+Mean
+31,932 
+29,984 
+30,081
+31,173
+29,490
+33,880
+20,414
+26,134
+29,497
+27,608
+26,398
+24,400 
+ 
+ 
+ 
+ 
+Median
+11,554 
+12,484 
+13,463
+13,908
+12,953
+17,353
+10,441
+11,331
+13,254
+13,641
+13,086
+12,686
+SD
+55,488 
+44,110 
+44,007
+45,710
+41,042
+45,619
+25,347
+37,706
+41,786
+36,882
+33,406
+30,026
+ 
+ 
+32 
+
+Table 3. Equality Test of Price Spreads and Depths  
+This Table presents the equality test of price spreads and depths using the Wald linear restriction test from the following regression.  
+ 
+i
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+B
+A
+B
+A
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+i
+D
+D
+D
+D
+D
+D
+D
+D
+D
+D
+D
+Spread
+ε
+β
+β
+β
+β
+β
+β
+β
+β
+β
+β
+β
++
++
++
++
++
++
++
++
++
++
++
+=
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+−
+5
+6
+5
+6
+4
+5
+4
+5
+3
+4
+3
+4
+2
+3
+2
+3
+1
+2
+1
+2
+1
+1
+1
+1
+2
+1
+2
+1
+3
+2
+3
+2
+4
+3
+4
+3
+5
+4
+5
+4
+6
+5
+6
+5
+      
+          
+ 
+ 
+i
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+j
+D
+D
+D
+D
+D
+D
+D
+D
+D
+D
+D
+D
+Depth
+ε
+β
+β
+β
+β
+β
+β
+β
+β
+β
+β
+β
+β
++
++
++
++
++
++
++
++
++
++
++
++
+=
+6
+6
+5
+5
+4
+4
+3
+3
+2
+2
+1
+1
+1
+1
+2
+2
+3
+3
+4
+4
+5
+5
+6
+6
+ 
+Spreadi and Depthj are the price spread and depth of successive levels in the order book for all stocks after stacking all observations.  Di, i = B5B6, ..., A6-A5 and Dj where j = B6, ..., A6 are dummy variables which equal to one if the observation of Spread or Depth belong to the book 
+level i or j.  The number of i and j are 11 and 12 respectively.  Wald statistics is used to test the sets of linear restrictions.  
+Panel A: Equality of Spread 
+DF
+Relative spread equality test 
+ 
+Wald test
+P-value 
+Displayed spreads including bid-ask spread: 
+2
+3
+1
+2
+1
+1
+2
+1
+3
+2
+A
+A
+A
+A
+B
+A
+B
+B
+B
+B
+−
+−
+−
+−
+−
+=
+=
+=
+=
+β
+β
+β
+β
+β
+ 
+4
+16.88
+0.0020 
+Displayed spreads excluding bid-ask spread: 
+2
+3
+1
+2
+2
+1
+3
+2
+A
+A
+A
+A
+B
+B
+B
+B
+−
+−
+−
+−
+=
+=
+=
+β
+β
+β
+β
+ 
+3
+1.69
+0.6402 
+Spreads on the bid side: 
+2
+1
+3
+2
+4
+3
+5
+4
+6
+5
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+−
+−
+−
+−
+−
+=
+=
+=
+=
+β
+β
+β
+β
+β
+ 
+4
+26.36
+0.0000 
+Spreads on the ask side: 
+5
+6
+4
+5
+3
+4
+2
+3
+1
+2
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+−
+−
+−
+−
+−
+=
+=
+=
+=
+β
+β
+β
+β
+β
+ 
+4
+0.28
+0.9908 
+Panel B: Equality of Depth 
+DF
+Depth equality test  
+ 
+Wald test
+P-value 
+Displayed depths including market depths: 
+3
+2
+1
+1
+2
+3
+A
+A
+A
+B
+B
+B
+β
+β
+β
+β
+β
+β
+=
+=
+=
+=
+=
+ 
+5
+9.22
+0.1006 
+Displayed depth excluding market depths: 
+3
+2
+2
+3
+A
+A
+B
+B
+β
+β
+β
+β
+=
+=
+=
+ 
+3
+1.13
+0.7690 
+Depths on the bid side: 
+1
+2
+3
+4
+5
+6
+B
+B
+B
+B
+B
+B
+β
+β
+β
+β
+β
+β
+=
+=
+=
+=
+=
+ 
+5
+1.13
+0.9519 
+Depths on the ask side: 
+6
+5
+4
+3
+2
+1
+A
+A
+A
+A
+A
+A
+β
+β
+β
+β
+β
+β
+=
+=
+=
+=
+=
+ 
+5
+4.09
+0.5366 
+ 
+ 
+33 
+
+Table 4. Determinants of the Shape of Order Book 
+The factors determining the shape of order book are examined through the following regression.  
+i
+i
+i
+i
+i
+i
+Volume
+Volatility
+FirmSize
+TickSize
+Convexity
+ε
+β
+β
+β
+β
+β
++
++
++
++
++
+=
+4
+3
+2
+1
+0
+ 
+ 
+where Convexityi is the average of the slope difference of the price schedule; TickSizei is the minimum relative price spread; FirmSizei is the 
+market capitalization; Volatilityi is the trade price volatility; Volumei  is the trading volume.  All the variables are standardized by subtracting the 
+cross-sectional mean and divided by the standard deviation.  Total refers to the regression when Convexityi is computed including both bid and 
+ask sides.  Bid (Ask) side is the regression when Convexityi is computed including only bid (ask) side.  Positive (Negative) Convexity is the 
+regression based on the firms with the positive (negative) Convexityi.  Large (Small) firms are firms with market capitalization larger (smaller) 
+than the median of all firms.  Large (Small) Tick Size are firms with relative tick size larger (smaller) than the median tick size of all firms.     
+The number in the parenthesis is the t-statistic adjusted by White heteroskedasticity, where * and ** denote 95% and 99% statistically 
+significance.   
+ 
+Total Book 
+All Firms 
+ 
+All Firms 
+Large Firms 
+Small Firms 
+Large Tick Size 
+Small Tick Size 
+Bid Side 
+Ask Side 
+TickSize 
+ 
+ 
+ 
+ 
+ 
+ 
+0.556
+-0.009
+0.773 
+0.762
+0.051
+0.466
+0.546
+(6.56)** 
+(-0.11) 
+(7.50)** 
+(6.77)** 
+(0.48)
+(6.70)** 
+(5.23)**
+FirmSize
+ 
+0.205
+-0.003
+0.026
+0.038
+0.078
+0.141
+0.245
+(3.11)**
+(-0.04)
+(0.29)
+(0.71)
+(0.98)
+(2.20)*
+(3.59)**
+Volatility
+ 
+-0.693
+-0.800
+-0.427
+-0.271
+-0.805
+-0.718
+-0.491
+(-7.45)**
+(-8.21)**
+(-3.09)**
+(-4.29)**
+(-7.95)**
+(-8.21)**
+(-4.38)**
+Volume
+0.032
+-0.164
+0.120
+0.223
+-0.1334
+0.068
+-0.024
+(0.63) 
+(-2.08)* 
+(1.21) 
+(3.12)** 
+(1.61)
+(1.08) 
+(-0.45)
+Durbin-Watson
+1.90
+1.77
+1.20
+1.75
+2.00
+1.81
+2.00
+Adjusted-R2 
+0.45
+0.52
+0.48
+0.50
+0.57
+0.45
+0.29
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+34 
+
+Table 5. Intraday Variation of the Order Book 
+The intraday patterns of interested variables are estimated as follows:  
+, subject to 
+ 
+t
+k
+t
+k
+k
+h
+t
+h
+h
+k
+t
+dweek
+dtime
+Y
+ε
+γ
+β
+α
+ˆ
+ˆ
+ˆ
+ˆ
+5
+1
+,
+9
+1
+,
++
++
++
+=
+∑
+∑
+=
+=
+0
+  ,0
+5
+1
+9
+1
+=
+=
+∑
+∑
+=
+=
+k
+k
+h
+h
+γ
+β
+where Yk
+t denotes the variables of interest which consist of Complete Quote, Bid-Ask Spread, Length of Order Book, Length of Bid, Length of 
+Ask, Price Spreads of the Successive Quote (B1-B2, B2-B3, A2-A1, A3-A2), Length of Limit Order Book, Length of Bid, and Length of Ask 
+Market Depth, Displayed Depth, Total Depth, Depths at Display Quoted (B3, B2, B1, A1, A2, A3).  For each variable, the data of 141 stocks are 
+stacked into a column and are standardized by subtracting the mean and divided by the standard deviation of its own stock.  Then, the 
+standardized variables are regressed against the time of the day and the day of the week dummies.  The table reports the cross-sectional averages 
+of the coefficients and the adjusted R2.  The statistical significance is based on the signed test of the estimated coefficients, where ** and * 
+indicates 99% and 95% significance level.   
+Panel A Time Variation of Complete Quote, Length of the book, and Spread  
+ 
+Complete 
+Quote 
+Length of 
+Book 
+Length of 
+Bid 
+Length of 
+Ask 
+Bid-Ask 
+Spread 
+B1-B2 
+ 
+ 
+ 
+B2-B3
+A2-A1
+A3-A2
+Constant 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+0.9227**
+13.90**
+6.40**
+7.50**
+1.1294**
+0.6563**
+0.6198**
+0.5722**
+0.5416**
+10:00-10:30 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+0.0046**
+-1.93**
+-0.75**
+-1.18**
+0.5248**
+0.0945**
+0.0504**
+0.0949**
+0.0579**
+10:30-11:00
+0.0128**
+-0.83**
+-0.20**
+ 
+-0.62**
+0.1763**
+0.0409**
+0.0300**
+0.0390**
+0.0334**
+11:00-11:30
+0.0129**
+-0.34**
+0.01
+-0.35**
+0.0553**
+0.0066**
+0.0127**
+0.0227**
+0.0179**
+11:30-12:00
+0.0113**
+-0.05**
+0.10**
+-0.15**
+-0.0140
+-0.0035
+0.0071**
+0.0061
+0.0085**
+12:00-12:30
+0.0105**
+ 
+0.17**
+0.11**
+0.06**
+-0.0590**
+-0.0070
+0.0030
+-0.0063**
+-0.0011
+14:30-15:00
+-0.0017
+0.48**
+0.13**
+0.34**
+-0.1294**
+-0.0192**
+-0.0202**
+-0.0218**
+-0.0146**
+15:00-15:30
+-0.0049**
+0.65**
+0.16**
+0.50**
+-0.1565**
+-0.0244**
+-0.0195**
+-0.0316**
+-0.0231**
+15:30-16:00
+-0.0138**
+0.83**
+0.23**
+0.60**
+-0.1885**
+-0.0326**
+-0.0242**
+-0.0443**
+-0.0333**
+16:00-16:30
+ 
+-0.0316**
+1.02**
+0.21**
+0.81**
+-0.2090**
+-0.0554**
+-0.0393**
+-0.0586**
+-0.0456**
+Monday
+0.0046**
+-0.21**
+-0.29**
+0.08**
+0.1006**
+0.0137
+0.0231
+0.0242**
+0.0092**
+Tuesday
+-0.0004
+0.08**
+0.03
+0.05
+0.0215*
+-0.0074
+-0.0084
+0.0052
+0.0097
+Wednesday
+-0.0032
+0.05
+0.31**
+-0.26**
+-0.0370**
+-0.0083
+-0.0120
+-0.0168**
+-0.0111**
+Thursday
+ 
+-0.0026
+0.07**
+ 
+0.03
+0.04
+-0.0327**
+0.0125
+0.0143
+-0.0081
+-0.0058
+Friday
+0.0016
+0.01
+-0.09**
+0.10**
+-0.0524**
+-0.0105**
+-0.0170**
+-0.0046
+-0.0020
+ 
+35 
+
+Panel B The Time Variation of Depth   
+ 
+Market 
+Depth 
+Displayed 
+Depth 
+Total Depth 
+ 
+ 
+ 
+ 
+ 
+ 
+B1
+B2
+B3
+A1
+A2
+A3
+Constant 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+51,941**
+150,578**
+351,730**
+32,629**
+26,960**
+26,729**
+19,881**
+25,164**
+26,979**
+10:00-10:30 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+-13,439**
+-43,719**
+-112,639**
+-7,286**
+-8,357**
+-7,806**
+-6,062**
+-7,027**
+-7,968**
+10:30-11:00
+-8,728**
+-24,559**
+-61,699**
+-5,241**
+-4,713**
+-4,245**
+-3,555**
+-3,597**
+-4,444**
+11:00-11:30
+-6,162**
+-14,055**
+-33,942**
+-4,007**
+-2,614**
+-2,540**
+-2,289**
+-1,539**
+-2,130**
+11:30-12:00
+-3,931**
+-6,993**
+-15,130**
+-2,678**
+-1,460**
+-1,096**
+-1,456**
+-573**
+-859**
+12:00-12:30
+-2,038**
+-1,401**
+77
+-1,222**
+-234
+-70**
+-996**
+-67**
+-65
+14:30-15:00
+2,689**
+8,920**
+24,611**
+1,858**
+2,075**
+1,942**
+868**
+1,120**
+1,804**
+15:00-15:30
+5,385**
+16,396**
+43,802**
+2,932**
+3,050**
+3,078**
+2,474**
+2,187**
+3,090**
+15:30-16:00
+8,988**
+24,530**
+62,656**
+4,751**
+4,314**
+4,136**
+4,244**
+3,816**
+4,073**
+16:00-16:30
+ 
+17,235**
+40,881**
+92,266**
+10,892**
+7,939**
+6,601**
+6,772**
+5,681**
+6,499**
+Monday
+-10,987**
+-20,068**
+-36,417**
+-9,518**
+-2,220**
+ 
+-3,553**
+-1,474**
+ 
+-2,413**
+-1,868**
+ 
+Tuesday
+-8,632**
+-10,447**
+-14,568**
+ 
+-8,434**
+-248
+-388**
+-187
+-858*
+-355
+Wednesday
+ 
+647
+1,941**
+-230
+-1,023
+-676
+-540
+1,702
+1,957**
+ 
+1,023**
+Thursday
+19,967**
+25,201**
+35,395**
+20,274**
+1,295**
+1,888
+-369
+705
+955**
+Friday
+-995
+3,373
+15,819**
+-1,300
+1,849**
+2,593**
+329
+609**
+245
+ 
+ 
+36 
+
+Table 6. Frequencies of Order Sequences 
+This Table shows the frequency of order sequences conditional to the degree of order aggressiveness.  Limit order has the level of aggressiveness from the least aggressive order at level 1 until 
+level 5.  The market order has the aggressiveness from level 6 to the most aggressive at level 9.  MB9 (MS9) is market buy (sell) order with order price higher (lower) than the best ask (bid) 
+price, and the order size larger than the shares available at the ask (bid).  MB8 (MS8) is market buy (sell) order with the order size larger than shares available at ask (bid) and the order price 
+equal to the price at the ask (bid).  MB7 (MS7) is market buy (sell) order with order price higher than the ask (bid) and the volume is smaller than the prevailing ask (bid).  MB6 (MS6) is market 
+buy (sell) order with order price equal to the best ask (bid) price and order volume lower than prevailing ask (bid).  LB5 (LS5) is limit buy (sell) order with order price higher than the best bid 
+(offer) price.  LB4 (LS4) is limit buy (sell) order that enters when the limit order book on bid (ask) is empty.  LB3 (LS3) is limit buy (sell) orders with order price equal to the best bid (ask) 
+price.  LB2 (LS2) is limit buy (sell) order with order price lower (higher) than the best bid (ask) price but higher (lower) than the third bid (ask) price.  LB1 (LS1) is limit buy (sell) order with 
+order price lower (higher) than the third bid (ask) price.  Each row and column represents the order flow event at time t-1 and t respectively.  Each row is an analogous probability vector and 
+adds up to 100 percent.  The maximum proportion in each row is in a bold format.   
+ t 
+t-1 
+No. of 
+obs. 
+% of 
+Total 
+MB9 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+MS9
+MB8
+MS8
+MB7
+MS7
+MB6
+MS6
+LB5
+LS5
+LB4
+LS4
+LB3
+LS3
+LB2
+LS2
+LB1
+LS1
+MB9
+20,259
+0.43
+5.15
+0.73
+4.07
+12.68 
+3.88
+0.65
+11.32
+4.96
+5.41
+10.29
+0.35
+0.02
+5.93
+7.21
+5.10
+11.07
+2.84
+8.34
+MS9 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+17,617
+0.38
+0.80
+3.79
+11.90 
+3.97
+0.79
+3.11
+4.11
+11.63
+9.13
+5.85
+0.12
+0.16
+6.66
+7.25
+10.14
+8.20
+6.14
+6.25
+MB8
+382,473
+8.15
+0.17
+0.07
+2.19
+11.52
+0.27
+0.17
+26.85 
+2.35
+3.14
+7.65
+0.08
+0.19
+8.15
+8.15
+6.54
+9.63
+4.57
+8.32
+MS8
+375,632
+8.00
+0.09
+0.16
+10.54
+1.94
+0.14
+0.22
+2.41
+24.99 
+7.02
+3.06
+0.28
+0.03
+9.45
+8.55
+9.22
+8.40
+6.69
+6.82
+MB7
+32,007
+0.68
+1.32
+0.45
+2.99
+6.76
+28.85 
+1.01
+8.53
+8.12
+2.10
+3.66
+0.07
+0.02
+8.52
+8.11
+4.76
+5.88
+4.32
+4.52
+MS7
+26,943
+0.57
+0.40
+1.72
+7.88
+3.06
+1.09
+9.69
+6.26
+14.10 
+3.63
+3.83
+0.06
+0.13
+10.87
+10.20
+8.00
+7.54
+5.69
+5.86
+MB6
+993,969 
+21.17
+0.15
+0.07
+1.00
+3.23
+0.32
+0.18
+33.60 
+3.05
+2.07
+1.32
+0.04
+0.03
+11.05
+13.87
+7.23
+9.08
+5.11
+8.60
+MS6
+916,081 
+19.51
+0.06
+0.09
+2.96
+0.85
+0.20
+0.27
+3.05
+31.72 
+1.29
+2.00
+0.04
+0.02
+15.26
+11.18
+8.68
+8.57
+7.20
+6.56
+LB5
+348,049
+7.41
+1.15
+0.86
+12.72
+7.44
+0.25
+0.81
+4.16
+1.09
+23.52 
+7.30
+0.14
+0.37
+7.98
+6.61
+6.45
+8.08
+4.21
+6.85
+LS5
+357,825
+7.62
+1.00
+1.00
+8.21
+10.89
+0.25
+0.80
+1.53
+3.95
+6.41
+23.63 
+0.42
+0.06
+6.49
+8.95
+6.85
+8.19
+5.08
+6.28
+LB4
+14,409
+0.31
+1.49
+2.14
+7.92
+7.11
+0.43
+2.37
+3.67
+1.30
+0.30
+12.09
+36.98 
+0.38
+0.58
+7.10
+0.46
+9.08
+0.15
+6.46
+LS4
+12,803
+0.27
+0.93
+0.55
+6.47
+7.27
+0.40
+1.40
+0.61
+2.59
+8.53
+0.19
+0.45
+56.99 
+4.30
+0.52
+5.02
+0.09
+3.56
+0.13
+LB3
+1,253,410
+26.70
+0.09
+0.13
+6.42
+1.79
+0.21
+0.20
+6.99
+10.20
+3.55
+1.68
+0.12
+0.03
+26.08 
+8.78
+10.92
+8.73
+6.89
+7.19
+LS3
+1,163,005
+24.77
+0.17
+0.10
+2.05
+6.39
+0.23
+0.23
+10.77
+7.18
+1.89
+3.96
+0.07
+0.08
+9.53
+23.09 
+8.05
+11.51
+6.20
+8.52
+LB2
+927,923
+19.77
+0.11
+0.13
+3.83
+2.64
+0.21
+0.16
+6.65
+7.82
+3.60
+2.45
+0.05
+0.06
+16.30
+10.20
+19.59 
+9.48
+8.96
+7.76
+LS2
+993,547 
+21.16
+0.16
+0.12
+3.11
+4.30
+0.22
+0.20
+8.78
+6.80
+2.72
+3.80
+0.11
+0.00
+11.21
+15.22
+8.72
+19.29 
+6.43
+8.79
+LB1
+722,078
+15.38
+0.08
+0.11
+2.86
+2.45
+0.24
+0.17
+6.17
+8.62
+2.31
+2.37
+0.00
+0.05
+11.95
+10.06
+12.85
+9.12
+21.47 
+9.10 
+LS1
+831,710
+17.71
+0.15
+0.10
+2.95
+3.56
+0.24
+0.18
+10.33
+6.10
+2.81
+2.87
+0.09
+0.03
+10.92
+11.78
+8.56
+12.17
+7.74
+19.43 
+ 
+37 
+
+Table 7. Hypotheses of Conditional Order Sequence 
+This Table presents the cross-sectional average of order sequence between market buy 
+order (MB), market sell order (MS), limit buy order (LB), and limit sell order (LS).  
+Panel A shows the descriptive statistics of the sequence likelihood.  Panel B compares 
+the probability of sequence pattern with the results of Parlour (1998) and Ranaldo 
+(2003).  Panel C shows the cross-sectional average of proportion of order type 
+conditional on the size of bid-ask spread.  
+Panel A Symmetry of Limit Orders and Market Orders 
+Probability 
+Mean 
+Median
+SD
+Max 
+Min
+MSt|MSt-1 
+0.60 
+0.61
+0.03
+0.67 
+0.48
+MSt|MBt-1 
+0.43 
+0.42
+0.04
+0.53 
+0.34
+MBt|MBt-1 
+0.57 
+0.58
+0.04
+0.66 
+0.47
+MBt|MSt-1 
+0.40 
+0.39
+0.03
+0.52 
+0.33
+LBt|LBt-1 
+0.58 
+0.58
+0.03
+0.69 
+0.47
+LBt|MBt-1 
+0.22 
+0.22
+0.03
+0.34 
+0.12
+LBt|LSt-1 
+0.40 
+0.40
+0.03
+0.49 
+0.29
+LBt|MSt-1 
+0.28 
+0.27
+0.03
+0.38 
+0.17
+LSt|LSt-1 
+0.60 
+0.60
+0.03
+0.71 
+0.51
+LSt|MSt-1 
+0.29 
+0.29
+0.04
+0.47 
+0.21
+LSt|LBt-1 
+0.42 
+0.42
+0.03
+0.53 
+0.31
+LSt|MBt-1 
+0.30 
+0.30
+0.03
+0.39 
+0.21
+ 
+Panel B Comparing with Parlour (1998) and Ranaldo (2003) 
+Number of stocks following the hypotheses 
+Parlour (1998)’s predictions 
+Ranaldo (2003)
+Findings
+Prob[MSt|MBt-1] < Prob[MSt|MSt-1] 
+8/15
+141/141
+Prob[MBt|MSt-1] < Prob[MBt|MBt-1] 
+15/15
+141/141
+Prob[LBt|LBt-1]  < Prob[LBt|MBt-1] 
+15/15
+0/141
+Prob[LBt|MBt-1] < Prob[LBt|LSt-1] 
+0/15
+141/141
+Prob[LBt|LSt-1] < Prob[LBt|MSt-1] 
+15/15
+0/141
+Prob[LSt|LSt-1] < Prob[LSt|MSt-1] 
+15/15
+0/141
+Prob[LSt|MSt-1] < Prob[LSt|LBt-1] 
+0/15
+137/141
+Prob[LSt|LBt-1] < Prob[LSt|MBt-1] 
+15/15
+1/141
+ 
+Panel C Proportion of Order Type Conditional on the Size of Bid-Ask Spread 
+ 
+Buy
+Market
+MB
+MS
+LB 
+LS
+Large spread 
+0.4905
+0.1841
+0.0976
+0.0865
+0.3929 
+0.4230
+Medium-large spread  
+0.4839
+0.2853
+0.1467
+0.1386
+0.3372 
+0.3775
+Medium-small spread 
+0.4825
+0.3628
+0.1881
+0.1747
+0.2944 
+0.3428
+Small spread 
+0.4785
+0.4113
+0.2128
+0.1985
+0.2658 
+0.3229
+ 
+ 
+38
+
+Table 8. Conditional Order Time Interval 
+This table presents the cross-sectional mean of the unconditional and conditional time 
+interval of order (in seconds).  The order time interval is conditioned to the spread 
+size and the order aggressiveness.  There are four groups of spread size, classifying by 
+the time-series first quartile, between the first quartile and second quartile, between 
+median and third quartile, or above the third quartile.  The order aggressiveness have 
+nine levels starting from the least aggressive order at level one to the most aggressive 
+order at level 9.  MB (MS) refers to market buy (sell), and LB (LS) is the limit buy 
+(sell).  The statistics in the table shows the cross-sectional mean, median, and standard 
+deviation of conditional order time interval.  The equality test of conditional time 
+interval is done using the ANOVA F-test and the nonparametric Kruskal-Wallis test. 
+The degree of freedom is shown in the parenthesis.  ** and * denote 99% and 95% 
+significance level.  
+ 
+Time interval (sec) 
+Equality Test 
+ 
+Mean
+Median
+SD
+ANOVA 
+Kruskal 
+Wallis
+Unconditional 
+332.5
+243.8
+282.0
+ 
+ 
+ 
+Large spread 
+378.1
+264.9
+328.9
+7.66** 
+11.62**
+Medium-large spread  
+347.4
+269.3
+279.9
+ (3,560) 
+(3)
+Medium-small spread 
+287.8
+201.8
+241.9
+ 
+Small spread 
+235.1
+188.5
+197.4
+ 
+ 
+ 
+MB9 (most aggressive) 
+62.4
+44.4
+60.8
+26.08** 
+183.25**
+MB8  
+202.4
+167.3
+153.7
+(8,1120) 
+(8)
+MB7 
+142.7
+69.5
+226.5
+ 
+MB6 
+231.7
+181.9
+190.3
+ 
+LB5 
+325.2
+252.4
+273.8
+ 
+LB4 
+309.2
+144.9
+361.3
+ 
+LB3 
+404.4
+315.1
+336.4
+ 
+LB2 
+409.0
+341.0
+320.0
+ 
+LB1 (least aggressive) 
+427.5
+351.1
+364.6
+ 
+ 
+ 
+MS9 (most aggressive) 
+79.5
+64.8
+59.6
+15.58** 
+95.76**
+MS8 
+221.3
+170.3
+176.8
+(8,1120) 
+(8)
+MS7 
+254.2
+136.3
+301.3
+ 
+MS6 
+304.1
+248.4
+251.9
+ 
+LS5 
+378.7
+271.2
+323.6
+ 
+LS4 
+276.7
+123.9
+372.2
+ 
+LS3 
+427.4
+315.7
+349.1
+ 
+LS2 
+403.9
+309.4
+330.8
+ 
+LS1 (least aggressive) 
+445.0
+328.6
+382.6
+ 
+ 
+ 
+39
+
+Table 9. Determinants of Order Aggressiveness 
+An ordered probit model is used to examine the determinants of order aggressiveness.  
+, where Yt is the order aggressiveness; Yt =1, 2, 3, and 4 for limit order placed 
+behind the displayed quote, within the displayed quote, at the best quote, and improve the quote respectively; Yt = 5 and 6 for the market order at the best quote and the market order with trade 
+size larger than the best quote or the price better than the best quote.  The explanatory variables are the standardized variables that represent the state of order book and market sentiment.  Bidask spread is the relative spread.  Same (Opposite) spread is the percentage price spread between price at the best quote and price at the third best quote on the same (opposite) side of order 
+type.  Same (Opposite) market depth is the number of shares available at the best bid (ask) side for buy order, and at the best ask (bid) side for sell order.  Same (Opposite) 2nd and 3rd depth is 
+the displayed shares at the second and third bid (ask) side for buy (sell) order.  Trade volatility is the standard deviation of the last 10 price changes.  Trade time elapsed is the average time 
+interval between the last 10 trades.  Order volume is the number of shares in the order.  The bull (bear) market is the period when the return of last 10 trades is positive (negative).  The 
+regression of the positive and negative sentiment of buyers and sellers are done separately.  The numbers shown are the cross-sectional average coefficient of all 141 stocks, stocks with tick size 
+larger and smaller than the median tick size, and stocks with market capitalization larger and smaller than the median size.  ** and * denote 99% and 95% significance level from the signed test.    
+t
+K
+h
+t
+h
+h
+t
+X
+Y
+ε
+β
++
+= ∑
+=1
+,
+ 
+Bull Market 
+ 
+Bear Market 
+ 
+Total 
+Large Tick  
+Small Tick  
+Large Firm 
+Small Firm 
+ 
+Total 
+Large Tick 
+Small Tick 
+Large Firm 
+Small Firm 
+Panel A: Buyers 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Bid-ask spread 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+-0.0658**
+-0.0836**
+-0.0482**
+-0.0251**
+-0.1059**
+-0.1045**
+-0.1132**
+-0.0960**
+-0.0570**
+-0.1513**
+Same spread
+0.0256**
+0.0359**
+0.0154**
+0.0311**
+0.0201**
+ 
+0.0310**
+ 
+0.0348**
+0.0273**
+0.0361**
+0.0260**
+Opposite spread
+-0.0206**
+-0.0121**
+-0.0290**
+-0.0391**
+-0.0025
+0.0080
+0.0134
+0.0027*
+-0.0184**
+0.0340**
+Same market depth 
+0.3398** 
+0.2578** 
+0.4206** 
+0.4345**
+0.2464**
+0.0865**
+0.1122**
+0.0612**
+0.0610**
+0.1116**
+Same 2nd-3rd depth 
+0.0042* 
+0.0105* 
+-0.0020 
+-0.0041 
+0.0124*
+0.0246**
+0.0321**
+0.0172**
+0.0182**
+0.0309**
+Opposite market depth
+-0.1809**
+-0.2073**
+-0.1548**
+-0.1559**
+-0.2054**
+-0.0890**
+-0.1002**
+ 
+-0.0779**
+-0.0633**
+-0.1143**
+ 
+Opposite 2nd-3rd depth
+ 
+0.0488**
+0.0344**
+0.0629**
+0.0627**
+0.0350**
+0.0150**
+0.0031
+0.0267**
+0.0368**
+-0.0064
+Trade volatility
+-0.0260**
+-0.0192**
+-0.0327**
+-0.0341**
+-0.0180**
+0.0346**
+0.0399
+0.0295**
+0.0166**
+0.0524**
+Trade time elapsed 
+ 
+-0.0202** 
+-0.0268** 
+ 
+-0.0136** 
+-0.0201**
+-0.0202**
+0.0110**
+-0.0016
+0.0233**
+0.0171**
+0.0049
+Order volume
+ 
+0.0279**
+ 
+0.0101
+0.0454**
+ 
+0.0464**
+ 
+0.0097
+ 
+ 
+-0.0062
+ 
+ 
+-0.0295
+0.0168
+ 
+0.0291**
+ 
+-0.0409**
+ 
+Panel B: Sellers
+Bid-ask spread
+-0.0851**
+-0.0894**
+-0.0809**
+-0.0586**
+-0.1112**
+-0.0334**
+-0.0448**
+ 
+-0.0222**
+-0.0085
+-0.0580**
+ 
+Same spread
+0.0362**
+0.0384**
+ 
+0.0340**
+0.0361**
+0.0362**
+0.0139**
+0.0030
+0.0247**
+0.0309**
+-0.0028
+Opposite spread
+0.0127**
+0.0085
+0.0168**
+0.0141**
+0.0113
+0.0069**
+0.0210
+-0.0070**
+-0.0100**
+0.0235
+Same market depth 
+0.1180** 
+0.1367** 
+0.0996** 
+0.1177**
+0.1184**
+0.0937**
+0.0968**
+0.0906**
+0.0860**
+ 
+0.1013**
+Same 2nd-3rd depth
+0.0137**
+0.0173**
+0.0101*
+0.0020
+0.0251**
+0.0156**
+0.0177**
+0.0135**
+0.0071
+0.0239**
+Opposite market depth
+-0.1950**
+-0.1517**
+-0.2376**
+-0.2598**
+-0.1310**
+-0.0640**
+-0.0824**
+-0.0458**
+-0.0492**
+-0.0785**
+Opposite 2nd-3rd depth
+0.0442**
+0.0472**
+0.0412**
+0.0463**
+0.0421**
+ 
+0.0319**
+0.0328**
+0.0310**
+0.0301**
+0.0336**
+ 
+Trade volatility 
+-0.0025** 
+0.0017 
+-0.0066** 
+-0.0188** 
+0.0136
+-0.0114**
+-0.0103**
+-0.0125**
+-0.0222**
+-0.0008
+Trade time elapsed 
+ 
+0.0978** 
+0.1059** 
+0.0898** 
+0.0921**
+0.1035**
+0.0647**
+0.0777**
+0.0518**
+0.0540**
+0.0753**
+Order volume
+0.0878**
+0.0762**
+0.0993**
+0.1160**
+0.0600**
+0.1044**
+0.1195**
+0.0894**
+0.1124**
+0.0964**
+ 
+40 
+
+Table 10. Marginal Likelihood for Each Order Placement Choice 
+This table shows the marginal likelihood for six order placement choices with respect to the change of one standard deviation in the limit order book components.  Six order 
+placement choices starting from the least aggressiveness order are a limit order placed behind the displayed quote, a limit order within the displayed quote, a limit order placed at the best 
+quote, a limit order that improves the quote, a market order at the best quote, and the market order with trade size larger than the best quote or the price better than the best quote.  The limit 
+order book components consist of seven variables as follows.  Bid-ask spread is the relative spread.  Same (Opposite) spread is the percentage price difference between price 
+at the best quote and price at the third best quote on the same (opposite) side of order type.  Same (Opposite) market depth is the number of shares available at the best bid 
+(ask) side for buy order, and at the best ask (bid) side for sell order.  Same (Opposite) 2nd and 3rd depth is the shares at the second and best bid (ask) side for buy (sell) order.  
+The bull (bear) market is the period when the return of last 10 trades is positive (negative).  The regression of the positive and negative sentiment of buyers and sellers are 
+done separately.  ** and * denote 99% and 95% significance level from the signed test. 
+ 
+Bull Market 
+ 
+Bear Market 
+LO.
+undisp. 
+LO. best 
+2-3 
+LO. at 
+the mkt. 
+LO. 
+improve 
+MO at 
+the mkt. 
+MO. 
+improve 
+LO.
+undisp. 
+LO. best 
+2-3 
+LO. at 
+the mkt. 
+LO. 
+improve 
+MO at 
+the mkt. 
+MO. 
+improve 
+Panel A: Buyers 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Bid-ask spread
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+0.03** 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+0.33**
+0.48**
+0.20**
+-0.02**
+-0.33**
+0.65**
+0.76**
+0.72**
+0.10
+-0.17**
+-0.43**
+0.98**
+Same spread
+-0.21**
+-0.17**
+-0.04**
+0.05**
+0.19**
+-0.18**
+-0.34**
+ 
+-0.15**
+ 
+0.05**
+ 
+0.09**
+ 
+0.16**
+ 
+-0.20**
+ 
+Opposite spread
+0.19**
+0.10**
+-0.02**
+-0.14**
+0.16**
+-0.01
+-0.09
+-0.03*
+0.00
+0.02
+-0.11
+Same market depth
+-2.44**
+-2.11**
+-0.69**
+0.23**
+2.30**
+-2.71**
+-0.72**
+-0.58**
+0.03
+0.18**
+0.42**
+-0.68**
+Same 2nd-3rd depth
+-0.03*
+-0.04*
+0.00**
+0.02*
+0.04*
+-0.02*
+-0.21**
+-0.16**
+0.02**
+ 
+0.05**
+0.12**
+-0.19**
+Opposite market depth
+1.09**
+1.24**
+0.46**
+-0.11**
+-1.14**
+1.54**
+0.66**
+0.57**
+0.02
+-0.08**
+-0.40**
+0.78**
+Opposite 2nd-3rd depth
+ 
+-0.36**
+ 
+-0.30**
+-0.09**
+ 
+0.03**
+ 
+0.31**
+ 
+-0.40**
+ 
+-0.22**
+ 
+-0.04**
+0.04
+ 
+0.06**
+ 
+0.09**
+ 
+-0.07**
+ 
+ 
+Panel B: Sellers
+ 
+Bid-ask spread
+ 
+0.81**
+0.49**
+-0.01
+-0.18**
+-0.42**
+0.69**
+0.22**
+0.22**
+0.08**
+-0.03**
+-0.17**
+0.32**
+Same spread
+-0.36**
+-0.19**
+0.01**
+ 
+0.07**
+0.19**
+-0.29**
+-0.17**
+-0.07**
+0.01**
+0.02**
+0.11**
+-0.10**
+Opposite spread
+-0.12**
+-0.06**
+0.00
+0.04**
+0.05**
+-0.10**
+-0.01**
+-0.05**
+-0.03**
+0.01**
+0.00**
+-0.08**
+Same market depth
+-1.15**
+-0.67**
+0.09**
+0.21**
+0.68**
+-0.85**
+-0.72**
+-0.58**
+-0.16**
+0.10**
+0.55**
+-0.81**
+Same 2nd-3rd depth
+-0.14**
+-0.07**
+0.02**
+0.03**
+0.07**
+-0.09**
+-0.13**
+-0.10**
+-0.01**
+0.03**
+0.09**
+-0.13**
+Opposite market depth
+1.98**
+1.03**
+-0.18**
+-0.31**
+-1.19**
+1.33**
+0.53**
+0.42**
+0.06**
+-0.08**
+-0.39**
+0.53**
+Opposite 2nd-3rd depth
+-0.45**
+-0.24**
+0.05**
+0.07**
+0.27**
+-0.30**
+-0.27**
+-0.20**
+-0.02**
+0.05**
+0.21**
+-0.24**
+ 
+ 
+ 
+ 
+ 
+41 
+
+Figure 1. Hypothetical Example of Convex Limit Order Book 
+This figure shows the convex shape of order book when the relative price spreads 
+increase by 20% and the depths decrease by 20% at each successive quote away from 
+the market. The vertical axis is the relative price deviation away from the mid quote 
+price, while the horizontal axis is the cumulative depth at the six best bid and best ask 
+quotes of the order book.  The positive (negative) relative price deviation and 
+cumulative depths represents the order book on the bid (ask) side. 
+-0.40
+-0.30
+-0.20
+-0.10
+0.00
+0.10
+0.20
+0.30
+0.40
+-150,000
+-100,000
+-50,000
+0
+50,000
+100,000
+150,000
+Cumulative Depth (Shares)
+Convex Limit Order Book
+Relative Price Deviation from Midpoint
+ 
+ 
+42
+
+Figure 2. Hypothetical Example of Concave Limit Order Book 
+This figure shows the concave shape of order book when the relative price spreads 
+decrease by 20% and the depths increase by 20% at each successive quote away from 
+the market. The vertical axis is the relative price deviation away from the mid quote 
+price, while the horizontal axis is the cumulative depth at the six best bid and best ask 
+quotes of the order book.  The positive (negative) relative price deviation and 
+cumulative depths represent the order book on the bid (ask) side. 
+-0.15
+-0.10
+-0.05
+0.00
+0.05
+0.10
+0.15
+-400,000
+-300,000
+-200,000
+-100,000
+0
+100,000
+200,000
+300,000
+400,000
+Cumulative Depth (Shares)
+Concave Limit Order Book
+Relative Price Deviation from Midpoint
+ 
+43
+
+Figure 3. Cross-sectional Shape of Order Book on the SET 
+This figure presents the relationship of average price deviation and cumulative depth 
+at the six best bid and best ask quotes of the order book.  The positive (negative) price 
+deviation and cumulative depths represent the order book on the bid (ask) side. 
+-0.20
+-0.15
+-0.10
+-0.05
+0.00
+0.05
+0.10
+0.15
+0.20
+-200,000
+-150,000
+-100,000
+-50,000
+0
+50,000
+100,000
+150,000
+200,000
+Cumulative Depth (Shares)
+Relative Price Deviation from Midpoint
+ 
+ 
+ 
+44

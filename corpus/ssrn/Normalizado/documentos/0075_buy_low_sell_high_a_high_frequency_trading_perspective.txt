@@ -1,0 +1,2563 @@
+ Electronic copy available at: http://ssrn.com/abstract=1964781 
+Buy Low Sell High: a High Frequency Trading Perspective
+Forthcoming in SIAM Journal of Financial Mathematics
+´Alvaro Carteaa, Sebastian Jaimungalb, Jason Riccib
+aDepartment of Mathematics, University College London, UK
+bDepartment of Statistics, University of Toronto, Canada
+Abstract
+We develop a High Frequency (HF) trading strategy where the HF trader uses her superior speed to
+process information and to post limit sell and buy orders. By introducing a multi-factor mutually-exciting
+process we allow for feedback eﬀects in market buy and sell orders and the shape of the limit order book
+(LOB). Our model accounts for arrival of market orders that inﬂuence activity, trigger one-sided and
+two-sided clustering of trades, and induce temporary changes in the shape of the LOB. We also model
+the impact that market orders have on the short-term drift of the midprice (short-term-alpha). We show
+that HF traders who do not include predictors of short-term-alpha in their strategies are driven out of the
+market because they are adversely selected by better informed traders and because they are not able to
+proﬁt from directional strategies.
+Keywords:
+Algorithmic Trading, High Frequency Trading, Short Term Alpha, Adverse Selection,
+Mutually-Exciting Processes, Hawkes processes
+1. Introduction
+Most of the traditional stock exchanges have converted from open outcry communications between human
+traders to electronic markets where the activity between participants is handled by computers. In addition
+Email addresses: a.cartea@ucl.ac.uk (´Alvaro Cartea), sebastian.jaimungal@utoronto.ca (Sebastian Jaimungal),
+jason.ricci@utoronto.ca (Jason Ricci)
+SJ and JR would like to thank the Natural Sciences and Engineering Research Council and Mprime for partially funding
+this work. JR would additionally like to thank the Ontario Graduate Scholarship for funding support. The authors also
+thank participants at the SAFI meeting at U. Michigan, ICIAM meeting in Vancouver, 3C Risk Forum at the Fields Institute
+for Mathematical Sciences, Toronto, Universidad Carlos III de Madrid, University College London, Imperial College, and
+R. Almgren, B. Dupire, D. Kramkov, U. Horst, P. Bank, M. Ludkovski, J. Penalva and S. Stoikov for helpful comments on
+various stages of this project.
+Preprint submitted to TBA
+April 15, 2014
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+ Electronic copy available at: http://ssrn.com/abstract=1964781 
+to those who have made the conversion, such as the New York Stock Exchange and the London Stock
+Exchange, new electronic trading platforms have entered the market, for example NASDAQ in the US
+and Chi-X in Europe. Along with the exchanges, market participants have been increasingly relying on
+the use of computers to handle their trading needs. Initially, computers were employed to execute trades,
+but nowadays computers manage inventories and make trading decisions; this modern way of trading in
+the electronic markets is known as Algorithmic Trading (AT).
+Despite the substantial changes that markets have undergone in the recent past (see Cvitanic and Kirilenko
+(2010)), some strategies used by investors remain the same. When asked about how to make money in
+the stock market, an old adage responds: “Buy low and sell high”. Although in principle this sounds like
+a good strategy, its success relies on spotting opportunities to buy and sell at the right time. Surprisingly,
+more than ever, due to the incredible growth in computing power, a great deal of the activity in the US
+and Europe’s stock exchanges is based on trying to proﬁt from short-term price predictions by buying low
+and selling high.2 The eﬀectiveness of these computerized short-term strategies, a subset of AT known
+as High Frequency (HF) trading, depends on the ability to process information and send messages to
+the electronic markets in microseconds, see Cartea and Penalva (2012). In this paper we develop an HF
+strategy that proﬁts from its superior speed advantage to decide when and how to enter and exit the
+market over extremely short time intervals. A unique characteristic to HF trading is that the strategies
+are designed to hold close to no inventories over very short periods of time (seconds, minutes, or at most
+one day) to avoid both exposure to markets after close and to post collateral overnight. Thus, proﬁts are
+made by turning over positions very quickly to make a very small margin per roundtrip transaction (buy
+followed by a sell or vice-versa), but repeating it as many times as possible during each trading day.
+In the past, markets were quote driven which means that market makers quoted buy and sell prices and
+investors would trade with them. Nowadays, there are limit order markets where all participants can post
+limit buy or sell orders; i.e. behave as market makers in the old quote driven market. The limit orders
+(LOs) show an intention to buy or sell and must indicate the amount of shares and price at which the
+agent is willing to trade. The limit buy (sell) order with the highest (lowest) price tag is known as the best
+bid (best oﬀer). During the trading day, all orders are accumulated in the limit order book (LOB) until
+they ﬁnd a counterparty for execution or are canceled by the agent who posted them. The counterparty is
+a market order (MO) which is an order to buy or sell an amount of shares, regardless of the price, which
+is immediately executed against LOs resting in the LOB at the best execution prices.
+2See for example CFTC and SEC (2010), and The Government Oﬃce for Science, London (2012).
+2
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+There is little evidence on the source of HF market making proﬁts, but the picture that is emerging is that
+price anticipation and short-term price deviations from the fundamental value of the asset are important
+drivers of proﬁts. On the other hand, from the classical microstructure literature on adverse selection
+(see e.g., O’Hara (1998)), we also know that strategies that do not include in their LOs a buﬀer to cover
+adverse selection costs, or that strategically post deeper in the book to avoid being picked oﬀ, may see
+their accumulated proﬁts dwindle as a consequence of trading with other market participants that possess
+private or better information. In the long term, HF traders (HFTs) who are not able to incorporate shortterm price predictability in their optimal HF market making strategies, as well as account for adverse
+selection costs, are very likely to be driven out of the market.
+The goal of this paper is to develop a particular dynamic HF trading strategy based on optimal postings
+and cancelations of LOs to maximize expected terminal wealth over a ﬁxed horizon T whilst penalizing
+inventories, which will be made mathematically precise in Section 5.1. The HFT we characterize here can
+be thought of as an ultra-fast market maker where the trading horizon T is at most one trading day, all
+the LOs are canceled an instant later if not ﬁlled, and inventories are optimally managed (to maximize
+expected penalised terminal wealth) and drawn to zero by T.3
+Early work on optimal postings by a
+securities dealer is that of Ho and Stoll (1981) and more recently Avellaneda and Stoikov (2008) study
+the optimal HF submission strategies of bid and ask LOs.
+Intuitively, the HF dynamic strategy we ﬁnd maximizes the expected proﬁts resulting from roundtrip
+trades by specifying how deep on the sell and buy side the LOs are placed in the LOB. The HF strategy
+is based on predictable short-term price deviations and managing adverse selection risks that result from
+trading with counterparties that may possess private or better information. Clearly, the closer the LOs
+are to the best bid and best oﬀer, the higher the probability of being executed, but the expected proﬁts
+from a roundtrip are also lower and adverse selection costs higher.
+Accumulated inventories play a key role throughout the entire strategy we develop. Optimal postings
+control for inventory risks by sending quotes to the LOB which induce mean reversion of inventories to
+an optimal level and by including a state dependent buﬀer to cover or avoid expected adverse selection
+costs, as will be discussed in Sections 5.2, 5.3, and 6. For example, if the probability of the next MO
+3HFTs closely monitor their exposure to inventories for many reasons. For example, HFTs’ own risk controls or regulation
+do not allow them to build large (long or short) positions; the HFT is capital constrained and needs to post collateral against
+her inventory position. Moreover, we remark that there is no consensus on characterizing HFTs as market makers because
+some stakeholders and regulatory authorities point out that their holding periods are too short to consider them as such, see
+for example European Commission (2010).
+3
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+being a buy or sell is the same, and inventories are positive, then the limit sell orders are posted closer
+to the best ask and the buy orders are posted further away from the best bid so that the probability
+of the oﬀer being lifted is higher than the bid being hit. Furthermore, as the dynamic trading strategy
+approaches the terminal date T, orders are posted nearer the midquote to induce mean-reversion to zero
+in inventories which avoids having to post collateral overnight and bearing inventory risks until the market
+opens the following day. Similarly, if the HF trading algorithm detects that LOs on one side of the LOB are
+more likely to be adversely selected, then these LOs are posted deeper into the book in anticipation of the
+expected adverse selection costs. An increase in adverse selection risk could be heralded by MOs becoming
+more one-sided as a consequence of the activity of traders acting on superior or private information who
+are sending one-directional MOs.
+Trade initiation may be motivated by many reasons which have been extensively studied in the literature,
+see for example Sarkar and Schwartz (2009). Some of these include: asymmetric information, diﬀerences
+in opinion or diﬀerential information, and increased proportion of impatient (relative to patient) traders.
+Likewise, trade clustering can be the result of various market events, see Cartea and Jaimungal (2013a).
+For instance, increases in market activity could be due to shocks to the fundamental value of the asset, or
+the release of public or private information that generates an increase in trading (two-sided or one-sided)
+until all information is impounded in stock prices. However, judging by the sharp rise of AT over the last
+ten years and the explosion in volume of submissions and order cancelations it is also plausible to expect
+that certain AT strategies that generate trade clustering are not necessarily motivated by the reasons
+mentioned above.
+The proﬁtability of these low latency AT strategies depends on how they interact with the dynamics of
+the LOB, and, more importantly, how these AT strategies coexist with each other. The recent increase in
+the number of orders and frequency of LOB updates shows that fast traders are responsible for most of
+the market activity and it is very diﬃcult to link news arrival or other classical ways of explaining motives
+for trade to the activity one observes in electronic markets. Superfast algorithms make trading decisions
+in split milliseconds. This speed, and how other superfast traders react, makes it diﬃcult to link trade
+initiation to private or public information arrival, a particular type of trader, liquidity shock, or any other
+market event.
+Therefore, as part of the model we develop here, we propose a reduced-form model for the intensity of
+the arrival of market sell and buy orders. The novelty we introduce is to assume that MOs arrive in two
+types. The ﬁrst type of orders are inﬂuential orders which excite the market and induces other traders
+4
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+to increase the amount of MOs they submit. For instance, the arrival of an inﬂuential market sell order
+increases the probability of observing another market sell order over the next time step and also increases
+(to a lesser extent) the probability of a market buy order to arrive over the next time step. On the other
+hand, when non-inﬂuential orders arrive the intensity of the arrival of MOs does not change. This reﬂects
+the existence of trades that the rest of the market perceives as not conveying any information that would
+alter their willingness to submit MOs. In this way, our model for the arrival of MOs is able to capture
+trade clustering which can be one-sided or two-sided and allow for the activity of trading to show the
+positive feedback that algorithmic trades seem to have brought to the market environment. Multivariate
+Hawkes processes have recently been used in the ﬁnancial econometrics literature to model clustering in
+trade arrival and changes in the LOB, see, e.g., Large (2007), Bowsher (2007) and Toke (2011), however,
+this article is the ﬁrst to incorporate such eﬀects into optimal control problems related to AT.
+In our model the arrival of trades also aﬀects the midprice and the LOB. The arrival of MOs is generally
+regarded as an informative process because it may convey information about subsequent price moves and
+adverse selection risks.4
+Here we assume that the dynamics of the midprice of the asset are aﬀected
+by short-term imbalances in the amount of inﬂuential market sell and buy orders – in particular, these
+imbalances have a temporary eﬀect on the drift of the midprice.
+Moreover, in our model the arrival of inﬂuential orders have a transitory eﬀect on the shape of both sides
+of the LOB. More speciﬁcally, since some market makers anticipate changes in the intensity of both the
+sell and buy MOs, the shape of the buy and sell side of the book will also undergo a temporary change
+due to market makers repositioning their LOs in anticipation of the increased expected market activity
+and adverse selection risk.
+We test our model using simulations where we assume diﬀerent types of HFTs who are mainly characterized
+by the quality of the information that they are able to process and incorporate into their optimal postings.
+We show that those HFTs who incorporate predictions of short-term price deviations in their strategy
+will deliver positive expected proﬁts. At the other extreme we have the HFTs that are driven out of the
+market because their LOs are picked oﬀby better informed traders and because they cannot proﬁt from
+directional strategies which are also based on short-lived predictable trends. We also show that in between
+these two cases, those HFTs who cannot execute proﬁtable directional strategies (and are systematically
+4For instance, periods where the amount of market buy orders is much higher than the amount of market sell orders could
+be regarded as times where informed traders have a private signal and are adversely selecting market makers who are unaware
+that they are providing liquidity at a loss, see Easley and O’Hara (1992).
+5
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+being picked oﬀ) can stay in business if they exert tight controls on their inventories. In our model these
+controls imply a higher penalty on their inventory position which pushes the optimal LOs further away
+from the midprice so the chances of being picked oﬀby other traders are considerably reduced.
+2. Arrival of MOs and Price Dynamics
+Very little is known about the details of the strategies that are employed by AT desks or the more
+specialized proprietary HF trading desks.
+Algorithms are designed for diﬀerent purposes and to seek
+proﬁts in diﬀerent ways, Bouchard et al. (2011). For example, there are algorithms that are designed to
+ﬁnd the best execution prices for investors who wish to minimize the price impact of large buy or sell
+orders, Almgren and Chriss (2000), Kharroubi and Pham (2010), and Bayraktar and Ludkovski (2012)
+while others are designed to manage inventory risk, Cartea and Jaimungal (2013b) and Gu´eant et al.
+(2013). There are HF strategies that specialize in arbitraging across diﬀerent trading venues whilst others
+seek to proﬁt from short-term deviations in stock prices. And ﬁnally, there are trading algorithms that
+seek to proﬁt from providing liquidity by posting bids and oﬀers simultaneously, Guilbaud and Pham
+(2013b). In previous works on algorithmic trading in LOBs, the midprice is assumed independent of MOs,
+and MOs arrive at Poisson times. Our work diﬀers signiﬁcantly in that we allow for dependence between
+MOs, the LOB dynamics and midprice moves.
+In the LOB, LOs are prioritized ﬁrst according to price and then according to time.5 Thus, based on the
+price/time priority rule the LOB stacks on one side all buy orders (also referred to as bids) and on the
+other side all sell orders (also referred to as oﬀers). The diﬀerence between the best oﬀer and best bid is
+known as the spread and their mean is referred to as the midquote price. Another dimension of the book
+is the quantities on the sell and buy side for each price tick which give ‘shape’ to the LOB.
+The HF trading strategy we develop here is designed to proﬁt from the realized spread where we allow the
+HFT to build inventories. To this end, before we formalize the HFT’s optimization problem, we require
+a number of building blocks to capture the most salient features of the market dynamics.6
+Since the
+HFT maximizes expected terminal wealth over a ﬁnite horizon T, while being penalized for holding large
+5This is the case for most exchanges. Some exchanges use prorata order books – where MOs are matched with all traders
+posting at the touch proportional their posted volume, see, e.g., Guilbaud and Pham (2013a) – or other alternatives such as
+Broker priority in Scandinavian markets.
+6Although we focus on a HF trading market making algorithm, the framework we develop here can be adapted for other
+types of AT strategies.
+6
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+inventories, and she is continuously repositioning buy and sell LOs, the success of the strategy depends on
+optimally picking the ‘best places’ in the bid and oﬀer queue which requires us to model: (i) The dynamics
+of the fundamental value of the traded stock, (ii) the arrival of market buy and sell orders, and (iii) how
+MOs cross the resting orders in the LOB. In this section we focus on (i) and (ii), then in Section 3 we
+discuss (iii) and after that we present the formal optimal control problem that the HFT solves.
+2.1. Price Dynamics
+We assume that the midprice (or fundamental price) of the traded asset follows
+dSt = (υ + αt) dt + σ dWt ,
+(1)
+where Wt is a P-standard Brownian Motion, and S0 > 0 and σ > 0 are constants.7 The drift of the
+midprice is given by a long-term component υ and by a short-term component αt which is a predictable
+zero-mean reverting process. Since we are interested in HF trading, our predictors are based on order
+ﬂow information where we allow for feedback between MO events and short-term-alpha. In the rest of the
+paper we assume that υ = 0 because the HF strategies we develop are for very short-term intervals.
+Section 4 gives details of the dynamics of the process αt, this element of the model plays a key role in
+the determination of the HF strategies we develop because it captures diﬀerent features that we observe
+in the dynamics of the midprice. For instance, it captures the price impact that some orders have on the
+midprice as a result of: a burst of activity on one or both sides of the market, orders that walk the LOB,
+etc. Furthermore, we also know that a critical component of HF trading is the ability that HFTs have
+to predict short-term deviations in prices so that they make markets by taking advantage of directional
+strategies based on short-term predictions (i.e. they are able to predict short-term-alpha) whilst at the
+same time allowing them to reposition stale or submit new quotes to avoid being picked oﬀby other
+market participants trading on short-term-alpha – avoid being adversely selected.
+7Unless otherwise stated, all random variables and stochastic processes are on the completed ﬁltered probability space
+(Ω, FT , F, P) with ﬁltration F = {Ft}0≤t≤T and where P is the real-world probability measure. What generates the ﬁltration
+will be deﬁned precisely in Section 5. Simply put, it will be generated by the Brownian motions Wt and Bt (introduced
+later), counting processes corresponding to buy/sell market and ﬁlled LOs, news events and the indicator of whether a trade
+is inﬂuential or not.
+7
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+0
+20
+40
+60
+80
+100
+120
+140
+160
+180
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+Time (seconds)
+Intensity rate
+ 
+ 
+Fitted
+Historical
+(a) Arrival of IBM market buy orders
+0
+20
+40
+60
+80
+100
+120
+140
+160
+180
+0
+20
+40
+60
+80
+100
+120
+140
+160
+180
+Time (seconds)
+Intensity rate
+ 
+ 
+Fitted
+Historical
+(b) Arrival of IBM market sell orders
+Figure 1: IBM MOs. Historical running intensity versus smoothed ﬁtted intensity (restricted to ρ = 1) using a 1 second
+sliding window for IBM for a 3 minute period, between 3.30 and 3.33 pm, February 1 2008.
+2.2. Mutually-exciting incoming market order dynamics
+Order ﬂow tends to ﬂuctuate throughout the day, indeed as a motivating example, Figure 1 shows the
+historical intensity of trade arrival for IBM over a three minute period (starting at 3.30pm, February 1
+2008). The historical intensities are calculated by counting the number of buy and sell MOs over the
+last 1 second. The ﬁtted intensities are computed using our model (see Equation (2)) under the speciﬁc
+assumption that all trades are inﬂuential – see Appendix A for more details. From the ﬁgures we observe
+that MOs may arrive in clusters and that there are times when the markets are mostly one-sided (for
+instance the ﬁrst 60 seconds of trading is more active on the buy side than on the sell side) and that these
+bursts of activity die out rather quickly and revert to around 5 events per second.
+Why are there bursts of activity on the buy and sell sides? It is diﬃcult to link all these short-lived increases
+in the levels of activity to the arrival of news. One could argue that trading algorithms, including HF,
+are also responsible for the sudden changes in the pace of the market activity, including bursts of activity
+in the LOB, and most of the times these algorithms act on information which is diﬃcult to link to public
+news. Thus, here we take the view that some MOs generate more trading activity in addition to the usual
+eﬀect of news increasing the intensity of MOs.
+In our model MOs arrive in two types. The ﬁrst are inﬂuential orders which excite the state of the market
+and induce other traders to increase their trading activity. We denote the total number of arrivals of
+inﬂuential sell/buy MOs up to (and including) time t by the processes {M
+−
+t , M
++
+t }. The second type of
+8
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+Time
+Activity Rate
+ 
+ 
+non-inﬂ. sell
+non-inﬂ. buy
+inﬂ. sell
+inﬂ. buy
+buy activity λ+
+ν
+η
+sell activity λ−
+Figure 2: Sample path of MO activity rates. When inﬂuential trades arrive, the activity of both buy and sell orders increase
+but by diﬀering amounts. Circles indicate the arrival of an inﬂuential MO, while squares indicate the arrival of non-inﬂuential
+trades.
+orders are non-inﬂuential orders. These orders do not excite the state of the market. We denote the
+total number of arrivals of non-inﬂuential sell/buy MOs up to (and including) time t by the processes
+{f
+M−
+t , f
+M+
+t }. Note that the type indicator of an order is not an observable. Rather, all one can observe is
+whether the market became more active after that trade. Therefore we assume that, conditional on the
+arrival of an MO, the probability that the trade is inﬂuential is a constant ρ ∈[0, 1].
+Thus, we model the intensity of sell, λ−
+t , and buy, λ+
+t , MOs by assuming that they solve the coupled
+system of stochastic diﬀerential equations:
+Assumption 1. The market sell/buy order arrival rates (λ−
+t , λ+
+t ) solve the coupled system of SDEs
+dλ−
+t = β(θ −λ−
+t )dt + η dM
+−
+t + ν dM
++
+t ,
+(2a)
+dλ+
+t = β(θ −λ+
+t )dt + η dM
++
+t + ν dM
+−
+t ,
+(2b)
+where, as previously stated, M
++
+t and M
+−
+t are the total number of inﬂuential buy and sell orders up until
+time t. Moreover, β, θ, η, ν are non-negative constants satisfying the constraint β > ρ(η + ν).
+MOs are mutually-exciting since their arrival rates λ± jump upon the arrival of inﬂuential orders (note
+that the arrival of non-inﬂuential orders do not aﬀect λ±). If the inﬂuential MO is a buy (so that a sell
+LO was lifted), the jump activity on the buy side increases by η while the jump activity on the sell side
+increases by ν, and similarly when the MO is a sell. Typically one would expect ν < η so that jumps on
+the opposite side of the book are smaller than jumps on the same side of the book (this bears out in the
+calibration as well as in the moving window activities reported in Figures 1).
+9
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+Trading intensity is mean reverting. Jumps in activity decay back to its long run level of θ at an exponential
+rate β. Figure 2 illustrates an intensity sample path. The lower constraint β > ρ(η + ν) is required for
+the intensity processes to be ergodic. To see this, deﬁne the mean future activity rate m±
+t (u) = E[λ±
+u |Ft]
+for u ≥t. For the processes λ±
+t to be ergodic, m±
+t (u) must remain bounded as a function of u, for each t,
+and the following Lemma provides a justiﬁcation for the constraint.
+Lemma 1. Lower Bound on Mean-Reversion Rate. The mean future rate m±
+t (u) remains bounded
+for all u ≥t if and only if β > ρ(η + ν). Furthermore,
+lim
+u→∞m±
+t (u) = A−1ζ ,
+where
+A =
+
+β −ηρ
+−νρ
+−νρ
+β −ηρ
+
+
+and
+ζ =
+
+βθ
+βθ
+
+.
+The intuition for the constraint is that when an MO arrives the activity will jump either by η or by ν
+and this occurs with probability ρ. Further, since both sell and buy inﬂuential orders induce mutualexcitations, the decay rate β must be strong enough to compensate for both jumps to pull the process
+towards its long-run level of θ.
+News events may also induce increases in trading activity and incorporating them into the analysis is
+straightforward, e.g., by adding an exogenous counting process which induces jumps in activity at the
+time of news arrivals.
+To keep the modeling to a minimal, however, we opt to exclude them in our
+analysis.
+3. Limit Quote Arrival Dynamics and Fill Rates
+The LOB can take on a variety of shapes and changes dynamically throughout the day, see Ro¸su (2009)
+and Cont et al. (2010). MOs walk the book until all the volume speciﬁed in the order is ﬁlled. LOs in
+the tails of the LOB are less likely to be ﬁlled than those within a couple of ticks away from the midprice
+St. The decision where to post limit buy and sell orders depends on a number of characteristics of the
+LOB and on the MOs. Some of the LOB features are: shape of the LOB, resiliency of the LOB, and
+how the LOB changes in between the arrival of MOs. These features, combined with the size and rate
+of the incoming MOs, determine the ﬁll rates of the LOs. The ﬁll rate is the rate of execution of a LO.
+Intuitively, a high (low) ﬁll rate indicates that a LO is more (less) likely to be ﬁlled by an MO.
+10
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+Here we model the ﬁll rate facing the HFT in a general framework where we allow the depth and shape
+of the book to ﬂuctuate. The ﬁll rate depends on where the HFT posts the limit buy and sell orders,
+that is at St −δ−
+t and St + δ+
+t respectively, where δ± denotes how far away from the midprice the orders
+are posted. Note, the agent continuously adjusts their posting relative to the midprice, hence, it is not
+possible for the midprice to move through the agent’s posts. Rather, ﬁlls occur when MOs arrive and
+reach the level that the agent is posted at. This is in line with how a number of other authors have
+modeled optimal postings and ﬁll probabilities as in Ho and Stoll (1981), Avellaneda and Stoikov (2008),
+Bayraktar and Ludkovski (2012), Cartea and Jaimungal (2013b) and Gu´eant et al. (2013). This approach
+can be viewed as a reduced form one, in contrast to models which focus on modeling the dynamics of
+each level of the LOB, together with MO arrivals (see, e.g., Ro¸su (2009) and Cont et al. (2010)). In all
+of the reduced form approaches when an MO arrives it walks through the LOB and the probability that
+the HFT’s limit order is ﬁlled is a (static) function of the posted depth δ± and it is also assumed that
+ﬁlled MOs do not aﬀect the shape of the LOB. In our approach however, we allow ﬁll probabilities to be
+stochastic due to changes in the LOB which result from the arrival of MOs.
+Assumption 2. The ﬁll rates are of the form Λ±
+t
+≜λ±
+t h±(δ; κt), where the non-increasing function
+h±(δ; κt) : R →[0, 1] is C2 in δ (uniformly in t for κt ∈Rn, ﬁxed ω ∈Ω), and lim
+δ→∞δ h±(δ; κt) = 0 for
+every κt ∈Rn. Moreover, the functions h±(δ; κt) satisfy: h±(δ; κt) = 1 for δ ≤0, κt ∈Rn.
+Assumption 2 allows for very general dynamics on the LOB through the dependence of the ﬁll probabilities
+(FPs) h±(δ; κt) on the process κt. The FPs can be viewed as a parametric collection with the exponential
+class h±(δ; κt) = e−κ±
+t δ± and power law class h±(δ; κt) = (1 + (κ±
+t δ±)α)−1 being two prime examples.
+The process κt introduces dynamics into the collection of FPs reﬂecting the dynamics in the LOB itself.
+The diﬀerentiability requirements in assumption 2 are necessary for the asymptotic expansions we carry
+out later on to be correct. The limiting behavior for large δ± implies that the book (volume) thins out
+suﬃciently slowly such that the FPs decay suﬃciently fast (faster than linear) so that it is not optimal to
+place orders inﬁnitely far away from the midprice. Finally, the requirement that h±(δ; κt) = 1 for δ ≤0
+and ∀κt ∈Rn is a ﬁnancial one. A trader wanting to maximize her chances of being ﬁlled the next time
+an MO arrives, must post the LOs at the midprice, i.e. δ± = 0, or she can also cross the midprice, i.e.
+δ± < 0. In these cases we suppose that the ﬁll rate is Λ±
+t = λ±
+t , i.e. it equals the rate of incoming MOs.
+This assumption makes crossing the midprice a suboptimal decision because the trader cannot improve
+the arrival rate of MOs (since Λ±
+t
+is constant when δ± ≤0), thus she will always post LOs that are
+δ± ≥0 away from the midprice. Furthermore, this condition is more desirable than explicitly restricting
+11
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+the controls δ± to be non-negative, since it is not necessary to check the boundary condition at δ± = 0;
+it will automatically be satisﬁed. Finally, we have the added bonus that the optimal control satisﬁes the
+ﬁrst-order condition.
+Observe that if MO volumes are iid, then the κ±
+t
+processes can be interpreted as parameters directly
+dictating the shape of the LOB. In particular, if the MO volumes are iid exponentially distributed and
+the shape of the LOB is ﬂat, then the probability that a LO at price level St ± δ±
+t is executed (given that
+an MO arrives) is equal to e−κ±
+t δ±
+t . Consequently, κ±
+t can be interpreted as depth of LOB at each price
+level. In order to satisfy the C1 condition at δ± = 0 and the condition that h±(δ, κt) = 1 for δ± ≤0, it is
+necessary to smooth the exponential function at δ = 0. This is always possible though, since there exists
+C2 functions for which the L2 distance to the target function is less than any positive constant.
+Assumption 3. The dynamics for κt satisfy
+dκ−
+t = ξ(ϑ −κ−
+t ) dt + ηκ dM
+−
+t + νκ dM
++
+t ,
+(3a)
+dκ+
+t = ξ(ϑ −κ+
+t ) dt + νκ dM
+−
+t + ηκ dM
++
+t ,
+(3b)
+where ηκ and νκ are non-negative constants and ϑ and ξ are strictly positive constants.
+Assumption 3 is a speciﬁc modeling assumption on κt which allows for incoming inﬂuential MOs to have
+an impact on the FPs. An increase (decrease) in the ﬁll rate can be due to two main reasons: (i) a decrease
+(increase) in LOB depth or (ii) an increase (decrease) in the distribution of MO volumes (in a stochastic
+dominance sense). This is a one-way eﬀect because inﬂuential MOs cause jumps in the κt process, but
+jumps in the FP do not induce jumps in MO arrivals. While it is possible to allow such feedback, empirical
+investigations (such as those in Large (2007)) demonstrate that the incoming MOs inﬂuence the state of
+the LOB and not the other way around. The mean-reversion term draws κ±
+t to the long-run mean of ϑ
+so that the impact of inﬂuential orders on the LOB is only temporary. Typically, we expect that the rate
+of mean-reversion ξ for the LOB to be slower than the rate of mean-reversion β of the MO activity. In
+other words, the impact of inﬂuential orders persists in the LOB on a longer time scale compared to their
+eﬀect on MO activity.
+Moreover, immediately after an inﬂuential market buy/sell order arrives the probability that a LO at
+price level St ± δ±
+t
+is executed is, for the same δ±, smaller than the probability of being ﬁlled before
+the inﬂuential order arrived. The intuition is the following. Immediately after an inﬂuential MO arrives,
+12
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+−1
+−0.8
+−0.6
+−0.4
+−0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+0
+0.2
+0.4
+0.6
+0.8
+1
+Depth of Limit Order ( δt )
+Rate of being ﬁlled Λt
+buy limit orders
+sell limit orders
+λ+
+t
+λ−
+t
+shape κ+
+t
+shape κ−
+t
+Figure 3: Fill rates Λ± with κ+
+t = 2, κ−
+t = 1, λ+
+t = 0.75 and λ−
+t = 1. As κ±
+t evolve, the ﬁll rate shape changes, while the
+MO activity rates λ± modulate the vertical scale. The maximum ﬁll rate is achieved at δ = 0.
+market participants react in anticipation of the increase of market activity they will face and decide to
+send LOs to the book. Since many market participants react in similar way, the probability of LOs being
+ﬁlled, conditional on an MO arriving, decreases.8
+Figure 3 illustrates the shape of the ﬁll rates at time t describing the rate of arrival of MOs which ﬁll LOs
+placed at price levels St ± δ±
+t . Notice that these rates peak at zero spread at which point they are equal
+to the arrival rate of MOs. In the ﬁgure these rates are asymmetric and decay at diﬀering speeds because
+we have assumed diﬀerent parameters for the buy and sell side, κ+
+t = 2, κ−
+t = 1, λ+
+t = 0.75 and λ−
+t = 1.
+In general these curves will ﬂuctuate throughout the day.
+4. Short-Term-Alpha Dynamics: directional strategies and adverse selection
+The actions of market participants aﬀect the dynamics of the midprice via activity in the LOB and/or
+the execution of market buy and sell orders. For instance, the arrival of public information is impounded
+in the midprice of the asset as a result of new MOs and the arrival and cancellation of LOs. Similarly,
+bursts of activity in buy and/or sell MOs, which are not necessarily the result of the arrival of public
+information, has market impact by producing momentum in the midprice.
+As discussed above, a great deal of the strategies that HFTs employ are directional strategies that take
+8It is also possible to have markets where, conditional on the arrival of an MO, the probability of a LO being ﬁlled increases
+immediately after the arrival of an inﬂuential order. We can incorporate this feature in our model. Note also that in our
+general framework, immediately after the inﬂuential buy/sell MO arrives, the intensities λ± increase and the overall eﬀect of
+an inﬂuential order on the ﬁll rates Λ± = λ±
+t h±(δ, κt) is ambiguous when λ±
+t and h±(δ, κt) move in opposite directions after
+the arrival of an inﬂuential order, for example when h±(δ, κt) = e−κ±
+t δ±
+t .
+13
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+advantage of short-term price deviations in two ways. First, it enables HFTs to exploit their superior
+knowledge of short-term trends in prices to execute proﬁtable roundtrip trades, and second, because it
+provides key information to update or cancel quotes that can be adversely picked oﬀby other traders.
+One can specify the dynamics of the predictable drift αt in many ways and this depends on the factors
+that aﬀect the short-term drift which for HF market making are based on order ﬂow. Here we assume
+that αt is a zero-mean-reverting process and jumps by a random amount at the arrival times of inﬂuential
+trades. If the inﬂuential trade was buy initiated the drift will jump up, and if the inﬂuential trade was
+sell initiated the drift will jump down. As such, we model the predictable drift as below.
+Assumption 4. The dynamics for the predictable component of the midprice’s drift, αt, satisfy
+dαt = −ζ αt dt + σα dBt + ϵ+ dM
++
+t −ϵ−dM
+−
+t
+(4)
+where ϵ± are random variables representing the size of the sell/buy inﬂuential trade’s impact on the drift
+of the midprice. Moreover, Bt denotes a Brownian motion independent of all other processes, and ζ, σα
+are positive constants.
+Slower traders will be adversely selected by better informed and quicker traders. For example, assume that
+αt = 0 and an HFT ‘detects’ that the incoming buy MO is inﬂuential. Her optimal directional strategy is
+to simultaneously send the following orders to the LOB: cancel her sell LOs, attempt to purchase the asset
+(from a slower market participant), and send new sell LOs to unwind the transaction. Of course, these
+types of trades do not guarantee a proﬁt but on average these roundtrips will be proﬁtable because the
+HFT trades on short-term-alpha and proﬁts from other traders who are not able to update their quotes in
+time or who submit market sell orders right before prices increase. Finally, even if HFTs who are able to
+trade on short-term-alpha miss a ﬂeeting opportunity to execute a directional trade, they still beneﬁt from
+updating their stale quotes in the LOB to avoid being adversely selected by other market participants.
+Given our chosen dynamics on the ﬁll probability driving process κ±
+t in (3), the aforementioned eﬀect
+can be modeled by taking ηκ < νκ, which will induce more arrivals of limit buy (sell) quotes when an
+inﬂuential market buy (sell) order arrives.
+An alternative approach to adverse selection was introduced in Cartea and Jaimungal (2013b), whereby
+MOs may induce an immediate jump in the midprice. The result of such direct adverse selection eﬀects
+was that the agent increases her optimal postings by the expected jump size. In this work, we will see a
+14
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+similar, but distinct, result whereby the agent adjusts her posting to protect herself against the potential
+change in the midprice drift.
+5. The High Frequency Trader’s Optimization Problem
+So far, we have speciﬁed counting processes for MOs and dynamics of the LOB through the FPs; however,
+we also require a counting process for the agent’s ﬁlled LOs. To this end, let N+
+t
+and N−
+t
+denote the
+number of the agent’s limit sell and buy orders, respectively, that were ﬁlled up to and including time t
+and the process qt = N−
+t −N+
+t is the agent’s total inventory. Note that the arrival rate of these counting
+processes can be expressed as Λ±
+t ≜λ±
+t h±(δ; κt), as in Assumption 2. Finally, the agent’s cash process
+Xt (excluding the shares she currently holds) satisﬁes the SDE
+dXt = (St + δ+
+t−) dN+
+t −(St −δ−
+t−) dN−
+t ,
+(5)
+where δ±
+t−denotes the left-limit of the LO’s distance from the midprice, i.e., if the LO was ﬁlled, the agent
+receives the quote that was posted an instant prior to the arrival of the MO.
+5.1. Formulation of the HF investment problem
+The HFT wishes to place sell/buy LOs at the prices St ± δ±
+t at time t such that the expected terminal
+wealth is maximized whilst penalizing inventories.9 The HFT is continuously repositioning her LOs in the
+book by canceling stale and submitting new LOs.10 Speciﬁcally, her value function is
+Φ(t, Xt, St, qt, αt, λt, κt) =
+sup
+(δ−
+u ,δ+
+u )t≤u≤T ∈A
+E
+
+XT + qT ST −φ
+Z T
+t
+q2
+s ds
+ Ft
+
+,
+(6)
+where the supremum is taken over all (bounded) Ft-progressively measurable functions and φ penalizes
+deviations of qt from zero along the entire path of the strategy.
+Ft is the natural (and completed)
+ﬁltration generated by the collection of processes {St, αt, M±
+t
+= M
+±
+t + f
+M±
+t , N±
+t } and the extended
+ﬁltration Ft = Ft ∨σ{(Mu)0≤u≤t}. Note that λt and κt are progressively measurable with respect to this
+9An alternative speciﬁcation is to assume that the HFT is risk averse so that she maximizes expected utility of terminal
+wealth. The current approach, however, is more akin to Almgren (2003) where quadratic variation, rather than variance, is
+penalized which acts on the entire path of the strategy.
+10In this setup the HFT’s LOs are always of the same size. An interesting extension is to also allow the HFT to choose the
+amount of shares in each LO.
+15
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+expanded ﬁltration. We will often suppress the dependence on many of the variables in Φ(·) and recall
+that we assumed υ = 0 in the dynamics of the midprice. Note that Cartea et al. (2013) show that the
+running penalty term in (6) can be interpreted as arising from the agent’s ambiguity aversion with respect
+to the asset’s midprice.
+The above control problem can be cast into a discrete-time controlled Markov chain as carried out in
+B¨auerle and Rieder (2009). Classical results from Bertsekas and Shreve (1978) imply that a dynamic
+programming principle holds and that the value function is the unique viscosity solution of the HJB
+equation
+(∂t + L) Φ + α Φs + 1
+2σ2 Φss
++λ−sup
+δ−
+n
+h−(δ−; κ)
+h
+S−
+q,λΦ(t, x −s + δ−) −Φ
+i
++ (1 −h−(δ−; κ))
+
+S−
+λ Φ −Φ
+o
++λ+ sup
+δ+
+n
+h+(δ+; κ)
+h
+S+
+q,λΦ(t, x + s + δ+) −Φ
+i
++ (1 −h+(δ+; κ))
+
+S+
+λ Φ −Φ
+o
+=φ q2,
+(7)
+with boundary condition Φ(T, ·) = x + qs, and the integro-diﬀerential operator L is the part of the
+generator of the processes αt, λt, κt, and Z±
+t which do not depend on the controls δ±
+t . Explicitly,
+L = β(θ −λ−)∂λ−+ β(θ −λ+)∂λ+ + ξ(ϑ −κ−)∂κ−+ ξ(ϑ −κ+)∂κ+ −ζ α∂α + 1
+2σ2
+α∂αα .
+(8)
+Moreover, we have introduced the following shift operators:
+S±
+λ Φ = ρ E
+
+S±
+λ Φ
+
++ (1 −ρ) Φ ,
+S±
+qλΦ = ρ E
+h
+S±
+qλΦ
+i
++ (1 −ρ) S±
+q Φ ,
+(9a)
+S±
+qλ = S±
+q S±
+λ ,
+S±
+q Φ(t, x, s, q, α, λ, κ) = Φ(t, x, s, q ∓1, α, λ, κ) ,
+(9b)
+S+
+λ Φ(t, x, s, q, α, λ, κ) = Φ(t, x, s, q, α + ϵ+, λ + (ν, η)′, κ + (νκ, ηκ)′) ,
+(9c)
+S−
+λ Φ(t, x, s, q, α, λ, κ) = Φ(t, x, s, q, α −ϵ−, λ + (η, ν)′, κ + (ηκ, νκ)′) ,
+(9d)
+where the expectation operators E[·] in (9a) are over the random variables ϵ±.
+5.2. The Feedback Control of the optimal trading strategy
+In general, an exact optimal control is not analytically tractable – two exceptions are the cases of an
+exponential and power FPs where the optimal control admits exact analytical solutions as presented
+in Appendix C.1. For the general case, we provide an approximate optimal control via an asymptotic
+expansion which is correct to o (ς) where ς = max(φ, α, E[ϵ±]). In principle, the expansion can be carried
+16
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+to higher orders if so desired.
+Proposition 2. Optimal Trading Strategy, Feedback Control Form. The value function Φ admits
+the decomposition Φ = x + q s + g(t, q, α, λ, κ) with g(T, ·) = 0. Furthermore, assume that g(·) can be
+written as an asymptotic expansion as follows
+g(t, q, α, λ, κ) = g0(t, q, λ, κ) + α gα(t, q, λ, κ) + ε gε(t, q, λ, κ) + φ gφ(t, q, λ, κ) + o(ς) ,
+(10)
+with boundary conditions g·(T, ·) = 0 – note the subscripts on the functions g do not denote derivatives,
+rather they are labels – and we have written E[ϵ±] = ε a± with ε constant. Then, the feedback controls of
+the optimal trading strategy for the HJB equation (7) admit the expansion
+δ±∗
+t
+= δ±
+0 + α δ±
+α + ε δ±
+ε + φ δ±
+φ + o(ς),
+(11)
+where
+δ±
+α = −B(δ±
+0 ; κ)
+
+S±
+qλgα −S±
+λ gα
+
+,
+(12a)
+δ±
+ε = −B(δ±
+0 ; κ)
+
+S±
+qλgε −S±
+λ gε ± ρ a± 
+S±
+qλgα −S±
+λ gα
+
+,
+(12b)
+δ±
+φ = −B(δ±
+0 ; κ)
+
+S±
+qλgφ −S±
+λ gφ
+
+,
+(12c)
+and the coeﬃcient B(δ±
+0 ; κ) =
+h′
+±(δ±
+0 ;κ)
+2h′
+±(δ±
+0 ;κ) + δ±
+0 h′′
+±(δ±
+0 ;κ). Moreover, δ±
+0 is a strictly positive solution to
+δ±
+0 h′
+±(δ±
+0 ; κ) + h±(δ±
+0 ; κ) = 0.
+(13)
+A solution to (13) always exists. Furthermore, the exact optimal controls are non-negative.
+In the next subsection we use the optimal controls derived here to solve the nonlinear HJB equation
+and obtain an analytical expressions for gα, gε, and gφ to obtain explicit expressions for the optimal
+postings. Before proceeding we discuss a number of features of the optimal control δ±∗
+t
+given by (11).
+The terms on the right-hand side of equation (11) show how the optimal postings are decomposed into
+diﬀerent components: risk-neutral (ﬁrst term), adverse selection and directional (second and third), and
+inventory-management (fourth term).
+17
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+The risk-neutral component, given by δ±
+0 , does not directly depend on: the arrival rate of MOs, shortterm-alpha, or inventories. It depends on the FPs. To see the intuition behind this result, we note that
+a risk-neutral HFT, who does not penalize inventories, seeks to maximize the probability of being ﬁlled
+at every instant in time. Therefore, the HFT chooses δ± to maximize the expected spread conditional on
+an MO hitting or lifting the appropriate side of the book, i.e. maximizes δ± h±(δ±; κt). The ﬁrst order
+condition of this optimization problem is given by (13) where we see that λ± plays no role in how the LOs
+are calculated.11
+The optimal halfspreads are adjusted by the impact that inﬂuential orders have on short-term-alpha
+through the term αt δ±
+α + ε δ±
+ε to reduce adverse selection costs and to proﬁt from directional strategies.
+An HFT that is able to process information and estimate the parameters of short-term-alpha will adjust
+the halfspreads to avoid adverse selection and to proﬁt from short-lived trends in the midprice.
+For
+example, if short-term-alpha is positive the HFT’s sell halfspread is increased to avoid being picked oﬀ,
+and at the same time the buy halfspread decreases to take advantage of the ﬁrst leg of a directional
+strategy by increasing the probability of purchasing the asset in anticipation of a price increase.
+Finally, the fourth term is an inventory management component that introduces asymmetry in the postings
+so that the HFT does not build large long or short inventories. This component of the halfspread is
+proportional to the penalization parameter φ > 0 which induces mean reversion to the optimal inventory
+position.
+5.3. The asymptotic solution of the optimal trading strategy
+Armed with the optimal feedback controls, our remaining task is to solve the resulting non-linear HJB
+equation to this order in ς. The following Theorem contains a stochastic characterization of the asymptotic
+expansion of the value function. This characterization can be computed explicitly in certain cases and
+then plugged into the feedback control to provide the optimal strategies.
+Theorem 3. Solving The HJB Equation. The solutions for gα, gε and gφ can be written as
+11If there are multiple solutions to (13) the HFT chooses the δ± that yields the maximum of δ± h±(δ±; κt).
+18
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+gα = aα(t, λ, κ) + q bα(t) ,
+(14a)
+gε = aε(t, λ, κ) + q bε(t, λ) ,
+(14b)
+gφ = aφ(t, λ, κ) + q bφ(t, λ, κ) + q2 cφ(t) ,
+(14c)
+where
+bα(t) = 1
+ζ
+
+1 −e−ζ(T−t)
+,
+(15a)
+bε(t, λ) = ρE
+Z T
+t
+ a+ λ+
+u −a−λ−
+u
+
+bα(u) du
+ λt = λ
+
+,
+(15b)
+bφ(t, λ, κ) = 2 E
+Z T
+t
+n
+h+
+0,u λ+
+u −h−
+0,u λ−
+u
+o
+(T −u) du
+ λt = λ, κt = κ
+
+,
+and
+(15c)
+cφ(t) = −(T −t) .
+(15d)
+In the above, h±
+0,u = h±(δ±
+0,u; κ±
+u ) and we have written E[ϵ±] = εa±. Finally, the functions g0, aα, aε and
+aφ do not aﬀect the optimal strategy.
+The asymptotic expansion of the optimal controls now follows as a straightforward corollary to Theorem 3.
+Note that the functions bε can be computed explicitly and is reported in Appendix C.2. Moreover, under
+some speciﬁc assumptions on the ﬁll probabilities h± (e.g., if h± are exponential or power functions), the
+function bφ can also be computed explicitly. Proposition 8 in Appendix C.3 provides a general class of
+models (which includes the exponential and power cases) for which simple closed form results are derived
+and the implications for the optimal limiting order postings have a very natural interpretation.
+Corollary 4. Optimal LOs. The asymptotic expansion of the optimal controls to ﬁrst order in ς is
+(dependencies on the arguments have been suppressed for clarity)
+δ±∗= δ±
+0 + B(δ±
+0 ; κ±)
+
+±S±
+λ
+
+E
+Z T
+t
+αu du
+
++ φ
+ ±S±
+λ bφ + (1 ∓2q)(T −t)
+
+(16)
+where δ±
+0 satisﬁes (13), and we have |δ±
+opt −δ∗±| = o(ς). Furthermore, the optimal controls max{δ±∗, 0}
+are also of order o(ς).12
+The expression for the optimal control warrants some discussion which goes beyond the discussion that
+followed the general result in Proposition 2. The term δ±
+0 represents the action of a risk-neutral agent
+12Note that the exact solution of the optimal control is non-negative as discussed in Assumption 2, but this is not necessarily
+the case in the asymptotic solution, thus we write the optimal control as max{δ±∗, 0}.
+19
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+who is not aware or is not able to estimate the impact that inﬂuential MOs have on the stochastic drift
+of the midprice (so she sets it to zero). The ﬁrst term in the braces accounts for the expected change in
+midprice due to the potential impact of orders on the midprice’s drift, the expected change to the arrival
+of orders, and the Brownian component in the short-term-alpha dynamics, see (4). This term plays a
+dual role in the optimal strategy: it corrects for the adverse selection eﬀect and positions the quotes to
+execute directional strategies. If the drift is positive, the agent posts further away from the midprice on
+the sell side (adverse selection correction) and closer to the midprice on the buy side in anticipation of
+upward price movements (directional strategy). When the drift is negative the interpretation is similar.
+The term proportional to φ contains two terms. The ﬁrst of these terms accounts for the asymmetry in
+the arrival rates of MOs on the sell and buy sides, while the second term controls for inventories. Both
+terms together help to induce mean reversion to an optimal inventory level which is not necessarily zero.
+There are a number of special cases that are interesting to analyze.
+For instance, if E[ϵ±] = ε = 0
+inﬂuential trades do not aﬀect the short-term-alpha dynamics so in the optimal control only the fact that
+αt reverts to zero, at the exponential speed ζ, is taken into account. Clearly, if αt > 0 the HFT’s sell
+halfspread is increased to avoid selling an asset which is trending up in price, and for the same reason the
+optimal buy halfspread decreases to increase the probability of purchasing the asset in anticipation of a
+price increase.
+In addition, the expression for optimal control simpliﬁes considerably when (i) the impact of inﬂuential
+orders on the stochastic drift is symmetric in the sense that ε+ = E[ϵ+] = E[ϵ−] = ε−:= ε; (ii) the
+parametric shape of the LOB FPs are symmetric, in the sense that the class of functions h+ and h−
+are equal;13 and (iii) the ﬁll probability at the risk-neutral optimal control is independent of the scale
+parameters,14 i.e, h±(δ±
+0 , κ) = const. Under these assumptions, the two important (non-trivial) quantities
+which appear in the optimal spreads in Equation (16) simplify to
+E
+Z T
+t
+αu du
+
+= ε ρ
+ζ (λ+
+t −λ−
+t )
+(
+1 −e−bβ(T−t)
+bβ
+−e−ζ(T−t) −e−bβ(T−t)
+bβ −ζ
+)
++ αt
+1 −e−ζ(T−t)
+ζ
+,
+(17a)
+bφ = 2 h (λ+
+t −λ−
+t )
+(
+1
+bβ
+(T −t) −1 −e−bβ(T−t)
+bβ2
+)
+,
+(17b)
+13This does not imply that the LOB is symmetric because the scale parameters κ±
+t will diﬀer. For example, exponential
+FPs e−κ±
+t δ± satisfy this requirement, even though the book may be signiﬁcantly deeper on one side than the other.
+14This condition is satisﬁed by (but not limited to) the exponential and power law FPs as discussed in examples 9 and 10.
+20
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+where bβ = β −ρ(η −ν) and h = h±(δ±
+0 , κ) = const. Both expressions contain terms proportional to the
+diﬀerence in the MO activity on the buy and sell sides. If there are no inﬂuential orders, these will be
+equal to their long-run levels and will therefore be zero. However, when inﬂuential orders arrive, the buy
+and sell activities diﬀer and the agent reacts to this order ﬂow imbalance. Finally, it is straightforward to
+see in this symmetric case (λ+
+t = λ−
+t ) that if ϵ = 0, the short-term-alpha component aﬀects the optimal
+posting only via the eﬀect of the last term on the right-hand side of (17a).
+6. High Frequency Market Making, Short-term-alpha and Directional Strategies
+In this section we apply a simulation study of the HF strategy where MOs are generated over a period of
+5 minutes. The HFT is rapidly updating her quotes in the LOB by submitting and canceling LOs which
+are ﬁlled according to exponential FPs.15 The optimal postings are calculated using Corollary 4 and the
+explicit form for bφ in Proposition 8. The processes λt, κt and αt are updated appropriately and the
+terminal cash-ﬂows are stored to produce the proﬁt and loss (PnL) generated from these strategies.
+To generate the PnL we assume that the ﬁnal inventory is liquidated at the midprice with diﬀerent
+transactions costs per share: 1 basis point (bp) and 10 bps.16 In practice the HFT will bear some costs
+when unwinding a large quantity which could be in the form of a temporary price impact (a consequence
+of submitting a large MO) and by paying a fee to the exchange for taking liquidity in the form of an
+aggressive MO. Finally, in each simulation the process is repeated 5, 000 times to obtain the PnLs of the
+various strategies. More details on the simulation procedure are contained in Appendix D.
+We analyze the performance of the HF market making strategy by varying the quality of the information
+that the HFT has when calculating the optimal postings. The main diﬀerence between our scenarios is
+whether the HFT is able to calculate the correct ρ which, conditional on the arrival of an MO, is the
+probability that the trade is inﬂuential and whether they are able to estimate the correct dynamics of
+short-term-alpha – all of them know the equations that determine λ±
+t and κ±
+t but do not necessarily know
+the correct parameters. We contemplate six diﬀerent types of HFTs:
+1. Correct probability of inﬂuential event (ρ). The HFT uses her superior computing power to process
+15The results for power FPs are very similar so in the interest of space we do not show them.
+16The transaction costs are computed on a percentage basis and since the starting midprice in the simulations is $100,
+these correspond to approximately 1 and 10 cents per share, respectively. In particular, qT shares are liquidated at a value
+of qT (ST −ctrans sgn(qT )).
+21
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+information to estimate ρ and the other parameters that determine the dynamics of λ±
+t and κ±
+t .
+Furthermore, we assume that the HFT may or may not be able to estimate the correct αt dynamics.
+(a) Correct midprice drift (α) dynamics. This is our benchmark because we also assume that the
+HFT is able to estimate the parameters of the αt process and adjust her postings accordingly.
+(b) Zero midprice drift (α) dynamics. Here we assume that although the HFT is able to estimate
+the correct ρ she assumes that short-term alpha is zero throughout the entire strategy.
+2. High probability of inﬂuential event (ρ). At the other extreme we also have an HFT who cannot
+distinguish between the type of MO and assumes that all orders are inﬂuential, ρ = 1. The jump
+sizes in λ±
+t and κ±
+t are set so that the long-run means are λ±
+t = m±
+t (∞) and κ±
+t = ˜m±
+t (∞).
+(a) Incorrect midprice drift (α) dynamics. Because the HFT assumes that all orders are inﬂuential
+she is not able to correctly predict short-term-alpha – she either overestimates or underestimates
+the eﬀect that MOs have on short-term-alpha because every time there is an incoming MO the
+HFT will predict a jump in αt. The mean jump size parameter, ε, is also rescaled by the correct
+ρ.
+(b) Zero midprice drift (α) dynamics. The HFT assumes that short-term-alpha is always zero.
+3. Low probability of inﬂuential event (ρ). At one extreme we have an HFT who cannot distinguish
+between order type and assumes that all orders are non-inﬂuential, ρ = 0, and assumes that λ±
+t , κ±
+t
+are constant and set at their long-run means: λ±
+t = m±
+t (∞), given in Lemma 1, and κ±
+t = ˜m±
+t (∞),
+given in Lemma 11.
+(a) Incorrect midprice drift (α) dynamics.
+Because the HFT assumes that all orders are noninﬂuential she is not able to correctly predict short-term-alpha – she only observes the diﬀusion
+components and not the jumps.
+(b) Zero midprice drift (α) dynamics. The HFT assumes that short-term-alpha is always zero.
+In all six cases, the data generating process (DPG) are identical and given by the full model where we
+assume the following values for the parameters (unless otherwise stated): β = 60 and θ = 1 (speed and
+level of mean reversion of intensity of MO arrivals), η = 40 and ν = 10 (jumps in λt upon the arrival of
+inﬂuential MOs); ξ = 10 and ϑ = 50 (speed and level of mean reversion for the κt process), ηκ = 10 and
+νκ = 25 (jumps in κt upon the arrival of inﬂuential MOs); υ = 0 (long-term component of the drift of the
+midprice), σ = 0.01 (volatility of diﬀusion component of the midprice), ζ = 2 and σα = 0.01 (speed of
+22
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+mean reversion and volatility of diﬀusion component of αt process); and ﬁnally ρ = 0.7 (probability of the
+MO being inﬂuential). Moreover, ϵ± are both exponentially distributed with the same mean, E [ϵ±] = ε,
+for the sell and buy impacts. In the simulations we consider two cases: ε = 0.04 and ε = 0.02.
+In Tables 1 and 2 we show the Proﬁt and Losses (PnL) that the HFTs face when executing the optimal
+strategy. The diﬀerence between the two tables is the impact that inﬂuential orders have (ε = 0.04 and
+ε = 0.02) on short-term-alpha. In both tables terminal inventories qT are liquidated at the midprice
+ST and pick up a penalty of 1bps and 10bps per share. The tables show the results for diﬀerent values
+of the inventory-management parameter φ = {1 × 10−5 , 2 × 10−5 , 4 × 10−5}. For each value of φ we
+show the mean and standard deviation of the six PnLs where the top row, for each φ, reports the three
+PnLs resulting from: the benchmark HFT (who uses the correct ρ = 0.7), and the other two HFTs who
+incorrectly specify the arrival of inﬂuential and non-inﬂuential MOs. For each φ the bottom row shows
+the other three PnLs that result from assuming that the HFTs set αt = 0 throughout the entire strategy.
+Case I: ε = 0.04, ρ = 0.7 and liquidation costs = 1bp
+φ
+αt
+Bench.
+ρ = 1
+ρ = 0
+1 × 10−5
+Yes
+mean
+14.09
+12.77
+-4.34
+(std)
+(6.98)
+(6.44)
+(3.00)
+No
+mean
+-3.81
+-3.88
+-4.32
+(std)
+(2.83)
+(2.83)
+(2.94)
+2 × 10−5
+Yes
+mean
+13.52
+12.15
+-2.80
+(std)
+(5.44)
+(5.01)
+(2.21)
+No
+mean
+-1.57
+-1.71
+-2.80
+(std)
+(2.07)
+(2.06)
+(2.17)
+4 × 10−5
+Yes
+mean
+12.49
+11.08
+-1.24
+(std)
+(4.28)
+(3.94)
+(1.60)
+No
+mean
+0.24
+0.06
+-1.25
+(std)
+(1.48)
+(1.48)
+(1.58)
+Case II: ε = 0.04, ρ = 0.7 and liquidation costs = 10bp
+φ
+αt
+Bench.
+ρ = 1
+ρ = 0
+1 × 10−5
+Yes
+mean
+13.32
+12.05
+-4.81
+(std)
+(6.80)
+(6.29)
+(3.12)
+No
+mean
+-4.28
+-4.34
+-4.78
+(std)
+(2.98)
+(2.98)
+(3.07)
+2 × 10−5
+Yes
+mean
+12.87
+11.55
+-3.19
+(std)
+(5.30)
+(4.90)
+(2.32)
+No
+mean
+-1.96
+-2.10
+-3.19
+(std)
+(2.20)
+(2.19)
+(2.28)
+4 × 10−5
+Yes
+mean
+11.94
+10.58
+-1.56
+(std)
+(4.17)
+(3.85)
+(1.69)
+No
+mean
+-0.09
+-0.27
+-1.57
+(std)
+(1.59)
+(1.59)
+(1.67)
+Table 1: The mean and standard deviation of the PnL from the various strategies as the inventory-management parameter
+φ increases, ε = 0.04, and ﬁnal inventory liquidation costs are 1bps and 10bps per share. Recall that only the benchmark
+HFT, who uses ρ = 0.7, is able to correctly specify the dynamics of short-term-alpha.
+The tables clearly show that market making is more proﬁtable if the HFTs incorporate in their optimal
+strategies predictions of short-term-alpha – this is true even if the HFTs incorrectly specify the shortterm-alpha parameters. Moreover, when the mean impact of inﬂuential orders on αt is ε = 0.04, Table
+1 clearly shows that HFTs who are not able to execute market making strategies based on predictable
+trends in the midprice will be driven out of the market because their trades are being adversely selected
+and because they are unable to proﬁt from directional strategies – HFTs who omit short-term-alpha face
+negative, or at best close to zero, mean PnLs. Table 2 shows that if the mean impact of inﬂuential orders
+decreases to ε = 0.02, HFTs are able to subsist even if they do not use predictors of short-term-alpha when
+making markets; however we believe that in practice HFTs will not survive if they are not able to trade
+23
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+Case III ε = 0.02, ρ = 0.7 and liquidation costs = 1bp
+φ
+Bench.
+ρ = 1
+ρ = 0
+1 × 10−5
+Yes
+mean
+8.81
+8.16
+1.25
+(std)
+(2.84)
+(2.60)
+(1.55)
+No
+mean
+1.66
+1.61
+1.23
+(std)
+(1.46)
+(1.47)
+(1.52)
+2 × 10−5
+Yes
+mean
+8.29
+7.63
+1.84
+(std)
+(2.23)
+(2.04)
+(1.15)
+No
+mean
+2.55
+2.48
+1.80
+(std)
+(1.09)
+(1.08)
+(1.13)
+4 × 10−5
+Yes
+mean
+7.41
+6.77
+2.33
+(std)
+(1.75)
+(1.60)
+(0.85)
+No
+mean
+3.08
+2.99
+2.30
+(std)
+(0.81)
+(0.80)
+(0.84)
+Case IV ε = 0.02, ρ = 0.7 and liquidation costs = 10bps
+φ
+Bench.
+ρ = 1
+ρ = 0
+1 × 10−5
+Yes
+mean
+8.16
+7.57
+0.79
+(std)
+(2.75)
+(2.53)
+(1.69)
+No
+mean
+1.19
+1.15
+0.77
+(std)
+(1.62)
+(1.63)
+(1.67)
+2 × 10−5
+Yes
+mean
+7.75
+7.13
+1.45
+(std)
+(2.16)
+(1.99)
+(1.27)
+No
+mean
+2.16
+2.09
+1.42
+(std)
+(1.23)
+(1.22)
+(1.26)
+4 × 10−5
+Yes
+mean
+6.95
+6.35
+2.00
+(std)
+(1.70)
+(1.57)
+(0.95)
+No
+mean
+2.75
+2.66
+1.98
+(std)
+(0.92)
+(0.92)
+(0.95)
+Table 2: The mean and standard deviation of the PnL from the various strategies as the inventory-management parameter
+φ increases, ε = 0.02, and ﬁnal inventory liquidation costs are 1bps and 10bps per share. Recall that only the benchmark
+HFT, who uses ρ = 0.7, is able to correctly specify the dynamics of short-term-alpha.
+on short-term-alpha to proﬁt from directional strategies and to reduce the eﬀects of adverse selection.17
+The inventory-management parameter φ plays an important role in the performance of the HFT strategies.
+Although the HFTs are maximizing expected terminal wealth (and not expected utility of terminal wealth),
+they are capital constrained and their own internal risk-measures require them to penalize building large
+positions. HFTs that wish to, or are required to, exert a tight control on their exposure to inventories
+will prefer a high φ. Tables 1 and 2 show an interesting eﬀect of φ on the PnL of the diﬀerent strategies
+that we study. If the HFT uses her predictions of short-term-alpha to make markets, increasing φ reduces
+both the mean and standard deviation of the PnL. Thus, in these cases the tradeoﬀbetween mean and
+standard deviation of proﬁts is clear: those HFTs who trade on short-term-alpha are able to trade oﬀ
+mean against standard deviation of PnL.
+On the other hand, the eﬀect of increasing φ on the PnL of HFTs that do not take into account short-termalpha is to increase the mean and to decrease the standard deviation of the PnL. The intuition behind
+this result is the following. As we have shown, HFTs that do not trade using predictions of short-termalpha suﬀer from being picked oﬀby better informed traders and are unable to boost their proﬁts using
+directional strategies. However, increasing φ makes their postings more conservative because, everything
+else equal, the LOs are posted deeper in the LOB and this makes it more diﬃcult for other traders to
+pick oﬀtheir quotes. Thus, by increasing φ the HFT reduces her exposure to adverse selection and this
+explains why the mean PnL increases in φ. Finally, the standard deviation of the PnL decreases because
+when φ increases the strategy induces very quick mean reversion of inventories to zero.
+17We are grateful to an anonymous referee for pointing this out.
+24
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+Finally, we repeat the simulations by assuming that inﬂuential orders arrive with probability ρ = 0.3.
+Table 3 shows the results when we assume that ε = 0.04 and ε = 0.02 and that ﬁnal inventory liquidation
+costs are 1bp. The results are qualitatively the same as those discussed above, except now the ρ = 0
+agent performs signiﬁcantly better, relative to the other agents (although still is the worst of the three
+strategies). We also run simulations with diﬀerent parameter choices and the benchmark HFT always
+performs better than the other HFTs.
+ε = 0.04, ρ = 0.3 and liquidation costs = 1bp
+φ
+Bench.
+ρ = 1
+ρ = 0
+1 × 10−5
+Yes
+mean
+4.97
+4.16
+2.60
+(std)
+(1.43)
+(1.19)
+(1.26)
+No
+mean
+2.59
+2.59
+2.57
+(std)
+(1.21)
+(1.22)
+(1.23)
+2 × 10−5
+Yes
+mean
+4.79
+4.01
+2.70
+(std)
+(1.11)
+(0.92)
+(0.94)
+No
+mean
+2.78
+2.74
+2.67
+(std)
+(0.91)
+(0.91)
+(0.92)
+4 × 10−5
+Yes
+mean
+4.47
+3.72
+2.75
+(std)
+(0.87)
+(0.71)
+(0.70)
+No
+mean
+2.88
+2.81
+2.72
+(std)
+(0.68)
+(0.69)
+(0.70)
+ε = 0.02, ρ = 0.3 and liquidation costs = 1bp
+φ
+Bench.
+ρ = 1
+ρ = 0
+1 × 10−5
+Yes
+mean
+4.69
+4.34
+3.86
+(std)
+(0.81)
+(0.74)
+(0.80)
+No
+mean
+3.87
+3.85
+3.83
+(std)
+(0.77)
+(0.77)
+(0.78)
+2 × 10−5
+Yes
+mean
+4.51
+4.19
+3.82
+(std)
+(0.65)
+(0.59)
+(0.61)
+No
+mean
+3.85
+3.82
+3.78
+(std)
+(0.60)
+(0.60)
+(0.61)
+4 × 10−5
+Yes
+mean
+4.19
+3.91
+3.66
+(std)
+(0.53)
+(0.48)
+(0.49)
+No
+mean
+3.71
+3.68
+3.63
+(std)
+(0.48)
+(0.48)
+(0.48)
+Table 3: The mean and standard deviation of the PnL from the various strategies as the inventory-management parameter φ
+increases, ε = 0.04 and 0.02, and ﬁnal inventory liquidation costs are 1bps per share. Recall that only the benchmark HFT,
+who uses ρ = 0.3, is able to correctly specify the dynamics of short-term-alpha.
+7. Conclusions
+We develop an HF trading strategy where the HFT uses her superior speed advantage to process information and to send orders to the LOB to proﬁt from roundtrip trades over very short-time scales. One of
+our contributions is to diﬀerentiate MOs between inﬂuential and non-inﬂuential. The arrival of inﬂuential
+MOs increases MO activity and also aﬀects the shape and dynamics of the LOB. On the other hand, when
+non-inﬂuential MOs arrive they walk the LOB but have no eﬀect on the demand or supply of shares in
+the market.
+Another contribution is to model short-term-alpha in the drift of the midprice as a zero-mean reverting
+process which jumps by a random amount upon the arrival of inﬂuential MOs and news.
+Inﬂuential
+buy and sell MOs induce a short-lived upward and downward trend in the midprice of the asset. This
+speciﬁcation allows us to capture the essence of HF trading: to exploit short-lived predictable opportunities
+by the way of directional strategies, and to supply liquidity to the market taking into account adverse
+selection costs.
+25
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+The trading strategy that the HFT employs is given by the solution of an optimal control problem where the
+trader is constantly submitting and canceling LOs to maximize expected terminal wealth, whilst managing
+inventories, over a short time interval T. The strategy shows how to optimally post (and cancel) buy and
+sell orders and is continuously updated to incorporate information of the arrival of MOs, size and sign
+of inventories, and short-term-alpha. The optimal strategy captures many of the key characteristics that
+diﬀerentiate HFTs from other algorithmic traders: proﬁt from directional strategies based on predicting
+short-term-alpha; reduce exposure to LOs being picked oﬀby better informed traders; and strong mean
+reversion of inventories to an optimal level throughout the entire strategy and to zero at the terminal
+date.
+Our framework allows us to derive asymptotic solutions of the optimal control problem under very general
+assumptions of the dynamics of the LOB. We test our model using simulations where we assume diﬀerent
+types of HFTs who are mainly characterized by the quality of the information that they are able to process
+and incorporate into their optimal postings. We show that only those HFTs who incorporate predictions
+of short-term price deviations in their strategy will deliver positive expected proﬁts. The other HFTs are
+driven out of the market because their LOs are picked oﬀby better informed traders and because they
+cannot proﬁt from directional strategies which are also based on short-lived predictable trends. We also
+show that those HFTs who cannot execute proﬁtable directional strategies and are systematically being
+picked oﬀcan stay in business if they exert tight controls on their inventories. In our model, these controls
+imply a higher penalty on their inventory position which pushes the optimal LOs further away from the
+midprice so the chances of being picked oﬀby other traders are considerably reduced.
+One aspect that we have left unmodeled is when is it optimal for the HFT to submit MOs. We know that
+HFTs submit both aggressive and passive orders. Depending on short-term-alpha it might be optimal for
+the HFT to submit aggressive orders (for one or both legs of the trade) to complete a directional strategy.
+In our stochastic optimal control problem the HFT does not execute MOs, the best she can do is send LOs
+at the midprice (zero spread) but this is no guarantee that the LO will be ﬁlled in time for the HF strategy
+to be proﬁtable. We leave for future research the optimal control problem where HFTs can submit both
+passive and aggressive orders.
+Finally, the mutual-exciting nature of our model captures other important features of strategic behavior
+which include ‘market manipulation’. For example, algorithms could be designed to send MOs, in the hope
+of being perceived as inﬂuential, to trigger other algorithms into action and then proﬁt from anticipating
+the temporary changes in the LOB and short-term-alpha. Market manipulation strategies are not new to
+26
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+the marketplace, they have been used by some market participants for decades, perhaps what has changed
+is the speed at which these techniques are executed and the question is whether speed enhances the ability
+to go undetected. Analyzing such strategies are beyond the scope of this paper.
+Appendix A. Fitting the Model
+Here we focus on the case when all MOs are inﬂuential. Calibrating and estimating the current state of activity in the general
+model in an online manner is beyond the scope of this work and will be reported elsewhere.
+When all MOs are inﬂuential (i.e., when ρ = 1), the path of the intensity process is fully speciﬁed (once the times at which
+the buy and sell trades are speciﬁed). Consequently, the likelihood can be written explicitly, and a straightforward maximum
+likelihood estimation (MLE) can be used (albeit it must be maximized numerically). To be speciﬁc, suppose {t1, t2, . . . , tn}
+are a set of observed trade times (with tn ≤T the time of the last trade) and {B1, B2, . . . , Bn} are buy/sell indicators, i.e., 0
+if the trade is a market sell and 1 if the trade is a market buy. Then the hazard rates and their integral at an arbitrary time
+t can be found by integrating (2a)-(2b) and are explicitly given by
+λ±
+t = θ +
+n
+X
+i=1
+H±
+i e−β(t−ti)
+and
+Z t
+0
+λ±
+u du = θ t +
+n
+X
+i=1
+H±
+i
+1 −e−β(t−ti)
+β
+,
+(A.1)
+where H±
+i = (Bi η + (1 −Bi) ν, Bi ν + (1 −Bi) η). Finally, the log-likelihood
+L = −2θ T −
+n
+X
+i=1
+
+Bi log(λ+
+ti) + (1 −Bi) log(λ−
+ti) + (η + ν)1 −e−β(T −ti)
+β
+
+.
+(A.2)
+Maximizing this log-likelihood results in the MLE estimates of the model parameters, and upon back substitution into
+Equation (A.1) provides the estimated path of activity. Integrating this activity over the last second, i.e.,
+R t
+t−1 λ±
+u du provides
+us with a smoothed version of the intensity and shown in Figure 1 as the path labeled “Fitted”. This is directly comparable
+to the one second historical intensity in Figure 1 labeled as “Historical”.
+For the time window 3:30pm to 4:00pm on Feb 1, 2008 for IBM the estimated parameters are as follows:
+bβ = 180.05,
+bθ = 2.16,
+bη = 64.16,
+and
+bν = 55.73 .
+Notice that the spikes in the historical intensity are often above the ﬁtted intensities. The reason for this diﬀerence is that,
+here, the ﬁtted intensities assume that all trades are inﬂuential (i.e., ρ = 1). Consequently, the size of the jump in intensities
+must be smaller than the true jump size to preserve total mean activity of trades. When a full calibration is carried out –
+in which ρ is not necessarily 1 and the inﬂuential/non-inﬂuential nature of the event must be ﬁltered – the jump sizes are
+indeed larger.
+27
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+Appendix B. Proof of Results
+Appendix B.1. Proof of Lemma 1
+Integrating both sides of (2), taking conditional expectation, applying Fubini’s Theorem, and then taking derivative gives
+the following coupled system of coupled ODEs for m±
+t (u)
+d
+du
+
+m−
+t (u)
+m+
+t (u)
+
++
+
+β −ηρ
+−νρ
+−νρ
+β −ηρ
+
+
+
+m−
+t (u)
+m+
+t (u)
+
+−
+
+βθ
+βθ
+
+=
+
+0
+0
+
+
+(B.1)
+with initial conditions m±
+t (t) = λ±
+t . This is a standard matrix equation and, if A has no zero eigenvalues, admits the unique
+solution
+
+m−
+t (u)
+m+
+t (u)
+
+= e−A(u−t)
+
+
+
+λ−
+t
+λ+
+t
+
+−A−1ζ
+
++ A−1ζ .
+(B.2)
+Since A is symmetric, it is diagonalizable by an orthonormal matrix U. Furthermore, its eigenvalues are β −(η±ν)ρ. Clearly,
+in the limit u →∞, mt(u) converges if and only if β −(η ± ν)ρ > 0 which implies β > (η + ν)ρ since η, ν, ρ ≥0.
+The remaining case is if A has at least one zero eigenvalue. However, it is easy to see that in this case, the solution to (B.1)
+has at least one of m±
+t (u) growing linearly as a function of u. Furthermore, if one eigenvalue is zero, then either β = (η−ν)ρ or
+β = (η +ν)ρ, which lie outside the stated the bounds. Finally, if both eigenvalues are zero, then we must have β = ν = η = 0.
+Once again outside of the stated bounds.
+□
+Appendix B.2. Proof of Proposition 2
+Applying the ansatz on the form on Φ, diﬀerentiating inside the supremum in (7) with respect to δ±, then expanding g using
+the speciﬁed ansatz, writing δ±∗= δ±
+0 + αδ±
+α + εδ±
+ε + φδ±
+φ + o(ς), and setting the resulting equation to 0 gives our ﬁrst-order
+optimality condition. To this order, the ﬁrst-order conditions imply that
+h±(δ±
+0 ) + δ±
+0 h′
+±(δ±
+0 ) + α
+n
+δα
+ h′′
+±(δ±
+0 ) + 2 h′
+±(δ±
+0 )
+
++ h′(δ±
+0 )
+
+S±
+qλgα −S±
+λ gα
+o
++ε
+n
+δε
+ h′′
+±(δ±
+0 ) + 2 h′
+±(δ±
+0 )
+
++ h′
+±(δ±
+0 )
+
+S±
+qλgε −S±
+λ gε + ±ρ a± S±
+qλgα
+o
++φ
+n
+δφ
+ h′′
+±(δ±
+0 ) + 2 h′
+±(δ±
+0 )
+
++ h′
+±(δ±
+0 )
+
+S±
+qλgφ −S±
+λ gφ
+o
+= o(ς) .
+(B.3)
+Observe that the Taylor expansion of h(δ) about δ0 requires the C2 regularity condition to keep the error of the correct order.
+The C1 regularity condition ensures that the global maximizer satisﬁes (B.3). Setting the constant term in (B.3) to zero
+yields (13). Setting the coeﬃcients of α, ε and φ each separately to zero and solving for δα, δε and δφ results in (11). The
+ﬁniteness of the optimal control correct to this order is ensured by the last condition in Assumption 2.
+The existence of a solution to (13) is clear by noticing that the solution to (13) is a critical point of the function δh(δ). The
+critical point exists since δh(δ) is non-positive for δ ≤0, strictly positive on an open interval of the form (0, d) due to h ∈C1
+(since h > 0 in an open neighbourhood of δ = 0), and goes to 0 in the limit (when δ →∞) by Assumption 2.
+28
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+To see that the exact values of the optimal controls are non-negative, observe that the value function is increasing in x.
+Therefore, Φ(t, x + δ, ·) < Φ(t, x, ·) for any δ < 0. Since the shift operators appearing in the argument of the supremum
+are linear operators, and h(δ; κ) is bounded above by 1 and attains this maxima at δ = 0, the δ = 0 strategy dominates all
+strategies which have δ < 0.
+□
+Appendix B.3. Proof of Theorem 3
+Inserting the expansion for g and the feedback controls (11) for δ into the HJB equation (7), and carrying out tedious but
+ultimately straightforward expansions, to order ς, equation (7) reduces to
+o(ς) = Dg0 + (λ+δ+
+0 h+(δ+
+0 ) + λ−δ−
+0 h−(δ−
+0 ))
++ α
+
+q + (D −ζ) gα + λ+ h+(δ0)
+
+S+
+qλ −S+
+λ
+
+gα + λ−h−(δ0)
+
+S−
+qλ −S−
+λ
+
+gα
+	
++ ε
+
+Dgε + λ+ h+(δ0)
+ 
+S+
+qλ −S+
+λ
+
+gε + ρ a+ S+
+qλgα
+
++λ−h−(δ0)
+ 
+S−
+qλ −S−
+λ
+
+gε −ρ a−S−
+qλgα
+	
++ φ
+
+−q2 + Dgφ + λ+ h+(δ0)
+
+S+
+qλ −S+
+λ
+
+gφ + λ−h−(δ0)
+
+S−
+qλ −S−
+λ
+
+gφ
+	
+,
+(B.4)
+where D = ∂t+L and the boundary conditions g0(T, ·) = gα(T, ·) = gε(T, ·) = gφ(T, ·) = 0 apply. Clearly, g0 is independent of
+q and, as seen in Proposition 2, does not aﬀect the optimal strategy. Next, perform the following steps (i) set the coeﬃcients
+of α, ε and φ to zero separately; (ii) write gα, gε and gφ as in (14); and (iii) collect powers of q and set them individually to
+zero;18 then one ﬁnds the following equations for the functions bα(t), bε(t, λ), bφ(t, λ, κ) and cφ(t):
+0 = Dbα −ζ bα + λ+ 
+S+
+λ −1
+
+bα + λ−
+S−
+λ −1
+
+bα + 1,
+(B.5a)
+0 = Dbε + λ+ 
+S+
+λ −1
+
+bε + λ−
+S−
+λ −1
+
+bε + ρ
+ λ+a+ −λ−a−
+bα,
+(B.5b)
+0 = Dbφ + λ+ 
+S+
+λ −1
+
+bφ + λ−
+S−
+λ −1
+
+bφ −2 h(δ0) (λ+ −λ−) cφ,
+(B.5c)
+0 = Dcφ + λ+ 
+S+
+λ −1
+
+cφ + λ−
+S−
+λ −1
+
+cφ −1 .
+(B.5d)
+These equations, together with the boundary conditions that bα(T, ·) = bε(T, ·) = bφ(T, ·) = cφ(T, ·) = 0, admit, through a
+Feynman-Kac argument, the solutions presented in (15). More speciﬁcally, we apply the Feynman-Kac formula in Lemma 5
+to link the solution of the derived PIDE back to its stochastic representation, as presented in (15).
+The functions aα, aε and aφ are independent of q and, since the optimal spreads given in (12) contain diﬀerence operators in
+q which vanish when the diﬀerence operators act on functions independent of q, do not inﬂuence the optimal strategy.
+□
+18Note that this step is not an asymptotic expansion in q, rather it is exact given the prescribed expansion in the other
+parameters.
+29
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+Appendix B.4. Proof of Corollary 4
+Applying Equation (14) for gα, gε and gφ in Theorem 3 to Equations (11) and (12) of Proposition 2 and using the fact that
+the a, b and c functions are all independent of q, after some tedious computations, δ∗± reduces to
+δ±∗= δ±
+0 + B(δ±
+0 ; κ±)
+
+±α bα + ε
+ ±S±
+λ bε + ρ a± bα
+
++ φ
+ ±S±
+λ bφ + (1 ∓2q)(T −t)
+	
+.
+Next, observing that ±α bα + ε
+ ±S±
+λ bε + ρ a± bα
+
+= ±S±
+λ
+
+E
+hR T
+t αu du
+i
+, we ﬁnd (16). Finally, let δ±
+opt denote the exact
+optimal controls. Using Proposition 2 we have that δ±
+opt is non-negative and |δ∗−δ±
+opt| = o(ς) therefore,
+max{δ±∗, 0} −δ±
+opt
+ ≤
+δ±∗−δ±
+opt
+ = o(ς) ,
+and we are done.
+□
+Appendix B.5. Feynman-Kac Forumla for Jump Diﬀusions
+Let Xt be a jump diﬀusion on Rk with P-generator L. Suppose that some function u(t, x) satisﬁes the following PIDE with
+boundary condition:
+
+
+
+(∂t + L)u(t, x) + f(t, x)
+=
+V (t, x)u(t, x)
+u(x, T)
+=
+ϕ(x)
+(B.6)
+Lemma 5. Feynman-Kac Formula. The solution to (B.6) has the following stochastic representation:
+u(t, x) = EP
+
+
+T
+Z
+t
+e
+−
+sR
+t
+V (z,Xz)dz
+f(s, Xs)ds + e
+−
+TR
+t
+V (z,Xz)dz
+ϕ(XT )
+
+Xt = x
+
+
+(B.7)
+Proof. Suppose u(t, x) is a solution to (B.6) and consider the process
+Y (r, Xr) :=
+r
+Z
+t
+e
+−
+sR
+t
+V (z,Xz)dz
+f(s, Xs)ds + e
+−
+rR
+t
+V (z,Xz)dz
+u(r, Xr).
+It then follows that
+Et,x [Y (T, XT ) −Y (t, Xt)] = Et,x
+
+
+T
+Z
+t
+e
+−
+rR
+t
+Vz dz
+{fr + (∂r + L)ur −Vr ur} dr
+
+= 0.
+30
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+The ﬁrst equality is true by Dynkin’s Formula. The second equality is due to the condition in (B.6). Hence, we have
+u(t, x) = Y (t, x) = Et,x [Y (t, Xt)] = Et,x [Y (T, XT )]
+= Et,x
+
+
+T
+Z
+t
+e
+−
+sR
+t
+V (z,Xz)dz
+f(s, Xs)ds + e
+−
+TR
+t
+V (z,Xz)dz
+u(T, XT )
+
+
+= Et,x
+
+
+T
+Z
+t
+e
+−
+sR
+t
+V (z,Xz)dz
+f(s, Xs)ds + e
+−
+TR
+t
+V (z,Xz)dz
+ϕ(XT )
+
+.
+□
+Appendix C. Some Explicit Formulae
+This appendix contains several explicit formulae for the optimal spreads as well as quantities that feed into the optimal
+spreads.
+Appendix C.1. Exact Optimal Trading Strategy
+Although an exact optimal control is not analytically tractable in general, the feedback control form for the cases of exponential
+and power-law FPs can be obtained within our modeling framework.
+Proposition 6. Exact Optimal Controls for Exponential and Power-Law. Suppose that the scale parameter process
+κ±
+t is bounded away from zero almost surely. More speciﬁcally, assume that P
+
+inft∈[0,T ] κ±
+t > 0
+
+= 1.
+1. If h±(δ; κ) = e−κ±δ for δ > 0, then the feedback control of the optimal trading strategy for the HJB equation (7) is
+given by
+δ±
+t = max
+ 1
+κ± −
+
+S±
+qλg −S±
+λ g
+	
+, 0
+
+.
+(C.1a)
+2. If h±(δ; κ) = (1 + κ±δ)α± for δ > 0, then the feedback control of the optimal trading strategy for the HJB equation (7)
+is given by
+δ±
+t = max
+
+α
+α −1
+ 1
+κ± −
+
+S±
+qλg −S±
+λ g
+	
+, 0
+
+.
+(C.1b)
+Here, the ansatz Φ = x + q s + g(t, q, α, λ, κ) with boundary condition g(T, ·) = 0 has been applied. Furthermore, the solutions
+in (2) are unique.
+Proof. Applying the ﬁrst order conditions to the supremum terms and using the speciﬁed ansatz leads, after some simpliﬁcations, to the stated result. We show this in detail for δ−in (C.1a) only as the other cases are analogous. The relevant
+31
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+supremum term in the HJB equation in (7) simpliﬁes to, after applying the ansatz Φ = x + q s + g(t, q, α, λ, κ),
+e−δ−κ−
+S−
+λ g −g + δ−
++ (1 −e−δ−κ−)
+
+S−
+λ g −g
+
+.
+(C.2)
+Diﬀerentiating (C.2) with respect to δ−and setting the resulting expression equal to zero yields (C.1a). Checking the second
+derivative of (C.2) veriﬁes that this point is in fact a local maximum. If this point is negative, then the optimal δ−is δ−= 0
+by Assumption 2.
+Uniqueness is trivial.
+□
+Appendix C.2. Explicit Computation of bε
+Rather than computing bε directly, it is more convenient to compute the expected integrated drift and then identify the
+appropriate terms. To this end we have the following result.
+Proposition 7. Expected Integrated Drift. The expected integrated drift is given by the expression
+E
+Z T
+t
+αs ds
+ λt = λ, αt = α
+
+= ε bϵ(t, λ) + α bα(t)
+(C.3)
+where ε bε(t, λ) = A(t) + λ · C(t) and
+A(t) = ζ′ · B(t) ,
+(C.4a)
+B(t) = ρ
+ζ
+n
+A−1 
+(T −t) I −A−1 
+I −e−A(T −t)
+−(A −ζ I)−1 
+bα(t) I −A−1 
+I −e−A(T −t)o
+εa ,
+(C.4b)
+C(t) =ρ
+ζ
+n
+A−1 
+I −e−A(T −t)
+−(A −ζ I)−1 
+e−ζ(T −t) I −e−A(T −t)o
+εa .
+(C.4c)
+Moreover, a = (−a−, a+)′ and ζ = (βθ, βθ)′.
+Proof. Denoting f(t, α, λ) = E
+hR T
+t αs ds
+ λt = λ, αt = α
+i
+, we have, through a Feynman-Kac theorem, that f satisﬁes the
+PDE
+(∂t + L)f + λ+  S+
+λ f −f
+
++ λ− S−
+λ f −f
+
++ α = 0 ,
+(C.5)
+where the inﬁnitesimal generator of α and λ is
+L = β(θ −λ−)∂λ−+ β(θ −λ+)∂λ+ −ζ α∂α + 1
+2σ2∂αα .
+Substituting the aﬃne ansatz f = A(t)+λC(t)+α bα(t) into the PDE, subject to the boundary conditions A(T) = C(T) = 0,
+leads to the system of coupled ODEs:
+
+
+
+∂tA(t) + ζ′ · C(t)
+= 0 ,
+∂tC(t) −AC(t) + ρ bα(t) εa
+= 0 .
+(C.6)
+32
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+The solution of this coupled system is given by (C.4a) - (C.4c). The assertion that A(t) + λ · C(t) = ε bε with bε provided
+in (15b) can be conﬁrmed by (i) writing down the PDE which the function bε satisﬁes, (ii) note that it admits an aﬃne
+ansatz Aε(t) + λ · Cε(t), and (iii) the ODEs that Aε(t) and Cε(t) satisfy are the same ODEs as A(t) and C(t) with the same
+boundary conditions. Uniqueness then implies they are equal.
+□
+Appendix C.3. Computing bφ when Risk-Neutral Fill Probabilities are Constants
+Closed form expressions for the function bφ can only be derived under further assumptions on the FPs h±(δ; κ).
+As a
+motivating factor, note that both exponential and power law FPs have the property that h±(δ±
+0 ; κ) = const., irrespective
+of the dynamics on the shape parameter κ±. This leads us to investigate the larger class of models for which h±(δ±
+0 ; κ) are
+constant. Under these assumptions, the following proposition provides an explicit form for the function bφ.
+Proposition 8. Explicit Solution for bφ(t, λ, κ). If h±(δ±
+0 ; κ) = h± are constants P-a.s., then the function bφ(t, λ, κ) is
+independent of κ, and is explicitly given by
+bφ(t, λ) = 2ξ′ n
+A−1(T −t) −A−2 
+I −e−A(T −t)
+λ −A−1ζ
+
++ 1
+2(T −t)2 A−1ζ
+o
+,
+(C.7)
+where I is the 2 × 2 identity matrix and ξ = (−h−, h+)′.
+Proof. Note that E
+hR T
+t λ±
+u (T −u) du|Ft
+i
+=
+R T
+t E
+
+λ±
+u |Ft
+
+(T −u) du =
+R T
+t m±
+t (u) (T −u) du. Using the form of m±
+t (u)
+provided in (B.2) and integrating over u implies that
+Z T
+t
+mt(u)(T −u) du =
+
+A−1(T −t) −A−2 
+I −e−A(T −t)  λt −A−1ζ
+
++ A−1ζ 1
+2(T −t)2 .
+(C.8)
+This result is valid under the restriction that A is invertible, which is implied by the arrival rate of MOs (2) and Lemma 1.
+Moreover, when h±(δ±
+0 ; κ) = h± we have bφ(t, λ) = 2
+TR
+t
+{h+ · m+
+t (u) −h−· m−
+t (u)}(T −u) du and (C.7) follows immediately.
+□
+As already mentioned, studying the class of models for which h±(δ±
+0 ; κ) = h± are constant was motivated by the exponential
+and power-law cases which we formalize in the two examples below.
+Example 9. Exponential Fill Rate. Take κ± = f ±(κ), where f ± : Rk 7→R+ are continuous functions. If h±(δ; κ) =
+e−κ±δ for δ > 0 and P
+
+inf
+t∈[0,T ] κ±
+t > 0
+
+= 1, then h±(δ±
+0 ; κ) = e−1 is constant and Proposition 8 applies.
+Example 10. Power Fill Rate.
+Take κ± = f ±(κ), where f ± : Rk 7→R+ are continuous functions, and α± > 1 as
+ﬁxed constants. If h±(δ; κ) =
+h
+1 + (κ±δ)α±i−1
+for δ > 0 and P
+
+inf
+t∈[0,T ] κ±
+t > 0
+
+= 1, then δ±
+0 = (α± −1)−
+1
+α± (κ±)−1 and
+h±(δ±
+0 ; κ) = α±−1
+α±
+is constant and Proposition 8 applies.
+Notice that the Poisson model of trade arrivals can be recovered by setting ρ = 0. Furthermore, if the initial states λ±
+0 are
+equal and κ± are equal then bφ ≡0.
+33
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+Appendix C.4. Conditional Mean of Fill Probability process
+Lemma 11. Conditional Mean of κt. Under the dynamics given in (3), the conditional mean ˜m±
+t (u) := E[κ±
+u |Ft] is
+˜m±
+t (u) = ϑ + ρ
+ξ
+
+ηκm±
+t (u) + νκm∓
+t (u)
+
++
+
+κ±
+t −ϑ −ρ
+ξ (ηκλ±
+t + νκλ∓
+t )
+
+e−ξ(u−t)
+(C.9)
+where m±
+t (u) are given in Appendix B.1.
+Proof. Proceeding as in the proof of Lemma 1 in Appendix B.1, ˜m±
+t (u) satisﬁes the (uncoupled) system of ODEs
+d ˜m±
+t (u)
+du
++ ξ ˜m±
+t (u) = ξϑ + ρ
+
+ηκm±
+t (u) + νκm∓
+t (u)
+
+(C.10)
+where m±
+t (u) is given by (B.2). Solving (C.10) with the initial condition ˜m±
+t (t) = κ±
+t gives the stated result.
+□
+Appendix D. Simulation Procedure
+Here we describe in more detail the approach to simulating the PnL distribution of the HF strategy. Note that this produces
+an exact simulation – speciﬁcally, there are no discretization errors that would be associated with approximating a continuous
+time process by a discrete one (i.e. simulated interarrival times are correct up to machine precision).
+1. Generate the duration until the next MO given the current level of activity λ±
+tn.
+•
+In between orders, the total rate of order arrival is λt = 2θ + (λ+
+tn + λ−
+tn −2θ)e−β(t−tn). To obtain a random draw
+of the time of the next trade, draw a uniform u ∼U(0, 1) and ﬁnd the root19 of the equation τeτ =
+1
+2θ (λtn −2θ) eς
+where ς =
+λtn −2θ
+2θ
++ β
+2θ ln u. Then, Tn+1 = 1
+β (τ −ς) is a sample for the next duration and tn+1 = tn + Tn+1.
+2. Decide if the trade is a buy or sell MO.
+•
+The probability that the MO is a buy order is pbuy =
+θ+(λ+
+tn −θ) e−β Tn+1
+2θ+(λ+
+tn +λ−
+tn −2θ) e−β Tn+1 . Therefore, draw a uniform u ∼
+U(0, 1) and if u < pbuy the order is a buy order, otherwise it is a sell order.
+•
+Set the buy/sell indicator Bn+1 = 1 if it is a buy MO and Bn+1 = −1 if it is a sell MO.
+3. Decide whether the MO ﬁlled the agent’s posted LO.
+•
+Compute the posted LO at the time of the MO λ±
+tn+1 = θ + (λ±
+tn −θ) e−β Tn+1 .
+•
+Draw a uniform u ∼U(0, 1).
+•
+If the MO was a sell (buy) order, then if u < e−κ−
+t δ−
+t (u < e−κ+
+t δ+
+t ) the agent’s buy (sell) LO was lifted (hit).
+4. Update the midprice and drift of the asset.
+19This is eﬃciently computed using the Lambert-W function since A0 is typically small.
+34
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+•
+Generate two correlated normals Z1 and Z2 with zero mean and covariances:
+C(Z1, Z1) = σ2
+ζ2
+
+Tn+1 −2 1−e−ζTn+1
+ζ
++ 1−e−2ζTn+1
+2ζ
+
+,
+C(Z2, Z2) =
+σ2
+2ζ (1 −e−2ζTn+1),
+and
+C(Z1, Z2) =
+σ2
+2ζ2
+ 1 −2e−ζTn+1 + e−2ζTn+1
+.
+Generate a third independent standard normal Z.
+•
+Update price and drift. Stn+1 = Stn + αtn
+1
+ζ (1 −e−ζn+1) + Z1 + σ√Tn+1 Z and αtn+1 = e−ζTn+1αtn + Z2.
+5. Update the inventory and agent’s cash: Xtn+1 = Xtn + Bn+1Stn+1 + δ+
+tn+1 and qtn+1 = qtn −Bn+1.
+6. Decide if the trade is inﬂuential and update activities, FPs and drift.
+•
+Draw a uniform u ∼(0, 1), if u < ρ the trade is inﬂuential, set Hn+1 = 1, otherwise set Hn+1 = 0. Finally,
+λ±
+tn+1 = θ + (λ±
+tn −θ) e−β Tn+1 +
+  1
+2(1 ± Bn+1)ν + 1
+2(1 ∓Bn+1)η
+
+Hn+1 ,
+κ±
+tn+1 = ϑ + (κ±
+tn −ϑ) e−ξ Tn+1 +
+  1
+2(1 ± Bn+1)νκ + 1
+2(1 ∓Bn+1)ηκ
+
+Hn+1 ,
+αtn+1 = 1
+2(1 + Bn+1)ϵ+ −1
+2(1 −Bn+1)ϵ−+ αtn+1 ,
+7. Repeat from step 1 until tn+1 ≥T.
+8. Flow the diﬀusion from the last time prior to maturity until maturity using step 4 with tn+1 = T.
+9. Compute the terminal PnL = XT + qT ST (1 −ctrans sgn(qT )) where ctrans is the liquidation cost (additional fee
+charged to the trader for taking liquidity from the market at time T due to forced liquidation of inventory).
+The PnLs for the other types of HFTs employed in the simulation are obtained similarly.
+Bibliography
+Almgren, R. (2003, January). Optimal execution with nonlinear impact functions and trading-enhanced
+risk. Applied Mathematical Finance 10(1), 1–18.
+Almgren, R. and N. Chriss (2000). Optimal execution of portfolio transactions. Journal of Risk 3.
+Avellaneda, M. and S. Stoikov (2008, November).
+High-frequency trading in a limit order book.
+Quantitative Finance 8, 217–224.
+B¨auerle, N. and U. Rieder (2009). MDP algorithms for portfolio optimization problems in pure jump
+markets. Finance and Stochastics 13, 591–611.
+Bayraktar, E. and M. Ludkovski (2012).
+Liquidation in limit order books with controlled intensity.
+Mathematical Finance, http://dx.doi.org/10.1111/j.1467–9965.2012.00529.x.
+35
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+Bertsekas, D. P. and S. Shreve (1978). Stochastic Optimal Control, Volume 139 of Mathematics in Science
+and Engineering. New York: Academic Press.
+Bouchard, B., N.-M. Dang, and C.-A. Lehalle (2011). Optimal control of trading algorithms: A general
+impulse control approach. SIAM Journal on Financial Mathematics 2, 404–438.
+Bowsher, C. G. (2007). Modelling security market events in continuous time: Intensity based, multivariate
+point process models. Journal of Econometrics 141(2), 876 – 912.
+Cartea, ´A. and S. Jaimungal (2013a). Modeling asset prices for algorithmic and high frequency trading.
+Applied Mathematical Finance, Forthcoming.
+Cartea, ´A. and S. Jaimungal (2013b). Risk metrics and ﬁne tuning of high-frequency trading strategies.
+Mathematical Finance, http://dx.doi.org/10.1111/maﬁ.12023.
+Cartea,
+´A.,
+S.
+Jaimungal,
+and
+R.
+Donnelly
+(2013).
+Robust
+market
+making.
+SSRN:
+http://ssrn.com/abstract=2310645.
+Cartea, ´A. and J. Penalva (2012). Where is the value in high frequency trading? Quarterly Journal of
+Finance 2(3), 1–46.
+CFTC and SEC (2010, September). Findings regarding the market events of may 6, 2010. Report, SEC.
+Cont, R., R. Talreja, and S. Stoikov (2010). A stochastic model for order book dynamics. Operations
+Research 58, 217–224.
+Cvitanic, J. and A. A. Kirilenko (2010). High Frequency Traders and Asset Prices. SSRN eLibrary.
+Easley, D. and M. O’Hara (1992, June). Time and the process of security price adjustment. The Journal
+of Finance XLVII(2), 577–605.
+European Commission (2010). Public consultation: Review of the markets in ﬁnancial instruments directive (MiFID).
+Gu´eant, O., C.-A. Lehalle, and J. Fernandez Tapia (2013). Dealing with the inventory risk: a solution to
+the market making problem. Mathematics and Financial Economics 7(4), 477–507.
+Guilbaud, F. and H. Pham (2013a). Optimal high-frequency trading in a pro rata microstructure with
+predictive information. Mathematical Finance.
+36
+Electronic copy available at: https://ssrn.com/abstract=1964781
+
+Guilbaud, F. and H. Pham (2013b).
+Optimal high frequency trading with limit and market orders.
+Quantitative Finance 13(1), 79–94.
+Ho, T. and H. R. Stoll (1981). Optimal dealer pricing under transactions and return uncertainty. Journal
+of Financial Economics 9, 47–73.
+Kharroubi, I. and H. Pham (2010). Optimal portfolio liquidation with execution cost and risk. SIAM
+Journal on Financial Mathematics 1, 897–931.
+Large, J. (2007).
+Measuring the resiliency of an electronic limit order book.
+Journal of Financial
+Markets 10(1), 1–25.
+O’Hara, M. (1998). Market Microstructure Theory. Wiley.
+Ro¸su, I. (2009). A dynamic model of the limit oder book. Review of Financial Studies 22, 4601–4641.
+Sarkar, A. and R. A. Schwartz (2009). Market sidedness: Insights into motives for trade initiation. The
+Journal of Finance 64(1), 375–423.
+The Government Oﬃce for Science, London (2012). Foresight: The future of computer trading in ﬁnancial
+markets.
+Toke, I. (2011). market making in an order book model and its impact on the spread. In F. Abergel,
+B. Chakrabarti, A. Chakraborti, and M. Mitra (Eds.), Econophysics of Order-driven Markets, New
+Economic Windows, pp. 49–64. Springer Milan.
+37
+Electronic copy available at: https://ssrn.com/abstract=1964781

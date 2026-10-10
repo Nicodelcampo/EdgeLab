@@ -1,0 +1,165 @@
+{
+  "titulo": "Quantitative Trading and Stock Price Crash Risk: Evidence from China",
+  "resumen_operativo": "Investiga si el quantitative trading en el mercado chino (dominado por retail) aumenta el riesgo de crash de precios. Usando datos de fondos mutuos cuantitativos y acciones A-share (2009-2023), encuentra que mayor exposicion a quantitative trading se asocia con mayor riesgo de crash futuro. El canal es via reduccion de eficiencia informacional: el quant trading sobre-senales no-fundamentales desplaza informacion fundamental de los precios. Efecto mas fuerte en acciones con mayor proporcion de inversores retail.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Stock Price Crash Risk",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Riesgo de caidas extremas negativas en precios individuales; medido con Ncskew (negative conditional skewness) y Duvol (down-to-up volatility).",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "Reduced Information Efficiency"
+        },
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Emerging Market Risk"
+        }
+      ],
+      "cita_textual": "stock price crash risk, defined as extreme negative drops in individual stock prices"
+    },
+    {
+      "nombre": "QTR (Quantitative Trading Ratio)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio del volumen de trading de fondos mutuos cuantitativos sobre volumen total anual de la accion; mide exposicion a quant trading.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "Quantitative Trading Exposure"
+        }
+      ],
+      "cita_textual": "QTR_i,t = sum_k QuantTrade_i,k,t / TotalTrade_i,t * 100%"
+    },
+    {
+      "nombre": "Information Efficiency (IE)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida inversa de synchronicity: IE = log((1-R2)/R2) donde R2 proviene de regresion de retornos semanales sobre mercado e industria.",
+      "relaciones": [
+        {
+          "tipo": "MEDIA",
+          "objeto": "Fundamental Information Incorporation"
+        }
+      ],
+      "cita_textual": "a higher value of IE indicates lower stock price synchronicity and a greater incorporation of firm-specific information"
+    },
+    {
+      "nombre": "Retail Investor Dominance",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Inversores retail representan >85% del trading en China; se enfocan en senales no-fundamentales (sentimiento, fricciones) debilitando contenido informativo de precios.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "Reduced Information Efficiency"
+        }
+      ],
+      "cita_textual": "in China's capital market, retail investors account for over 85% of trading"
+    },
+    {
+      "nombre": "Mediation Analysis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Regresion paso a paso que demuestra que QTR reduce IE, y menor IE aumenta crash risk, confirmando el canal causal.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Information Efficiency (IE)"
+        }
+      ],
+      "cita_textual": "Mediation analysis further reveals that reduced information efficiency constitutes a key channel"
+    },
+    {
+      "nombre": "Non-Fundamental Signals",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Senales como sentimiento de mercado, rumores y patrones tecnicos no vinculados directamente al valor intrinseco de la empresa.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "Stock Price Crash Risk"
+        }
+      ],
+      "cita_textual": "in China's retail-dominated market, quantitative trading over-relies on non-fundamental signals"
+    },
+    {
+      "nombre": "Herding Behavior in Quant Funds",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Homogeneidad de algoritmos cuantitativos induce comportamiento de rebano y miopia que amplifica distorsiones de precios.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "Reduced Information Efficiency"
+        }
+      ],
+      "cita_textual": "the homogeneity of quantitative algorithms induces herding and myopic behavior"
+    },
+    {
+      "nombre": "Asymmetric Sell-Side Effect",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El efecto adverso del quant trading es mas fuerte en ventas (QTR_sell) que en compras, por falta de mecanismo de short-selling en China.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "Stock Price Crash Risk"
+        }
+      ],
+      "cita_textual": "the coefficients on QTR(sell) are larger and more statistically significant"
+    },
+    {
+      "nombre": "Guba Forum Data",
+      "tipo": "dato",
+      "definicion_en_contexto": "Numero de posts en el foro online Guba (Eastmoney.com) como proxy de atencion de inversores retail sobre una accion.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "Retail Investor Attention"
+        }
+      ],
+      "cita_textual": "PostNum: the number of posts related to a stock in Guba online forum"
+    },
+    {
+      "nombre": "CSMAR Database",
+      "tipo": "dato",
+      "definicion_en_contexto": "Base de datos de China Securities Market and Accounting Research que proporciona holdings y transacciones de fondos mutuos.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "QTR (Quantitative Trading Ratio)"
+        }
+      ],
+      "cita_textual": "Data on fund holdings and transactions are sourced from the CSMAR database"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Un aumento de 1pp en QTR se asocia con aumento de 12.7% (Ncskew) y 12.8% (Duvol) sobre medias muestrales de crash risk (p<0.01).",
+      "mercado": "Chinese A-share market",
+      "periodo": "2009-2023",
+      "magnitud": "QTR: beta=0.0413 (Ncskew), beta=0.0272 (Duvol), p<0.01",
+      "condiciones": "34,910 observaciones firma-ano; efectos fijos de firma y ano; controles: Size, Age, Lev, Roa, BM, Ret, Sigma, Dturn, Growth, Cash",
+      "robustez": "alta",
+      "cita_textual": "a one-percentage-point increase in the share of quantitative trading corresponds to increases of 12.7% and 12.8% of the sample means of Ncskew and Duvol"
+    },
+    {
+      "afirmacion": "Quantitative trading reduce significativamente la eficiencia informacional (beta_QTR = -0.0585, p<0.01); IE media el efecto sobre crash risk.",
+      "mercado": "Chinese A-shares",
+      "periodo": "2009-2023",
+      "magnitud": "QTR -> IE: beta=-0.0585***; IE -> Ncskew: beta=-0.1190***",
+      "condiciones": "Mediacion con stock price synchronicity como variable mediadora",
+      "robustez": "alta",
+      "cita_textual": "quantitative trading indeed crowds out fundamental information from stock prices and thereby reduces informational efficiency"
+    },
+    {
+      "afirmacion": "Efecto de QTR sobre crash risk es significativo solo en acciones con alta proporcion de retail investors; no significativo en acciones con baja proporcion retail.",
+      "mercado": "Chinese A-shares",
+      "periodo": "2009-2023",
+      "magnitud": "High PostNum: QTR beta=0.0850** vs Low: 0.0241 (ns)",
+      "condiciones": "Cross-sectional split por mediana de atencion retail (PostNum, Dispersion, AvgHold)",
+      "robustez": "alta",
+      "cita_textual": "The adverse effect of quantitative trading is significant only for stocks with higher retail investor ratio"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Datos anuales/trimestrales de fondos mutuos; estudio de riesgo sistemico, no de estrategia de trading intradia."
+  },
+  "doc_id": 285
+}

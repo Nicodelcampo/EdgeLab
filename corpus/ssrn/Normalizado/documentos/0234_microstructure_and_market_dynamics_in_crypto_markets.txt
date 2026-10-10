@@ -1,0 +1,1602 @@
+ 
+Microstructure and Market Dynamics in Crypto Markets  
+ 
+David Easley, Maureen O’Hara, Songshan Yang , and Zhibai Zhang* 
+ 
+We investigate the role of market microstructure metrics in predicting price dynamics for five 
+major cryptocurrencies. We show that microstructure measures of liquidity and price discovery 
+have predictive power for measures of price dynamics used in electronic market making, 
+dynamic hedging strategies and volatility estimation. We identify important own market and 
+cross-market effects for Roll measures and VPINs in BTC and ETH. Our results are little 
+changed during crypto winter, demonstrating a stability to these effects. These findings imply 
+that market dynamics of cryptocurrencies are similar to those of futures markets, suggesting that 
+regulation of crypto might benefit from a structure that is similar to the regulation of futures 
+markets. 
+ 
+Keywords: Cryptocurrencies, Market microstructure, machine learning, liquidity, price dynamics, 
+futures market, crypto regulation 
+ 
+JEL Classification: C02, D52, D53, G14, E44. 
+ 
+*David Easley, Departments of Economics and Information Science, Cornell University, Ithaca 
+NY, US; dae3@cornell.edu  
+Corresponding author: Maureen O’Hara, Johnson College of Business, Cornell University. Ithaca 
+NY, US; mo19@cornell.edu  
+Songshan Yang, Center for Applied Statistics and Institute of Statistics and Big Data, Renmin 
+University of China; yangss@ruc.edu.cn 
+Zhibai Zhang, the Tandon School of Engineering, New York University, US, z.zhibai@gmail.com 
+ 
+We thank participants at the CEPR 2024 Conference and seminar participants at Cornell 
+University for helpful comments.  
+ 
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+1 
+ 
+ 
+Microstructure and Market Dynamics in Crypto Markets  
+ 
+ 
+We investigate the role of market microstructure metrics in predicting price dynamics for five 
+major cryptocurrencies. We show that microstructure measures of liquidity and price discovery 
+have predictive power for measures of price dynamics used in electronic market making, 
+dynamic hedging strategies and volatility estimation. We identify important own market and 
+cross-market effects for Roll measures and VPINs in BTC and ETH. Our results are little 
+changed during crypto winter, demonstrating a stability to these effects. These findings imply 
+that market dynamics of cryptocurrencies are similar to those of futures markets, suggesting that 
+regulation of crypto might benefit from a structure that is similar to the regulation of futures 
+markets. 
+ 
+Keywords: Cryptocurrencies, Market microstructure, machine learning, liquidity, price dynamics, 
+futures market, crypto regulation 
+ 
+JEL Classification: C02, D52, D53, G14, E44. 
+ 
+ 
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+2 
+ 
+ 
+Microstructure and Market Dynamics in Crypto Markets 
+The challenge confronting cryptocurrencies has long been apparent:  How to make crypto an 
+asset class investible by retail and institutional traders?  Following the January 2024 SEC approval 
+of spot-market based Bitcoin ETFs, inflows to the new Bitcoin ETFs reached almost $70 billion 
+in just 2 months.1  This remarkable growth testifies to the appeal that being able to buy crypto 
+exposure through brokerage accounts rather than via crypto exchanges or futures markets has for 
+retail traders. But other obstacles remain for both retail and institutional investors. Vanguard, for 
+example, will not offer crypto-products arguing bitcoin is “a speculation [rather] than an 
+investment”. JP Morgan and Goldman Sachs have expressed similar views.2 Whether these 
+difficulties can be overcome remains to be seen, but certainly fundamental to greater participation 
+is the ability to understand what drives the market dynamics of cryptocurrencies.   
+Understanding these market dynamics, however, is not straightforward.  As we discuss 
+below, there is a developing literature attempting to understand crypto valuation drawing on 
+standard tools from other asset classes.  Other approaches focus on crypto-specific factors such as 
+underlying users or mining costs to explain crypto valuations.  Yet other researchers eschew 
+understanding the determinants of crypto value and instead turn to more “black box” machine 
+learning to simply predict future prices.  While these approaches yield interesting insights, accurate 
+                                                 
+1 Bitcoin spot ETF AUM numbers as of March 28, 2024 from https://cryptonews.com/news/assets-invested-incrypto-etfs-and-etps-rise-359-in.  The launch of spot Ethereum ETFs on July 23, 2024 also elicited investor interest 
+with BlackRock’s EHTA ETF alone gathering inflows of $618 million in the first week of trading.  See 
+https://blockworks.co/ethereum-etf for data on Ether ETFs. 
+2024.htm#:~:text=ETFGI%2C%20an%20independent%20research%20firm%2C%20reports%20assets%20invested,
+increase%20from%20%2415.12%20billion%20at%20end%20of%202023.  See also “Bitcoin ETFs on Better Win 
+Streak than 95% of Traditional Funds,” Forbes, March 25, 2024. 
+2 Institutional roadblocks include regulatory issues (e.g. is crypto a security?, know your customer compliance), 
+market manipulation concerns, valuation issues, market fragmentation, excessive volatility, and lack of liquidity.  
+For discussion, see  blog.ionixxtech.com/top-5-challenges-institutional-investors-face-in-crypto-trading/.  
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+3 
+ 
+crypto valuation continues to prove elusive, underscoring the difficulty of making crypto more 
+accessible to a wider investing audience who, understandably, want to know whether the crypto 
+asset they are considering buying is over- or under-valued. 
+In this paper, we offer a different approach to investigating crypto market behavior.  Our 
+particular focus is on a basic question:  Can standard microstructure measures predict crypto 
+market dynamics? Unlike valuation-based analyses, our approach is based more on understanding 
+the liquidity and price discovery process involved in crypto trading.  Microstructure theory 
+provides various measures related to liquidity (for example, the Amihud measure), asymmetric 
+information and toxicity (Kyle lambda, VPIN), and overall spreads and auto-correlations (Roll 
+measure and Roll Impact measure) that have been shown to matter for liquidity and price dynamics 
+in other asset markets.  We estimate these variables for five major cryptocurrencies, giving insight 
+into how these metrics differ from those found in more standard market settings. 
+We then use these measures to predict five market price dynamics of particular interest for 
+electronic market making, dynamic hedging strategies and volatility estimation.  These outcome 
+variables are the signs of the change in realized volatility, the change in auto-correlation of realized 
+returns, the change in skewness of realized returns, the change in kurtosis of realized returns, and 
+the change in the Jarque-Bera statistic. We follow the approach taken in Easley, Lopez de Prado, 
+O’Hara, and Zhang (ELOZ) (2021) of using machine learning to ask if our microstructure features 
+can predict these outcome labels in cryptocurrency markets.   
+Some readers might find it odd to care about crypto market liquidity and price dynamics 
+rather than crypto valuation per se. Two reasons to do so are paramount.  First, as noted in ELOZ, 
+in high frequency settings how the market is structured turns out to be critical in predicting where 
+the market is going. The second reason is that institutional and high frequency traders rely on 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+4 
+ 
+algorithmic trading approaches to optimize trading strategies.  These strategies, in turn, rely on 
+predicting market dynamics to determine the optimal path for executing trades.  Algorithmic 
+trading is widely used in crypto markets, where trade bots allow both crypto “whales” and retail 
+traders alike the ability to trade dynamically.3  But the algorithmic strategies employed there 
+generally rely on common market indicators, and not on the underlying microstructure variables 
+that may drive the sophisticated trade execution strategies found in more standard asset markets.4  
+The labels we focus on are inputs to those quantitative strategies, so understanding their 
+predictability is fundamental to attracting such traders to the crypto space.   Perhaps the simplest 
+way to characterize our interest is that we are asking: Are crypto markets really different, and if 
+so, how?5 
+Our research design uses high frequency data from Binance (the largest crypto exchange) for 
+cryptocurrencies of five major blockchain platforms:  Bitcoin (BTC), Ethereum (ETH), Ripple 
+(XRP), Solano (SOL), and Cardano (ADA)6.  We are interested in both the effects of own 
+microstructure variables for prediction (e.g. does the ADA Roll metric predict the sign of changes 
+in future  ADA volatility) and the cross effects for prediction (e.g. does Bitcoin VPIN predict the 
+sign of changes in future Ethereum autocorrelation).  Our interest in these cross-asset effects 
+reflects the reality that high frequency trading behavior often involves complex multi-asset 
+                                                 
+3 For a discussion of trade bots see Coinbase, “How trade bots work? where it is noted that “some common 
+parameters bots use include price, time frame, and order volume, while common market indicators include moving 
+averages (MAs), relative strength index (RSI), and more”.  Available at https://www.coindesk.com/learn/what-arecrypto-trading-bots-and-how-do-they-work/ 
+4 There is some discussion in the crypto industry of the potential use of microstructure measures, but no systematic 
+evaluation of microstructure measures and their ability to predict characteristics of the distribution of returns. See for 
+example, https://medium.com/@kryptonlabs/vpin-the-coolest-market-metric-youve-never-heard-of-e7b3d6cbacf1 
+5 A related approach is taken by Kogan, Makarov, Niessner, and Schoar [2024] who investigate whether retail 
+trading in crypto differs from retail trading in stocks and gold.  These authors find substantial differences in retail 
+crypto trading. 
+6 Each blockchain has a native token in which transactions are charged. In addition, various non-native tokens can 
+be deployed on a blockchain. Here we focus the study only on the native tokens, which are represented by the 
+tickers in parentheses.  
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+5 
+ 
+strategies. We use random forest machine learning to ascertain overall predictability and to 
+determine which features (i.e. microstructure variables) are most important for understanding 
+market dynamics. Our sample period spans January 2021 – July 2023, allowing us to investigate 
+whether the predictability of crypto markets behaved differently during the “crypto winter” period.   
+Our research provides a number of results, three of which we highlight here: 
+First, we find surprisingly high values for the Roll Measure and VPIN in crypto markets 
+relative to more standard equity and futures market settings.  The greater serial correlation in crypto 
+prices is consistent with more momentum-based trading, while the higher levels of VPIN are 
+indicative of greater trade toxicity arising potentially from more asymmetric information.    
+Second, we find moderate predictability of microstructure measures for future market price 
+dynamics.  Averaging across all currencies and variables, we find an AUC > .55.7 Focusing on the 
+individual features, we find similar predictability (AUC ranging from .54 - .61) with the exception 
+of skewness where we find no predictability (AUC=.50). Overall, we find that predictability is 
+driven by the Roll measure and by VPIN.  Own measures of Roll and VPIN matter for most of our 
+predicted features, with other microstructure features having little or no importance for own market 
+prediction.  Cross effects are also important:  BTC Roll and VPIN and ETH Roll and VPIN have 
+strong predictive power for price dynamics across the other crypto currencies.   
+Third, a particular concern for institutional trading methods is the stability of these market 
+dynamics.  We use the natural experiment of “crypto winter” to investigate how these market 
+dynamics are affected by different market regimes. Somewhat surprisingly, we find no effects of 
+                                                 
+7A standard metric in random forest algorithms to measure the performance of classification models is ROC, or the 
+receiver operating classification curve.  The AUC stands for “area under the ROC curve” and essentially captures 
+the predictive ability of the machine learning algorithm.  An AUC of .50 indicates no predictability, while greater 
+values indicate more predictability. For financial data which tends to have a high noise to signal ratio and AUC of 
+.55 is good. For more discussion of evaluation techniques for financial machine learning see Lopez de Prado (2018). 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+6 
+ 
+crypto winter on our results, suggesting a remarkable stability to the price dynamic effects 
+uncovered here.  
+Overall, we show that the price dynamics of the crypto market respond to its market 
+microstructure in ways similar to that of other financial assets. That the market exhibits some 
+predictability is not too surprising – crypto markets are relatively young, exhibit large volatility 
+relative to other asset classes and are much less regulated.8  But even in mature markets, there can 
+be predictability from microstructure variables.  As ELOZ [2021] showed, futures markets also 
+exhibit predictability. What is true in both market settings is that over short horizons liquidity is 
+predictable, and thus potentially exploitable for optimizing trading strategies. Moreover, our 
+results on the strong cross effects of the Roll measure, a metric capturing autocorrelation 
+properties, and VPIN, a measure of market toxicity, convincingly support that there are common 
+factors driving price dynamics across cryptocurrencies.9 
+Our research relates to several streams of research directed to understanding the market 
+drivers of cryptocurrencies. A large literature in computer science uses machine learning to predict 
+future crypto prices and returns (see, for example, Koker and Koutmos (2020); Jaquart, Kopke, 
+and Weinhardt (2022); Cortese, Kolm, and Lindstrom (2023); Filippou, Rapach, and Thimsen 
+(2024)). Our analysis also relies on machine learning but differs from the black box prediction 
+methods typically used in that we are testing for the effects of particular model-based metrics on 
+market dynamics. In common with these papers, we find strong predictability in crypto markets.  
+A large finance literature focuses on the valuation of cryptocurrencies (see Pagnotta and 
+Buraschi (2018), Cong, et al (2020), Bias et al (2022) for theoretical analyses). Much of the 
+                                                 
+8 See also Nimalendram et al [2021] who use variance tests to show cryptocurrency inefficiency and examine its 
+relationship to market regulation. 
+9 For a discussion of factor pricing in crypto see Cong, Karolyi, Tang and Zhao (2022). 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+7 
+ 
+empirical literature draws on applying valuation methodologies to estimate cryptocurrency values. 
+Erb (2020) investigates linkages between gold valuation and bitcoin valuation but concludes that 
+“neither gold nor bitcoin are obvious inflation hedges, stores of value, or safe havens” and so are 
+hard to value.10  Liu and Tsyvinski (2018) argue that crypto has no exposure to common equity 
+market or macro factors or to currency or commodity markets.11 Liu, Tsyvinski and Wu [2021] 
+develop a three-factor model based solely on crypto market, size and momentum to explain returns.  
+Cong, Karolyi, Tang and Zhao (2021) augment these factors with value and network factors, 
+yielding a five-factor model of crypto returns. Our analysis suggests that inter-dependencies across 
+crypto currencies arising from information and liquidity dynamics may be potential factors to 
+consider in future research.   
+Another substantial body of research focuses on the trading of crypto assets (for a general 
+survey see Hallaburda et al (2022)).  Early papers here include Easley, O’Hara, and Basu (2019), 
+Huberman and Lasko (2021), and Cong He, and Li (2021), who analyzed the equilibrium role of 
+transaction fees and miners in Bitcoin. Recent work analyzes trading across crypto exchanges, 
+with Makorov and Schoar (2019; 2020) finding extensive arbitrage opportunities and Crepelliere 
+et al (2023) documenting a decreasing trend in such opportunities. Our results are consistent with 
+the market inefficiency found there, with our results on its persistence during crypto winter 
+underscoring the importance of understanding the cryptocurrency microstructure.  Also relevant is 
+Makorov and Schoar (2022) who present intriguing evidence on the trading and network structure 
+of the bitcoin blockchain.  These authors find that the bitcoin ecosystem is still dominated by large 
+and concentrated players, raising anew the issue of whether crypto currencies can appeal to a wider 
+                                                 
+10 See Erb (2020) pg. 15. 
+11 Related research investigates the linkages of crypto markets to other markets, with Iyer (2022) establishing 
+increased interdependence between crypto and equity markets.  
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+8 
+ 
+investment audience. Research directly addressing this issue includes Hardle, Harvey and Ruelle 
+(2020), Harvey et al (2022) and Ang, Morris, and Savi (2022). 
+The paper is organized as follows. Section II describes the microstructure variables we 
+consider, the market statistics we predict using these microstructure variables and the random 
+forest procedure we use to generate predictions. Section III describes the data set: Binance data on 
+prices and volumes of trade for the leading five crypto currencies for the period January 2021 to 
+July 2023. Section IV provides results about predictability and the relative importance of each 
+microstructure measure in generating predictions. Section V offers two robustness tests: the effect 
+of crypto winter; and using logistic regressions rather than random forests to generate predictions. 
+Section VI concludes.  
+II. 
+Research Design 
+We ask whether five standard microstructure variables are useful in predicting various 
+measures of market dynamics.  These variables will be the features we use in our random forest 
+approach to prediction. The specific microstructure measures considered are: Roll measure, Roll 
+impact measure, Kyle’s lambda,  Amihud measure and VPIN (Volume synchronized measure of 
+information-based trade). These microstructure measures are intended to measure illiquidity or the 
+presence of information-based trade. Illiquidity and information should lead to price volatility, and 
+ELOZ (2021) demonstrate that these microstructure measures are successful in predicting price 
+dynamics in futures markets.  
+The price dynamics we focus on are measures of changes in the distribution of realized returns. 
+The specific price dynamics measures we predict are: the sign of the change in realized volatility, 
+the sign of the change in the sequential correlation, the sign of the change in the Jarque-Bera 
+statistic, the sign of the change in the skewness and the sign of the change in kurtosis. We use a 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+9 
+ 
+random forest classification algorithm to predict these binary variables; following standard random 
+forest nomenclature these signs of changes are the labels we predict. Note that as we predict signs 
+of changes our labels are +1 and -1 and not the magnitudes of the changes. These measures of 
+price dynamics have important implications for trading strategies.  For example, if realized 
+volatility is expected to increase, then increasing the speed of algo execution would be expected 
+to reduce fill price uncertainty.  An increase in predicted serial correlation can result in greater or 
+less price impact depending upon the trade side being executed.  As ELO [2015] show, this should 
+change the optimal speed of trading.12 The Jarque-Bera statistic captures normality of returns, so 
+its increase signals non-normal returns, suggesting that estimates of implementation shortfall may 
+be too small.  If skewness is expected to increase, then the distribution of returns is shifted to one 
+side, perhaps consistent with toxicity in order flow. An increase in kurtosis means greater weight 
+in the tails, an outcome that may signal a withdraw of liquidity support by market makers.  
+Delaying the speed of execution would then be optimal.  
+These price variables are defined using Binance data on prices and volume. For each crypto 
+we first create one-minute time bars; that is, we split the data into segments of length one-minute 
+and we record the price at the beginning of each time bar, at the end of each time bar, and the 
+dollar volume of trade that occurs within each time bar.13 Let t=1,2,… index time measured in 
+minutes. The basic variables we consider are the ending price 
+tp in time bar t, the return 
+1
+1
+(
+)/
+t
+t
+t
+t
+r
+p
+p
+p
+−
+−
+=
+−
+in time bar t and 
+tV the dollar volume of trade in time bar t.  
+                                                 
+12 These authors also demonstrate how incorporating microstructure variables into trading strategies can improve 
+upon the outcomes provided by standard trade algorithms.  In particular, an algorithm based on predicted VPIN 
+changes and volume participation dominates a VWAP trading strategy.  See Lopez de Prado et al (2020) for more 
+discussion. 
+13 We use one-minute time bars because that is the highest granularity bar data the public exchanges offer.  This time 
+period also seems appropriate for capturing market dynamics in a high frequency setting. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+10 
+ 
+We next compute a realization of each of our microstructure measures for each time bar t. Each 
+of these microstructure measures is computed using past data.  For any time bar t, a microstructure 
+measure at t is computed using data in periods t, t-1, …, t-W where W is the lookback window. In 
+our analysis we consider lookback windows of 50 bars and 100 bars. For example, the Amihud 
+measure at time bar t is the average ratio of absolute returns to dollar volume where the average is 
+computed over the past W time bars. Note that a microstructure measure at time bar t and one at 
+time bar t+1 are computed using W-1 overlapping bars of market data.  
+Our market microstructure variables are defined from these basic variables as follows: 
+1. The Roll measure is 
+ 2 √|𝑐𝑜𝑣(𝚫𝑷𝒕 , 𝚫𝑷𝒕−𝟏)| , 
+𝚫𝑷𝒕= [∆𝑝𝑡−𝑊, ∆𝑝𝑡−𝑊+1, … , ∆𝑝𝑡] , 
+ 𝚫𝑷𝒕−𝟏= [∆𝑝𝑡−𝑊−1, ∆𝑝𝑡−𝑊, … , ∆𝑝𝑡−1] ,  
+where ∆𝑝𝑡= 𝑝𝑡−𝑝𝑡−1 .  
+2. The Roll impact measure---the Roll measure divided by dollar volume over a certain 
+period, is 
+2 
+√|𝑐𝑜𝑣(𝚫𝑷𝒕 ,𝚫𝑷𝒕−𝟏)|
+𝑝𝑡𝑉𝑡
+ . 
+3. The Amihud measure is 
+1
+𝑊
+∑
+|𝑟𝑖|
+𝑝𝑖𝑉𝑖
+𝑡
+𝑖=𝑡−𝑊+1
+ , 
+4. Kyle’s 𝜆 is  
+𝑝𝑡−𝑝𝑡−𝑊
+∑
+𝑏𝑖𝑉𝑖
+𝑡
+𝑖=𝑡−𝑊
+  , 
+where 𝑏𝑖= 𝑠𝑖𝑔𝑛(𝑝𝑖−𝑝𝑖−1) . 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+11 
+ 
+5. VPIN is  
+1
+𝑊
+∑
+|𝑉𝑖
+𝑆−𝑉𝑖
+𝐵|
+𝑉𝑖
+𝑡
+𝑖=𝑡−𝑊+1
+,   
+where 𝑉𝑖
+𝐵= 𝑉𝑖𝑍(
+∆𝑝𝑖
+𝜎∆𝑝𝑖
+) , 𝑉𝑖
+𝑆= 𝑉𝑖−𝑉𝑖
+𝐵 and 
+( )
+Z
+ is the CDF of the standard normal. 
+We use these microstructure measures to predict the signs of changes in various market 
+statistics. These “signs of change” are represented by -1 for a negative change and +1 for a positive 
+change. Thus, our market statistics data is a sequence of -1 and +1, one for each time bar. Similar 
+to the way we compute microstructure measures, these market statistics are also computed using 
+some number of past observations. For example, the distribution of realized returns as of time bar 
+t is the empirical distribution of returns over some number of past time bars. The number of past 
+time bars used in computing each market statistic is also W (the lookback window). Note that this 
+procedure implies that the sign of change in a market statistic at time bar t and at time bar t+1 also 
+uses W-1 overlapping observations of data. So, when we want to predict the sign of the change in 
+a market statistic we predict it far enough into the future to avoid using overlapping data. That is, 
+we use a substantial ``look ahead’’ window. We set this look ahead window to be h=1,500 bars; 
+roughly one day of trading.  
+Formally the signs of change in market statistics are: 
+1. The sign of the change in realized volatility 
+𝑠𝑖𝑔𝑛(𝜎𝑡+ℎ−𝜎𝑡) , 
+where 𝜎𝑡 is the realized volatility of one bar returns over a look back window of size W.  
+2. The sign of change in Jarque-Bera statistics of realized returns 
+𝑠𝑖𝑔𝑛(𝐽𝐵(𝑟𝑡+ℎ) −𝐽𝐵(𝑟𝑡)) ,  
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+12 
+ 
+𝐽𝐵(𝑟) = 𝑛
+6 (𝑆2 + 1
+4 (𝐶−3)2) , 
+where 𝑆 is the skewness and 𝐶 is the kurtosis of realized returns 𝑟 over the previous W 
+bars. 
+3. The sign of change in sequential correlation of realized returns 
+𝑠𝑖𝑔𝑛(𝑠𝑐𝑡+ℎ−𝑠𝑐𝑡), 
+𝑠𝑐𝑡= 𝑐𝑜𝑟𝑟(𝑟𝑡, 𝑟𝑡−1). 
+4. The sign of change in absolute skewness of realized returns: 
+sign[
+t h
+Skew + -
+t
+Skew ]. 
+5. The sign of the change in kurtosis of realized returns: 
+sign[
+t h
+t
+Kurt
+Kurt
++ −
+ ]. 
+The microstructure literature suggests that a financial asset’s microstructure measures 
+should provide information about its price dynamics. But the literature provides little guidance 
+about exactly what form this relationship should take. From prior research it also seems reasonable 
+to expect cross-asset relationships, for example BTC or ETH microstructure measures may help 
+predict market statistics of other cryptos, but again the literature provides no guidance about what 
+form this relationship should take.14 To avoid restricting ourselves to an arbitrary structure we use 
+machine learning to discover these relationships. 
+A wide variety of machine learning procedures could be used to ask about the predictive 
+content of our market microstructure measures (see Lopez de Prado (2018) and Kelly and Xiu 
+                                                 
+14 See, for example, research on crypto currency interdependence by Kukacka and Kristofex (2023) and Qureshi et 
+al (2020). 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+13 
+ 
+(2023) for discussion of these approaches). We chose a random forest procedure primarily to make 
+it possible to compare our results to previous results in the literature.  
+In a random forest “features” (the microstructure measures) are used to predict “labels” 
+(the market statistics). We build, for each crypto currency, decision trees based on repeated cuts 
+of the time series of labels and features into two pieces. The division of the data is determined by 
+a two-step process. First, for each feature we compute the information gain (gain in homogeneity 
+of the data) that would be obtained by splitting the data using that feature. Second, we cut the data 
+into two pieces (two branches of the decision tree) by randomly selecting two features and using 
+the feature with the largest information gain. We repeat this cutting process until no additional cut 
+will yield an information gain. For each crypto currency this process yields a decision tree that 
+predicts labels for any assignment of features. To avoid tying our predictions to a single tree that 
+may be too heavily influenced by randomness in the data, we create multiple decision trees for 
+each crypto currency. This is done by creating 100 trees using bootstrapped samples of the data 
+from the actual data set. The prediction given any list of features is then the majority prediction 
+using the collection of trees.15  
+Ultimately, we are interested in the accuracy of our predictions and in which features 
+contribute to any accuracy.16 In a regression analysis it is standard to compute p-values to measure 
+the importance of any predictor. This, however, is an in-sample measure and its computation is 
+tied to the regression analysis. In contrast, the feature importance measure Mean Decreased 
+Accuracy (MDA) is based on out-of-sample prediction, and it can be used to compute the 
+importance of any predictive variable. Mean Decreased Accuracy for a feature represents how 
+                                                 
+15 For more discussion of this procedure see ELOZ (2021). 
+16 For a discussion of how best to measure accuracy in financial machine learning applications see Lopez de Prado 
+(2018), Chapter 8. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+14 
+ 
+much prediction accuracy we lose if we compute accuracy first using that feature and then using 
+shuffled values of the feature. To compute MDA, we first split the data into disjoint training and 
+test sets. We run our random forest procedure on the training set and compute accuracy of 
+predictions on the test set (the definition of accuracy is given below). We then rerun the random 
+forest procedure on the training set after randomizing the value of a feature and compute accuracy 
+again. The relative loss in accuracy is defined as the MDA measure for this feature.  
+III. 
+ Data 
+The data we use are obtained from the Binance public database for the period January 2021 
+to July 2023. Historically, there have been a large number of crypto exchanges, some of which 
+were relatively short-lived. As of December 2023, active centralized crypto exchanges with daily 
+volume greater than one-hundred million dollars number in the dozens, according to the crypto 
+analytics site https://www.coingecko.com/. Among these exchanges, Binance is the largest 
+measured by daily dollar volume so we chose it for the focus our study. Because each exchange 
+runs their own limit order book, we cannot directly apply our current analysis to data combined 
+from multiple exchanges.    
+The format of the data is the standard time-bar candle-stick with 1-minute intervals, 
+including open, close, high, low price and volume aggregated from tick data within each interval. 
+All features and labels in this study are derived from this data. Since the number of 
+cryptocurrencies has grown exponentially, and is quite volatile, it is infeasible to examine all of 
+the tokens traded on the exchange. We focus on the top five cryptocurrencies as measured by their 
+market-capitalization in January 2021: BTC, ETH, ADA, SOL, and XRP.     
+ 
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+15 
+ 
+IV. 
+ Results 
+Table 1 provides estimates of the mean values of the market microstructure variables over 
+our sample period.  As is standard in crypto settings, we express each currencies’ microstructure 
+measures with respect to the U.S. dollar as given by Tethers (USDT). As expected, all variables 
+have positive signs.  Averaging over longer time bars tends to reduce mean values for the Roll and 
+Kyle metrics, but has little impact on the Amihud and VPIN measures.  The Roll measure is 
+markedly different across the currencies, with Bitcoin having substantially higher autocorrelation. 
+The presence of “whales” trading large quantities algorithmically could be one reason for such a 
+finding. The VPIN measure is remarkably stable across currencies, but its level is surprising: ELO 
+(2021) found (using a slightly different methodology) average VPINs for the E-mini S&P500 and 
+crude oil futures of 0.22 to 0.23 whereas these crypto VPINs range from .45 to .47.17  Such high 
+toxicity is consistent with greater information-based trading. 
+Some might query what is the source of information-based trading in crypto markets? As 
+discussed in O’Hara (2015), in high frequency markets such asymmetric information can take on 
+new dimensions.  In particular, knowing your own future trades, particularly in the case of large 
+traders, gives insights into likely price impacts.  Indeed, Easley, Lopez de Prado, and O’Hara 
+(2015) show how incorporating such information into a trading algorithm can dramatically reduce 
+execution costs.  Because the crypto ecosystem is characterized by large and concentrated players, 
+information on future trading plans can be a substantial source of toxicity for price-setters in these 
+markets. 
+                                                 
+17 They are not as high as the highest VPIN levels of approximately 0.8 that ELO (2012) found for the E-mini during 
+the time period of the flash crash.  
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+16 
+ 
+We now ask how much predictive accuracy we can achieve from our microstructure 
+measures and which microstructure measures contribute to this predictive accuracy. There are two 
+ways to measure predictive accuracy. Accuracy is the number of correct predictions of the sign of 
+change divided by the total number of predictions. Area Under the Curve (AUC) is the probability 
+that our fitted random forest will rank a randomly drawn +1 higher than it ranks a randomly drawn 
+-1. We compute both measures, but in the text we focus on Accuracy as the two measures yield 
+nearly identical results.18 In this section we provide results for our entire sample period (January 
+2021 through July 2023); in Section V we divide the sample into two periods and ask about the 
+effects of Crypto Winter.      
+For each crypto currency we consider  25 features (the five microstructure measures for 
+each of the five crypto currencies) and the five labels defined in Section II. To facilitate comparison 
+of our results for crypto with previous results for more standard financial assets, we run the random 
+forest procedure described in Section II on these features and labels and do not attempt to tune it 
+to maximize predictive accuracy. The previous research we use in our comparison is ELOZ (2020) 
+which used these  features to predict similar labels and found average predictive accuracy in the 
+range 0.54 to 0.61 for futures markets. 
+We first examine average predictive accuracy over our five crypto currencies. Note that we 
+are predicting changes in market statistics one day ahead and we make predictions every minute. 
+So even small amounts of accuracy (above 0.5) can be valuable. Average (across all cryptos in our 
+sample and all labels) predictive accuracy is provided in Table 2. Depending on the number of 
+bars used as a lookback window in constructing our market microstructure measures, we find that 
+predictive accuracy is between 0.53 and 0.54.19 
+                                                 
+18 Results for both accuracy measures are provided in the tables. 
+19 The results for AUC are also given in Table 1 and they range from 0.53 to 0.54.  
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+17 
+ 
+If we exclude skewness, predictive accuracy for our entire sample period ranges (across 
+accuracy measures, the number of bars used and labels) from 0.52 to 0.58. These results are 
+provided in the last two rows of the two final columns of Table 3A (Auto-correlation), 3B (JB 
+statistic), 3C (Kurtosis), and 3D (Realized Volatility). However, as the last two columns of Table 
+3E show, skewness is not predictable; for skewness we find predictive accuracy of 0.5 implying 
+that for the crypto currencies we examine, our microstructure measures are not useful in predicting 
+market statistics for skewness. This result for crypto is similar to results in ELOZ (2020) for futures 
+where skewness is the least predictable label.  
+Predictive accuracy is greatest for the sign of the change in realized volatility. For both 
+accuracy measures (Accuracy and AUC), the average accuracy of prediction ranges from 0.56 to 
+0.58 depending on the number of bars used. This is a remarkably high accuracy level for random 
+forest predictions in financial applications, see Lopez de Prado (2018).   
+The predictive accuracy results indicate that when crypto order flow is imbalanced, causing 
+positive correlation in price changes and an increased Roll measure, volatility increases and it 
+remains high during the look-ahead window of 1,500 bars or roughly a day. The ability to predict 
+changes in realized volatility from microstructure measures intended to measure imbalances or 
+correlations in order flow suggests that there is trend following in these markets which could be 
+exploited by sophisticated trading algorithms.  
+Equally important for our purposes is determining which microstructure measures 
+contribute to prediction accuracy of our labels. Figures 1 through 4 provide average MDA scores 
+(averaged over our five crypto currencies) for prediction of the change in realized volatility (Figure 
+1), the change in Kurtosis (Figure 2), the change of the JB statistic (Figure 3) and the change in 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+18 
+ 
+auto-correlation (Figure 4).20 These results are derived from prediction of each market statistic for 
+each crypto currency using only that currencies own microstructure measures as features. These 
+results are remarkably consistent across the various market statistics. For prediction of each market 
+statistic, the Roll measure is the most important feature as measured by MDA. VPIN is the second 
+most important measure and the Roll impact measure is third most important.  
+It is reasonable to expect that microstructure measures for other crypto currencies could be 
+useful in predicting market statistics for a specific crypto. In particular, as BTC and ETH are the 
+leading cryptos it could be that trade in these cryptos leads trade, and thus changes in market 
+statistics, for other cryptos. Figures 5 through 9 provide the results for this analysis. Each figure 
+provides MDA scores for one of our price dynamics labels for each of our five crypto currencies. 
+For example, Panel 1 of Figure 5 provides MDA scores for the 25 microstructure measures for the 
+sign of the change in realized volatility for ADA. Examining this panel of Figure 5 shows that 
+ADA’s own Roll measure is the most important feature. The next three most important features 
+for ADA are, in order, ADA’s own VPIN measure, the Roll measure for BTC, and the Roll 
+measure for ETH.  
+Figures 5 through 9 tell a compelling story.  In almost every case, each crypto’s own Roll 
+measure is the most important feature for predicting price dynamics. This contrasts with futures 
+markets where the Amihud measure and VPIN are the most important own measures. In our crypto 
+sample, own VPIN is an important feature, but not as important as the own Roll measure, and only 
+occasionally do the own Roll impact measure or the Amihud measure have predictive value. The 
+own Kyle measure typically has a low, nearly-zero MDA score.  
+                                                 
+20 We do not provide results for Skewness as there is no predictive accuracy for it. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+19 
+ 
+The cross-market result for Bitcoin and Ethereum reveal interesting dynamics.  The BTC 
+Roll measure and BTC VPIN are the most important features in driving Bitcoin price dynamics, 
+with the Ethereum Roll measure also playing an important, but lesser role. However, the other 
+crypto currency cross-measures have virtually no influence.  Similarly, price dynamics for 
+Ethereum are driven by the ETH Roll measure and the ETH VPIN, with the Bitcoin Roll measure 
+playing again playing an important, but lesser role. As is the case for Bitcoin, the other crypto 
+currency cross-measures have virtually no influence. Across all other cryptos and labels we study, 
+Roll measures for BTC and ETH have high MDA scores. All other cross-crypto features typically 
+have very low MDA scores. This suggests that trade in BTC and ETH leads price changes and 
+volatility in other cryptos; not a surprising result, but one that is consistent with the notion that 
+trade in other cryptos follows trade in these two large cryptos. 
+The importance of market microstructure measures for crypto price dynamics demonstrates 
+that these markets have much in common with more standard financial asset markets. Our random 
+forest analysis does not imply causation flowing from our features to our labels. But it does suggest 
+that trading tools based on own Roll and VPIN as well as cross BTC and ETH Roll measures can 
+be valuable.  
+ 
+V. 
+Crypto Winter and Other Robustness Tests  
+In this section we consider two robustness tests. First, we ask if our results are stable over time 
+using the beginning of crypto winter as a date to split our sample. Second, we ask if a logistic 
+regression would produce similar results.  
+ 
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+20 
+ 
+V.1 . Crypto Winter 
+Prices and trading volumes of crypto currencies changed dramatically over our sample 
+period.  Approximately the first half of our sample falls in a “boom” period for crypto currencies 
+with rising prices and increasing trading volumes.  During this period, overall daily trading volume 
+reached a peak of $158.64B on April 10, 2021, and remained at that level over much of 2021.  
+Emblematic of crypto prices, during this period the price of Bitcoin reached a high of $67,617 on 
+November 2021, where after prices began a steady decline, reaching a low of $15,742 in October 
+2022.21 This latter period is generally referred to as “crypto winter”.  A natural question  is whether 
+our predictability results differ in the period before crypto winter and after it began. We selected 
+November 10, 2021 as the date to use in breaking our sample into two pieces as total crypto market 
+capitalization reached its peak on November 9, 2021.  
+Table 4 provides our results. Although valuations changed dramatically between these two 
+sub-periods, predictability is nearly unchanged and the importance of the various microstructure 
+measures is also unchanged. For both of our predictability measures, and for both window sizes, 
+values range from 0.53 to 0.54 over both the entire sample and each of the before and after crypto 
+winter subperiods. These results suggest that although valuations changed, the structure of trading 
+did not change. We regard this as good news for crypto markets as it implies that trading tools 
+based on these microstructure measures should be robust to the extreme volatility of crypto 
+currency markets. 
+ Furthermore, in Tables 5 and 6 we present the values of the microstructure features used in 
+our analysis  before and after November 2021. It is worth noting that out of the five market 
+microstructure variables that we consider, Roll measure, Amihud measure and Kyle’s λ are 
+                                                 
+21 Along with depressed prices, crypto winter also featured several spectacular failures of crypto currencies and 
+exchanges.  For discussion of these aspects of crypto winter see Arner, Zetsche, Buckley, and Kirkwood (2023). 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+21 
+ 
+proportional to the scale of price while Roll Impact and VPIN are not. As such, because the price 
+of most crypto tokens dropped significantly after the peak in November 2021, there is a more 
+pronounced change in the Roll measure, the Amihud measure and Kyle’s λ. On the other hand, the 
+values of Roll Impact and VPIN are comparably more stable before and after November 2021.   
+ 
+V.2. Logistic Regression 
+An alternative to using a random forest to predict binary labels is to use a logistic regression. 
+The logistic regression uses a liner regression to model the log odds of the two labels.22 The 
+aggregated accuracy and MDA results for the logistic regression are provided in Figure 10. 
+Overall, the results are similar to those obtained via a random forest. There is predictive accuracy 
+for all labels other than skewness. The ranking of features by MDA is unchanged, although the 
+actual MDA scores for the most important features, the Roll measure and VPIN, are increased 
+relative to the scores for the less useful features. This is reassuring as these results suggest that our 
+ability to predict and our ranking of the importance of various microstructure measures is not a 
+result of the specific method used to classify observations of market statistics.  
+ 
+VI. Conclusion 
+We find that the ability of microstructure variables to predict market statistics is not very 
+different between crypto markets and futures markets.  Both market settings are electronic and 
+both trade almost continuously over a 24-hour day23, but they differ in that futures are wellestablished markets widely used by institutional traders whereas crypto trading is more nascent 
+                                                 
+22 The specific approach we use is discussed in ELOZ (2022), Section 4.6. 
+23 CME, one of the leading futures markets offer products that trade up to 23 hours a day Monday through Friday. 
+Many crypto exchanges operate 24 hours, 7 days a week without a break.   
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+22 
+ 
+and dominated by crypto “natives”.  Two important implications arise from our results. One is that 
+the market dynamics of crypto markets may already be similar enough to more mature markets to 
+facilitate analogous sophisticated trading techniques. The second is that a similar regulatory 
+framework may be appropriate in both markets.  
+Our random forest analysis does not imply causation flowing from our features to our labels. 
+But it does suggest that trading tools based on own Roll and VPIN as well as cross BTC and ETH 
+Roll measures can be valuable. For institutional and high frequency traders, whose trading relies 
+on sophisticated algorithmic and optimized trading strategies, this commonality removes an 
+important obstacle to their participation.  Whether that tips the balance to crypto becoming an asset 
+class in its own right remains to be seen.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+23 
+ 
+References 
+Ang, Andrew and Morris, Tom and Savi, Raffaele, 2022, Asset Allocation with Crypto: 
+Application of Preferences for Positive Skewness, The Journal of Alternative 
+Investments, Spring 2023, 25 (4) 7-28.  
+Arner, D. W. , Zetzsche, D. Buckley, R. and J. Kirkwood, 2023, The Financialization of Crypto: 
+Lessons from FTX and the Crypto Winter of 2022-2023, available at 
+SSRN: https://ssrn.com/abstract=4372516.   
+Biais, Bruno and Bisiere, Christophe and Bouvard, Matthieu and Casamatta, Catherine and 
+Menkveld, Albert J., 2023, Equilibrium Bitcoin Pricing, Journal of Finance, 78(2) 9671014 
+Cong, Lin and He, Zhiguo and Li, Jiasun, 2021, Decentralized Mining in Centralized Pools, 
+Review of Financial Studies, 34(3)1191-1235. 
+Cong, Lin W. and Karolyi, George A. and Tang, Ke and Zhao, Weiyi, 2022, Value Premium, 
+Network Adoption, and Factor Pricing of Crypto Assets, available at 
+SSRN: https://ssrn.com/abstract=3985631. 
+Cong, Lin and Li, Ye and Wang, Neng, 2020, Tokenomics: Dynamic Adoption and Valuation 
+Review of Financial Studies, 34 (3), 1105-1155. 
+Cortese, Federico and Kolm, Petter N. and Lindstrom, Erik, 2023, What Drives Cryptocurrency 
+Returns? A Sparse Statistical Jump Model Approach, Digital Finance, Springer, 5(3), 
+483-518. 
+Crépellière, Tommy and Pelster, Matthias and Zeisberger, Stefan, 2023, Arbitrage in the Market 
+for Cryptocurrencies, Journal of Financial Markets, 64 (June). 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+24 
+ 
+Easley, D., M. Lopez de Prado, and M. O’Hara, 2012, Flow Toxicity and Volatility in a High 
+Frequency World, Review of Financial Studies, 25, 5, 1457-93.  
+Easley, D., M. Lopez de Prado, and M. O’Hara, 2015, “Optimal Execution Horizon,” 
+ 
+Mathematical Finance, 25(3), 640-672. 
+Easley, D., M. Lopez de Prado, M. O’Hara, and Z. Zhang, 2021. Microstructure in the machine 
+age. Review of Financial Studies, 34:3316–63. 
+Easley, D., M. O’Hara, and S. Basu, 2019, From Mining to Markets:  The Evolution of Bitcoin 
+Transaction Fees, Journal of Financial Economics, 134(1), 91-109. 
+Erb, Claude B., 2020, Bitcoin is Exactly Like Gold Except When it Isn't, available at 
+http://dx.doi.org/10.2139/ssrn.3746997.  
+Filippou, Ilias and Rapach, David and Thimsen, Christoffer, 2024, Cryptocurrency Return 
+ 
+Predictability: A Machine-Learning Analysis, Available at SSRN: 
+ 
+https://ssrn.com/abstract=3914414.  
+Halaburda, Hanna and Haeringer, Guillaume and Gans, Joshua and Gandal, Neil, 2022 The 
+Microeconomics of Cryptocurrencies, Journal of Economic Literature, 60(3) 971-1013.  
+Hardle, W., C. Harvey and R. Reule, 2020, Understanding Cryptocurrencies, Journal of Financial 
+Econometrics, 12:2, 181-208. 
+Harvey, C., T.A. Zeid, T. Draaisma, M. Luk, H., Neville, A. Ryzm, and O. Van Hemert, 2022, An 
+investor’s guide to Crypto, Journal of Portfolio Management, 49(1), 146-171.  
+Huberman, G., J. Leshno, and C. Moallemi, 2021, “Monopoly without a Monopolist: An 
+Economic Analysis of the Bitcoin Payment System,” Review of Economic Studies, 88 (6), 
+3011-3040; 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+25 
+ 
+Iver, T., 2022, Crypto Connections; Spillover between crypto and equity markets, IMF Global 
+Stability Note No. 2022/1. 
+Jaquart, P., S. Kopke, and C. Weinhardt, 2022, Machine learning for cryptocurrency market 
+prediction and trading, Journal of Finance and Data Science, 8, (2022) 331-352. 
+Kelly, Bryan T. and Xiu, Dacheng, 2023, Financial Machine Learning, Foundations and 
+Trends in Finance, 13(3-4), 205-363. 
+Kogan, S., I. Makarov,  M. Niessner, and A. Schoar, 2024, Are Cryptos Different? Evidence 
+from Retail Trading,  Journal of Financial Economics, 159, September. 
+Koker, T. and D. Koutmos, Cryptocurrency trading using machine learning, 2020, J. Risk 
+Financial Manag. , 13(8), 178 
+Kukacka, Jiri and Kristoufek, Ladislav, 2023, Fundamental and Speculative Components of 
+the Cryptocurrency Pricing Dynamics, Financial Innovation (9).  
+ Liu, Yukun, Tsyvinski, Aleh, and Wu, Xi, 2022, Common Risk Factors in Cryptocurrency, 
+Journal of Finance, 77(2) 1133-1177. 
+Lopez de Prado, M., 2018, Advances in Financial Machine Learning, (Wiley; New York).  
+Makarov, Igor, and Antoinette Schoar. 2019. "Price Discovery in Cryptocurrency 
+Markets." AEA Papers and Proceedings, 109: 97-99. 
+Makarov, Igor and Schoar, Antoinette, 2020, Trading and Arbitrage in Cryptocurrency Markets, 
+Journal of Financial Economics, 135(2) 293-319. 
+Makarov, Igor and Schoar, Antoinette, 2020, Blockchain Analysis of the Bitcoin Market 
+Working paper, available at SSRN: https://ssrn.com/abstract=3942181.   
+Nimalendran, M. and P., Praveen and P., Mariia and Q. Liangfei, 2024, Informational Efficiency 
+of Cryptocurrency Markets, Journal of Financial and Quantitative Analysis, forthcoming.  
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+26 
+ 
+O’Hara, M., 2015, High Frequency Market Microstructure, Journal of Financial Economics, , 116 
+(2), 257-270. 
+Pagnotta, E. and Buraschi, A. (2018). An equilibrium valuation of bitcoin and decentralized 
+network assets. available at https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3142022 
+Qureshi, S., M. Aftab, E. Bouri, and T. Saeed, 2020, Dynamic interdependence of crypto markets: 
+An analysis across time and frequency, Physics A: Statistical Mechanics and its 
+Applications, 559(1). 
+ 
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+27 
+ 
+ 
+Tables 
+ 
+Table 1: Mean values of market microstructure variables  
+Type 
+Window 
+Roll Measure 
+Roll 
+Impact 
+Kyle’s 
+Lambda 
+Amihud 
+VPIN 
+SOLUSDT 
+50 bars 
+0.073091217 
+1.1765E06 
+8.60909E-05 
+3.17524E08 
+0.469121339 
+100 bars 
+0.06355549 
+1.06911E06 
+4.54613E-05 
+3.0913E08 
+0.462114902 
+XRPUSDT 
+50 bars 
+0.000640782 
+5.43329E09 
+2.73E-09 
+8.80316E09 
+0.465487876 
+100 bars 
+0.000547614 
+5.05243E09 
+6.91752E-09 
+9.06127E09 
+0.456565606 
+ADAUSDT 
+50 bars 
+0.001026723 
+2.5131E08 
+6.55367E-09 
+3.04002E08 
+0.464679 
+100 bars 
+0.000923532 
+2.33606E08 
+1.77393E-09 
+2.95753E08 
+0.458025021 
+BTCUSDT 
+50 bars 
+20.36453232 
+1.78623E05 
+15.9869968 
+4.28419E10 
+0.469240396 
+100 bars 
+18.16115194 
+1.62215E05 
+1.255397095 
+4.28417E10 
+0.459877142 
+ETHUSDT 
+50 bars 
+1.643139356 
+2.83363E06 
+0.002306957 
+1.19623E09 
+0.470527845 
+100 bars 
+1.45823823 
+2.58103E06 
+0.00490705 
+1.19626E09 
+0.461889666 
+ 
+This table provides average values for each of the five microstructure measures for each crypto 
+currency, for each of 50 and 100 time bar lookback windows, where the average is taken over the 
+entire sample period.  
+ 
+ 
+ 
+Table 2: Aggregated accuracy and AUC 
+Window 
+Aggregated Accuracy 
+Aggregated AUC 
+50 bars 
+0.538089 
+0.538134 
+100 bars 
+0.530436 
+0.530428 
+ 
+Both accuracy measures are aggregated across all five cryptocurrencies, across the entire sample 
+period, and across all five labels. The results provided in the table are the average values. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+28 
+ 
+ 
+Table 3A:  Feature importance and prediction performance for auto-correlation 
+Period 
+Window 
+Roll 
+Measure 
+Roll 
+Impact 
+Kyle’s 
+Lambda 
+Amihud 
+VPIN 
+Accuracy 
+AUC 
+2021.1 – 
+2021.11 
+50 bars 
+0.04324 
+0.01002 
+0.00444 
+0.00364 
+0.01496 
+0.533329 
+0.533324 
+100 bars 0.03972 
+0.00594 
+0.00452 
+0.00244 
+0.01042 
+0.527921 
+0.527826 
+2021.11 – 
+2023.7 
+50 bars 
+0.04506 
+0.01044 
+0.00168 
+0.00298 
+0.01674 
+0.536524 
+0.536573 
+100 bars 0.03606 
+0.00722 
+0.00112 
+0.00164 
+0.01396 
+0.526781 
+0.526674 
+2021.12023.7 
+50 bars 
+0.04426 
+0.00986 
+0.00396 
+0.00464 
+0.01552 
+0.531708 
+0.531698 
+100 bars 0.03892 
+0.00630 
+0.00424 
+0.00318 
+0.01016 
+0.523608 
+0.523532 
+ 
+Table 3B:  Feature importance and prediction performance for JB Statistics 
+Period 
+Window 
+Roll 
+Measure 
+Roll 
+Impact 
+Kyle’s 
+Lambda 
+Amihud 
+VPIN 
+Accuracy 
+AUC 
+2021.1 – 
+2021.11 
+50 bars 
+0.04662 
+0.00838 
+0.00502 
+0.00006 
+0.0154 
+0.532057 
+0.532077 
+100 bars 0.04256 
+0.00544 
+0.00516 
+-0.0002 
+0.00884 
+0.530776 
+0.530836 
+2021.11 – 
+2023.7 
+50 bars 
+0.04918 
+0.00772 
+0.00036 
+0.00142 
+0.01678 
+0.527283 
+0.527297 
+100 bars 0.03978 
+0.00518 
+0.00106 
+0.00042 
+0.01404 
+0.523098 
+0.523367 
+2021.12023.7 
+50 bars 
+0.04822 
+0.00814 
+0.00476 
+0.00124 
+0.01636 
+0.532994 
+0.533029 
+100 bars 0.04330 
+0.00616 
+0.00506 
+0.00190 
+0.00946 
+0.531124 
+0.531142 
+ 
+Table 3C:  Feature importance and prediction performance for Kurtosis 
+Period 
+Window 
+Roll 
+Measure 
+Roll 
+Impact 
+Kyle’s 
+Lambda 
+Amihud 
+VPIN 
+Accuracy 
+AUC 
+2021.1 – 
+2021.11 
+50 bars 
+0.03308 
+0.00814 
+0.0036 
+0.00256 
+0.01882 
+0.544144 
+0.544135 
+100 bars 
+0.03196 
+0.0048 
+0.00438 
+0.00198 
+0.01082 
+0.531292 
+0.531236 
+2021.11 – 
+2023.7 
+50 bars 
+0.0335 
+0.00852 
+0.00214 
+0.00344 
+0.0221 
+0.545655 
+0.545724 
+100 bars 
+0.02728 
+0.00586 
+0.00184 
+0.00192 
+0.01498 
+0.529588 
+0.529195 
+2021.12023.7 
+50 bars 
+0.03396 
+0.00792 
+0.00332 
+0.00328 
+0.01888 
+0.544184 
+0.544134 
+100 bars 
+0.03124 
+0.00510 
+0.00452 
+0.00286 
+0.01066 
+0.530874 
+0.530842 
+ 
+Table 3D:  Feature importance and prediction performance for Realized Volatility 
+Period 
+Window 
+Roll 
+Measure 
+Roll 
+Impact 
+Kyle’s 
+Lambda 
+Amihud 
+VPIN 
+Accuracy 
+AUC 
+2021.1 – 
+2021.11 
+50 bars 
+0.05662 
+0.00922 
+0.00562 
+-0.00092 
+0.00808 
+0.579853 
+0.57897 
+100 bars 
+0.04578 
+0.0048 
+0.0036 
+-0.00226 
+0.0057 
+0.562562 
+0.561153 
+2021.11 
+– 2023.7 
+50 bars 
+0.06442 
+0.00822 
+0.00092 
+0.00132 
+0.00922 
+0.584063 
+0.582128 
+100 bars 
+0.05098 
+0.00542 
+0.00182 
+0.00014 
+0.00962 
+0.567168 
+0.564179 
+2021.1– 
+2023.7 
+50 bars 
+0.058120 
+0.00878 
+0.00534 
+0.001060 
+0.00922 
+0.581566 
+0.581797 
+100 bars 
+0.046740 
+0.00562 
+0.00376 
+0.000660 
+0.00664 
+0.564701 
+0.564723 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+29 
+ 
+ 
+Table 3E:  Feature importance and prediction performance for Skewness 
+Period 
+Window 
+Roll 
+Measure 
+Roll 
+Impact 
+Kyle’s 
+Lambda 
+Amihud 
+VPIN 
+Accuracy 
+AUC 
+2021.1 – 
+2021.11 
+50 bars 
+0.03448 
+0.00804 
+0.00348 
+0.00266 
+0.01202 
+0.500303 
+0.50031 
+100 bars 
+0.03202 
+0.00452 
+0.00366 
+0.00214 
+0.00858 
+0.501256 
+0.501286 
+2021.11 
+– 2023.7 
+50 bars 
+0.03704 
+0.00858 
+0.00162 
+0.00318 
+0.01402 
+0.504024 
+0.50409 
+100 bars 
+0.02936 
+0.006 
+0.00138 
+0.00124 
+0.01174 
+0.503889 
+0.503985 
+2021.1– 
+2023.7 
+50 bars 
+0.035320 
+0.00782 
+0.00302 
+0.00342 
+0.01238 
+0.499993 
+0.500012 
+100 bars 
+0.031440 
+0.0051 
+0.00392 
+0.00282 
+0.00862 
+0.501874 
+0.501902 
+ 
+ 
+ 
+Table 4: Aggregated accuracy and AUC before and after Nov 2021.  
+Period 
+Window 
+Aggregated Accuracy  
+Aggregated AUC  
+2021.1 – 2021.11 
+50 bars 
+0.537937 
+0.537763 
+100 bars 
+0.530761 
+0.530467 
+2021.11 – 2023.7 
+50 bars 
+0.53951 
+0.539162 
+100 bars 
+0.530105 
+0.52948 
+2021.1 – 2023.7 
+50 bars 
+0.538089 
+0.538134 
+100 bars 
+0.530436 
+0.530428 
+ 
+Both accuracy measures are aggregated across all five cryptocurrencies, and across all five 
+labels. The results in the table are the averages. 
+ 
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+30 
+ 
+ 
+Table 5: Mean values of market microstructure variables before Nov 2021 
+Type 
+Window 
+Roll Measure Roll Impact 
+Kyle’s 
+Lambda 
+Amihud 
+VPIN 
+SOLUSDT 
+50 bars 
+0.095517402 1.17672E06 
+7.20968E-05 
+3.46395E08 
+0.472742998 
+100 bars 0.095411928 1.05633E06 
+2.02224E-05 
+3.12291E08 
+0.467878084 
+XRPUSDT 
+50 bars 
+0.001119395 3.97082E09 
+1.98885E-09 
+4.44686E09 
+0.473858007 
+100 bars 0.000972959 3.71646E09 
+1.36295E-09 
+4.44819E09 
+0.465288554 
+ADAUSDT 
+50 bars 
+0.001736012 8.62496E09 
+1.27048E-08 
+4.90547E09 
+0.475664534 
+100 bars 0.001543807 7.83887E09 
+4.24928E-09 
+4.90575E09 
+0.468764089 
+BTCUSDT 
+50 bars 
+30.59170154 2.22919E05 
+42.21893443 4.85441E10 
+0.477695275 
+100 bars 27.11981393 2.00616E05 
+1.100938512 4.85445E10 
+0.469784298 
+ETHUSDT 
+50 bars 
+2.275569375 2.63985E06 
+0.005914603 9.99954E10 
+0.483894069 
+100 bars 2.006449812 2.37222E06 
+0.00496139 
+9.99933E10 
+0.476930492 
+ 
+ 
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+31 
+ 
+ 
+Table 6: Mean values of market microstructure variables after Nov 2021 
+Type 
+Window 
+Roll Measure 
+Roll 
+Impact 
+Kyle’s 
+Lambda 
+Amihud 
+VPIN 
+SOLUSDT 
+50 bars 
+0.059758002 
+1.17637E06 
+9.44109E-05 
+3.00358E08 
+0.466968126 
+100 bars 
+0.044615633 
+1.07671E06 
+6.04667E-05 
+3.07251E08 
+0.458688473 
+XRPUSDT 
+50 bars 
+0.000356229 
+6.30279E09 
+3.17064E-09 
+1.13931E08 
+0.460511516 
+100 bars 
+0.00029473 
+5.84671E09 
+1.02199E-08 
+1.18039E08 
+0.451379484 
+ADAUSDT 
+50 bars 
+0.000605024 
+3.49444E08 
+2.89657E-09 
+4.55577E08 
+0.458147685 
+100 bars 
+0.000554756 
+3.25889E08 
+3.02232E-10 
+4.42423E08 
+0.45164024 
+BTCUSDT 
+50 bars 
+14.28409348 
+1.52287E05 
+0.391117916 
+3.94517E10 
+0.46421365 
+100 bars 
+12.83488862 
+1.39385E05 
+1.347228563 
+3.94512E10 
+0.453986963 
+ETHUSDT 
+50 bars 
+1.267135794 
+2.94883E06 
+0.000162075 
+1.31292E09 
+0.462581119 
+100 bars 
+1.132305714 
+2.70517E06 
+0.004874742 
+1.31298E09 
+0.452947326 
+ 
+ 
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+32 
+ 
+ 
+Figures 
+ 
+Figure 1: Average MDA own feature importance for change of realized volatility. 
+ 
+MDA feature importance using only own features for change of realized volatility. The 
+prediction window is 50 bars. Results are aggregated across all five cryptocurrencies. 
+ 
+ 
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+33 
+ 
+ 
+Figure 2: Average MDA feature importance for change of Kurtosis.  
+ 
+MDA feature importance using only own features for the change of Kurtosis. The 
+prediction window is 50 bars. Results are aggregated across all five cryptocurrencies 
+ 
+Figure 3:  MDA feature importance for change of JB Statistics 
+ 
+MDA feature importance using only own features for the change in the JB statistic. The 
+prediction window is 50 bars. Results are aggregated across all five cryptocurrencies. 
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+34 
+ 
+ 
+Figure 4:  MDA feature importance for change of return auto-correlation.  
+ 
+MDA feature importance using only own features for the change in return 
+autocorrelation. The prediction window is 50 bars. Results are aggregated across all five 
+cryptocurrencies. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+35 
+ 
+Figure 5: Aggregated MDA scores for ADA using all 25 features 
+ 
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+36 
+ 
+ 
+Each panel of this figure provides MDA scores (aggregated over 50 and 100 bars) for 
+prediction of a market statistic for ADA using all 25 features (five features for each of the 
+five crypto currencies).  
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+37 
+ 
+Figure 6: Aggregated MDA scores for BTC using all 25 features 
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+38 
+ 
+ 
+Each panel of this figure provides MDA scores (aggregated over 50 and 100 bars) for 
+prediction of a market statistic for BTC using all 25 features (five features for each of the 
+five crypto currencies).  
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+39 
+ 
+Figure 7:  Aggregated MDA scores for ETH using all 25 features 
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+40 
+ 
+ 
+Each panel of this figure provides MDA scores (aggregated over 50 and 100 bars) for 
+prediction of a market statistic for ETH using all 25 features (five features for each of the 
+five crypto currencies).  
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+41 
+ 
+Figure 8:  Aggregated MDA scores for SOL using all 25 features 
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+42 
+ 
+ 
+Each panel of this figure provides MDA scores (aggregated over 50 and 100 bars) for 
+prediction of a market statistic for SOL using all 25 features (five features for each of the 
+five crypto currencies).  
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+43 
+ 
+Figure 9:  Aggregated MDA scores for XRP using all 25 features 
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+44 
+ 
+ 
+Each panel of this figure provides MDA scores (aggregated over 50 and 100 bars) for 
+prediction of a market statistic for XRP using all 25 features (five features for each of the 
+five crypto currencies).  
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+45 
+ 
+ 
+ 
+Figure 10: Aggregated Accuracy and MDS Results from a Logistic Regression
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed
+
+46 
+ 
+ 
+ 
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5337672
+Preprint not peer reviewed

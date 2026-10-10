@@ -1,0 +1,107 @@
+{
+  "doc_id": 106,
+  "titulo": "Applied Econometrics and Algorithmic Trading",
+  "resumen_operativo": "El paper presenta un análisis econométrico clásico del Bitcoin utilizando modelos ARIMA para la media y GARCH para la volatilidad condicional. Testea empíricamente dos estrategias simples (cruce de medias móviles y RSI) usando validación in-sample, out-of-sample y walk-forward. Demuestra la importancia de considerar la heterocedasticidad y evaluar la robustez en diferentes regímenes de mercado para evitar el sobreajuste.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "volatility clustering",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Patrón empírico donde periodos de alta volatilidad son seguidos por alta volatilidad y periodos de calma por calma, muy presente en criptomonedas.",
+      "relaciones": [],
+      "cita_textual": "The squared return plot shows periods of high volatility followed by high volatility and calm periods followed by calm periods."
+    },
+    {
+      "nombre": "GARCH",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo autorregresivo utilizado para capturar la varianza condicional variante en el tiempo y el agrupamiento de volatilidad.",
+      "relaciones": [],
+      "cita_textual": "The Generalised Autoregressive Conditional Heteroskedasticity (GARCH) model, from Bollerslev (1986), models conditional volatility that changes over time."
+    },
+    {
+      "nombre": "fat tails",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Distribución de retornos con colas más pesadas que la normal, confirmada por un fuerte rechazo del test Jarque-Bera en Bitcoin.",
+      "relaciones": [],
+      "cita_textual": "The null hypothesis of normality is strongly rejected, confirming that residuals are leptokurtic (fat-tailed)."
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia que asume que los precios tienden a volver a su promedio histórico después de movimientos extremos, operada aquí mediante el RSI.",
+      "relaciones": [],
+      "cita_textual": "Mean-reversion strategies operate on the premise that asset prices tend to revert to their historical average following extreme moves."
+    },
+    {
+      "nombre": "ARIMA",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo lineal utilizado para predecir la media condicional de los retornos, ineficaz para manejar la volatilidad cambiante.",
+      "relaciones": [],
+      "cita_textual": "The ARIMA model fits the conditional mean adequately but cannot account for the heteroskedastic variance structure of Bitcoin returns."
+    },
+    {
+      "nombre": "walk-forward validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de validación empírica que usa ventanas móviles de entrenamiento y testeo para simular el despliegue de una estrategia.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "backtest overfitting"
+        }
+      ],
+      "cita_textual": "a walk-forward analysis was conducted using rolling 90-day training windows with 30-day forward test steps, generating 21 independent test windows"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de ajustar una estrategia en exceso a los datos históricos, capturando ruido en vez de verdadera señal predictiva.",
+      "relaciones": [],
+      "cita_textual": "Overfitting occurs when a strategy is excessively tuned to historical data, capturing noise rather than genuine signal."
+    },
+    {
+      "nombre": "look-ahead bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo que ocurre al utilizar inadvertidamente información que no estaba disponible en el momento de tomar la decisión.",
+      "relaciones": [],
+      "cita_textual": "Look-ahead bias occurs when a strategy inadvertently uses information that would not have been available at the time of trading"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costos de intercambio aplicados en las simulaciones para dar mayor realismo al backtest.",
+      "relaciones": [],
+      "cita_textual": "Transaction costs of 0.1% per trade are deducted on every entry and exit to reflect realistic exchange fees"
+    },
+    {
+      "nombre": "maximum drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de caída máxima de la curva de capital de una estrategia respecto a su pico previo.",
+      "relaciones": [],
+      "cita_textual": "The maximum drawdown of –15.35% reflects the strategy's vulnerability during choppy, sideways markets"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La estrategia RSI (reversión a la media) superó al Buy & Hold y a la estrategia de cruce de medias móviles en periodos fuera de la muestra.",
+      "mercado": "BTC-USD",
+      "periodo": "2024-2026",
+      "magnitud": "Retorno OOS: RSI +1.60%, MA -3.61%, B&H -17.21%",
+      "condiciones": "Costos transaccionales 0.1%, stop-loss 2%, take-profit 4%",
+      "robustez": "media",
+      "cita_textual": "The RSI strategy again outperformed on all key metrics, with a positive Sharpe ratio of 0.2665 and maximum drawdown of –11.95%"
+    },
+    {
+      "afirmacion": "En el análisis walk-forward a nivel de ventana móvil, ninguna estrategia logró superar sistemáticamente el rendimiento promedio del Buy & Hold.",
+      "mercado": "BTC-USD",
+      "periodo": "2024-2026",
+      "magnitud": "Retorno promedio por ventana: MA 0.00%, RSI -0.87%, B&H +1.92%",
+      "condiciones": "21 ventanas rolling de 90 días train y 30 días test",
+      "robustez": "media",
+      "cita_textual": "neither strategy consistently outperforms Buy & Hold across all 21 windows."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El enfoque es clásico con datos diarios y estrategias simples (RSI/MA), pero su marco de evaluación walk-forward y modelado de volatilidad es transferible al intradía."
+  }
+}

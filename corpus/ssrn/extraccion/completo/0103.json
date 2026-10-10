@@ -1,0 +1,92 @@
+{
+ "doc_id": 103,
+ "titulo": "The effect of fat tails on rules for optimal pairs trading",
+ "resumen_operativo": "Investiga el efecto de modelar los residuos de los spreads en pairs trading utilizando distribuciones de cola pesada (t-student no centrada, hiperbólica generalizada, estable de L´evy) en lugar de distribuciones normales. A través de simulaciones de Monte Carlo basadas en la ecuación de Ornstein-Uhlenbeck, demuestra que las distribuciones de cola pesada se ajustan mucho mejor a los datos empíricos de acciones y criptomonedas. La elección distribucional afecta drásticamente el tamaño óptimo de las reglas de trading y las medidas de riesgo asociadas. Además, revela que la inclusión de eventos tipo Poisson justifica la utilización de umbrales finitos de stop-loss, que de otro modo serían subóptimos.",
+ "calidad_paper": "media",
+ "conceptos": [
+  {
+   "nombre": "Ornstein-Uhlenbeck equation",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Ecuación diferencial estocástica de tiempo continuo utilizada para modelar procesos con reversión a la media, aplicada aquí para modelar la dinámica del spread en pairs trading.",
+   "relaciones": [
+    {
+     "tipo": "APLICA_A",
+     "objeto": "pairs trading"
+    }
+   ],
+   "cita_textual": "One of the most popular models to give account of mean-reverting processes is the Ornstein-Uhlenbeck equation"
+  },
+  {
+   "nombre": "pairs trading",
+   "tipo": "estrategia",
+   "definicion_en_contexto": "Estrategia de inversión orientada a reducir el riesgo de mercado construyendo un portafolio de dos activos financieros, con posiciones opuestas (larga y corta), aprovechando la reversión a la media del spread.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "Ornstein-Uhlenbeck equation"
+    }
+   ],
+   "cita_textual": "Pairs trading is a trading strategy aimed at reducing market risk, where the investor builds a portfolio consisting in just two ﬁnancial products, being one of the positions long and being the other position short"
+  },
+  {
+   "nombre": "fat-tailed distributions",
+   "tipo": "concepto",
+   "definicion_en_contexto": "Distribuciones de probabilidad que permiten dar cuenta de eventos extremos de manera más precisa que la distribución gaussiana. El artículo usa variantes como t-student no centrada, hiperbólica generalizada y estable de Lévy.",
+   "relaciones": [
+    {
+     "tipo": "MEJORA_A",
+     "objeto": "normal distribution"
+    }
+   ],
+   "cita_textual": "fat-tailed distributions can usually give account of extreme events (i.e. outcomes lying relatively far away from the median) in an accurate manner."
+  },
+  {
+   "nombre": "Poisson events",
+   "tipo": "fenomeno",
+   "definicion_en_contexto": "Eventos inesperados y extremos con una probabilidad específica de ocurrencia que provocan saltos significativos en el precio y dan cuenta del efecto de cola pesada en las series financieras.",
+   "relaciones": [
+    {
+     "tipo": "CAUSA",
+     "objeto": "stop-loss threshold"
+    }
+   ],
+   "cita_textual": "These Poisson events can happen with a given probability (PPoisson)... The meaning of such a Poisson event is an unexpected fact that affects the price of the product."
+  },
+  {
+   "nombre": "stop-loss threshold",
+   "tipo": "estrategia",
+   "definicion_en_contexto": "Valor del spread en el cual el portafolio se liquida asumiendo una pérdida; su optimización depende significativamente de la existencia de eventos extremos tipo Poisson.",
+   "relaciones": [
+    {
+     "tipo": "MITIGA",
+     "objeto": "Poisson events"
+    }
+   ],
+   "cita_textual": "the stop-loss threshold, which determines the value at which the portfolio is unwinded having a loss."
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "La distribución normal falla al ajustar los residuos de los spreads en pairs trading de acciones y criptomonedas, siendo superada por distribuciones de cola pesada (t-student, hiperbólica generalizada, estable de Lévy).",
+   "mercado": "Acciones (EE.UU. y Europa) y criptomonedas (BTC/ETH)",
+   "periodo": "2010-2022",
+   "magnitud": "Rechazo de normalidad con p-values < 10^-16 (Shapiro-Wilk, Anderson-Darling, Kolmogorov-Smirnov).",
+   "condiciones": "Pruebas de normalidad aplicadas a residuos empíricos de 41 pares usando spread lineal de precios logarítmicos.",
+   "robustez": "alta",
+   "cita_textual": "We ﬁnd that the normal distribution suits very poorly to the spread residuals, being the t-student and hyperbolic distributions more appropriate choices."
+  },
+  {
+   "afirmacion": "La inclusión de eventos Poisson justifica la utilidad de umbrales finitos de stop-loss, los cuales de otra forma resultarían subóptimos frente a umbrales infinitos.",
+   "mercado": "Simulaciones de Monte Carlo",
+   "periodo": "Simulado",
+   "magnitud": "Impacto decisivo en la formulación de las reglas de salida.",
+   "condiciones": "Experimentos de Monte Carlo de trayectorias de precios con y sin eventos Poisson simulados a lo largo de un horizonte fijo.",
+   "robustez": "media",
+   "cita_textual": "we have indicated that ﬁnite stop-loss thresholds arise from considering Poisson events which give account of the change of the mean in the mean-reverting process, while their absence makes it advisable to ignore stop-loss orders."
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "media",
+  "nota": "El modelo de Ornstein-Uhlenbeck es común para estrategias de reversión a la media intradía. El hallazgo más valioso metodológicamente es la necesidad de asumir retornos no normales (t-student) para dimensionar correctamente el riesgo y los umbrales de stop-loss en pares, y que los stops estrictos intradía sólo tienen justificación matemática al presuponer saltos discretos o regímenes adversos (Poisson), conceptos útiles para el universo ES/NQ."
+ }
+}

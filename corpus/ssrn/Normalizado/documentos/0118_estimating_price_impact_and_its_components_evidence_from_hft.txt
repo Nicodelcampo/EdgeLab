@@ -1,0 +1,4988 @@
+A Simple Approach to Estimating Price Impact and its
+Components
+Thomas J. George and Moazzam A. Khoja*
+This draft: June 16, 2026
+First draft: November, 29, 2023
+Abstract
+We provide a simple approach to estimating price impact and its components from
+transaction prices and trades.
+Temporary and permanent components are estimated
+jointly using OLS, and hypothesis testing is conducted using the delta method. A reliable
+estimation approach for transaction price data is an essential tool for researchers and
+practitioners because price impacts estimated from transaction prices measure the profit
+and loss that traders experience.
+The state space approach used in prior work fails
+with transaction price data due to violations of Normality assumptions underlying the
+Kalman filter; the OLS approach avoids these problems and extends easily to multiple
+classifications of trades.
+We illustrate the approach by analyzing transaction price
+impacts around earnings announcements for counterparty pairings between high-frequency
+traders (HFTs) and non-HFTs in a special Nasdaq sample. The OLS approach is fast to
+execute on millisecond transactions data and performs well relative to a full-information
+GMM benchmark in the rich, eight-parameter HFT/non-HFT setting.
+*Acknowledgements: We are very grateful to the Nasdaq Office of the Chief Economist for providing data and answering
+questions, and to Terry Hendershott, Albert Menkveld, and seminar participants at the University of Houston and the University
+of Texas at San Antonio for helpful comments and suggestions. Any errors are the responsibility of the authors. Earlier drafts of
+this paper were circulated under the title Estimating Price Impact and its Components: Evidence from HFT Around Earnings
+Announcements. George is from the C. T. Bauer College of Business, University of Houston. Khoja is from the Carlos Alvarez
+College of Business, University of Texas at San Antonio.
+Email: tom-george@uh.edu and moazzam.khoja@utsa.edu.
+The
+authors have not received external research support and do not have financial relationships with entities external to their
+universities. The authors have no conflicts of interest to report.
+
+1
+Introduction
+The price impact of a transaction is an important cost of trading securities, and the
+components of price impact are often regarded as helpful metrics for understanding how
+securities markets perform. In the market microstructure literature, the permanent component
+of price impact captures the severity of adverse selection and the contribution of trading to
+price discovery. The temporary component captures the compensation liquidity demanders
+pay to cover liquidity providers’ direct costs of market making, including managing an
+inventory, any profit or rents earned by the liquidity provider, and frictions in the trading
+process such as discreteness in prices. Understanding price impact and its components is
+also important to industry professionals. Traders with discretion between liquidity seeking
+and liquidity providing orders can use estimates of price impact to optimize their strategies
+between order types, trading platforms, and across securities that are close substitutes.
+Market managers and regulators monitor the performance of markets at least in part by
+analyzing price and trading dynamics. They may be interested in understanding how the
+components of price impact are associated with particular market clearing mechanisms
+or order types (e.g., batch vs continuous, visible vs hidden), routing arrangements (e.g.,
+payment for order flow vs market-exposed), or trader identities (e.g., particular liquidity
+providers or demanders).1 A large body of asset pricing research also relies on the notion
+of price impact or components thereof as the basis for measuring the cost, risk, and return
+premium associated with illiquidity.2
+In this paper, we provide a simple way to estimate price impact and its components.
+The approach can be used unconditionally, with all trades assumed to have the same price
+1Glosten and Milgrom (1985), Kyle (1985), and Easley and O’Hara (1987) are classic references for the role of adverse
+selection in securities trading.
+Ho and Stoll (1980), Grossman and Miller (1988), Menkveld (2013), and Hendershott and
+Menkveld (2014) focus on dealer inventory and price dynamics. Glosten (1989) and Kyle (1989) show that dealer monopoly
+power results in an additional markup to the temporary component. Rounding due to price discreteness is modeled in Glosten
+and Harris (1988) and Allena and Chordia (2025). Batch and continuous trading mechanisms are compared in Stoll and Whaley
+(1990) and George and Hwang (2001). Visible and hidden orders are compared in Boulatov and George (2013), Bloomfield et al.
+(2015), Foley and Putni¸nˇs (2016), and Edwards et al. (2021). Hasbrouck (1991a), Hasbrouck (1991b), and Hasbrouck (1993)
+synthesize these ideas into a general empirical framework that captures how information and frictions affect price dynamics.
+2A few examples are Amihud (2002) and Bollen and Whaley (2004) who measure illiquidity as a total price impact, Brennan
+and Subrahmanyam (1996), Chordia et al. (2009) and Huh (2014) use measures of the permanent component, and P´astor and
+Stambaugh (2003) and Hasbrouck (2009) use measures of the temporary component.
+1
+
+impact, or conditionally with trades belonging to different categories for testing hypotheses
+about differences in price impacts or components between the categories.
+For example,
+trades could be categorized by clearing mechanism, route to market, trader type, or by
+“ours” versus “others” for an institution benchmarking its own execution quality against the
+rest of the market.
+The approach is based on the rather general model of Hendershott
+and Menkveld (2014) in the framework of Hasbrouck (1991a,b, 1993).
+The estimation
+only requires transaction prices, signed traded quantities, and (if desired) trade category
+assignments as inputs.
+Bid, ask and midquotes are not needed, nor is the assumption
+that midquotes are reasonable proxies for true security values.
+The components can be
+estimated for all categories jointly with OLS, which is fast enough to be useful for large-scale
+applications in microstructure and asset pricing research. The components can optionally
+be estimated using GMM, which further supplies overidentifying restrictions. Either way,
+hypothesis testing for the components or functions thereof can be done easily with the delta
+method.
+A key aspect of our analysis is using individual transactions and transaction prices rather
+than midquotes. Using transaction prices enables us to capture the impact of trading on the
+prices that agents actually pay and receive. This approach embraces bid-ask bounce, which
+contributes to the temporary component of price impact that traders experience. While
+midquotes have a statistical advantage of making the data less noisy, they smooth out and
+mask variation that is part of the actual changes in traders’ wealth that both researchers
+and practitioners would naturally be interested in estimating. We explain in Section 2 that
+the temporary price impact has a distinct economic interpretation when estimated from
+transaction prices versus midquotes. Midquotes reflect liquidity providers’ reactions to order
+flow, whereas transaction prices capture the actual wealth transfers between counterparties
+at the moment of execution. Wanting to use transaction prices is an important motivation
+for seeking a simple approach to estimation, particularly one that does not rely on specific
+distributional assumptions. As we show in Section 5, the state space approach that prior work
+2
+
+relies upon for analyzing midquote data fails on transaction price data because distributional
+assumptions are violated.
+We illustrate and assess how the new approach works using data that contain a rich
+set of transaction categories in order to challenge the estimation with a high-dimensional
+parameter space. The data are provided by the Nasdaq market covering all transactions for
+120 securities over the years 2008-09. The data are special because Nasdaq itself provides
+the identity types of high-frequency traders (HFT) and non-HFT, their roles as liquidity
+demander or liquidity provider, the sign (buy/sell) and quantity of the liquidity seeking
+order, and the transaction price. This level of detail in classifying trades demands that the
+approach estimates eight price impact components jointly. While the sample period is from
+the earlier days of HFT in equities trading, this is one of the few (perhaps the only) data
+sets available to academics that identifies multiple trader types and their roles in individual
+transactions. These data serve as an ideal sample to assess the performance of the OLS
+approach and to illustrate concretely how it can be used by regulators, market managers,
+and institutions whose proprietary data contain information about trade routing, individual
+trader identities, or their own trading, as interesting dimensions along which to estimate
+and compare price impact components. The approach can also be used straightforwardly
+without classifying trades into categories to estimate unconditional measures of illiquidity
+as inputs for other studies such as asset pricing tests.
+Our empirical illustration focuses on earnings announcements in the time period covered
+by the Nasdaq HFT database.
+Earnings announcements are a natural setting for this
+analysis. They are the primary scheduled events at which fundamental information about
+firms is publicly released, making them periods of concentrated information flow and elevated
+adverse selection risk.
+Indeed, using a different approach from ours, Chordia and Miao
+(2020) show that low-latency trading plays an important role in incorporating earnings
+information into prices efficiently. The days immediately surrounding announcements and
+the corresponding days one week later provide a matched pair of high- and low-information3
+
+asymmetry trading environments that enable us to examine how price impact components
+vary with the intensity of information flow.
+The permanent component findings confirm what prior work has established using midquotes:
+HFTs absorb orders that pose greater adverse selection risk than non-HFTs when trading
+as liquidity providers, and HFTs’ liquidity demanding orders are more informative to prices
+than those of non-HFTs (e.g., Brogaard et al., 2014).
+The temporary component findings are different in character. Temporary price impact
+tends to be negative when the liquidity demander is an HFT, regardless of whether the
+liquidity provider is an HFT or not, meaning that HFTs actually earn profit on average from
+their liquidity demanding trades. The liquidity providers in those trades are not compensated
+by transaction prices for market making costs, and the adverse selection they absorb is
+underpriced.3
+In contrast, when the liquidity demander is a non-HFT, temporary price
+impact is neutral or positive—non-HFTs tend to pay rather than receive a price concession.
+Results of this kind involving wealth transfers are unique to our approach and not available
+through midquote-based estimation.
+The economic significance of these findings in both components is amplified around
+earnings announcements by elevated trading volume. Dollar volume is approximately twice
+as large on the day following an announcement as on the corresponding week-after day
+for non-HFT initiated trades, and about 1.7 times as large for HFT initiated trades. The
+aggregate wealth transfers and adverse selection differences between counterparty pairings
+are correspondingly larger at the moments of greatest information flow.
+Cross-sectional analysis of the price impacts indicates that the profitability of HFTs’
+liquidity demanding trades is related to the adverse selection they absorb as liquidity providers.
+HFTs capture larger price concessions both contemporaneously and in the days following
+periods when they absorb more informative trades as liquidity providers, consistent with
+absorbing adverse selection being a learning opportunity that supports profitable subsequent
+3Liquidity provider losses measured only from transaction prices omit rebates for which they qualify under Nasdaq rules.
+Rebates are discussed in the Results section.
+4
+
+trade initiations. These findings support theories in which HFTs process information gleaned
+from the trading environment for (re)use in their own profitable trading (e.g., Biais et al.,
+2015; Foucault et al., 2016; Huang and Yueshen, 2021). This association can be studied
+because our estimates are based on transaction prices, for which the temporary component
+of price impact is a measure of the profit and loss that traders experience.
+Our contribution to the literature is twofold. First, we provide a simple approach to
+jointly estimating and formally comparing the components of transaction price impact that
+can be implemented easily and reliably with transaction prices and when transactions are
+classified into several different categories. Estimation requires only transaction prices and
+trades, is done with OLS, and does not rely on distributional assumptions that are likely to
+be inconsistent with the dynamics of individual transaction prices and trades. We show that
+the state space approach used in prior work with midquote data fails to reliably estimate
+the model’s parameters when applied to transaction price data. Since transaction prices are
+needed to capture the actual wealth transfers that traders experience from price impact, a
+reliable estimation approach for transaction price data is a valuable tool for the analysis of
+microstructure data.
+We compare the OLS estimates with estimates from a corresponding “full-information”
+GMM estimation. The OLS approach performs well, including matching the inferences of the
+GMM-based hypothesis tests. Because OLS estimation is fast, our approach is well suited for
+use in studies that require estimates of components of price impact (illiquidity) from intraday
+data for large panels of securities.4 Because the procedure is simple and hypothesis testing
+can be done at the security-day (or finer) level, our approach is also suited to narrower case
+or event studies of market or trading-strategy performance that could interest regulators,
+market managers, and professional traders.
+Second, our findings confirm and extend what is known about HFT participation in
+4In the internet appendix, we show that the model our estimates are based upon nests several prominent empirical models
+of price dynamics that have been used in the microstructure and illiquidity-in-asset-pricing literatures.
+5
+
+markets.5 The most closely related papers are Carrion (2013), which studies the profitability
+of HFTs’ trades against benchmarks that represent naive trading strategies, and Brogaard
+et al. (2014), which estimates price impact using TAQ midquotes for trades reported in the
+Nasdaq HFT data that we analyze. Their conclusions that HFTs absorb adverse selection
+and trade in the direction of future price changes are supported in our results. Our findings
+are distinctive in showing that the negative temporary price impact of HFT-initiated trades
+implies that HFTs actually earn profit on average by taking liquidity from orders that
+underprice adverse selection risk, including trades where the counterparty is another HFT,
+and that this profit is greater when HFTs also absorb more informative trades as liquidity
+providers.
+The next section reviews the Hasbrouck (1991a,b, 1993) framework and the refinements
+introduced by Hendershott and Menkveld (2014), and explains how the interpretation of
+the model differs when estimated using transaction prices versus midquotes. Our estimation
+approach is presented in Section 3. Section 4 describes the Nasdaq HFT data. Results are
+presented in Section 5. Section 6 offers a brief conclusion.
+2
+Model
+The model we estimate is developed by Menkveld (2013) and Hendershott and Menkveld
+(2014) in the framework of Hasbrouck (1991a,b, 1993). In Hasbrouck’s framework, observed
+security prices are the sum of two unobserved components that reflect the impact of information
+and market frictions, respectively. The specification is
+pt = mt + st,
+(1)
+where pt is the observable security price, mt is the security’s unobservable true economic
+value (both in logarithms), and st is drawn from an unobservable mean-zero stationary
+stochastic process. The true value is modeled as a random walk because innovations to
+5See the excellent review articles Chordia et al. (2013), Biais et al. (2014), O’Hara (2015), Menkveld (2016) and the more
+recent studies Chordia et al. (2018) and Chordia and Miao (2020) that examine HFT and price efficiency around macroeconomic
+news and earnings announcements, respectively.
+6
+
+a random walk are permanent in accordance with the martingale property of (theoretical)
+security prices. The mean-zero stationary component models market-microstructure frictions
+by capturing deviations of observed prices from true values, which are transitory and die out
+over time.6
+The variances of these components have interpretations as metrics of market quality.
+The variance of the random walk’s innovation is a measure of the rate of information flow
+into prices and includes information conveyed by the execution of orders to buy and sell, and
+the arrival of public news. The variance of the stationary component is a measure of noise or
+friction in the trading process. The stationary component can include the price concession
+that liquidity demanders pay to liquidity suppliers for execution services, including profit,
+a return on capital, and compensation for bearing inventory risk; and it also includes other
+temporary effects on prices such as rounding due to fixed tick sizes and price discreteness.
+In this framework, transactions can impact prices through the permanent component by
+conveying information and through the temporary component by allowing the price to deviate
+temporarily from its true value.
+Though the innovation to the random walk and st are unobservable, Hasbrouck shows
+that their variances can be identified from the parameter estimates of a vector-autoregression
+(VAR) involving observable variables—price changes and non-price variables that describe
+the trading process, such as trade indicators (e.g., +1 for buys and -1 for sells) or signed
+order quantities. Hasbrouck also shows how the contribution of an observable variable to
+the variance of the random walk innovation can be identified from the VAR estimates as
+the variance of the infinite impulse response associated with the observable variable. Such
+measures can be used to assess the degree to which information flow is attributable to specific
+variables that describe the trading process.
+To create model parameters that capture the impacts of observable variables on both
+6The unobserved components model avoids strong assumptions that can accompany working directly with quotes and spreads,
+such as the assumption that the bid-ask midquote is a good proxy for the true security value and the half spread is a good
+estimate of the temporary component. Studies of liquidity provision that fit an unobserved components model to midquotes
+find temporary components in midquote dynamics, which implies that midquote changes are not ideal proxies for changes in
+the true value and that the half spread is an incomplete measure of the temporary component.
+7
+
+components of price changes, Menkveld (2013) introduces observables directly into the equations
+for st and mt. Hendershott and Menkveld (2014) introduce the additional feature of autoregression in the transitory component. Their model is as follows:
+st = ϕ st−1 + ψ xt + ηt
+(2)
+mt = mt−1 + κ ϵt + ξt
+(3)
+pt = mt + st,
+(4)
+where xt is an observable non-price variable, ϵt ≡xt −Et−1[xt] is the unexpected value of
+xt, and ηt and ξt are mutually uncorrelated iid disturbances. The ψ parameter captures the
+impact of the non-price variable on the temporary component of prices. The κ parameter
+captures the impact of the unexpected non-price variable on the permanent change in prices.
+The unexpected value of xt is required in Equation (3) to preserve the martingale property
+of mt [see Foster and Viswanathan (1993)]. Compared to Equation (1), Equations (2) - (4)
+add the minimal structure needed to create specific model parameters that capture the price
+impacts of interest. Henceforth, we refer to Equations (2) - (4), coupled with a (V)AR for
+xt, as the HHM model (for Hasbrouck, Hendershott, and Menkveld).
+The autoregressive term in the equation for st is important because, without it, the
+dynamic properties of the temporary component are constrained to mimic those of xt. Even
+though xt and ψ can be vectors, this would be a serious constraint because xt contains limited
+information about the trading process.
+For example, if xt represents signed transaction
+quantities and pt represents transaction prices, as in our analysis, then ϕ can capture an
+important aspect of inventory management. If liquidity providers reposition their quotes to
+elicit liquidity seeking orders that reverse prior shocks to inventories, then trade reversals
+will lead to reversals in the temporary component, and ϕ will be negative. The AR(1) is a
+parsimonious way to accommodate these dynamics, and our estimates confirm that negative
+values of ϕ are an important feature in fitting transaction price dynamics in our sample.
+Altogether, the HHM model strikes a balance between additional structure connecting the
+8
+
+non-price variables to both components of prices, and flexibility in allowing the temporary
+component to reverse or persist for reasons that are not attributable to contemporaneous
+variation in the modeled non-price variables.
+The selection of the xt variable(s) and the way that prices are measured determine
+the interpretations of κ and ψ. Menkveld (2013) uses midquotes sampled at five-minute
+intervals as the price variable, and the inventory of a dominant HFT as the non-price
+trading variable, to study whether unexpected inventory contributes to price discovery (κ)
+and whether the inventory of the HFT is a determinant of the positioning of midquotes in
+relation to the true security value (ψ). Likewise, Hendershott and Menkveld (2014) study
+NYSE specialist inventories and the positioning of midquotes. Their price variable is the
+daily closing midquote, and the key non-price variable xt is the daily change in specialist
+inventory. Brogaard et al. (2014) estimate HHM models using the Nasdaq HFT data. Their
+price variable is also the midquote, sampled at one-second intervals in their main results.
+The xt is the net signed quantities aggregated within those intervals traded by either liquidity
+providers (HFTs and non-HFTs), liquidity demanders (HFTs and non-HFTs), or HFTs only
+(both liquidity provided and demanded), each in a separate estimation. They also report
+some estimations using midquotes and quantities sampled at the transaction frequency. In
+each estimation, κ and ψ are interpreted as contributions of the particular measure of net
+quantity traded to permanent changes in the midquote and the transitory repositioning of
+the midquote in relation to the true security value.
+Most prior work estimates the HHM model using midquotes sampled at intervals ranging
+from one second to one day, which introduces two distinctions from our approach: the use of
+midquotes rather than transaction prices, and the aggregation of order flow within intervals
+rather than measuring it trade by trade. Time aggregation changes the interpretation of κ
+and ψ from sensitivities of price changes to individual trades to sensitivities to net order flow
+aggregated within time intervals. An equally important distinction is the choice of the price
+variable.
+9
+
+Transaction prices and midquotes capture different economic phenomena even when
+both are measured at the transaction frequency, as in Brogaard et al.’s transaction-time
+estimations involving midquotes. When estimated from transaction prices, st is the deviation
+of the transaction price from true value, which is a wealth transfer between the liquidity
+demander and provider that includes bid-ask bounce, dealer compensation, and other frictions.
+The parameter ψ is the sensitivity of this wealth transfer to the size of the contemporaneous
+trade. When estimated from midquotes, st represents the transitory deviation of the posttrade midquote from true value, usually attributed to liquidity providers positioning quotes
+to elicit inventory-equilibrating order flow. The parameter ψ is then the sensitivity of this
+positioning to the size of the prior trade and not a wealth transfer associated with the current
+trade.
+At the transaction frequency, the interpretation of κ is the same whether estimated
+from transaction prices or midquotes because both are anchored by the same random walk
+representing variation in the true security value. If sampled at the same frequency, transaction
+prices and midquotes should produce very similar estimates of the permanent component of
+price impact. We return to these distinctions in Section 5 where we compare our estimates
+directly to those of Brogaard et al. (2014).
+The choice of price variable therefore has implications for the conclusions we draw about
+price discovery from the estimates.
+Both approaches are informative, but they answer
+different questions. Midquote-based estimation is well suited to studying price discovery
+as it is reflected in liquidity providers’ responses to order flow. Transaction price estimation
+is well suited to studying the actual gains and losses that traders experience and the role
+of order flow in price discovery and wealth transfers. Our contribution is in providing an
+approach that works well for the latter, since the approach that has been used successfully
+with midquotes fails with transaction prices, as we show in Section 5.
+Estimating the HHM model is not straightforward because mt, st and ϵt are unobservable.
+The three studies cited above estimate the surprises ϵt as residuals from a time-series
+10
+
+regression of xt on its own lags. The residuals are then used as observable variables in a statespace estimation [see Hamilton (2020), p. 372–408] (a maximum-likelihood estimation where
+the Kalman Filter is used recursively to define forecast errors).7 Thus, their estimations
+involve a two-step sequence. The first step is to fit a (V)AR model to the inventory or
+trades variable(s) to generate residuals that proxy for true innovations. The second step
+is the maximum likelihood state-space estimation using midquotes, the inventory or trades
+variable(s), and the VAR residuals as observables.
+The equations of the Kalman Filter
+and the likelihood function both rely on the assumption that the midquote and aggregated
+inventory or trades data are jointly Normal.
+In our study, xt is a vector of signed dollar values of individual trades whose four elements
+correspond to the distinct possible counterparty pairings in individual transactions between
+HFTs and non-HFTs trading as liquidity demanders and suppliers, and our price variable
+is the transaction price, to the millisecond. In this setting, the joint Normality assumptions
+are unlikely to hold.
+In the next section, we provide an estimation method that is suited to transaction prices
+and quantities, and that also easily accommodates high-dimensional κ and ψ vectors. We
+show that κ and ψ can be estimated using OLS regressions without using residuals as proxies
+for disturbances. Hypothesis testing for κ, ψ and functions thereof can be conducted using
+the delta method. Some prior work using state space estimation suggests in passing that
+ARIMA-based methods can in principle serve as an alternative [e.g., Brogaard et al. (2014),
+Hendershott and Menkveld (2014)], but it does not develop the approach. Proposition 1
+below fills this gap.
+3
+Regression Approach
+Let xt be a (k × 1) vector of observable variables that describe the dynamics of trading.
+In our empirical work, xt contains signed dollar quantities traded for the k = 4 distinct
+possible pairings of HFTs and non-HFTs as transaction counterparties.
+The position in
+7Menkveld et al. (2007) is the first of which we are aware to use a state-space approach to fit a model in the framework of
+Hasbrouck.
+11
+
+the xt vector that is non-zero indicates the nature of the counterparty pairing, and the
+sign of the entry indicates whether the liquidity demander is a buyer (positive) or a seller
+(negative). For example, if an HFT liquidity demander buys $20,000 worth of shares from
+an HFT liquidity supplier, then xt = (+2, 0, 0, 0)′. If instead an HFT liquidity demander
+sells $4,000 worth of shares to a non-HFT liquidity supplier, then xt = (0, −0.4, 0, 0)′. The
+third element of xt indicates transactions in which a non-HFT liquidity demander is paired
+with an HFT liquidity supplier, and the fourth element indicates transactions in which two
+non-HFTs are paired. Transaction values are in units of $10,000 to facilitate reporting κ
+and ψ in basis points per $10,000 traded, or equivalently the price impact in dollars for a
+$10,000 trade.
+As in the studies that use state-space estimation where a VAR is first fitted to obtain
+residuals, we also assume that xt follows a vector autoregression of known order n:
+xt = B1xt−1 + B2xt−2 + · · · + Bnxt−n + ϵt,
+(5)
+where each Bj is a (k × k) matrix of VAR parameters and ϵt is a (k × 1) iid vector of
+disturbances.
+Our approach requires fitting the VAR, but it does not use the residuals
+as independent variables in a later estimation.
+For now, we assume that the individual
+elements of the vector xt are observable to market participants. We revisit this assumption
+in subsection 3.1 below.
+Proposition 1 shows that the parameters κ and ψ are identified in a simple way as
+functions of the coefficients of independent regressions—i.e., the VAR, and a regression
+whose dependent variable is the first difference of (log) prices. The proposition allows st
+to have a general ARMA(p, q) structure, which includes the simpler AR(1) specification in
+Equation (2) as a special case.
+The content of the proposition is that the HHM model
+parameters are exactly identified by only the contemporaneous and first-order-lag regression
+coefficients, adjusted by the first-order VAR parameter matrix, provided that those coefficients
+are estimated with higher-order lagged returns and trading variables included as controls in
+12
+
+the regression.
+Proposition 1. Suppose that the VAR(n) in Equation (5) describes the dynamics of a (k×1)
+vector of trading variables xt and the dynamics of prices are described by the HHM model in
+which st is ARMA(p, q) plus ψ′xt; i.e.,
+st = ϕ1 st−1 + · · · + ϕp st−p + ψ′xt + ηt + θ1ηt−1 + · · · + θqηt−q
+(6)
+mt = mt−1 + κ′ϵt + ξt
+(7)
+pt = mt + st,
+(8)
+where the disturbances ξt, ηt, and ϵt are mutually uncorrelated at all lags.
+Under these
+conditions, the model parameters ϕ1, κ and ψ can be written as
+ϕ1 = a1
+(9)
+κ′ = (C′ + D′
+1) [(1 −a1)Ik −B1]−1
+(10)
+ψ′ = C′ −(C′ + D′
+1) [(1 −a1)Ik −B1]−1 ,
+(11)
+where Ik is the (k × k) identity matrix, B1 is the (k × k) first-order-lag coefficient matrix of
+the VAR, and a1, C′ and D′
+1 are coefficient vectors in the regression:
+dpt = a1 dpt−1 + C′xt + D′
+1xt−1 +
+p
+X
+j=2
+aj dpt−j +
+n+p
+X
+s=2
+D′
+sxt−s + ut,
+(12)
+where dpt is the first difference of (log) prices, a1 is a scalar, and C′ and D′
+1 are (1 × k) row
+vectors. The disturbance ut is autoregressive of order max{p, q} and is uncorrelated with ϵt
+in Equation (5) at all lags.
+Proposition 1 provides a simple recipe for estimation and hypothesis testing with the
+HHM model. Estimates of the κ and ψ vectors can be obtained directly from estimating
+the parameters of Equations (5) and (12) separately by OLS and plugging a subset of those
+estimates into Equations (9) - (11). Because the regression disturbances in (5) and (12) are
+13
+
+uncorrelated, a variance-covariance matrix of the coefficient estimates can be constructed in
+a block-diagonal manner from the variance-covariance matrices of the separate estimations of
+the coefficients of (5) and (12). Newey-West with lag order max{p, q} can be used to account
+for the serial covariance in ut when constructing the block that relates to the coefficient
+estimates of Equation (12).
+The delta method can then be used with the constructed
+variance-covariance matrix to test hypotheses about ϕ1, κ, ψ, and functions thereof.
+Since ϕ1, κ, and ψ are identified using only the coefficients on the lowest order lags in
+(5) and (12), the formulas in Equations (9) - (11) are invariant to the researcher’s choices
+of the VAR lag length and the ARMA orders of st. This is an advantage in programming
+because the VAR length can be allowed to differ by security and day, while the code for
+computing the estimates and hypothesis tests is always the same. The lag and order choices
+do matter for the specifications of the regressions (5) and (12), however. The higher-order
+lags of variables can be thought of as control variables that are required to obtain consistent
+estimates of the coefficients on the lower-order lags that are used to identify and estimate ϕ1,
+κ, and ψ. The matrix inverse in Equations (10) and (11) will exist unless 1−a1 happens to be
+an eigenvalue of B1, an occurrence that did not appear in our nearly 3050 estimations.
+With this approach, estimation and hypothesis testing can be done without the joint
+Normality assumptions that are essential for correct specification of the Kalman Filter and
+the likelihood function in state-space estimation. This is especially helpful in working with
+transactions data, which are unlikely to satisfy such assumptions as we show later.
+In
+addition, regardless of the dimension of κ and ψ, estimation of the two regressions occurs
+in one step using OLS, which is fast because a search-based optimization is not required.
+Inferences can be conducted at the firm-day level (or even subintervals of the day) and
+justified in the usual way. The ability to conduct inferences at the narrow level of a single
+estimation is helpful for analyzing unique events where a cross-sectional distribution of
+estimates is not available. The CETV earnings announcement that we study below is such
+an example.
+14
+
+A practical advantage of the OLS approach is that it estimates the parameters for all
+categories of trading variables jointly, regardless of the dimension of κ and ψ.
+This is
+important because separate estimation yields inconsistent estimates when the cross-serial
+covariances between trade categories are non-zero, as the presence of B1 in the formulas for
+κ and ψ implies. As long as B1 is not diagonal, the identification of the permanent and
+temporary components of price impact for a given category of trades will depend on the
+cross-serial covariances between those trades and trades in another category. If the trades in
+different categories are motivated by similar economic forces, the true B1 matrix is unlikely
+to be diagonal.8
+The approach in Proposition 1 treats the regression coefficients of variables at lags greater
+than one as nuisance parameters since they are not essential for identification. To see why,
+note that Equations (6) - (8) can be differenced and combined to yield
+dpt = ϕ1 dpt−1 + (ψ′ + κ′)xt −[ψ′ + κ′(ϕ1Ik + B1)] xt−1 + h.o.t + ut.
+(13)
+The symbol h.o.t represents linear terms in dp and x of lag orders two and greater. The
+coefficients on those terms are non-linear functions of the VAR and HHM structural parameters
+(see the explicit version of (13) appearing as Equation (31) in Appendix A). The leading
+coefficients in Equation (13) along with B1 from the VAR are sufficient to identify the HHM
+structural parameters.
+Although the coefficients in h.o.t are not used, the variables themselves are essential to
+include in the regression, even, for example, if one is interested only in estimating the total
+price impact κ + ψ (and not the separate components). In Proposition 1, the vector C by
+itself identifies the total price impact (i.e., C = ψ + κ), but the regression from which C is
+estimated must include the lagged variables as controls in order for C to take the value ψ+κ.
+In this respect, Proposition 1 cautions against the common practice of estimating a total price
+8The classifications of trades that are given in the Nasdaq HFT data we analyze. Hendershott et al. (2022) can also be
+thought of as estimating price impact parameters jointly, but for classifications that are inferred from the data via maximumlikelihood estimation of a detailed structural model. Their trade classifications relate to agents who exhibit varying degrees of
+inattention to trading, which they show can explain puzzling low frequency patterns in equity returns.
+15
+
+impact by regressing returns on a contemporaneous trade variable alone (i.e., estimating an
+empirical “Kyle lambda”). If the HHM model with n > 0 describes the true return generating
+process, then omitting the controls will lead to inconsistent estimates because the regression
+cannot properly isolate the impact of the current trade and its innovation on the price. The
+controls are needed in order to separate the impact of the current trade from the effects of
+lagged trades on the current return that exist because of serial correlation in both trades
+and the temporary component of price changes.
+Though not required for identification, the higher-order coefficients can be exploited
+as a source of overidentifying restrictions in a GMM approach to estimating the HHM
+model. This is because there are more higher-order coefficients that can be estimated than
+structural parameters that define them. The VAR and Equation (31) in Appendix A can be
+estimated together as a system by selecting values for κ, ψ, ϕs, and Bs to minimize a GMM
+objective function in a search-based optimization. As with the OLS approach described
+in the Proposition, GMM does not require joint Normality assumptions. The parameters
+of the HHM model are overidentified by the usual regression orthogonality conditions for
+Equations (5) and (31), so the GMM J statistic can be used to test whether the HHM model
+is well-specified. We use GMM estimates and inferences below as benchmarks for assessing
+the performance of the OLS approach in Proposition 1 and three alternative approaches. The
+numerical optimization takes considerable time, which makes GMM infeasible for large scale
+applications that are typical in microstructure and illiquidity-in-asset-pricing research.9
+Proposition 1 and our empirical illustrations below focus on the case where xt contains
+trades classified into different categories.
+However, the identification logic applies more
+broadly. Whenever dpt is linear in xt and xt follows a VAR, the HHM model parameters are
+identified by the contemporaneous and first-order-lag coefficients as in Proposition 1. This
+9State space estimation is sometimes justified on grounds of asymptotic efficiency. However, this property holds only when the
+model is correctly specified and the Normality assumptions underlying the Kalman filter are satisfied. When these assumptions
+fail, as we document they do for transaction prices in Section 5.1, the efficiency justification does not apply. Our OLS approach
+does not impose all the model’s constraints and is therefore not asymptotically efficient. However, the GMM approach does
+impose all the constraints implied by the model and is asymptotically efficient without requiring Normality assumptions, making
+it a more appropriate efficiency benchmark when working with transaction prices.
+16
+
+generality means that many familiar structural models of price dynamics and illiquidity
+measures used in market microstructure and asset pricing research are nested within the
+HHM framework.
+The non-price variables xt in those models take a variety of forms—
+signed trade quantities, functions of trade quantities such as trade signs, or demand pressure
+measures that are not trade quantities at all. The nesting of those models within HHM also
+provides economic intuition for why the contemporaneous and first-order-lag coefficients are
+sufficient for identification: those are the same lags that identify the key parameters in
+the classic structural models. We work through several cases in the internet appendix to
+illustrate the breadth of structural models that are nested within the HHM framework and
+can be estimated using Proposition 1.
+3.1
+Observability of xt to Market Participants
+The discussion so far assumes that the individual elements of xt are observable to market
+participants in real time. Otherwise, market participants would be unable to compute the
+vector ϵt in real time, and Equation (7) would not be a martingale with respect to the market’s
+beliefs.
+One can imagine that in applications of this estimation approach to blockchain
+markets, trader (or wallet) identities may be observable in real time. However, in the Nasdaq
+HFT data, market participants were aware of the trades, but not the identity types of the
+counterparties, in real time. The procedure in Proposition 1 requires a slight modification
+in this case.
+The model that traders perceive is one in which a univariate series of signed dollar order
+quantities ˆxt is observed, and the unconditional price impact parameters are scalars ˆκ and
+ˆψ. Therefore, the equation for return dynamics perceived by market participants is
+dpt = ϕ1 dpt−1 + ( ˆψ + ˆκ)ˆxt −
+h
+ˆψ + ˆκ(ϕ1 + b1)
+i
+ˆxt−1 + d
+h.o.t + ut,
+(14)
+where b1 is a scalar first-order autoregressive parameter from a univariate AR model for
+ˆxt, and d
+h.o.t are linear terms in dp and ˆx of lag orders two and greater. Nevertheless, as
+researchers, we can do the equivalent of adding dummy variables as interactions with the
+17
+
+regressors to estimate and test for differences in coefficients conditional on the data categories
+identified by the dummies.
+In particular, as researchers and in hindsight we know to which of the four counterparty
+bins each ˆxt belongs. So we can define (4 × 1) vectors xt whose elements are each identified
+with a particular counterparty pairing. For example, if the transaction at time t is between
+two HFTs, then the first element of xt is assigned the value of ˆxt and the other elements of
+xt are assigned values of zero; likewise for the other three elements of xt and counterparty
+pairings. Thus, ˆxt is the sum of the elements of xt, and Equation (14) is equivalent to
+dpt = ϕ1 dpt−1+( ˆψ+ˆκ)(xt1+· · ·+xt4)−
+h
+ˆψ + ˆκ(ϕ1 + b1)
+i
+(xt−1,1+· · ·+xt−1,4)+ d
+h.o.t+ut. (15)
+We can then replace the scalars ˆκ and ˆψ with analogs of dummy slope coefficients to
+accommodate different price impacts by counterparty pairing:
+dpt =ϕ1 dpt−1 + (ψ1 + κ1)xt1 + · · · + (ψ4 + κ4)xt4
+−[ψ1 + κ1(ϕ1 + b1)] xt−1,1 + · · · + [ψ4 + κ4(ϕ1 + b1)] xt−1,4 + d
+h.o.t + ut.
+(16)
+Writing this in vector notation yields
+dpt = ϕ1 dpt−1 + (ψ′ + κ′)xt −[ψ′ + κ′(ϕ1 + b1)] xt−1 + d
+h.o.t + ut,
+(17)
+which is the same as Equation (13) except that the identity matrix Ik is not needed, the
+scalar b1 replaces the matrix B1, and d
+h.o.t includes lags of ˆxt rather than lags of the individual
+elements of the vector xt. In Equations (10) and (11) for the model parameters, the scalar
+b1 replaces the matrix B1. Our estimations with the Nasdaq HFT data use this modified
+procedure. The modified version of the full equation for return dynamics that includes the
+higher-order terms, and which we use for the GMM estimations, is given in Equation (38)
+in Appendix A.
+18
+
+4
+Data
+The data we analyze are provided by Nasdaq.10 We use these data because the classifications
+are extensive and result in eight parameters to be estimated jointly. A high-dimensional
+parameter space is challenging, and estimation in this setting provides a good test of the
+performance of the approach in Proposition 1. We compare its estimates and inferences
+to those that impose overidentifying restrictions and that should be more efficient. If the
+simpler approach performs well in this case, it ought to perform well in applications that do
+not require classifications of trades, such as estimating illiquidity measures for asset pricing
+tests. 11
+The Nasdaq HFT data are also used in Carrion (2013) and Brogaard et al. (2014), which
+provide excellent descriptions of the data and how it came into existence. We highlight the
+aspects that are most relevant to our study.
+The data contain all transactions executed on Nasdaq from January 1, 2008, to December
+31, 2009 for 120 stocks divided equally between small, medium and large categories by market
+capitalization. Each record contains the following fields:
+1. Timestamp in milliseconds
+2. Stock symbol
+3. Number of shares
+4. Buy/sell indicator of the liquidity seeking side of the trade
+5. Transacted price
+6. Trader pairing (i.e., HH, HN, NH, NN)
+The trader pairing variable identifies the types of traders who are counterparties to the
+transaction (H=HFT or N=non-HFT), with the trader type that was seeking liquidity listed
+first. Nasdaq identifies 26 traders as HFTs based on whether a trader exhibits characteristics
+10We thank the Office of the Chief Economist for kindly providing the data.
+11While the Nasdaq HFT data are special in providing the actual classifications of trades by HFTs and non-HFTs, one could
+also use the approach with trades classified by a proxy. In the HFT setting, see for example, Chordia and Miao (2020), who
+use the Hasbrouck and Saar (2013) measure of strategic runs of fast message traffic as a proxy for low-latency trading activity,
+and runs that end with a transaction as trades in which liquidity is provided by a low-latency trader.
+19
+
+usually attributed to HFTs, such as a high frequency of trades, orders, and cancellations,
+and low inventory accumulation. A few institutions with large brokerage operations are not
+identified as HFTs despite having HFT capabilities. 60 of the stocks are listed on Nasdaq
+and 60 are listed on the NYSE, and many trade on other venues. Only trades that are
+executed on Nasdaq are included in the sample.
+Most of the transaction records have distinct millisecond time stamps, which enable us
+to identify the sequence of distinct transactions within each day. When transactions are
+distinct, the xt vector of signed trades for millisecond t has only a single non-zero entry
+among its four elements. The location of the entry corresponds to the trader pairing for the
+transaction, the sign of the entry indicates whether a purchase (positive) or a sale (negative)
+was on the liquidity demanding side of the trade, and the magnitude of the entry is the
+dollar value of the trade in $10,000 units.
+There are some instances in which more than one transaction has the same millisecond
+time stamp. Nasdaq advised us that transactions with the same time stamp are not necessarily
+written to the database in chronological order within the millisecond. In these instances,
+we compute the dollar value of the trades within each trader pairing, and sign the trade
+indicator for that pairing according to whether the net liquidity taken is a buy or sell. For
+example, if a $30,000 HH buy and a $10,000 HH sell have the same timestamp, the net HH
+transaction is a $20,000 buy, which we code as +2 in the first element of xt. If there are
+multiple types of pairings within the same millisecond (e.g., HH and HN transactions with
+the same timestamp), then the xt vector will have multiple entries, one for each pairing. The
+magnitude of each entry is again the dollar value of the net trade in $10,000 units, and the
+sign of each entry is positive or negative depending on whether the net liquidity taken in
+that pairing was a buy or sell.12
+For the stocks and time period covered by the Nasdaq sample, we draw the dates
+and times of earnings announcements and analysts’ earnings forecasts from I/B/E/S. The
+12The ratio of the mean (median) number of milliseconds with more than one transaction to milliseconds with at least one
+transaction is only 0.08 (0.13) across stock-days.
+20
+
+vast majority of earnings announcements occur during the overnight period between the
+market close and open. We exclude daytime announcements in order to have uniform preannouncement and post-announcement days throughout the sample. We record the number
+of analysts forecasting earnings as an indication of the intersection of supply and demand
+in the market for public information about a company’s earnings. We use this number to
+stratify the sample into quartiles.
+We compute the earnings surprise for each announcement as the difference between
+realized earnings per share and the median analyst estimate prior to the earnings announcement
+reported on IBES, divided by the opening stock price on the day preceding the overnight
+announcement. For announcements with two or more analyst forecasts, we compute dispersion
+in analysts’ forecasts as the difference between the highest and lowest analyst estimates
+divided by the median estimate.
+Our estimation and testing focus on prices and trades from four days anchored by each
+earnings announcement. The Pre-day is the trading day prior to the overnight announcement
+and the Post-day is the trading day following the announcement. The Week-After-Pre (WAPre) day is one week later than the Pre-day on the same weekday, and the WA-Post day
+is likewise one week later than the Post-day on the same weekday. We include all days
+with 50 or more transactions total and at least 10 trades for each of the four counterparty
+pairings HH, HN, NH, NN. After these constraints, we have 3047 security-days relating to 823
+earnings announcements belonging to 120 distinct stocks. Cutoffs for the analyst coverage
+quartiles are based on the distribution of coverage for these security-days.
+A set of parameters ϕ1, ψ, and κ is estimated for each security-day using prices and
+trades during daytime trading hours (8:30-4:00pm Eastern Time). We exclude the opening
+transaction from all security-days because the first trade of the day is known to have different
+characteristics than transactions during the rest of the day [e.g., Amihud and Mendelson
+(1987), Stoll and Whaley (1990)]. Table 1 reports summary statistics for the sample. For
+the item listed in each row, the columns report statistics describing the distribution of daily
+21
+
+values for that item across security-days. For example, the median across security-days of the
+daily dollar volume of trades in which both counterparties are HFTs (i.e., the HH category)
+is $761,782. HH is the category with the smallest median and mean dollar volume across
+security-days, and NN is the category with the largest. However, there is a high degree of
+overlap between the distributions of all categories. For example, the 75th percentile for HH
+is larger than the median of NN. The 25th percentile of NN is larger than the median of HH,
+but substantially smaller than the 75th percentile of HH. As noted earlier, counterparty types
+are not reported to traders in transaction records. The high degree of overlap would make
+it difficult for traders in real time to infer counterparty types from transaction flows.
+Table 1 also reports distributions of the daily numbers of transactions in each counterparty
+category. The mean and median numbers of transactions are smallest for HH and largest
+for NN. The range of values constituting the middle 98% of each category is impressive.
+HH ranges from 10 to 13,442, and NN ranges from 102 to 15,677. These distributions also
+exhibit substantial overlap across categories of counterparty pairings.
+Items concerning the scale of transaction returns are also reported in the table. Transaction
+returns are centered on zero, as is evident by the mean of means and median of median
+transaction returns both being zero to the tenth of a basis point. Transaction returns are
+also small in magnitude. Across security-days, the mean and median of the mean daily
+absolute transaction returns are 4.5bp and 3.1bp respectively; and the 99th percentile is
+20.4bp. The mean and median of the median daily absolute transaction returns are smaller
+at 1.8bp and 0.0bp, respectively; with a 99th percentile of 14.8bp.
+By construction, the Nasdaq sample is diverse in market capitalization, ranging from
+about $218 million to $325 billion as of December 2007. The mean and median are $27.5
+billion and $2.58 billion, respectively. The number of analysts forecasting earnings ranges
+widely—from zero to 34—with a mean and median of 12.6 and 11, respectively.
+22
+
+5
+Results
+We begin with the results of attempting to estimate the model using state space methods
+for the days associated with a subsample of 40 randomly chosen earnings announcements (i.e.,
+the four days described above for each announcement, or 160 stock-days in total). It turns
+out that the state space approach either fails entirely or performs poorly, even when OLS
+estimates are supplied as starting values. More focused investigation points to non-Normality
+of the data as the reason for both failures, which strongly suggests that having an alternative
+to state-space estimation is an essential resource for microstructure researchers, especially
+when using transaction price data.
+Then we turn to evaluating the quality of the OLS
+approach by comparing its estimates and inferences to those of GMM in the full sample. We
+take GMM as the gold standard because it incorporates all the restrictions of the model. The
+main finding is that estimates and hypothesis tests that follow the approach in Proposition
+1 compare favorably to GMM and perform better than other OLS based approaches that
+take shortcuts relative to the approach in Proposition 1. Finally, we present detailed results
+for the OLS approach in Proposition 1 for the days around earnings announcements and the
+week after, and some regression tests that characterize cross-sectional and temporal patterns
+in the components of price impacts around earnings. We also conduct an event study of the
+single announcement in our sample with the largest earnings surprise.
+5.1
+State Space Estimation
+Since we motivate the OLS approach by observing that the assumptions underlying the
+state-space (SS) approach are likely to be violated in transaction price data, we begin by
+attempting to estimate the model’s parameters using a SS approach that follows the steps
+in Brogaard et al. (2014), which works successfully for estimation using midquote data. For
+each stock-day, we estimate a VAR as in Equation (5) whose order is determined by the
+AIC, and residuals from the VAR along with signed trades and log price changes are used
+as data to estimate ϕ1 and the κ and ψ parameters by maximum likelihood and the Kalman
+filter. The ϕ1 parameter is constrained to lie between -0.99 and 0.99 in the optimization,
+23
+
+and diffuse priors are used for the disturbance variances of the permanent and temporary
+components. A difference from Brogaard et al. (2014) is that we estimate all eight κ and ψ
+parameters and ϕ1 jointly for consistency with the OLS and GMM approaches. They group
+trades together in various ways, as described in Section 2.
+Because these optimizations are resource intensive, we focus on the days surrounding
+a subset of 40 randomly chosen earnings announcements in our sample (160 stock-days in
+total). We use OLS estimates obtained as described in Proposition 1 (henceforth, OLSProp estimates) as starting values for the nine parameters. 148 of the 160 days satisfy the
+intra-day data requirements of at least 50 transactions and 10 transactions for each of the
+counterparty pairings. The model converges for 124 of those days. For the other 24 days, the
+negative log-likelihood is flat enough not to identify a minimum. More concerning is that the
+estimate of ϕ1 is equal to 0.99 for 69 of the 124 days for which there is a solution. Since 0.99
+is the upper boundary of the parameter space, this outcome indicates that the optimization
+is unable to find an interior solution and is instead being pushed to the boundary ϕ ≈1
+where the temporary and permanent components are not separately identified. As far as the
+data are concerned in these cases, a temporary component in transaction price changes does
+not exist. This conclusion is unreasonable a priori given the vast microstructure literature
+that documents its existence with simple estimation approaches. This leaves us with 55
+stock-days with useful estimates to characterize, about one-third of the 148 stock-days we
+started with.
+Details of the results for these 55 estimations are discussed below.
+However, before
+we get there, and to understand the sources of these failures better, we conduct a series
+of focused experiments on five stock-days drawn from the set of problematic cases. The
+experiments replace real data with simulated Normal draws in various ways to isolate why
+transaction price data cause the SS approach to break down. Table 2 reports the outcomes
+of the experiments, with only meaningful details included for brevity.
+Panel C of Table 2 reports the results of the first experiment, a Monte Carlo simulation
+24
+
+in which all variables are drawn from Normal distributions. The signed trades xt and their
+innovations ϵt are drawn as independent standard Normals, and the disturbances ξt and ηt are
+drawn as independent mean-zero Normals whose standard deviations are set to the median
+standard deviation of transaction returns in the sample. The OLS-Prop estimates of ϕ1, and
+the κ and ψ vectors are used as the “true” parameter values in generating the simulated price
+data for each of the five stock-days. No VAR is estimated, so this experiment focuses on
+the maximum-likelihood-Kalman-filter step in isolation. SS estimation is performed on the
+simulated data with zeros as starting parameter values, then next with OLS-Prop estimates
+as starting values. With both sets of starting values, the SS estimator converges and provides
+valid standard errors (non-singular Hessian) for all five stock-days. The “true” parameter
+values are recovered almost exactly, which confirms that the failures observed with the real
+data are not attributable to programming errors or numerical problems relating to the OLSProp parameter or starting values.
+The second experiment uses real data and is reported in Panel A. Two sets of starting
+values are again used for each stock-day, OLS-Prop estimates and zeros. With OLS starting
+values, S1, S2, S4 and S5 converge to the boundary where ˆϕ1 = 0.99, and S1 and S3 fail to
+produce Hessian-based standard errors because the Hessian is singular. For S3, this indicates
+that the negative-log-likelihood surface has a non-convexity in the neighborhood of an interior
+value. With zero starting values, all five stock-days converge to the boundary. These results
+highlight two important points. First, the failures are not due to poor starting values—
+OLS starting values do not help S1, S2, S4 or S5. Second, non-convexities in the negative
+log-likelihood appear at both boundary and interior solutions. These findings suggest that
+the failures of SS in the larger sample to identify the temporary and permanent components
+separately are not related to the starting values used in the estimation, and that impediments
+to estimation or inference relating to the shape of the log-likelihood function are not limited
+to boundary solutions.
+The third experiment, reported in Panel B, combines real trading data with simulated
+25
+
+Normal disturbances, which allows the real trading activity data to introduce dynamics
+that are possibly contrary to the joint Normality assumptions underlying the SS approach.
+In this experiment, we estimate the VAR for trading activity using real data to generate
+observations of trading innovations. We then use these innovations and actual trades to
+generate a temporary component series, a permanent component series and a price series.
+The OLS-Prop estimates are used as the “true” parameter values, and the disturbances ξt
+and ηt are drawn as independent Normal random variables with means of zero and standard
+deviations that are again equal to the median standard deviation of transaction returns in
+the sample. When zeros are used as starting values, four of the five stock-days converge to
+the boundary with ˆϕ1 = 0.99, though S3 converges to an interior solution with ˆϕ1 = −0.098.
+However, when OLS-Prop starting values are used, all five stock-days converge to plausible
+interior values of ϕ1 with small standard errors, and all five match the OLS-Prop values to
+the second or third decimal place. The κ and ψ parameters are also recovered accurately.
+Interestingly the estimates of ϕ1 for S3 are nearly identical when both zeros and the OLSProp starting values are used, suggesting that it is possible, though not likely, for SS to find
+the “true” parameter values even when starting at zero. The results in this panel suggest
+that real trading activity introduces non-Normal dynamics into the data that prevents SS
+from recovering accurate estimates unless starting values are sufficiently close to the solution.
+If the structural disturbances are Normal, SS has a chance of working well, but only reliably
+when started from values that are sufficiently close to the solution. In practice, a researcher
+would not have access to such starting values without first running OLS-Prop or something
+like it, making SS either infeasible or, at best, a refinement of methods that explicitly do not
+rely on Normality assumptions.
+Our final experiment is reported in Panel D, where the return and four trading activity
+series are transformed into univariate Normal series by applying the inverse of the Normal
+CDF to “plotting positions” based on a ranking of each original series.13 The SS procedure
+13The plotting positions we use are pi = (ri −3/8)/(n + 1/4) where ri is the rank of observation i and n is the number of
+observations. This procedure is attributable to Blom (1958).
+26
+
+including the VAR and using OLS-Prop initial values is then applied to the transformed data,
+just as it was with the original sample. All five stock-days converge to interior solutions with
+valid Hessian-based standard errors. The estimate of S3 comes close to the boundary with
+ˆϕ1 = 0.973 and a large standard error. The remaining four stock-days produce plausible
+estimates ranging from -0.255 to 0.639 with small standard errors, which are consistent with
+identifying separately permanent and temporary components of price changes. Although
+the parameter estimates are not economically meaningful after the transformation, the
+improvement in SS behavior relative to Panel A is informative.
+The fact that four of
+five stock-days produced well-behaved interior solutions after the transformation strongly
+implicates non-Normality of the original transaction price and trading data as the primary
+source of SS failures. The case of S3 suggests that univariate Normality of the marginals
+alone may not be sufficient, and that violations of the multivariate Normality assumption
+underlying the Kalman filter may also play a role.
+The failure of the state-space approach documented here is consistent with Allena and
+Chordia (2025), who show that the rounding induced by discrete tick sizes destroys the
+Gaussian structure that the Kalman filter requires, rendering it unsuitable for transactionlevel data. They provide an estimation method that is Bayesian and numerical but does
+not use the Kalman filter for recovering the latent true price purged of tick-rounding effects.
+Our objective differs from theirs. Rather than purging frictions from observed prices, we aim
+to measure them since the bid-ask bounce, dealer compensation, and rounding that Allena
+and Chordia’s framework filters out are elements of the temporary component (and traders’
+experience) that we wish to estimate. For our purpose, OLS is preferable because it requires
+no structural or distributional assumptions about the frictions. This is important because
+our Panel B results indicate that non-Normality intrinsic to the underlying trade dynamics
+would remain even after applying a rounding correction.
+Returning now to the larger sample of SS estimates, Panel A of Table 3 compares the
+performance of the SS approach to GMM for the 55 stock-days with valid SS estimates and
+27
+
+ˆϕ1 < 0.99. The distributions of SS estimates and inferences do not match those of GMM
+well at all. For ϕ1, the average SS estimate is 0.07 compared to -0.12 for GMM. The median
+of -0.08 is closer to the GMM median of -0.12. The match rate with GMM inferences is 67%
+when the GMM estimate is positive, but only 13.5% when the GMM estimate is negative.
+This is a serious deficiency because the vast majority (80%) of the GMM estimates are
+negative and significant. In contrast, corresponding match rates are all above 80% for the
+OLS estimates in the full sample in Panel B of the table. The κ parameters are estimated
+especially poorly by SS, with match rates of only 9.1% to 13.7% when the GMM estimate
+is positive, and a vast majority (89% or more) of the GMM estimates are positive and
+significant. SS average and median estimates are all smaller than the GMM averages and
+medians. The ψ parameters are estimated somewhat better in matching the average and
+median GMM estimates. Nevertheless, the percentages of days that match the inferences of
+GMM are uniformly smaller than those of the OLS estimates in the full sample in Panel D
+of the table. Taken together, these results confirm that even when SS is seeded with OLS
+starting values and produces a valid solution in transaction price data, the SS estimates and
+inferences are still unreliable.14
+5.2
+Assessing the Quality of OLS Estimates
+5.2.1
+Comparison of OLS and GMM
+Having established that the SS estimation is unreliable for transaction price data, we
+now turn to evaluating the performance of three OLS-based approaches by comparing their
+estimates and inferences to those of GMM. Estimates and tests are conducted at the securityday level for all three OLS approaches and GMM, and performance is evaluated by comparing
+the distribution of estimates and inferences across security-days. To ensure uniformity of the
+underlying assumptions, GMM and the two OLS approaches that use a VAR are all based
+upon an HHM model with (n = 7, p = 1 and q = 0). The lag length of seven was chosen
+14The RMSE statistics reported for SS in this panel are smaller than those of OLS in the full sample in later panels. This is
+due to differences in the samples. Though details are not tabulated for brevity, OLS performs better overall in this subsample
+than in the full sample, and in particular the OLS RMSEs (and RMedSEs) are uniformly smaller in this subsample than those
+of SS. These 55 stock-days appear to be atypically easier to estimate by both methods than stock-days in the full sample.
+28
+
+after visual inspection of the correlograms of a random selection of security-days before any
+estimation was attempted. This choice turned out to be very close to the overall sample
+median of eight when lag lengths are selected by the AIC separately on each security-day,
+as reported in the next section.
+For the GMM estimation of κ, ψ and ϕ1, the moment conditions are the least-squares
+normal equations corresponding to an AR(7) for ˆxt and to Equation (38) in Appendix A
+altogether in one pass (Equation (5) reduces to an AR(7) and Equation (31) reduces to
+Equation (38) in the case where the elements of the xt vector are not individually observable
+by market participants). We regard the GMM estimates as a “full information” benchmark
+in these performance assessments because GMM imposes the constraints that are implied
+by the model on all the regression coefficients in estimating Equations (5) and (38). In
+contrast, only the exactly-identifying information from the contemporaneous and first-orderlag regression coefficients are used in the OLS approach of Proposition 1 and the two other
+OLS-based alternatives considered below.
+The GMM estimations require a numerical optimization that takes considerable processing
+time. There are 25 orthogonality conditions and only 19 parameters that define the regression
+coefficients, so the system of moment conditions is overidentified.
+The overidentifying
+restrictions do have some bite. The GMM J statistic rejects the null in 25.9% of the 3047
+security-days in the sample. Nevertheless, the HHM model seems to fit the data well for a
+large majority of security-days.
+The first OLS approach is that of Proposition 1, which estimates Equations (5) and
+(38) in Appendix A separately by OLS. Inferences are based on a block-diagonal variancecovariance matrix with a Newey-West adjustment as described following Proposition 1. We
+refer to this approach as “OLS-Prop.”
+The second OLS approach is a two-step procedure, which first estimates a VAR model
+for trades by OLS, then uses its residuals as proxies for the ϵt vector in a second-stage
+regression for returns. The second-stage equation corresponds to Equation (27) in Appendix
+29
+
+A, where ϵt is treated as an observable variable and the lagged ϵts are absorbed into the
+disturbance. Price impact parameters correspond to distinct coefficients in this regression.
+This approach does not include the higher order lags of trades as controls because they
+are not needed if residuals from the first-stage are regarded as observationally equivalent
+to ϵt. Hypothesis tests with this method ignore the estimation error involved in the first
+step. Inferences are based on Newey-West standard errors from the second-stage equation.
+Comparing the results from this approach to those of Proposition 1 provides evidence on
+whether the errors-in-variables arising from using a proxy for ϵt, and ignoring the first stage
+estimation error in computing standard errors, matter to the estimates and inferences. We
+refer to this method as “OLS-Resid”.
+The third OLS approach assumes that Et−1[xt] = 0 for all t, and does not use either
+the time-series model residuals or the trades beyond lag-one as controls in the returns
+equation.
+This approach treats xt entirely as a surprise, and there is no role for fitting
+Equation (5).
+Price impact parameters are computed from the formulas in Proposition
+1 with B1 = 0.
+Inferences are based on standard errors with no adjustment for lagged
+dependence in residuals. Comparing the results from this approach to the others provides
+evidence on the importance of modeling the market’s conditional expectations. As we show
+below, this approach exhibits large distortions in the estimates and tests. We refer to this
+method as “OLS-Zero”.
+Detailed results of the four estimation methods for all the parameters appear in panels
+B - D of Table 3. Altogether, OLS-Prop matches the estimates and inferences of GMM
+rather well. The overidentifying restrictions GMM brings to the estimation do not change
+the estimates and inferences very much from those of OLS-Prop. OLS-Resid is a close second
+best. OLS-Zero does poorly, especially with the ψ parameters, which are biased upward and
+toward rejecting in the positive direction. The differences between the OLS-based methods
+are whether and how conditional expectations of xt are incorporated into the estimation.
+The results indicate that care taken in modeling expectations of xt matters to the quality of
+30
+
+the estimates and inferences of the price impact parameters.
+The lag length was held fixed at seven across these estimations. However, the choice of
+lag length is itself an important aspect of modeling the conditional expectations of xt. We
+do not know what model market participants use to form beliefs, and the appropriate lag
+length could vary by security and by day. Searching over lag lengths and the parameter space
+using GMM is infeasible for a panel of security-days as would be typical in microstructure
+or asset pricing research. However, allowing such flexibility in selecting lag lengths is easy
+with a method based on OLS. We exploit this flexibility in obtaining the estimates for our
+main results to which we now turn.
+5.3
+OLS-Prop with AIC
+This section is divided into five subsections. The first three provide detailed results for
+each of the key sets of parameters—ϕ1, κs and ψs.
+The estimation is done using OLSProp as described in the previous section.
+The difference here is that lag lengths are
+determined by the AIC for each security-day. These are followed by a fourth subsection
+that reports descriptive statistics for trading volume by trade classification and type of
+day. The final subsection examines relations between parameters from the same earnings
+announcement (and week-after) days for evidence that HFTs use information learned from
+liquidity providing trades to enhance the profitability of their liquidity demanding trades.
+5.3.1
+ϕ1 Estimates
+Table 4 reports estimates and tests for ϕ1.
+The format of this table is a template
+for the tables that follow. Under the heading for a particular counterparty pairing, there
+are four rows of statistics that relate to the four classifications of days around earnings
+announcements. Those labeled “Pre” are estimates for days prior to the overnights when
+earnings announcements occur, those labeled “Post” are for post-announcement days, and
+those labeled “WA Pre” and “WA Post” are estimates from the same weekday one week
+after the Pre and Post days, respectively. For each day classification, we report the fractions
+of the sample for which the estimates of ϕ1 are positive and significant, and negative and
+31
+
+significant, followed by the mean and median of the estimates. The fifth row reports statistics
+for the pooled set of estimates that includes all four day classifications.
+For the full sample, the average (median) ϕ1 parameter estimate is -0.11 (-0.10). Negative
+estimates reject the null of equality with zero at a rate of 64% for the full sample, and 42%
+and 91% for the low- and high-analyst-coverage quartiles, respectively.
+Rejections with
+positive estimates are rare at 3% or less.
+Negative estimates of ϕ1 indicate reversals in
+the temporary component of prices unrelated to contemporaneous trading, consistent with
+liquidity providers posting quotes to elicit trades that reverse past shocks to inventory. The
+full-sample median lag selected by the AIC is eight, with larger lag lengths selected for
+high-coverage (median of 16) than for low-coverage stocks (median of four).
+5.3.2
+Kappas and their Differences
+Table 5 reports estimates of the permanent components of price impact, the κs, and
+selected κ differences. The results confirm what prior work has established using midquotes:
+permanent price impacts are positive and significant for the vast majority of security-days
+across all counterparty pairings, with between 66% and 92% of estimates positive and
+significant.
+The average estimates range from 6.39bp to 14.55bp per $10,000 traded for
+κNN and κHH respectively, and are substantially larger for low-coverage stocks and smaller
+for high-coverage stocks; the internet appendix reports corresponding results for the lowand high-coverage quartiles separately.
+The differences tests in Table 5 confirm that the identity of the liquidity provider has a
+stronger association with permanent price impact than the identity of the liquidity demander.
+HFT liquidity providers absorb more adverse selection than non-HFT liquidity providers
+regardless of the identity of the liquidity demander, with rejection rates in the positive
+direction of 42% and 46% for the two relevant differences. HFTs’ liquidity demanding trades
+also pose greater adverse selection than those of non-HFTs, though the differences are smaller
+in magnitude and significance. Thus HFTs both pose and absorb greater adverse selection
+than non-HFTs in both trading roles—a pattern that will appear in regressions below that
+32
+
+investigate how HFTs profit from their liquidity demanding trades. Price priority implies
+that HFTs have the most aggressive quotes for the trades to which they provide liquidity;
+otherwise, they would not have been paired as counterparties to those trades.
+We can
+therefore conclude that HFT liquidity providers tend to offer more aggressive quotes than
+non-HFTs to the trades that pose the greatest adverse selection risk. Evidence below suggests
+that HFTs benefit from doing so by trading more profitably as liquidity demanders.
+The cross-sectional regressions in Table 6 confirm these patterns. The first three columns
+show that when the liquidity demander is a non-HFT, HFTs absorb orders that move prices
+permanently by 2.7bp to 4.8bp more than non-HFTs for stocks with moderate analyst
+coverage, with the effect larger for low-coverage stocks, absent for high-coverage stocks,
+and stronger around announcements with larger earnings surprises. The last three columns
+show that when the liquidity demander is an HFT, HFTs also absorb more adverse selection
+than non-HFTs for stocks outside the highest coverage quartile, with marginal evidence of
+a significant effect for low-coverage stocks.
+5.3.3
+Psis and their Differences
+Table 7 reports estimates and hypothesis tests for the ψ parameters. The rather surprising
+finding is the high frequency with which negative ψ estimates reject the null of equality to
+zero compared to positive estimates when the liquidity demander in the transaction is an
+HFT. This means that HFTs actually capture, rather than pay, a price concession when
+they execute liquidity seeking trades. This finding is contrary to the traditional notion that
+liquidity demanders pay for immediacy with price concessions that are greater for larger
+orders.
+These results appear on the left side of Table 7. When the liquidity provider is also
+an HFT, the negative (positive) rejection rate is 33% (8%). When the liquidity provider
+is a non-HFT, the negative (positive) rejection rate is 54% (2%). These percentages are
+for all days. The overall pattern suggests that when HFTs trade as liquidity demanders,
+the counterparty orders that supply liquidity are priced so aggressively that they result in
+33
+
+a wealth transfer to the liquidity demander. Those orders could be stale, or they could
+be deliberately priced aggressively to attract a counterparty and execution. The fact that
+this happens when the liquidity providers are other HFTs, and that the point estimates are
+even larger in magnitude for those trades, suggests that staleness is not the full explanation.
+The findings suggest that supplying liquidity on favorable terms is common for both HFTs
+and non-HFTs, and that HFTs are adept at identifying and trading against such offers as
+liquidity demanders.
+The internet appendix reports corresponding results for the low- and high-coverage
+quartiles separately. The same patterns are apparent in these quartiles as for the full sample.
+For all days, the average and median magnitudes of the price concession captured by HFT
+liquidity demanders are larger for low-coverage stocks at between 2.83bp and 1.81bp, versus
+0.26bp to 0.07bp for the high-coverage stocks.
+As described in Section 2, the negative ψ estimates documented here for HFT liquidity
+demanders have a different interpretation than a similar finding in midquote-based studies.
+Brogaard et al. (2014) interpret a negative temporary component in midquotes as HFTs
+trading to correct temporary mispricing—e.g., buying when the midquote is temporarily
+below true value and thereby pushing it back toward true value. This is a natural interpretation
+from the liquidity demander’s perspective. From the liquidity provider’s perspective, however,
+a negative midquote ψ following a purchase means that the midquote has risen to reflect the
+information content of the trade but has not risen fully, leaving the midquote below true
+value. This is more consistent with slow adjustment of quotes to the information content
+of trades than with liquidity providers’ repositioning quotes to elicit offsetting order flow.
+The latter would require a positive ψ to push the midquote above true value and discourage
+further buying. Our transaction-price ψ speaks to a different question entirely. Namely,
+whether the execution price itself is above or below true value at the moment of the trade.
+When ψ is negative in transaction prices, HFTs are executing buys at prices below (and
+sales at prices above) true value on average, which yield profits on the transactions. The two
+34
+
+results are therefore complementary but distinct. Both reflect HFTs trading when prices
+favor them, but the midquote result describes the dynamics of quote adjustment following a
+trade, while the transaction-price result captures how the execution price itself constitutes
+a wealth transfer in the HFT’s favor.
+The results are different for transactions in which non-HFTs demand liquidity from
+HFTs, depicted in the upper right of the table. In this case, the rejections favor positive
+estimates over negative estimates of ψ. In other words, non-HFTs tend to pay price concessions
+to HFT liquidity providers. The magnitudes are rather modest—for the full-sample and
+all days, the positive (negative) rejection rates are 20% (11%). The average and median
+estimates are quite small at 0.27bp and 0.02bp, respectively. The corresponding statistics
+are somewhat larger at 1.28bp and 0.52bp for the low-coverage quartile, and they are tiny
+at 0.042bp and 0.016bp for the high-coverage quartile (internet appendix).
+The frequency of positive versus negative rejections is less when the liquidity provider is
+also a non-HFT at 12% and 11% for the full sample, and the average and medians are less
+positive at -0.52bp and 0.00bp, respectively. A similar pattern exists for both low- and highcoverage stocks (internet appendix). In these transactions, there appears to be no dominant
+direction in which the temporary component of price impact is sensitive to the value of the
+transaction, and the magnitudes are very small on average. When non-HFTs trade with
+each other, it is just as likely in the panel of stock-days that the liquidity demander pays as
+receives a price concession.
+During the time of our sample, Nasdaq fees and rebates added costs to demanding
+liquidity and added revenue to qualifying liquidity providers such as HFTs. Receiving rebates
+reduces the price concessions that liquidity providers must embed in their limit prices to
+cover costs, so negative estimates for ψ do not necessarily imply that a liquidity provider
+who receives rebates suffers trading losses overall. However, the differences above appear too
+large to be attributable to fees and rebates alone.15 In addition, as we show formally next,
+15Brogaard et al. (2014) report that in the time period of the Nasdaq HFT data, fees ranged from $0.0025 to $0.00295,
+and rebates ranged from $0.0025 to $0.0028 per share.
+These correspond to about 1bp or less of the transaction
+35
+
+the differences in ψ estimates are more strongly determined by the identity of the liquidity
+demander than that of the liquidity provider, which is not the pattern to expect if fees and
+rebates are important determinants of differences in ψ estimates.
+Formal tests of pairwise differences in ψs are reported in Table 7. The left side of the
+table focuses on varying the identity of the liquidity demander. The rejection rates and
+difference estimates in the upper left indicate that non-HFT liquidity demanders pay greater
+price concessions than HFT liquidity demanders when the liquidity provider is an HFT. The
+rejection rates are 33% vs 5% and the average difference is -3.24bp for the full sample, the
+median is -0.39bp. The rejection rates are stronger (45% vs 2%), but the average -1.06bp
+and median -0.30bp differences are smaller in magnitude, when the liquidity provider is a
+non-HFT (lower-left). These patterns hold for the low- and high-coverage quartiles as well,
+as reported in the internet appendix. Non-HFTs pay significantly greater price concessions
+than HFTs when paired with either other HFTs or non-HFTs as liquidity providers.
+The statistics reported on the right side of the table focus on the identity of the liquidity
+provider.
+The identity of the liquidity provider has only a limited association with the
+price concession that HFTs earn when trading as liquidity demanders—rejection rates favor
+negative differences only slightly at 17% versus 11% for the sample as a whole, meaning that
+HFT liquidity demanders capture profit from HFT and non-HFT liquidity providers alike.
+Similarly, when the liquidity demander is a non-HFT, rejection rates favor positive differences
+at only 16% versus 8%, suggesting that non-HFTs pay modestly greater price concessions
+to HFT liquidity providers than to non-HFT liquidity providers, but the difference is weak.
+These results reinforce our conjecture that stale limit orders are not the primary explanation
+for why HFTs capture price concessions when they trade as liquidity demanders, and suggest
+that HFTs and non-HFTs receive similar compensation when providing liquidity to non-HFT
+demanders.
+Summarizing, the ψ estimates tend to be negative for trades initiated by HFTs, regardless
+value for a stock whose price is $30/share or more.
+The current fee and rebate schedule is available online at
+http://nasdaqtrader.com/Trader.aspx?id=PriceListTrading2.
+36
+
+of whether the liquidity provider is an HFT or non-HFT. The estimates tend to be positive
+when HFTs absorb orders initiated by non-HFTs.
+The difference in ψ between trades
+initiated by HFTs versus non-HFTs suggests that HFTs are more adept than non-HFTs at
+targeting aggressively priced orders, regardless of whether the liquidity provider is another
+HFT or a non-HFT. Thus, while the results for κs above suggest that HFTs contribute to
+price discovery to a greater degree than non-HFTs (by initiating trades that inform market
+prices and by offering liquidity to trades that are more informative to market prices), the
+results for ψs suggest that HFTs also profit from initiating trades selectively against orders
+that are aggressively priced. We examine a possible relation between these aspects of HFTs’
+trading further below.
+It is instructive to compare our estimates to those of Brogaard et al. (2014), who estimate
+the HHM model using the same Nasdaq HFT data but with midquotes as the price variable.
+The comparison is approximate since their estimations group trades differently than ours, but
+the broad patterns are informative. Averaging our estimates across liquidity provider types,
+the average κ for HFT liquidity demanders is 11.62bp and for non-HFT liquidity demanders
+is 8.75bp, falling within the range of Brogaard et al.’s medium-stock event-time estimates
+of 11.91bp and 6.69bp. These figures are consistent with the Section 2 argument that κ
+estimates should be similar since both are anchored on the same permanent component. For
+ψ, Brogaard et al. find negative estimates for both HFT and non-HFT liquidity demanders in
+midquotes, consistent with liquidity providers being slow to adjust quotes to the information
+content of trades. Our transaction-price estimates differ by liquidity demander. Our average
+ψ for HFT liquidity demanders is -2.27bp, confirming that HFTs capture profit at the
+transaction level, while our average ψ for non-HFT liquidity demanders is only -0.13bp
+and tends to be positive in many subsamples, especially when the liquidity provider is an
+HFT, meaning non-HFTs pay rather than receive a price concession at execution.
+Cross-sectional regressions in Table 8 confirm that HFTs capture more favorable price
+concessions than non-HFTs for stocks outside the highest quartile of analyst coverage, with
+37
+
+the advantage concentrated in low-coverage stocks, absent for high-coverage stocks, and not
+associated with earnings days or announcement attributes. For trades initiated by HFTs,
+the price concession advantage is larger when non-HFT liquidity providers absorb the trades
+than when HFT liquidity providers do.
+5.3.4
+Trading Volume
+The estimates of parameters κ and ψ are the price impacts per $10,000 traded in a
+given category on a given day. The internet appendix reports means and medians of trading
+volume by day within each counterparty pairing category. The number of transactions and
+transaction sizes are both elevated on the Pre-day and especially so on the Post-day for
+trades initiated by non-HFTs compared to the week-after days. The average total dollar
+volume for the NH and NN pairings on the Post-day is greater than on the WA-Post day by
+factors of 2.01 and 2.02 respectively, and by factors of 1.35 and 1.30 on the Pre-day versus
+the WA-Pre day. Dollar volume initiated by HFTs is also elevated on the Post-day by a
+factor of 1.70 relative to the WA-Post day. The elevated trading volume around earnings
+announcements means that the aggregate economic significance of the κ and ψ differences
+reported above are larger around earnings announcements, and especially on the Post-day,
+by approximately these same factors.
+5.3.5
+Event Study and Temporal Regressions
+The ψ results establish that HFTs earn profit on average per dollar of liquidity demanded.
+The κ results show that HFTs absorb more adverse selection than non-HFTs when they
+provide liquidity. A key consequence of estimating the parameters from transaction prices
+rather than midquotes is that we can ask whether HFTs’ profit is associated with what
+they learn from the adverse selection they absorb as liquidity providers. Several theoretical
+models suggest this possibility, predicting that HFTs process information gleaned from the
+trading environment for use in their own profitable trading (e.g., Biais et al., 2015; Foucault
+et al., 2016; Huang and Yueshen, 2021). We begin with a vivid example.
+All except one of the earnings surprises in our sample range from -29% to 13%. The
+38
+
+exception is the February 24, 2009 earnings announcement of Central European Media
+Enterprises Ltd. (ticker CETV), whose earnings surprise was -145%. The global financial
+crisis decimated TV ad spending by CETV’s clients in late 2008 and early 2009, which
+depressed revenue and earnings, and caused a suspension in company guidance beyond the
+following quarter.16
+Panel A of Figure 1 plots the permanent component of price impact, κ, for three
+counterparty pairings beginning on day -16 and ending on day 36 relative to the CETV
+earnings announcement, which occurs between days 0 and 1. The green line that lies mostly
+below the others is κ for trades in which non-HFTs are both the demander and provider
+of liquidity (NN). The blue line, mostly in the middle, represents transactions in which
+an HFT demands liquidity from a non-HFT liquidity provider (HN). The red line that lies
+mostly above the others is κ for trades initiated by non-HFTs and absorbed by HFT liquidity
+providers (NH). There is economically significant variation in all three lines over this time
+period. Panel B of the same figure plots the temporary component, ψ, for the same set
+of counterparty pairings. On most days, the temporary component associated with trades
+between non-HFTs (in green) is positive, meaning that non-HFTs pay for liquidity provided
+by other non-HFTs. In contrast, the temporary component is often negative for the blue
+and red lines. The red line is large and negative in the approximately 10 days following the
+earnings announcement. When trading as liquidity providers, HFTs were effectively paying
+non-HFTs to take liquidity. Panels A and B together suggest that HFTs were underpricing
+the elevated adverse selection they absorbed from non-HFTs in the days following the
+earnings announcement. The internet appendix plots ψNH with its 95% confidence bands;
+while zero is within the confidence bands for most days, the negative spikes on 10 of the
+days are significantly different from zero.
+In both panels, peaks in the red line appear to precede peaks in the blue line—periods
+in which HFTs absorb a high degree of adverse selection when supplying liquidity to non16See the earnings call transcript at https://seekingalpha.com/article/134262-central-european-media-enterprises-ltd-q1-2009earnings-call-transcript. On March 23, 2009, Time Warner purchased a 31% stake, and by 2013 owned a controlling interest in
+CETV.
+39
+
+HFTs are followed by periods when HFTs impose greater adverse selection in their liquidity
+demanding trades.
+Redeploying information gleaned from trading with others is a way
+for HFTs to benefit from absorbing adverse selection—like a self-made rebate.
+In this
+exceptional case the effect spans multiple calendar days, consistent with the hypothesis
+that HFTs learn from the order flow they absorb as liquidity providers and re-trade on what
+they learn.
+To examine whether this pattern is a general feature of HFT trading around earnings
+announcements, Table 9 reports regressions for the full sample that test whether κNH leads
+ψHN (i.e., “red leads blue”) between the two days that straddle the earnings announcement
+(Pre and Post), and separately between the two corresponding days in the week after the
+announcement (WA Pre and WA Post). Each earnings announcement is represented by a
+single observation in this analysis, so the reason that led us to cluster standard errors by
+earnings announcement in the regressions in Tables 6 and 8 is not present here. However, as
+a clear outlier, the 2/24/2009 earnings announcement of CETV described above is excluded
+from this analysis.
+We consider the “normal” pair of days in the week after announcements first. Column
+(1) in Table 9 examines whether ψHN on the WA-Post day is related to κNH on the WA-Pre
+day. The ψHN on the WA-Pre day is included as a control to account for persistence in
+ψHN. The estimates indicate very strong and significant persistence, with a coefficient of
+0.76. The coefficient on the WA-Pre day κNH is negative and significant, implying that
+HFTs profit more (i.e., ψHN is lower) on days following those in which they absorb greater
+adverse selection (i.e., “red leads blue”). The adjusted R2 is 0.53.
+The regression in column (2) adds κHH on the WA-Pre day as a regressor to account
+for learning from trades absorbed from other HFTs.
+We also include κNH and κHH on
+the WA-Post day itself to capture the contemporaneous re-use of information gleaned from
+informative trades on the same day. Persistence in ψHN is again strong in this regression, with
+a coefficient of 0.68. However, the coefficient on the WA-Pre day κNH that was significant
+40
+
+in column (1) is not significant here. Instead, the contemporaneous κHH is negative and
+significant, and larger in magnitude than the coefficient on κNH in column (1).
+After
+accounting for persistence, the significant incremental contribution to profitable liquidity
+demanding trades by HFTs on the WA-Post day comes from informative trades absorbed
+from other HFTs on the same day. The significant coefficient in column (1) and the similarity
+of the adjusted R2 at 0.60 suggests that the WA-Pre day κNH is acting as a proxy for, and
+is perhaps a determinant of, κHH on the WA-Post day.
+The insignificance of the intercept suggests that after accounting for persistence, the
+incremental profitability of liquidity-demanding trades would trend toward zero were it not
+for information gleaned from trades with other HFTs (i.e., without positive κHH on the WAPost day). Thus, on average across the WA day pairs, absorbing adverse selection from other
+HFTs is essential to HFTs profiting from their liquidity demanding trades. These findings
+are consistent with the hypothesis that, on “normal” days, HFTs profit from the reuse of
+information gleaned mostly from their trading with other HFTs.
+Columns (3) and (4) report the same regressions for the days on either side of earnings
+announcements, and the results differ from the week-after findings in an interesting way. In
+column (3), the coefficient on κNH is negative and highly significant, and it remains so in
+column (4) after adding the other κ regressors—i.e., “red leads blue” strongly in the two days
+around earnings announcements. In fact, all the κ coefficients are negative and significant
+except the contemporaneous κHH, and the largest in magnitude are those relating to trades
+absorbed from non-HFTs. The trades that HFTs absorb from non-HFTs on both the Pre
+and Post days contribute most to the profitability of their liquidity demanding trades on the
+Post-day, with trades absorbed from other HFTs on the Pre-day contributing as well but to
+a lesser degree. Thus, around earnings announcements, the source of profitable information
+for HFTs shifts toward the trades they absorb from non-HFTs, in contrast to the week-after
+days where trading with other HFTs dominates.
+Despite these stronger regression relations, the results around earnings announcements
+41
+
+are less statistically reliable than those for the week-after days. The adjusted R2 in the
+column (4) regression is only 0.23 versus 0.60 for the WA days.
+Unlike the WA days, there is negative persistence in ψHN from the Pre to the Post day,
+which is highly significant. This means that Post days with the most profitable liquidity
+demanding HFT trades (controlling for the other price impacts) follow Pre days having the
+least profitable liquidity demanding trades. HFTs are informed and profit most after days
+of initiating trades that profit least. We do not have a simple explanation for this finding,
+though the contrast with the strong positive persistence on the “normal” WA days suggests
+that earnings announcements disrupt the dynamics of HFT learning and profitability.
+Taken together, the results in Table 9 lend support to the hypothesis that HFTs profit
+in their liquidity demanding trades for having learned from the adverse selection they absorb
+when providing liquidity. Hirschey (2021) shows that HFTs’ liquidity demanding trades lead
+those of non-HFTs. The learning channel documented here offers a possible explanation for
+how HFTs come to anticipate non-HFT order flow.
+Interestingly, the counterparties from whom HFTs learn are different around earnings
+announcements than in the week after. Around earnings announcements, the important
+source of the information tends to be trades initiated by non-HFTs, whereas trades initiated
+by other HFTs are important on the “normal” week-after days.
+Of course, the regressions document associations rather than causal relations. It could
+be that greater profits from liquidity demanding trades follow directly from losses when
+providing liquidity; or it could be that some feature of the information environment leads
+HFTs to (rationally) believe that there are greater gains to be had demanding liquidity
+after learning more, which then leads HFTs to tolerate greater risk of loss in liquidity
+provision.
+Either way, what the regressions establish is that periods of greater adverse
+selection absorbed by HFTs as liquidity providers are associated with greater profits from
+their liquidity demanding trades, regardless of the channel through which this association
+arises.
+42
+
+6
+Conclusion
+We provide a simple approach to estimating price impact and its components based on
+a model attributable to Hasbrouck (1991a, 1991b, 1993) and Hendershott and Menkveld
+(2014) that is rather general and descriptive of many securities market settings.
+The
+approach handles situations in which transactions are categorized by trader type, order type,
+trading platform, or trade routing, estimating temporary and permanent components for all
+categories jointly in a consistent framework with hypothesis testing via the delta method. It
+requires no distributional assumptions, avoids the Normality failures that cause state space
+estimation to break down with transaction price data, and is fast enough for large-scale
+applications while performing well relative to a full-information GMM benchmark.
+We illustrate the approach using millisecond-level Nasdaq data with trades categorized
+by counterparty pairings between HFTs and non-HFTs—the kind of analysis that regulators
+and market operators could conduct with proprietary data that identifies categories of trades
+in various ways. We find that HFTs capture rather than pay concessions in their liquidity
+demanding trades, and these wealth transfers are related in the cross-section to the adverse
+selection HFTs absorb as liquidity providers, consistent with absorbing adverse selection
+being a learning opportunity that supports profitable subsequent trade initiations.
+Two natural extensions are worth highlighting for future research. First, the approach in
+Proposition 1 accommodates nonlinear price impact simply by including higher-order terms
+in the xt vector, which could be used to test whether price impact is convex in order size
+and whether the illiquidity of entering and exiting large positions carries a return premium.
+Second, because OLS estimation is fast, the approach is well suited for generating illiquidity
+estimates from intraday data for large panels of securities for use in asset pricing tests.
+Comparing permanent, temporary, and total price impact as competing illiquidity measures,
+and examining whether the finer decomposition enabled by the HHM model improves on
+simpler constructs, seems a particularly fruitful avenue for future research.
+43
+
+Appendix A: Proofs and Additional Equations
+Proof of Proposition 1: To simplify notation, the proof considers the case in which st follows an ARMA(2,1)
+plus ψ′xt. This case is sufficient to infer the implications for a general ARMA(p, q). In the ARMA(2,1) case,
+Equations (6) -(8) in the text are:
+st = ϕ1st−1 + ϕ2st−2 + ψ′xt + ηt + θηt−1
+(18)
+mt = mt−1 + κ′ϵt + ξt
+(19)
+pt = mt + st,
+(20)
+where xt and ϵt are (k × 1) vectors. Writing these equations in first differences yields
+dst = ϕ1 dst−1 + ϕ2 dst−2 + ψ′dxt + ηt −(1 −θ)ηt−1 −θηt−2
+(21)
+dmt = κ′ϵt + ξt
+(22)
+dpt = κ′ϵt + dst + ξt,
+(23)
+where dxt ≡xt−xt−1 and where we have substituted from Equation (22) for the dmt term into Equation (23).
+Next, we substitute for lags of dst in terms of observables. Lagging Equation (23) by one, then by two, and
+multiplying by the corresponding ϕj yields
+ϕ1dst−1 = ϕ1 dpt−1 −ϕ1 κ′ϵt−1 −ϕ1 ξt−1
+(24)
+ϕ2dst−2 = ϕ2 dpt−2 −ϕ2 κ′ϵt−2 −ϕ2 ξt−2.
+(25)
+Substituting these into Equation (21) yields
+dst = ϕ1dpt−1 + ϕ2dpt−2 −ϕ1κ′ϵt−1 −ϕ2κ′ϵt−2 −ϕ1ξt−1 −ϕ2ξt−2 + ψ′dxt + ηt −(1 −θ)ηt−1 −θηt−2. (26)
+Substituting this into Equation (23) yields
+dpt = ϕ1 dpt−1 + ϕ2 dpt−2 + ψ′dxt + κ′(ϵt −ϕ1ϵt−1 −ϕ2ϵt−2) + η∗
+t ,
+(27)
+where η∗
+t = (ξt + ηt) −(ϕ1ξt−1 + (1 −θ)ηt−1) −(ϕ2ξt−2 + θηt−2) is an AR(2) disturbance. In general, if st
+follows an ARMA(p,q) process, then η∗
+t is autoregressive of order max{p, q}. Mutual uncorrelatedness of ξ,
+η and ϵ at all lags implies that η∗
+t is uncorrelated with ϵt at all lags as well.
+44
+
+Using the VAR model, Equation (5), we write
+ϵt −ϕ1ϵt−1 −ϕ2ϵt−2 =
+ 
+xt −
+n
+X
+s=1
+Bsxt−s
+!
+−ϕ1
+ 
+xt−1 −
+n
+X
+s=1
+Bsxt−s−1
+!
+−ϕ2
+ 
+xt−2 −
+n
+X
+s=1
+Bsxt−s−2
+!
+(28)
+= xt −(ϕ1Ik + B1)xt−1 −(ϕ2Ik + B2 −ϕ1B1)xt−2
+−
+n
+X
+s=3
+(Bs −ϕ1Bs−1 −ϕ2Bs−2)xt−s
++ (ϕ1Bn + ϕ2Bn−1)xt−n−1 + ϕ2Bnxt−n−2,
+(29)
+where Ik is the k × k identity matrix. Substituting Equation (29) into Equation (27) yields
+dpt = ϕ1 dpt−1 + ϕ2dpt−2 + ψ′(xt −xt−1) + κ′
+
+xt −(ϕ1Ik + B1)xt−1 −(ϕ2Ik + B2 −ϕ1B1)xt−2
+−
+n
+X
+s=3
+(Bs −ϕ1Bs−1 −ϕ2Bs−2)xt−s + (ϕ1Bn + ϕ2Bn−1)xt−n−1 + ϕ2Bnxt−n−2
+
++ η∗
+t
+(30)
+= ϕ1 dpt−1 + (ψ′ + κ′)xt −[ψ′ + κ′(ϕ1Ik + B1)] xt−1
++ ϕ2 dpt−2 −κ′(ϕ2Ik + B2 −ϕ1B1)xt−2 −
+n
+X
+s=3
+κ′(Bs −ϕ1Bs−1 −ϕ2Bs−2)xt−s
++ κ′(ϕ1Bn + ϕ2Bn−1)xt−n−1 + ϕ2κ′Bnxt−n−2 + η∗
+t .
+(31)
+It is clear from inspection that the highest-order lags of dp and x on the right-hand side of Equation (31)
+are determined as p and n + p, respectively, where p is the AR order of the ARMA specification for st and
+n is the lag order of the VAR.
+The rest of the proof involves matching the coefficients in Equation (12) in the text and Equation (31)
+here. Matching the first terms of both equations yields ϕ1 = a1. Matching the second and third terms
+yields
+C′ = ψ′ + κ′
+(32)
+D′
+1 = −ψ′ −ϕ1κ′ −κ′B1 = −ψ′ −a1κ′ −κ′B1,
+(33)
+which imply that ψ′ = C′ −κ′, and therefore
+D′
+1 = κ′ −C′ −a1κ′ −κ′B1
+(34)
+D′
+1 + C′ = κ′[(1 −a1)Ik −B1]
+(35)
+κ′ = (D′
+1 + C′)[(1 −a1)Ik −B1]−1,
+(36)
+and
+ψ′ = C′ −(D′
+1 + C′)[(1 −a1)Ik −B1]−1.
+(37)
+45
+
+Finally, noting that ut = η∗
+t establishes that ut is autoregressive of order max{p, q + 1} and uncorrelated
+with ϵt at all lags. □
+Additional Equations: When the individual elements of xt are not observable to market participants, the
+equation for price dynamics in Equation (31) is modified as follows:
+dpt = ϕ1 dpt−1 + (ψ′ + κ′)xt −[ψ′ + κ′(ϕ1 + b1)] xt−1
++ ϕ2 dpt−2 −ˆκ(ϕ2 + b2 −ϕ1b1)ˆxt−2 −
+n
+X
+s=3
+ˆκ(bs −ϕ1bs−1 −ϕ2bs−2)ˆxt−s
++ ˆκ(ϕ1bn + ϕ2bn−1)ˆxt−n−1 + ϕ2ˆκbnˆxt−n−2 + η∗
+t .
+(38)
+If st = ϕ1st−1 + ψ′xt + ηt then the disturbance to the regression in Proposition 1 (denoted in the proof
+by η∗
+t ) given by
+ut = (ξt + ηt) −(ϕ1ξt−1 + ηt−1),
+(39)
+whose variance and first-order serial covariance are
+Var[ut] = (1 + ϕ2
+1)σ2
+ξ + 2σ2
+η
+(40)
+Cov[ut, ut−1] = −ϕ1σ2
+ξ −σ2
+η.
+(41)
+Solving for σ2
+η and σ2
+ξ yields:
+σ2
+η = ϕ1Var[ut] + (1 + ϕ1) Cov[ut, ut−1]
+2ϕ1 −(1 + ϕ2
+1)
+(42)
+σ2
+ξ = Var[ut] −2σ2
+η
+1 + ϕ2
+1
+.
+(43)
+These formulas can be used to estimate σ2
+η and σ2
+ξ based on moments of the regression residuals and the
+regression estimate of ϕ1 (i.e., a1 in Proposition 1).
+46
+
+Table 1: Summary Statistics
+The table reports summary statistics for all four stock days defined in the paper (i.e., Pre, Post, WA-Pre and WA-Post) for 823 earnings
+announcements from 120 distinct stocks in our sample that spans 2008-2009. Each row corresponds to a statistic that is computed from
+Nasdaq daytime trading hours for each stock-day. For each row, the numbers reported across the columns correspond to the distribution of
+the statistic across stock-days. Statistics include the dollar volume of transactions within each counterparty pairing: HH, HN, NH, and NN,
+where H represents HFT and N represents non-HFTs. The first letter identifies the liquidity demander and the second letter identifies the
+liquidity provider. Also included are statistics on the transaction returns, the number of transactions by counterparty pairing, equity market
+capitalization at the end of December 2007, and analyst coverage taken from I/B/E/S.
+Median
+Mean
+Standard deviation
+1st percentile
+25th percentile
+75th percentile
+99th percentile
+Dollar volume HH ($)
+761,782
+15,948,604
+54,888,290
+6,753
+109,326
+11,722,029
+241,017,598
+Dollar volume HN
+4,043,612
+29,415,150
+96,184,331
+41,269
+847,259
+24,731,626
+467,411,748
+Dollar volume NH
+1,856,180
+29,676,621
+91,006,027
+23,888
+292,077
+21,581,772
+408,913,358
+Dollar volume NN
+7,016,318
+36,589,210
+103,331,394
+161,090
+1,705,066
+32,708,586
+475,522,937
+Dollar volume All
+13,857,100
+111,629,585
+332,655,730
+265,547
+3,266,132
+95,893,555
+1,612,497,009
+Number of transactions HH
+298
+1,542
+3,131
+10
+49
+1,890
+13,442
+Number of transactions HN
+1,026
+2,407
+3,630
+42
+303
+3,237
+16,879
+Number of transactions NH
+562
+2,036
+3,720
+18
+121
+2,510
+16,308
+Number of transactions NN
+1,350
+2,516
+3,280
+102
+573
+3,289
+15,677
+Number of transactions All
+3,362
+8,500
+13,166
+242
+1,119
+11,286
+60,840
+Mean transaction return
+0.000%
+0.000%
+0.005%
+-0.015%
+0.000%
+0.001%
+0.015%
+Median transaction return
+0.000%
+0.000%
+0.000%
+0.000%
+0.000%
+0.000%
+0.000%
+Std. dev. of transaction returns
+0.062%
+0.092%
+0.103%
+0.012%
+0.029%
+0.117%
+0.422%
+Mean absolute transaction return
+0.031%
+0.045%
+0.045%
+0.006%
+0.014%
+0.059%
+0.204%
+Median absolute transaction return
+0.000%
+0.018%
+0.031%
+0.000%
+0.000%
+0.027%
+0.148%
+Std. dev. of absolute transaction returns
+0.053%
+0.079%
+0.093%
+0.010%
+0.025%
+0.101%
+0.391%
+Market capitalization (millions $)
+2,579
+27,530
+56,574
+218
+1,442
+29,339
+324,786
+Number of Analysts
+11.00
+12.60
+7.79
+0.00
+7.00
+18.00
+34.00
+
+Table 2: State Space Estimation Results: Focused Diagnostic Experiments
+The table reports state space estimation outcomes for five stock-days selected from cases in which the state space estimator failed
+on the full data (non-convergence, ˆϕ1 = 0.99, or hessian singluar). The state space model is estimated by maximum likelihood
+using the Kalman filter. The parameter ϕ1 governs persistence of the temporary component st; values near unity indicate
+failure to distinguish the stationary and permanent components. “Valid” indicates that the estimation produced parameter
+estimates and valid standard errors.
+Stock-Day
+Experiment
+Outcome
+S1
+S2
+S3
+S4
+S5
+Panel A: Real Data
+Real data, OLS starting values
+Valid
+Nob
+Yes
+Noc
+Yes
+Yes
+ˆϕ1
+0.99
+0.99
+−0.31
+0.99
+0.99
+Real data, zero starting values
+Valid
+Yes
+Yes
+Yes
+Yes
+Yes
+ˆϕ1
+0.99
+0.99
+0.99
+0.99
+0.99
+Panel B: Semi-Simulation (real trades xt, simulated Normal disturbances)
+Semi-simulation, zero starting values
+Valid
+Yes
+Yes
+Yes
+Yes
+Yes
+ˆϕ1
+0.99
+0.99
+−0.098a
+0.99
+0.99
+Semi-simulation, OLS starting values
+Valid
+Yes
+Yes
+Yes
+Yes
+Yes
+ˆϕ1
+−0.074
+−0.125
+−0.011
+−0.032
+−0.072
+(s.e.)
+(0.001)
+(0.001)
+(0.001)
+(0.003)
+(0.001)
+Panel C: Monte Carlo (all variables simulated with Normal distributions)
+Monte Carlo, Normal disturbances
+Valid
+Yes
+Yes
+Yes
+Yes
+Yes
+ˆϕ1 ≈input
+Yes
+Yes
+Yes
+Yes
+Yes
+Panel D: Rank-Transformed Data (univariate Normal marginals)
+Rank-transformed, OLS starting values
+Valid
+Yes
+Yes
+Yes
+Yes
+Yes
+ˆϕ1
+0.639
+−0.255
+0.973
+0.089
+0.177
+(s.e.)
+(0.118)
+(0.032)
+(986)
+(0.012)
+(0.124)
+a Standard error = 0.131.
+b Estimation converged but the Hessian is singular, preventing computation of standard errors. ˆϕ1 = 0.99 indicates
+failure to identify the temporary component.
+c Estimation converged but the Hessian is singular, preventing computation of standard errors. Unlike S1, ˆϕ1 = −0.31
+is a reasonable value, suggesting the likelihood surface is flat in the neighborhood of a valid solution rather than at a
+boundary.
+48
+
+Table 3: GMM vs State Space and OLS
+The HHM model is estimated for each security-day in five different ways. The rows under each parameter
+heading correspond to the estimation approach. Average and median estimates and rejection rates computed
+under each approach appear in columns on the left. Rejection rates correspond to the null hypothesis that
+the parameter is equal to zero. Columns to the right compare the state space (SS) and OLS approaches to
+GMM by reporting percentages of security-days for which the inference of the SS or OLS-based approach
+matches those of GMM. Also reported are root-mean-squared differences and root-median-squared differences
+between the SS or OLS-based estimate and the GMM estimate. Panel A reports results for the SS estimator
+and GMM for a subset of 55 stock-days. To be included in this subset, a stock-day must (i) have a valid SS
+estimate (i.e., the numerical maximization converged), and (ii) have an SS estimate of ˆϕ1 that is strictly less
+than 0.99 when rounded to two decimal places. The 0.99 threshold is the upper bound imposed on ϕ1 in the
+SS estimation; stock-days hitting this bound are excluded because the estimate is constrained rather than
+interior. Panels B–D report results comparing three OLS-based approaches to GMM for the full sample of
+3047 stock-days. All models are estimated with n = 7 lags. Note that the large percentages for SS and the
+small percentages reported for all OLS methods for κNN in matching GMM when the GMM estimate is less
+than zero reflects only a few security-days. Very few days have negative GMM estimates for any of the four
+κ parameters.
+Panel A - State Space (SS) vs GMM: 55 stock-days with valid SS and GMM estimates and ˆϕ1 < 0.99
+% rej>0
+% rej<0
+ave
+median
+% match GMM>0
+% match GMM<0
+RMSE
+RMedSE
+Phi 1
+GMM
+2%
+80%
+-0.12
+-0.12
+SS
+16%
+2%
+0.07
+-0.08
+66.7%
+13.5%
+0.41
+0.02
+Kappa HH
+GMM
+89%
+2%
+2.41
+0.59
+SS
+5%
+4%
+1.54
+0.45
+9.8%
+75.0%
+8.37
+0.13
+Kappa HN
+GMM
+91%
+0%
+1.87
+0.24
+SS
+7%
+0%
+0.79
+0.16
+13.2%
+100%a
+4.29
+0.04
+Kappa NH
+GMM
+89%
+0%
+2.64
+0.50
+SS
+9%
+0%
+1.43
+0.37
+13.7%
+100%a
+8.66
+0.04
+Kappa NN
+GMM
+96%
+0%
+2.85
+0.24
+SS
+5%
+0%
+0.49
+0.11
+9.1%
+nab
+7.32
+0.05
+Psi HH
+GMM
+5%
+51%
+-0.65
+-0.12
+SS
+5%
+4%
+-0.40
+-0.07
+66.7%
+39.1%
+4.33
+0.04
+Psi HN
+GMM
+2%
+62%
+-0.61
+-0.06
+SS
+0%
+2%
+-0.88
+0.00
+90.0%
+22.2%
+3.67
+0.02
+Psi NH
+GMM
+18%
+15%
+0.29
+0.00
+SS
+4%
+4%
+0.38
+0.00
+63.0%
+64.3%
+4.88
+0.02
+Psi NN
+GMM
+7%
+11%
+-0.38
+0.00
+SS
+4%
+0%
+-0.05
+0.00
+82.1%
+74.1%
+3.35
+0.01
+a The 100% match rate is a small-sample artifact (2 and 4 observations respectively) where the GMM
+estimate is negative. In every such instance neither estimator produces a significant result.
+b No GMM estimates are negative for Kappa NN in this subsample.
+49
+
+Table 3 (continued): GMM vs State Space and OLS
+Panel B - ϕ1
+% rej>0
+% rej<0
+ave
+median
+% match GMM>0
+% match GMM<0
+RMSE
+RMedSE
+Phi 1
+GMM
+1.5%
+64%
+-0.10
+-0.10
+OLS Prop
+0.9%
+64%
+-0.11
+-0.10
+86%
+92%
+0.03
+0.004
+OLS resid
+0.9%
+65%
+-0.11
+-0.11
+86%
+92%
+0.04
+0.005
+OLS zero
+1.2%
+62%
+-0.11
+-0.10
+82%
+86%
+0.03
+0.004
+Panel C - Kappas
+% rej>0
+% rej<0
+ave
+median
+% match GMM>0
+% match GMM<0
+RMSE
+RMedSE
+Kappa HH
+GMM
+68%
+0.5%
+14.85
+2.29
+OLS Prop
+68%
+0.3%
+14.74
+2.39
+95%
+94%
+13.99
+0.04
+OLS resid
+69%
+0.3%
+13.67
+2.31
+93%
+92%
+22.21
+0.11
+OLS zero
+68%
+0.3%
+13.43
+1.98
+94%
+93%
+39.04
+0.21
+Kappa HN
+GMM
+85%
+0.1%
+8.96
+1.59
+OLS Prop
+85%
+0.03%
+8.49
+1.59
+94%
+83%
+13.16
+0.02
+OLS resid
+83%
+0.1%
+8.68
+1.67
+92%
+80%
+14.58
+0.05
+OLS zero
+88%
+0.03%
+7.36
+1.44
+93%
+69%
+13.31
+0.09
+Kappa NH
+GMM
+76%
+0.3%
+10.84
+1.99
+OLS Prop
+76%
+0.3%
+11.24
+2.08
+94%
+88%
+14.24
+0.04
+OLS resid
+77%
+0.2%
+10.69
+1.99
+92%
+87%
+15.42
+0.08
+OLS zero
+75%
+0.2%
+9.81
+1.77
+93%
+88%
+15.30
+0.17
+Kappa NN
+GMM
+92%
+0.1%
+7.13
+1.43
+OLS Prop
+90%
+0.03%
+6.25
+1.38
+94%
+33%
+16.66
+0.03
+OLS resid
+91%
+0.03%
+6.42
+1.41
+95%
+27%
+17.42
+0.04
+OLS zero
+92%
+0.03%
+5.43
+1.22
+94%
+27%
+16.90
+0.06
+50
+
+Table 3 (continued): GMM vs State Space and OLS
+Panel D - Psis
+% rej>0
+% rej<0
+ave
+median
+% match GMM>0
+% match GMM<0
+RMSE
+RMedSE
+Psi HH
+GMM
+8.2%
+35%
+-4.66
+-0.37
+OLS Prop
+7.7%
+33%
+-4.11
+-0.35
+95%
+93%
+12.58
+0.03
+OLS resid
+7.8%
+32%
+-3.29
+-0.32
+90%
+87%
+18.77
+0.10
+OLS zero
+13%
+24%
+-2.33
+-0.13
+82%
+81%
+37.29
+0.21
+Psi HN
+GMM
+2.0%
+56%
+-2.65
+-0.32
+OLS Prop
+2.0%
+53%
+-2.16
+-0.31
+92%
+92%
+11.40
+0.02
+OLS resid
+1.4%
+52%
+-2.34
+-0.36
+89%
+87%
+12.51
+0.04
+OLS zero
+3.7%
+44%
+-0.84
+-0.18
+80%
+78%
+12.31
+0.09
+Psi NH
+GMM
+20%
+12%
+-0.86
+0.02
+OLS Prop
+20%
+11%
+-0.20
+0.02
+92%
+92%
+15.09
+0.02
+OLS resid
+25%
+8.4%
+0.38
+0.04
+83%
+86%
+16.96
+0.07
+OLS zero
+40%
+3.7%
+1.94
+0.18
+69%
+72%
+16.65
+0.17
+Psi NN
+GMM
+14%
+14%
+-1.35
+-0.001
+OLS Prop
+12%
+10%
+-0.37
+0.001
+90%
+88%
+16.11
+0.01
+OLS resid
+11%
+9.9%
+-0.53
+0.001
+86%
+84%
+17.19
+0.02
+OLS zero
+30%
+6.3%
+0.54
+0.06
+66%
+78%
+17.17
+0.06
+51
+
+Table 4: Phi Parameter Estimates and AIC Autoregression Order
+The HHM model is estimated for each security-day in the sample. Panel A reports average and median
+estimates of ϕ1 by day in proximity to the earnings announcement (Pre and Post bracket the announcement,
+WA Pre and WA Post are the week after). Also reported are rejection rates for security-day hypothesis
+tests of ϕ1 = 0, where the > 0 and < 0 columns report the percentage of days with rejections in which the
+parameter estimate is positive and negative, respectively. Numbers in the row labeled ALL are computed
+using all security-days. Panels B and C report the same statistics for the subsamples of stocks in the lowest
+and highest quartiles by analyst coverage, respectively. Panel D reports statistics for the distribution of
+auto-regression lag orders selected by the AIC for the full sample and for the low and high quartiles of
+analyst coverage.
+Panel A: Full Sample
+% rej >0
+% rej <0
+ave
+median
+Pre
+1%
+63%
+-0.10
+-0.10
+Post
+1%
+68%
+-0.12
+-0.11
+WA Pre
+1%
+64%
+-0.11
+-0.10
+WA Post
+1%
+62%
+-0.11
+-0.10
+ALL
+1%
+64%
+-0.11
+-0.10
+Panel B: Low Coverage Quartile
+% rej >0
+% rej <0
+ave
+median
+Pre
+1%
+40%
+-0.08
+-0.07
+Post
+3%
+45%
+-0.09
+-0.09
+WA Pre
+1%
+42%
+-0.09
+-0.08
+WA Post
+1%
+41%
+-0.08
+-0.08
+ALL
+2%
+42%
+-0.09
+-0.08
+Panel C: High Coverage Quartile
+% rej >0
+% rej <0
+ave
+median
+Pre
+1%
+89%
+-0.14
+-0.13
+Post
+0%
+96%
+-0.16
+-0.15
+WA Pre
+1%
+89%
+-0.15
+-0.13
+WA Post
+0%
+88%
+-0.15
+-0.14
+ALL
+0%
+91%
+-0.15
+-0.14
+Panel D: AIC Autoregression Order
+ave
+median
+25th %tile
+75th %tile
+Full Sample
+10.4
+8
+4
+17
+Low Coverage Quartile
+6.3
+4
+2
+8
+High Coverage Quartile
+15.6
+16
+10
+22
+52
+
+Table 5: Kappa Estimates and Differences
+The HHM model parameters are estimated jointly for each security-day in the sample. Reported for the full
+sample are average and median estimates of the κs and selected κ differences for all counterparty pairings by
+day in proximity to the earnings announcement (Pre and Post bracket the announcement, WA Pre and WA
+Post are the week after). Particular counterparty pairings are identified by HH, HN, NH, and NN, where e.g.,
+HN indicates that an HFT takes liquidity from a non-HFT. Also reported are rejection rates for security-day
+hypothesis tests of κxy = 0 and κxy −κwz = 0, where the > 0 and < 0 columns report the percentage
+of days with rejections in which the parameter estimate or difference is positive and negative, respectively.
+Numbers in the row labeled ALL are computed using all security-days. The internet appendix reports the
+same statistics for the subsamples of stocks in the lowest and highest quartiles by analyst coverage.
+Full Sample
+Estimates
+Kappa HH
+% rej >0
+% rej <0
+ave
+median
+Kappa NH
+% rej >0
+% rej <0
+ave
+median
+Pre
+68%
+0%
+17.72
+2.37
+Pre
+75%
+0%
+11.02
+2.05
+Post
+66%
+0%
+14.76
+2.68
+Post
+81%
+0%
+13.39
+3.32
+WA Pre
+68%
+0%
+12.01
+2.08
+WA Pre
+71%
+1%
+10.92
+1.72
+WA Post
+69%
+0%
+13.65
+2.27
+WA Post
+73%
+0%
+10.43
+1.62
+ALL
+68%
+0%
+14.55
+2.35
+ALL
+75%
+0%
+11.49
+2.09
+Kappa HN
+% rej >0
+% rej <0
+ave
+median
+Kappa NN
+% rej >0
+% rej <0
+ave
+median
+Pre
+85%
+0%
+9.21
+1.65
+Pre
+90%
+0%
+6.15
+1.33
+Post
+84%
+0%
+10.03
+1.75
+Post
+91%
+0%
+7.96
+1.39
+WA Pre
+85%
+0%
+7.45
+1.44
+WA Pre
+92%
+0%
+5.89
+1.39
+WA Post
+85%
+0%
+8.68
+1.55
+WA Post
+89%
+0%
+5.38
+1.41
+ALL
+85%
+0%
+8.88
+1.59
+ALL
+90%
+0%
+6.39
+1.39
+Differences
+KappaHH −KappaNH
+% rej >0
+% rej <0
+ave
+median
+KappaHH −KappaHN
+% rej >0
+% rej <0
+ave
+median
+Pre
+23%
+4%
+6.70
+0.20
+Pre
+42%
+3%
+8.51
+0.65
+Post
+20%
+6%
+1.37
+0.08
+Post
+46%
+2%
+4.72
+0.73
+WA Pre
+22%
+5%
+1.09
+0.16
+WA Pre
+38%
+3%
+4.55
+0.52
+WA Post
+22%
+4%
+3.21
+0.21
+WA Post
+40%
+2%
+4.96
+0.49
+ALL
+22%
+5%
+3.06
+0.16
+ALL
+42%
+2%
+5.67
+0.61
+KappaHN −KappaNN
+% rej >0
+% rej <0
+ave
+median
+KappaNH −KappaNN
+% rej >0
+% rej <0
+ave
+median
+Pre
+25%
+6%
+3.06
+0.12
+Pre
+44%
+4%
+4.87
+0.56
+Post
+24%
+6%
+2.07
+0.10
+Post
+58%
+2%
+5.43
+1.05
+WA Pre
+22%
+8%
+1.57
+0.11
+WA Pre
+39%
+4%
+5.03
+0.36
+WA Post
+23%
+6%
+3.30
+0.09
+WA Post
+41%
+4%
+5.05
+0.40
+ALL
+23%
+7%
+2.49
+0.11
+ALL
+46%
+4%
+5.11
+0.56
+53
+
+Table 6: Regressions - Kappa Parameter Differences
+Differences between κs of selected counterparty pairings for each security-day are regressed on day and coverage dummies and attributes of the
+earnings announcement associated with each κ difference. Particular counterparty pairings are identified by HH, HN, NH, and NN, where e.g.,
+HN indicates that an HFT takes liquidity from a non-HFT. Each earnings announcement contributes up to four security-days to the sample.
+Standard errors are clustered by earnings announcement.
+(1)
+(2)
+(3)
+(4)
+(5)
+(6)
+Kappa NH-NN
+Kappa NH-NN
+Kappa NH-NN
+Kappa HH-HN
+Kappa HH-HN
+Kappa HH-HN
+Lowest Quartile Analyst Coverage=1
+3.84∗∗
+4.745∗∗∗
+4.769∗∗∗
+.8264
+5.334
+5.363
+(2.26)
+(2.61)
+(2.62)
+(0.17)
+(1.15)
+(1.15)
+Highest Quartile Analyst Coverage=1
+-4.451∗∗∗
+-3.072∗∗∗
+-3.063∗∗∗
+-6.405∗∗∗
+-3.376∗∗∗
+-3.365∗∗∗
+(-6.46)
+(-4.72)
+(-4.69)
+(-4.53)
+(-3.35)
+(-3.32)
+Pre Day=1
+.01509
+.5743
+.02963
+3.818
+2.364
+1.012
+(0.01)
+(0.48)
+(0.03)
+(1.28)
+(0.92)
+(0.41)
+Post Day=1
+.2787
+1.246
+1.463
+-.08203
+1.427
+1.963
+(0.18)
+(0.87)
+(1.03)
+(-0.02)
+(0.38)
+(0.51)
+Abs(Earning Surprise)
+141.2∗∗∗
+167.0∗∗
+267.7
+264.6
+(2.62)
+(2.07)
+(1.52)
+(0.90)
+Abs(Analyst Dispersion)
+53.15
+23.04
+43.79
+17.89
+(1.23)
+(0.41)
+(0.46)
+(0.13)
+Pre Day=1 × Abs(Earning Surprise)
+49.66
+152.4
+(0.42)
+(0.76)
+Post Day=1 × Abs(Earning Surprise)
+-137.3
+-123.5
+(-1.17)
+(-0.34)
+Pre Day=1 × Abs(Analyst Dispersion)
+38.64
+74.29
+(0.51)
+(0.41)
+Post Day=1 × Abs(Analyst Dispersion)
+71.59
+20.18
+(0.90)
+(0.11)
+Constant
+4.839∗∗∗
+2.674∗∗∗
+2.75∗∗∗
+5.981∗∗∗
+2.364
+2.559
+(5.15)
+(2.98)
+(3.10)
+(3.24)
+(1.41)
+(1.52)
+Const + Low Covg Coeff
+8.679∗∗∗
+7.419∗∗∗
+7.519∗∗∗
+6.8074
+7.698
+7.922∗
+Const + High Covg Coeff
+0.388
+-0.398
+-0.313
+-0.424
+-1.012
+-0.806
+Observations
+3042
+2823
+2823
+3042
+2823
+2823
+R2
+0.010
+0.023
+0.025
+0.002
+0.008
+0.009
+t statistics in parentheses
+∗p < .1, ∗∗p < .05, ∗∗∗p < .01
+54
+
+Table 7: Psi Estimates and Differences
+The HHM model parameters are estimated jointly for each security-day in the sample. Reported for the full
+sample are average and median estimates of the ψs and selected ψ differences for all counterparty pairings by
+day in proximity to the earnings announcement (Pre and Post bracket the announcement, WA Pre and WA
+Post are the week after). Particular counterparty pairings are identified by HH, HN, NH, and NN, where e.g.,
+HN indicates that an HFT takes liquidity from a non-HFT. Also reported are rejection rates for security-day
+hypothesis tests of ψxy = 0 and ψxy −ψwz = 0, where the > 0 and < 0 columns report the percentage
+of days with rejections in which the parameter estimate or difference is positive and negative, respectively.
+Numbers in the row labeled ALL are computed using all security-days. The internet appendix reports the
+same statistics for the subsamples of stocks in the lowest and highest quartiles by analyst coverage.
+Full Sample
+Estimates
+Psi HH
+% rej >0
+% rej <0
+ave
+median
+Psi NH
+% rej >0
+% rej <0
+ave
+median
+Pre
+6%
+37%
+-8.73
+-0.46
+Pre
+17%
+14%
+0.04
+0.01
+Post
+12%
+24%
+0.17
+-0.16
+Post
+20%
+13%
+0.59
+0.02
+WA Pre
+7%
+36%
+-3.05
+-0.45
+WA Pre
+21%
+8%
+-0.63
+0.02
+WA Post
+6%
+37%
+-0.55
+-0.39
+WA Post
+23%
+8%
+1.06
+0.03
+ALL
+8%
+33%
+-2.96
+-0.35
+ALL
+20%
+11%
+0.27
+0.02
+Psi HN
+% rej >0
+% rej <0
+ave
+median
+Psi NN
+% rej >0
+% rej <0
+ave
+median
+Pre
+1%
+63%
+-3.20
+-0.40
+Pre
+10%
+13%
+-0.62
+-0.010
+Post
+4%
+36%
+-1.76
+-0.22
+Post
+13%
+10%
+-1.11
+0.003
+WA Pre
+2%
+59%
+-1.26
+-0.35
+WA Pre
+11%
+10%
+-0.24
+0.002
+WA Post
+2%
+58%
+-0.09
+-0.33
+WA Post
+12%
+9%
+-0.05
+0.002
+ALL
+2%
+54%
+-1.58
+-0.32
+ALL
+12%
+11%
+-0.52
+0.000
+Differences
+PsiHH −PsiNH
+% rej >0
+% rej <0
+ave
+median
+PsiHH −PsiHN
+% rej >0
+% rej <0
+ave
+median
+Pre
+4%
+36%
+-8.78
+-0.50
+Pre
+10%
+18%
+-5.53
+-0.08
+Post
+9%
+26%
+-0.42
+-0.18
+Post
+13%
+14%
+1.93
+-0.01
+WA Pre
+3%
+35%
+-2.42
+-0.50
+WA Pre
+11%
+18%
+-1.80
+-0.05
+WA Post
+3%
+37%
+-1.60
+-0.49
+WA Post
+11%
+16%
+-0.46
+-0.05
+ALL
+5%
+33%
+-3.24
+-0.39
+ALL
+11%
+17%
+-1.38
+-0.05
+PsiHN −PsiNN
+% rej >0
+% rej <0
+ave
+median
+PsiNH −PsiNN
+% rej >0
+% rej <0
+ave
+median
+Pre
+1%
+49%
+-2.58
+-0.40
+Pre
+15%
+10%
+0.67
+0.02
+Post
+3%
+34%
+-0.64
+-0.20
+Post
+17%
+10%
+1.70
+0.02
+WA Pre
+1%
+49%
+-1.02
+-0.30
+WA Pre
+17%
+5%
+-0.40
+0.04
+WA Post
+1%
+50%
+-0.04
+-0.36
+WA Post
+16%
+6%
+1.11
+0.04
+ALL
+2%
+45%
+-1.06
+-0.30
+ALL
+16%
+8%
+0.80
+0.03
+55
+
+Table 8: Regressions - Psi Parameter Differences
+Differences between ψs of selected counterparty pairings for each security-day are regressed on day and coverage dummies and attributes of the
+earnings announcement associated with each ψ difference. Particular counterparty pairings are identified by HH, HN, NH, and NN, where e.g.,
+HN indicates that an HFT takes liquidity from a non-HFT. Each earnings announcement contributes up to four security-days to the sample.
+Standard errors are clustered by earnings announcement.
+(1)
+(2)
+(3)
+(4)
+(5)
+(6)
+Psi HN-NN
+Psi HN-NN
+Psi HN-NN
+Psi HH-HN
+Psi HH-HN
+Psi HH-HN
+Lowest Quartile Analyst Coverage=1
+-.5517
+-3.013∗∗∗
+-3.019∗∗∗
+3.647
+-2.053
+-2.044
+(-0.22)
+(-3.10)
+(-3.10)
+(0.78)
+(-0.73)
+(-0.72)
+Highest Quartile Analyst Coverage=1
+.9457∗∗∗
+1.263∗∗∗
+1.262∗∗∗
+3.283∗∗∗
+1.858∗∗
+1.876∗∗
+(2.60)
+(4.29)
+(4.27)
+(2.69)
+(2.20)
+(2.19)
+Pre Day=1
+-2.044
+-.4821
+-.2318
+-4.407∗
+-2.932∗
+-.05829
+(-1.48)
+(-0.73)
+(-0.38)
+(-1.89)
+(-1.65)
+(-0.03)
+Post Day=1
+-.06938
+.8756
+.8328
+2.925
+.6709
+2.37
+(-0.07)
+(1.50)
+(1.41)
+(1.11)
+(0.33)
+(0.98)
+Abs(Earning Surprise)
+13.88
+10.97
+-79.34
+-74.46
+(0.69)
+(0.35)
+(-0.60)
+(-0.29)
+Abs(Analyst Dispersion)
+7.64
+16.98
+11.49
+168.8
+(0.40)
+(0.49)
+(0.12)
+(0.93)
+Pre Day=1 × Abs(Earning Surprise)
+-22.78
+-104.1
+(-0.58)
+(-0.45)
+Post Day=1 × Abs(Earning Surprise)
+30.65
+74.41
+(1.01)
+(0.25)
+Pre Day=1 × Abs(Analyst Dispersion)
+-17.67
+-314.1
+(-0.46)
+(-1.46)
+Post Day=1 × Abs(Analyst Dispersion)
+-16.91
+-284.2
+(-0.46)
+(-1.30)
+Constant
+-.6107
+-1.608∗∗∗
+-1.659∗∗∗
+-2.971∗∗
+-1.267
+-2.452
+(-0.83)
+(-3.52)
+(-3.43)
+(-2.03)
+(-1.05)
+(-1.46)
+Const + Low Covg Coeff
+-1.1624
+-4.621∗∗∗
+-4.678∗∗∗
+0.676
+-3.32
+-4.496
+Const + High Covg Coeff
+0.335
+-0.345
+-0.397
+0.312
+0.591
+-0.576
+Observations
+3042
+2823
+2823
+3042
+2823
+2823
+R2
+0.001
+0.017
+0.017
+0.002
+0.003
+0.009
+t statistics in parentheses
+∗p < .1, ∗∗p < .05, ∗∗∗p < .01
+56
+
+Table 9: Redeploying Information Gleaned from Absorbing Adverse Selection
+The temporary component of price impact of transactions where HFTs take liquidity from non-HFTs (ψHN) is regressed on its prior-day value
+and contemporaneous and prior-day values of κNH and κHH, which measure the permanent price impact (informativeness) of trades absorbed
+by HFTs providing liquidity. Columns (1) and (2) analyze sample days in the week after each earnings announcement; columns (3) and (4)
+analyze the days bracketing each earnings announcement. Each announcement contributes at most one observation to each regression.
+(1)
+(2)
+(3)
+(4)
+PsiHN (WA Post)
+PsiHN (WA Post)
+PsiHN (Post)
+PsiHN (Post)
+PsiHN (WA Pre)
+.7579∗∗∗
+.6809∗∗∗
+(27.09)
+(24.88)
+KappaNH (WA Pre)
+-.05679∗∗∗
+.006134
+(-4.45)
+(0.40)
+KappaNH (WA Post)
+.001178
+(0.07)
+KappaHH (WA Pre)
+-.003796
+(-0.43)
+KappaHH (WA Post)
+-.07187∗∗∗
+(-8.88)
+PsiHN (Pre)
+-.1171∗∗∗
+-.2359∗∗∗
+(-4.00)
+(-7.56)
+KappaNH (Pre)
+-.1156∗∗∗
+-.06423∗∗∗
+(-10.49)
+(-5.25)
+KappaNH (Post)
+-.09716∗∗∗
+(-7.30)
+KappaHH (Pre)
+-.02656∗∗∗
+(-3.86)
+KappaHH (Post)
+.004249
+(0.32)
+Constant
+-.4202
+-.1407
+-.6566∗∗∗
+-.3636∗
+(-1.57)
+(-0.55)
+(-2.94)
+(-1.66)
+Observations
+666
+666
+666
+666
+R2
+0.533
+0.600
+0.143
+0.235
+t statistics in parentheses
+∗p < .1, ∗∗p < .05, ∗∗∗p < .01
+57
+
+Figure 1
+Panel A: Permanent component of price impacts, κ
+Panel B: Temporary component of price impacts, ψ
+Permanent and temporary components of price impacts for various counterparty pairings on the
+days prior and subsequent to the February 24, 2009 (day 0) earnings announcement by Central
+European TV. The red line (NH) represents trades initiated by non-HFTs and absorbed by HFT
+liquidity providers; the blue line (HN) represents trades initiated by HFTs against non-HFT liquidity
+providers; and the green line (NN) represents trades between non-HFT counterparties.
+58
+
+References
+Allena, R. and Chordia, T. (2025). True liquidity and fundamental prices: Us tick size pilot. Journal of Financial
+Economics, forthcoming.
+Amihud, Y. (2002). Illiquidity and stock returns: cross-section and time-series effects. Journal of Financial Markets,
+5(1):31–56.
+Amihud, Y. and Mendelson, H. (1987). Trading mechanisms and stock returns: An empirical investigation. The
+Journal of Finance, 42(3):533–553.
+Biais, B., Foucault, T., et al. (2014). Hft and market quality. Bankers, Markets & Investors, 128(1):5–19.
+Biais, B., Foucault, T., and Moinas, S. (2015). Equilibrium fast trading. Journal of Financial Economics, 116(2):292–
+313.
+Blom, G. (1958). Statistical Estimates and Transformed Beta Variables. John Wiley & Sons, New York.
+Bloomfield, R., O’Hara, M., and Saar, G. (2015). Hidden liquidity: Some new light on dark trading. The Journal of
+Finance, 70(5):2227–2274.
+Bollen, N. P. and Whaley, R. E. (2004). Does net buying pressure affect the shape of implied volatility functions?
+The Journal of Finance, 59(2):711–753.
+Boulatov, A. and George, T. J. (2013). Hidden and displayed liquidity in securities markets with informed liquidity
+providers. The Review of Financial Studies, 26(8):2096–2137.
+Brennan, M. J. and Subrahmanyam, A. (1996). Market microstructure and asset pricing: On the compensation for
+illiquidity in stock returns. Journal of Financial Economics, 41(3):441–464.
+Brogaard, J., Hendershott, T., and Riordan, R. (2014). High-frequency trading and price discovery. The Review of
+Financial Studies, 27(8):2267–2306.
+Carrion, A. (2013). Very fast money: High-frequency trading on the nasdaq. Journal of Financial Markets, 16(4):680–
+711.
+Chordia, T., Goyal, A., Lehmann, B. N., and Saar, G. (2013). High-frequency trading. Johnson Graduate School
+Research Paper Series.
+Chordia, T., Green, T. C., and Kottimukkalur, B. (2018). Rent seeking by low-latency traders: evidence from trading
+on macroeconomic announcements. The Review of Financial Studies.
+Chordia, T., Huh, S.-W., and Subrahmanyam, A. (2009). Theory-based illiquidity and asset pricing. The Review of
+Financial Studies, 22(9):3629–3668.
+Chordia, T. and Miao, B. (2020). Market efficiency in real time. The Journal of Accounting and Economics, (70):1–27.
+Easley, D. and O’Hara, M. (1987). Price, trade size, and information in securities markets. Journal of Financial
+Economics, 19(1):69–90.
+Edwards, A. K., Hughes, P., Ritter, J., Vegella, P., and Zhang, H. (2021). The effect of hidden liquidity: Evidence
+from an exogenous shock. Available at SSRN 3766512.
+Foley, S. and Putni¸nˇs, T. J. (2016). Should we be afraid of the dark? dark trading and market quality. Journal of
+Financial Economics, 122(3):456–481.
+Foster, F. D. and Viswanathan, S. (1993). Variations in trading volume, return volatility, and trading costs: Evidence
+on recent price formation models. The Journal of Finance, 48(1):187–211.
+Foucault, T., Hombert, J., and Ro¸su, I. (2016). News trading and speed. The Journal of Finance, 71(1):335–382.
+George, T. J. and Hwang, C.-Y. (2001). Information flow and pricing errors: A unified approach to estimation and
+testing. The Review of Financial Studies, 14(4):979–1020.
+Glosten, L. R. (1989). Insider trading, liquidity, and the role of the monopolist specialist. Journal of Business, pages
+211–235.
+59
+
+Glosten, L. R. and Harris, L. E. (1988). Estimating the components of the bid/ask spread. Journal of Financial
+Economics, 21(1):123–142.
+Glosten, L. R. and Milgrom, P. R. (1985). Bid, ask and transaction prices in a specialist market with heterogeneously
+informed traders. Journal of Financial Economics, 14(1):71–100.
+Grossman, S. J. and Miller, M. H. (1988). Liquidity and market structure. the Journal of Finance, 43(3):617–633.
+Hamilton, J. D. (2020). Time series analysis. Princeton University Press.
+Hasbrouck, J. (1991a). Measuring the information content of stock trades. The Journal of Finance, 46(1):179–207.
+Hasbrouck, J. (1991b).
+The summary informativeness of stock trades: An econometric analysis. The Review of
+Financial Studies, 4(3):571–595.
+Hasbrouck, J. (1993). Assessing the quality of a security market: A new approach to transaction-cost measurement.
+The Review of Financial Studies, 6(1):191–212.
+Hasbrouck, J. (2009). Trading costs and returns for us equities: Estimating effective costs from daily data. The
+Journal of Finance, 64(3):1445–1477.
+Hasbrouck, J. and Saar, G. (2013). Low-latency trading. Journal of Financial Markets, 16(4):646–679.
+Hendershott, T. and Menkveld, A. J. (2014). Price pressures. Journal of Financial Economics, 114(3):405–423.
+Hendershott, T., Menkveld, A. J., Pratz, R., and Seasholes, M. (2022). Asset price dynamics with limited attention.
+The Review of Financial Studies, 35:962–1008.
+Hirschey, N. (2021).
+Do high-frequency traders anticipate buying and selling pressure?
+Management Science,
+67(6):3321–3345.
+Ho, T. and Stoll, H. R. (1980). On dealer markets under competition. The Journal of Finance, 35(2):259–267.
+Huang, S. and Yueshen, B. Z. (2021). Speed acquisition. Management Science, 67(6):3492–3518.
+Huh, S.-W. (2014). Price impact and asset pricing. Journal of Financial Markets, 19:1–38.
+Kyle, A. S. (1985). Continuous auctions and insider trading. Econometrica, pages 1315–1335.
+Kyle, A. S. (1989). Informed speculation with imperfect competition. The Review of Economic Studies, 56(3):317–355.
+Menkveld, A. J. (2013). High frequency trading and the new market makers. Journal of Financial Markets, 16(4):712–
+740.
+Menkveld, A. J. (2016).
+The economics of high-frequency trading: Taking stock.
+Annual Review of Financial
+Economics, 8:1–24.
+Menkveld, A. J., Koopman, S. J., and Lucas, A. (2007). Modeling around-the-clock price discovery for cross-listed
+stocks using state space methods. Journal of Business & Economic Statistics, 25(2):213–225.
+O’Hara, M. (2015). High frequency market microstructure. Journal of Financial Economics, 116(2):257–270.
+P´astor, L. and Stambaugh, R. F. (2003). Liquidity risk and expected stock returns. Journal of Political Economy,
+111(3):642–685.
+Stoll, H. R. and Whaley, R. E. (1990). Stock market structure and volatility. The Review of Financial Studies,
+3(1):37–71.
+60
+
+Internet Appendix to: A Simple Approach to Estimating Price
+Impact and its Components
+Thomas J. George and Moazzam A. Khoja
+June 16, 2026
+
+IA.1
+Nesting Certain Structural Models
+In this appendix, we show how several familiar structural models that are used to
+estimate price impact or illiquidity are nested within the HHM structure. This discussion is
+helpful in several ways. It provides intuition for why κ and ψ are identified by contemporaneous
+and lag-one dependence, and it shows how trading variables that are non-linear in quantity
+traded can fit within the HHM structure. In addition, the connections to the nested models
+highlight the generality of the HHM model and offer some clear avenues for future research.
+In these applications, trades are not classified into separate categories as in our empirical
+analysis with the Nasdaq HFT data.
+Rearranging Equation (13) in the paper yields:
+dpt = ϕ1 (dpt−1 −κ′xt−1) + ψ′(xt −xt−1) + κ′(xt −B1xt−1) + h.o.t + ut.
+(1)
+Following the taxonomy of models in Huh (2014), we begin with two classic market microstructure
+models of price dynamics.
+In our notation, the basic Glosten and Harris (1988) model
+is,
+dpt = ψ(St −St−1) + κQt + ut,
+(2)
+where Qt is the signed quantity traded at time t and upper-case St is an indicator variable
++1 or -1 for the sign of Qt. The Foster and Viswanathan (1993) model is
+dpt = ψ(St −St−1) + κ(Qt −Et−1[Qt]) + ut.
+(3)
+These models are nested in the return equation of the paper by defining xt = (St, Qt)′ and
+adding the “loadings constraints” that ϕ1 = 0, and that ψ and κ are non-zero on only the St
+and Qt components of xt, respectively. Under these constraints, the temporary component
+of price changes is fixed with respect to trade size and the permanent component is variable
+(scales linearly) with trade size. If, in addition, (St, Qt)′ is AR(1), then the second element
+of the 2 × 1 vector B1xt−1 is exactly the expectation at t −1 of Qt.1
+1Adding more constraints nests the equilibrium pricing equations in Glosten and Milgrom (1985) and Kyle (1985).
+In
+1
+
+Note that St is a non-linear function of Qt, but both models are easily nested in the
+HHM structure because dpt depends linearly on St. A related example is Sadka (2006),
+who adds the unexpected sign St, computed from a Normal CDF of a forecast of Qt, as
+another predictor of price changes. This variable is highly non-linear in Qt, but because dpt
+is linear in this variable, Sadka’s model can be nested in the HHM structure by including an
+additional element to the vector xt.
+The Glosten-Harris and Foster-Viswanathan models capture the economics that are
+essential to the HHM model, all of which are reflected in contemporaneous and lag-one
+relations. It is therefore probably not surprising that the key parameters in the HHM model
+are identified by coefficients for the same lags as are needed to estimate the classic models.
+But the approaches are not identical. Glosten and Harris (1988) show that the “loadings
+constraints” described above are necessary for identification of κ and ψ when estimating a
+single equation model. However, nesting the classic models within HHM makes it evident
+that the loadings constraints are not necessary for identification when additional information
+from the dynamics of xt is incorporated in the estimation. Adding the B1 parameter(s) is
+just enough to preserve identification while relaxing the loadings constraints. Provided that
+(1 −ϕ1) is not an eigenvalue of B1, the temporary and permanent components of prices
+can both be modeled as having fixed and variable parts and estimated using the recipe in
+Proposition 1. Exponents of Qt could also be added as variables to the xt vector to allow the
+permanent and temporary components of price impact to be polynomial functions of signed
+trades, for example. All these variations are easily accommodated in the HHM model and
+estimated via Proposition 1.
+Some asset pricing studies that incorporate illiquidity use measures that are motivated
+heuristically, such as the Amihud (2002) measure, while other studies use measures that are
+model-based. Those that are model-based can differ in their focus. For example, Brennan
+those models, transaction prices are equal to the market makers’ conditional expected value of the security and the transitory
+component is non-existent, ψ = 0. In Glosten-Milgrom, the permanent component is fixed because transactions are unit sized,
+so κ is constrained to zero on the Qt element in xt. In Kyle, prices depend linearly on signed order flow and the permanent
+component is variable, so κ is constrained to zero for the St element in xt.
+2
+
+and Subrahmanyam (1996) and Huh (2014) measure illiquidity using intraday estimates
+of κ from the classic models above, which places their focus on illiquidity associated with
+permanent price impacts. In contrast, P´astor and Stambaugh (2003) estimate illiquidity as
+the temporary price impact of signed volume. They define illiquidity as γ in a regression
+involving daily returns and lagged daily volume signed by the stock’s net-of-market return:
+dpt = ϕo + ϕ1dpt−1 + γ Qt−1 + ut.
+(4)
+The regression is designed so that γ captures the price impact of yesterday’s signed volume
+that reverses today. The P´astor-Stambaugh measure is also nested in the HHM model. By
+reference to the coefficient on xt−1 in the return equation of the paper, γ is a combination of
+all the HHM parameters. Its partial derivative with respect to ψ is indeed positive. However,
+if contemporaneous Qt is excluded from the estimation, there is no assurance that γ will be
+equal to its counterpart in the return equation. Even if the Qt process is AR(0), both Qt
+and Qt−1 must be included in the regression. Thus, if the HHM model describes the data
+generating process at the daily frequency, then Proposition 1 indicates that the P´astorStambaugh measure could be improved as a proxy for ψ by including contemporaneous Qt
+when estimating γ. Hasbrouck (2009) also proposes a temporary component measure based
+on ψ in Equation (2) with κ constrained to zero. Under the assumption that the St are iid
+at the daily frequency, the ψ parameter is then estimated along with trade signs that are
+inferred from price changes rather than constructed from signed trading volume as in P´astor
+and Stambaugh.
+In light of these contrasting approaches, Proposition 1 suggests that the HHM model can
+be used to estimate illiquidity parameters at large scale with OLS to compare the performance
+of, say, κ, ψ, and κ + ψ as measures of illiquidity in asset pricing tests. As noted above,
+the impact of higher orders of trades can be estimated easily too, which could be used to
+investigate whether, for example, price impact is convex in order size and the illiquidity of
+entering and exiting especially large positions is priced. Looking deeper into these questions
+3
+
+is likely to be a fruitful avenue for future research. Huh (2014) conducts a large-scale study
+of illiquidity premia in the cross-section of equity returns and finds that intraday estimates
+of κ using even the simpler classical models strongly dominate the best performing daily
+measures (e.g., Amihud, 2002; P´astor and Stambaugh, 2003). Extending Huh’s study using
+the HHM model as suggested in Proposition 1 can provide greater specificity to whether
+permanent, temporary, or both types of price impacts are priced as illiquidity costs or risks
+in equity markets.
+The nested models above have the common feature that they all apply to equity markets,
+where signed trading volume is the natural non-price variable. The HHM structure is more
+general than this, however, and the same identification logic applies for any price-like market
+statistic that has permanent and temporary components, and any non-price variables that
+are thought to be determinants of those components.
+For example, Bollen and Whaley
+(2004) estimate the impact of measures of buying pressure on option implied volatilities.
+They use heuristic economic arguments to motivate a model specification that turns out to
+be a constrained version of the return equation of the paper with implied volatilities replacing
+prices:
+∆σt = ϕo + ϕ1∆σt−1 + β′xt + controlst + ut,
+(5)
+where σt is option implied volatility on day t and xt is a vector of demand pressure measures.
+Bollen and Whaley are interested in estimating a total contemporaneous price impact, and
+indeed their β′ maps to κ′ + ψ′ in the HHM framework. The approach in Proposition 1
+suggests that by including lags of the demand pressure measures, and estimating a VAR
+to capture their dynamics, one can further identify the separate permanent and temporary
+components of buying pressure on implied volatility in Bollen and Whaley’s experiment.
+Such measures, perhaps estimated using intraday data, could then be used as inputs to study
+further whether illiquidity premia exist in options markets [see Christofferson, et al. (2018)
+for such a study where intraday realized spreads are used as the measure of illiquidity].
+4
+
+IA.2
+Coverage Quartile Results for Tables 5 and 7
+This section reports the low-coverage (Panel B) and high-coverage (Panel C) quartile
+results for Table 5 (κ estimates and differences) and Table 7 (ψ estimates and differences)
+of the paper. The full-sample results for each table appear in the paper. The quartiles are
+based on the number of analysts forecasting earnings as reported on I/B/E/S.
+5
+
+Table 5: Kappa Estimates and Differences (continued)
+Panels B and C report average and median estimates of the κs for all counterparty pairings by day in
+proximity to the earnings announcement, for the subsamples of stocks in the lowest and highest quartiles by
+analyst coverage, respectively. See Table 5 in the paper for full caption and full-sample results.
+Panel B - Low Coverage Quartile
+Kappa HH
+% rej >0
+% rej <0
+ave
+median
+Kappa NH
+% rej >0
+% rej <0
+ave
+median
+Pre
+37%
+0%
+32.69
+12.23
+Pre
+47%
+1%
+19.67
+8.70
+Post
+34%
+0%
+30.66
+9.99
+Post
+60%
+0%
+25.46
+12.24
+WA Pre
+34%
+0%
+16.51
+7.08
+WA Pre
+47%
+2%
+19.88
+7.99
+WA Post
+36%
+0%
+25.32
+8.44
+WA Post
+44%
+0%
+22.15
+7.56
+ALL
+35%
+0%
+26.56
+9.08
+ALL
+50%
+1%
+22.03
+9.15
+Kappa HN
+% rej >0
+% rej <0
+ave
+median
+Kappa NN
+% rej >0
+% rej <0
+ave
+median
+Pre
+74%
+0%
+18.47
+7.03
+Pre
+81%
+0%
+12.00
+5.95
+Post
+70%
+0%
+21.60
+6.05
+Post
+87%
+0%
+16.57
+5.81
+WA Pre
+76%
+0%
+14.08
+6.28
+WA Pre
+85%
+0%
+11.29
+5.99
+WA Post
+76%
+0%
+19.03
+6.78
+WA Post
+81%
+0%
+10.32
+5.83
+ALL
+73%
+0%
+18.50
+6.59
+ALL
+83%
+0%
+12.82
+5.92
+Panel C - High Coverage Quartile
+Kappa HH
+% rej >0
+% rej <0
+ave
+median
+Kappa NH
+% rej >0
+% rej <0
+ave
+median
+Pre
+97%
+0%
+1.13
+0.64
+Pre
+98%
+0%
+0.89
+0.57
+Post
+97%
+0%
+1.03
+0.61
+Post
+100%
+0%
+0.95
+0.56
+WA Pre
+96%
+0%
+1.03
+0.57
+WA Pre
+96%
+0%
+0.77
+0.49
+WA Post
+95%
+0%
+1.02
+0.57
+WA Post
+98%
+0%
+0.84
+0.55
+ALL
+96%
+0%
+1.05
+0.61
+ALL
+98%
+0%
+0.86
+0.55
+Kappa HN
+% rej >0
+% rej <0
+ave
+median
+Kappa NN
+% rej >0
+% rej <0
+ave
+median
+Pre
+93%
+0%
+0.56
+0.28
+Pre
+97%
+0%
+0.38
+0.19
+Post
+94%
+0%
+0.44
+0.20
+Post
+97%
+0%
+0.32
+0.17
+WA Pre
+91%
+0%
+0.61
+0.25
+WA Pre
+97%
+0%
+0.45
+0.19
+WA Post
+91%
+0%
+0.54
+0.23
+WA Post
+95%
+0%
+0.46
+0.20
+ALL
+92%
+0%
+0.54
+0.24
+ALL
+97%
+0%
+0.40
+0.19
+6
+
+Table 5: Kappa Estimates and Differences (continued)
+Panels B and C report average and median estimates of κ differences between selected counterparty pairings
+by day in proximity to the earnings announcement, for the subsamples of stocks in the lowest and highest
+quartiles by analyst coverage, respectively. See Table 5 in the paper for full caption and full-sample results.
+Panel B - Low Coverage Quartile
+KappaHH −KappaNH
+% rej >0
+% rej <0
+ave
+median
+KappaHH −KappaHN
+% rej >0
+% rej <0
+ave
+median
+Pre
+10%
+1%
+13.02
+2.17
+Pre
+13%
+2%
+14.23
+3.07
+Post
+6%
+4%
+5.20
+0.13
+Post
+14%
+2%
+9.06
+3.55
+WA Pre
+6%
+5%
+-3.37
+0.05
+WA Pre
+11%
+3%
+2.42
+1.02
+WA Post
+8%
+6%
+3.17
+1.39
+WA Post
+14%
+2%
+6.29
+1.23
+ALL
+8%
+4%
+4.53
+0.69
+ALL
+13%
+2%
+8.06
+2.18
+KappaHN −KappaNN
+% rej >0
+% rej <0
+ave
+median
+KappaNH −KappaNN
+% rej >0
+% rej <0
+ave
+median
+Pre
+16%
+6%
+6.46
+0.94
+Pre
+22%
+7%
+7.67
+2.02
+Post
+15%
+6%
+5.03
+0.51
+Post
+32%
+3%
+8.89
+5.22
+WA Pre
+15%
+11%
+2.80
+0.56
+WA Pre
+18%
+4%
+8.59
+2.37
+WA Post
+17%
+6%
+8.71
+0.74
+WA Post
+21%
+8%
+11.83
+2.43
+ALL
+16%
+7%
+5.69
+0.71
+ALL
+24%
+5%
+9.21
+2.97
+Panel C - High Coverage Quartile
+KappaHH −KappaNH
+% rej >0
+% rej <0
+ave
+median
+KappaHH −KappaHN
+% rej >0
+% rej <0
+ave
+median
+Pre
+38%
+4%
+0.24
+0.09
+Pre
+76%
+3%
+0.57
+0.31
+Post
+39%
+5%
+0.08
+0.07
+Post
+85%
+1%
+0.58
+0.40
+WA Pre
+34%
+6%
+0.26
+0.06
+WA Pre
+71%
+2%
+0.42
+0.25
+WA Post
+31%
+7%
+0.18
+0.08
+WA Post
+69%
+2%
+0.48
+0.30
+ALL
+36%
+6%
+0.19
+0.07
+ALL
+75%
+2%
+0.51
+0.31
+KappaHN −KappaNN
+% rej >0
+% rej <0
+ave
+median
+KappaNH −KappaNN
+% rej >0
+% rej <0
+ave
+median
+Pre
+32%
+7%
+0.18
+0.03
+Pre
+72%
+3%
+0.51
+0.24
+Post
+31%
+9%
+0.12
+0.02
+Post
+86%
+0%
+0.63
+0.35
+WA Pre
+26%
+10%
+0.16
+0.03
+WA Pre
+66%
+2%
+0.33
+0.18
+WA Post
+24%
+9%
+0.08
+0.02
+WA Post
+66%
+1%
+0.38
+0.22
+ALL
+28%
+9%
+0.14
+0.03
+ALL
+73%
+1%
+0.46
+0.24
+7
+
+Table 7: Psi Estimates and Differences (continued)
+Panels B and C report average and median estimates of the ψs for all counterparty pairings by day in
+proximity to the earnings announcement, for the subsamples of stocks in the lowest and highest quartiles by
+analyst coverage, respectively. See Table 7 in the paper for full caption and full-sample results.
+Panel B - Low Coverage Quartile
+Psi HH
+% rej >0
+% rej <0
+ave
+median
+Psi NH
+% rej >0
+% rej <0
+ave
+median
+Pre
+2%
+20%
+-15.35
+-3.79
+Pre
+12%
+6%
+0.26
+0.28
+Post
+7%
+9%
+3.20
+-2.19
+Post
+13%
+6%
+2.87
+0.88
+WA Pre
+5%
+16%
+-2.46
+-1.86
+WA Pre
+12%
+4%
+-1.39
+0.14
+WA Post
+6%
+17%
+3.31
+-2.26
+WA Post
+17%
+4%
+2.98
+0.82
+ALL
+5%
+15%
+-2.43
+-2.38
+ALL
+13%
+5%
+1.28
+0.52
+Psi HN
+% rej >0
+% rej <0
+ave
+median
+Psi NN
+% rej >0
+% rej <0
+ave
+median
+Pre
+0%
+50%
+-5.80
+-3.00
+Pre
+6%
+9%
+-1.29
+-0.06
+Post
+4%
+28%
+-3.88
+-1.42
+Post
+9%
+8%
+-2.63
+-0.03
+WA Pre
+4%
+43%
+-4.28
+-1.64
+WA Pre
+10%
+7%
+-0.55
+0.07
+WA Post
+3%
+35%
+2.99
+-2.02
+WA Post
+9%
+5%
+0.17
+0.04
+ALL
+3%
+39%
+-2.83
+-1.81
+ALL
+8%
+7%
+-1.18
+-0.001
+Panel C - High Coverage Quartile
+Psi HH
+% rej >0
+% rej <0
+ave
+median
+Psi NH
+% rej >0
+% rej <0
+ave
+median
+Pre
+12%
+52%
+-0.318
+-0.104
+Pre
+29%
+20%
+0.022
+0.003
+Post
+24%
+37%
+-0.128
+-0.027
+Post
+37%
+19%
+0.042
+0.015
+WA Pre
+12%
+50%
+-0.327
+-0.084
+WA Pre
+35%
+10%
+0.066
+0.024
+WA Post
+9%
+49%
+-0.275
+-0.076
+WA Post
+33%
+8%
+0.039
+0.023
+ALL
+14%
+47%
+-0.26
+-0.07
+ALL
+34%
+14%
+0.042
+0.016
+Psi HN
+% rej >0
+% rej <0
+ave
+median
+Psi NN
+% rej >0
+% rej <0
+ave
+median
+Pre
+1%
+79%
+-0.24
+-0.09
+Pre
+17%
+19%
+-0.018
+-0.005
+Post
+5%
+44%
+-0.10
+-0.02
+Post
+18%
+12%
+0.005
+0.003
+WA Pre
+0%
+77%
+-0.27
+-0.08
+WA Pre
+18%
+12%
+-0.009
+0.003
+WA Post
+0%
+73%
+-0.20
+-0.08
+WA Post
+17%
+13%
+-0.005
+0.001
+ALL
+1%
+68%
+-0.20
+-0.07
+ALL
+18%
+14%
+-0.007
+0.001
+8
+
+Table 7: Psi Estimates and Differences (continued)
+Panels B and C report average and median estimates of ψ differences between selected counterparty pairings
+by day in proximity to the earnings announcement, for the subsamples of stocks in the lowest and highest
+quartiles by analyst coverage, respectively. See Table 7 in the paper for full caption and full-sample results.
+Panel B - Low Coverage Quartile
+PsiHH −PsiNH
+% rej >0
+% rej <0
+ave
+median
+PsiHH −PsiHN
+% rej >0
+% rej <0
+ave
+median
+Pre
+1%
+15%
+-15.61
+-4.46
+Pre
+7%
+8%
+-9.56
+-1.26
+Post
+4%
+11%
+0.33
+-2.16
+Post
+8%
+4%
+7.08
+-0.13
+WA Pre
+3%
+12%
+-1.07
+-2.32
+WA Pre
+8%
+7%
+1.82
+-0.05
+WA Post
+4%
+16%
+0.34
+-3.54
+WA Post
+8%
+8%
+0.32
+-0.54
+ALL
+3%
+13%
+-3.71
+-2.92
+ALL
+8%
+7%
+0.40
+-0.36
+PsiHN −PsiNN
+% rej >0
+% rej <0
+ave
+median
+PsiNH −PsiNN
+% rej >0
+% rej <0
+ave
+median
+Pre
+2%
+36%
+-4.51
+-2.75
+Pre
+12%
+5%
+1.55
+0.52
+Post
+3%
+25%
+-1.25
+-1.49
+Post
+11%
+4%
+5.50
+0.64
+WA Pre
+2%
+37%
+-3.73
+-1.93
+WA Pre
+10%
+3%
+-0.84
+0.24
+WA Post
+2%
+32%
+2.82
+-2.15
+WA Post
+13%
+4%
+2.81
+0.60
+ALL
+2%
+32%
+-1.65
+-2.01
+ALL
+11%
+4%
+2.46
+0.53
+Panel C - High Coverage Quartile
+PsiHH −PsiNH
+% rej >0
+% rej <0
+ave
+median
+PsiHH −PsiHN
+% rej >0
+% rej <0
+ave
+median
+Pre
+6%
+57%
+-0.34
+-0.11
+Pre
+18%
+31%
+-0.08
+-0.01
+Post
+19%
+41%
+-0.17
+-0.03
+Post
+24%
+23%
+-0.02
+0.00
+WA Pre
+4%
+55%
+-0.39
+-0.12
+WA Pre
+21%
+28%
+-0.06
+-0.01
+WA Post
+2%
+56%
+-0.31
+-0.11
+WA Post
+22%
+22%
+-0.08
+-0.02
+ALL
+8%
+52%
+-0.30
+-0.10
+ALL
+21%
+26%
+-0.06
+-0.01
+PsiHN −PsiNN
+% rej >0
+% rej <0
+ave
+median
+PsiNH −PsiNN
+% rej >0
+% rej <0
+ave
+median
+Pre
+1%
+65%
+-0.22
+-0.08
+Pre
+23%
+16%
+0.04
+0.01
+Post
+4%
+44%
+-0.11
+-0.03
+Post
+29%
+13%
+0.04
+0.02
+WA Pre
+0%
+61%
+-0.26
+-0.09
+WA Pre
+29%
+7%
+0.08
+0.02
+WA Post
+0%
+67%
+-0.19
+-0.08
+WA Post
+27%
+5%
+0.04
+0.02
+ALL
+1%
+59%
+-0.20
+-0.06
+ALL
+27%
+10%
+0.05
+0.02
+9
+
+IA.3
+Trading Volume by Counterparty Pairing
+This section reports trading statistics by counterparty pairing and by day in proximity
+to the earnings announcement, for the full sample and for the subsamples of stocks in the
+lowest and highest quartiles by analyst coverage.
+10
+
+Trading Volume by Counterparty Pairing
+The table reports trading statistics by counterparty pairing and by day in proximity to the earnings
+announcement. The Pre and Post days bracket the announcement, the WA Pre and WA Post days are the
+corresponding weekdays the week after the announcement. Particular counterparty pairings are identified by
+HH, HN, NH, and NN, where e.g., HN indicates that an HFT takes liquidity from a non-HFT. For each stockday, dollar volume is computed as the within-day sum of the product of transaction prices and quantities
+for a given counterparty pairing. Dollar volume per transaction is dollar volume divided by the number of
+transactions in that day with that counterparty pairing. For each day type and counterparty pairing, means
+and medians are computed across stock-days. Mean and median dollar volume in the right-most columns
+are reported in thousands of dollars. Panel A reports results for the full sample. Panels B and C report
+results for the subsamples of stocks in the lowest and highest quartiles by analyst coverage, respectively.
+Panel A: Full Sample
+HH
+Dollar Volume Per Transaction
+Number of Transactions
+Dollar Volume ($thousands)
+day
+Mean
+Median
+Mean
+Median
+Mean
+Median
+Pre
+$5,280
+$3,659
+1526
+316
+$14,978
+$802
+Post
+$5,428
+$3,831
+1973
+318
+$22,665
+$878
+Week-After Pre
+$5,323
+$3,715
+1306
+297
+$12,617
+$667
+Week-After Post
+$5,278
+$3,627
+1318
+260
+$12,859
+$638
+HN
+Pre
+$6,404
+$4,580
+2393
+1001
+$28,673
+$3,731
+Post
+$6,765
+$4,876
+3017
+1198
+$40,407
+$4,744
+Week-After Pre
+$6,575
+$4,699
+2087
+947
+$23,727
+$3,954
+Week-After Post
+$6,530
+$4,634
+2069
+931
+$23,756
+$3,688
+NH
+Pre
+$6,999
+$4,614
+2028
+558
+$29,390
+$1,655
+Post
+$7,199
+$4,571
+2789
+747
+$44,136
+$2,734
+Week-After Pre
+$6,813
+$4,712
+1612
+478
+$21,743
+$1,496
+Week-After Post
+$6,752
+$4,594
+1635
+451
+$21,942
+$1,456
+NN
+Pre
+$8,085
+$5,481
+2430
+1277
+$35,440
+$6,967
+Post
+$8,726
+$5,858
+3461
+2000
+$54,711
+$10,828
+Week-After Pre
+$7,928
+$5,678
+2052
+1172
+$27,325
+$6,036
+Week-After Post
+$7,854
+$5,556
+2015
+1090
+$27,002
+$5,597
+11
+
+Panel B: Lowest Quartile
+HH
+Dollar Volume Per Transaction
+Number of Transactions
+Dollar Volume Traded ($thousands)
+day
+Mean
+Median
+Mean
+Median
+Mean
+Median
+Pre
+$2,778
+$2,304
+102
+40
+$245
+$85
+Post
+$2,779
+$2,422
+112
+43
+$313
+$118
+Week-After Pre
+$2,783
+$2,421
+88
+29
+$217
+$92
+Week-After Post
+$2,671
+$2,274
+87
+31
+$204
+$86
+HN
+Pre
+$3,409
+$2,924
+325
+236
+$1,105
+$720
+Post
+$3,673
+$3,241
+418
+287
+$1,702
+$946
+Week-After Pre
+$3,676
+$3,176
+315
+229
+$1,346
+$836
+Week-After Post
+$3,724
+$3,087
+292
+232
+$1,170
+$829
+NH
+Pre
+$2,944
+$2,540
+176
+85
+$528
+$212
+Post
+$3,081
+$2,760
+267
+122
+$915
+$298
+Week-After Pre
+$3,092
+$2,556
+173
+71
+$562
+$197
+Week-After Post
+$3,014
+$2,635
+151
+65
+$459
+$200
+NN
+Pre
+$3,856
+$3,528
+514
+380
+$2,033
+$1,424
+Post
+$4,081
+$3,693
+916
+639
+$4,256
+$2,123
+Week-After Pre
+$3,966
+$3,492
+552
+421
+$2,588
+$1,404
+Week-AFter Post
+$3,805
+$3,308
+486
+387
+$1,980
+$1,314
+12
+
+Panel C: Highest Quartile
+HH
+Dollar Volume Per Transaction
+Number of Transactions
+Dollar Volume Traded ($thousands)
+day
+Mean
+Median
+Mean
+Median
+Mean
+Median
+Pre
+$8,630
+$6,367
+3280
+2386
+$36,888
+$13,230
+Post
+$9,440
+$6,692
+4739
+3268
+$62,164
+$20,476
+Week-After Pre
+$8,667
+$6,402
+2747
+1848
+$30,158
+$12,132
+Week-After Post
+$8,587
+$6,474
+2808
+1917
+$30,972
+$12,420
+HN
+Pre
+$10,500
+$7,552
+5132
+3814
+$73,374
+$30,318
+Post
+$11,644
+$8,527
+7001
+5498
+$111,642
+$43,243
+Week-After Pre
+$10,601
+$7,982
+4379
+3428
+$58,925
+$26,680
+Week-After Post
+$10,472
+$7,991
+4356
+3254
+$58,847
+$25,114
+NH
+Pre
+$11,825
+$8,269
+4368
+3076
+$69,821
+$27,079
+Post
+$12,826
+$8,924
+6484
+4837
+$113,865
+$41,157
+Week-After Pre
+$11,359
+$8,237
+3385
+2399
+$50,927
+$22,048
+Week-After Post
+$11,152
+$8,212
+3466
+2530
+$51,372
+$21,259
+NN
+Pre
+$13,630
+$9,946
+5028
+3973
+$88,698
+$38,783
+Post
+$15,628
+$11,620
+7321
+5709
+$145,697
+$70,101
+Week-After Pre
+$13,211
+$10,343
+4119
+3521
+$67,188
+$36,072
+Week-After Post
+$12,980
+$10,110
+4068
+3287
+$65,531
+$32,837
+13
+
+IA.4
+CETV Event Study: Additional Figure
+Figure IA.1:
+The solid line is the temporary component of price impacts, ψNH, for
+transactions initiated by non-HFTs and absorbed by HFTs on the days prior and subsequent
+to the February 24, 2009 (day 0) earnings announcement by Central European TV. The
+dashed lines are 95% confidence bands.
+14
+
+References
+Amihud, Y. (2002). Illiquidity and stock returns: cross-section and time-series effects. Journal of Financial Markets,
+5(1):31–56.
+Bollen, N. P. and Whaley, R. E. (2004). Does net buying pressure affect the shape of implied volatility functions?
+The Journal of Finance, 59(2):711–753.
+Brennan, M. J. and Subrahmanyam, A. (1996). Market microstructure and asset pricing: On the compensation for
+illiquidity in stock returns. Journal of Financial Economics, 41(3):441–464.
+Foster, F. D. and Viswanathan, S. (1993). Variations in trading volume, return volatility, and trading costs: Evidence
+on recent price formation models. The Journal of Finance, 48(1):187–211.
+Glosten, L. R. and Harris, L. E. (1988). Estimating the components of the bid/ask spread. Journal of Financial
+Economics, 21(1):123–142.
+Glosten, L. R. and Milgrom, P. R. (1985). Bid, ask and transaction prices in a specialist market with heterogeneously
+informed traders. Journal of Financial Economics, 14(1):71–100.
+Hasbrouck, J. (2009). Trading costs and returns for us equities: Estimating effective costs from daily data. The
+Journal of Finance, 64(3):1445–1477.
+Huh, S.-W. (2014). Price impact and asset pricing. Journal of Financial Markets, 19:1–38.
+Kyle, A. S. (1985). Continuous auctions and insider trading. Econometrica, pages 1315–1335.
+P´astor, L. and Stambaugh, R. F. (2003). Liquidity risk and expected stock returns. Journal of Political Economy,
+111(3):642–685.
+Sadka, R. (2006). Momentum and post-earnings-announcement drift anomalies: The role of liquidity risk. Journal
+of Financial Economics, 80(2):309–349.
+15

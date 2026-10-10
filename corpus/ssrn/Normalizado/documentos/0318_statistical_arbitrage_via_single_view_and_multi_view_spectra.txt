@@ -1,0 +1,3233 @@
+Statistical Arbitrage via Single-view and Multi-view Spectral
+Clustering on Mixed Frequency Data
+Raymond C. W. Leung
+September 2024
+Abstract
+Systematically identifying clusters of similar assets is a critical step in statistical arbitrage strategies.
+This paper makes two key contributions: (i) In addition to assets’ daily closing prices, we incorporate
+realized estimators (i.e. realized volatility, realized beta, and others) derived from high-frequency intraday
+data into the daily feature set; and (ii) We examine the effectiveness of single-view and multi-view spectral
+clustering algorithms on these feature sets for identifying similar assets. We use these clustered assets to
+construct a variety of signals and trading rules, including the distance method, cointegration method,
+copula method, and an optimal entry-exit rule based on Ornstein-Uhlenbeck spread dynamics. We
+evaluate our methodology on the S&P 500 equities, futures contracts, exchange traded funds, and foreign
+exchange asset classes. Our findings show that trading profitability is influenced more by the selection of
+feature sets and clustering methods than by the choice of signals or trading rules. Specifically, strategies
+employing multi-view clustering algorithms, which integrate various realized estimators, consistently
+deliver superior risk-adjusted returns and reduced drawdowns compared to those based on the distance
+method and single-view clustering that rely solely on daily closing price data.
+Keywords: statistical arbitrage; pairs trading; high-frequency data; realized estimators; machine learning
+algorithms; spectral clustering
+JEL Classification: C14, C45, C58, G12
+1
+
+1
+Introduction
+Broadly speaking, statistical arbitrage has two distinct steps: (1) Identify clusters of similar risky assets; and
+(2) Monitor these clustered assets for any substantial price deviations amongst them for potential long-short
+trading. There is extensive literature (see Section 2 for a review) on executing step (2), applying methods from
+cointegration, copulas, to machine learning for quantifying trade opening and closing conditions. However,
+the vast majority of the literature focuses on daily or monthly prices (or simple transformations thereof, like
+returns) as the sole characterizing feature of assets for executing step (1). Our paper’s key finding is that
+using intraday data and clustering algorithms can improve the quality of step (1), and hence enhance the
+risk-adjusted performance of statistical arbitrage strategies.
+In classical works like [Gatev et al., 2006] and many others, the daily closing price Pt,i of a risky asset
+i is the sole characterizing feature of a risky asset. Normalizing the prices to some initial date t = 1, one
+would then compare the normalized price index Pt,i := Pt,i/P1,i of asset i versus asset j’s index Pt,j over
+a formation period. If the two assets’ price indices are similar Pt,i ≈Pt,j, then we would regard these two
+assets as similar to each other and hence belong the same cluster. This is [Gatev et al., 2006]’s classical
+distance method. Subsequently in the trading period, if the normalized prices of asset i and j substantially
+deviate from each other, and since they were deemed to be in the same cluster, this would present a statistical
+arbitrage opportunity to long the underpriced asset and short the overpriced asset and take a profit when the
+price gap closes.
+However, a significant risk in applying a completely data driven method to identify similar assets is
+spurious clustering. Assets that are well clustered together should have fairly similar statistical properties.
+So when a large price gap between the assets opens, the statistical arbitrageur is confident that this deviation
+should be a statistical anomaly and should eventually reverse itself by market equilibrium. But if dissimilar
+assets are erroneously clustered together in the formation period, then any perceived price gaps over the
+trading period of these assets are spurious, the gaps will not close or even widen, and the statistical arbitrageur
+will almost surely lose on the trade. We hypothesize including — above and beyond just the assets’ prices —
+additional features motivated by the continuous-time literature should improve the likelihood of identifying
+similar assets and thereby prevent spurious clustering.
+To motivate our ideas, suppose a risky asset i has the following price Pi,t dynamics,
+dPt,i = µi(t, Pt,i) dt + σi(t, Pt,i) dWt,i
+where µi and σi are the mean and diffusion processes and Wi is a standard Brownian motion 1 . Of course,
+price Pt,i itself remains as the most important feature of the risky asset. However, the quadratic variation
+[Pi]t :=
+R t
+0 σ2
+i (s, Ps,i) ds process is another important feature that characterizes this risky asset. Indeed, and
+as we shall see in the main text, several other variational quantities can be defined from the continuous-time
+price dynamics equations. However, quantities such as the quadratic variation are not directly observable
+and hence must be estimated empirically. We take advantage of the vast financial econometrics literature
+on realized estimators that advocate for using high-frequency intraday data to estimate these variational
+quantities at a daily cadence. For example, the daily quadratic variation can be consistently estimated by the
+realized variance estimator, which is equal to the sum of squared intraday returns. The inclusion of these
+variational quantities inspired by continuous-time process should help to reduce spurious clustering in the
+data. Recall by the distance method, one would deem assets i and j belong together if their price indices
+are similar, Pt,i ≈Pt,j. But if we also see that [Pi]t̸ ≈[Pj]t then these two assets have somewhat different
+fundamental properties and therefore should not be in the same cluster. Consequently even if in the trading
+period we observe asset i’s normalized prices have substantially deviated from asset j’s, this pair should not
+even be considered for trading as we had deemed them to be statistically dissimilar.
+Armed with a vector of features for each risky asset, we apply machine learning clustering algorithms to
+identify clusters of similar assets. This paper focuses on two main classes of clustering algorithms: single-view
+1See many standard texts like [Rogers and Williams, 2000a, Rogers and Williams, 2000b] and many others for the existence
+and well-posedness of these semimartingales.
+2
+
+spectral clustering and multi-view spectral clustering. There are many clustering techniques, and spectral
+clustering is a particular technique that utilizes the spectrum of feature matrices (i.e. set of eigenvalues of
+these matrices). The single-view paradigm is probably most conventional in the machine learning literature.
+Suppose we are given a collection of features (e.g. closing price, realized variance, and others) for a risky
+asset. The single-view paradigm concatenates all these features into a long vector for a particular asset, and
+then stacks to a matrix for all assets. In all, the input to single-view clustering algorithms is one big features
+matrix. However, the concatenation step inevitably causes a loss of the spatial and temporal information
+between the features. Multi-view clustering algorithms aim to preserve these spatial and temporal information
+by forgoing the concatenation step. Indeed, the input to multi-view clustering algorithms is a collection of
+features matrices.
+Let’s turn to the trading strategies after having identified the clusters of risky assets. In this paper we
+study the classical two standard deviation rule ([Gatev et al., 2006]) and slightly extend it to consider other
+parameterized probability distributions, the bivariate cointegration method ([Vidyamurthy, 2004], [Chiu and
+Wong, 2011], [Huck and Afawubo, 2015]), the copula method ([Xie et al., 2016], [Rad et al., 2016]) and
+optimal entry and exit rules based on the Ornstein-Uhlenbeck framework ([Bertram, 2010]).
+Our main text focuses on the S&P 500 equities over the data sample of 2000–2022. We also apply our
+methodologies to selected exchange-traded funds (ETFs) over 2012–2022, continuous futures contracts over
+2009–2022, and foreign exchange (forex) pairs over 2010–2022. But for brevity the results on ETFs, futures
+and forex are only briefly discussed in this main text, and we delegate their details to the Supplemental
+Materials [Leung, 2024].
+As documented by [Avellaneda and Lee, 2010], [Rad et al., 2016] and others 2 the profitability of
+conventional statistical arbitrage strategies has declined substantially over time. Indeed, one could argue that
+the distance method of [Gatev et al., 2006] (although the ideas has its origins due to Morgan Stanley from the
+mid-1980s; see [Vidyamurthy, 2004] for an account) is the classical benchmark clustering and trading strategy.
+We confirm these findings: applying the distance method solely on the prices of risky assets, and even if we
+explore a variety of trading methods, we do not find any statistically significant profitability once we account
+for transactions costs. Concretely, the distance clustering method with the two standard deviation trading
+rule yields an annualized Sharpe ratio of 0.571 but collapses to 0.338 once transactions costs are accounted
+for.
+In sharp contrast, we robustly find meaningful statistical arbitrage profitability once we adopt a combination
+of the multi-view clustering algorithms applied on various realized estimates based on intraday data, along
+with more sophisticated trading rules beyond that of the two standard deviation rule. In this paper, the
+best strategy on the S&P 500 applies the multi-view clustering algorithm on a plethora of realized quantities
+along with the closing prices of risky assets, along with an optimal entry and exit rules based on an OrnsteinUhlenbeck framework; this strategy achieves an annualized Sharpe ratio of 1.166 without transactions costs,
+and it is 0.830 once we account for transactions costs. Most importantly, we show that much of the first
+order profitability enhancements come from the choice of the clustering algorithm, above and beyond the
+specific choice of the trading strategy: after accounting for transactions costs and utilizing all the features
+studied in this paper, the best of the distance clustering method yields an annualized Sharpe ratio of 0.187;
+the best of the single-view clustering method yields 0.495; and the best the multi-view clustering method
+yields 0.830. Downside risks are an omnipresent threat to statistical arbitrage strategies (e.g. see [Khandani
+and Lo, 2008] for an account of statistical arbitrage strategies during the 2007–2008 financial crisis). The
+benchmark distance method suffers a maximum drawdown of 18.8% over its daily excess return series. In
+contrast, the aforementioned best of our multi-view clustering strategy suffers a maximum drawdown of 4.6%
+over its daily excess return series. Moreover, we find striking robustness in our multi-view clustering based
+strategies: as compared to features set of the best strategy, slight perturbations to the intraday features
+set do not materially alter the Sharpe ratios, max drawdowns and other performance measures. We arrive
+at the same qualitative conclusions for the ETFs, futures and forex asset classes. In all, our results show
+that multi-view clustering algorithms applied on a plethora of realized estimates based on intraday data can
+2[Bookstaber, 2008, page 194] colorfully writes: “Statistical arbitrage is now past its prime. In mid-2002 the performance of
+stat arb strategies began to wane, and the standard methods have not recovered.”
+3
+
+robustly achieve significant improvements both reward and risk measures.
+We structure the remainder of our paper as follows. Section 2 reviews the literature. Section 3 discusses
+our methodology. We show our results in Section 4. We conclude in Section 5. This main text discusses
+almost exclusively the S&P 500 equities asset class. The Supplemental Materials [Leung, 2024] extend our
+analysis to the exchange traded funds, futures, and foreign exchange asset classes.
+2
+Literature review
+Key studies of statistical arbitrage and pairs trading include [Vidyamurthy, 2004], [Gatev et al., 2006],
+[Avellaneda and Lee, 2010], [Do and Faff, 2010], [Jacobs and Weber, 2015], [Rad et al., 2016], [Stübinger et al.,
+2018], and many others. [Krauss, 2017] is a recent comprehensive survey on the statistical arbitrage literature.
+[Brunetti and De Luca, 2023] comparatively studies how different metrics for measuring the similarity of
+between pairs of stocks affect the performance of a cointegration strategy. [Eroğlu et al., 2023] is a recent
+study that computes the cointegration relationship between the wavelet transform of pairs of assets, and the
+authors find that the wavelet transform removes common noises between the assets and thereby the obtained
+cointegration relationship is more stable and hence profitable in opening trading pairs. [Krauss et al., 2017] is
+an interesting recent study that directly applies neural networks and other machine learning methods for
+statistical arbitrage; in particular, unlike the prevailing statistical paradigm of first identifying clusters and
+then monitoring for price deviations, their machine learning approach to statistical arbitrage effectively rolls
+both of these steps into one.
+Clustering is the backbone to our statistical arbitrage methodology. A detailed review of these clustering
+algorithms will be given in Section 3. There are some contemporary papers that apply clustering methods to
+find pairs of assets for statistical arbitrage. [Han et al., 2023] uses unsupervised machine learning algorithms
+along with the low-frequency characteristics of stocks from [Green et al., 2017] for generating clusters of similar
+assets. [Jin et al., 2023] is a recent study that finds clusters using the correlations of CAPM idiosyncratic
+risks of various stocks by applying the method of [Cucuringu et al., 2019]. Both of these papers are similar in
+spirit to this paper in that they are also using clustering methods to find pairs. This paper differs from these
+papers in significant ways. [Han et al., 2023] focuses on a monthly rebalancing strategy. [Jin et al., 2023]
+focuses on a fixed three-day rebalancing frequency but their trade opening and closing criterion is only based
+on the under- or over-performance of stock returns compared to its mean return over the past five days. Our
+paper explores a plethora of opening and closing conditions, and also our trading conditions are completely
+endogenous and are not based on a predetermined rebalancing period. Most importantly, we introduce and
+study whether intraday realized estimators could be useful in finding good clusters of assets. Finally, we also
+study the novel multi-view aspect of our clustering methodology, while these two papers focus exclusively on
+the single-view clustering paradigm.
+We extensively use realized estimators constructed out of intraday data. These estimators are rooted in
+the literature of high-frequency financial econometrics, and key references here include [Andersen et al., 2001],
+[Barndorff-Nielsen and Shephard, 2002], [Andersen et al., 2003], and many others. Comprehensive surveys
+of this literature include [McAleer and Medeiros, 2008] and [Bauwens et al., 2012]. It should be noted that
+while we do use intraday to construct these realized estimators, our paper does not study intraday statistical
+arbitrage like in [Liu et al., 2017], [Stübinger and Bredthauer, 2017], or [Stübinger, 2019]. We use intraday
+data to construct quantities that are then observable at a daily frequency. To the best of our knowledge, our
+paper is the first to introduce realized estimation concepts from the financial econometrics literature into the
+statistical arbitrage literature.
+3
+Methodology
+There are two preparatory steps and three core steps to our methodology.
+As is common in the statistical arbitrage literature, Section 3.1 shows our first preparatory step whereby
+we break the data into formation and trading periods. Our second preparatory step in Section 3.2 defines
+4
+
+and computes the features of risky assets over the formation period; this section will motivate and introduce
+various realized estimators that use high-frequency intraday data.
+Thanks to the two preparatory steps, we have a set of features for each risky asset at the end of the
+formation period. Section 3.3 is our first core step where we group assets into distinct clusters based
+on the similarity of their features; this section will revisit the classical distance clustering method, and
+introduce several single-view and multi-view clustering algorithms. After grouping assets into distinct clusters,
+Section 3.4 is our second core step where we aggregate the information of these clusters into various signals.
+The third and final core step is Section 3.5 where we apply these signals to determine our trade opening and
+trade closing conditions. See Table 1 for an overall methodology summary. In all, a strategy in this paper is
+the combination of four elements: (a) choice of the features set; (b) choice of the clustering algorithm; (c)
+choice of the signal; and (d) choice of the trading rule.
+The remaining subsections discuss various details to our methodology. Section 3.6 shows how we aggregate
+our individual trades into an overall portfolio. Finally, Section 3.7 discusses our software tools and data
+sources.
+3.1
+Formation and trading periods
+Suppose there are N risky assets. We use letters i, j to identify assets. We use the formation period to both
+cluster groups of similar assets together and construct signals for potential trading. From the clusters of
+assets identified in the formation period, we use the subsequent trading period to open and close any potential
+trades. Each formation period is 12 × 21 = 252 business days (i.e. assuming there are 21 business days each
+month). The trading period is the 6 × 21 = 126 business days following the formation period. See Figure 1
+for an illustration of the timeline of our formation and trading periods. The set of days in a given formation
+period is denoted by Tform and its subsequent set of days in the trading period is denoted by Ttrade.
+[Figure 1 about here.]
+[Table 1 about here.]
+3.2
+Features
+As in most statistical arbitrage methodologies, the most prominent feature in this paper is the normalized
+prices of assets. Let Pt,i denote the closing price of asset i on the t-th day of the formation period. We
+construct a normalized price index Pt,i := Pt,i/P1,i by normalizing to the initial day of the formation period.
+We use italized P to denote normalized prices but upright P to denote raw prices. While many papers
+on statistical arbitrage have focused on daily prices (or transformations of which, say normalized prices
+or returns), a core contribution of our paper is to consider other daily features. Table 2 summarizes the
+individual features constructed in this paper.
+[Table 2 about here.]
+First and foremost, we are interested in realized estimators that are constructed from high-frequency
+intraday data. These realized estimators include realized variance, skewness, kurtosis, semivariances and
+intraday estimated betas with various reference assets. Assume on day t we observe M number of equispaced
+intraday price observations {Ptm,i}M
+m=0; throughout this paper we exclusively focus on the case tm −tm−1 ≡
+1 minute. Denote the log-return of the tm-th observation by Rtm,i := log Ptm,i −log Ptm−1,i. For any a ∈R,
+we denote a+ := max{a, 0} and a−:= min{a, 0}. Using the realized covariance and realized variance, we
+construct the intraday realized beta Betat,index,i between asset i and an index from Table 3; for example,
+Betat,i,SPY denotes the realized beta between asset i and the SPDR S&P 500 ETF.
+[Table 3 about here.]
+5
+
+Secondly, we consider features that use low-frequency data. We use daily rolling regressions to construct the
+following beta quantities. On day t we use a lookback window of the past 252-trading days, with a minimum
+observations of 126-trading days. Over this window, we run a linear regression on the daily log-returns of the
+asset onto the daily log-returns of the market, small-minus-big, high-minus-low, and up-minus-down factors
+from Kenneth French’s website 3 to estimate the respective beta coefficients. Idiosyncratic volatility is the
+standard deviation of the resulting regression residuals. Total volatility is the standard deviation of the daily
+returns of the asset over this window. We emphasize the calculations of Betat,·,i and betat,·,i are different,
+even though both them are observable on day t; the former (upper case “B”) is computed using only the
+intraday data of day t, while the latter (lower case “b”) is computed using the past 252-days of data up to
+day t.
+In all, Table 4 summarizes the sets of features we consider in this paper. These are the sets of features
+that will be used in our clustering methods.
+It will be convenient to fix the following notation for subsequent discussions. Let p ≥1 denote the number
+of features. We denote the l-th scalar-valued feature, for l = 1, . . . , p, of an asset i on day t by xt,i;l. Given
+T time periods (i.e. T = |Tform| = 252 in the formation period), denote the l-th feature of all assets as an
+T × N matrix,
+Xl :=
+
+
+x1,1;l
+· · ·
+x1,i,;l
+· · ·
+x1,N;l
+...
+...
+...
+...
+...
+xT,1;l
+· · ·
+xT,i,;l
+· · ·
+xT,N;l
+
+=
+
+x1;l
+· · ·
+xi;l
+· · ·
+xN;l
+
+(1)
+where xi;l is a T × 1 vector containing the l-th feature of asset i over the T time periods.
+[Table 4 about here.]
+3.3
+Formation: Assets clustering
+We use three kinds of assets clustering procedures. Throughout this paper, a cluster means a set of asset
+names. The distance clustering method is the classical benchmark method as advocated by [Gatev et al., 2006].
+4 The distance clustering method is effectively a bivariate clustering algorithm, where assets are pairwise
+grouped together if the mean-squared error of their normalized price processes is small. We also introduce
+single-view and multi-view spectral algorithms.See Figure 2 for an illustration. The key differentiation between
+the single-view and multi-view paradigm is how features are concatenated together: single-view algorithms
+collapses all features into one big vector, while multi-view algorithms treat each feature individually.
+[Figure 2 about here.]
+We clearly have not exhausted all possible single-view or multi-view clustering algorithms in this paper.
+Indeed, given the breadth and rapid development of the clustering literature, an exhaustive study of all
+clustering algorithms would be a herculean task. The core focus of our paper is to study whether the inclusion
+of other variables beyond the price of an asset could improve upon the statistical arbitrage framework.
+The spectral decomposition based clustering algorithms we employ in this paper are meant to be baseline
+representatives of the single-view and multi-view clustering paradigms.
+We use the term cluster more loosely than the conventional clustering literature in machine learning.
+Conventionally, a clustering algorithm partitions a set into subsets such that every elewment of the set is
+exactly in one of these subsets. In other words, these subsets exhaust to cover the set, and these subsets are
+pairwise disjoint. In this paper, our clusters do not necessarily exhaust to cover all the assets (i.e. the union of
+3https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html
+4Conventionally, the distance method is actually a combination of two steps. The first step is what this paper refers to as the
+distance clustering method, whereby pairs of assets are grouped together by the closeness of the mean-squared error of their
+normalized processes. The second step is what this paper refers to as the two standard deviation trading rule, whereby a trading
+opportunity becomes available when the difference of the normalized prices of a pair of assets deviate from each other by at least
+two standard deviations. For our purposes, it is instructive to distinctly separate out these two steps.
+6
+
+the clusters is not necessarily equal to all the asset names). But we do enforce the pairwise disjoint property
+between the clusters. With some abuse of terminology, any statement revolving bivariate quantities in this
+paper always means exactly two quantities, while multivariate quantities always refer to strictly more than
+two quantities. For instance, a bivariate cluster always means a cluster with two assets, while a multivariate
+cluster always means a cluster with at least three assets. We discard clusters with only one asset.
+3.3.1
+Distance clustering method
+Our distance clustering method follows [Gatev et al., 2006]. We make a small modification to handle additional
+features other than price. Fix p ≥1 features. We concatenate the p features into a pT × N matrix
+Z =
+
+
+X1
+X2
+...
+Xp
+
+=
+
+z1,z2, · · · ,zN
+
+(2)
+where zi is a pT × 1 vector holding the all the p features of asset i across the T periods.
+Given two assets i, j and i̸ = j, we define the mean-squared error (MSE) as MSEij := 1
+T
+PT
+t=1 ||zi −zj||2,
+where || · || is the standard Euclidean norm. In particular, if p = 1 and xt,i;1 ≡Pt,i then we recover the
+original distance method of [Gatev et al., 2006]. Once the sequence {MSEij}N
+i̸=j=1 has been calculated, we
+select 50 pairs of assets that achieve the lowest MSE’s. Thus by this classical distance method, the number of
+clusters is 50, and each cluster contains two assets. 5
+3.3.2
+Single-view clustering
+Conventionally, single-view clustering methods can only operate on a single feature. To accommodate the
+case with p > 1 number of features, we use the simple idea of “feature concatenation” (e.g. [Kumar and
+Daumé, 2011]). As it is conventional in the machine learning literature, we first standardize Xl of (1) by row,
+so that each row would have mean zero and unit standard deviation. We stack the standardized Xl’s to the
+pT × N matrix Z as in (2).
+K-means
+The K-means clustering method ([MacQueen et al., 1967], [Lloyd, 1982]) is a classical benchmark
+in the single-view clustering literature. The method aims to partition N number of vectors {z1, . . . ,zN} into
+K sets {C1, . . . , CK}, where K ≤N, so as to minimize the within-cluster sum of squares. That is, we are
+looking to solve minC
+PK
+k=1
+P
+z∈Ck ||z −µk||, where µk =
+1
+|Ck|
+P
+z∈Ck z, and |Ck| is the cardinality of the set
+Ck. See Algorithm 1.
+Algorithm 1 K-means
+Input: Number of clusters K and input vectors {z1, . . . ,zN}.
+Output: K clusters C1, . . . , CK.
+Solve minC1,...,CK
+PK
+k=1
+P
+z∈Ck ||z −µk||, where µk =
+1
+|Ck|
+P
+z∈Ck z, and |Ck| is the cardinality of the set
+Ck.
+Spectral clustering
+Spectral clustering is a classical single-view clustering method. An excellent tutorial
+on the spectral clustering method is [von Luxburg, 2007]. Here we apply the classical algorithm of [Ng et al.,
+2001] and [Shi and Malik, 2000]. Construct an N × N similarity matrix W such that the (i, j)-element wij,
+for i, j = 1, . . . , N, satisfy wij ≥0 and wij = wji. Loosely speaking, the matrix W measures whether two
+vertices zi and zj are connected by an edge in an undirected graph. In this paper, we use a radial basis
+5The literature like [Gatev et al., 2006], [Rad et al., 2016] and others often choose 20 pairs in the distance method. Our
+choice of 50 pairs ensures a broad representation of pairs in the subsequent clustering applications; see Remark 1.
+7
+
+function with local scaling as per [Zelnik-Manor and Perona, 2004] to construct the similarity matrices. Fix a
+positive integer ¯k (following [Zelnik-Manor and Perona, 2004], we use ¯k = 7). Let σi := ||zi −z ¯k|| be the
+distance of the i-th vector to its ¯k-th nearest neighbor. We then construct a single similarity matrix as
+W =
+
+exp
+
+−||zi −zj||2
+σiσj
+
+i,j=1,...,N
+(3)
+See Algorithm 2.
+Algorithm 2 Single-view spectral clustering
+Input: Number of clusters K and a similarity matrix W ∈RN×N.
+Output: K clusters C1, . . . , CK.
+1: Construct the normalized graph Laplacian matrix L := D−1/2WD−1/2 ∈RN×N, where D is the diagonal
+matrix given by whose diagonal entries are given by dii = PN
+j=1 wij.
+2: Compute the top K eigenvectors u1, . . . ,uK of L. Or equivalently, solve the optimization problem,
+max
+A∈RN×N tr(A⊤LA)
+subject to
+A⊤A = I
+and select the first K columns of the optimizer A.
+3: Stack as U = [u1, . . . ,uK] ∈RN×K.
+4: Row normalize U . That is, after normalizing, each row of U should have norm 1, and where the norm is
+the Euclidean norm on RK.
+5: Let yi ∈RK be the column vector corresponding to the i-th row of U . Cluster the points {y1, . . . ,yN}
+with the K-means algorithm into sets C1, . . . , CK.
+3.3.3
+Multi-view clustering
+With p > 1 features, a critical restriction of both the distance clustering method and the single-view clustering
+method is that the information of asset i has been concatenated into a single “big” pT × 1 vector zi as in (2).
+Clearly we lose both the temporal and spatial information between the different features of the data. A key
+benefit of multi-view clustering is that we disentangle the p features of each asset separately. That is, rather
+than using a single matrix as the input for single-view clustering algorithms, we use a set of standardized
+matrices {X1, X2, · · · , Xp} as the input for multi-view clustering algorithms. To emphasize the “view” aspect
+of multi-view clustering algorithms, we will prefer the terminology “view” instead of “feature”. Accordingly,
+instead of constructing a single similarity matrix (3) in the single-view clustering case, we now construct a
+collection of similarity matrices,
+W l =
+
+exp
+
+−||xi,l −xj,l||2
+σi;lσj;l
+
+i,j=1,...,N
+,
+l = 1, . . . , p,
+(4)
+where σi,l := ||xi;l −x¯k;l|| be the distance of the i-th vector to its ¯k-th nearest neighbor (again, ¯k = 7). We
+fix the matrix of normalized prices as the first view X1, which is assumed to be the most informative view.
+See [Fu et al., 2020] and [Chao et al., 2021] for recent surveys of multi-view clustering algorithms.
+Multi-view spectral clustering
+Algorithm 3 is the classical algorithm of [Ng et al., 2001] augmented
+with [Blum and Mitchell, 1998]’s co-training idea.
+Multi-view co-regularized spectral clustering
+We consider [Kumar and Daumé, 2011]’s extension of
+the multi-view clustering algorithm. Note that if λ = 0 then Algorithm 4 reduces to Algorithm 3. While
+hypothetically we could apply cross-validation to optimize for the regularization parameter λ, we choose to
+fix the regularization parameter as λ = 1/2 throughout to reduce computational burdens.
+8
+
+Algorithm 3 Co-trained multi-view spectral clustering
+Input: Number of clusters K and similarity matrices W 1, . . . ,W p ∈RN×N for the p views of input data.
+Assume view 1 is the most informative view.
+Output: Clusters C1, . . . , CK.
+1: Initialize: Construct the normalized graph Laplacian matrix Lv := D−1/2
+v
+W vD−1/2
+v
+for each view v =
+1, . . . , p, where Dv is the diagonal matrix given by whose diagonal entries are given by dv,ii = PN
+j=1 wv,ij.
+Let U v be the N × K matrix with columns as the top K eigenvectors of Lv.
+2: Construct
+Sv = sym
+
+
+
+W v
+p
+X
+v′=1
+v′̸=v
+U v′U ⊤
+v′
+
+
+
+,
+for v = 1, . . . , p, and where sym(A) := (A + A⊤)/2.
+3: Use S1, . . . ,Sp as the new similarity matrices and compute their normalized graph Laplacian matrices,
+and then construct a new set of matrices of eigenvectors U 1, . . . ,U p.
+4: Set the matrix V := U 1 corresponding view 1, recalling that it is assumed to be the most informative
+view.
+5: Row normalize V .
+6: Apply the K-means clustering algorithm on V to obtain clusters C1, . . . , CK.
+Algorithm 4 Co-regularized multi-view spectral clustering
+Input: Number of clusters K and similarity matrices W 1, . . . ,W d ∈RN×N for the d views of input data.
+Assume view 1 is the most informative view. Fix a regularization λ > 0 parameter.
+Output: Clusters C1, . . . , CK.
+1: Initialize: For each view v = 1, . . . , d, construct the the normalized graph Laplacian matrix Lv :=
+D−1/2
+v
+W vD−1/2
+v
+, where Dv is the diagonal matrix given by whose diagonal entries are given by dv,ii =
+PN
+j=1 wv,ij.
+2: Solve
+max
+U 1,...,U d∈RN×K
+d
+X
+v=1
+tr
+ U ⊤
+v LvU v
+
++ λ
+X
+1≤v,v′≤d
+v̸=v′
+tr
+ U vU ⊤
+v U v′U ⊤
+v′
+
+subject to:
+U ⊤
+v U v = I, v = 1, . . . , d.
+3: Set the matrix V := U 1 corresponding view 1, which is assumed to be the most informative view.
+4: Row normalize V .
+5: Apply the K-means clustering algorithm on V to obtain clusters C1, . . . , CK.
+9
+
+3.3.4
+Cluster sizes
+This paper only focuses on cluster sizes of K = 10 and K = 25. A critical hyperparameter in clustering
+algorithms is the number of clusters. While there are some methods to determine the optimal number of
+clusters in a single-view spectral clustering context (i.e. [Zelnik-Manor and Perona, 2004]), to the best of
+our knowledge we do not know of any methods to determine the optimal number of clusters in a multi-view
+context. The most informative view in this paper is always the normalized prices of assets. While it is feasible
+to determine the number of optimal clusters based on the view of normalized prices alone, it is much less
+clear whether this is the same number of optimal clusters when other views are fused together. We do not
+take a stance on the optimality of the number of clusters in this paper, but rather view the two choices of
+K ∈{10, 25} as a parameterization sensitivity check.
+3.3.5
+Distance method screening
+Unlike the bivariate clusters from the distance clustering method of Section 3.3.1, a distinct characteristic of
+multivariate clustering methods is that we can have clusters containing more than two assets. It is useful
+distill down these multivariate clusters in order to apply (bivariate) pairs trading rules.
+We apply the following procedure to distill multivariate clusters to bivariate clusters. Suppose after
+single-view or multi-view clustering, we have clusters C1, . . . , CK of assets, where |C|k ≥2 for all k = 1, . . . , K.
+For each cluster k and for all assets i, j ∈Ck, i̸ = j, compute their MSEi,j based on their normalized prices
+again over the formation period. To maintain comparability with the bivariate distance clustering method
+of Section 3.3.1, we wish to ultimately output 50 pairs. These 50 pairs should be chosen widely across the
+clusters and not be chosen exclusively from a few select clusters. For any a ∈R, denote ⌈a⌉as the smallest
+integer greater than or equal to a. Our rules are: (1) Within each cluster k, select ⌈50/K⌉number of pairs
+that achieve the lowest MSE’s within its own cluster; and (2) Select 50 pairs of the lowest MSE’s from these
+K × ⌈50/K⌉number of pairs. In all, this procedure distills the K number of clusters, each with varying
+number of assets, to just 50 bivariate pairs. Most importantly, this procedure ensures that pairs are drawn
+from each of the K clusters. See Figure 3 for an illustration.
+[Figure 3 about here.]
+Remark 1 (Number of pairs). Recall from Section 3.3.1 we choose to work with 50 pairs rather than 20 pairs
+as is commonplace in the pairs trading literature. Our distance method screening procedure here makes clear
+why choosing 50 pairs is a sensible choice. As we only work with cluster sizes of K ∈{10, 25}, choosing 50
+pairs results in roughly ⌈50/10⌉= 5 pairs per cluster when K = 10 and roughly ⌈50/25⌉= 2 pairs per cluster
+when K = 25. If we had chosen 20 pairs then we’d effectively be just choosing the lowest ⌈20/25⌉= 1 MSE
+pair within each cluster when K = 25. Indeed, working with more pairs most likely biases down our overall
+results as we then inevitably choose lower quality pairs in terms of their MSE fits.
+3.4
+Signals
+With a cluster of assets, we now need to aggregate them to construct useful subsequent potential trading
+signals.
+3.4.1
+Signals based on bivariate assets
+The distance clustering method, the single-view clustering method with distance method screening, and the
+multi-view clustering method with distance screening will result in 50 clusters and each cluster will have
+exactly two assets. In this section we will simplify notation and label any two different assets as asset 1 and
+asset 2.
+10
+
+Simple long-short
+The simple long-short signal is effectively the classical method as advocated by [Gatev
+et al., 2006]. We construct their undirected spread as spreadt = Pt,1 −Pt,2. We say spreadt as written is
+“undirected” because we had arbitrarily chosen asset 1 to be in the “long position” and asset 2 to be in the
+“short position”. We will fix the direction of trade after we construct an opening rule based on this undirected
+spread signal.
+Bivariate cointegration
+[Vidyamurthy, 2004] provides a framework to apply cointegration to statistical
+arbitrage pairs trading. Specifically, here we follow the recipe as provided by [Rad et al., 2016, Section 4.2]
+and follow the [Engle and Granger, 1987] two-step procedure. Using the normalized prices in the formation
+period, we run the linear regressions of Pt,1 on Pt,2, and Pt,2 on Pt,1 via ordinary least squares (OLS). We
+compute the Augmented Dickey-Fuller (ADF) test statistic of the two regressions, and pick the regression
+that generates the lowest ADF test statistic. Suppose it is the first regression that generates the lowest ADF
+test statistic. Then we construct the spread process as spreadt = Pt,1 −ˆβPt,2, where ˆβ is the OLS coefficient
+estimate. Observe the ADF test statistic here is used as a mere heuristic to fix whether it is asset 1 or asset 2
+that should have 1 or ˆβ loading onto its normalized price to construct spreadt; we do not use the ADF test
+statistic itself to ascertain whether a cointegrating relationship exists between the two assets.
+Bivariate copula
+We follow a bivariate copula method studied by [Rad et al., 2016, Section 4.3]. First
+obtain the daily returns of assets i = 1, 2 in the formation period. For each asset i, we apply maximum
+likelihood to fit the returns individually over univariate distributions (i.e. Gaussian, logistic, generalized
+logistic, and generalized extreme value). For a pair of assets and for a pair of their associated fitted marginal
+distributions, we fit them through each of the copulas C (i.e. Gaussian, student-t, Clayton, Gumbel, Frank,
+and Joe). We choose the best fitting marginal of asset 1, marginal of asset 2, and the copula ( ˆF1, ˆF2, ˆC) for
+the two assets as the triple that achieves the highest AIC out of all the possible combinations. See [Nelsen,
+2006] for an overview of copula theory. See the Supplemental Materials [Leung, 2024] for detailed descriptions
+of the marginal distributions and the copulas.
+3.4.2
+Signals based on multivariate assets
+Once again, a distinct feature of our single-view and multi-view clustering algorithms is that each cluster
+would naturally have (weakly) more than two assets. Hence it is natural to consider trading strategies that
+trade strictly more than a pair of assets.
+Multivariate cointegration
+A natural multivariate trading strategy is the multivariate extension to the
+bivariate cointegration method. Standard references on vector cointegration include [Engle and Granger,
+1987], [Engle and Granger, 1991] and [Maddala and Kim, 1998]. Fix assets i = 1, 2, . . . , n := |Ck| in a
+cluster Ck. Obtain the daily normalized prices of these assets over the formation period and stack them as
+P t := [Pt,1, . . . , Pt,n]⊤.
+Following the standard estimation procedures of [Johansen, 1988, Johansen, 1991] estimation method,
+we estimate the associated vector error correction model (VECM) with one lag, no trend and no constant.
+Following [Aznar and Salvador, 2002], [Wang and Bessler, 2005] and others, we use the AIC to select the
+best rank r ≥1. Let ˆβl ∈Rn for l = 1, . . . , r be the r number of cointegrating vectors with r < n. Note
+the matrix [ ˆβ1, . . . , ˆβr] is normalized by using the [Phillips, 1991] triangular representation. Despite this
+triangular representation, namely that one of the entries of βl for all l = 1, . . . , r would have the value
+1, we notice that this would often result in very large values (in absolute value) in the other entries. In
+constructing the subsequent trading rules associated with this multivariate cointegration method, we will
+use ˆβl effectively as the weights to constructing a trade. Hence, excessively large absolute values in some
+entries of ˆβl would imply excessively large short or levered positions in the trade. To this end, we choose to
+normalize the cointegrating vector by its Euclidean norm except for entry with the value 1. 6 Furthermore, it
+is inconvenient for the subsequent trading step to work with r different possible βl’s (although statistically
+6There is no harm in this rescaling due to the non-uniqueness of cointegrating vectors. Generically, suppose we have a
+11
+
+equivalent by cointegration theory). To this end, we use a simple heuristic to select out just one cointegrating
+vector. For each l = 1, . . . , r, we construct the scalar time series ul
+t := ˆβ⊤
+l P t, t ∈Tform. We compute ADF
+test statistics on each of {ul
+t}t∈Tform for l = 1, . . . , r with lag 1, no trend, and no constant. We select the
+cointegration vector ˆβl∗associated with the smallest ADF test statistic. Finally, we construct the spread
+process spreadt = ˆβ⊤
+l∗P t.
+3.5
+Trading rules
+Once the signals have been constructed, we proceed to define the associated opening and closing trading
+criteria. Fix a given cluster Ck in what follows. For notational brevity, for signals associated with bivariate
+assets, so |Ck| = 2, we label the assets as assets 1 and 2. For signals associated with multivariate assets, we
+label the assets in the cluster as 1, 2, . . . , n := |Ck|. We emphasize that generically |Ck| and |Ck′| are different
+for k̸ = k′. But in this subsection, with some abuse of notations in suppressing the dependence in k, we still
+write n := |Ck|.
+Spread percentile thresholds
+Let’s take an undirected spread {spreadt}t∈Tform that is computed out
+of the bivariate simple long-short, bivariate cointegration, or multivariate cointegration signal construction
+approaches, so all the spreads have the form spreadt = ˆβ⊤P t, for ˆβ = [ˆβ1, . . . , ˆβn]⊤∈Rn, where n = 2 for
+both the simple long-short and bivariate cointegration signals, and n = |Ck| for the multivariate cointegration
+signal, and P t is the vector of normalized prices for the n assets over the formation period.
+We first revisit the classical rule of [Gatev et al., 2006]. If {spreadt}t∈Tform is assumed to be strictly
+stationary and Gaussian distributed, we compute its sample mean ˆµ and sample standard deviation ˆσ. Let Φµ,σ
+denote the cumulative distribution function of N(µ, σ). Over the trading period, we observe spreads = ˆβ⊤P s
+for each day s ∈Ttrade. We open the trade the first time sop ∈Ttrade when spreadsop ≥Φ−1
+ˆµ,ˆσ(0.975), in which
+case we take the position of ˆβi dollars into asset i at sop, and close the trade the first time s > sop and
+s ∈Ttrade for which spreads ≤0. Symmetrically, when spreadsop ≤Φ−1
+ˆµ,ˆσ(0.025), we take the position of −ˆβi
+dollars into asset i at sop, and close the trade the first time s > sop and s ∈Ttrade for which spreads ≥0.
+Once a trade closes, we continue to monitor spreads for any additional opening opportunities until the end
+of the trading period. We will call this classical trading rule as the two standard deviation rule.
+7 The
+combination of the distance clustering method on just the closing price feature along with this two standard
+deviation rule is the benchmark strategy for this paper.
+It is well known that financial data do not exhibit Gaussian behavior. Extending the above opening
+rule to non-Gaussian distributions is an important consideration. To this end, for {spreadt}t∈Tform over the
+formation period, we fit this sequence over each of the distributions (including the Gaussian distribution). We
+triangular system representation ([Phillips, 1991, Phillips, 1994])
+Y 1t = BY 2t + u1t,
+∆Y 2t = u2t,
+where Y = [Y ⊤
+1t,Y ⊤
+2t] has been conformally partitioned such that Y 2t is a full ranked integrated process and u1t and u2t are
+stationary errors and B is (n−r)×r. Indeed, the n×r matrix of cointegrating vectors A⊤= [I r, −B] can exactly be written in this
+way as shown in [Phillips, 1991, Phillips, 1994]. In our current applications, our n×r matrix of cointegrating vectors is [ˆβ1, . . . , ˆβr].
+But from the above triangular system representation, it is easy to see the above system with B is observationally equivalent to
+having ˜B = BD where D is any r × r invertible matrix. Indeed, if we have Y 1t = ˜BY 2t + u1t = BDY 2t + u1t = B ˜Y 2t + u1t
+with ∆˜Y 2t = D(Y 2t −Y 2,t−1) = Du2t = ˜u2t, where ˜u2t is another stationary process. Thus for our purposes, we simply pick
+D = diag
+
+1
+||b1||, . . . ,
+1
+||br||
+
+where bl is the l-th (n −r)-vector of B and || · || is the standard Euclidean norm on Rn−r.
+7The method in [Gatev et al., 2006] does not require the Gaussian distribution assumption. We introduce the Gaussian
+assumption to motivate the need to study non-Gaussian based opening threshold rules. Moreover and strictly speaking, the
+authors’ rule is simply to open a trade when | spreadt−µ
+σ
+| > 2. But under the Gaussian assumption, this two standard deviation
+rule is equivalent to when spreadt−µe
+σe
+is strictly greater than Φ(2) ≈0.977, or when it is strictly less than Φ(−2) ≈0.023. In
+this paper, we choose to use the “round numbers” of 0.025- and 0.975-percentiles strictly for convenience when we deal with
+non-Gaussian distributions. For comparability, we will still use 0.025- and 0.975-percentiles even when dealing with the Gaussian
+distribution case.
+12
+
+pick out the distribution that achieves the lowest AIC value. Let ˆQ denote the quantile function associated
+with the best fitting distribution, and compute ˆQ(0.025) and ˆQ(0.975). The remainder of the opening and
+closing rules are identical to the aforementioned Gaussian distribution case.
+Bivariate mispricing index
+This mispricing index opening rule only applies to the bivariate copula
+approach to constructing an unsigned trade signal. Here we follow the method of [Xie et al., 2016] and [Rad
+et al., 2016]. From the bivariate copula signal construction method, we have obtained the triple ( ˆF1, ˆF2, ˆC) of
+the best fitted marginal distributions of assets 1 and 2 and also its associated best fitted bivariate copula
+over the formation period. For each day s ∈Ttrade in the trading period, we compute the probability integral
+transform us,1 = ˆFi(Rs,i) for i = 1, 2. We retrieve the conditional distribution function h(·, ·|ˆθ) =: ˆh(·, ·)
+associated with ˆC. For notational clarity, define ˆh1(u1|u2) := ˆh(u1, u2), and ˆh2(u2|u1) := ˆh(u2, u1), which are
+the conditional distribution of U1 conditional on U2 = u2 and the conditional distribution of U2 conditional on
+U1 = u1, respectively. A value of 0.5 for ˆh1(us,1|us,2) is interpreted as a 50% chance for the random variable
+U1, which is a monotonic transform of the return of asset 1, to be below its current realization us,1, given the
+current value of probability transform us,2 of asset 2’s current returns. We apply the same interpretation for
+ˆh2(us,2|us,1).
+Now, we define the mispricing indices,
+ms,1 = ˆh(us,1|us,2) −0.5,
+ms,2 = ˆh(us,2|us,1) −0.5.
+We then define the cumulative mispricing indices, M1 and M2, which are set to zero at the beginning of the
+trading period,
+Ms,1 = Ms−1,1 + ms,1,
+Ms,2 = Ms−1,2 + ms,2.
+A positive (negative) value Ms,1 and negative (positive) Ms,2 are interpreted as asset 1 (asset 2) are
+overvalued relative to asset 2 (asset 1). We open a trade when on day sop ∈Ttrade we observe Msop,1 > 0.5
+and Msop,2 < −0.5, so we short $1 of asset 1 and long $1 of asset 2. We unwind the trade on day scl when
+we observe Mscl,1 ≤0 and Mscl,2 ≥0. Symmetrically, we open a trade when on day sop ∈Ttrade when
+Msop,1 < −0.5 and Msop,2 > 0.5, so we long $1 of asset 1 and short $1 of asset 2. We close the trade on
+day scl when we observe Mscl,1 ≥0 and Mscl,2 ≤0. Once a trade closes, we continue to monitor for any
+additional opening opportunities until the end of the trading period.
+Ornstein-Uhlenbeck spreads thresholds
+We implement the continuous time model of [Bertram, 2010],
+which assumes that spreads of a trade are given by an Ornstein-Uhlenbeck process dXt = −αXt dt + η dBt,
+where α > 0 is the speed of mean reversion of the process, η > 0 is the diffusion constant, and B is a standard
+Brownian motion. A strategy is defined by entering a trade when Xt = a and exiting the trade at Xt = m,
+where it is assumed a < m. Suppose that c > 0 is the transaction costs associated with the trade. [Bertram,
+2010] shows in an analytical form that the optimal trading strategy is symmetric, meaning the optimal entry
+and optimal exits are related by m∗= −a∗. Moreover, the author shows the optimal entry a∗maximizes the
+expected mean return of the trade a 7→µ(a, c, α, κ) =
+α(2a+c)
+2πErfi(a√α/η). Note that a strictly positive transaction
+cost c is needed in this model; if c = 0, then it would be optimal to trade continuously. Once a trade closes,
+we continue to monitor for any additional opening opportunities until the end of the trading period.
+We set Xt as spreadt. A key input is the transaction cost parameter c. We assume the one-way transaction
+cost per asset is 5 basis points. We set the two-way transaction cost per trade as c = 2 × 0.0005 × ||β||1
+where the L1 norm is ||x||1 := P
+i |xi|. We take {spreadt}t∈Tform over the formation period and compute its
+maximum likelihood estimates (ˆα, ˆη).
+13
+
+3.6
+Performance calculations
+The accounting of statistical arbitrage trading profits is nuanced because of the random distribution of
+cashflows over the duration of the strategy. Here we follow the procedures of [Gatev et al., 2006], [Do and
+Faff, 2010] and many others in the literature.
+First we define the daily marked-to-market profit and loss (PnL) of any given trade l on a trade day
+s ∈Ttrade. Suppose at the trade opening day s = sop we have a vector θl = (θl,1, . . . , θl,n)⊤of the number
+of shares held in n risky assets. Recall our convention of using upright P for denoting the raw price of an
+asset, and we use an italized P for prices normalized to the price Psop at the beginning of the trade. With no
+transactions costs, the PnL on the initial trade day is PnLsop = θ⊤
+l Psop. For instance, for signals on bivariate
+assets (e.g. bivariate simple long-short signal with the spread thresholds trading rule), if we want to long $1
+of asset 1 and short $1 of asset 2, then θ = (1/Psop,1, −1/Psop,1)⊤, and this results in PnLsop = $0. The daily
+marked-to-market PnL of the l-th trade on day s ∈(sop, scl] is PnLs,l = θ⊤
+l (Ps −Ps−1). Following [Gatev
+et al., 2006], [Do and Faff, 2010] and many others, we consider employed capital portfolios to aggregate all of
+these trades. In particular, the employed capital portfolio daily excess returns is defined as,
+Rs = 1
+Ls
+Ls
+X
+l=1
+PnLs,l,
+(5)
+where Ls is the number of activated trades on day s. Observe that Ls sums opened trades across all of the
+six overlapping trading periods.
+Transactions costs have a critical impact on the performance of statistical arbitrage strategies. In this
+paper, we assume a proportional transactions costs of 5 basis points for every dollar of position held by each
+asset when entering a trade, and also the same transactions costs per asset when exiting a trade. 8
+When we account for transactions costs, we must adjust the PnL process at the trade open date and
+the trade closing date. At opening, we pay the transactions costs of 0.0005 Pn
+i=1 |θl,i|Psop,i, which results
+in the opening day PnL of PnLc
+sop,l = PnLl,sop −0.0005 Pn
+i=1 |θl,i|Psop,i. As the number of shares held in
+the n assets are unchanged for s ∈(sop, scl), we pay no transactions costs in between the opening and
+closing dates, and hence PnLc
+s,l = PnLs,l. At the closing date s = scl, we will pay the transactions costs
+0.0005 Pn
+i=1 |θl,i|Pscl,i, which results in the closing day PnL of PnLc
+scl,l = PnLscl,l −0.0005 Pn
+i=1 |θl,i|Pscl,i.
+Hence, the employed capital portfolio daily excess returns with transactions costs is
+Rc
+s = 1
+Ls
+Ls
+X
+l=1
+PnLc
+s,l
+(6)
+Example. Let’s use a simple illustration to make our performance calculations concrete. Suppose at some
+day s = sop, we decide to long $1 of asset 1 and short $1 of asset 2, and they have prices Psop,1 = $100 and
+Psop,2 = $5, respectively. We accordingly purchase θ1 = 1/100 shares of asset 1 and short θ2 = 1/5 shares of
+asset 2. With no transactions costs, our initial PnL is PnLsop = θ1Psop,1 −θ2Psop,2 =
+1
+100$100 −1
+5$5 = $0.
+However, with transactions costs, we pay 0.0005|θ1|Psop,1 + 0.0005|θ2|Psop,2 = $0.0010 at open, resulting in
+PnLc
+sop = PnLsop −$0.0010 = −$0.0010. For any time s ∈(sop, scl), the daily marked-to-market PnL, with
+or without transactions costs, is PnLs = PnLc
+s =
+1
+100(P1,s −P1,s−1) −1
+5(P2,s −P2,s−1).
+Some time later at s = scl we decide to close the trade, and suppose the prices of the two assets have
+changed to Pscl,1 = $150 and Pscl,2 = $3.50. Suppose also the previous day’s prices were Pscl−1,1 = $145.75
+and Pscl−1,2 = $4.25. Without transactions cost, the PnL on the closing day would be PnLscl =
+1
+100($150 −
+$145.75) −1
+5($3.50 −$4.25) = $0.1925. With transactions costs, we pay 0.0005|θ1|Pscl,1 + 0.0005|θ2|Pscl,2 =
+0.0005 ×
+1
+100 × 150 + 0.0005 × 1
+5 × 3.50 = $0.0011 to exit the trade. Hence the closing date PnL with
+8More sophisticated measures of transactions costs can be implemented here (e.g. [Roll, 1984], [Corwin and Schultz, 2012]
+and [Abdi and Ranaldo, 2017]). See also [Frazzini et al., 2018] for a recent study on the effects of transaction costs. Our 5 basis
+point transactions cost assumption is derived from [Frazzini et al., 2018]; in particular, see their Table II “Realized Trading
+Costs”, which shows the market impact (MI) median trading costs of 5.08 basis points for US NYSE-AMEX equities and 5.03 for
+NASDAQ equities over their 1998-2016 sample period.
+14
+
+transactions costs is PnLc
+scl = 0.1925 −0.0011 = $0.1914. The total round trip transactions cost for this
+trade is thus 0.0010 + 0.0011 = $0.0021. In all, the total PnL for this trade without transactions costs is
+1
+100($150−$100)−1
+5($5−$3.50) = $0.20, while with transactions cost the total PnL is 0.20−0.0011 = $0.1989.
+Remark 2 (Committed capital portfolio). For brevity, this paper focuses on the employed capital portfolio.
+The literature also defines a more conservative committed capital portfolio, which replaces the denominator
+by the number of overlapping trading periods and multiplied by the number of possible trades; so in this
+paper, that would be 6 × 50 = 300. [Gatev et al., 2006, page 806] argues the employed capital portfolio would
+be closer to what would actually be deployed in practice: “To the extent that hedge funds are flexible in their
+sources and uses of funds, computing excess return relative to the actual capital employed may give a more
+realistic measure of the trading profits.” While not reported in the paper, we have studied the committed
+capital portfolio and our qualitative conclusions are the same as the employed capital portfolio.
+3.7
+Software and data
+The majority of the general data analysis in this paper is done in R ([R Core Team, 2023]). The single-view
+clustering algorithms are implemented in Python ([Van Rossum and Drake, 2009]), while the multi-view
+clustering algorithms are implemented in C++ ([Stroustrup, 2013]). See the Supplemental Materials [Leung,
+2024] for details of the software packages used in this paper.
+Our primary data source is the intraday and daily data from Kibot 9 . We also use data from the Center
+for Research in Security Prices (CRSP).
+Equities
+We consider the daily S&P 500 constituents from 2000 to 2022. We first extract the daily
+constituents from CRSP. The daily and 1-minute intraday price data that have been adjusted for shares split
+and dividends are from Kibot 10 11 . We collect rolling betas on the risk factors from the WRDS Beta Suite.
+The constituents are first matched by ticker and then confirmed by company name match. When there are
+dual class shares of the same company, and they are both listed as the constituents of the S&P 500, we pick
+the class of shares which has the longest data history. 12 It is very likely the price trajectories of these dual
+class shares tightly follow each other, but they are also unlikely to produce meaningful statistical arbitrage
+profits. We deliberately remove one of these dual class shares to avoid spurious selection in the formation
+period.
+ETFs, futures, and forex
+Details of these three asset classes are discussed in the Supplemental Materials
+[Leung, 2024]. We choose ETFs (45 number of asset names), continuous futures contracts (22) and forex
+pairs (29 for the US dollar denominated pairs; 13 for the British pound denominated pairs; and 15 for the
+Euro denominated pairs) for their liquidity. With some exceptions, the methodologies applied to these three
+asset classes are nearly identical to our treatment of the S&P 500 equities.
+4
+Results
+This paper studies four asset classes: S&P 500 equities, ETFs, futures, and forex. We will briefly highlight
+the core findings for the other asset classes in Section 4.4. Other than those mentioned in Section 4.4, all
+figures and tables in this main text refer to to the S&P 500 equities.
+9See www.kibot.com.
+10While the Kibot database has many stocks with intraday data starting from 1998, we deliberately choose to start a later
+date of 2000-12-31. We find that Kibot does not have good intraday coverage for the S&P 500 constituents until after 2000-12-31.
+We do not have access to the TAQ database for this study.
+11The literature on intraday realized estimators often advocate for using 5-minute intraday prices to minimize microstructure
+noise; for example, see [Hansen and Lunde, 2006], [Bandi and Russell, 2008] and many others. We do not find material differences
+in using 1-minute or 5-minute realized estimators for the purposes of our study.
+12Google / Alphabet is an example of this, whereby both GOOG (class C) and GOOGL (class A) are constituents of the S&P
+500. The other notable examples are Fox Corporation with their FOX (class B) and FOXA (class A) tickers, and News Corp
+with their NWSA (class A) and NWS (class B) tickers.
+15
+
+Our first order of business is to succinctly and meaningfully discuss our results when dealing with
+the plethora of possible combinations of clustering methods, features, signals, trading methods, and the
+consideration of transaction costs in this paper. Indeed, we have computed all the well over 2, 000 of these
+combinations in this work. However, just cherry-picking the best result out of these thousands runs afoul of
+p-hacking suspicions (i.e. [Harvey et al., 2016]). We will take a “top-down” approach, and discuss our results
+first from the aggregate level and then distill to specific cases for additional details. Specifically, subsection 4.1
+will discuss the performance results of all strategy cases studied in this paper. Subsection 4.2 will discuss the
+aggregate results when we specialize to the All features set. Finally, subsection 4.3 will discuss additional
+details for several important special strategy cases.
+In the results tables, we use the following abbreviations for the clustering methodology: DM for the distance
+clustering method, SV-KM(K) for single-view K-means with K clusters, SV-Sp(K) for single-view spectral
+clustering, MV-Sp(K) for multi-view spectral clustering, and MV-CRSp(K) for multi-view co-regularized
+spectral clustering. We use the following abbreviations for the signals: BvLS for bivariate simple long-short,
+BvCoint for bivariate cointegration, BvCopl for bivariate copula, and MvCoint for multivariate cointegration.
+We also use the following abbreviations for the trading rules: Spr(norm) for the two standard deviation
+rule, Spr(optd) for spread percentile thresholds using an optimal probability distribution, MisPrcIdx for the
+bivariate mispricing index, and OrnUhl for the Ornstein-Uhlenbeck spreads thresholds. Recall a combination
+of a single-view or multi-view clustering algorithm along with a bivariate signal always mean we apply the
+distance screening method.
+4.1
+Overall portfolio excess returns performance
+Let’s begin with a simple benchmark. Table 5 shows the employed capital portfolio excess returns performance
+of the distance clustering method applied on just the normalized price index P feature, but is studied across
+all signals, trading methods and transactions costs assumptions. Just by the P feature alone, it is already
+evident that our portfolio performance results will be influenced by the signal choice and the trading rule.
+For instance, using the simple long-short signal with Ornstein-Uhlenbeck thresholds trading we can achieve
+an annualized Sharpe ratio of 0.851 without transactions costs (but drops to 0.536 with transactions costs).
+Yet if we keep the long-short signal but change to the classical two standard deviation trading rule of [Gatev
+et al., 2006], the portfolio Sharpe ratio drops to 0.571 without transactions costs (and even further to 0.338
+with transactions costs). This will be a recurrent theme throughout the remainder of our results discussions:
+it is not surprising that the inclusion of transactions costs will lower portfolio performance; however, the
+choice of the features, signal and the trading rule will make substantial impacts on portfolio performances, on
+top of the choice of the clustering method.
+[Table 5 about here.]
+Our 0.571 annualized Sharpe ratio value, using the [Gatev et al., 2006] distance method and applied on
+the S&P 500 equities universe, is lower than what has been reported on the literature. However, this could
+largely be attributed to differences in the universe choice, the time sample under study, and our choice of
+studying 50 pairs. Most notably, [Rad et al., 2016] (see their Figure 8) shows the mean excess returns of the
+distance method with 20 pairs over the CRSP universe peaked in the early 1970s (about 1.80% per month
+or 21.6% per annum before transactions costs) and has dropped dramatically by the 2010’s (about 0.2%
+per month or 2.40% per annum, which is in line with our Table 5). Also we should keep in mind that our
+universe of S&P 500 equities is substantially more liquid than the average stock in the CRSP universe and
+hence our results are unlikely to be driven by any liquidity premia. It should also be noted that [Rad et al.,
+2016] also does not find their results to be driven by the liquidity premia either.
+Let’s investigate the rest of the strategies. Firstly, in the Supplemental Results [Leung, 2024], we show
+that the multivariate cointegration signal contributes to the most extreme adverse results in our paper. We
+find: (i) naively applying the distance method to multivariate clusters do not seem to generate any positive
+results (and indeed, seems to generate some of the worst performances); and (ii) although the introduction of
+multivariate clustering methods seems to invite the enticing possibility of constructing multivariate signals
+and hence exploiting statistical arbitrage opportunities involving multivariate assets, this alluring conjecture
+16
+
+(let alone transactions costs) does not seem to hold true. In light of these discussion and for brevity, for the
+remainder of this section we will drop the multivariate cointegration signal unless specified otherwise. In
+particular, this means all subsequent discussions will focus exclusively on pairs trading on two assets, as we
+will no longer discuss trading on multivariate assets.
+[Figure 4 about here.]
+Table 6 is a key summarizing result of this paper. This table shows although there might be some
+heterogeneity in portfolio performance when taking into account the exact features, signal and trading method
+choices, it is quite clear that multi-view clustering methods rank the highest in terms of delivering portfolio
+performance results. Moreover, compared to the baseline results distance method on just the normalized
+price index feature from Table 5, our multi-view clustering methods prevent large drawdowns. For instance,
+after transactions costs, the best performing strategy from Table 5 is to apply the simple long-short signal
+and trade with Ornstein-Uhlenbeck thresholds, which yields an annualized Sharpe ratio of 0.536 but suffers
+a maximum drawdown of 13.7% at the daily frequency. In comparison, the best performing strategy from
+Table 6 applies the multi-view co-regularized spectral clustering method (with 25 clusters) on all features
+studied in this paper, uses the simple long-short signal, and trades the Ornstein-Uhlenbeck thresholds to
+achieve an annualized Sharpe ratio of 0.830 after transactions costs but only suffers a maximum drawdown of
+7.0% at the daily frequency.
+[Table 6 about here.]
+We should also note the remarkable robustness of multi-view clustering to perturbations of the features
+set. From Table 6, we clearly see the best Sharpe ratio strategies are associated with the bivariate long-short
+signal along with the Ornstein-Uhlenbeck trading rule. Again, the best strategy deploys the MV-CRSp(25)
+algorithm on the All features to achieve a Sharpe ratio of 0.830. Yet the other top strategies are also all
+based on multi-view clustering applied on various features subsets, and they also achieve Sharpe ratios in the
+0.70–0.80 range. Although this paper does not aim to identify the “best” combination of features, we see the
+choice of the clustering algorithm has a dominant effect on the strategy performance more than the specific
+choices of signals or trading rules.
+We have discussed at length the Sharpe ratios and the maximum drawdowns of various strategies. However,
+as known in the literature, different metrics exhibit different measures of risks and it is prudent to further
+investigate these metrics on our strategies. In the Supplemental Materials [Leung, 2024], we see the top ten
+strategies sorted by their Sharpe ratios in general exhibit fairly similar quantities across the various risk
+metrics (e.g. Omega, Sortino, VaR and others). Likewise and unsurprisingly, the bottom ten strategies sorted
+by their Sharpe ratios exhibit fairly unfavorable risk metric quantities.
+4.2
+On the “All” features
+Let’s focus on just the “All” features (recall Table 2) so that we can specifically discuss the effects of the
+clustering methods. Table 7 critically shows the effects of the different clustering algorithms, as we now hold
+the choice of features as fixed. There is a clear ranking: the distance method is subpar to the single-view
+clustering method, which is then subpar to the multi-view clustering method. Indeed, the best of the distance
+method yields an annualized Sharpe ratio of 0.187 (maximum drawdown of 14.3% over the daily excess returns
+series) after transactions costs. In contrast, the best of the single-view clustering method yields an annualized
+Sharpe ratio of 0.495 (maximum drawdown of 14.0%), while the multi-view clustering method yields an
+annualized Sharpe ratio of 0.830 (maximum drawdown of 7.0%). Notice that a variety of combinations of
+signals and trading methods are present in this table. It is quite evident the choice of the clustering method
+has a bigger effect on the portfolio performance than either the signal choice or the trading method themselves.
+For instance, across various signals and trading rules, the tenth best multi-view clustering case has a Sharpe
+ratio of 0.611, which is still better than the best single-view clustering case that has a Sharpe ratio of 0.495.
+[Table 7 about here.]
+17
+
+In the Supplemental Materials [Leung, 2024] we isolate the effects of the individual signals and effects of
+the trading strategies. There does not seem like an individual signal choice is strictly dominant in terms of
+the strategy’s Sharpe ratio performance. Likewise, no single trading strategy seems to dominate the results.
+In all, at least for the All features set, the first order effect on a strategy’s Sharpe ratio and maximum
+drawdown performances is the choice of the clustering method.
+4.3
+Highlighted strategies
+To discuss further details of our strategies, let’s focus on a few highlighted and representative cases as shown
+in Table 8. We emphasize these cases as they focus on straightforward features (i.e. either just closing prices P
+or the kitchen-sink set features All), represent the simplest possible signal (i.e. just the bivariate long-short),
+or apply the most straightforward trading mechanism (i.e. the two standard deviation rule). We also study
+the Ornstein-Uhlenbeck trading rule as reference; the last case of Table 8 is the “best” strategy in terms of the
+Sharpe ratio as seen in Table 6. Moreover, note “DM-P-BvLS-SprN” is the [Gatev et al., 2006] benchmark
+case of applying the distance method on just the closing price and trading with the two standard deviation
+rule.
+[Table 8 about here.]
+Let’s see some figures to show the overall performance results of the highlighted strategy cases. Figure 5
+shows their cumulative returns. It seem like these strategies are not necessarily highly correlated with each
+other. Figure 6 shows the correlation matrix of the daily excess returns of these selected strategies, and also
+of their rolling correlations against the “DM-P-BvLS-SprN” benchmark. While some pairs of strategies having
+a high correlations is not surprising given that they are based off of the same or similar signal, it is interesting
+to note that overall the correlation entries are not generally high. This suggests there might be additional
+diversification benefits to combining several of these trading strategies together; we leave the investigation of
+this hypothesis for later research.
+[Figure 5 about here.]
+[Figure 6 about here.]
+Having focused on the “All” set of features, let’s evaluate the risk-adjusted performance of our selected
+cases. Table 9 regresses the daily employed capital portfolio excess returns onto the Fama-French three
+factor model with momentum ([Fama and French, 1992, Fama and French, 1993], [Carhart, 1997]), and the
+Fama-French five factor model with momentum ([Fama and French, 2015]). The columns “MKT”, “SMB”,
+“HML”, “RMW”, “CMA” and “MOM” are, respectively, the market, small-minus-big factor, high-minus-low,
+profitability, investment and momentum factors.
+[Table 9 about here.]
+For brevity, let’s focus our discussions on the five factor model. First and foremost, we see that distance
+method clustering based strategies do not generate statistically significant alpha; this is regardless of clustering
+on the closing price P feature or using the kitchen-sink features set All, and also regardless of the trading
+method. Given that we are working with post-2000’s data on the large S&P 500 equities universe, this result
+largely confirms the findings of [Rad et al., 2016] and [Krauss, 2017], whereby they document a declining
+profitability of conventional statistical arbitrage techniques. Next, we see that single-view clustering methods
+also do not fare much better than the distance based methods. We see that “SV-KM(25)-All-SprN” and
+“SV-Sp(25)-All-SprN” also fail to generate any statistically significant alpha. However, the story becomes
+more encouraging as we move to multi-view based clustering methods. We see that “MV-Sp(25)-All-SprN”
+(α = 2.0% p.a. (t-statistic of 2.139)), “MV-CRSp(25)-All-SprN” (3.0% (2.276)) and “MV-CRSp(25)-All-OU”
+(2.4% (3.655)) are all both economically and statistically significant. We should keep in mind that these
+economic and statistical magnitudes are quite substantial once we remind ourselves that our universe focuses
+on the largest equities in the US. Also interestingly, we see that all of our cases (regardless of whether they
+18
+
+have statistically significant alpha or not) have a slightly negative (but very statistically significant) market
+factor beta, which implies our strategies are almost market neutral.
+Reducing the set of strategies to that of Table 8 allows us to concisely investigate the specific per-trade
+properties of the strategies in Table 10. The benchmark “DM-P-BvLS-SprN” strategy generates a 29.22 basis
+point of PnL per day for each active trade and a per-trade daily IR of 0.297 and a skewness of 7.2. However,
+only 51.8% of the trades are convergent in this strategy and the PnL per trade is only at 46.91 basis points.
+Coherent with the aforementioned factor regression results, we see that moving to single-view clustering
+methods do not improve much upon the “DM-P-BvLS-SprN” benchmark. Once again, the story gets more
+interesting once we consider multi-view clustering methods. For “MV-Sp(25)-All-BvLS-SprN”, 50.9% of its
+trades are convergent but it enjoys a mean per-trade daily IR of 0.285 and a much higher skewness of 10.7.
+In other words, “MV-Sp(25)-All-BvLS-SprN” is much more likely than “DM-P-BvLS-SprN” to experience
+large positive PnL wins. The picture for “MV-CRSp(25)-All-BvLS-SprN” and “MV-CRSp(25)-All-BvLS-OU”
+improve upon that of “MV-Sp(25)-All-BvLS-SprN”. In particular, thanks to both an improved clustering
+method and also a better trading method, “MV-CRSp(25)-All-BvLS-OU” exhibits the highest win rate of
+69.2%, the highest mean per-trade average daily PnL of 38.13 basis points, and also the highest total PnL per
+trade of 54.32 basis points. Finally, Table 11 shows the number of activated trades per day of our selected
+cases and also the number of distinct pairs encountered throughout the entire trading period.
+[Table 10 about here.]
+[Table 11 about here.]
+4.4
+Results highlights for ETFs, futures, and forex
+As mentioned, we only briefly highlight the core findings for ETFs, futures and forex in this main text. See
+Supplemental Materials [Leung, 2024] for more detailed discussions. While there is some literature guidance
+on the transactions costs amounts for equities, as far as we are aware the literature for transactions costs on
+non-equities asset classes is sparse. However, for the sake of consistency, we will assume the same 5 basis
+point transaction cost throughout.
+[Figure 7 about here.]
+Figure 7 summarizes our findings across all the asset classes. As a reference, for each asset class, we show
+the [Gatev et al., 2006] benchmark strategy whereby we apply the distance clustering method on just the
+normalized price index P, use the simple bivariate long-short signal, and trade according to the two standard
+deviation rule. Echoing our results on the S&P 500 in this main text, we consistently find the clustering
+method associated with the best Sharpe ratio strategy is associated with a multi-view clustering algorithm.
+We will delegate details of the exact features set, signal choices and trading rule choices that generate the best
+strategy to the Supplemental Materials. Notice for the ETFs, it seems like a single-view clustering method
+generated the best Sharpe ratio strategy. However, as our Supplemental Materials show, that best strategy
+actually has a relatively weak t-statistic on the mean excess returns. In other words, we do not find meaningful
+statistical arbitrage profits in the highly liquid ETFs that we have selected. Regardless, for the S&P 500,
+futures and forex asset classes, we find the strategies associated with the multi-view clustering method not
+only generate the best performance, but also significantly outperforms that of the simple benchmark strategy
+in both Sharpe ratios and maximum drawdowns. In all, it is a strong robustness check that our methodology
+applies across multiple asset classes.
+5
+Conclusion
+We offer a revised answer to the question posed by [Do and Faff, 2010]: “Does Simple Pairs Trading Still
+Work?” Our conclusion is negative. Since the 2000s, we have not observed statistical arbitrage profits across
+S&P 500 equities, exchange-traded funds, futures contracts, and foreign exchange asset classes when using
+19
+
+the classical benchmark of [Gatev et al., 2006], which applies the distance clustering method combined with
+the two-standard-deviation trading rule.
+Instead, we positively answer the refined question: “Does Pairs Trading with Improved Assets Clustering
+Methods Work?”. This paper makes two key contributions: (1) We incorporate realized estimators based
+on high-frequency intraday data into the daily feature set that characterizes an asset; and (2) We examine
+the effectiveness of applying single-view and multi-view clustering algorithms on this expanded feature
+set to identify assets for potential statistical arbitrage trading. By utilizing multi-view clustering on both
+closing prices and daily realized estimates, we uncover statistically and economically significant risk-adjusted
+arbitrage profits across all major asset classes. In particular, by expanding the feature set and applying
+clustering algorithms, we identify significant arbitrage opportunities where the benchmark “simple pairs
+trading” method falls short. Indeed, since distance-based and single-view clustering methods inherently lose
+spatial and temporal feature information, it is expected that multi-view clustering methods would produce
+more effective clusters, leading to superior statistical arbitrage trading performance.
+We believe there are several fruitful avenues for future research: (i) Consider more sophisticated multi-view
+clustering algorithms. This paper has mostly focused on single-view and multi-view spectral clustering, which
+are core staples in the clustering literature. Recent developments in multi-view deep clustering could be an
+interesting direction (see [Ren et al., 2024]); (ii) Fine tune the number of clusters. It seems like a robust
+method to find the optimal number of clusters in clustering algorithms remains challenging, although some
+advances have been made on this important topic; see [Xu and Tian, 2015] and [Oyewole and Thopil, 2023]
+for recent surveys. (iii) Expand the number of asset names, especially for equities. Due to our intraday data
+availability, we have restricted our equities universe to just the S&P 500 constituents. It would be instructive
+to extend our analysis to include smaller US equities; and (iv) Curate and expand the set of daily features.
+To emphasize the realized estimators in this paper, we deliberately do not include low frequency fundamentals
+into the features set. It would be interesting expand our work to include these slower moving fundamentals
+(e.g. sector information for equities, and see the set of fundamentals by [Green et al., 2017]).
+References
+[Abdi and Ranaldo, 2017] Abdi, F. and Ranaldo, A. (2017). A simple estimation of bid-ask spreads from
+daily close, high, and low prices. The Review of Financial Studies, 30(12):4437–4480.
+[Amaya et al., 2015] Amaya, D., Christoffersen, P., Jacobs, K., and Vasquez, A. (2015). Does realized
+skewness predict the cross-section of equity returns? Journal of Financial Economics, 118(1):135–167.
+[Andersen et al., 2001] Andersen, T. G., Bollerslev, T., Diebold, F. X., and Labys, P. (2001). The distribution
+of realized exchange rate volatility. Journal of the American Statistical Association, 96(453):42–55.
+[Andersen et al., 2003] Andersen, T. G., Bollerslev, T., Diebold, F. X., and Labys, P. (2003). Modeling and
+forecasting realized volatility. Econometrica, 71(2):579–625.
+[Ang et al., 2006] Ang, A., Hodrick, R. J., Xing, Y., and Zhang, X. (2006). The cross-section of volatility
+and expected returns. The Journal of Finance, 61(1):259–299.
+[Avellaneda and Lee, 2010] Avellaneda, M. and Lee, J.-H. (2010). Statistical arbitrage in the us equities
+market. Quantitative Finance, 10(7):761–782.
+[Aznar and Salvador, 2002] Aznar, A. and Salvador, M. (2002). Selecting the rank of the cointegration space
+and the form of the intercept using an information criterion. Econometric Theory, 18(4):926–947.
+[Bandi and Russell, 2008] Bandi, F. M. and Russell, J. R. (2008). Microstructure noise, realized variance,
+and optimal sampling. The Review of Economic Studies, 75(2):339–369.
+20
+
+[Barndorff-Nielsen and Shephard, 2002] Barndorff-Nielsen, O. E. and Shephard, N. (2002). Econometric
+analysis of realized volatility and its use in estimating stochastic volatility models. Journal of the Royal
+Statistical Society Series B: Statistical Methodology, 64(2):253–280.
+[Bauwens et al., 2012] Bauwens, L., Hafner, C. M., and Laurent, S. (2012). Handbook of volatility models
+and their applications, volume 3. John Wiley & Sons.
+[Bertram, 2010] Bertram, W. K. (2010). Analytic solutions for optimal statistical arbitrage trading. Physica
+A: Statistical mechanics and its applications, 389(11):2234–2243.
+[Blum and Mitchell, 1998] Blum, A. and Mitchell, T. (1998). Combining labeled and unlabeled data with
+co-training. In Proceedings of the eleventh annual conference on Computational learning theory, pages
+92–100.
+[Bollerslev et al., 2020] Bollerslev, T., Li, J., Patton, A. J., and Quaedvlieg, R. (2020). Realized semicovariances. Econometrica, 88(4):1515–1551.
+[Bookstaber, 2008] Bookstaber, R. (2008). A Demon of Our Own Design: Markets, Hedge Funds, and the
+Perils of Financial Innovation. Wiley.
+[Brunetti and De Luca, 2023] Brunetti, M. and De Luca, R. (2023). Pre-selection in cointegration-based
+pairs trading. Statistical Methods & Applications, pages 1–30.
+[Carhart, 1997] Carhart, M. M. (1997). On persistence in mutual fund performance. The Journal of Finance,
+52(1):57–82.
+[Chao et al., 2021] Chao, G., Sun, S., and Bi, J. (2021). A survey on multiview clustering. IEEE Transactions
+on Artificial Intelligence, 2(2):146–168.
+[Chiu and Wong, 2011] Chiu, M. C. and Wong, H. Y. (2011). Mean-variance portfolio selection of cointegrated
+assets. Journal of Economic Dynamics and Control, 35(8):1369–1385.
+[Corwin and Schultz, 2012] Corwin, S. A. and Schultz, P. (2012). A simple way to estimate bid-ask spreads
+from daily high and low prices. The Journal of Finance, 67(2):719–760.
+[Cucuringu et al., 2019] Cucuringu, M., Davies, P., Glielmo, A., and Tyagi, H. (2019). Sponge: A generalized
+eigenproblem for clustering signed networks. In The 22nd International Conference on Artificial Intelligence
+and Statistics, pages 1088–1098. PMLR.
+[Do and Faff, 2010] Do, B. and Faff, R. (2010). Does simple pairs trading still work? Financial Analysts
+Journal, 66(4):83–95.
+[Engle and Granger, 1991] Engle, R. and Granger, C. (1991). Long-run economic relationships: Readings in
+cointegration. Oxford University Press.
+[Engle and Granger, 1987] Engle, R. F. and Granger, C. W. (1987). Co-integration and error correction:
+Representation, estimation, and testing. Econometrica, pages 251–276.
+[Eroğlu et al., 2023] Eroğlu, B. A., Yener, H., and Yiğit, T. (2023). Pairs trading with wavelet transform.
+Quantitative Finance, pages 1–26.
+[Fama and French, 1992] Fama, E. F. and French, K. R. (1992). The cross-section of expected stock returns.
+The Journal of Finance, 47(2):427–465.
+[Fama and French, 1993] Fama, E. F. and French, K. R. (1993). Common risk factors in the returns on
+stocks and bonds. Journal of financial economics, 33(1):3–56.
+21
+
+[Fama and French, 2015] Fama, E. F. and French, K. R. (2015). A five-factor asset pricing model. Journal
+of Financial Economics, 116(1):1–22.
+[Frazzini et al., 2018] Frazzini, A., Israel, R., and Moskowitz, T. J. (2018). Trading costs. Available at SSRN
+3229719.
+[Fu et al., 2020] Fu, L., Lin, P., Vasilakos, A. V., and Wang, S. (2020). An overview of recent multi-view
+clustering. Neurocomputing, 402:148–161.
+[Gatev et al., 2006] Gatev, E., Goetzmann, W. N., and Rouwenhorst, K. G. (2006). Pairs trading: Performance of a relative-value arbitrage rule. The Review of Financial Studies, 19(3):797–827.
+[Green et al., 2017] Green, J., Hand, J. R., and Zhang, X. F. (2017). The characteristics that provide
+independent information about average us monthly stock returns. The Review of Financial Studies,
+30(12):4389–4436.
+[Han et al., 2023] Han, C., He, Z., and Toh, A. J. W. (2023). Pairs trading via unsupervised learning.
+European Journal of Operational Research, 307(2):929–947.
+[Hansen and Lunde, 2006] Hansen, P. R. and Lunde, A. (2006). Realized variance and market microstructure
+noise. Journal of Business & Economic Statistics, 24(2):127–161.
+[Harvey et al., 2016] Harvey, C. R., Liu, Y., and Zhu, H. (2016). ... and the cross-section of expected returns.
+The Review of Financial Studies, 29(1):5–68.
+[Huck and Afawubo, 2015] Huck, N. and Afawubo, K. (2015). Pairs trading and selection methods: is
+cointegration superior? Applied Economics, 47(6):599–613.
+[Jacobs and Weber, 2015] Jacobs, H. and Weber, M. (2015). On the determinants of pairs trading profitability.
+Journal of Financial Markets, 23:75–97.
+[Jin et al., 2023] Jin, Q., Cucuringu, M., and Cartea, Á. (2023). Correlation matrix clustering for statistical
+arbitrage portfolios. In Proceedings of the Fourth ACM International Conference on AI in Finance, pages
+557–564.
+[Johansen, 1988] Johansen, S. (1988). Statistical analysis of cointegration vectors. Journal of Economic
+Dynamics and Control, 12(2-3):231–254.
+[Johansen, 1991] Johansen, S. (1991). Estimation and hypothesis testing of cointegration vectors in gaussian
+vector autoregressive models. Econometrica, pages 1551–1580.
+[Khandani and Lo, 2008] Khandani, A. E. and Lo, A. W. (2008). What happened to the quants in august
+2007?: Evidence from factors and transactions data. Technical report, National Bureau of Economic
+Research.
+[Krauss, 2017] Krauss, C. (2017). Statistical arbitrage pairs trading strategies: Review and outlook. Journal
+of Economic Surveys, 31(2):513–545.
+[Krauss et al., 2017] Krauss, C., Do, X. A., and Huck, N. (2017). Deep neural networks, gradient-boosted
+trees, random forests: Statistical arbitrage on the s&p 500. European Journal of Operational Research,
+259(2):689–702.
+[Kumar and Daumé, 2011] Kumar, A. and Daumé, H. (2011). A co-training approach for multi-view spectral
+clustering. In Proceedings of the 28th International Conference on Machine Learning (ICML-11), pages
+393–400.
+[Leung, 2024] Leung, R. C. W. (2024). Supplemental Materials to “Statistical Arbitrage via Single-view and
+Multi-view Spectral Clustering on Mixed Frequency Data”.
+22
+
+[Lintner, 1975] Lintner, J. (1975). The valuation of risky assets and the selection of risky investments in
+stock portfolios and capital budgets. Stochastic Optimization Models in Finance, pages 131–155.
+[Liu et al., 2017] Liu, B., Chang, L.-B., and Geman, H. (2017). Intraday pairs trading strategies on high
+frequency data: The case of oil companies. Quantitative Finance, 17(1):87–100.
+[Lloyd, 1982] Lloyd, S. (1982). Least squares quantization in pcm. IEEE Transactions on Information
+Theory, 28(2):129–137.
+[MacQueen et al., 1967] MacQueen, J. et al. (1967). Some methods for classification and analysis of multivariate observations. In Proceedings of the Fifth Berkeley Symposium on Mathematical Statistics and
+Probability, volume 1, pages 281–297. Oakland, CA, USA.
+[Maddala and Kim, 1998] Maddala, G. S. and Kim, I.-M. (1998). Unit roots, cointegration, and structural
+change. Cambridge university press.
+[Markowitz, 1952] Markowitz, H. (1952). Portfolio selection. The Journal of Finance, 7(1):77–91.
+[McAleer and Medeiros, 2008] McAleer, M. and Medeiros, M. C. (2008). Realized volatility: A review.
+Econometric reviews, 27(1-3):10–45.
+[Nelsen, 2006] Nelsen, R. B. (2006). An Introduction to Copulas. Springer.
+[Newey and West, 1987] Newey, W. K. and West, K. D. (1987). A simple, positive semi-definite, heteroskedasticity and autocorrelation consistent covariance matrix. Econometrica: Journal of the Econometric Society,
+pages 703–708.
+[Ng et al., 2001] Ng, A., Jordan, M., and Weiss, Y. (2001). On spectral clustering: Analysis and an algorithm.
+Advances in neural information processing systems, 14.
+[Oyewole and Thopil, 2023] Oyewole, G. J. and Thopil, G. A. (2023). Data clustering: Application and
+trends. Artificial Intelligence Review, 56(7):6439–6475.
+[Phillips, 1991] Phillips, P. C. (1991). Optimal inference in cointegrated systems. Econometrica, pages
+283–306.
+[Phillips, 1994] Phillips, P. C. (1994). Some exact distribution theory for maximum likelihood estimators of
+cointegrating coefficients in error correction models. Econometrica: Journal of the Econometric Society,
+pages 73–93.
+[R Core Team, 2023] R Core Team (2023). R: A Language and Environment for Statistical Computing. R
+Foundation for Statistical Computing, Vienna, Austria.
+[Rad et al., 2016] Rad, H., Low, R. K. Y., and Faff, R. (2016). The profitability of pairs trading strategies:
+distance, cointegration and copula methods. Quantitative Finance, 16(10):1541–1558.
+[Ren et al., 2024] Ren, Y., Pu, J., Yang, Z., Xu, J., Li, G., Pu, X., Philip, S. Y., and He, L. (2024). Deep
+clustering: A comprehensive survey. IEEE Transactions on Neural Networks and Learning Systems.
+[Rogers and Williams, 2000a] Rogers, L. C. and Williams, D. (2000a). Diffusions, Markov Processes, and
+Martingales: Volume 1 Foundations. Cambridge University Press.
+[Rogers and Williams, 2000b] Rogers, L. C. and Williams, D. (2000b). Diffusions, Markov processes, and
+Martingales: Volume 2 Itô Calculus. Cambridge university press.
+[Roll, 1984] Roll, R. (1984). A simple implicit measure of the effective bid-ask spread in an efficient market.
+The Journal of finance, 39(4):1127–1139.
+23
+
+[Sharpe, 1964] Sharpe, W. F. (1964). Capital asset prices: A theory of market equilibrium under conditions
+of risk. The Journal of Finance, 19(3):425–442.
+[Shi and Malik, 2000] Shi, J. and Malik, J. (2000).
+Normalized cuts and image segmentation.
+IEEE
+Transactions on Pattern Analysis and Machine Intelligence, 22(8):888–905.
+[Stroustrup, 2013] Stroustrup, B. (2013). The C++ Programming Language. Addison-Wesley Professional.
+[Stübinger, 2019] Stübinger, J. (2019). Statistical arbitrage with optimal causal paths on high-frequency
+data of the s&p 500. Quantitative Finance, 19(6):921–935.
+[Stübinger and Bredthauer, 2017] Stübinger, J. and Bredthauer, J. (2017). Statistical arbitrage pairs trading
+with high-frequency data. International Journal of Economics and Financial Issues, 7(4):650–662.
+[Stübinger et al., 2018] Stübinger, J., Mangold, B., and Krauss, C. (2018). Statistical arbitrage with vine
+copulas. Quantitative Finance, 18(11):1831–1849.
+[Van Rossum and Drake, 2009] Van Rossum, G. and Drake, F. L. (2009). Python 3 Reference Manual.
+CreateSpace, Scotts Valley, CA.
+[Vidyamurthy, 2004] Vidyamurthy, G. (2004). Pairs Trading: Quantitative Methods and Analysis, volume
+217. John Wiley & Sons.
+[von Luxburg, 2007] von Luxburg, U. (2007). A tutorial on spectral clustering. Statistics and Computing,
+17:395–416.
+[Wang and Bessler, 2005] Wang, Z. and Bessler, D. A. (2005). A monte carlo study on the selection of
+cointegrating rank using information criteria. Econometric Theory, 21(3):593–620.
+[Xie et al., 2016] Xie, W., Liew, R. Q., Wu, Y., and Zou, X. (2016). Pairs trading with copulas. The Journal
+of Trading, 11(3):41–52.
+[Xu and Tian, 2015] Xu, D. and Tian, Y. (2015). A comprehensive survey of clustering algorithms. Annals
+of Data Science, 2:165–193.
+[Zelnik-Manor and Perona, 2004] Zelnik-Manor, L. and Perona, P. (2004). Self-tuning spectral clustering.
+Advances in neural information processing systems, 17.
+24
+
+Formation period (12 × 21 days)
+Trading period (6 × 21 days)
+Figure 1: Timeline of the formation and trading periods. There are two distinct steps in the formation
+period: clustering assets and constructing trading signals. Assets are first clustered with a given clustering
+method. Then within each cluster, we select asset candidates eligible for subsequent trading and construct a
+trading signal. Finally in the trading period, we execute the trading rule based the signals of those selected
+assets from the formation period. The formation period is twelve months and the trading period is six months,
+where we assume each month has 21 business days. Each square in the diagram represents one month (i.e. 21
+business days).
+25
+
+N
+T
+Xp
+X1
+p
+Multi-view
+clustering
+Single-view
+clustering
+N
+X1
+Xp
+Z
+pT
+Figure 2: Illustration of multi-view versus single-view clustering. Here, N is the number of assets, T is the
+number of time periods in the formation period, and p is the number of features under consideration.
+26
+
+C1
+C2
+CK
+· · · · · ·
+⌈NumPairs/K⌉
+MSE ↓
+•
+•
+••
+•••
+•••
+...
+...
+...
+...
+••••••••
+••
+••
+••
+•••
+•••••
+...
+...
+••••••••
+•
+•••
+•••
+•••
+•••••
+...
+...
+...
+...
+...
+...
+•••••••••
+Figure 3: Illustration of applying the distance method screening on the single-view or multi-view clusters
+C1, C2, . . . , CK. Each ■represents one specific asset. Each • represents the magnitude of the calculated mean
+squared errors between the normalized prices over the formation period of a pair assets that belong to the
+same cluster; less (more) •’s represent smaller (bigger) MSE’s. We choose K ∈{10, 25} and NumPairs = 50
+for the S&P 500 equities in this main text.
+27
+
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+0.35
+0.40
+0.45
+−0.1
+0.0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1.0
+1.1
+1.2
+Sharpe ratio
+Maximum drawdown
+(a) Without transactions costs
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+0.35
+0.40
+0.45
+0.50
+−0.2
+−0.1
+0.0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+Sharpe ratio
+Maximum drawdown
+DM
+MV−CRSp(10)
+MV−CRSp(25)
+MV−Sp(10)
+MV−Sp(25)
+SV−KM(10)
+SV−KM(25)
+SV−Sp(10)
+SV−Sp(25)
+DM
+SV
+MV
+(b) After transactions costs
+Figure 4: Scatter plots of the employed capital portfolio Sharpe ratio and the maximum drawdown of the
+various cases considered in this paper over 2000–2022. This figure plots all the cases across every clustering
+method, feature, signal (except for the multivariate cointegration signal) and trading method. The horizontal
+axis shows the annualized Sharpe ratio, while the vertical axis shows the maximum drawdown over daily
+horizons (further down is better).
+28
+
+1.0
+1.2
+1.4
+1.6
+1.8
+2.0
+2.2
+2003
+2006
+2009
+2012
+2015
+2018
+2021
+Cum ex return ($) w/o trans costs 
+0.8
+0.9
+1.0
+1.1
+1.2
+1.3
+1.4
+1.5
+1.6
+1.7
+1.8
+2003
+2006
+2009
+2012
+2015
+2018
+2021
+Cum ex return ($) w/ trans costs
+DM−P−BvLS−SprN
+DM−P−BvLS−OU
+DM−All−BvLS−SprN
+DM−All−BvLS−OU
+SV−KM(25)−All−BvLS−SprN
+SV−Sp(25)−All−BvLS−SprN
+MV−Sp(25)−All−BvLS−SprN
+MV−CRSp(25)−All−BvLS−SprN
+MV−CRSp(25)−All−BvLS−OU
+DM
+SV
+MV
+Figure 5: Cumulative returns series of the highlighted cases in Table 8. The displayed cumulative returns
+are based on the monthly excess returns of the employed capital portfolios over 2000–2022. The monthly
+excess returns are obtained by compounding the daily excess returns.
+29
+
+1.00 0.89
+1.00
+0.22
+0.21
+1.00
+0.31
+0.30
+0.58
+1.00
+0.35
+0.36
+0.59
+0.19
+1.00
+0.28
+0.25
+0.68
+0.17
+0.78
+1.00
+0.67
+0.64
+0.18
+0.26
+0.46
+0.40
+1.00
+0.16
+0.15
+0.71
+0.10
+0.78
+0.91
+0.23
+1.00
+0.43
+0.48
+0.16
+0.22
+0.46
+0.33
+0.57
+0.30
+1.00
+−1
+−0.8
+−0.6
+−0.4
+−0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+DM−P−BvLS−SprN
+DM−P−BvLS−OU
+DM−All−BvLS−SprN
+DM−All−BvLS−OU
+SV−KM(25)−All−BvLS−SprN
+SV−Sp(25)−All−BvLS−SprN
+MV−Sp(25)−All−BvLS−SprN
+MV−CRSp(25)−All−BvLS−SprN
+MV−CRSp(25)−All−BvLS−OU
+DM−P−BvLS−SprN
+DM−P−BvLS−OU
+DM−All−BvLS−SprN
+DM−All−BvLS−OU
+SV−KM(25)−All−BvLS−SprN
+SV−Sp(25)−All−BvLS−SprN
+MV−Sp(25)−All−BvLS−SprN
+MV−CRSp(25)−All−BvLS−SprN
+MV−CRSp(25)−All−BvLS−OU
+(a) Correlation matrix
+−0.1
+0.0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1.0
+2003
+2006
+2009
+2012
+2015
+2018
+2021
+Correlation
+DM−P−BvLS−SprN
+DM−P−BvLS−OU
+DM−All−BvLS−SprN
+DM−All−BvLS−OU
+SV−KM(25)−All−BvLS−SprN
+SV−Sp(25)−All−BvLS−SprN
+MV−Sp(25)−All−BvLS−SprN
+MV−CRSp(25)−All−BvLS−SprN
+MV−CRSp(25)−All−BvLS−OU
+DM
+SV
+MV
+(b) Rolling correlations against “DM-P-BvLS-SprN”
+Figure 6: The correlation matrix and the rolling correlations of the employed capital portfolio excess returns of the highlighted case strategies
+of Table 8 over 2000–2022. The left panel shows the overall correlations of the daily excess returns over the entire sample period. The right
+panel shows the rolling 36 month correlations of the monthly excess returns of various highlighted strategies against that of “DM-P-BvLS-SprN”.
+The daily excess returns are compounded to obtain the monthly excess returns series.
+30
+
+Sharpe ratio
+Maximum drawdown
+S&P 500
+ETF
+Futures
+FX−American
+FX−British
+FX−European
+−0.50
+−0.25
+0.00
+0.25
+0.50
+0.75
+1.00
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+DM−P−BvLS−SprN
+SV
+MV
+Figure 7: Summary of employed capital portfolio performance results across the S&P 500 equities (over the
+date range 2000–2022), ETFs (2012–2022), futures (2009–2022) and forex (2010–2022) asset classes. The top
+panel shows the annualized Sharpe ratios of the employed capital portfolio, while the bottom panel shows the
+maximum drawdown over the daily excess return series. Note maximum drawdown is positively signed (i.e.
+lower is better). We assume a transactions costs of 5 basis points for every monetary unit (i.e. pound for
+FX-Britsh, euro for FX-European, and US dollar for every other asset class) of position held by each asset
+when entering a trade, and also the same transactions costs when exiting a trade. For each asset class, the left
+bar shows the benchmark strategy of [Gatev et al., 2006]’s distance clustering method on the normalized price
+index P with the two standard deviation trading rule. For each asset class, the right bar shows the clustering
+method associated with the strategy achieving the highest Sharpe ratio across all clustering methods, features
+set choice, signal choice and trading rule choice. We set a cluster size of K = 5 and select 10 pairs in the
+distance method screening for all non-S&P 500 equities asset classes due to the smaller number of asset names
+available. We respectively focus on forex pairs for which the American USD, British GBP and European EUR
+are the quote currencies. Due to timezone limitations, the realized betas of the forex asset use various futures
+rather than US-traded ETFs as reference assets. See the Supplemental Materials [Leung, 2024] for details.
+31
+
+Formation Period
+Trading Period
+Trading rule
+Clustering
+Signal
+Spread
+%-tile
+thresholds
+Bivar
+mispricing
+index
+OU
+thresholds
+Distance
+Method
+Bivariate assets
+Simple long-short
+✓
+Bivariate cointegration
+✓
+✓
+Bivariate copula
+✓
+Single-view
+Clustering
+Bivariate assets
+Simple long-short
+✓
+Bivariate cointegration
+✓
+✓
+Bivariate copula
+✓
+Multivariate assets
+Multivar. cointegration
+✓
+✓
+Multi-view
+Clustering
+Bivariate assets
+Simple long-short
+✓
+Bivariate cointegration
+✓
+✓
+Bivariate copula
+✓
+Multivariate assets
+Multivar. cointegration
+✓
+✓
+Table 1: Summary of methods. A “✓” indicates a pertinent case considered in this paper. A strategy in
+this paper is the combination of four elements: (a) choice of the features set from Table 4; (b) choice of the
+clustering algorithm; (c) choice of the signal; and (d) choice of the trading rule. Signals that involve “bivariate
+assets” with the single-view or multi-view clustering algorithms always apply the distance method screening
+of Section 3.3.5.
+32
+
+Feature
+Definition
+Reference
+Pt
+Raw closing price
+Pt
+Normalized price
+Pt/P1
+Rt
+Daily log-return
+log(Pt/Pt−1)
+RVt
+Realized variance
+PM
+m=1(Rtm −Rtm−1)2
+[Andersen et al., 2001]
+RCovt,i,j
+Realized covariance
+PM
+m=1 Rtm,iRtm,j
+[Andersen et al., 2001]
+Skewt
+Realized skewness
+√
+M PM
+m=1 R3
+tm
+(PM
+m=1 R2
+tm)3/2
+[Amaya et al., 2015]
+Kurtt
+Realized kurtosis
+M PM
+m=1 R4
+tm
+(PM
+m=1 R2
+tm)2
+[Amaya et al., 2015]
+SVDownt
+Downside semivariance
+PM
+m=1(R−
+tm)2
+[Bollerslev et al., 2020]
+SVUpt
+Upside semivariance
+PM
+m=1(R+
+tm)2
+[Bollerslev et al., 2020]
+Betaindex,t
+Realized beta
+RCovindex,t/RVindex,t
+betamkt,t
+Market beta
+[Markowitz,
+1952],
+[Sharpe,
+1964],
+[Lintner, 1975]
+betasmb,t
+Small-minus-big beta
+[Fama and French, 1992]
+betahml,t
+High-minus-low beta
+[Fama and French, 1992]
+betaumd,t
+Up-minus-down beta
+[Carhart, 1997]
+ivolt
+Idiosyncratic volatility
+[Ang et al., 2006]
+tvolt
+Total volatility
+Table 2: Definition of features. See Table 3 for the list of indices for which realized betas are computed
+against.
+33
+
+Symbol
+Index Name
+SPY
+SPDR S&P 500
+DIA
+SPDR Dow Jones Industrial Average
+IWM
+iShares Russell 2000 Index
+QQQ
+PowerShares QQQ
+XLB
+SPDR Materials Select Sector
+XLE
+SPDR Energy Select Sector
+XLF
+SPDR Financial Select Sector
+XLI
+SPDR Industrial Select Sector
+XLK
+SPDR Technology Select Sector
+XLP
+SPDR Consumer Staples Select Sector
+XLU
+SPDR Utilities Select Sector
+XLV
+SPDR Health Care Select Sector
+XLY
+SPDR Consumer Discretionary Select Sector
+Table 3: List of market indices used to calculate realized betas.
+34
+
+P
+RV
+SK
+SV
+BetaSPY Betaidx Betasec betaFF
+vol
+1.
+×
+2.
+×
+×
+3.
+×
+×
+×
+4.
+×
+×
+×
+5.
+×
+×
+6.
+×
+×
+×
+×
+7.
+×
+×
+8.
+×
+×
+×
+9.
+×
+×
+10.
+×
+×
+11.
+×
+×
+×
+12.
+×
+×
+×
+13.
+×
+×
+×
+×
+×
+×
+14.
+×
+×
+×
+×
+×
+×
+×
+×
+×
+Table 4:
+Sets of features.
+An “×” indicates that the given feature is included into the set.
+Note
+that all features set include normalized prices P.
+See Table 2 for the definitions of the features.
+For notational brevity, we use bolded letters to indicate a grouped set of features: SK (Skew, Kurt);
+SV (SVDown, SVUp); Betaidx (Betaindex for index ∈{DIA, IWM, QQQ}); Betasec (Betaindex for
+index ∈{XLB, XLE, XLF, XLI, XLK, XLP, XLU, XLU, XLV, XLY}); betaFF (betafactor for factor ∈
+{mkt, smb, hml, umd}); and vol (ivol, tvol).
+In the results tables, for brevity we will abbreviate feature set (14) as All.
+35
+
+Signal
+Trade
+Costs
+SR
+Mean
+t
+Skew
+Kurt
+MDD
+BvLS
+OrnUhl
+N
+0.851
+0.030
+3.892
+6.250
+170.973
+0.107
+BvCoint
+OrnUhl
+N
+0.826
+0.029
+3.778
+6.806
+191.082
+0.101
+BvLS
+Spr(optd)
+N
+0.626
+0.027
+2.861
+4.714
+136.344
+0.152
+BvLS
+Spr(norm)
+N
+0.571
+0.026
+2.610
+2.913
+130.797
+0.156
+BvCoint
+Spr(optd)
+N
+0.556
+0.024
+2.541
+3.362
+149.561
+0.150
+BvCoint
+Spr(norm)
+N
+0.539
+0.024
+2.465
+3.157
+138.828
+0.153
+BvLS
+OrnUhl
+Y
+0.536
+0.019
+2.452
+6.233
+171.081
+0.137
+BvCoint
+OrnUhl
+Y
+0.507
+0.018
+2.321
+6.792
+191.298
+0.136
+BvLS
+Spr(optd)
+Y
+0.377
+0.016
+1.726
+4.692
+136.136
+0.184
+BvLS
+Spr(norm)
+Y
+0.338
+0.015
+1.545
+2.891
+130.549
+0.188
+BvCoint
+Spr(optd)
+Y
+0.335
+0.015
+1.530
+3.341
+149.293
+0.180
+BvCoint
+Spr(norm)
+Y
+0.323
+0.014
+1.476
+3.133
+138.507
+0.181
+BvCopl
+MisPrIdx
+N
+0.068
+0.004
+0.312
+-11.236
+465.914
+0.265
+BvCopl
+MisPrIdx
+Y
+-0.071
+-0.005
+-0.326
+-11.245
+466.466
+0.322
+Table 5: Employed capital portfolio performance results for the distance clustering method on the closing
+price P sorted in descending order of the Sharpe ratio over 2000–2022. SR is the annualized Sharpe ratio,
+defined as the annualized mean excess returns divided by the annualized standard deviation of the excess
+returns. Mean is annualized mean returns and t is the associated t-statistic. Skew and Kurt are the kurtosis
+and skewness, respectively, of the daily excess returns. MDD is the maximum drawdown of the daily excess
+returns. We assume there are 252 business days per year whereever annualization is applied. See Table 1 for
+explanations of the columns Signal and Trade. A “Y” in the Costs column indicates this strategy incorporates
+trading costs, while “N” indicates the strategy does not incorporate trading costs. In tables where the column
+“Feat (with P)” is shown, refer to Table 4 for the combinations of features under consideration; all features
+include the normalized price index P.
+36
+
+Clustering
+Feat (with P)
+Signal
+Trade
+SR
+Mean
+t
+Skew
+Kurt
+MDD
+MV-CRSp(25)
+All
+BvLS
+OrnUhl
+0.830
+0.027
+3.797
+0.970
+13.297
+0.070
+MV-Sp(25)
+Betasec
+BvLS
+OrnUhl
+0.817
+0.030
+3.738
+2.865
+55.512
+0.062
+MV-Sp(25)
+betaFF-vol
+BvLS
+OrnUhl
+0.787
+0.028
+3.599
+2.808
+51.652
+0.074
+MV-Sp(25)
+SV
+BvLS
+OrnUhl
+0.756
+0.028
+3.457
+3.206
+67.676
+0.055
+MV-Sp(25)
+RV-SK
+BvLS
+OrnUhl
+0.752
+0.027
+3.438
+3.672
+81.378
+0.078
+MV-CRSp(25)
+BetaSPY-Betaidx
+BvLS
+OrnUhl
+0.750
+0.025
+3.428
+1.595
+19.817
+0.066
+MV-Sp(25)
+betaFF-vol
+BvLS
+Spr(optd)
+0.749
+0.034
+3.427
+2.320
+40.875
+0.122
+MV-CRSp(25)
+RV-SK-SV
+BvLS
+OrnUhl
+0.748
+0.026
+3.422
+1.655
+20.945
+0.082
+MV-Sp(25)
+betaFF-vol
+BvCoint
+OrnUhl
+0.747
+0.026
+3.415
+2.521
+45.846
+0.085
+MV-Sp(10)
+RV-SK-SV
+BvLS
+OrnUhl
+0.728
+0.025
+3.328
+2.114
+38.006
+0.079
+(a) Top ten sorted by Sharpe ratio
+Clustering
+Feat (with P)
+Signal
+Trade
+SR
+Mean
+t
+Skew
+Kurt
+MDD
+DM
+P
+BvCopl
+MisPrIdx
+-0.071
+-0.005
+-0.326
+-11.245
+466.466
+0.322
+DM
+Betasec
+BvCoint
+OrnUhl
+-0.075
+-0.002
+-0.345
+1.110
+20.252
+0.159
+DM
+RV-SK
+BvCoint
+Spr(optd)
+-0.080
+-0.008
+-0.368
+-3.164
+497.370
+0.417
+DM
+RV-SK-SV
+BvCoint
+Spr(optd)
+-0.080
+-0.008
+-0.368
+-3.164
+497.370
+0.417
+DM
+SV
+BvCopl
+MisPrIdx
+-0.091
+-0.006
+-0.416
+-11.813
+500.097
+0.309
+DM
+RV
+BvCopl
+MisPrIdx
+-0.092
+-0.006
+-0.422
+-12.350
+531.795
+0.310
+DM
+Betasec
+BvLS
+Spr(optd)
+-0.140
+-0.006
+-0.639
+0.472
+9.459
+0.242
+DM
+Betasec
+BvLS
+Spr(norm)
+-0.146
+-0.007
+-0.668
+0.545
+11.064
+0.248
+DM
+All
+BvCoint
+OrnUhl
+-0.155
+-0.007
+-0.707
+0.023
+10.648
+0.267
+DM
+RV-SK-SV-Betaidx-betaFF-vol
+BvCoint
+OrnUhl
+-0.196
+-0.010
+-0.898
+0.065
+11.911
+0.302
+(b) Bottom ten sorted by Sharpe ratio
+Table 6: Top and bottom ten employed capital portfolio performance results (after transactions costs and excluding the multivariate cointegration
+signal) for all clustering methods, features, signals and trading methods sorted in descending order of the annualized Sharpe ratio over 2000–2022.
+See Table 5 for an explanation of the columns.
+37
+
+Clustering
+Signal
+Trade
+SR
+Mean
+t
+Skew
+Kurt
+MDD
+DM
+BvCopl
+MisPrIdx
+0.187
+0.009
+0.856
+-0.012
+18.743
+0.143
+DM
+BvLS
+OrnUhl
+0.160
+0.009
+0.731
+-0.009
+45.921
+0.172
+DM
+BvLS
+Spr(optd)
+-0.022
+-0.002
+-0.100
+-3.431
+471.259
+0.320
+DM
+BvCoint
+Spr(norm)
+-0.036
+-0.004
+-0.166
+-3.845
+1114.632
+0.351
+DM
+BvCoint
+Spr(optd)
+-0.051
+-0.005
+-0.232
+-6.093
+894.803
+0.322
+DM
+BvLS
+Spr(norm)
+-0.051
+-0.005
+-0.235
+-3.177
+654.741
+0.357
+DM
+BvCoint
+OrnUhl
+-0.155
+-0.007
+-0.707
+0.023
+10.648
+0.267
+(a) Distance method clustering
+Clustering
+Signal
+Trade
+SR
+Mean
+t
+Skew
+Kurt
+MDD
+SV-Sp(10)
+BvCoint
+Spr(optd)
+0.495
+0.024
+2.263
+4.112
+77.170
+0.140
+SV-Sp(10)
+BvLS
+Spr(optd)
+0.480
+0.024
+2.196
+4.246
+104.660
+0.130
+SV-Sp(10)
+BvLS
+OrnUhl
+0.476
+0.016
+2.179
+1.701
+19.254
+0.088
+SV-KM(25)
+BvLS
+OrnUhl
+0.472
+0.016
+2.160
+0.985
+15.880
+0.084
+SV-Sp(25)
+BvLS
+OrnUhl
+0.462
+0.016
+2.114
+0.654
+9.307
+0.103
+SV-Sp(10)
+BvCoint
+Spr(norm)
+0.459
+0.022
+2.101
+2.167
+63.224
+0.134
+SV-Sp(10)
+BvLS
+Spr(norm)
+0.455
+0.024
+2.081
+3.428
+107.830
+0.132
+SV-Sp(25)
+BvCoint
+OrnUhl
+0.433
+0.015
+1.979
+0.722
+8.236
+0.150
+SV-KM(10)
+BvLS
+OrnUhl
+0.406
+0.013
+1.858
+1.002
+15.183
+0.108
+SV-KM(10)
+BvLS
+Spr(norm)
+0.379
+0.016
+1.733
+0.554
+9.251
+0.172
+(b) Single-view clustering
+Clustering
+Signal
+Trade
+SR
+Mean
+t
+Skew
+Kurt
+MDD
+MV-CRSp(25)
+BvLS
+OrnUhl
+0.830
+0.027
+3.797
+0.970
+13.297
+0.070
+MV-Sp(10)
+BvCopl
+MisPrIdx
+0.717
+0.020
+3.280
+1.053
+12.710
+0.058
+MV-Sp(10)
+BvLS
+OrnUhl
+0.697
+0.025
+3.189
+2.882
+66.261
+0.068
+MV-CRSp(10)
+BvCoint
+Spr(norm)
+0.648
+0.026
+2.964
+0.509
+16.621
+0.113
+MV-CRSp(10)
+BvLS
+Spr(norm)
+0.648
+0.026
+2.962
+0.458
+11.377
+0.112
+MV-CRSp(10)
+BvCoint
+Spr(optd)
+0.641
+0.026
+2.930
+0.592
+16.893
+0.114
+MV-CRSp(10)
+BvLS
+Spr(optd)
+0.629
+0.025
+2.876
+0.488
+15.710
+0.106
+MV-CRSp(10)
+BvCoint
+OrnUhl
+0.623
+0.020
+2.850
+0.767
+12.561
+0.088
+MV-CRSp(25)
+BvCoint
+OrnUhl
+0.621
+0.020
+2.842
+0.766
+10.950
+0.083
+MV-Sp(10)
+BvLS
+Spr(optd)
+0.611
+0.028
+2.796
+2.742
+62.316
+0.072
+(c) Multi-view clustering
+Table 7: Top ten employed capital portfolio performance results (after transactions costs and excluding the
+multivariate cointegration signal) on the All set of variables for all clustering methods, signals and trading
+methods sorted in descending order of the annualized Sharpe ratio over 2000–2022. See Table 5 for an
+explanation of the columns.
+38
+
+Case
+Clustering
+Feat (with P) Signal
+Trading
+DM-P-BvLS-SprN
+DM
+P
+BvLS
+Spr(norm)
+DM-P-BvLS-OU
+DM
+P
+BvLS
+OrnUhl
+DM-All-BvLS-SprN
+DM
+All
+BvLS
+Spr(norm)
+DM-All-BvLS-OU
+DM
+All
+BvLS
+OrnUhl
+SV-KM(25)-All-BvLS-SprN
+SV-KM(25)
+All
+BvLS
+Spr(norm)
+SV-Sp(25)-All-BvLS-SprN
+SV-Sp(25)
+All
+BvLS
+Spr(norm)
+MV-Sp(25)-All-BvLS-SprN
+MV-Sp(25)
+All
+BvLS
+Spr(norm)
+MV-CRSp(25)-All-BvLS-SprN
+MV-CRSp(25)
+All
+BvLS
+Spr(norm)
+MV-CRSp(25)-All-BvLS-OU
+MV-CRSp(25)
+All
+BvLS
+OrnUhl
+Table 8: Highlighted strategies
+39
+
+Case
+α (ann.)
+MKT
+SMB
+HML
+RMW
+CMA
+MOM
+FF3Mom
+DM-P-BvLS-SprN
+0.007
+-0.028
+0.033
+-0.027
+-0.071
+(0.710)
+(-3.094)
+(1.522)
+(-2.161)
+(-11.738)
+DM-P-BvLS-OU
+0.011
+-0.038
+0.032
+-0.022
+-0.050
+(1.438)
+(-5.121)
+(1.767)
+(-2.137)
+(-10.288)
+DM-All-BvLS-SprN
+-0.015
+0.002
+-0.013
+-0.025
+-0.044
+(-1.024)
+(0.239)
+(-0.644)
+(-2.349)
+(-4.617)
+DM-All-BvLS-OU
+-0.001
+-0.007
+-0.001
+-0.014
+-0.061
+(-0.099)
+(-0.959)
+(-0.055)
+(-1.723)
+(-8.250)
+SV-KM(25)-All-BvLS-SprN
+0.012
+-0.058
+0.016
+-0.017
+-0.096
+(1.306)
+(-10.336)
+(1.008)
+(-2.223)
+(-15.595)
+SV-Sp(25)-All-BvLS-SprN
+0.010
+-0.036
+0.015
+-0.016
+-0.129
+(0.875)
+(-6.595)
+(0.934)
+(-1.582)
+(-16.522)
+MV-Sp(25)-All-BvLS-SprN
+0.017
+-0.048
+0.035
+-0.033
+-0.105
+(1.802)
+(-4.948)
+(1.516)
+(-2.340)
+(-12.921)
+MV-CRSp(25)-All-BvLS-SprN
+0.026
+-0.050
+0.023
+-0.017
+-0.094
+(2.032)
+(-7.949)
+(1.574)
+(-1.716)
+(-10.645)
+MV-CRSp(25)-All-BvLS-OU
+0.022
+-0.061
+0.015
+-0.021
+-0.053
+(3.236)
+(-11.827)
+(1.278)
+(-3.064)
+(-9.528)
+FF5Mom
+DM-P-BvLS-SprN
+0.010
+-0.033
+0.029
+-0.008
+-0.023
+-0.064
+-0.064
+(1.013)
+(-4.107)
+(1.324)
+(-0.412)
+(-1.762)
+(-2.142)
+(-9.151)
+DM-P-BvLS-OU
+0.014
+-0.045
+0.028
+-0.003
+-0.030
+-0.061
+-0.044
+(1.874)
+(-6.473)
+(1.479)
+(-0.203)
+(-2.801)
+(-2.433)
+(-7.739)
+DM-All-BvLS-SprN
+-0.012
+-0.004
+-0.019
+-0.010
+-0.041
+-0.041
+-0.038
+(-0.817)
+(-0.459)
+(-0.962)
+(-0.651)
+(-2.210)
+(-1.303)
+(-3.667)
+DM-All-BvLS-OU
+0.003
+-0.015
+-0.012
+-0.001
+-0.067
+-0.028
+-0.055
+(0.287)
+(-2.068)
+(-0.714)
+(-0.083)
+(-4.543)
+(-1.126)
+(-7.114)
+SV-KM(25)-All-BvLS-SprN
+0.014
+-0.063
+0.013
+-0.000
+-0.017
+-0.057
+-0.090
+(1.539)
+(-10.719)
+(0.858)
+(-0.017)
+(-1.465)
+(-2.299)
+(-12.878)
+SV-Sp(25)-All-BvLS-SprN
+0.013
+-0.042
+0.013
+0.012
+-0.012
+-0.102
+-0.120
+(1.128)
+(-7.679)
+(0.843)
+(0.822)
+(-0.882)
+(-3.689)
+(-14.260)
+MV-Sp(25)-All-BvLS-SprN
+0.020
+-0.055
+0.033
+-0.008
+-0.015
+-0.089
+-0.097
+(2.139)
+(-6.282)
+(1.390)
+(-0.378)
+(-1.025)
+(-2.694)
+(-10.293)
+MV-CRSp(25)-All-BvLS-SprN
+0.030
+-0.056
+0.018
+0.006
+-0.029
+-0.074
+-0.086
+(2.276)
+(-8.974)
+(1.255)
+(0.407)
+(-2.132)
+(-2.984)
+(-8.874)
+MV-CRSp(25)-All-BvLS-OU
+0.024
+-0.067
+0.011
+-0.003
+-0.029
+-0.058
+-0.047
+(3.655)
+(-12.900)
+(0.929)
+(-0.286)
+(-3.123)
+(-3.170)
+(-7.485)
+Table 9: Regressing daily excess return series after transactions costs of the selected cases of Table 8 against
+various factor models over 2000–2022. The column “α (ann.)” is the annualized regression intercept (i.e. 1.00
+means 1.00% per annum). The t-statistics for each regression coefficient are given in parentheses and are
+calculating using [Newey and West, 1987] standard erors with 6 lags. See Section 4.3 for explanations of the
+other columns.
+40
+
+Per-trade average daily PnL
+Length(days)
+PnL per trade
+Case
+Conv
+%Trades
+Mean(bp)
+Std(bp)
+IR
+Skew
+Win
+Mean
+Std
+Mean(bp)
+Std(bp)
+IR
+DM-P-BvLS-SprN
+All
+100.0%
+29.22
+98.23
+0.297
+7.2
+62.7%
+47.0
+38.2
+46.91
+1028.65
+0.046
+C
+51.8%
+64.38
+125.18
+0.514
+5.9
+97.7%
+26.1
+25.0
+597.50
+646.99
+0.924
+U
+48.2%
+-8.59
+20.40
+-0.421
+-2.8
+25.1%
+69.5
+37.0
+-545.22
+1034.07
+-0.527
+DM-P-BvLS-OU
+All
+100.0%
+33.07
+107.52
+0.308
+30.7
+69.4%
+45.5
+41.0
+37.98
+937.10
+0.041
+C
+63.0%
+58.18
+128.08
+0.454
+28.2
+100.0%
+25.7
+25.3
+468.71
+517.00
+0.907
+U
+37.0%
+-9.76
+19.57
+-0.499
+-3.9
+17.3%
+79.2
+40.7
+-696.82
+1031.43
+-0.676
+DM-All-BvLS-SprN
+All
+100.0%
+12.85
+99.44
+0.129
+27.3
+57.1%
+19.4
+32.2
+-3.90
+596.60
+-0.007
+C
+79.9%
+18.41
+109.40
+0.168
+25.5
+64.9%
+7.9
+16.4
+127.38
+327.63
+0.389
+U
+20.1%
+-9.28
+31.69
+-0.293
+0.8
+25.9%
+65.3
+38.3
+-526.05
+1001.79
+-0.525
+DM-All-BvLS-OU
+All
+100.0%
+17.44
+59.95
+0.291
+6.8
+60.7%
+60.1
+40.7
+32.82
+1018.40
+0.032
+C
+46.6%
+45.79
+75.89
+0.603
+6.1
+100.0%
+35.0
+27.3
+713.75
+505.49
+1.412
+U
+53.4%
+-7.31
+19.73
+-0.371
+1.2
+26.4%
+82.0
+37.7
+-561.90
+980.38
+-0.573
+SV-KM(25)-All-BvLS-SprN
+All
+100.0%
+30.44
+135.01
+0.225
+14.2
+60.9%
+49.5
+38.1
+44.36
+1341.23
+0.033
+C
+47.2%
+76.11
+183.23
+0.415
+11.4
+97.2%
+28.0
+25.5
+841.25
+691.46
+1.217
+U
+52.8%
+-10.40
+31.31
+-0.332
+-4.8
+28.6%
+68.7
+37.1
+-668.09
+1380.02
+-0.484
+SV-Sp(25)-All-BvLS-SprN
+All
+100.0%
+25.31
+106.68
+0.237
+13.8
+59.0%
+53.1
+37.2
+34.47
+1301.86
+0.026
+C
+43.2%
+72.23
+146.23
+0.494
+11.5
+99.2%
+31.5
+25.4
+960.62
+644.05
+1.492
+U
+56.8%
+-10.31
+29.12
+-0.354
+-4.7
+28.4%
+69.4
+36.3
+-668.79
+1233.27
+-0.542
+MV-Sp(25)-All-BvLS-SprN
+All
+100.0%
+33.89
+119.05
+0.285
+10.7
+62.7%
+48.7
+38.4
+50.55
+1276.25
+0.040
+C
+50.9%
+77.64
+152.31
+0.510
+9.2
+99.1%
+27.2
+24.9
+805.41
+730.74
+1.102
+U
+49.1%
+-11.46
+27.83
+-0.412
+-4.6
+24.9%
+71.1
+37.0
+-732.08
+1249.28
+-0.586
+MV-CRSp(25)-All-BvLS-SprN
+All
+100.0%
+29.16
+116.47
+0.250
+11.2
+61.0%
+50.6
+37.5
+68.94
+1265.67
+0.054
+C
+46.1%
+74.78
+156.58
+0.478
+9.2
+98.8%
+29.3
+25.4
+873.43
+695.07
+1.257
+U
+53.9%
+-9.81
+30.23
+-0.325
+-6.9
+28.7%
+68.7
+36.7
+-618.32
+1237.95
+-0.499
+MV-CRSp(25)-All-BvLS-OU
+All
+100.0%
+38.13
+109.34
+0.349
+8.0
+69.2%
+46.3
+40.7
+54.32
+1109.69
+0.049
+C
+62.2%
+68.85
+127.50
+0.540
+7.5
+100.0%
+26.9
+25.5
+633.09
+424.04
+1.493
+U
+37.8%
+-12.41
+27.79
+-0.446
+-8.0
+18.5%
+78.3
+40.9
+-897.69
+1226.35
+-0.732
+Table 10: Converged and unconverged trades for the selected strategies accounting for transactions costs of Table 8 over 2000–2022. “Conv”
+classifies for both converged and unconverged trades (All), convergent only trades (C) or unconvergent trades (U). A trade is “convergent” if it
+opens and closes endogenously by the prescribed trading rule, and it is “unconvergent” a trade is forcibly closed because the trade still remains
+open by the end of the trading period. “%Trades” shows the proportion of trades that either of the convergent or unconvergent type. “Per-trade
+average daily PnL” is the average of the PnL across all active trades for each day; we compute the time series mean and standard deviation (in
+basis points), IR is the mean divided by the standard deviation (no annualization), and skew is the skewness over the time series. “Win” is the
+percentage of trades that have a strictly positive cumulative PnL at the end of its trade length. “Trade length” is the number of business days
+for a trade. “PnL per trade” is the cumulative PnL for each trade.
+41
+
+Num activated trades
+Case
+Mean
+Median
+Std
+Distincts
+DM-P-BvLS-SprN
+172.779
+175.000
+33.529
+4174
+DM-P-BvLS-OU
+262.097
+268.000
+32.985
+4161
+DM-All-BvLS-SprN
+128.999
+131.000
+30.352
+1767
+DM-All-BvLS-OU
+181.549
+181.000
+36.276
+1611
+SV-KM(25)-All-BvLS-SprN
+160.215
+162.000
+28.831
+6300
+SV-Sp(25)-All-BvLS-SprN
+162.339
+164.000
+30.609
+8368
+MV-Sp(25)-All-BvLS-SprN
+179.767
+182.000
+30.283
+7867
+MV-CRSp(25)-All-BvLS-SprN
+161.564
+163.000
+29.378
+5836
+MV-CRSp(25)-All-BvLS-OU
+221.067
+219.000
+51.750
+5191
+Table 11: Converged and unconverged trades on the selected strategy cases of Table 8 over 2000–2022. All
+calculations here include transactions costs. The heading “Num activated trades” shows respectively the mean,
+median and standard deviation of number of trades that are currently active; note this is not equivalent to
+the number of new opening trades, but rather it is the sum of total trades currently in play on any given day.
+“Distincts” is the total number of unique pairs for the strategy over the entire trading period.
+42

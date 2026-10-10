@@ -1,0 +1,146 @@
+{
+  "doc_id": 28,
+  "titulo": "A Visual Guide to Market Microstructure Models",
+  "resumen_operativo": "Nota pedagógica que ofrece interpretaciones geométricas de los modelos clásicos de información asimétrica de Kyle (1985) y Glosten-Milgrom (1985), mostrando cómo el market maker infiere información privada a partir del order flow y ajusta precio/spread en consecuencia. No presenta backtests ni datos nuevos; es un derivado analítico-visual de resultados ya conocidos, útil para entender el mecanismo microeconómico detrás de fenómenos como el bid-ask spread y el price impact que un quant intradía observa empíricamente.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Kyle model",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo de un solo período con informed trader, noise trader y un market maker competitivo que fija precio en función del order flow agregado; el paper deriva y visualiza su solución de equilibrio.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Glosten-Milgrom model"},
+        {"tipo": "APLICA_A", "objeto": "market making"},
+        {"tipo": "USA", "objeto": "order flow imbalance"}
+      ],
+      "cita_textual": "Two workhorse models in this literature are Kyle (1985) and Glosten and Milgrom (1985)."
+    },
+    {
+      "nombre": "Glosten-Milgrom model",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo secuencial de un activo binario donde el market maker fija bid y ask actualizando su creencia bayesiana tras cada operación, en función de si el trader es informado o no.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "adverse selection"},
+        {"tipo": "PARTE_DE", "objeto": "market microstructure noise"},
+        {"tipo": "PREDICE", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "Consider one risky asset with value v drawn from the set v ∈0, 1. A competitive market maker has an initial belief Pr(v = 1) = p1 = 1 2."
+    },
+    {
+      "nombre": "market maker",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Agente competitivo que fija precios (o bid/ask) condicionado al flujo de órdenes observado, rompiendo en cero en expectativa (break-even) tanto en Kyle como en Glosten-Milgrom.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order flow imbalance"},
+        {"tipo": "MITIGA", "objeto": "adverse selection"}
+      ],
+      "cita_textual": "a competitive market maker who sets the price p based on total order flow y"
+    },
+    {
+      "nombre": "informed trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Presencia de agentes que conocen el valor verdadero del activo v y explotan esa información maximizando su beneficio esperado frente al market maker.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "adverse selection"},
+        {"tipo": "PREDICE", "objeto": "order flow imbalance"}
+      ],
+      "cita_textual": "informed traders who know v, noise traders who trade randomly, and a competitive market maker who sets the price p based on total order flow y"
+    },
+    {
+      "nombre": "adverse selection",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Riesgo que enfrenta el market maker de transar contra un trader informado; en Glosten-Milgrom es máximo cuando la creencia pt está en 0.5 y se refleja en el ancho del spread.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "bid-ask spread"},
+        {"tipo": "MITIGA", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "when the market maker is most uncertain about the asset’s value (pt = 0.5), they set the maximum spread to protect against adverse selection"
+    },
+    {
+      "nombre": "order flow imbalance",
+      "tipo": "concepto",
+      "definicion_en_contexto": "En Glosten-Milgrom, el desbalance de órdenes Nt (compras menos ventas acumuladas) es la estadística suficiente para la creencia del market maker sobre el valor del activo y determina el spread cotizado en cada momento.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "bid-ask spread"},
+        {"tipo": "MIDE", "objeto": "informed trading"},
+        {"tipo": "PARTE_DE", "objeto": "Glosten-Milgrom model"}
+      ],
+      "cita_textual": "This imbalance serves as a sufficient statistic for the market maker’s belief about the asset’s value (pt), and is the time-varying determinant of the bid-ask spread St."
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Diferencia entre ask y bid que en Glosten-Milgrom es máxima cuando la creencia del market maker está en 0.5 (máxima incertidumbre) y se estrecha a medida que el desbalance de órdenes crece en cualquier dirección.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "adverse selection"},
+        {"tipo": "PARTE_DE", "objeto": "Glosten-Milgrom model"}
+      ],
+      "cita_textual": "As Nt grows in either direction (more buys or more sells) the spread narrows."
+    },
+    {
+      "nombre": "price impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "En Kyle, λ mide la sensibilidad del precio al flujo de órdenes agregado; aumenta con la volatilidad del activo y disminuye con la volatilidad de la demanda de noise traders.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "order flow imbalance"},
+        {"tipo": "PARTE_DE", "objeto": "Kyle model"}
+      ],
+      "cita_textual": "the market maker sets the price to µv when the aggregate demand is zero (y = 0) and changes the prices more in response to aggregate demand when the asset volatility is high"
+    },
+    {
+      "nombre": "noise trader",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Agente cuya demanda yε se distribuye normal con media cero y es independiente del valor del activo; su volatilidad afecta inversamente la sensibilidad del precio al order flow en Kyle.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Kyle model"},
+        {"tipo": "SE_OPONE_A", "objeto": "informed trading"}
+      ],
+      "cita_textual": "noise traders who trade randomly"
+    },
+    {
+      "nombre": "price discovery",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Proceso por el cual el precio de equilibrio converge al valor fundamental v a medida que el market maker observa más órdenes y actualiza su creencia; en el límite Nt→±∞ el spread converge a cero.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "order flow imbalance"},
+        {"tipo": "MITIGA", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "In the limit, as Nt →+∞ (resp. Nt →−∞), the spread converges to zero, as both bid and ask prices approach 1 (resp. 0)."
+    },
+    {
+      "nombre": "Bayesian belief updating",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Mecanismo por el cual el market maker en Glosten-Milgrom actualiza su probabilidad pt de que el activo valga 1, condicional en la secuencia observada de trades y precios, vía la regla de Bayes.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order flow imbalance"},
+        {"tipo": "PARTE_DE", "objeto": "Glosten-Milgrom model"}
+      ],
+      "cita_textual": "The market maker observes ht, updates her belief pt = Pr(v = 1 | ht) via Bayes’ rule, and sets quotes (Bt and At) to break even in expectation."
+    },
+    {
+      "nombre": "probability of informed trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Parámetro µ (y su transformación δ) que representa la probabilidad de que llegue un trader informado; a mayor δ, las órdenes son más informativas y el market maker ajusta sus creencias más agresivamente.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "bid-ask spread"},
+        {"tipo": "EQUIVALE_A", "objeto": "PIN"}
+      ],
+      "cita_textual": "Since δ increases with the probability of informed trading µ, a higher δ implies that trades are more informative, causing the market maker to adjust beliefs more aggressively in response to order flow."
+    },
+    {
+      "nombre": "microprice",
+      "tipo": "concepto",
+      "definicion_en_contexto": "En la reformulación del equilibrio de Kyle (Ec. 10), el precio se expresa como función lineal de la mejor estimación de la demanda informada, análoga a un precio ponderado por la creencia sobre información privada.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "price impact"},
+        {"tipo": "PARTE_DE", "objeto": "Kyle model"}
+      ],
+      "cita_textual": "the price function of the market maker aims to replicate the value function of the asset using the best guess for informed demand"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Es un derivado teórico sin datos ni backtest; solo aporta marco conceptual (por qué el spread y el price impact reaccionan al order flow imbalance) que podría motivar features de microestructura para ES intradía, pero no ofrece señales ni parámetros testeables directamente."
+  }
+}

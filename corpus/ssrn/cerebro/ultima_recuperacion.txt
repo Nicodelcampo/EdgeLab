@@ -1,0 +1,52 @@
+======================================================================
+MEMORIA RECUPERADA PARA: 'microestructura y edges en futuros de divisas FX intradiario'
+======================================================================
+
+--- BARRO EMPÍRICO (hallazgos de backtests que matchean) ---
+
+[media] doc 18 (multi-asset (futuros, incluye equities, bonos, FX, commodities), no especificado (estudio citado de Moskowitz et al. 2012))
+  Un portafolio diversificado de time-series momentum across asset classes obtuvo un Sharpe ratio muy superior al del portafolio de acciones (equity market), y su desempeño extra-fuerte se concentra en movimientos extremos de mercado, sin correlación relevante con benchmarks pasivos. — Sharpe ratio > 1 anual, aproximadamente 2.5 veces el Sharpe ratio del portafolio de mercado de acciones
+  Condiciones: robusto a distintos subsamples, look-back y holding periods según el paper citado; no se especifica si incluye costos de transacción
+
+[alta] doc 206 (Futuros de bonos (Euro Bobl, Euro Bund) en Eurex, Enero - Junio 2021)
+  Los instrumentos más líquidos y frecuentemente negociados tienden a liderar en la mayoría de medidas de microestructura, pero este patrón no es universal: en bonos, el Euro Bobl (menos líquido) lidera al Euro Bund (más líquido). — LLS significativo en dirección contraria a la hipótesis de liquidez
+  Condiciones: Frecuencias HF y UHF; 6 meses de datos; solo combinaciones con >21 días de observación
+
+[baja] doc 11 (FX USD/JPY, no especificado (simulación calibrada))
+  El volumen de transacciones esperado aumenta muy rápidamente con la intensidad de intervención del banco central, lo que hace que valores realistas de intervención sean pequeños y que un colapso de mercado (crash) por intervención extrema sea un evento remoto en la práctica. — sin magnitud numérica única; se describe como incremento 'muy rápido' del volumen relativo (ver Figura 5, rango relativo 1x-8x)
+  Condiciones: basado en parametrización de referencia (benchmark) elegida por el autor, no estimada; sin backtest ni datos de eventos reales de intervención
+
+[media] doc 11 (FX USD/CHF, 1986-1995)
+  Payne y Vitale (2003), citados como referencia externa consistente con el modelo, estiman que una operación de intervención de 100 millones de dólares del banco central suizo tiene un impacto de precio de 50 puntos básicos en el spot USD/CHF, aproximadamente 10 veces mayor que el impacto de precio de las operaciones de clientes en el mismo mercado. — 50 bps de impacto por USD 100 millones de intervención; ~10x el impacto de trades de clientes
+  Condiciones: resultado empírico de un estudio externo (Payne y Vitale 2003) con datos transaccionales reales, no generado por el propio modelo de este paper
+
+[baja] doc 12 (FX VND/USD (Vietnam) vs. mercados globales/emergentes, no especificado (datos históricos hasta ~2007))
+  La participación del segmento interbancario en el volumen total de FX en Vietnam es marcadamente inferior a la de mercados internacionales y mercados emergentes comparables. — segmento interbancario <15% del turnover total en Vietnam, vs. 80%+ a nivel global y 55-95% en otros mercados emergentes
+  Condiciones: datos agregados de fuentes oficiales dispares, no estrictamente comparables entre países
+
+[media] doc 18 (futuros (commodities y otros activos exchange-traded), no especificado (estudio citado de Baltas et al. 2012a))
+  Estrategias de time-series momentum en futuros muestran fuerte continuación de retornos a través de distintas frecuencias de rebalanceo, con el Sharpe ratio de los portafolios de momentum superando un umbral relativamente alto. — Sharpe ratio del portafolio de momentum superior a 1.20
+  Condiciones: distintas frecuencias de trading; no se encontró evidencia de restricciones de capacidad en commodities según el estudio citado
+
+--- HIPOCAMPO (pasajes crudos de los papers, por relevancia) ---
+
+[0.858] Electronic Futures Market Microstructure (doc 113)
+  "All of these analyses would help investors determine whether their futures orders were well-executed or not. 1 Electronic copy available at: https://ssrn.com/abstract=1223738 1 Objectives and Prior Art Objectives My goal is to perform the baseline analysis needed for academic researchers, regulators, and practitioners to understand the microstructure of electronic futures markets. In particular, my analysis should be suﬃcient to: • assess later changes in market quality; • determine optimal strategies for automated execution; • quantify intraday relations between various contracts; and, • unde"
+
+[0.855] ssrn-4953435.pdf (doc 389)
+  "In this research, following [1], we create alternative volatility-managed portfolios via options pairs trading. Using the seminal Black-Scholes model ([13]), we construct pairwise options portfolios that are only dependent on market volatility. The literature on options pairs arbitrage is rather scarce. Research on options pairs trading in the public domains includes [14], [15] and [16]. [15] note that most options mispricings disappear once transaction costs are taken into account. [14] also highlight that option mispricing relative to their theoretical benchmarks may be primarily due to micr"
+
+[0.855] Managing Volatility for Profitable Options Trading: Evidence from Pairs Trading Strategies (doc 220)
+  "In this research, following [1], we create alternative volatility-managed portfolios via options pairs trading. Using the seminal Black-Scholes model ([13]), we construct pairwise options portfolios that are only dependent on market volatility. The literature on options pairs arbitrage is rather scarce. Research on options pairs trading in the public domains includes [14], [15] and [16]. [15] note that most options mispricings disappear once transaction costs are taken into account. [14] also highlight that option mispricing relative to their theoretical benchmarks may be primarily due to micr"
+
+[0.854] Microstructural Pulse Dislocation (MPD) and Event-Driven Microstructure Collapse (EMC): A Formal White Paper on a Newly Identified Market Microstructure Phenomenon (doc 233)
+  "(EMC):​ rapid depth evaporation and asymmetric reformation that enable large price moves through thinned books.​ Using six representative events from FX and equities, and broker-verified trading records from 2024–2025, I have shown that: ●​ MPD and EMC appear consistently across NFP, CPI, FOMC, NZD, GBP CPI and earnings events;​ ●​ a simple, symmetric hedged strategy implemented in real time, with no optimization and no privileged feeds, produced repeatable net profits by exploiting this architecture; and​ ●​ the structure is visible at one-second resolution, making it accessible to scientific"
+
+[0.854] A Market Microstructure Analysis of Foreign Exchange Intervention (doc 11)
+  "629 May 2006 B. Review of Related Literature As already mentioned, several authors, such as Bhattacharya and Weller (1997), Montgomery and Popper (2001), and Vitale (1999, 2003), have formulated theoretical models to analyze the signalling role of foreign exchange intervention. While developed from a market microstructure perspective, none of these models is fully dynamic, neither represents faithfully the structure of the spot FX markets. On the contrary, several structural models of exchange rate determination, based on the market microstructure approach, have recently been formulated. Thus,"
+
+======================================================================
+Instruccion para el Cerebro: usa estos pasajes como evidencia
+citable (con su doc_id). El grafo da la estructura; los
+hallazgos dan la evidencia empirica; los pasajes dan el texto
+fuente exacto para citar.

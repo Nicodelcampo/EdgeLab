@@ -1,0 +1,239 @@
+{
+  "doc_id": 35,
+  "titulo": "Real-World Viability of Cointegration-Based Forex Pairs Trading Strategy with Walk-Forward Optimization",
+  "resumen_operativo": "El paper aplica Walk-Forward Optimization (WFO) a una estrategia de pairs trading basada en cointegración sobre 42 pares de Forex durante 17 años, comparando selección fija de pares (ex post) contra selección dinámica (walk-forward) basada en Sharpe rolling. Muestra que WFO con ventanas largas (24-60 meses) reduce drawdowns y mejora el Calmar ratio sin empeorar el Sharpe, aportando evidencia de que la selección dinámica de pares mitiga cola de riesgo respecto a un filtro fijo optimizado in-sample.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia que identifica dos activos correlacionados y explota divergencias temporales de precio entre ellos, apostando a la reversión a la media.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "cointegration"},
+        {"tipo": "SE_OPONE_A", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "Pairs trading, a strategy that involves identifying two correlated assets and exploiting temporary price divergences between them, has proven effective in different markets"
+    },
+    {
+      "nombre": "cointegration",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Relación de equilibrio de largo plazo entre dos series de precios no estacionarias, tal que sus residuos son estacionarios, garantizando reversión a la media aun con tendencias individuales.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "mean reversion"},
+        {"tipo": "USA", "objeto": "Engle-Granger test"},
+        {"tipo": "APLICA_A", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "cointegration-based pairs trading identifies pairs with stable long-term equilibrium relationships, ensuring mean reversion even in the presence of non-stationary financial time series"
+    },
+    {
+      "nombre": "Engle-Granger test",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Procedimiento de dos pasos para testear cointegración: primero ADF sobre cada serie individual, luego regresión lineal entre las series y ADF sobre los residuos para verificar estacionariedad.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Augmented Dickey-Fuller test"},
+        {"tipo": "PARTE_DE", "objeto": "cointegration"}
+      ],
+      "cita_textual": "During each training period, we performed cointegration analysis on the currency pairs using the Engle-Granger test to identify pairs with a long-term statistical relationship"
+    },
+    {
+      "nombre": "Augmented Dickey-Fuller test",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Test de raíz unitaria usado para determinar si una serie temporal es no estacionaria, aplicado tanto a las series individuales como a los residuos de la regresión de cointegración.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Engle-Granger test"}
+      ],
+      "cita_textual": "The first step of the Engle-Granger test involves conducting the Augmented Dickey-Fuller (ADF) test on each of the two time series variables to determine whether each variable is non-stationary"
+    },
+    {
+      "nombre": "synthetic spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Residuo de la regresión de cointegración entre dos monedas, calculado como la diferencia entre log-precios ajustada por el coeficiente beta; captura la desviación del equilibrio de largo plazo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "cointegration"},
+        {"tipo": "USA", "objeto": "z-score"}
+      ],
+      "cita_textual": "the synthetic spread, ˆϵt, was calculated as the difference between the log prices of the paired currencies, adjusted by the regression coefficient β"
+    },
+    {
+      "nombre": "z-score",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Señal de entrada/salida calculada normalizando el spread sintético del día por la media y desviación estándar del spread durante el período de entrenamiento; umbral de ±1 dispara posiciones largas/cortas.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "pairs trading"},
+        {"tipo": "MIDE", "objeto": "synthetic spread"}
+      ],
+      "cita_textual": "A threshold for the z-score was set at ±1, and trading signals were generated when the z-score exceeded this threshold"
+    },
+    {
+      "nombre": "Walk-Forward Optimization",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Recalibración dinámica de parámetros de estrategia mediante ventanas rodantes de entrenamiento y testeo, usando solo información disponible hasta cada punto para mitigar sesgo de anticipación y evaluar robustez fuera de muestra.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "look-ahead bias"},
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"},
+        {"tipo": "SE_OPONE_A", "objeto": "combinatorial purged cross-validation"},
+        {"tipo": "USA", "objeto": "Sharpe ratio"}
+      ],
+      "cita_textual": "By utilizing only the information available at each historical point, it mitigates look-ahead bias and provides a realistic simulation of real-time strategy performance"
+    },
+    {
+      "nombre": "look-ahead bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo de usar información no disponible en el momento de la decisión; en este estudio se evita aplicando un shift de un día al filtro de Sharpe rolling y un lag de dos días entre señal y ejecución.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "Walk-Forward Optimization"}
+      ],
+      "cita_textual": "The mask is created by selecting those pairs where the rolling Sharpe ratio exceeds zero, with a shift applied by one day to avoid look-ahead bias"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Fenómeno en que una estrategia optimizada en datos históricos captura ruido en vez de patrones genuinos, fallando fuera de muestra; el paper lo cita como riesgo del método de selección fija ex post con parámetros arbitrarios.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "data snooping"},
+        {"tipo": "MITIGA", "objeto": "Walk-Forward Optimization"}
+      ],
+      "cita_textual": "Bailey et al. [12] explore backtest overfitting, where a strategy optimized on historical data captures noise rather than genuine patterns, leading to poor performance on new datasets"
+    },
+    {
+      "nombre": "combinatorial purged cross-validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método de validación citado como alternativa más robusta al WFO, que mejor aborda sesgos, se adapta a cambios de régimen y ofrece evaluaciones de desempeño más confiables mediante splits diversos de train-test.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Walk-Forward Optimization"}
+      ],
+      "cita_textual": "its rigidity and computational intensity make it less robust compared to advanced methods like Combinatorial Purged Cross-Validation (CPCV), which better address biases, adapt to regime shifts, and offer more reliable performance assessments through diverse train-test splits"
+    },
+    {
+      "nombre": "rolling Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Sharpe ratio calculado sobre una ventana rodante de N días de retornos, usado como filtro para decidir dinámicamente qué pares operar en el período de testeo siguiente.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"},
+        {"tipo": "USA", "objeto": "Walk-Forward Optimization"}
+      ],
+      "cita_textual": "we compute the rolling Sharpe ratio for each pair over a rolling training window (t−δtrain, t), and execute trades on a rolling test window (t, t+δtest) only when the Sharpe ratio for a given pair is positive"
+    },
+    {
+      "nombre": "Calmar ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica de retorno ajustado por riesgo que relaciona el retorno anualizado con el máximo drawdown; en el estudio mejora sustancialmente con selección dinámica de pares.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "maximum drawdown"}
+      ],
+      "cita_textual": "dynamic pair selection (walk-forward) shows a significantly improved Calmar ratio (0.36 vs. 0.23), indicating superior risk-adjusted returns relative to drawdowns"
+    },
+    {
+      "nombre": "maximum drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Máxima caída desde un pico de equity; la métrica que más mejora al pasar de selección fija ex post a selección dinámica walk-forward.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"}
+      ],
+      "cita_textual": "the most striking improvement is indeed observed in the maximum drawdown, where dynamic pair selection (walk-forward) experienced a drawdown of -27.71%, substantially better than the -44.14% drawdown of fixed pair selection (ex post)"
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Retorno ajustado por volatilidad; en el estudio prácticamente idéntico entre estrategia fija y dinámica una vez igualado el retorno anualizado objetivo.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"}
+      ],
+      "cita_textual": "This similarity in volatility results in closely aligned Sharpe ratios (0.58 vs. 0.57), indicating that both strategies offer similar risk-adjusted returns"
+    },
+    {
+      "nombre": "kurtosis",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de \"tailedness\" de la distribución de retornos; usada para mostrar que la selección dinámica reduce la frecuencia de eventos extremos frente a la selección fija.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "tail risk"}
+      ],
+      "cita_textual": "Fixed pair selection (ex post) showed a much higher kurtosis (59.41 vs. 20.52), indicating a return distribution with greater frequency of extreme deviations from the mean"
+    },
+    {
+      "nombre": "tail risk",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Riesgo de eventos extremos en la distribución de retornos, capturado por skewness y kurtosis; el paper argumenta que la selección dinámica de pares lo mitiga respecto a la selección fija.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "Walk-Forward Optimization"}
+      ],
+      "cita_textual": "dynamic pair selection through walk-forward optimization not only did not worsen risk-adjusted performance, but also mitigated tail risk as well as drawdowns"
+    },
+    {
+      "nombre": "leverage adjustment",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Escalado de la exposición de cada estrategia para igualar un retorno anualizado objetivo arbitrario (10%), permitiendo comparar directamente el riesgo entre estrategias con el mismo nivel de retorno.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Sharpe ratio"}
+      ],
+      "cita_textual": "we applied a leverage factor of 21.71 to the dynamic pair selection strategy and 26.40 to the fixed pair selection strategy"
+    },
+    {
+      "nombre": "trade frequency filter",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Filtro arbitrario de mínimo 30 operaciones por par usado para descartar pares con desempeño anómalo derivado de muy baja frecuencia de trading, evitando conclusiones distorsionadas por outliers estadísticos.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "data snooping"}
+      ],
+      "cita_textual": "we set an arbitrary filter of 30 trades to discard pairs that could exhibit anomalous performance due to a low trading frequency"
+    },
+    {
+      "nombre": "data snooping",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Selección de resultados favorables (cherry-picking) que el paper menciona vía el ejemplo de la SEC sobre fondos que exhiben selectivamente performance pasada; riesgo relacionado con el enfoque de selección fija ex post original.",
+      "relaciones": [],
+      "cita_textual": "the SEC \"uncovered marketing and advertising issues, with some firms potentially misleading clients on past performance by 'cherry picking' their results from fund to fund\""
+    },
+    {
+      "nombre": "execution lag",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Retraso de dos días aplicado entre la generación de la señal y la ejecución de la operación, para simular condiciones reales de trading y fricciones de mercado.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "a two-day lag was applied between the generation of the signal and the execution of the trade... the trade would be executed at time t+2"
+    },
+    {
+      "nombre": "optimization window sensitivity",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Regularidad empírica observada: ventanas cortas de WFO (1-6 meses) son muy reactivas y volátiles con drawdowns grandes, ventanas medias (18 meses) dan métricas altas pero sospechosas de overfitting, y ventanas largas (24-60 meses) dan desempeño más estable.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "shorter windows, such as 1 to 6 months, demonstrate high variability and appear overly reactive to short-term patterns in the data"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Con ventana de optimización walk-forward de 36 meses, la selección dinámica de pares reduce drásticamente el máximo drawdown frente a la selección fija ex post, manteniendo retorno y Sharpe casi idénticos.",
+      "mercado": "FX (7 monedas, 42 pares: EUR, GBP, JPY, CHF, CAD, AUD, NZD frente a USD)",
+      "periodo": "2007-01-01 a 2024-01-01 (17 años)",
+      "magnitud": "Retorno anualizado 10.01% (fijo) vs 10.00% (dinámico); Sharpe 0.58 vs 0.57; Calmar 0.23 vs 0.36; Max Drawdown -44.14% vs -27.71%; Kurtosis 59.41 vs 20.52; Skewness 2.23 vs 1.47",
+      "condiciones": "Ambas estrategias reescaladas por leverage a retorno anualizado objetivo de 10% (arbitrario); ventana train/test 257/21 días; umbral z-score ±1; lag de ejecución de 2 días; sin mención explícita de costos de transacción",
+      "robustez": "media",
+      "cita_textual": "the most striking improvement is indeed observed in the maximum drawdown, where dynamic pair selection (walk-forward) experienced a drawdown of -27.71%, substantially better than the -44.14% drawdown of fixed pair selection (ex post)"
+    },
+    {
+      "afirmacion": "Las ventanas de optimización walk-forward cortas (1-6 meses) muestran alta variabilidad y drawdowns sustanciales, mientras que las ventanas largas (24-60 meses) ofrecen desempeño más estable y consistente, y la ventana de 18 meses exhibe métricas excepcionalmente altas pero con riesgo de overfitting.",
+      "mercado": "FX (42 pares de 7 monedas)",
+      "periodo": "2007-2024 (17 años), ventanas rodantes de 1, 3, 6, 12, 18, 24, 36, 48 y 60 meses",
+      "magnitud": "No se reportan valores numéricos puntuales de Sharpe/Calmar por ventana en el texto (solo en Figura 1), pero se describe la ventana de 18 meses como la de métricas más altas y las de 24-60 meses como más estables",
+      "condiciones": "Comparación cualitativa basada en gráfico (Figura 1); sin backtest OOS independiente de esta observación, análisis in-sample sobre el mismo dataset de 17 años",
+      "robustez": "baja",
+      "cita_textual": "The 18-month optimization window stands out showing favorable metrics such as a relatively high Sharpe, Calmar, and Sortino ratios... this exceptional results might be highly sensitive to small changes in the data, which suggests a risk of overfitting"
+    },
+    {
+      "afirmacion": "Entre los 42 pares de FX estudiados con WFO de 36 meses, existe enorme heterogeneidad de desempeño y frecuencia de trading, con pares de baja frecuencia de operación mostrando retornos y ratios de riesgo extremos y no confiables.",
+      "mercado": "FX (42 pares de 7 monedas)",
+      "periodo": "2007-2024 (17 años)",
+      "magnitud": "EUR/CHF: 14 trades, retorno anualizado 119.26%, Sharpe 4.69, Calmar 30.61; JPY/CAD: 2 trades, retorno -162.16%, Sharpe -23.20, Calmar -489.04; tras filtrar pares con >30 trades, Sharpe rango -3.29 (AUD/NZD) a 3.10 (CHF/EUR)",
+      "condiciones": "Resultados brutos sin filtro de frecuencia mínima de trades; el propio paper advierte que son anómalos por muy bajo número de operaciones (2-14 trades en 17 años)",
+      "robustez": "baja",
+      "cita_textual": "Among all pairs, EUR/CHF exhibited an exceptionally high annualized average return of 119.26 %, while... JPY/CAD showed an exceptionally low value of -162.16 %"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper trabaja con datos diarios de FX y ventanas de meses/años, muy distinto a la escala intradía de ES; lo transferible es conceptual: el patrón de que ventanas de recalibración walk-forward muy cortas generan overfitting y las largas dan más estabilidad, y la idea de filtrar señales por un indicador rolling (Sharpe positivo) en vez de fijar parámetros ex post, podría inspirar un filtro de régimen para activar/desactivar zonas de liquidez en el ecosistema ES."
+  }
+}

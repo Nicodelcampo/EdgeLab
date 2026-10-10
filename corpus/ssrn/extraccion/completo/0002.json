@@ -1,0 +1,59 @@
+{
+  "doc_id": 2,
+  "titulo": "500 C++ programs for quantitative finance",
+  "resumen_operativo": "Es un compendio pedagógico de programas en C++ para finanzas cuantitativas, orientado a enseñar programación moderna en C++ (STL, punteros, structs) con ejemplos ilustrativos de finanzas como curvas de descuento e interpolación lineal de tasas cero. No presenta investigación empírica, backtests ni resultados de estrategias: es material didáctico de programación, no un paper de investigación cuantitativa.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "discount curve",
+      "tipo": "dato",
+      "definicion_en_contexto": "Estructura de datos que almacena un conjunto de tasas cero correspondientes a tenores clave, junto con la fecha de hoy y el número total de puntos, usada para calcular factores de descuento.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "linear interpolation"},
+        {"tipo": "PARTE_DE", "objeto": "discount factor"}
+      ],
+      "cita_textual": "The first version of a discount_curve might consist of a set of zero rates corresponding to key tenors, and additionally keeping track of today & the total number points."
+    },
+    {
+      "nombre": "linear interpolation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método usado para interpolar linealmente las tasas cero entre dos fechas conocidas del bucket de tenor, con el fin de estimar la tasa en una fecha arbitraria.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "discount curve"}
+      ],
+      "cita_textual": "Interpolation : Linear on zero rates"
+    },
+    {
+      "nombre": "discount factor",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Factor que descuenta un flujo futuro a valor presente, calculado a partir de la tasa cero interpolada y el tiempo hasta el vencimiento bajo convención actual/365.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "linear interpolation"}
+      ],
+      "cita_textual": "double df = exp(-rate_1Y * 1);\nstd::cout << \"\\nDiscount factor (1Y) = \" << df;"
+    },
+    {
+      "nombre": "day count convention",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Convención usada para calcular fracciones de año entre fechas (actual/365) al construir la curva de descuento y calcular factores de descuento.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "discount curve"}
+      ],
+      "cita_textual": "Assumptions : Basis = actual/365"
+    },
+    {
+      "nombre": "forward rate",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Tasa implícita entre dos fechas de descuento (from_date y to_date), derivada de los factores de descuento correspondientes a cada fecha.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "discount factor"}
+      ],
+      "cita_textual": "double fwd = (1 / T) * (df1 / df2 - 1);"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "nula",
+    "nota": "Es un tutorial de programación C++ con ejemplos genéricos de curvas de tasas de renta fija; no aporta señales, métricas de microestructura ni evidencia empírica aplicable al trading intradía de ES."
+  }
+}

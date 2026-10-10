@@ -1,0 +1,37 @@
+{
+  "id": "0068",
+  "title": "Auditing the Audit Trails: A Cryptographic Framework and a Compliance Survey of 185 Published Machine-Learning Papers in Quantitative Finance",
+  "authors": [
+    "Akram Khan"
+  ],
+  "year": 2026,
+  "abstract": "The U.S. Federal Reserve’s SR 11-7 (April 2011) and the EU AI Act (Regulation 2024/1689, eﬀective for high-risk systems on 2 August 2026) require ﬁrms deploying machine-learning models in regulated domains to maintain per-prediction audit trails: code state, data state, model state, compute environment, and the prediction itself, recorded with enough integrity protection that an external reviewer can verify any claim ex post. Existing open-source ML tooling (MLﬂow, Weights & Biases, DVC) targets experiment tracking or artifact versioning; none produces an SR 11-7-shaped audit trail with low-friction integration, vendor-neutral storage, and regulator-export capability out of the box. This paper makes two paired contributions. First, we introduce mr-audit, an open-source Python package that writes one immutable, hash-chained record per ML prediction, capturing git commit, library versions, input hash, model parameters, compute environment, random seed, and prediction value. Records form a linked hash chain via SHA-256; tampering with any record breaks the chain. The package ships with a replay engine, a driftdetection module (Kolmogorov-Smirnov plus Population Stability Index), and a regulator-export bundle. We compare mr-audit head-to-head against ﬁve existing tools on nine audit-trail capabilities and on three quantitative benchmarks (throughput, storage overhead, tamper-detection sensitivity). Second, we apply the same compliance rubric to a corpus of 185 published machine-learning papers in quantitative ﬁnance posted between 1952 and 2025 (drawn from the 119-paper survey corpus of Khan (2026b) and a 2024–2025 arXivq-ﬁn extension constrained to papers with a discoverable code-repository link). For each paper, an automated pipeline locates the code link, clones the repository, and mechanically scores the six static compliance dimensions: code accessibility, data release, computational environment, random-seed documentation, input-data lineage, and model-state persistence. The static-six analysis followed a pre-speciﬁed plan (hypotheses and rubric ﬁxed before the scoring step and deposited at OSF); we are explicit that this is a pre-speciﬁed plan, not a timestamp-enforced preregistration, and that the six manual-review dimensions deferred to a follow-up version will be genuinely pre-registered (timestamp-enforced) before any of their scoring begins. On the six automatable dimensions we ﬁnd: a mean static-rubric score of 1.52 of 6 (full corpus, N = 185); a mean of 3.28 of 6 conditional on the paper carrying a discoverable code link (N = 80); 11 of 185 papers (5.9%) score the full 6 of 6 on the static rubric, all of them within the 80-paper code-link subset (13.8% of it); the temporal slope of compliance is +0.088 score units per year (in the pre-speciﬁed range [0.05, 0.20], statistically nonzero); and a 10% rot rate on discovered code URLs (21% if non-GitHub repositories are counted). Three papers (FinRL, FinGPT, Grinsztajn tabular-benchmark) achieve a perfect static score of 6 of 6; they are existence proofs that audit-grade publication is achievable but far from the ﬁeld’s median. The six manual-review dimensions (bit-identical replay, per-prediction logging, drift monitoring, signiﬁcance testing, multiple-comparison correction, out-of-sample protocol) require Tier-1 code execution or manual review and are deferred to v2.1 of this paper. The full per-paper scorecard, the scoring pipeline, and an audit-of-audit log are released publicly with the package. The package, the audit pipeline, the corpus, the per-paper scorecard, an audit script that re-derives every numerical claim in this paper from JSON outputs, and a 6,825-record demonstration log on the seven-model volatility-forecasting panel of Khan (2026f) are released at github.com/ayk5511/mr-audit.",
+  "keywords": [
+    "model risk management",
+    "SR 11-7",
+    "OCC 2011-12",
+    "EU AI Act",
+    "audit trail",
+    "machine learning",
+    "reproducibility",
+    "compliance",
+    "regulatory technology",
+    "replication crisis"
+  ],
+  "jel_codes": [
+    "C52",
+    "C53",
+    "C88",
+    "G17",
+    "G28"
+  ],
+  "topics": [
+    "Quantitative Finance",
+    "Machine Learning",
+    "Regulatory Technology",
+    "Audit Trails",
+    "Reproducibility"
+  ],
+  "methodology": "Mixed methodology. First, engineering of 'mr-audit', an open-source Python package that creates hash-chained, immutable logs for ML pipelines. Second, an empirical compliance survey of 185 published machine-learning papers in quantitative finance, using an automated pipeline to mechanically score six static compliance dimensions (code accessibility, data release, computational environment, random-seed documentation, input-data lineage, model-state persistence).",
+  "findings": "The mean static-rubric score for reproducibility compliance is 1.52 out of 6 (full corpus) and 3.28 conditional on having a discoverable code link. Only 11 of 185 papers (5.9%) achieved a perfect 6 out of 6 score on the static rubric. There is a positive temporal trend of +0.088 score units per year. There is a 10% rot rate on discovered code URLs (21% for non-GitHub). The findings demonstrate a massive gap between the current state of academic publishing in machine learning for finance and the regulatory standards required for deployment (such as SR 11-7 and the EU AI Act)."
+}

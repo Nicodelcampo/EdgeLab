@@ -1,0 +1,4217 @@
+ Electronic copy available at: https://ssrn.com/abstract=2984315 
+A dynamic market microstructure model with market
+orders and random order book depth
+Jörg Osterrieder
+ETH Zürich
+Department of Mathematics
+8092 Zürich, Switzerland
+joerg.osterrieder@math.ethz.ch
+March 30, 2005
+Abstract
+This paper studies a dynamic market microstructure model, in which a strategic market
+maker competes with an informed trader. We include the presence of noise traders and
+limit order traders in our setup. Our model is a N period model. We give necessary
+and su¢ cient conditions for an equilibrium to exist and provide conditions for it to be
+unique. Moreover, both the informed trader and the market maker try to maximize their
+pro…ts. The resulting recursive equations lead to various economic interpretations. We
+investigate the interplay of di¤erent information sets. Finally we consider the competitive
+situation for the market maker. Our framework is general enough to obtain several wellknown models as a particular case, among them the models by Kyle (1985) as well as
+Bondarenko and Sung (2003).
+1
+Introduction
+We consider a multiperiod market microstructure model. Our model has four di¤erent types of
+agents: limit order traders, noise traders, one insider and one market maker where the market
+maker can choose how much liquidity he provides to the market. The …rst main feature is
+that di¤erent agents possess di¤erent information, in particular, the in‡uence of price and
+quantities is considered. The trading behaviour of market makers and informed traders is of
+utmost importance in …nancial markets and therefore, it is of interest in market microstructure.
+The market maker usually is the one who provides liquidity to the market. However, many real
+markets work as hybrid markets, where liquidity is supplied both by the market maker and
+limit order traders. A rule on the NYSE and Amex states that the specialists have to consider
+the highest bid and the lowest ask prices in the limit order book, when they determine the
+price. This has also been a topic of empirical research. In this research, see e.g. Madhavan and
+So…anos (1998) [MS98], it has been reported, that liquidity provision signi…cantly depends on
+the stock which is traded. Some of the stocks basically trade in quote-driven markets, where
+most of the liquidity is provided by the specialist, where for other stocks, it might be just the
+other way around. Another study by Harris and Hasbrouck (1996) [HH96] shows that more
+than half of the orders submitted through SuperDOT are limit orders. Therefore, one might
+want to include both limit order traders and specialists in a microstructure model. Models
+which consider only one of both ways to provide liquidity to the market cannot model the
+interaction between those two types.
+One of the most obvious result in our paper in this
+direction is of course, that we do have an equilibrium under certain conditions once the order
+book depth is not zero. The interested reader can compare this to the case of strategic market
+Financial support by Credit Suisse Group and NCCR FINRISK is gratefully acknowledged.
+1
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+ Electronic copy available at: https://ssrn.com/abstract=2984315 
+makers when there are no limit order traders present. Results in this area have usually shown
+the existence of an equilibrium, however there was the additional assumption that there are
+more than two market makers. With a nontrivial order book, the limit order traders naturally
+compete with the market maker for liquidity. This has the nice e¤ect that there can be an
+equilibrium even if there is only one market maker. Of course, this shows up in reality, since
+there are several exchanges which are organized in a way that there is a monopolist market
+maker for certain stocks. This specialist can choose whether and how much to use from his
+own inventory, since the limit order traders come up for the remaining liquidity which needs
+to be provided.
+Furthermore, the insider’s trading strategies as well as the specialist’s pricing rule are
+derived endogenously. This extension allows us to thoroughly investigate the in‡uence of timevarying information and the learning behaviour of di¤erent agents. All agents are risk-neutral
+and both the market maker and the informed trader try to maximize their expected pro…ts,
+whereas the limit order trader’s strategy satis…es a no expected pro…t condition. This allows
+us to explicitly model the information advantage of the market maker.
+Our model is in the spirit of Kyle (1985) [Kyl85] and Bondarenko and Sung (2003) [BS03].
+Bondarenko and Sung (2003) [BS03] work with a one-period model which we will extend to
+a multiperiod model. Other papers in this area are Back (1992) [Bac92], Bhattacharya and
+Spiegel (1991) [BS91], Chung and Charoenwong (1998) [CC98], Dutta and Madhavan (1997)
+[DM97], Bondarenko (2001) [Bon01], Chakravarty and Holden (1995) [CH95], Chung, Van
+Ness and Van Ness (1999) [CVNVN99], Dennert 1993 [Den93] and Glosten 1989 [Glo89]. In
+particular we mention here the model by Bondarenko 2001 [Bon01] . He also works with a
+multiperiod model, however, he does not include limit order traders and his setup is di¤erent:
+There, the market makers post price schedules in the beginning, before observing the order
+‡ow. Therefore he cannot investigate one of our main goals, namely the e¤ects of being able
+to observe the order ‡ow before posting a price. Furthermore he concludes that there is no
+equilibrium, when there are less than three market makers, whereas we will show that there
+exists a (unique) equilibrium even if there is only one market maker. Our general setup also
+allows us to obtain Kyle’s model [Kyl85] in a very straightforward and easy way.
+There has been extensive research on trading behaviour of market makers which are perfectly competitive. This leads to a zero-pro…t condition which greatly simpli…es the analysis of
+those models. However, this contradicts empirical literature quite often, see e.g. Christie and
+Schultz (1994) [CS94], Christie et al. (1994) [CHS94] or Hasbrouck and So…anos (1993) [HS93]
+and So…anos (1995) [Sof95]. Those …ndings are supported by both static and dynamic research
+which investigate the e¤ects of strategic market makers. However, most of those models have
+been of static nature, and, to the best of our knowledge, there has not been any investigation
+as far as a dynamic model is concerned, which included both a nontrivial order book and a
+strategic market maker.
+We consider a N period model. In every period the noise traders and the insider submit
+their orders to the market maker.
+The market maker then chooses the price after having
+observed the limit order book and the combined order ‡ow from the insider and the noise
+traders, such that the market is cleared. A precise de…nition and conditions on the distribution
+of the order book depth which are necessary and su¢ cient for a market equilibrium to exist,
+will be given later. After the last trading round; the true value of the asset will become known
+and everyone realizes his gains or losses on the positions which he still has. We note here the
+particular role which information plays in this model. The insider knows the true value of the
+asset, whereas the market maker observes the order book depth and the combined order ‡ow
+from the insider and the noise traders. This shows that we deal with two kinds of information:
+One is the information about the asset price, the other is the information on the order ‡ow.
+It is the interplay between these two aspects which we will investigate and show that both the
+insider and the market maker will gain from their information whereas the noise traders will
+lose money in this model. We will show that there exists a market equilibrium and investigate
+the mutual interdependence of the various parameters. We will also give conditions under
+which the market equilibrium is unique.
+2
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+The remainder of this paper is organized as follows. In the next section we describe the
+basic model.
+In Section 3 we give the main theorems.
+The following section is supposed
+to describe the four market participants in more detail. Section 4 describes the particular
+case, when the order book depth is predictable.
+Next we compare our setup to the case
+of a competitive market maker, arising from a Bertrand auction e.g. We …nish with a short
+section on comparative statistics. In the appendix we shall give proofs of the more complicated
+theorems.
+2
+The basic model
+Throughout the paper, we shall …x a probability space (
+; F; P) : The setup is as follows: The
+distribution of the asset value  at time T is a normal distribution with mean 0 and variance 2
+0:
+This distribution is known to all participants in the …nancial market. We consider a N period
+model from time 0 to T; with the shares being traded at times 0 < t1 <    < tN < T: The
+length of the n-th period is denoted by tn: The market maker sets the price pn at time tn:
+We model the information through  algebras. Information which is known to the limit
+order traders just before time tn is described by the  algebra Fn 1 generated by the prices
+p1; : : : ; pn 1; i.e.
+Fn 1 =  (p1; : : : ; pn 1)
+The limit order traders base their decision at time tn on the information Fn 1.
+The
+distribution of n is known to everyone, however only the market makers know the realization
+of n.
+The order quantities are denoted as follows: The number of shares ordered by the insider are xn, the noise traders submit zn; the market maker yn and the limit order traders
+n
+ L
+n 1   pn
+
+; where L
+n 1 denotes the limit order traders’expected price of the true asset
+based on the information they have at time tn: We assume that P (n > 0) = 1: Of course, this
+setup implies that the order book has a uniform depth of n and limit orders are placed for all
+prices. The assumption of a linear limit order supply schedules has been used in a number of
+important market microstructure models see e.g. Kyle (1989) [Kyl89] and Black (1995) [Bla95]
+and Glosten (1994) [Glo89]. Just before the new prices pn are published, the insider knows all
+previous prices, his own order ‡ow and the true value of the asset .
+In 1 =  (p1; : : : ; pn 1; x1; : : : ; xn 1; xn; )
+The insider bases his decision on the information In 1.
+After the market maker receives the combined order ‡ow from the insider and the noise
+trader (He can only observe the combined order ‡ow.), he knows all previous prices, the
+combined order ‡ow from the insider and the noise traders and his own order ‡ow.
+Mn =  (1; : : : ; n; p1; : : : ; pn 1; pn; x1 + z1; : : : ; xn + zn; y1; : : : ; yn)
+The market maker bases his decision on the information Mn.
+The market participants update their information on the true value of the asset in each
+trading round. Each of the market participants has a di¤erent information set. Therefore we
+have to de…ne the following updated price of the asset at time tn as follows: The price as seen
+by the market maker:
+n = E ( jMn )
+The price as seen by the limit order traders:
+L
+n = E ( jFn )
+Of course, the insider knows the true value:
+ = E ( jIn )
+3
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+Furthermore we de…ne the updated variance of the true price  as seen by the limit order
+traders at time tn as
+2
+n
+=
+V ar ( jMn )
+=
+E
+
+(   E ( jMn ))2 jMn
+
+=
+E
+
+(   n)2 jMn
+
+We denote the pro…ts of the insider in trading rounds n through N as I
+n and the pro…ts of
+the market maker as M
+n :
+I
+n
+=
+N
+X
+k=n
+(   pk) xk
+M
+n
+=
+N
+X
+k=n
+(   pk) yk =
+N
+X
+k=n
+(pk   )
+ xk + zk + 
+ L
+k 1   pn
+
+The market maker has to ensure that the market clearing condition is satis…ed:
+xn + yn + zn + n
+ L
+n 1   pn
+
+= 0
+n = 1; 2; : : : ; N
+(1)
+Of course, it is natural to assume that the limit order traders base their decision on their
+estimate of the true asset price L
+n 1 as compared to the price pn 1: In order to solve for an
+equilibrium, we have to make several assumptions: First, as customary in the literature on
+market microstructure, we assume that the quantity xn traded by the insider at time tn is
+linear in the di¤erence between the actual asset price  and the expected value of pn; given
+the information the insider has at time tn; when he makes his decision. We also assume that
+the price chosen by the market maker is linear in the total quantity submitted by the insider
+and the noise trader:
+xn
+=
+n (   E (pn jIn 1 )) tn
+(2)
+pn
+=
+pn 1 + n (xn + zn)
+(3)
+where P (n > 0) = 1:
+We assume that zn is normally distributed with mean zero and instantaneous variance
+2
+ztn; independent of : The distribution of  is public knowledge (we need this e.g. later
+for modelling the limit order traders decision on n: This assumption allows us to calculate
+E ( jMn )): We de…ne trading strategies as N tuples:
+De…nition 1 A trading strategy for the insider is de…ned as a function XN : ft1; t2; : : : ; tNg !
+R with XN = (x1; : : : ; xN) :
+De…nition 2 A trading strategy for the market maker is de…ned as a function YN : ft1; t2; : : : ; tNg !
+R with YN = (y1; : : : ; yN) :
+De…nition 3 Each trader is represented by its trading strategy.
+The vector of order book depths is de…ned as  = (1; : : : ; N) :
+De…nition 4 (Market Equilibrium) A security market equilibrium is a triplet (X; Y; )
+such that the following conditions are satis…ed:
+1. The market maker maximizes his expected pro…ts:
+(yn+1; : : : ; yN) 2 arg max E
+ M
+n+1 jMn+1
+
+; n = 0 : : : N   1
+4
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+2. The informed trader maximizes his expected pro…ts:
+(xn+1; : : : ; xN) 2 arg max E
+ I
+n+1 jIn
+
+; n = 0 : : : N   1
+3. The order book depth n satis…es a no-expected pro…t condition:
+E
+ (   pn) n
+ L
+n 1   pn
+
+jFn
+
+= 0;
+n = 1 : : : N
+4. The market clearing condition is satis…ed:
+xn + yn + zn + n
+ L
+n 1   pn
+
+= 0
+n = 1; : : : ; N
+We only consider linear market equilibria and later we will show under what conditions a
+linear market equilibrium exists. Solutions to the informed trader’s and the market maker’s
+optimization problem are called optimal strategies for the informed trader and the market
+maker respectively.
+De…nition 5 (Linear market equilibrium) A linear market equilibrium is de…ned as a
+market equilibrium where xn and pn satisfy in addition
+xn
+=
+n (   E (pn jIn 1 )) tn
+pn
+=
+pn 1 + n (xn + zn)
+for some n which is a function of n; such that n is  (p1; : : : ; pn 1)  measurable.
+3
+General calculations and main results
+The market maker has an informational advantage as compared to the limit order traders,
+since he observes the combined order ‡ow from the noise traders and the insider. For a model
+where the market can observe the noise trader order ‡ow separately, see Rochet and Vila (1994)
+[RV94]. However the market maker also has an informational disadvantage as compared to the
+insider, since he does not know the true value of the asset. It is this interplay between those
+two aspects which is one of our main points of investigation. We shall …rst state our main
+theorem on the existence of an equilibrium.
+Theorem 6 There is an equilibrium in this …nancial market which, for n = 1; : : : ; N is given
+by
+1. The insider’s strategy at time tn is
+xn = ntn (   E (pn jIn 1 ))
+2. The market maker sets the price pn at time tn as
+pn = pn 1 + n (n) (xn + zn)
+3. The depth of the market is distributed such that the conditional expected pro…t of the limit
+order traders satis…es a zero pro…t condition
+E
+ (   pn) n
+ L
+n 1   pn
+
+jFn 1
+
+= 0
+4. The market is cleared, i.e.
+0 = xn + yn + zn + n
+ L
+n 1   pn
+
+5
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+The maximal conditional expected pro…t of the insider is given by
+max
+(xn+1;:::;xN) E
+ I
+n+1 jIn
+
+= an (   pn)2 + bn
+whereas the maximal conditional expected pro…t of the market maker is given by
+max
+(n+1;:::;N) E
+ M
+n+1 jMn+1
+
+= cn+1 (xn+1 + zn+1)2 + dn+1 (xn+1 + zn+1) + en+1
+The coe¢ cients an; bn; cn; dn; en; n are Fn 1 measurable and together with n; n satisfy the
+following recursive system of equations for n = 1; : : : ; N :
+an 1 = an + n (1   2anE (n jIn 1 ))   2
+n
+ E (n jIn 1 )   anE
+ 2
+n jIn 1
+
+bn 1 = anE
+ 2
+n jIn 1
+
+2
+ztn + bn
+with the boundary conditions
+aN = bN = 0
+and
+n =
+ntn
+1 + ntnE (n jIn 1 ):
+The parameter n chosen by the informed trader satis…es
+2ntn
+1 + ntnE (n jIn 1 )
+ E (n jIn 1 )   anE
+ 2
+n jIn 1
+
+= 1   2anE (n jIn 1 )
+with the second-order conditions given by
+E (n jIn 1 ) > anE
+ 2
+n jIn 1
+
+(4)
+The market maker chooses the optimal n given by
+2n (n) (xn + zn)
+ n   2cn+12
+n+1
+
+=
+xn + zn + n
+ L
+n 1   2pn 1 + n
+
++ 2cn+12
+n+1 (pn 1   n)   dn+1n+1
+where
+n = n 1 +
+n2
+n 1
+2n2
+n 1 + 2ztn 1
+(xn + zn   n (n 1   pn 1))
+and
+2
+n = V ar ( jMn ) =
+2
+n 12
+ztn 1
+2n2
+n 1 + 2ztn 1
+The second-order conditions read as
+cn+12
+n+1   n < 0
+and
+n > 0:
+The distribution of n and n satis…es
+E (n jFn 1 )
+ L
+n 1   pn 1
+2
+(5)
++E (nn (n) jFn 1 ) n
+
+ E
+ 2 jFn 1
+
+  L
+n 1
+2 + 4L
+n 1pn 1   2p2
+n 1
+
++E
+ n2
+n (n) jFn 1
+  2
+nE
+ 2 jFn 1
+
++ 2
+np2
+n 1   22
+nL
+n 1pn 1 + 2
+ztn
+
+=
+0
+The exact recursive forms of cn; dn and en are given in the appendix. They satisfy the boundary
+condition
+cN+1 = dN+1 = eN+1 = 0
+Our second theorem concerns the solution of the informed trader’s maximization problem.
+6
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+Theorem 7 Assume that E (n jIn 1 ) 6= anE
+ 2
+n jIn 1
+
+for all n = 1; : : : N: Then the informed trader has a unique optimal strategy, whereas the informed trader has several optimal
+strategies in periods where E (n jIn 1 ) = anE
+ 2
+n jIn 1
+
+.
+Next, we look at the market maker’s optimization problem.
+Theorem 8 Assume that n   cn+12
+n+1 6= 0 for all n = 1; : : : N: Then the market maker
+has a unique optimal strategy, whereas he has several optimal strategies in periods where n  cn+12
+n+1 = 0.
+Uniqueness of the equilibrium is provided in the next theorem.
+Theorem 9 The market equilibrium is unique if for all n = 1; : : : N; n   cn+12
+n+1 6= 0;
+E (n jIn 1 ) 6= anE
+ 2
+n jIn 1
+
+and if the distribution of n is uniquely characterized by Conditions (4) and (5) :
+Now we look at the di¤erent market participants separately and we start with a look at
+the informed trader.
+3.1
+The informed trader
+Recall that  is I0 measurable. We start with writing the quantity xn as a linear function of
+ and pn 1:
+Lemma 10 Assume that  is not Mn measurable for every n: The quantity xn ordered by
+the informed trader is linear in the di¤erence between  and pn 1: More precisely,
+xn
+=
+ntn
+1 + ntnE (n jIn 1 ) (   pn 1)
+(6)
+=
+: n (   pn 1)
+Proof. We use equations (2) and (3) :
+xn
+=
+ntn (   pn 1   xnE (n jIn 1 ))
+=)
+xn (1 + ntnE (n jIn 1 )) = ntn (   pn 1)
+=)
+xn =
+ntn
+1 + ntnE (n jIn 1 ) (   pn 1)
+provided
+1 + ntnE (n jIn 1 ) 6= 0
+The condition
+1 + ntnE (n jIn 1 ) = 0
+implies that ntn (   pn 1) = 0: This holds if and only if n = 0 or  = pn 1: However,
+these are the cases which we excluded by assumption.
+Assume that n is In 1 measurable. The informed trader knows the realization of  and
+chooses the quantity xn: To solve his optimization problem, we make the following inductive
+hypothesis:
+max
+(xn+1;:::;xN) E
+ I
+n+1 jIn
+
+= an (   pn)2 + bn
+for some In 1 measurable functions an and bn with the boundary conditions
+aN = bN = 0
+This backward iteration procedure approach already appears in Kyle 1985.
+7
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+Remark 11 The equation
+max
+(xn+1;:::;xN) E
+ I
+n+1 jIn
+
+= an (   pn)2 + bn
+leads to our …rst interpretation. If the market maker sets a price pn which is far away from
+the true asset value ; the conditional expected pro…t of the insider is larger than if pn were
+close to : Of course, this shows how the lack of information on the side of the market maker
+leads to additional pro…ts on the side of the insider. (Note that we will show later that indeed,
+an > 0 and bn > 0:)
+The informed trader’s optimization problem: Choose xn such as to maximize the expected
+pro…t based on the information just before time tn :
+max
+xn E
+ (   pn) xn + I
+n+1 jIn 1
+
+Our main result reads as follows.
+Theorem 12 Assume that E (n jIn 1 ) 6= anE
+ 2
+n jIn 1
+
+for all n. Then necessary conditions for an equilibrium are
+ntn
+1 + ntnE (n jIn 1 ) =
+1   2anE (n jIn 1 )
+2E (n jIn 1 )   2anE
+ 2
+n jIn 1
+
+and
+E (n jIn 1 ) > anE
+ 2
+n jIn 1
+
+Proof. see Appendix
+In the next theorem we look at the case where E (n jIn 1 ) = anE
+ 2
+n jIn 1
+
+for some n:
+Theorem 13 Assume that E (n jIn 1 ) = anE
+ 2
+n jIn 1
+
+for some n: Then anE (n jIn 1 ) =
+1
+2 is a necessary condition for having an equilibrium. However in this case the strategy of the
+insider is not unique anymore. If we have anE (n jIn 1 ) 6= 1
+2 then there is no equilibrium.
+Proof. see Appendix
+Remark 14 This in contrast to the results in Kyle 1985 [Kyl85] where we always have a
+unique equilibrium. If however, as in Kyle 1985 [Kyl85], n is constant for all n, we get a
+unique strategy for the insider, which can be seen from the following lemma.
+Lemma 15 Assume that n 2 In 1 for n = 1; : : : ; N. The condition E (n jIn 1 ) = anE
+ 2
+n jIn 1
+
+implies that anE (n jIn 1 ) = 1
+2 cannot be true. Therefore we get a unique strategy for the
+insider. In particular, n 2 In 1 if n is constant as in Kyle [Kyl85].
+Proof. Assume that E (n jIn 1 ) = anE
+ 2
+n jIn 1
+
+for some n and therefore n = an2
+n:
+Together with ann = 1
+2 this implies ann = 1 which leads to a contradiction.
+We now look at the maximal conditional expected pro…t
+max
+(xn+1;:::;xN) E
+ I
+n+1 jIn
+
+= an (   pn)2 + bn
+and the coe¢ cients an and bn:
+Lemma 16 Let n 2 N and assume that E (n jIn 1 ) 6= anE
+ 2
+n jIn 1
+
+: Then the coe¢ cients
+an and bn are given by the following recursive formula
+bn 1 := anE
+ 2
+n jIn 1
+
+2
+ztn + bn
+and
+an 1 := n   2
+nE (n jIn 1 ) + an + an2
+nE
+ 2
+n jIn 1
+
+  2annE (n jIn 1 )
+8
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+with the boundary conditions aN = bN = 0: If E (n jIn 1 ) = anE
+ 2
+n jIn 1
+
+for some n 2 N,
+then necessarily for an equilibrium anE (n jIn 1 ) = 1
+2 and the coe¢ cients an and bn are given
+by
+an 1 := an
+and
+bn 1 := E (n jIn 1 ) 2
+ztn + bn
+Proof. See Appendix
+3.2
+The market maker
+Recall that n is Mn measurable. Assume that n is independent of In: (Clearly, this could
+be justi…ed by assuming that n is independent of In; which is one of our basic features of the
+model, and the assumption that n is e.g. a deterministic function of n: We also assume that
+ is independent of n:
+The following lemma will be used in the sequel.
+Lemma 17 We have xn + zn 6= 0 P a.s.
+Proof. Assume that P (xn + zn = 0) > 0: Then on this set
+ntn (   E (pn jIn 1 )) =  zn
+However by the independence of the distributions of  and zn; this cannot hold true with
+positive probability.
+In the next subsection we want to calculate the conditional expected value of the asset
+based on the market maker’s information. He does not have as much information on  as
+the informed trader, however the market maker observes the combined order ‡ow from the
+liquidity traders and the informed trader. Therefore he does have at least partial information
+on : To make this statement more precise is the purpose of the next subsection.
+3.2.1
+E ( jMn )
+As a preliminary step, we calculate
+E ( jMn )
+Theorem 18 The expected value of the asset conditional on the market maker’s information
+is given by
+n = E ( jMn ) = n 1 + n
+2
+n
+2ztn 1
+(xn + zn)  2
+n
+2ztn 1
+2
+n (n 1   pn 1)
+The conditional variance reads as
+2
+n = V ar ( jMn ) =
+2
+n 12
+ztn 1
+2n2
+n 1 + 2ztn 1
+Proof. see appendix
+Based on those formulas, we are ready to solve the maximization problem of the marker
+maker.
+9
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+3.2.2
+Maximization problem of the market maker
+As before we proceed by backward induction. We make the following inductive hypotheses:
+max
+(n+1;:::;N) E
+ M
+n+1 jMn+1
+
+= cn+1 (xn+1 + zn+1)2 + dn+1 (xn+1 + zn+1) + en+1
+with the boundary conditions
+cN+1 = dN+1 = eN+1 = 0
+and the assumption that cn; dn and en are Mn 1 measurable for all n: The market maker
+solves
+max
+n E
+
+(pn   )
+ xn + zn + n
+ L
+n 1   pn
+
++ cn+1 (xn+1 + zn+1)2 + dn+1 (xn+1 + zn+1) + en+1 jMn
+
+(7)
+The results are summarized in the following two theorems.
+Theorem 19 A solution to the market maker’s maximization problem exists and the maximizing n is given by
+n (n)
+ 2 (xn + zn) n   2cn+12
+n+1 (xn + zn)
+
+=
+xn + zn + n
+ L
+n 1   2pn 1 + n
+
++ 2cn+12
+n+1pn 1   dn+1n+1   2cn+12
+n+1n
+Uniqueness of the solution is given by the following theorem.
+Theorem 20 Assume that n   cn+12
+n+1 6= 0: Then a unique solution to the market maker’s
+maximization problem exists and the maximizing n is given by
+n (n) = xn + zn + n
+ L
+n 1   2pn 1 + n
+
++ 2cn+12
+n+1pn 1   dn+1n+1   2cn+12
+n+1n
+2 (xn + zn) n   2cn+12
+n+1 (xn + zn)
+The second-order conditions are given by
+cn+12
+n+1 < n
+and
+n > 0
+Proof. see Appendix
+We also give a condition, when there is no equilibrium.
+Lemma 21 Assume that n   cn+12
+n+1 = 0 for some n: If in addition,
+(xn + zn)
+ xn + zn + nL
+n 1   nn   dn+1n+1
+
+6= 0
+then there is no equilibrium. If
+(xn + zn)
+ xn + zn + nL
+n 1   nn   dn+1n+1
+
+= 0
+there will be multiple optimal strategies for the market maker.
+In the appendix we provide precise recursive formulas for the coe¢ cients cn; dn and en:
+Based on those formulas, one can also show the su¢ ciency of the above conditions.
+10
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+3.3
+Noise traders
+They submit orders zn where zn is normally distributed with expectation 0 and instantaneous
+variance 2
+z:
+xn + yn + zn + n
+ L
+n 1   pn
+
+=
+0
+()
+zn =  xn   yn   n
+ L
+n 1   pn
+
+Their pro…t is given by
+
+N
+X
+n=1
+zn  N
+X
+n=1
+znpn = 
+N
+X
+n=1
+zn  N
+X
+n=1
+zn (n 1 + n (xn + zn))
+=
+N
+X
+n=1
+zn (   n 1)  N
+X
+n=1
+znn (xn + zn) =
+N
+X
+n=1
+zn (   n 1)  N
+X
+n=1
+zn (pn   n 1)
+They do participate, no matter how much they lose. A reason for this seemingly paradox
+behaviour could be liquidity reasons for example, see Kyle (1989) [Kyl89] among others.
+3.4
+Limit order traders
+Here we derive a necessary condition on the distribution of n and n (n) such that the
+expected pro…t of the limit order traders satis…es a zero pro…t condition. A note on L
+n 1 :
+This denotes the opinion of the limit order traders on the true value of the asset ; at time tn,
+just when the limit order traders decide on the price. This means that the limit order traders
+buy n
+ L
+n 1   pn
+
+shares at time tn and L
+n 1 is given by
+L
+n 1 = E ( jFn 1 )
+where Fn 1 denotes the information of the limit order trader after trading round n   1 but
+before he knows about the price pn at time tn:
+The limit order traders create the limit order book with depth n: At time tn they buy
+n
+ L
+n 1   pn
+
+shares if L
+n 1   pn is positive and sell them if this expression is negative. This
+means the limit order traders observe the market and update their beliefs on the expected value
+of : In order to …nd a condition on n; in other words, to …nd out whether and to what extent
+limit order traders are willing to participate, we assume that their demand n
+ L
+n 1   pn
+
+satis…es a zero expected pro…t condition: For each n = 1; : : : ; N we assume that
+E
+ (   pn) n
+ L
+n 1   pn
+
+jFn 1
+
+= 0
+Our result reads as follows.
+Theorem 22 Assume that E
+ (   pn) n
+ L
+n 1   pn
+
+jFn 1
+
+= 0: Then n and n have to
+satisfy
+E (n jFn 1 )
+ L
+n 1
+2   2pn 1L
+n 1 + p2
+n 1
+
++E (nn (n) jFn 1 ) n
+
+ E
+ 2 jFn 1
+
+  L
+n 1
+2 + 4L
+n 1pn 1   2p2
+n 1
+
++E
+ n2
+n (n) jFn 1
+  2
+nE
+ 2 jFn 1
+
++ 2
+np2
+n 1   22
+nL
+n 1pn 1 + 2
+ztn
+
+=
+0
+Proof. see Appendix
+11
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+4
+Predictable order book depth
+Here we consider the particular case where the order book depth n is Fn 1 measurable.
+Furthermore we assume that n is a function of n which is Fn 1 measurable. Our …rst
+lemma shows that E (pn jIn 1 ) is Mn measurable.
+Lemma 23 Assume that n is independent of In 1 and n is a deterministic function of n:
+Then E (pn jIn 1 ) is Mn-measurable.
+Proof.
+E (E (pn jIn 1 ) jMn )
+=
+E (E (pn 1 + xnE (n jIn 1 ) jIn 1 ) jMn )
+=
+pn 1 + E (xnE (n jIn 1 ) jMn )
+=
+E (pn 1 + xnE (n) + znE (n) jMn )   znE (n)
+=
+E (pn 1 + (xn + zn) E (n) jMn )   znE (n)
+=
+E (pn 1 + (xn + zn) E (n) jMn )   znE (n)
+=
+pn 1 + (xn + zn) E (n) = E (pn jIn 1 )
+Next we show that the information of the market maker is exactly one period ahead of the
+information which the limit order traders have.
+Lemma 24 Assume that n 2 Fn 1 and n is a deterministic function of n: We claim that
+Mn = Fn
+(8)
+In other words, if the order book depth is nonrandom, then the noise and limit order traders
+will have the same information as the market maker, only one period later.
+Proof. Recall that
+Mn =  (1; : : : ; n; p1; : : : ; pn; x1 + z1; : : : ; xn + zn; y1; : : : ; yn)
+and
+Fn =  (p1; : : : ; pn)
+xn
+=
+ntn (   E (pn jIn 1 ))
+pn
+=
+pn 1 + n (n) (xn + zn)
+0
+=
+xn + yn + zn + n (n 1   pn)
+We use equations (2) and (3) as well as the market clearing condition (1). We proceed by
+induction: M1 = F1: It is clear that F1  M1; so we need to show that M1  F1: By
+assumption, p1 is F1 measurable. This, together with the assumption of F0 measurable 1
+and F1 measurable p0; implies that x1 + z1 is F1 measurable. Therefore the market clearing
+condition implies that y1 is also F1 measurable. Now assume that
+Mn 1 = Fn 1
+To show Mn  Fn we proceed as follows: By assumption, pn and pn 1 are Fn measurable.
+Then xn + zn is Fn measurable and as before this implies that yn is Fn measurable. Here
+we also used that n 1 is Fn 1 measurable. This leads us to conclude that Mn  Fn:
+After those preliminary remarks we look at the equations we got in earlier sections and
+consider the particular case where n and n are Fn 1 measurable. The previous lemma
+implies that L
+n = n:
+Theorem 25 We have the following necessary conditions for an equilibrium:
+12
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+1. The market clearing condition is given by
+xn + yn + zn + n (n 1   pn) = 0
+2. The parameters n and n are given by
+n
+=
+ntn
+1 + ntnn
+:
+ntn
+=
+1
+n
+  2an
+3. The second-order conditions are
+1 > ann;
+cn+12
+n+1 < n
+and
+n > 0:
+4. The parameters an and bn are recursively given by
+bn 1 = an2
+n2
+ztn + bn
+and
+an 1 = an + 1
+2n (1   2ann)
+with the boundary conditions
+aN = bN = 0:
+5. The parameter n is given by
+n (n) = xn + zn + n
+ L
+n 1   2pn 1 + n
+
++ 2cn+12
+n+1 (pn 1   n)   dn+1n+1
+2 (xn + zn) n   2cn+12
+n+1 (xn + zn)
+:
+6. The conditional expected value of  is given by
+n = n 1 +
+n2
+n 1
+2n2
+n 1 + 2ztn 1
+(xn + zn   n (n 1   pn 1))
+and the conditional variance is
+2
+n = V ar ( jMn ) =
+2
+n 12
+ztn 1
+2n2
+n 1 + 2ztn 1
+:
+7. The equations for cn; dn and en are given in the Appendix.
+8. The condition on n is as follows
+2
+n 1   2pn 1n 1 + p2
+n 1 +
+n (n) n
+  E
+ 2 jFn 1
+
+  2
+n 1 + 4n 1pn 1   2p2
+n 1
+
++
+2
+n (n)
+ 2
+nE
+ 2 jFn 1
+
++ 2
+np2
+n 1   22
+nn 1pn 1 + 2
+ztn
+
+= 0:
+Proof. The only equations which remain to be shown are the equations for an and n:
+an 1
+=
+an + n (1   2ann)   2
+n
+ n   an2
+n
+
+=
+an +
+1   2ann
+2n   2an2
+n
+(1   2ann)  (1   2ann)2
+4
+ n   an2
+n
+2
+ n   an2
+n
+
+=
+an + (1   2ann)2
+2
+ n   an2
+n
+   (1   2ann)2
+4
+ n   an2
+n
+ = an + (1   2ann)2
+4
+ n   an2
+n
+
+=
+an + 1
+2n (1   2ann) = an (1   nn) + 1
+2n
+13
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+For n we obtain
+ntn
+1 + ntnn
+=
+1   2ann
+2n   2an2
+n
+()
+ntn
+ 2n   2an2
+n
+
+= (1 + ntnn) (1   2ann)
+()
+ntn
+ 2n   2an2
+n
+
+= 1   2ann + ntnn   ntnn2ann
+()
+ntnn = 1   2ann
+()
+ntn = 1
+n
+  2an
+If we look at period N   1; we obtain several interesting results.
+Lemma 26 aN 1 and bN 1 are given by
+aN 1 =
+1
+4N
+and
+bN 1 = 0
+This clearly has an economic interpretation: Assume that N is a strictly increasing function
+of N: Then the larger the order book depth, the larger is the slope of the pricing rule, i.e. the
+larger N; the lower is the informed trader’s pro…t. In other words, if there are many limit
+order traders in the market, the pro…t of the informed trader is low.
+Proof. We use that aN = bN = 0: Then
+bN 1 = 0
+and
+aN 1 = N   2
+NN
+(9)
+from the equations for aN 1 and bN 1 respectively. From the equation for N we get
+NtN
+1 + NtNN
+=
+1
+2N
+()
+2NNtN = 1 + NtNN
+()
+NNtN = 1
+Therefore
+N =
+1
+2N
+Plugging this into Equation (9) yields
+aN 1
+=
+1
+2N
+ 1
+42
+N
+N
+=
+1
+4N
+Lemma 27 The second-order conditions are ful…lled in the last period, provided N > 0 and
+N > 0:
+14
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+Proof. The second-order conditions are
+E (N jIN 1 ) > aNE
+ 2
+N jIN 1
+
+cN+12
+N+1 < N
+and
+N > 0
+which are equivalent to
+N > 0
+and
+N > 0
+since cN+1 = aN = 0:
+Lemma 28 The condition N > 0 is satis…ed in equilibrium provided
+ 2
+ L
+N 1
+2 + 2pN 1L
+N 1   p2
+N 1 + E
+ 2 jFN 1
+
+> 0:
+Proof. From the condition on the limit order book and the equation
+N =
+1
+2N
+we get
+ L
+N 1
+2   2pN 1L
+N 1 + p2
+N 1
++1
+2
+
+ E
+ 2 jFN 1
+
+  L
+N 1
+2 + 4L
+N 1pN 1   2p2
+N 1
+
++1
+4E
+ 2 jFN 1
+
++ 1
+4p2
+N 1   1
+2L
+N 1pN 1 + 2
+N (N) 2
+ztN = 0
+This holds if and only if
+2
+ L
+N 1
+2   2pN 1L
+N 1 + p2
+N 1   E
+ 2 jFN 1
+
++ 42
+N (N) 2
+ztN = 0
+This gives
+42
+N (N) 2
+ztN =  2
+ L
+N 1
+2 + 2pN 1L
+N 1   p2
+N 1 + E
+ 2 jFN 1
+
+If we now assume that
+2pN 1L
+N 1   2
+ L
+N 1
+2   p2
+N 1 + E
+ 2 jFN 1
+
+> 0
+()
+ 2
+ L
+N 1
+2 + 2pN 1L
+N 1   p2
+N 1 + E
+ 2 jFN 1
+
+> 0
+there is exactly one positive solution for N:
+Lemma 29 The condition
+ 2
+ L
+N 1
+2 + 2pN 1L
+N 1   p2
+N 1 + E
+ 2 jFN 1
+
+> 0
+holds e.g. if the conditional variance of  is large compared to the conditional mean.
+Proof. We look at the condition
+ 2
+ L
+N 1
+2 + 2pN 1L
+N 1   p2
+N 1 + E
+ 2 jFN 1
+
+> 0
+as a quadratic term in p2
+N 1: Then this condition is satis…ed if and only if
+ L
+N 1
+2   4 ( 1)
+
+ 2
+ L
+N 1
+2 + E
+ 2 jFN 1
+
+> 0
+()
+ 3
+ L
+N 1
+2 + 4V ar
+ 2 jFN 1
+
+> 0
+()
+V ar
+ 2 jFN 1
+
+> 3
+4
+ L
+N 1
+2
+15
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+5
+Competitive market maker
+5.1
+Competitive market maker with order book
+Here we modify our previous setup slightly. Quite often in the literature on market microstructure we do not have a maximizing market maker, but instead the maximizing behaviour is
+replaced by the condition
+E ( jMn ) = pn
+which actually is a zero expected pro…t condition for the market maker, which we shall show
+later. For a justi…cation of this in a game-theoretic context see e.g. Kyle (1985) [Kyl85]. We
+call this the competitive case.
+Lemma 30 We have that L
+n = pn; n = 1; : : : ; N:
+Proof. The proof uses the assumption
+E ( jMn ) = pn
+and the fact that Fn  Mn: Then
+L
+n
+=
+E ( jFn ) = E (( jMn ) jFn )
+=
+E (pn jFn ) = pn
+The next lemma shows that indeed the condition E ( jMn ) = pn is a zero-pro…t condition
+for the market maker.
+Lemma 31 The market maker has a zero expected conditional pro…t.
+Proof. Di¤erent from before, we now make the inductive hypotheses that
+max
+(n+1;:::;N) E
+ M
+n+1 jMn+1
+
+= en+1
+with en+1 2 Mn+1 and the boundary condition eN+1 = 0: From before we get for the conditional expected pro…t of the market maker:
+max
+(n;:::;N) E
+ M
+n jMn
+
+=
+en+1 + (pn 1   n)
+ xn + zn + nL
+n 1   npn 1
+
++ n (n) (xn + zn)2
++n (n) (xn + zn) n
+ L
+n 1   pn 1
+
+  (pn 1   n) nn (n) (xn + zn)   2
+n (n) (xn + zn)2 n
+Setting n = pn and L
+n 1 = pn 1 gives
+max
+(n;:::;N) E
+ M
+n jMn
+
+=
+en+1 + (pn 1   pn) (xn + zn + npn 1   npn 1) + n (n) (xn + zn)2
+  (pn 1   pn) nn (n) (xn + zn)   2
+n (n) (xn + zn)2 n
+=
+en+1   n (n) (xn + zn)2 + n (n) (xn + zn)2
++n2
+n (n) (xn + zn)2   n2
+n (n) (xn + zn)2
+=
+en+1
+Of course, the boundary condition eN+1 = 0 now implies that en = 0 for all n = 1; : : : ; N + 1:
+16
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+Theorem 32 The equilibrium in the competitive case is given by the following recursive system
+of equations
+xn
+=
+ntn (   E (pn jIn 1 ))
+pn
+=
+pn 1 + n (n) (xn + zn)
+0
+=
+(xn + zn) (1   nn (n)) + yn
+with
+E ( jMn ) = pn
+2
+n = V ar ( jMn ) =
+2
+n 12
+ztn 1
+2n2
+n 1 + 2ztn 1
+n (n) =
+n2
+n
+2ztn 1
+ p2
+n 1   E
+ 2 jFn 1
+
+n
+ E (nn (n) jFn 1 ) + E
+ n2
+n (n) jFn 1
+
+n
+
++
+E
+ n2
+n (n) jFn 1
+
+2
+ztn = 0
+ntn
+ 2E (n jIn 1 )   2anE
+ 2
+n jIn 1
+
+= 1 + ntnE (n jIn 1 ) (1   2anE (n jIn 1 ))
+and the second-order conditions
+E (n jIn 1 ) > anE
+ 2
+n jIn 1
+
+where
+n =
+ntn
+1 + ntnE (n jIn 1 )
+bn 1 := anE
+ 2
+n jIn 1
+
+2
+ztn + bn
+an 1 := an + n (1   2anE (n jIn 1 ))   2
+n
+ E (n jIn 1 )   anE
+ 2
+n jIn 1
+
+and the boundary conditions
+aN = bN = 0
+Proof. We use that
+pn = pn 1 + n (n) (xn + zn)
+Before we have shown that
+n = n 1 +
+n2
+n 1
+2n2
+n 1 + 2ztn 1
+(xn + zn)
+and
+2
+n = V ar ( jMn ) =
+2
+n 12
+ztn 1
+2n2
+n 1 + 2ztn 1
+This immediately implies
+n (n)
+=
+n2
+n 1
+2n2
+n 1 + 2ztn 1
+=
+n2
+n
+2ztn 1
+The market clearing condition now reads as
+0 = (xn + zn) (1   nn (n)) + yn
+17
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+Rewriting the condition on the order book depth coming from the no expected pro…t condition
+for the limit order traders yields
+nE (nn (n) jFn 1 )
+ p2
+n 1   E
+ 2 jFn 1
+
+  2
+nE
+ n2
+n (n) jFn 1
+  p2
+n 1   E
+ 2 jFn 1
+
++ E
+ n2
+n (n) jFn 1
+
+2
+ztn = 0
+Lemma 33 In the competitive case, the prices pn follow a martingale with respect to the
+…ltration (Fn) and with respect to the …ltration (Mn) :
+Proof. We look at
+E (pn jFn 1 )
+=
+E (( jMn ) jFn 1 )
+=
+E ( jFn 1 ) = pn 1
+and
+E (pn jMn 1 )
+=
+E (( jMn ) jMn 1 )
+=
+E ( jMn 1 ) = pn 1
+5.2
+Competitive case with no order book
+If we look at the competitive case with no order book, i.e. n = 0 for n = 1; : : : ; N; we obtain
+a particularly nice result. In the sequel we show that this case can easily be treated with our
+setup.
+Theorem 34 The equilibrium in the competitive case is given by the following recursive system
+of equations
+xn
+=
+ntn (   E (pn jIn 1 ))
+pn
+=
+pn 1 + n (n) (xn + zn)
+0
+=
+xn + zn + yn
+with
+E ( jMn ) = pn
+2
+n = V ar ( jMn ) =
+2
+n 12
+ztn 1
+2n2
+n 1 + 2ztn 1
+n =
+n2
+n
+2ztn 1
+=
+1
+ntn
+and the second-order conditions
+1 > ann
+where
+n = ntn
+2
+bn 1 := an2
+n2
+ztn + bn
+an 1 = 1
+4
+ 1
+n
++ an
+
+and the boundary conditions
+aN = bN = 0
+18
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+Proof. We use that
+pn = pn 1 + n (xn + zn)
+Before we have shown that
+n = n 1 +
+n2
+n 1
+2n2
+n 1 + 2ztn 1
+(xn + zn)
+and
+2
+n = V ar ( jMn ) =
+2
+n 12
+ztn 1
+2n2
+n 1 + 2ztn 1
+This immediately implies that
+n
+=
+n2
+n 1
+2n2
+n 1 + 2ztn 1
+=
+n2
+n
+2ztn 1
+The market clearing condition now reads as
+0 = xn + zn + yn
+n =
+ntn
+1 + ntnn
+= ntn
+2
+ntn
+ 2n   2an2
+n
+
+=
+1 + ntnn (1   2ann)
+()
+2ntnn = 1 + ntnn
+()
+ntnn = 1
+()
+n =
+1
+ntn
+bn 1 := an2
+n2
+ztn + bn
+an 1 := an + n (1   2ann)   2
+n
+ n   an2
+n
+
+= an + ntn
+2
+
+1   2an
+1
+ntn
+
+  2
+nt2
+n
+4
+
+1
+ntn
+  an
+1
+2
+nt2n
+
+= an + ntn
+2
+  an   ntn
+4
++ an
+4 = 1
+4 (ntn + an) = 1
+4
+ 1
+n
++ an
+
+The careful reader observes that these results are consistent with the results in Kyle (1985)
+[Kyl85].
+6
+Two particular cases
+6.1
+No order book
+Here we consider the particular case, when there is no order book at some time tn. Based on our
+previous results, there should be no equilibrium. As a necessary condition for an equilibrium
+to exist, we derived that n > 0: Therefore, no equilibrium can exist with n = 0: Here we
+want to show intuitively how the market maker can make in…nite pro…ts in this case and how
+the other market participants can deviate from their strategy.
+Theorem 35 If n = 0 for some n = 1; : : : ; N; then the market maker can make in…nite
+pro…ts with probability one.
+19
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+Proof. Assume that, for some n = 1; : : : ; N; n = 0: Then the market maker observes the
+total order ‡ow xn + zn: If xn + zn > 0; he chooses n as large as possible. His pro…t is then
+  (xn + zn) (   pn) ! 1 as n ! 1
+Of course, given a strategy at time tn for the market maker, represented by n; the market
+maker will always deviate by choosing a larger n: Therefore, no equilibrium can exist. Similarly if xn + zn < 0; no equilibrium exist. The case xn + zn = 0 has probability zero and will
+therefore not be considered by us.
+Again, this shows that for the existence of our equilibrium it was crucial to have a nontrivial
+order book. This result is consistent with earlier results in the literature. In a static model,
+Dennert [Den93],has already shown a nonexistence result. Even the existence of two market
+makers is not su¢ cient to guarantee an equilibrium, see e.g. Bondarenko [Bon01].
+6.2
+The one-period model
+If we choose N = 1 we are able to obtain several previous results, known in the literature,
+in an easy and straightforward way. Again our setup is easy and general enough to allow
+for particular cases in an extremely convenient way. In particular, we obtain the model by
+Bondarenko and Sung [BS03]: We …rst observe that 0 = p0 = L
+0 : The interested reader can
+easily do the calculations by using the following formulas
+a)
+ := 22
+0 + 2
+z
+2
+0
+= 2 + 2
+
+where 2 = 2
+z
+2
+0 ;
+b)
+s :=
+
+E () E
+ 1
+
+ 1
+4
+;
+c)
+
+s = ;
+d)
+E () = 
+ s + s3
+;
+and
+e)
+ () = 1
+2 + 1
+2
+s
+s2 + 1:
+Furthermore, we also obtain a formula for the expected pro…t of the market maker, which
+is not in their paper and which is given by
+max
+
+E
+ M jM1
+
+= c (x + z)2
+where
+c = (   )2
+42
+> 0
+Intuitively, the further  and  are apart, the larger is the expected pro…t of the market maker.
+20
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+7
+Comparative statistics
+We end this paper with a look at a few very interesting lemmas and return to the setup of the
+basic model as in Section 2: We want to look at the behaviour of certain parameters: First we
+consider n (n) :
+Lemma 36 Assume that n   cn+12
+n+1 > 0: If the market order quantity is positive then the
+slope of the pricing rule increases if the expectation about the asset value as seen by the market
+maker increases. The pricing rule becomes less steep if n increases provided the total market
+order quantity is negative. In short, we can write
+@n
+@n
+>
+0
+if
+xn + zn > 0
+@n
+@n
+<
+0
+if
+xn + zn < 0
+Economically this is meaningful, since the market maker has to adjust the new price pn to the
+new conditions.
+Proof. The proof is straightforward:
+@n
+@n
+=
+@
+@n
+nn   2cn+12
+n+1n
+2 (xn + zn) n   2cn+12
+n+1 (xn + zn)
+=
+1
+2 (xn + zn)
+ n   2cn+12
+n+1
+ 
+ n   2cn+12
+n+1
+
+=
+1
+2 (xn + zn)
+Lemma 37 We get
+@xn
+@E (n jIn 1 ) > 0
+if
+ < pn 1
+and
+@xn
+@E (n jIn 1 ) < 0
+if
+ > pn 1
+Economically, this makes sense. If the previous price pn 1 is greater than the true price  and
+the expected conditional value E (n jIn 1 ) increases, the order quantity xn increases.
+Proof. This immediately follows from
+xn =
+ntn
+1 + ntnE (n jIn 1 ) (   pn 1)
+Lemma 38 Clearly, the market maker learns about the true asset value  from the combined
+order ‡ow xn + zn: If this order ‡ow increases, then n also increases, i.e.
+@n
+@ (xn + zn) > 0
+Proof. Clearly, looking at the formula for n and taking the partial derivative with respect
+to xn + zn yields
+n = n 1 +
+n2
+n 1
+2n2
+n 1 + 2ztn 1
+(xn + zn   n (n 1   pn 1))
+and
+@n
+@ (xn + zn) =
+n2
+n 1
+2n2
+n 1 + 2ztn 1
+21
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+Lemma 39 Assume that n is independent of In 1: Then
+  (   pn 1) 6 E (   pn jIn 1 ) 6 (   pn 1)
+More precisely,
+  (   pn 1) (1   nE (n (n))) 6 E (   pn jIn 1 ) 6 (1   nE (n (n))) (   pn 1)
+The larger nn (n) is, the closer will be the price pn to : In other words, if the insider
+trades very aggressively on his information, i.e. if n is very large, the price will approach the
+true value very fast.
+Proof. We calculate
+E (   pn jIn 1 )
+=
+E (   pn 1   n (n) (xn + zn) jIn 1 )
+=
+   pn 1   E (n (n) xn jIn 1 )
+=
+   pn 1   E (n (n) n (   pn 1) jIn 1 )
+=
+   pn 1   n (   pn 1) E (n (n))
+=
+(   pn 1) (1   nE (n (n)))
+and look at
+1   nn (n)
+=
+1  ntn
+1 + ntnE (n (n))E (n (n)) :
+Clearly
+0 6 1  ntn
+1 + ntnE (n (n))E (n (n)) 6 1
+Here we want to show that an > 0 and bn > 0; which we already used in a previous remark.
+Lemma 40 Assume that E (n jIn 1 ) > anE
+ 2
+n jIn 1
+
+for all n = 1; : : : ; N and n > 0:
+Then the coe¢ cients an and bn are nonnegative.
+Proof. We proceed by backward induction: N+1 = 0 = bN+1: Now assume that an; bn > 0:
+We use the recursive formulas for an and bn:
+bn 1 = anE
+ 2
+n jIn 1
+
+2
+ztn + bn
+and
+an 1 = n   2
+nE (n jIn 1 ) + an + an2
+nE
+ 2
+n jIn 1
+
+  2annE (n jIn 1 )
+Clearly, this shows already, that bn 1 > 0: Furthermore n is given by
+n =
+ntn
+1 + ntnE (n jIn 1 )
+From the second-order conditions
+E (n jIn 1 ) > anE
+ 2
+n jIn 1
+
+and the equation
+ntn
+1 + ntnE (n jIn 1 ) =
+1   2anE (n jIn 1 )
+2E (n jIn 1 )   2anE
+ 2
+n jIn 1
+ = n
+22
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+we obtain that
+1   2anE (n jIn 1 )
+>
+0;
+n
+6
+1
+and
+1   2anE (n jIn 1 ) 6 2E (n jIn 1 )   2anE
+ 2
+n jIn 1
+
+We can use these results to estimate
+an 1
+=
+n   2
+nE (n jIn 1 ) + an + an2
+nE
+ 2
+n jIn 1
+
+  2annE (n jIn 1 )
+=
+n
+ 1   2annE (n jIn 1 ) + n
+ anE
+ 2
+n jIn 1
+
+  E (n jIn 1 )
+
++ an
+=
+n
+ 
+1   2annE (n jIn 1 ) + (1   2anE (n jIn 1 ))
+ anE
+ 2
+n jIn 1
+
+  E (n jIn 1 )
+
+2E (n jIn 1 )   2anE
+ 2
+n jIn 1
+
+!
++ an
+=
+n
+
+1   2annE (n jIn 1 )   1
+2 (1   2anE (n jIn 1 ))
+
++ an
+=
+n
+1
+2 + anE (n jIn 1 ) (1   2n)
+
++ an
+>
+n
+1
+2   anE (n jIn 1 )
+
++ an > an
+as desired.
+Here we look at the behaviour of n if n changes. Based on the formula pn = pn 1 +
+n (n) (xn + zn) one would expect that n increases if n increases, provided that the limit
+order traders and the market traders actually order a positive amount. This is what we want
+to show next.
+Lemma 41
+@n
+@n
+8
+<
+:
+> 0
+if n <
+L
+n 1 pn 1
+xn+zn
+< 0
+if n >
+L
+n 1 pn 1
+xn+zn
+Proof. We use the market clearing condition
+xn + yn + zn + n
+ L
+n 1   pn 1   n (n) (xn + zn)
+
+= 0
+(10)
+to …nd the partial derivative of n with respect to n: Solving 10 for n (n) yields
+n (n) = xn + yn + zn + nL
+n 1   npn 1
+n (xn + zn)
+Taking the derivative:
+@n
+@n
+= n (xn + zn)
+ L
+n 1   pn 1
+
+  xn + yn + zn + nL
+n 1   npn 1
+
+(xn + zn)
+2n (xn + zn)2
+=
+ (xn + yn + zn)
+2n (xn + zn)
+= n
+ L
+n 1   pn
+
+2n (xn + zn)
+=
+L
+n 1   pn
+n (xn + zn)
+First we make the assumption that xn + zn > 0; i.e. the cumulative market order is positive.
+Then
+@n
+@n
+>
+0
+if
+L
+n 1   pn > 0
+@n
+@n
+<
+0
+if
+L
+n 1   pn < 0
+23
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+Clearly, if the market depth increases and both the market and the limit orders are positive,
+the market maker sets a steeper pricing rule. For the case xn + zn < 0 we get similar results.
+This yields
+@n
+@n
+ > 0
+if
+ L
+n 1   pn > 0 and xn + zn > 0
+
+or
+ L
+n 1   pn < 0 and xn + zn < 0
+
+< 0
+if
+ L
+n 1   pn > 0 and xn + zn < 0
+
+or
+ L
+n 1   pn < 0 and xn + zn > 0
+
+We can express this di¤erently and get
+@n
+@n
+8
+<
+:
+> 0
+if n <
+L
+n 1 pn 1
+xn+zn
+< 0
+if n >
+L
+n 1 pn 1
+xn+zn
+Next we want to look at the signed participation rate Rn (n; xn + zn) de…ned as
+Rn (n; xn + zn) =
+yn
+xn + zn
+Lemma 42
+Rn (n; xn + zn)
+>
+0
+()
+n >
+xn + zn
+pn   L
+n 1
+and (xn + zn)
+ L
+n 1   pn
+
+< 0
+or n
+<
+xn + zn
+pn   L
+n 1
+and (xn + zn)
+ L
+n 1   pn
+
+> 0
+Proof. We estimate
+Rn (n; xn + zn)
+>
+0
+()
+n
+ pn   L
+n 1
+
+xn + zn
+> 1
+First assume that xn + zn > 0 and pn   L
+n 1 > 0: Then
+Rn (n; xn + zn)
+>
+0 () n
+ pn   L
+n 1
+
+xn + zn
+> 1
+()
+n >
+xn + zn
+pn   L
+n 1
+Therefore, if n is large enough, the market maker and the market traders trade in the same
+direction. Obviously, if n is large, the limit order traders provide the necessary liquidity and
+therefore, both market traders and the market maker can take liquidity out of the market.
+With similar calculations, we get
+Rn (n; xn + zn)
+>
+0
+()
+n >
+xn + zn
+pn   L
+n 1
+and (xn + zn)
+ L
+n 1   pn
+
+< 0
+or n
+<
+xn + zn
+pn   L
+n 1
+and (xn + zn)
+ L
+n 1   pn
+
+> 0
+Remark 43 This means that the market maker and the market traders trade in the same
+direction provided n is large and both market and limit traders trade in di¤erent directions.
+Furthermore the market maker and the market traders trade also in the same direction provided
+n is small and market traders and limit traders trade in di¤erent directions.
+These short observations …nish the main part of this paper. In the appendix we provide
+the remaining proofs.
+24
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+Appendix
+Before starting with the main calculations, we state and prove a preliminary lemma.
+Lemma 44  is not Mn measurable for all n:
+Proof. Recall that
+Mn =  (1; : : : ; n; p1; : : : ; pn 1; pn; x1 + z1; : : : ; xn + zn; y1; : : : ; yn)
+and that zn is independent of both  and k; 1 6 k 6 n: From this we immediately see that
+ 62 Mn:
+Remark 45 Clearly, the previous result is necessary in order for us to be able to set up the
+model the way we wanted to: The insider should really be the only one who knows the exact
+realization of :
+From now on, we shall use that for n = 1; : : : ; N;  is not Mn measurable.
+A
+The informed trader
+Here we want to prove Theorems 12; 13 as well as Lemma 16: We start with a preliminary
+lemma.
+Lemma 46 From the assumption
+max
+(xn+1;:::;xN) E
+ I
+n+1 jIn
+
+= an (   pn)2 + bn
+we get
+max
+(xn+1;:::;xN) E
+ I
+n+1 jIn 1
+
+=
+max
+(xn+1;:::;xN) E
+ E
+ I
+n+1 jIn
+
+jIn 1
+
+=
+max
+(xn+1;:::;xN) E
+
+an (   pn)2 + bn jIn 1
+
+The informed trader solves
+max
+(xn;:::;xN) E
+ (   pn) xn + I
+n+1 jIn 1
+
+=
+max
+xn E
+
+(   pn) xn + an (   pn)2 + bn jIn 1
+
+We shall assume that an and bn are In 1 measurable.
+max
+(xn;:::;xN) E
+ (   pn) xn + I
+n+1 jIn 1
+
+=
+max
+xn E
+
+(   pn 1   n (xn + zn)) xn + an (   pn 1   n (xn + zn))2 + bn jIn 1
+
+=
+max
+xn E ((   pn 1   n (xn + zn)) xn jIn 1 )
++E
+
+an
+
+(   pn 1)2 + 2
+n (xn + zn)2   2 (   pn 1) n (xn + zn)
+
++ bn jIn 1
+
+=
+max
+xn (   pn 1   E (n jIn 1 ) xn) xn
++E
+
+an (   pn 1)2 + an2
+n
+ x2
+n + z2
+n + 2xnzn
+
+  2an (   pn 1) n (xn + zn) + bn jIn 1
+
+=
+max
+xn (   pn 1   E (n jIn 1 ) xn) xn + an (   pn 1)2 + anx2
+nE
+ 2
+n jIn 1
+
++anE
+ 2
+n jIn 1
+
+2
+ztn   2an (   pn 1) xnE (n jIn 1 ) + bn
+Note that we implicitly used that
+E (zn jIn 1 ) = 0
+25
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+and
+E
+ z2
+n jIn 1
+
+=
+E
+ z2
+n
+
+=
+2
+ztn
+since zn is independent of In 1: In a …rst step we assume that E (n jIn 1 ) 6= anE
+ 2
+n jIn 1
+
+:
+Looking at the …rst order conditions and di¤erentiating the following expression with respect
+to xn
+(   pn 1   E (n jIn 1 ) xn) xn + an (   pn 1)2
++anx2
+nE
+ 2
+n jIn 1
+
++ anE
+ 2
+n jIn 1
+
+2
+ztn   2an (   pn 1) xnE (n jIn 1 ) + bn
+yields
+   pn 1   2E (n jIn 1 ) xn + 2anxnE
+ 2
+n jIn 1
+
+  2an (   pn 1) E (n jIn 1 ) = 0
+()
+xn
+  2E (n jIn 1 ) + 2anE
+ 2
+n jIn 1
+
+=   + pn 1 + 2an (   pn 1) E (n jIn 1 )
+()
+xn =   + pn 1 + 2an (   pn 1) E (n jIn 1 )
+ 2E (n jIn 1 ) + 2anE
+ 2
+n jIn 1
+
+()
+xn =
+ 1 + 2anE (n jIn 1 )
+ 2E (n jIn 1 ) + 2anE
+ 2
+n jIn 1
+ (v   pn 1)
+Therefore, using Lemma 10 we get
+ntn
+1 + ntnE (n jIn 1 ) =
+ 1 + 2anE (n jIn 1 )
+ 2E (n jIn 1 ) + 2anE
+ 2
+n jIn 1
+
+The second-order conditions yield
+ 2E (n jIn 1 ) + 2anE
+ 2
+n jIn 1
+
+<
+0
+()
+E (n jIn 1 )   anE
+ 2
+n jIn 1
+
+> 0
+In the next theorem we look at the case where E (n jIn 1 ) = anE
+ 2
+n jIn 1
+
+for some n; i.e.
+we prove Theorem 13.
+Proof of Theorem 13
+Consider some n for which
+E (n jIn 1 ) = anE
+ 2
+n jIn 1
+
+then the …rst order conditions are zero if and only if
+   pn 1   2an (   pn 1) E (n jIn 1 )
+=
+0
+()
+(   pn 1) (1   2anE (n jIn 1 )) = 0
+()
+ = pn 1 or anE (n jIn 1 ) = 1
+2
+The …rst condition implies  2 Mn 1: This means that  is known to the market maker after
+round n   1: We discussed this case before and excluded it. From the second condition
+anE (n jIn 1 ) = 1
+2
+we get with
+E (n jIn 1 ) = anE
+ 2
+n jIn 1
+
+that
+1
+2 = a2
+nE
+ 2
+n jIn 1
+
+26
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+Here the …rst order conditions are always zero. Therefore
+max
+xn (   pn 1   E (n jIn 1 ) xn) xn + an (   pn 1)2 + anx2
+nE
+ 2
+n jIn 1
+
++anE
+ 2
+n jIn 1
+
+2
+ztn   2an (   pn 1) xnE (n jIn 1 ) + bn
+=
+an (   pn 1)2 + E (n jIn 1 ) 2
+ztn + bn
+From this we set
+an 1 := an
+and
+bn 1 := E (n jIn 1 ) 2
+ztn + bn
+Now, in period tn we therefore have several choices of xn: The conditional expected pro…t of the
+insider will be the same, no matter what xn he chooses. Therefore the strategy of the insider
+is not unique anymore. We want to add a small remark: The condition anE (n jIn 1 ) = 1
+2
+cannot be satis…ed in the last trading period since aN = 0:
+For the case E (n jIn 1 ) 6= anE
+ 2
+n jIn 1
+
+for all n = 1; : : : ; N we have a closer look at
+the maximal expected conditional pro…t. This allows us to compute the recursive formulas for
+an and bn:
+max
+(xn;:::;xN) E
+ (   pn) xn + I
+n+1 jIn 1
+
+=
+max
+xn (   pn 1   E (n jIn 1 ) xn) xn + an (   pn 1)2
++anx2
+nE
+ 2
+n jIn 1
+
++ anE
+ 2
+n jIn 1
+
+2
+ztn   2an (   pn 1) xnE (n jIn 1 ) + bn
+=
+(   pn 1   E (n jIn 1 ) n (   pn 1)) n (   pn 1)
++an (   pn 1)2 + an (n (   pn 1))2 E
+ 2
+n jIn 1
+
++anE
+ 2
+n jIn 1
+
+2
+ztn   2an (   pn 1)2 nE (n jIn 1 ) + bn
+=
+(   pn 1)2  n   2
+nE (n jIn 1 ) + an + an2
+nE
+ 2
+n jIn 1
+
+  2annE (n jIn 1 )
+
++anE
+ 2
+n jIn 1
+
+2
+ztn + bn
+Recall that
+n =
+ntn
+1 + ntnE (n jIn 1 )
+From this we set
+bn 1 := anE
+ 2
+n jIn 1
+
+2
+ztn + bn
+and
+an 1 := n   2
+nE (n jIn 1 ) + an + an2
+nE
+ 2
+n jIn 1
+
+  2annE (n jIn 1 )
+=
+ntn
+1 + ntnE (n jIn 1 )  
+ntn
+1 + ntnE (n jIn 1 )
+2
+E (n jIn 1 )
++ an + an
+
+ntn
+1 + ntnE (n jIn 1 )
+2
+E
+ 2
+n jIn 1
+
+  2anE (n jIn 1 )
+ntn
+1 + ntnE (n jIn 1 )
+= an +
+ntn
+1 + ntnE (n jIn 1 ) (1   2anE (n jIn 1 ))
+ 
+ntn
+1 + ntnE (n jIn 1 )
+2  E (n jIn 1 )   anE
+ 2
+n jIn 1
+
+Clearly, this implies that an and bn are indeed In 1 measurable.
+27
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+We consider two more cases. First
+(   pn 1) (1   2anE (n jIn 1 )) < 0
+Then the insider chooses the quantity minus in…nity, so there is no equilibrium. Second
+(   pn 1) (1   2anE (n jIn 1 )) > 0
+Then the insider chooses a quantity plus in…nity and he gains an in…nite amount of money.
+Then yn would be minus in…nity and the market maker would make an in…nite loss. Of course
+the market maker can deviate from this strategy by picking a di¤erent n: Therefore he will do
+so and this case cannot occur in equilibrium. Summing up, we see that n will not be chosen
+such that E (n jIn 1 ) = anE
+ 2
+n jIn 1
+
+; except if in addition anE (n jIn 1 ) = 1
+2:
+B
+The market maker
+Assume that n; n and n are Mn measurable. Furthermore assume that n is independent
+of In: (Clearly, this could be justi…ed by assuming that n is independent of In; which is one
+of our basic features of the model, and the assumption that n is e.g. a deterministic function
+of n) We also assume that  is independent of n: First we start with proving the formulas
+for n and 2
+n as in Theorem 18: We look at
+xn + zn =
+ntn
+1 + ntnE (n jIn 1 ) (   pn 1) + zn
+Assume that xn is Mn measurable and n is independent of In 1. Then
+xn + zn =
+ntn
+1 + ntnE (n) (   pn 1) + zn
+We assume that n is Mn 1 measurable and independent of . For the forthcoming calculations, also note that  is independent of n: We start with the conditional expected value of
+:
+E ( jMn )
+=
+E (v jMn 1 ) + Cov (; xn + zn jMn 1 )
+V ar (xn + zn jMn 1 ) (xn + zn   E (xn + zn jMn 1 ))
+=
+n 1 + Cov (; xn + zn jMn 1 )
+V ar (xn + zn jMn 1 ) (xn + zn   E (xn jMn 1 ))
+First we calculate
+Cov (; xn + zn jMn 1 ) = Cov
+
+;
+ntn
+1 + ntnE (n) (   pn 1) + zn jMn 1
+
+=
+Cov (; n (   pn 1) + zn jMn 1 ) = Cov (; n (   pn 1) jMn 1 ) = n2
+n 1
+and
+V ar (xn + zn jMn 1 ) = V ar
+
+ntn
+1 + ntnE (n) (   pn 1) + zn jMn 1
+
+=
+V ar (n (   pn 1) + zn jMn 1 ) = V ar (n (   pn 1) + zn jMn 1 ) = 2
+n2
+n 1 + 2
+ztn 1
+We assume that 2
+n2
+n 1 + 2
+ztn 1 6= 0: Using this, we can calculate
+E ( jMn )
+=
+n 1 +
+n2
+n 1
+2n2
+n 1 + 2ztn 1
+(xn + zn   n (n 1   pn 1))
+=
+n 1 +
+n2
+n 1
+2n2
+n 1 + 2ztn 1
+(xn + zn   n (n 1   pn 1))
+28
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+as well as
+2
+n
+=
+V ar ( jMn ) = V ar ( jMn 1 )   (Cov (; xn + zn) jMn 1 )2
+V ar (xn + zn jMn 1 )
+=
+2
+n 1  2
+n4
+n 1
+2n2
+n 1 + 2ztn 1
+= 2
+n 1  2
+n4
+n 1
+2n2
+n 1 + 2ztn 1
+=
+2
+n4
+n 1 + 2
+n 12
+ztn 1   2
+n4
+n 1
+2n2
+n 1 + 2ztn 1
+=
+2
+n 12
+ztn 1
+2n2
+n 1 + 2ztn 1
+(Note that n is independent of ) From this
+n
+2
+n
+2ztn 1
+=
+n2
+n 1
+2n2
+n 1 + 2ztn 1
+and
+2
+n
+2ztn 1
+=
+2
+n 1
+2n2
+n 1 + 2ztn 1
+Then
+n
+=
+n 1 + n
+2
+n
+2ztn 1
+(xn + zn   n (n 1   pn 1))
+=
+n 1 + n
+2
+n
+2ztn 1
+(xn + zn)  2
+n
+2ztn 1
+2
+n (n 1   pn 1)
+Furthermore
+E
+ 2 jMn
+
+=
+2
+n 12
+ztn 1
+2n2
+n 1 + 2ztn 1
++ 2
+n
+Next we give proofs for Theorems 19 and 20:
+Proofs of Theorems 19 and 20
+We make the following inductive hypotheses:
+max
+(n+1;:::;N) E
+ M
+n+1 jMn+1
+
+= cn+1 (xn+1 + zn+1)2 + dn+1 (xn+1 + zn+1) + en+1
+with the boundary conditions
+cN+1 = dN+1 = eN+1 = 0
+and the assumption that cn+1; dn+1 and en+1 are Mn measurable: The market maker solves
+max
+n E
+
+(pn   )
+ xn + zn + n
+ L
+n 1   pn
+
++ cn+1 (xn+1 + zn+1)2 + dn+1 (xn+1 + zn+1) + en+1 jMn
+
+(11)
+First assume that n   cn+12
+n+1 6= 0: Use that n is independent of In and therefore
+xn+1 =
+n+1tn+1
+1 + n+1tn+1E (n+1) (   pn)
+29
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+We proceed in two steps: First we calculate
+E
+
+cn+1 (xn+1 + zn+1)2 + dn+1 (xn+1 + zn+1) + en+1 jMn
+
+=
+E
+ cn+1x2
+n+1 + dn+1xn+1 jMn
+
++ cn+12
+ztn+1 + en+1
+=
+E
+ 
+cn+1
+
+n+1tn+1
+1 + n+1tn+1E (n+1) (   pn)
+2
++ dn+1
+n+1tn+1
+1 + n+1tn+1E (n+1) (   pn) jMn
+!
++cn+12
+ztn+1 + en+1
+=
+E
+ 
+cn+1
+2
+n+12tn+1
+ 1 + n+1tn+1E (n+1)
+2 (   pn)2 + dn+1
+n+1tn+1
+1 + n+1tn+1E (n+1) (   pn) jMn
+!
++cn+12
+ztn+1 + en+1
+=
+E
+
+cn+12
+n+1 (   pn)2 + dn+1n+1 (   pn) jMn
+
++ cn+12
+ztn+1 + en+1
+=
+E
+
+cn+12
+n+1 (   pn)2 + dn+1n+1 (   pn) jMn
+
++ cn+12
+ztn+1 + en+1
+=
+cn+12
+n+1E
+
+(   pn)2 jMn
+
++ dn+1n+1E ((   pn) jMn ) + cn+12
+ztn+1 + en+1
+Continuing we get
+E
+
+cn+1 (xn+1 + zn+1)2 + dn+1 (xn+1 + zn+1) + en+1 jMn
+
+=
+cn+12
+n+1E
+
+(   pn)2 jMn
+
++ dn+1n+1E ((   pn) jMn ) + cn+12
+ztn+1 + en+1
+=
+cn+12
+n+1E
+ 2 jMn
+
+  cn+12
+n+1E (2pn jMn ) + cn+12
+n+1E
+ p2
+n jMn
+
++
+dn+1n+1E ( jMn )   dn+1n+1E (pn jMn ) + cn+12
+ztn+1 + en+1
+=
+cn+12
+n+1
+ 2
+n + 2
+n
+
+  2pncn+12
+n+1n + cn+12
+n+1p2
+n +
+dn+1n+1n   dn+1n+1pn + cn+12
+ztn+1 + en+1
+Plugging in the equation for pn
+pn = pn 1 + n (n) (xn + zn)
+yields
+E
+
+cn+1 (xn+1 + zn+1)2 + dn+1 (xn+1 + zn+1) + en+1 jMn
+
+=
+cn+12
+n+1
+ 2
+n + 2
+n
+
+  2 (pn 1 + n (n) (xn + zn)) cn+12
+n+1n
++cn+12
+n+1 (pn 1 + n (n) (xn + zn))2 +
+(12)
+dn+1n+1n   dn+1n+1 (pn 1 + n (n) (xn + zn)) + cn+12
+ztn+1 + en+1
+Di¤erentiating with respect to n leads to:
+@
+@n
+E
+
+cn+1 (xn+1 + zn+1)2 + dn+1 (xn+1 + zn+1) + en+1 jMn
+
+=
+ 2 (xn + zn) cn+12
+n+1n + cn+12
+n+12 (pn 1 + n (n) (xn + zn)) (xn + zn)
+ dn+1n+1 (xn + zn)
+To continue, we assume that n+1 is independent of Mn: In a second step we calculate
+E
+ (pn 1 + n (n) (xn + zn)   )
+ xn + zn + n
+ L
+n 1   pn 1   n (n) (xn + zn)
+
+jMn
+
+=
+(pn 1 + n (n) (xn + zn)   n)
+ xn + zn + nL
+n 1   npn 1   nn (n) (xn + zn)
+
+=
+(pn 1   n)
+ xn + zn + nL
+n 1   npn 1
+
++ n (n) (xn + zn)2
++n (n) (xn + zn) n
+ L
+n 1   pn 1
+
+  (pn 1   n) nn (n) (xn + zn)
+ 2
+n (n) (xn + zn)2 n
+30
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+(Clearly, L
+n 1 = E ( jFn 1 ) is Mn measurable.) Di¤erentiating this last expression
+(pn 1   n)
+ xn + zn + nL
+n 1   npn 1
+
++ n (n) (xn + zn)2
++n (n) (xn + zn) n
+ L
+n 1   pn 1
+
+  (pn 1   n) nn (n) (xn + zn)   2
+n (n) (xn + zn)2 n
+with respect to n yields
+(xn + zn)2 + (xn + zn) n
+ L
+n 1   pn 1
+
+(13)
+  (pn 1   n) n (xn + zn)   2n (n) (xn + zn)2 n
+We have to ensure that this term has a …nite maximum, therefore we take the second derivative,
+which yields
+ 2 (xn + zn)2 n
+This has be to negative, which is equivalent to the condition n > 0 (with probability one).
+We add the term (13) to the expression (12) and set the derivative of the sum to zero.
+(xn + zn)2 + (xn + zn) n
+ L
+n 1   pn 1
+
++   (pn 1   n) n (xn + zn)
+ 2n (n) (xn + zn)2 n   2 (xn + zn) cn+12
+n+1n +
+2cn+12
+n+1 (pn 1 + n (n) (xn + zn)) (xn + zn)   dn+1n+1 (xn + zn) = 0
+Solving this for n yields
+n (n) = xn + zn + n
+ L
+n 1   2pn 1 + n
+
++ 2cn+12
+n+1 (pn 1   n)   dn+1n+1
+2 (xn + zn) n   2cn+12
+n+1 (xn + zn)
+(14)
+Multiplying by xn + zn and (xn + zn)2 respectively, we obtain
+n (n) (xn + zn) = xn + zn + n
+ L
+n 1   2pn 1 + n
+
++ 2cn+12
+n+1 (pn 1   n)   dn+1n+1
+2n   2cn+12
+n+1
+and
+2
+n (n) (xn + zn)2 =
+ xn + zn + n
+ L
+n 1   2pn 1 + n
+
++ 2cn+12
+n+1 (pn 1   n)   dn+1n+1
+2
+ 2n   2cn+12
+n+1
+2
+The maximal conditional expected pro…t is then
+(pn 1   n)
+ xn + zn + nL
+n 1   npn 1
+
++ n (n) (xn + zn)2
++n (n) (xn + zn) n
+ L
+n 1   pn 1
+
+  (pn 1   n) nn (n) (xn + zn)   2
+n (n) (xn + zn)2 n
++cn+12
+n+1
+ 2
+n + 2
+n
+
+  2 (pn 1 + n (n) (xn + zn)) cn+12
+n+1n
++cn+12
+n+1 (pn 1 + n (n) (xn + zn))2 +
++dn+1n+1n   dn+1n+1 (pn 1 + n (n) (xn + zn)) + cn+12
+ztn+1 + en+1
+Factorizing n and 2
+n: The maximal pro…t reads as:
+n (n) (xn + zn)
+ xn + zn + n
+ L
+n 1   2pn 1 + n
+
++ 2cn+12
+n+1 (pn 1   n)   dn+1n+1
+
++2
+n (n) (xn + zn)2   n + cn+12
+n+1
+
++ (pn 1   n)
+ xn + zn + nL
+n 1   npn 1
+
++
++cn+12
+n+1
+ 2
+n + 2
+n
+
+  2pn 1cn+12
+n+1n + cn+12
+n+1p2
+n 1 +
++dn+1n+1n   dn+1n+1pn 1 + cn+12
+ztn+1 + en+1
+31
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+Further simplifying and plugging in n (n) from Equation (14) :
+max
+(n;:::;N) E
+ M
+n jMn
+
+=
+xn + zn + n
+ L
+n 1   2pn 1 + n
+
++ 2cn+12
+n+1 (pn 1   n)   dn+1n+1
+2n   2cn+12
+n+1
+
+ xn + zn + n
+ L
+n 1   2pn 1 + n
+
+  dn+1n+1 + 2cn+12
+n+1 (pn 1   n)
+
++
+ xn + zn + n
+ L
+n 1   2pn 1 + n
+
++ 2cn+12
+n+1 (pn 1   n)   dn+1n+1
+2
+ 2n   2cn+12
+n+1
+2
+ cn+12
+n+1   n
+
++ (pn 1   n)
+ xn + zn + nL
+n 1   npn 1
+
++ cn+12
+n+1
+ 2
+n + 2
+n
+
+  2pn 1cn+12
+n+1n
++cn+12
+n+1p2
+n 1 + dn+1n+1n   dn+1n+1pn 1 + cn+12
+ztn+1 + en+1
+=
+ xn + zn + n
+ L
+n 1   2pn 1 + n
+
++ 2cn+12
+n+1 (pn 1   n)   dn+1n+1
+2
+4n   4cn+12
+n+1
++ (pn 1   n)
+ xn + zn + nL
+n 1   npn 1
+
++ cn+12
+n+1
+ 2
+n + 2
+n
+
+  2pn 1cn+12
+n+1n
++cn+12
+n+1p2
+n 1 + dn+1n+1n   dn+1n+1pn 1 + cn+12
+ztn+1 + en+1
+Now plugging in the expression for n;
+n = n 1 +
+n2
+n 1
+2n2
+n 1 + 2ztn 1
+(xn + zn   n (n 1   pn 1))
+and looking at the terms with xn + zn; one can see that we can write
+max
+(n;:::;N) E
+ M
+n jMn
+
+= cn (xn + zn)2 + dn (xn + zn) + en
+for some Mn measurable functions cn; dn and en: From this calculation one also gets that
+indeed cn+1; dn+1; en+1 are Mn measurable. Now we look at the second-order conditions.
+We di¤erentiate the following expression again with respect to n :
+(xn + zn)2 + (xn + zn) n
+ L
+n 1   pn 1
+
+  (pn 1   n) n (xn + zn)   2n (n) (xn + zn)2 n
+ 2 (xn + zn) cn+12
+n+1n + 2cn+12
+n+1 (pn 1 + n (n) (xn + zn)) (xn + zn)   dn+1n+1 (xn + zn)
+which yields
+ 2 (xn + zn)2 n + 2cn+12
+n+1 (xn + zn)2
+<
+0
+()
+cn+12
+n+1 < n
+This …nishes the proof of Theorems 19 and 20:
+In the following we want to prove Lemma 21.
+Proof of Lemma 21
+32
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+We have a look at the maximal expected conditional pro…t.
+max
+(n;:::;N) E
+ M
+n jMn
+
+=
+n (n) (xn + zn)
+ xn + zn + n
+ L
+n 1   2pn 1 + n
+
++ 2cn+12
+n+1 (pn 1   n)   dn+1n+1
+
++2
+n (n) (xn + zn)2   n + cn+12
+n+1
+
++ (pn 1   n)
+ xn + zn + nL
+n 1   npn 1
+
++
++cn+12
+n+1
+ 2
+n + 2
+n
+
+  2pn 1cn+12
+n+1n + cn+12
+n+1p2
+n 1 +
++dn+1n+1n   dn+1n+1pn 1 + cn+12
+ztn+1 + en+1
+=
+n (n) (xn + zn)
+ xn + zn + n
+ L
+n 1   2pn 1 + n
+
++ 2n (pn 1   n)   dn+1n+1
+
++ (pn 1   n)
+ xn + zn + nL
+n 1   npn 1
+
++ n
+ 2
+n + 2
+n
+
+  2pn 1nn
++np2
+n 1 + dn+1n+1n   dn+1n+1pn 1 + cn+12
+ztn+1 + en+1
+=
+n (n) (xn + zn)
+ xn + zn + n
+ L
+n 1 + n
+
+  2nn   dn+1n+1
+
++ (pn 1   n)
+ xn + zn + nL
+n 1   npn 1
+
++ n
+ 2
+n + 2
+n
+
+  2pn 1nn
++np2
+n 1 + dn+1n+1n   dn+1n+1pn 1 + cn+12
+ztn+1 + en+1
+We consider three cases. First
+(xn + zn)
+ xn + zn + n
+ L
+n 1 + n
+
+  2nn   dn+1n+1
+
+< 0
+Then the market maker would choose n to be minus in…nity, and there will be no equilibrium.
+(Note that the informed trader could deviate from his strategy by picking a di¤erent xn which
+gives him a higher pro…t.) Second
+(xn + zn)
+ xn + zn + n
+ L
+n 1 + n
+
+  2nn   dn+1n+1
+
+> 0
+Then the market maker would choose n to be plus in…nity, and there will be no equilibrium.
+Third
+(xn + zn)
+ xn + zn + n
+ L
+n 1 + n
+
+  2nn   dn+1n+1
+
+= 0
+Then the conditional expected pro…t of the market maker will be
+(pn 1   n)
+ xn + zn + nL
+n 1   npn 1
+
++ n
+ 2
+n + 2
+n
+
+  2pn 1nn
++np2
+n 1 + dn+1n+1n   dn+1n+1pn 1 + cn+12
+ztn+1 + en+1
+independent of n: Therefore the market maker has several strategies, he can pick whatever
+n he desires.
+C
+Calculation of cn; dn and en
+The purpose of this section is to make a previous remark more precise. In the previous subsection we omitted the explicit calculation of the parameters cn; dn and en: Now we shall give
+explicit expressions for them. The calculations are quite lengthy and they are just stated here
+for the convenience of the reader. However they are necessary since they will provide us with
+33
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+the necessary result that cn+1; dn+1 and en+1 are Mn measurable functions.
+max
+(n;:::;N) E
+ M
+n jMn
+
+=
+xn + zn + n
+ L
+n 1   2pn 1 + n
+
++ 2cn+12
+n+1 (pn 1   n)   dn+1n+1
+2n   2cn+12
+n+1
+
+ xn + zn + n
+ L
+n 1   2pn 1 + n
+
+  dn+1n+1 + 2cn+12
+n+1 (pn 1   n)
+
++
+ xn + zn + n
+ L
+n 1   2pn 1 + n
+
++ 2cn+12
+n+1 (pn 1   n)   dn+1n+1
+2
+ 2n   2cn+12
+n+1
+2
+ cn+12
+n+1   n
+
++ (pn 1   n)
+ xn + zn + nL
+n 1   npn 1
+
++ cn+12
+n+1
+ 2
+n + 2
+n
+
+  2pn 1cn+12
+n+1n
++cn+12
+n+1p2
+n 1 + dn+1n+1n   dn+1n+1pn 1 + cn+12
+ztn+1 + en+1
+=
+ xn + zn + n
+ L
+n 1   2pn 1 + n
+
++ 2cn+12
+n+1 (pn 1   n)   dn+1n+1
+2
+2
+ n   cn+12
+n+1
+
+  xn + zn + n
+ L
+n 1   2pn 1 + n
+
++ 2cn+12
+n+1 (pn 1   n)   dn+1n+1
+2
+4
+ n   cn+12
+n+1
+
++ (pn 1   n)
+ xn + zn + nL
+n 1   npn 1
+
++ cn+12
+n+1
+ 2
+n + 2
+n
+
+  2pn 1cn+12
+n+1n
++cn+12
+n+1p2
+n 1 + dn+1n+1n   dn+1n+1pn 1 + cn+12
+ztn+1 + en+1
+=
+ xn + zn + n
+ L
+n 1   2pn 1 + n
+
++ 2cn+12
+n+1 (pn 1   n)   dn+1n+1
+2
+4
+ n   cn+12
+n+1
+
++ (pn 1   n)
+ xn + zn + nL
+n 1   npn 1
+
++ cn+12
+n+1
+ 2
+n + 2
+n
+
+  2pn 1cn+12
+n+1n
++cn+12
+n+1p2
+n 1 + dn+1n+1n   dn+1n+1pn 1 + cn+12
+ztn+1 + en+1
+Now plugging in the expression for n;
+n
+=
+n 1 +
+n2
+n 1
+2n2
+n 1 + 2ztn 1
+(xn + zn   n (n 1   pn 1))
+=
+n 1 + gn (xn + zn)   gn (n 1   pn 1)
+=
+hn + gn (xn + zn)
+where
+gn :=
+n2
+n 1
+2n2
+n 1 + 2ztn 1
+hn := n 1   gn (n 1   pn 1)
+one gets
+max
+(n;:::;N) E
+ M
+n jMn
+
+=
+ xn + zn + n
+ L
+n 1   2pn 1 + hn + gn (xn + zn)
+
++ 2cn+12
+n+1 (pn 1   (hn + gn (xn + zn)))   dn+1n+1
+2
+4
+ n   cn+12
+n+1
+
++ (pn 1   (hn + gn (xn + zn)))
+ xn + zn + nL
+n 1   npn 1
+
++ cn+12
+n+1
+
+2
+n + (hn + gn (xn + zn))2
+ 2pn 1cn+12
+n+1 (hn + gn (xn + zn)) + cn+12
+n+1p2
+n 1 + dn+1n+1 (hn + gn (xn + zn))
+ dn+1n+1pn 1 + cn+12
+ztn+1 + en+1
+34
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+Simplifying leads to
+max
+(n;:::;N) E
+ M
+n jMn
+
+=
+ xn + zn + ngn (xn + zn)   2cn+12
+n+1gn (xn + zn) + n
+ L
+n 1   2pn 1 + hn
+2
+4
+ n   cn+12
+n+1
+
++
+ 2cn+12
+n+1 (pn 1   hn)   dn+1n+1
+2
+4
+ n   cn+12
+n+1
+
++xn + zn + ngn (xn + zn)   2cn+12
+n+1gn (xn + zn) + n
+ L
+n 1   2pn 1 + hn
+
+4
+ n   cn+12
+n+1
+
+2cn+12
+n+1 (pn 1   hn)   dn+1n+1
+4
+ n   cn+12
+n+1
+
++ (pn 1   hn) (xn + zn) + (pn 1   hn)
+ nL
+n 1   npn 1
+
+ gn (xn + zn) (xn + zn)   gn (xn + zn)
+ nL
+n 1   npn 1
+
++cn+12
+n+12
+n + cn+12
+n+1h2
+n + 2cn+12
+n+1hngn (xn + zn)
++cn+12
+n+1g2
+n (xn + zn)2   2pn 1cn+12
+n+1hn   2pn 1cn+12
+n+1gn (xn + zn)
++cn+12
+n+1p2
+n 1 + dn+1n+1hn + dn+1n+1gn (xn + zn)   dn+1n+1pn 1 + cn+12
+ztn+1 + en+1
+Factorizing xn + zn
+max
+(n;:::;N) E
+ M
+n jMn
+
+=
+ (xn + zn)
+ 1 + ngn   2cn+12
+n+1gn
+
++ n
+ L
+n 1   2pn 1 + hn
+
++ 2cn+12
+n+1 (pn 1   hn)   dn+1n+1
+2
+4
+ n   cn+12
+n+1
+
++ (xn + zn)
+ (pn 1   hn)   gn
+ nL
+n 1   npn 1
+
++ 2cn+12
+n+1hngn   2pn 1cn+12
+n+1gn + dn+1n+1gn
+
++ (xn + zn)2   gn + cn+12
+n+1g2
+n
+
++ (pn 1   hn)
+ nL
+n 1   npn 1
+
++ cn+12
+n+12
+n + cn+12
+n+1h2
+n
+ 2pn 1cn+12
+n+1hn + cn+12
+n+1p2
+n 1 + dn+1n+1hn   dn+1n+1pn 1 + cn+12
+ztn+1 + en+1
+=
+(xn + zn)2
+ 1 + ngn   2cn+12
+n+1gn
+2
+4
+ n   cn+12
+n+1
+
++ (xn + zn) 2
+ 1 + ngn   2cn+12
+n+1gn
+  n
+ L
+n 1   2pn 1 + hn
+
++ 2cn+12
+n+1 (pn 1   hn)   dn+1n+1
+
+4
+ n   cn+12
+n+1
+
++
+ n
+ L
+n 1   2pn 1 + hn
+
++ 2cn+12
+n+1 (pn 1   hn)   dn+1n+1
+2
+4
+ n   cn+12
+n+1
+
++ (xn + zn)
+ pn 1   hn   gn
+ nL
+n 1   npn 1
+
++ 2cn+12
+n+1hngn   2pn 1cn+12
+n+1gn + dn+1n+1gn
+
++ (xn + zn)2   gn + cn+12
+n+1g2
+n
+
++ (pn 1   hn)
+ nL
+n 1   npn 1
+
++ cn+12
+n+12
+n + cn+12
+n+1h2
+n
+ 2pn 1cn+12
+n+1hn + cn+12
+n+1p2
+n 1 + dn+1n+1hn   dn+1n+1pn 1 + cn+12
+ztn+1 + en+1
+We set
+cn :=
+ 1 + ngn   2cn+12
+n+1gn
+2
+4
+ n   cn+12
+n+1
+
+  gn + cn+12
+n+1g2
+n
+dn
+:
+= 2
+ 1 + ngn   2cn+12
+n+1gn
+  n
+ L
+n 1   2pn 1 + hn
+
++ 2cn+12
+n+1 (pn 1   hn)   dn+1n+1
+
+4
+ n   cn+12
+n+1
+
++pn 1   hn   gn
+ nL
+n 1   npn 1
+
++ 2cn+12
+n+1hngn   2pn 1cn+12
+n+1gn + dn+1n+1gn
+35
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+en
+:
+=
+ n
+ L
+n 1   2pn 1 + hn
+
++ 2cn+12
+n+1 (pn 1   hn)   dn+1n+1
+2
+4
+ n   cn+12
+n+1
+
++ (pn 1   hn)
+ nL
+n 1   npn 1
+
++ cn+12
+n+12
+n + cn+12
+n+1h2
+n
+ 2pn 1cn+12
+n+1hn + cn+12
+n+1p2
+n 1 + dn+1n+1hn   dn+1n+1pn 1 + cn+12
+ztn+1 + en+1
+Resubstituting hn and gn yields
+cn
+=
+
+1 + n
+n2
+n 1
+2
+n2
+n 1+2
+ztn 1   2cn+12
+n+1
+n2
+n 1
+2
+n2
+n 1+2
+ztn 1
+2
+4
+ n   cn+12
+n+1
+
+ n2
+n 1
+2n2
+n 1 + 2ztn 1
++cn+12
+n+1
+
+n2
+n 1
+2n2
+n 1 + 2ztn 1
+2
+dn
+=
+2
+
+1 + n
+n2
+n 1
+2
+n2
+n 1+2
+ztn 1   2cn+12
+n+1
+n2
+n 1
+2
+n2
+n 1+2
+ztn 1
+
+4
+ n   cn+12
+n+1
+
+
+
+n
+
+L
+n 1   2pn 1 + n 1  n2
+n 1
+2n2
+n 1 + 2ztn 1
+(n 1   pn 1)
+
++2cn+12
+n+1
+
+pn 1   n 1 +
+n2
+n 1
+2n2
+n 1 + 2ztn 1
+(n 1   pn 1)
+
+  dn+1n+1
+
++pn 1   n 1 +
+n2
+n 1
+2n2
+n 1 + 2ztn 1
+(n 1   pn 1)  n2
+n 1
+2n2
+n 1 + 2ztn 1
+ nL
+n 1   npn 1
+
++2cn+12
+n+1
+
+n 1  n2
+n 1
+2n2
+n 1 + 2ztn 1
+(n 1   pn 1)
+
+n2
+n 1
+2n2
+n 1 + 2ztn 1
+ 2pn 1cn+12
+n+1
+n2
+n 1
+2n2
+n 1 + 2ztn 1
++ dn+1n+1
+n2
+n 1
+2n2
+n 1 + 2ztn 1
+en
+=
+2
+n
+
+L
+n 1   2pn 1 + n 1  n2
+n 1
+2
+n2
+n 1+2
+ztn 1 (n 1   pn 1)
+2
+4
+ n   cn+12
+n+1
+
++
+
+2cn+12
+n+1
+
+pn 1  
+n 1  n2
+n 1
+2
+n2
+n 1+2
+ztn 1 (n 1   pn 1)
+
+  dn+1n+1
+2
+4
+ n   cn+12
+n+1
+
++
+2n
+
+L
+n 1   2pn 1 + n 1  n2
+n 1
+2
+n2
+n 1+2
+ztn 1 (n 1   pn 1)
+
+4
+ n   cn+12
+n+1
+
+
+
+2cn+12
+n+1
+
+pn 1  
+n 1  n2
+n 1
+2n2
+n 1 + 2ztn 1
+(n 1   pn 1)
+
+  dn+1n+1
+
++
+
+pn 1  
+n 1  n2
+n 1
+2n2
+n 1 + 2ztn 1
+(n 1   pn 1)
+  nL
+n 1   npn 1
+
++cn+12
+n+12
+n + cn+12
+n+1
+
+n 1  n2
+n 1
+2n2
+n 1 + 2ztn 1
+(n 1   pn 1)
+2
+ 2pn 1cn+12
+n+1
+
+n 1  n2
+n 1
+2n2
+n 1 + 2ztn 1
+(n 1   pn 1)
+
++cn+12
+n+1p2
+n 1 + dn+1n+1
+
+n 1  n2
+n 1
+2n2
+n 1 + 2ztn 1
+(n 1   pn 1)
+
+ dn+1n+1pn 1 + cn+12
+ztn+1 + en+1
+36
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+This shows that indeed, cn+1; dn+1; en+1 are Mn measurable. Obviously, here we used that
+n+1 2 Mn:
+D
+Limit order traders
+For each n = 1; : : : ; N we assume that
+E
+ (   pn) n
+ L
+n 1   pn
+
+jFn 1
+
+= 0
+From this we get:
+E
+ (   pn) n
+ L
+n 1   pn
+
+jFn 1
+
+= 0
+()
+E
+ nL
+n 1   npn   pnnL
+n 1 + np2
+n jFn 1
+
+= 0
+()
+L
+n 1E (n jFn 1 )   pn 1E (n jFn 1 )   E (nn (n) (xn + zn) jFn 1 )  E
+ (pn 1 + n (n) (xn + zn)) nL
+n 1 jFn 1
+
++ E
+
+n (pn 1 + n (n) (xn + zn))2 jFn 1
+
+= 0
+()
+ L
+n 1
+2 E (n jFn 1 )   2pn 1L
+n 1E (n jFn 1 )   E (nn (n) xn jFn 1 )  E
+ n (n) xnnL
+n 1 jFn 1
+
++ E
+ np2
+n 1 jFn 1
+
++ E
+
+n2
+n (n) (xn + zn)2 jFn 1
+
++
+E (2npn 1n (n) (xn + zn) jFn 1 ) = 0
+Further simplifying this leads to
+E
+ (   pn) n
+ L
+n 1   pn
+
+jFn 1
+
+= 0
+()
+ L
+n 1
+2 E (n jFn 1 )   2pn 1L
+n 1E (n jFn 1 )   E (nn (n) n (   pn 1) jFn 1 )
+ E
+ n (n) n (   pn 1) nL
+n 1 jFn 1
+
++ p2
+n 1E (n jFn 1 )
++E
+
+n2
+n (n) 2
+n (   pn 1)2 jFn 1
+
++ 2
+ztnE
+ n2
+n (n) jFn 1
+
++E (2npn 1n (n) n (   pn 1) jFn 1 ) = 0
+Factorizing the terms with n and n :
+E
+ (   pn) n
+ L
+n 1   pn
+
+jFn 1
+
+= 0
+()
+ L
+n 1
+2 E (n jFn 1 )   2pn 1L
+n 1E (n jFn 1 )
+ nE
+ 2 jFn 1
+
+E (nn (n) jFn 1 ) + L
+n 1npn 1E (nn (n) jFn 1 )
+ n
+ L
+n 1
+2 E (n (n) n jFn 1 ) + npn 1L
+n 1E (n (n) n jFn 1 )
++p2
+n 1E (n jFn 1 ) + 2
+nE
+ 2 jFn 1
+
+E
+ n2
+n (n) jFn 1
+
++2
+np2
+n 1E
+ n2
+n (n) jFn 1
+
+  22
+nL
+n 1pn 1E
+ n2
+n (n) jFn 1
+
++2
+ztnE
+ n2
+n (n) jFn 1
+
++ 2pn 1nL
+n 1E (nn (n) jFn 1 )
+ 2p2
+n 1nE (nn (n) jFn 1 ) = 0
+()
+E (n jFn 1 )
+ L
+n 1
+2   2pn 1L
+n 1 + p2
+n 1
+
++E (nn (n) jFn 1 ) n
+
+ E
+ 2 jFn 1
+
+  L
+n 1
+2 + 4L
+n 1pn 1   2p2
+n 1
+
++
+E
+ n2
+n (n) jFn 1
+  2
+nE
+ 2 jFn 1
+
++ 2
+np2
+n 1   22
+nL
+n 1pn 1 + 2
+ztn
+
+= 0
+For n 2 Fn 1 and n a deterministic function of n, we get:
+37
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+E
+ (   pn) n
+ L
+n 1   pn
+
+jFn 1
+
+= 0
+()
+n
+ L
+n 1
+2   2pn 1L
+n 1 + p2
+n 1
+
++nn (n)
+
+ E
+ 2 jFn 1
+
+  L
+n 1
+2 + 4L
+n 1pn 1   2p2
+n 1
+
++n2
+n (n)
+ 2
+nE
+ 2 jFn 1
+
++ 2
+np2
+n 1   22
+nL
+n 1pn 1 + 2
+ztn
+
+= 0
+()
+ L
+n 1
+2   2pn 1L
+n 1 + p2
+n 1 +
+n (n)
+
+ E
+ 2 jFn 1
+
+  L
+n 1
+2 + 4L
+n 1pn 1   2p2
+n 1
+
++
+2
+n (n)
+ 2
+nE
+ 2 jFn 1
+
++ 2
+np2
+n 1   22
+nL
+n 1pn 1 + 2
+ztn
+
+= 0
+References
+[Bac92]
+K. Back. Insider trading in continuous time. Review of Financial Studies 5,
+387–409 (1992).
+[Bla95]
+F. Black. Equilibrium exchanges. Financial Analysts Journal 51, 23–29 (1995).
+[Bon01]
+O. Bondarenko. Competing market makers, liquidity provision, and bid-ask
+spreads. Journal of Financial Markets 4, 269–308 (2001).
+[BS91]
+U. Bhattacharya and M. Spiegel. Insiders, outsiders and market breadowns.
+Review of Financial Studies 4, 225–282 (1991).
+[BS03]
+O. Bondarenko and J. Sung. Specialist participation and limit orders. Journal
+of Financial Markets 6, 539–571 (2003).
+[CC98]
+K.H. Chung and C. Charoenwong. Insider trading and the bid-ask spread.
+Financial Review 33, 1–20 (1998).
+[CH95]
+S. Chakravarty and C. Holden. An integrated model of market and limit
+orders. Journal of Financial Intermediation 4, 213–241 (1995).
+[CHS94]
+W. Christie, J. Harris, and P. Schultz. Why did NASDAQ market makers
+stop avoiding odd-eight quotes? Journal of Finance 49, 1841–1860 (1994).
+[CS94]
+W. Christie and P. Schultz. Why do NASDAQ market makers avoid oddeight quotes? Journal of Finance 49, 1813–1840 (1994).
+[CVNVN99] K. Chung, B. Van Ness, and R. Van Ness. Limit orders and the bid-ask
+spread. Journal of Financial Economics 53, 255–287 (1999).
+[Den93]
+J. Dennert. Price competition between market makers. Review of Economic
+Studies 60, 735–751 (1993).
+[DM97]
+P. Dutta and A. Madhavan. Competition and collusion in dealer markets.
+Journal of Finance 52, 245–276 (1997).
+[Glo89]
+L. Glosten. Insider trading, liquidity and the role of the monopolist specialist.
+Journal of Business 62, 211–235 (1989).
+[HH96]
+L. Harris and J. Hasbrouck. Market versus limit orders: The SuperDOT
+evidence on order submission strategy. Journal of Financial and Quantitative
+Analysis 31, 213–231 (1996).
+[HS93]
+J. Hasbrouck and G. Sofianos. The trades of market makers: An empirical
+analysis of NYSE specialists. Journal of Finance 48, 1565–1593 (1993).
+38
+Electronic copy available at: https://ssrn.com/abstract=2984315
+
+[Kyl85]
+A. Kyle. Continuous auctions and insider trading. Econometrica 53, 1315–1335
+(1985).
+[Kyl89]
+A. Kyle.
+Informed speculation with imperfect competition.
+The Review of
+Economic Studies 56, 317–356 (1989).
+[MS98]
+A. Madhavan and G. Sofianos. An empirical analysis of NYSE specialist
+trading. Journal of Financial Economics 48, 189–210 (1998).
+[RV94]
+J.C. Rochet and J.L. Vila. Insider trading without normality. The Review of
+Economic Studies 61, 131–152 (1994).
+[Sof95]
+G. Sofianos. Specialist gross trading revenues at the New York Stock Exchange.
+NYSE working paper Nr. 95-01 (1995).
+39
+Electronic copy available at: https://ssrn.com/abstract=2984315

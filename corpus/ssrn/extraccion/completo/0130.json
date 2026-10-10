@@ -1,0 +1,137 @@
+{
+ "doc_id": 130,
+ "titulo": "Fractional Stochastic Volatility, Market Microstructure, and Execution: A Simple Primer",
+ "resumen_operativo": "El paper ofrece una introducción no técnica a la volatilidad estocástica fraccional (FSV) y su relevancia para la microestructura de mercado y la ejecución óptima. Explica cómo la FSV generaliza los modelos clásicos de volatilidad estocástica (SV) incorporando movimiento browniano fraccional con un exponente de Hurst (H), permitiendo modelar la memoria larga y el agrupamiento de volatilidad intradiaria (o rugosidad cuando H < 0.5). A partir de la literatura existente, el autor propone heurísticas de ejecución simples y adaptables, tales como el espaciado consciente de la volatilidad (pacing), el uso del desbalance del flujo de órdenes (OFI) para modular tamaños de órdenes, el enrutamiento sensible a la profundidad del libro y el rebalanceo intradiario de estimaciones, sin introducir nuevos modelos matemáticos formales ni un análisis empírico profundo.",
+ "calidad_paper": "media",
+ "conceptos": [
+  {
+   "nombre": "Fractional Stochastic Volatility",
+   "tipo": "teoria",
+   "definicion_en_contexto": "Modelo de volatilidad que generaliza la volatilidad estocástica clásica, incorporando un movimiento browniano fraccional para capturar efectos de memoria larga o rugosidad en la dinámica de la volatilidad.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "fractional Brownian motion"
+    }
+   ],
+   "cita_textual": "Fractional stochastic volatility (FSV) models incorporate fractional Brownian motion (fBm) with Hurst exponent H, enabling long-memory or roughness in the volatility process."
+  },
+  {
+   "nombre": "fractional Brownian motion",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Un proceso gaussiano continuo utilizado en FSV, donde los incrementos de volatilidad tienen un parámetro de Hurst. Si H > 0.5, los incrementos están positivamente correlacionados, y si H < 0.5, negativamente correlacionados.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "Fractional Stochastic Volatility"
+    }
+   ],
+   "cita_textual": "fractional Brownian motion B_t^H, which has parameter H in (0,1). When H > 0.5, increments are positively correlated (persistence); when H < 0.5, increments are negatively correlated (roughness)."
+  },
+  {
+   "nombre": "Hurst exponent",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Parámetro que mide el grado de memoria o rugosidad en la volatilidad. En finanzas de alta frecuencia, un valor H ligeramente menor a 0.5 representa una dinámica 'rugosa' y agrupada de la volatilidad.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "rough volatility"
+    }
+   ],
+   "cita_textual": "fractional Brownian motion (fBm) with Hurst exponent H, enabling long-memory or roughness in the volatility process."
+  },
+  {
+   "nombre": "rough volatility",
+   "tipo": "propiedad",
+   "definicion_en_contexto": "Característica empírica en la que la volatilidad a corto plazo se comporta como un proceso rugoso, manifestando un fuerte agrupamiento intradiario (clustering).",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "Fractional Stochastic Volatility"
+    }
+   ],
+   "cita_textual": "Empirically, recent evidence suggests short-horizon volatility behaves as a 'rough' process (H slightly below 0.5), which helps account for strong intraday clustering."
+  },
+  {
+   "nombre": "Volatility-aware pacing",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Heurística de ejecución que sugiere suavizar la participación en el mercado y evitar operar en ráfagas concentradas durante picos de volatilidad a corto plazo, a menos que haya amplia liquidez disponible.",
+   "relaciones": [
+    {
+     "tipo": "APLICA_A",
+     "objeto": "optimal execution"
+    }
+   ],
+   "cita_textual": "Volatility-aware pacing: When realized short-horizon volatility spikes (consistent with rough/clustered dynamics), prefer schedules that smooth participation and avoid concentrated trading in hot windows unless liquidity is ample."
+  },
+  {
+   "nombre": "OFI signals as controls",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Regla empírica en la cual se utiliza la señal de desbalance del flujo de órdenes (Order Flow Imbalance) para modular los tamaños de las órdenes algorítmicas o pausas de ejecución.",
+   "relaciones": [
+    {
+     "tipo": "APLICA_A",
+     "objeto": "optimal execution"
+    }
+   ],
+   "cita_textual": "OFI signals as controls: Use order-flow imbalance to modulate child-order sizes; scale down when imbalance is extreme."
+  },
+  {
+   "nombre": "Depth-sensitive routing",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Ajuste de enrutamiento que favorece operar a través de fondos oscuros o reducir órdenes agresivas en momentos donde el libro de órdenes tiene profundidad delgada y la volatilidad es alta.",
+   "relaciones": [
+    {
+     "tipo": "APLICA_A",
+     "objeto": "optimal execution"
+    }
+   ],
+   "cita_textual": "Depth-sensitive routing: When displayed depth is thin and volatility is elevated, increase dark/hidden venues and reduce aggressive child orders."
+  },
+  {
+   "nombre": "Intraday rebalancing",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Reestimación de los modelos aproximados de volatilidad y microestructura en ventanas cortas (5 a 15 minutos) durante la sesión intradiaria para ir adaptando los cronogramas de ejecución (como el TWAP/VWAP).",
+   "relaciones": [
+    {
+     "tipo": "APLICA_A",
+     "objeto": "optimal execution"
+    }
+   ],
+   "cita_textual": "Intraday rebalancing: Re-estimate volatility proxies intra-interval (e.g., every 5-15 minutes) and adjust schedules accordingly"
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "Los modelos clásicos de volatilidad estocástica (SV) pueden considerarse como un caso anidado (donde H = 0.5) del modelo más general de volatilidad estocástica fraccional (FSV).",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "La volatilidad a corto plazo (intradiaria) se comporta empíricamente con características 'rugosas' y agrupadas, requiriendo adaptar las estrategias mecánicas estándar.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "El uso combinado de estimadores de volatilidad de memoria larga (rugosidad), señales de desbalance del order flow (OFI) y evaluaciones de profundidad del libro de órdenes provee una base robusta, probada y sin nuevos modelos, para optimizar las órdenes a nivel intradiario.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "alta",
+  "nota": "Aunque es un paper de revisión no técnica ('primer'), las heurísticas provistas están focalizadas exclusivamente en las dinámicas de microestructura (OFI, order book depth) y horizontes de corto plazo, siendo conceptos 100% transferibles a un sistema de ejecución intradiario en ES para mitigar costos de transacción y riesgos de impacto."
+ }
+}

@@ -1,0 +1,1314 @@
+ 
+1 
+ 
+ 
+ 
+ 
+ 
+Capability Satisficing in High Frequency Trading 
+ 
+March 7, 2017 
+ 
+ 
+Accepted to: 
+Research in International Business and Finance (RIBAF) 
+ 
+ 
+Ben Van Vliet 
+Center for Strategic Finance 
+Stuart School of Business 
+Illinois Institute of Technology 
+565 W. Adams, Chicago, IL  60661 
+e.  bvanvliet@stuart.iit.edu  p.  312 906-6513 
+ 
+ 
+Abstract: 
+ 
+This paper explains the capability theory of how HFT firms make allocation decisions under 
+uncertainty, and shows how capability maximization is precisely consistent with utility theory. The 
+issue, however, is how these firms actually make allocation decisions in practice. Using the Gioia 
+methodology, this paper presents evidence from interviews with HFT professionals and specialist 
+media that suggests that these firms are capability satisficers.  Capability theory is also consistent 
+with bounded rationality and the adaptive markets hypothesis, and defines the point at which these 
+firms reach a satisfactory solution.  Thus, capability reconciles mainstream theory and the more 
+realistic, behavioral theories based on observation of industry practice.  The methodology 
+developed can be applied to any firm that makes algorithmic decisions under uncertainty. 
+ 
+Keywords: 
+High frequency trading, adaptive markets hypothesis, capability theory, 
+satisficing  
+ 
+Acknowledgements:   I would like to thank Dr. Sherzod Mirakhmedov, Dr. Steven Moffitt, Dr. 
+Rick Cooper, Dr. Andrew Kumiega, Dr. Joel Goldhar, and Dr. Jonathan 
+Seddon for their valuable assistance and feedback. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+2 
+ 
+1. 
+INTRODUCTION 
+Finance is the application of economic principles to decision-making 
+that involves the allocation of money under conditions of uncertainty.  
+Investors allocate their funds among financial assets in order to 
+accomplish their objectives.  
+        ‒ Fabozzi and Drake [2009]   
+Mean-variance expected utility has been the foundation of decision theory in mainstream 
+finance for decades.  But, the advent of automated trading has changed everything and new 
+theories are needed [see O’Hara 2015].  Today, the markets are ecologies of algorithms 
+[Hasanhodzic et al. 2011; Farmer and Skouras 2013; MacKenzie 2014].  These algorithms 
+encapsulate trading strategies that, presumably, have some efficacy.  Among these, high 
+frequency strategies alone account for over 70% of the daily trading volume [Brogaard 2010; 
+Hoffman 2014]. 
+The mainstream theories have a difficult time with high frequency trading (HFT).  The 
+profits some of these strategies earn and the consistency with which they earn them are 
+inconsistent with the efficient markets hypothesis.  This leads some to conclude either that those 
+theories are wrong or that HFT firms (henceforth firms) are doing something nefarious.  
+Behavioral theories in finance also have a difficult time with HFT.  The systems these firms 
+create do what Richard Thaler says people cannot do—“calculate like a computer and have no 
+self-control problems1 [see Orrel 2010].”  While this may be true, Kumiega and Van Vliet [2012] 
+argue that behavioral biases in the management of algorithmic strategy research and 
+development projects and on/off allocation decisions open the door to (potential) irrationality.  
+Whatever the case, this paper overcomes these difficulties by starting from first principles 
+and arguing these firms are something new.  They are neither pure, market-risk-averse utility 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+3 
+ 
+maximizers (as in mainstream finance theory) nor pure, risk-neutral profit maximizers (as in 
+theory of the firm).  They are a combination of both, because they are sensitive to both market 
+risk and demand risk.  They are in theory something called capability maximizers (from the 
+perspective of mainstream finance and a rational, idealized world) or they are capability 
+satisficers (from the perspective of behavioral finance and a real, boundedly rational world) in 
+the sense of Simon [1965] (henceforth Simon).  Thus, the concept of capability allows us to 
+“move back and forth from the world of theory to the world of action [Ostrom 1990],” by 
+reconciling the mainstream-finance / behavioral-finance dichotomy.  It does so by assuming the 
+evolutionary, or biological, approach to markets [see Farmer and Lo 1999; Farmer 2002; Farmer 
+and Skouras 2013] under the adaptive markets hypothesis (AMH) of Lo [2004; 2005], where 
+“financial agents compete and adapt, but not…in an optimal fashion [Lo 2007].”   
+Empirically, while HFT firms are notoriously secretive, I was able to follow the 
+methodology of Gioia et al. [2012] and interview seven HFT industry professionals.  These 
+interviews shed light on emerging issues on how these firms compete and adapt.  The aim is to 
+contribute to the theoretical and case study literatures on HFT by taking a cross-disciplinary 
+view.  While the sample is small, common concepts and themes across firms appear to support 
+the aggregate dimension that (rather than optimizing) these firms are capability satisficers.  They 
+allocate to strategies that achieve some target, goal, or aspiration level, or simply that are “good 
+enough.”  Quotes drawn from the specialist media corroborate these interviewees’ comments.   
+Relative to the existing literature, this paper makes four contributions.  One, this paper 
+presents capability as a descriptive theory of decision-making in HFT under the AMH.  Two, this 
+paper extends an existing profit function for HFTs and re-presents capability using the more 
+intuitive statistics of the distribution of the sample sum, rather than the sample mean.  Third, this 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+4 
+ 
+paper extends capability theory by explaining these firms’ time and risk preferences according to 
+a ratio of measurable components—the Cooper ratio—that shows that capability is precisely 
+consistent with utility maximization.  Four, as maximization is not possible in practice, this paper 
+presents qualitative evidence that these firms exhibit satisficing behavior when making on/off 
+allocation decisions. 
+The remainder of this paper proceeds as follows.  Section 2 provides some background 
+concepts, including a review of the relevant literature, the economic premise of capability theory, 
+and an update to the HFT profit model.  Section 3 presents a numerical implementation of an 
+example HFT strategy.  Section 4 redefines capability using the distribution of the sample sum.  
+Section 5 connects capability to utility maximization.  Section 6 presents the evidence for the 
+proposition that these firms are in practice capability satisficers.  Section 7 concludes. 
+2. 
+BACKGROUND AND LITERATURE REVIEW 
+ 
+In mainstream finance theory, Von Neumann and Morgenstern’s [1947] expected utility 
+theorem describes people's preferences with regard to decision making under uncertainty under 
+the assumption of rationality.  Further, it accounts for risk aversion, meaning people’s utility 
+functions are concave.  This leads to expected utility maximization and the measure of relative 
+risk aversion λ of Arrow [1965] and Pratt [1964].  The first order condition of optimality of 
+expected utility leads to the well-known Sharpe ratio (SR) [Sharpe 1966], which is commonly 
+used to rank the performance of portfolio strategies, where SR = ( E( r ) - rf ) / σ.  For any 
+investor, the higher the SR, the higher the expected utility, regardless of their objectives or their 
+idiosyncratic level of risk aversion λ.   
+Kumiega et al. [2014] suggest that the performance of HFT strategies is more 
+appropriately assessed against a capability ratio Cpl as in equation (1), which measures of the 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+5 
+ 
+ability of a process to satisfy a lower specification limit [Kane 1986].  In (1) μn is the average 
+expected return per trade, σn is the standard deviation of expected returns per trade, and c is the 
+specification limit, which is the average fixed cost necessary to build and operate these 
+infrastructure-intensive strategies.2 
+
+1
+3
+
+
+
+n
+n
+pl
+c
+n
+C
+
+
+ 
+ 
+ 
+ 
+ 
+(1) 
+Cooper et al. [2015] adds that non-normality in the returns of strategies can be more precisely 
+modeled and that capability can be a proxy for prudence in algorithmic trading.   
+These authors present capability as a prescriptive framework, combining statistical 
+control and risk-adjusted performance measurement.  Firms ought to invest in algorithmic 
+strategies with capability ratios that are greater than one.  Their assumption is that stationary 
+trading profits are available to firms that invest in the correct combination of technologies and 
+algorithms.  Consistent profitability is a stylized fact of HFT [see for example, Hadfield 2017; 
+Baron et al. 2012; Kirilenko et al. 2015], and it is what justifies these firm’s large, up-front 
+investments in research and technological infrastructure. 
+In behavioral economics, Simon’s contributions on bounded rationality and satisficing 
+form the foundation of theories derived from observation of agents [Schwartz 2002].  A wide 
+body of literature develops these concepts, including some contributions related to the market 
+ecology of algorithms.  Brennan and Lo [2012] develop a binary choice model of decisions and 
+show that “bounds on rationality are determined by physiological and environmental 
+constraints.”  Hasanhodzic et al. [2011] “suggest that a reinterpretation of market efficiency in 
+computational terms might be the key to reconciling [the efficient markets hypothesis] with the 
+possibility of making profits based on past prices alone…It does not make sense to talk about 
+market efficiency without taking into account that market participants have bounded resources.”   
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+6 
+ 
+In addition to the literature on the AMH already discussed, other authors in finance have 
+also addressed satisficing, the “decision-making procedure or cognitive heuristic that entails 
+searching through the available options just long enough to find one that reaches a preset 
+threshold of acceptability [Colman 2015].”  Firms satisfice in ambiguous (i.e. complex and 
+dynamic) environments that preclude any sort of optimization or optimal behavior.  Lanzillotti 
+[1958] and Payne et al. [1980], and Payne et al. [1981] show that managers are concerned with 
+profit targets, not profit maximization.  Abbas et al. [2008] and Bordley and Kirkwood [2004] 
+investigate “target-oriented utility.”  The literature of engineering describes a similar concept, 
+“goal-oriented requirements engineering,” where “a goal is an objective the system under 
+consideration should achieve” [Van Lamsweerd 2001].  “Engineering attempts to find good 
+enough abstractions for phenomena at issue [Abbott 2010]” and “automation is an engineering 
+discipline [Schuler 2006].”  However, none of these address satisficing in the highly complex 
+and dynamic environment of automated and HFT. 
+Most importantly for this paper, Brown and Sim [2009] develop the idea of a satisficing 
+measure, “which depends on a [risky] position’s performance relative to a given aspiration 
+level.”  These authors extend their ideas in Brown et al. [2012] to “provide some formalism for 
+the role of aspiration levels in choice under uncertainty.”  These articles assume diversification 
+among positions, or “acts,” and convex preferences.  Under their definition, the SR is a 
+satisficing measure on a linear space of a finite set of random variables (even though it does not 
+define an aspiration level), because it satisfies the axioms of attainment content, nonattainment 
+apathy, monotonicity, and gain continuity.  I apply their definition to the HFT case to show that 
+the capability ratio is also a satisficing measure.      
+2.1 
+THE ECONOMIC PREMISE OF CAPABILITY 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+7 
+ 
+The economic premise of capability theory follows the evolutionary and computational 
+approach of Hasanhodzic et al. [2011].  As such, it assumes that HFTs are suppliers of efficient 
+markets (with respect to short-term3 information) and liquidity to longer-term traders and 
+investors who demand these characteristics of markets.  Whether this view holds or not is the 
+subject of debate.  However, the preponderance of empirical evidence supports the hypothesis 
+that HFT aids in price discovery and increases liquidity [Brogaard 2010; Brogaard et al. 2014; 
+Hasbrouck and Saar 2013; Jovanovic and Menkveld 2011; Riordan and Storkenmaier 2012].  
+More specifically, I assume: 
+1. HFT strategies generate revenues, or gross profits, by extracting private information 
+from public market data and incorporating it into future price changes of financial 
+instruments [see for example, Grossman and Stiglitz 1980; and Benos et al. 2015].  
+This revenue represents the price that longer-term traders and investors are willing to 
+pay for removal of a short-term inefficiency, or opportunity O [see Zhang 1999].   
+2. HFT strategies also generate revenues, or gross profits, through the use of passive 
+limit orders, thereby supplying liquidity and earning the bid-ask spread S.  The spread 
+consists of a fee for liquidity provision plus a premium for assuming the risk of 
+adverse selection when transacting against informed traders [Glosten 1987].   
+The AMH argues that evolutionary processes at work in the markets will determine the correct 
+diversity (i.e. number and variety) of HFT strategies that make for a robust ecology. 
+2.2 
+THE HFT PROFIT MODEL 
+Cooper and Van Vliet [2015] attribute trading profits in HFT to the two sources of 
+revenue O and S plus exchange rebates4 R to build a total revenue TR equation.  Because HFTs 
+earn O probabilistically, C is the percentage of the opportunity O that the strategy can capture.  
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+8 
+ 
+Then, revenue from information processing is C ∙ O, the captured opportunity, and the total 
+revenue equation is TR = C ∙ O + S + R.  As I use the term, trading profit π is TR minus variable 
+trading costs VC, so that π = TR – VC.  Variable costs are commissions and/or exchange fees and 
+margins, particularly in the case of listed derivatives markets.  In equity markets, these firms 
+often pay a flat fee for unlimited trading and may deposit fixed margins.  In such a case, these 
+costs are part of fixed costs FC.  (Later, I will use the term net profits πnet, where πnet = TR – VC – 
+FC, and fixed costs are denoted by the letter c.)    
+In full, then, the expected trading profit per share (or contract) traded E( π ) of an HFT 
+strategy is defined in equation (2). 
+   
+
+VC
+R
+S
+C
+O
+E
+
+
+
+
+
+
+
+
+  
+ 
+ 
+(2) 
+The expected trading profit per trade is the trading profit per share traded times the number of 
+shares traded, or the size s, as E( πt ) = μt = μ · s.  Given a quantity of trades q per day (a proxy 
+for demand for the information processing and liquidity they supply through passive limit 
+orders), then the expected trading profit5 per day E( πd ) = μd = μt · q. Given many trading days, 
+or a waiting time w, the expected trading profit per w is E( πw ) = μw = μd · w.  Of course, μ, μt, μd, 
+and μw are simply expectations of four distributions of trading profit outcomes, and q is itself a 
+random variable (as is potentially s).  The shape of the distribution of profits per share traded 
+around the expectation in (2) determines the shapes of the others through the central limit 
+theorem.  These firms take advantage of these relationships to increase profits and decrease risk 
+of loss.     
+Appendix A provides a brief review of the central limit theorem and the statistical 
+relationships between a distribution and the distributions of its sample mean and sample sum.  In 
+HFT, the distribution of the sample sum of trading profits is the powerful concept.  Because the 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+9 
+ 
+mean grows faster than the standard deviation, any trading strategy that has a positive 
+expectation will be increasingly profitable and with an increasing level of reliability of 
+profitability as q and w increase.  This is related to the concept of “success probability” in 
+Browne [1999], Follmer and Leukert [1999], and Muller and Baumann [2006].  The best way to 
+demonstrate this is through a numerical implementation.     
+3. 
+NUMERICAL IMPLEMENTATION 
+Consider a (trivial) equity HFT strategy that implements a short-term directional forecast 
+or intermarket arbitrage or statistical arbitrage using passive limit orders (i.e. make-make tactics 
+[see Cooper and Van Vliet 2015]) and holds no positions over night.  Such a strategy may in 
+reality have a (virtually) stationary and non-normal reference distribution of trading profits per 
+share traded π, with a small expectation (say, just one tenth of a penny, $0.001) and a long left 
+tail in cases of adverse selection, so that μ = 0.001, σ2 = 0.0004, γ = -3.0, and κ = 33.0.  Figure 1 
+shows this reference distribution of trading profits per share traded.  
+ 
+Figure 1:  Reference Distribution of Trading Profits per Share Traded 
+If the strategy trades s = 100 shares per trade, then the distribution of trading profits per 
+trade has the moments μt = 0.10, σt2 = 4.00, γt = -3.0, and κt = 33.0.  Incidentally, these moments 
+show why these firms prefer to make many small trades as opposed to fewer larger ones, which 
+liquidity demanders prefer [Easley and O’Hara 1987].  For a given volume of shares traded, or 
+scale k = s ∙ q, the variance over k is σk2 = σ2 · s2 ∙ q.  Thus, the variance of a single one thousand 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+10 
+ 
+share trade, σk2 = σ2 · 10002 ∙ 1 = σ2 · 1,000,000, is ten times greater than the variance of 
+executing ten one hundred share trades, σk2 = σ2 · 1002 · 10 = σ2 · 100,000.  This is consistent 
+with the empirical evidence.  As HFT activity has increased, the average trade size has gone 
+down [see Kumiega et al. 2016]. 
+If the strategy makes many of these s = 100 trades per day, say q = 10, 100, or 1000, 
+respectively, then the three resulting distributions of profits per day are shown Figure 2.  The 
+distribution of the sample sum is very close to normal, especially at q = 1000, the right-most 
+graph.  Given this distribution, which has the moments μd = 100.00, σd2 = 4000.00, γd = -0.095, 
+and κd = 0.033, the firm has a high probability of generating between $0 and $200 in trading 
+profits per day from this strategy.     
+ 
+Figure 2:  Distributions of Trading Profits per Day 
+s = 100, q = 100, 500, and 1000 
+If the strategy is making (an average of) q = 1000 trades per day and runs for several 
+days, say w = 5, 10, or 20 days, then the three distributions of profits per waiting time w are 
+shown in Figure 3.  The distribution of the sample sum where w = 20 has the moments μw = 
+2000.00, σw2 = 80000.00, γw = -0.021, and κw = 0.002.  Given this distribution, the firm has high 
+probability of generating trading profits of between $1500 and $2500 per month from the 
+strategy.  
+ 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+11 
+ 
+Figure 3:  Distributions of Trading Profits per Period 
+s = 100, q = 1000, w = 5, 10, and 20 days 
+The heavy, vertical, dashed lines in each chart in Figure 2 and Figure 3 represent the 
+fixed cost c = FC associated with the trading strategy (plus any required rate of return) that the 
+firm hopes to exceed by allocating to the strategy.  In Figure 2, this cost is $50 per day in the 
+three charts.  In Figure 3, this cost is $50 × 5 = $250 per week, $50 × 10 = $500 per two-week 
+period, and $50 × 20 = $1000 per month.6  Because the fixed costs in HFT are so large and 
+cannot be assumed away, expected net profits πnet are what really matter, where πnet = μw – cw.  As 
+a goal formulation, these firms search for “capable” strategies, as defined in Proposition 1, which 
+is self-evident. 
+Proposition 1:  The objective, or goal, of the HFT firm is to allocate capital to 
+capable strategies; ones it believes will be able to reliably generate net profits over 
+some acceptable timeframe.   
+The risk in Proposition 1 and that these firms are averse to is the probability of loss over a given 
+period w, as in Mao [1970].  Lower reliability of profits means greater probability of loss and 
+consecutive losing periods, which raises doubt about the moments of the distribution and may 
+lead to bankruptcy [see Cooper et al. 2015].  This arises as much from uncertainty about demand, 
+or quantity q, as it does from price uncertainty σ.     
+This is why low latency technology is so important.  “The fastest firms (in absolute and 
+in relative terms) earn the highest profits [Baron et al. 2012].”  Technological speed is necessary 
+to increase C in order to achieve positive μ, minimize the length of the left tail (i.e. lower adverse 
+selection risk), and to increase q to a level that makes the strategy reliably profitable. Faster 
+technological speed means better position in the limit order queue, and the better the position in 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+12 
+ 
+the limit order queue, the more often the strategy can earn O (because O is fleeting) and S, and 
+the relatively less often it realizes adverse selection.     
+4. 
+DEFINING CAPABILITY 
+Capability theory models Proposition 1 by conveying the ability of a strategy to generate 
+net profits πnet over the firms’ acceptable w with sufficient reliability.  This is to say that, unlike 
+equation (1), these firms have idiosyncratic preferences when it comes to time and risk of loss.  
+Their time preference w must be something less than 252 days.  They are obligated to pay rent, 
+salaries, and allocate IT costs out of trading profits at regular intervals, say biweekly or monthly.  
+Over w, the probability of loss7 is P( πw < cw ), or put the other way, the reliability of net profits, 
+or the success probability, is 1 - P( πw < cw ).  Implicitly or explicitly, the firm has some tolerance 
+ξ for loss over w, or a required reliability of net profits 1 - ξ.  The definition of capability in (1) 
+prescribes that firms use ξ = 0.00135 (i.e. z = 3), but this is not necessarily the case for all firms.  
+For example, relative to the frequency distribution of trading profits μw, a tolerance for loss of ξ 
+= .05 would equate to a z-score of Φ-1( 95% ) = 1.64 times the standard deviation of trading 
+profits σw.   
+The intuition of capability is most easily grasped visually.  Figure 4 depicts the 
+distribution of μw using the right most chart from Figure 3 where q = 1000 and w = 20.  As can 
+be seen, the length of the line πnet is the expected net profit.  The line zσw is the distance from the 
+mean to the level that corresponds to the firm’s ξ, its acceptable probability of loss.  The 
+remainder φ = μw – zσw – cw is the safety margin, similar to that described in Fellner [1948] and 
+Day et al. [1971].  So, if the length of πnet is greater than the length of zσw, then the strategy is 
+capable.  The firm can expect the strategy to generate net profits πnet reliably over its acceptable 
+w.8  
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+13 
+ 
+ 
+ 
+Figure 4:  Capability of the HFT Strategy 
+s = 100, q = 1000, w = 20 
+The capability ratio in (3) articulates the goal, or aspiration level as Cpl( ξ, w ) ≥ 1 in (3) 
+conveys this relationship. (For additional discussion, see Appendix B.) 
+1
+)
+(
+)
+,
+(
+1
+
+
+
+
+
+
+w
+net
+w
+w
+w
+pl
+z
+c
+w
+C
+
+
+
+
+
+
+  
+ 
+ 
+(3) 
+Relative to (1), the specification of Cpl in (3) uses the sample sum instead of the sample mean 
+and does not prescribe that all firms’ z = 3.  For the example strategy used earlier and using the 
+moments from the distribution in Figure 4, if the firm’s ξ = 0.05 and w = 20, then the strategy is 
+capable since Cpl( .05, 20 ) = ( 2000 – 1000 ) / ( 1.64 · √80,000 ) = 2.16. 
+Relative to the Proposition 1, capability is a reasonable representation of the on/off 
+decision-making problem in HFT.  However, rather than simply arguing that firms ought to 
+allocate capital to capable strategies, what is it they actually do?  From which side of the 
+mainstream-finance / behavioral-finance dichotomy can or should we perceive these firms?  
+While a higher capability ratio is always better, do these firms maximize capability (in the Von 
+Neumann-Morgenstern and EMH sense) or simply allocate capital to those strategies that 
+achieve the aspiration level (in Simon’s satisficing sense and the AMH). 
+5. 
+CAPABILITY MAXIMIZATION 
+Given the variables discussed thus far, Table 1 shows their directions that increase the 
+value of a strategy’s capability ratio, and these make intuitive sense.  These firms prefer more 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+14 
+ 
+trading profit, less market risk, smaller trade size, greater quantity, and lower fixed costs, while 
+the firm’s time and risk preferences w and ξ are constraining. 
+ 
+Table 1:  Capability Maximizing Directions 
+For these firms to be rational agents, capability maximization must be in some way a 
+form of or consistent with utility maximization.  Indeed, this is the case. 
+Proposition 2:  In mainstream finance theory, HFT firms maximize capability. 
+Cooper et al. [2015] (henceforth just Cooper) show that the Cpl in (1) can be decomposed into a 
+daily SR times √w / 3 using the distribution of the sample mean.  Here, what I call the daily 
+SRHFT employs the distribution of the sample sum given q, and daily fixed costs cd (instead of rf), 
+so that SRHFT = ( μd – cd ) / σd.  Thus, the Cpl in (3) is the same as the SRHFT multiplied by what I 
+call the daily Cooper ratio CR = √w / z as shown in equation (4)9. 
+
+
+1
+1
+1
+1
+,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+z
+qw
+SR
+qw
+z
+qw
+c
+CR
+SR
+z
+w
+SR
+w
+z
+w
+c
+z
+w
+C
+HFT
+t
+t
+t
+t
+HFT
+HFT
+d
+d
+d
+d
+w
+net
+pl
+
+
+
+
+
+
+
+ 
+(4) 
+The CR combines the firm’s idiosyncratic time and risk preferences into a single 
+measure.  Figure 5 depicts the surface of the CR over the various combinations of z (from .25 to 
+3) and w (from 5 to 50) given q = 1000.  As can be seen, high values of w and low values of z 
+result in high values of CR.  Multiplying SRHFTs of strategies by a high CR toward the back 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+15 
+ 
+corner results in more strategies being capable (and therefore, warranting allocations), but the 
+impetus of the firm is to push its CR as far toward the lower front corner as possible.  Thus, there 
+is an implicit trade-off between w and ξ.  In the numerical example, the SRHFT = ( 100 – 50 ) / 
+√4000 = 0.79, and the CR = √20 / 1.64 = 2.73, so that the Cpl = 0.79 × 2.73 = 2.16 as before.  The 
+black dot in Figure 5 represents this value of the CR. 
+ 
+Figure 5:  Surface of the Cooper Ratio 
+q = 1000 
+ 
+Maximizing the SRHFT alone assumes that that all firms’ CRs equal one for all their 
+strategies.  This only happens if all these firms’ tolerances for risk of loss are equal to the square 
+root of their time preferences, or z = √w for a given level of q.  This is unlikely to be true for all 
+firms, or for all their strategies.  The actual CR depends upon each firm’s willingness to accept 
+losses over some timeframe.  Which is to say that, unlike the coefficient of risk aversion λ, it 
+should be possible to measure more directly these firms’ preferences, if only these firms were not 
+so secretive.10  For example, as these firms are often privately held, their investors may very well 
+specify their tolerances for consecutive losing months in advance.  
+Given the decomposition in (4), we can say that Cpl maximization occurs at the maximum 
+SRHFT times the firm’s CR.  Thus, the Cpl is an affine transformation of the SRHFT and is therefore 
+“precisely consistent” with expected utility [see Pulley 1981].  The mainstream macroeconomist 
+can rest assured that these firms are rational agents, or at least that only rational firms will 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+16 
+ 
+survive, and can proceed with bigger questions about the market ecology of algorithms.  
+However, the evidence from practitioners seems to show that maximization is not how these 
+firms decide to allocate capital to HFT strategies, or make on/off decisions.   
+6. 
+CAPABILITY SATISFICING 
+To understand how these firms actually make on/off decisions, I interviewed seven 
+current or former employees of seven different algo/HFT11 firms in Chicago in May through July 
+of 2016.  At the time of the interviews, one interviewee was a managing director at such a firm; 
+two were Ph.D. quantitative strategists; one was a former quantitative strategist still working in 
+the industry in a different capacity; one was a former director of quality assurance; and, two were 
+traders.  I cite these individuals anonymously as Interviewees A through G.  In addition to the 
+interviewees, I found quotes published in the specialist media.  These quotes use real names plus 
+the source reference.  The conclusion, the aggregate dimension, is based on exploratory 
+questions, which are appropriate for inter-disciplinary inquiry in management, technology, and 
+finance [see Silverman, 2011].   
+I asked the HFT professionals:  1) Is Proposition 1 a reasonable representation of the 
+decision-making problem in HFT?  2) How does your firm decide to turn on/off its trading 
+strategies?  3) Do you backtest your strategies?  4) Is optimizing or satisficing a more apt 
+description of how you make allocation decisions?  5) For how long do your strategies work?  6) 
+Do you think about your collection of strategies as a portfolio?  Using the data collected from 
+these interviews, I follow Gioia et al. [2012] to documents first order concepts, from which I 
+extract second order themes.  These themes seem to support the aggregate dimension in 
+Proposition 3.   
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+17 
+ 
+Proposition 3:  In behavioral finance theory and in practice, HFT firms are 
+capability satisficers. 
+While the interviewees agreed that Proposition 1 is a reasonable problem definition, they 
+suggested that they lack adequate information and resources to optimize their strategies or 
+allocations.  Thorough searches of all possible alternative strategies and all possible 
+technological implementations are infeasible.  Further, the moments of the reference distribution 
+and demand cannot be known ex ante.  As a result, they appear to form beliefs about the 
+capability of their strategies heuristically, based upon their expertise, intuition, and competence.  
+This is precisely the scenario described by Simon [see also Heath and Tversky, 1991; and Fox 
+and Weber, 2002] and addressed in the AMH.     
+All of the interviewees were familiar with mean-variance optimization.  What 
+optimization does occur in HFT appears to be something different from utility maximization.   
+Interviewee C: “[For cross-sectional HFT strategies12] you optimize to get the 
+basket blends right and neutralize exposures to factors, but that is not utility 
+maximization, which applies to signal processing, where you figure out which 
+factors forecast best.”   
+As a theme, HFT appears to be an ambiguous environment.13 It is too complex and dynamic for 
+optimization to occur.   
+Interviewee B: “You can’t find a way to allocate using optimization [in HFT].” 
+Interviewee G: “You have to be constantly adapting.  Otherwise, you just get lost.” 
+Only one of the interviewees was aware of “satisficing” as a term, but the others offered as a 
+concept that they search for strategies that are “good enough” or that cover their fixed costs.   
+Interviewee G: “In HFT, it’s a race just to break even.” 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+18 
+ 
+Once I explained satisficing, they agreed that it more accurately describes how they make 
+allocation decisions.   
+Most of the interviewees agreed that the values of the variables presented in Table 1 
+cannot be known ex ante.  In particular, the concept is that backtesting and simulated (or paper) 
+trading are commonly through to provide little, if any, factual premises on which to base 
+decisions, primarily due to overfitting and the dynamic nature of the environment.   
+Interviewee F: “The world [both the market and the technology] changes so fast 
+that backtesting has little relevance in HFT.  Even if there is a marginal benefit, the 
+cost and the time to build and run the backtesting engine are prohibitive.” 
+Likewise, the long-term fixed costs and the returns to investments in research and technology 
+are very difficult to forecast with any certainty.  The market infrastructure evolves too quickly.     
+Interviewee E:  “If they build a new microwave tower [to transmit market data more 
+quickly], then the whole trade may change.”   
+Further, the concept arises that competitors’ reactions to their strategies once implemented 
+cannot be foreseen.   
+Interviewee D:  “HTF’ers are satisficers in a real sense, and not just because of 
+problem complexity. …It's also because of game theory—the introduction of any 
+strategy may be met with a counter-strategy…that defeats it.”   
+Interviewees suggested that they form initial beliefs about the variables in Table 1 
+heuristically.  From there, they appear to move on to (what I call) the concept of “probationary 
+trading” (i.e. trading with limited scale or risk) in order to form the reference distribution ex post.  
+This is similar to the “minimum viable product” approach used in innovation management [see 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+19 
+ 
+Moogk 2012], where a firm launches a basic version of a product or strategy into the market to 
+gather “validated learning” used to justify continued development14. 
+Mike Madigan, CTO at WH Trading:  “[We like to] stick a toe in the water and see 
+if we can make money [DeFrancesco 2016].”   
+Once a strategy is up and running in some limited fashion, they appear to engage in probing and 
+learning to improve capability, while scaling up the strategy.  As a second order theme, probing 
+and learning is a process used in ambiguous environments where firms “launch [a strategy] in the 
+market, learn from failures, and modify for future attempts [Pich et al. 2002].”  While the term 
+“probing and learning” was unfamiliar to the interviewees, they agreed it accurately described 
+how they work.  
+Interviewee F: “You don’t derive these strategies. They’re based on logic about 
+what other market participants will do.  If we do this, then they’ll do that, and we’ll 
+make money.  You think, intuitively this [strategy] will work, let’s turn it on, get 
+some numbers and see…  If you’re not trading, you’re not learning.” 
+Interviewee D: “Probing is precisely what these guys do.” 
+Richard Gorelick, co-founder of RGM Advisers LLC: “Our first day, we did four 
+trades and made $17.  Our second day, we lost a few hundred dollars and had to 
+make adjustments.”   
+Within a year, RGM’s strategy was generating profits reliably enough to allow them to hire 
+additional researchers [Foroohar 2010].  None of these comments suggests optimization.  
+Interviewee B: “You don’t stop doing something that isn’t working too soon.  You 
+keep improving it until it works out.  You don’t give up [on a good idea] too early.”   
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+20 
+ 
+Interviewee A: “We turn it on and see what happens, then watch it, and add three or 
+four more layers. …We get [the strategy] to a baseline acceptable level, then work 
+on improving it. …You learn ten times more when something is running than 
+during backtesting.”   
+The interviewees also suggested the prevalent use of selectionism, another second order 
+theme.  Selectionism is the process used in ambiguous environments where the firm searches 
+through multiple alternatives to find the best one [see Pich et al. 2002; Sommer and Loch 2004].  
+The use of multiple trading teams within these firms fosters parallel and independent search in 
+this regard [see for example Narang 2013; Lenglet 2011; and Davis et al. 2013].      
+Interviewee E:  “We’re all dealing with a subset of the possible strategies…while 
+we are constantly looking for the best ones, sometimes we settle for ones that are 
+good enough.” 
+Interviewee B: “You don’t have unlimited risk capital.  It’s like fishing.  You pick 
+where to put your hooks in the water.  Hopefully, you catch some fish.  If you’re [a 
+bigger firm], you can put more hooks in the water.” 
+Interviewee G:  “We used to run [multiple versions of] the same strategy with 
+different configurations at the same time with one lots in a liquid market.  Then, we 
+would increase the size on the good ones.” 
+Relative to the methodology of Goia et al. [2005], Figure 6 organizes the concepts and 
+themes drawn from these interviews to show how they support the aggregate dimension 
+expressed in Proposition 3.  Based upon the qualitative evidence, capability satisficing is an 
+appropriate description of decision-making under uncertainty in HFT.   
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+21 
+ 
+ 
+Figure 6:  Structure of the Data 
+Relative to Brown and Sim [2009], because the SRHFT is a satisficing measure and the Cpl 
+is an affine transformation of the SRHFT, then the Cpl in (3) is also satisficing measure.  What 
+Figure 6 implies is that if these firms are capability satisficers, then the aspiration level, or goal, 
+of Cpl( ξ, w ) = 1 defines when a particular strategy is “good enough” to warrant an allocation.  
+Thus, we can dismiss the common criticism of Simon’s framework—that the satisficing point 
+cannot be determined.  However, in a complex and dynamic environment, what satisfices today 
+may not satisfice tomorrow.  Thus, these firms engage in a continuous struggle to maintain 
+capability, or to “keep their head above water,” as it were.  This concept is also best described 
+visually.   
+Turning again to the decomposition in (4), we can further tie the Cpl back to the intuition 
+of the SRHFT by noting that when φ = 0 and therefore Cpl( ξ, w ) = 1, the strategy is right at the 
+aspiration level of one.  In this case, the preference-dependent critical SRHFT = 1 / CR.  Since the 
+firm’s tolerance for loss and time preference, and therefore its CR, are known ex ante, the firm 
+searches for strategies with trading profit generating processes above the critical SRHFT, the kind 
+of water line, or are in a capability satisficing region (assuming fixed costs are known over the 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+22 
+ 
+short-run).  In the numerical example, where q = 1000, w = 20, z = 1.64, and c = 50, the critical 
+SRHFT = 1 / ( √20 / 1.64 ) = 0.367.  Figure 7 shows the satisficing region for daily SRHFTs over 
+combinations of μw and σw.  
+ 
+Figure 7:  The Critical SRHFT ( 1 / CR ) Curve 
+q = 1000, ξ = .05, c = 50 
+In Figure 7, the heavy dark line is SRHFT = 0, where μw = 50 and πnet = 0.  The black 
+dotted line is the critical SRHFT curve = 1 / CR = 0.367.  Capability satisficing suggests that firms 
+search for strategies with SRHFTs above this curve.  Once found, because the environment 
+changes, the firm struggles to maintain the capability of a strategy through modification and 
+reconfiguration based on heuristics, continually learning by receiving positive or negative 
+feedback from the outcomes.  From (3) we can also note that the level of investment in 
+infrastructure (i.e. fixed costs c) over the long term (say annually) is such that c252 ≤ μ252 – zσ252.  
+Since μ and σ are not known ex ante, these firms’ are making their up-front investments in the 
+technological arms race based on competence and expertise, as in Kumiega and Van Vliet 
+[2013], which prescribes min-max-most likely estimation of these costs using a Delphi method 
+[see Dalkey and Helmer 1963]. 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+23 
+ 
+However, “the heuristics of the old environment are not necessarily suited to the new [Lo 
+2007],” and this leads potentially to what might be perceived as maladaptive behavior, cognitive 
+biases, or irrationality in their on/off allocation decisions.  Thus, through the lens of biological 
+approach and capability, “we can better understand the apparent contradictions between the 
+EMH and the presence and persistence of behavioral biases [Lo 2007].” 
+7. 
+CONCLUSION 
+This paper argues that capability is the appropriate problem representation of how HFT 
+firms make decisions to allocate capital to strategies.  While capability theory is consistent with 
+expected utility theory, the qualitative evidence from practitioners suggests that 70% of the daily 
+trading volume (for which HFT accounts) is driven by capability satisficers, not utility 
+maximizers.  Thus, there is a potential that behavioral biases may seep into algorithmic market 
+agents through the heuristic on/off decisions that these firms make.  This may result in a less than 
+robust ecology and departures from rationality, which are thought to abound under the AMH.   
+This ought to have implications for how further studies into macroeconomic market 
+efficiency approach the ecology of algorithms.  Under the AMH, the macroeconomist should be 
+concerned with the supply of information processing and liquidity as a function of the bounded 
+rationality and CRs of the individual firms or their strategies.  The Cpl defines the satisficing 
+point through the inclusion of the CR, thus enabling moving back and forth between mainstream 
+theory and the behavioral approaches based on industry practice.  Consistent with the AMH, the 
+firm may very well modify its CR over time in response to the changing environment.  Likewise, 
+levels of market efficiency and liquidity are dependent upon variable and fixed costs, which are 
+passed along to longer-term traders and investors.  This methodology can be applied to any firm 
+that makes algorithmic decisions under uncertainty. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+24 
+ 
+REFERENCES 
+ 
+Abbas, A. E., J.E. Matheson, and R.F. Bordley. “Effective Utility Functions Induced by 
+Organizational Target‐based Incentives.” Managerial and Decision Economics, Vol. 30, No. 4 
+(2009), pp. 235-251. 
+ 
+Abbott, R. “Equity markets and computational intelligence.” Proceedings of IEEE UK Workshop 
+on Computational Intelligence (UKCI). (2010), pp. 1-6. IEEE. 
+ 
+Arrow, K.J. “The Theory of Risk Aversion.”  In: Aspects of the Theory of Risk-bearing. Helsinki: 
+Yrjö Jahnssonin Säätiö. (1965). 
+ 
+Baron, M., J. Brogaard, and A. Kirilenko. “The Trading Profits of High Frequency Traders.”  
+University of Chicago Working Paper.  (2012). 
+ 
+Benos, E., J. Brugler, E. Hjalmarsson, and F. Zikes.  “Interactions Among High-Frequency 
+Traders.”  Bank of England, Working Paper No. 523.  (2015) 
+ 
+Bordley, R.F. and C.W. Kirkwood. “Multiattribute Preference Analysis with Performance 
+Targets.” Operations Research, Vol. 52, No. 6, (2004), pp. 823-835.  
+ 
+Brennan, T.J., and A.W. Lo. “An Evolutionary Model of Bounded Rationality and Intelligence.” 
+PloS one, Vol. 7, No. 11, (2012). 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+25 
+ 
+ 
+Brogaard, J. “High Frequency Trading and Its Impact on Market Quality.” Northwestern 
+University Kellogg School of Management Working Paper.  (2010). 
+ 
+Brogaard, J., T. Hendershott, and R. Riordan. “High-Frequency Trading and Price Discovery.” 
+Review of Financial Studies, Vol. 27, No. 8, (2014), pp. 2267-2306. 
+ 
+Brown, D.B. and M. Sim. “Satisficing Measures for Analysis of Risky Positions.” Management 
+Science, Vol. 55, No. 1, (2009), pp. 71-84. 
+ 
+Brown, D. B., E.D. Giorgi, and M. Sim. “Aspirational Preferences and Their Representation by 
+Risk Measures.” Management Science, Vol. 58, No. 11, (2012), pp. 2095-2113. 
+ 
+Browne, S. “The Risks and Rewards of Minimizing Shortfall Probability.” Journal of Portfolio 
+Management, Vol. 25, No. 4, (1999), pp. 76-85. 
+ 
+Colman, A. M. A Dictionary of Psychology. Oxford University Press. (2015). 
+ 
+Cooper, R.A. and B. Van Vliet. “Expected Return in High Frequency Trading.” Journal of 
+Trading, Vol. 10, No. 2, (2015), pp. 34-40. 
+ 
+Cooper, R.A. and B. Van Vliet.  “Whole Distribution Statistical Process Control in High 
+Frequency Trading.” Journal of Trading, Vol. 7, No. 2, (2012), pp. 57-68. 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+26 
+ 
+ 
+Cooper, R., M. Ong, and B. Van Vliet.  “Multi-Scale Capability: A Better Approach to 
+Performance Measurement for Algorithmic Trading.” Algorithmic Finance, Vol. 4, No. 1-2, 
+(2015), pp. 53-68. 
+ 
+Dalkey, N., and O. Helmer. “An Experimental Application of the Delphi Method to the Use of 
+Experts.” Management Science, Vol. 9, No. 3, (1963), pp. 458-467. 
+ 
+Davis, M., A. Kumiega, and B. Van Vliet. “Ethics, Finance, and Automation: A Preliminary 
+Survey of Problems in High Frequency Trading.” Science and Engineering Ethics, Vol. 19, No. 
+3, (2013), pp. 851-874. 
+ 
+Day, R.H., D.J. Aigner, and K.R. Smith. “Safety Margins and Profit Maximization in the Theory 
+of the Firm.” Journal of Political Economy, Vol. 79, No. 6, (1971), pp. 1293-1301. 
+ 
+DeFrancesco, D.  “Eternally Internal: WH Trading CTO Mike Madigan.”  Waters Technology.  
+January 11. (2016).  Available at:  
+www.waterstechnology.com/waters/feature/2441344/eternally-internal-wh-trading-cio-mikemadigan 
+ 
+Easley, D., and M. O’Hara. “Price, Trade Size, and Information in Securities Markets.” Journal 
+of Financial Economics, Vol. 19, No. 1, (1987), pp. 69-90. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+27 
+ 
+Fabozzi, F. and P. Drake.  Finance:  Capital Markets, Financial Management, and Investment 
+Management, 1st Edition.  New York: John Wiley and Sons. (2009). 
+ 
+Farmer, D. “Market Force, Ecology and Evolution.” Industrial and Corporate Change, Vol. 11, 
+(2002), pp. 895–953. 
+ 
+Farmer, D. and A. Lo. “Frontiers of Finance: Evolution and Efficient Markets.” Proceedings of 
+the National Academy of Sciences, Vol. 96, (1999), pp. 9991–2. 
+ 
+Farmer, J. D., and S. Skouras. “An Ecological Perspective on the Future of Computer Trading.” 
+Quantitative Finance, Vol. 13, No. 3, (2013), pp. 325-346. 
+ 
+Fellner, W. “Average-Cost Pricing and the Theory of Uncertainty.” Journal of Political 
+Economy, Vol. 56, No. 3, (1948), pp. 249-252. 
+ 
+Finucan, H.M., R.F. Galbraith, and M. Stone. “Moments Without Tears in Simple Random 
+Sampling from a Finite Population.” Biometrika, Vol. 61, No. 1, (1974), pp. 151-154. 
+ 
+Föllmer, H., and P. Leukert. “Quantile Hedging.” Finance and Stochastics, Vol. 3, No. 3, (1999), 
+pp. 251-273. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+28 
+ 
+Foroohar, K. “Trading Pennies into $7 Billion Drives High Frequency’s Cowboys.”  Bloomberg 
+Markets, October 5. (2010).  Available at: http://www.bloomberg.com/news/articles/2010-1006/trading-pennies-into-7-billion-profit-drives-high-frequency-s-new-cowboys 
+ 
+Fox, C. R. and M. Weber. “Ambiguity Aversion, Comparative Ignorance, and Decision 
+Context.” Organizational Behavior and Human Decision Processes, Vol. 88, No. 1, (2002), pp. 
+476-498. 
+ 
+Gioia, D.A., K.G. Corley, and A.L. Hamilton.  “Seeking Qualitative Rigor in Inductive 
+Research:  Notes on the Gioia Methodology.”  Organizational Research Methods, Vol. 16, No. 1, 
+(2013), pp. 15-31. 
+ 
+Glosten, L. R.  “Components of the Bid‐Ask Spread and the Statistical Properties of Transaction 
+Prices.” Journal of Finance, Vol. 42, No. 5, (1987), pp. 1293-1307. 
+ 
+Grossman, S.J., and J.E. Stiglitz. “On the Impossibility of Informationally Efficient Markets.”  
+American Economic Review, Vol. 70, No. 3, (1980), pp. 393-408. 
+ 
+Hadfield, W.  “Dutch Speed Trader Hasn't Lost Money in ETFs Since 2014.”  Accessed on 
+March 1, 2017 at:  bloomberg.com/news/articles/2017-02-15/dutch-speed-trader-hasn-t-lostmoney-in-etf-market-since-2014. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+29 
+ 
+Hasanhodzic, J., A. Lo, and E. Viola. “A Computational View of Market Efficiency.” 
+Quantitative Finance, Vol. 11, No. 7, (2011), pp. 1043-1050. 
+ 
+Hasbrouck, J. and G. Saar. “Low-Latency Trading.” Journal of Financial Markets, Vol. 16, No. 
+4, (2013), pp. 646-679. 
+ 
+Heath, C., and A. Tversky. “Preference and Belief: Ambiguity and Competence in Choice Under 
+Uncertainty.” Journal of Risk and Uncertainty, Vol. 4, No. 1, (1991), pp. 5–28. 
+ 
+Hinde, R. “Population Moments and Moments of the Sample Mean.” Communications in 
+Statistics-Theory and Methods, Vol. 15, No. 10, (1986), pp. 3129-3143.  
+ 
+Hoffmann, P. “A Dynamic Limit Order Market with Fast and Slow Traders.” Journal of 
+Financial Economics, Vol. 113, No. 1, (2014), pp. 156-169. 
+ 
+Jovanovic, B. and A.J. Menkveld. “Middlemen in Limit Order Markets.” Western Finance 
+Association (WFA). (2011). Available at:  
+papers.ssrn.com/sol3/papers.cfm?abstract_id=1624329 
+ 
+Kane, V.E. “Process Capability Indices.” Journal of Quality Technology, Vol. 18, No. 1, (1986), 
+pp. 41-52. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+30 
+ 
+Kirilenko, A.A., A.S. Kyle, M. Samadi, and T. Tuzun. “The Flash Crash: High Frequency 
+Trading on an Electronic Market.” (2015). Available at: 
+papers.ssrn.com/sol3/papers.cfm?abstract_id=1686004. 
+ 
+Knight, F.H. Risk, Uncertainty, and Profit. Boston: Houghton-Mifflin. (1921). 
+ 
+Kumiega, A., and B. Van Vliet. “Automated Finance: The Assumptions and Behavioral Aspects 
+of Algorithmic Trading.” Journal of Behavioral Finance, Vol. 13, No. 1 (2012), pp. 51-55. 
+ 
+Kumiega, A., and B. Van Vliet. “A Practical Real Options Approach to Valuing High-Frequency 
+Trading System R&D Projects.”  Journal of Trading, Vol. 8, No. 3, (2013), pp. 40-48. 
+ 
+Kumiega, A., T. Neururer, and B. Van Vliet. “Trading System Capability.” Quantitative 
+Finance, Vol. 14, No. 3, (2014), pp. 383-392. 
+ 
+Kumiega, A., G. Sterijevski, and B. Van Vliet, B. “Beyond the Flash Crash: Systemic Risk, 
+Reliability, and High Frequency Financial Markets.” Journal of Trading, Vol. 11, No. 2, (2016), 
+pp. 71-83. 
+ 
+Lanzillotti, R.F. “Pricing Objectives in Large Companies.” American Economic Review, Vol. 48, 
+No. 5, (1958), pp. 921-940. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+31 
+ 
+Lenglet, M. “Conflicting Codes and Codings: How Algorithmic Trading is Reshaping Financial 
+Regulation.” Theory, Culture and Society, Vol. 28, No. 6, (2011), pp. 44-66. 
+ 
+Lo, A. “The Adaptive Markets Hypothesis: Market Efficiency from an Evolutionary 
+Perspective.” Journal of Portfolio Management, Vol. 30, (2004), pp. 15–29. 
+ 
+Lo, A. “Reconciling Efficient Markets with Behavioral Finance: The Adaptive Markets 
+Hypothesis. Journal of Investment Consulting, Vol. 7, (2005), pp. 21–44. 
+ 
+Lo, A.W. “Efficient Markets Hypothesis.” The New Palgrave Dictionary of Economics. Second 
+Edition. Eds. S.N. Durlauf and L.E. Blume. Palgrave Macmillan (2008). 
+ 
+MacKenzie, D. “A Sociology of Algorithms: High-Frequency Trading and the Shaping of 
+Markets.” University of Edinburgh Working Paper. (2014). 
+ 
+Mao, J.C. “Survey of Capital Budgeting: Theory and Practice.” Journal of Finance, Vol. 25, No. 
+2, (1970), pp. 349-360. 
+ 
+Moogk, D.R. “Minimum Viable Product and the Importance of Experimentation in Technology 
+Startups.” Technology Innovation Management Review, Vol. 2, No. 3, (2012), pp. 23. 
+ 
+Müller, H. and R. Baumann. “Shortfall Minimizing Portfolios.” SAV Bulletin, Vol. 2, (2006), pp. 
+125-142. 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+32 
+ 
+ 
+Narang, R.K. Inside the Black Box: A Simple Guide to Quantitative and High Frequency 
+Trading. New York: John Wiley and Sons. (2013). 
+ 
+O’Hara, M. “High Frequency Market Microstructure.” Journal of Financial Economics, Vol. 
+116, No. 2, (2015), pp. 257-270. 
+ 
+Orrell, D.  Economyths: How The Science of Complex Systems is Transforming Economic 
+Thought.  New York: Icon Books Ltd. (2010). 
+ 
+Ostrom, E.  Governing the Commons: The Evolution of Institutions for Collective Action.  
+Cambridge University Press. (1990). 
+ 
+Payne, J.W., D.J. Laughhunn, and R. Crum. “Translation of Gambles and Aspiration Level 
+Effects in Risky Choice Behavior.” Management Science, Vol. 26, No. 10, (1980), pp. 10391060. 
+ 
+Payne, J.W., D.J. Laughhunn, and R. Crum.  “Note—Further Tests of Aspiration Level Effects in 
+Risky Choice Behavior.” Management Science, Vol. 27, No. 8, (1981), pp. 953-958. 
+ 
+Pich, M.T., C.H. Loch, and A.D. Meyer. “On Uncertainty, Ambiguity, and Complexity in Project  
+Management.” Management Science, Vol. 48, No. 8, (2002), pp. 1008-1023. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+33 
+ 
+Pratt, J.W. “Risk Aversion in the Small and in the Large.” Econometrica, Vol. 32, No. 1–2, 
+(1964), pp. 122–136. 
+ 
+Pulley, L.B.  “A General Mean-Variance Approximation to Expected Utility for Short Holding 
+Periods.” Journal of Financial and Quantitative Analysis, Vol. 16, No. 03, (1981), pp. 361-373. 
+ 
+Riordan, R. and A. Storkenmaier.  “Latency, Liquidity and Price Discovery.” Journal of 
+Financial Markets, Vol. 15, No. 4, (2012), pp. 416-437. 
+ 
+Schuler, H. “Automation in chemical industry (Automatisierung in der chemischen industrie).” 
+at-Automatisierungstechnik. 54, (2006), pp. 363-371. 
+ 
+Schwartz, H.  “Herbert Simon and behavioral economics.” The Journal of Socio-Economics, 
+Vol. 31, No. 3, (2002), pp. 181-189. 
+ 
+Serbera, J.-P., and P. Paumard. “The Fall of High-Frequency Trading: A Survey of Competition 
+and Profits.” Research in International Business and Finance, Vol. 36, (2016), pp. 271-287. 
+ 
+Sharpe, W.F. “Mutual Fund Performance.” Journal of Business, Vol. 39, No. 1, (1966), pp. 119138. 
+ 
+Silverman, D. Interpreting Qualitative Data, 4th ed. London: Sage. (2011). 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+34 
+ 
+Simon, H.A. Administrative Behavior, Vol. 4. New York: Free Press. (1965). 
+ 
+Sommer, S.C., and C.H. Loch. “Selectionism and Learning in Projects with Complexity and 
+Unforeseeable Uncertainty.” Management Science, Vol. 50, No. 10, (2004), pp. 1334-1347. 
+ 
+Van Lamsweerde, A. “Goal-oriented Requirements Engineering: A Guided Tour.” In 
+Requirements Engineering. Proceedings of the Fifth IEEE International Symposium, (2001), pp. 
+249-262. 
+ 
+Von Neumann, J. and O. Morgenstern. Theory of Games and Economic Behavior, 2nd Ed. 
+Princeton, NJ: Princeton University Press. (1947). 
+ 
+Zhang, Y.C. “Toward a theory of marginally efficient markets." Physica A: Statistical 
+Mechanics and its Applications, Vol. 269, No. 1, (1999), pp. 30-44. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+35 
+ 
+APPENDIX A:  The Central Limit Theorem and HFT 
+Through the central limit theorem, the distribution of the sample mean and the 
+distribution of the sample sum are both approximately normal when the sample size n is large.  
+Any skewness and excess kurtosis disappear as n increases.  For example, we usually annualize 
+the SR by multiplying the expected daily log return by 252 and the standard deviation of the 
+daily log returns by the √252.  Thus, the annualized SR follows the distribution of the sample 
+sum.   
+If we assume a random variable X from some infinite population with moments mean μX, 
+variance σX2, skewness γX, and the excess kurtosis κX.  The sample sum Σ is simply the linear 
+combination of the values Xi, for i = 1,…,n.  The moments of the distribution of Σ, the sample 
+sum [see Finucan et al. 1974], and the moments of the distribution of 𝑋̅, the sample mean [see 
+Hinde 1986], are related to the moments of the distribution of X as shown in Table A1.       
+Moments of the 
+Distribution of X 
+Moments of the 
+Distribution of the 
+Sample Mean 𝑿̅ 
+Moments of the 
+Distribution of the 
+Sample Sum Σ 
+μX 
+𝜇𝑋̅ = μX 
+µΣ = µX · n 
+σX2 
+𝜎𝑋̅
+2 = σX2 / n 
+σΣ2 = σX2 · n 
+ 
+𝜎𝑋̅ = σX / √n 
+σΣ = σX · √n 
+γX 
+𝛾𝑋̅ = γX / √n 
+γΣ = γX / √n 
+κX 
+𝜅𝑋̅ = κX / n 
+κΣ = κX / n 
+ 
+Table A1:  Relationships Among Distributions 
+From Table A1, we can note that although the standard deviation of the sample mean 
+decreases as n increases where the standard deviation of the sample sum increases as n increases, 
+the rates of change relative to the change in their respective means is the same, √n.  What this 
+means is that the value of any signal-to-noise ratio (such as the SR or Cpl) will be the same, 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+36 
+ 
+regardless of whether we use the distribution of the sample mean or the sample sum of either 
+profits or log returns.  The equations in (A1) demonstrate the equivalence relationship, where the 
+distribution of the sample mean 𝑋̅ is on the left, and the distribution of the sample sum Σ is on 
+the right.   
+      
+1
+1
+1
+n
+n
+X
+X
+X
+X
+X
+X
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+1
+n
+n
+n
+X
+X
+X
+X
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+(A1) 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+37 
+ 
+APPENDIX B:  Discussion of the Capability Ratio 
+If these firms are ex ante profit maximizers, then the probability of loss over w as P( πw < 
+cw ) leads to the characterization of Proposition 1 as an optimization problem as in (B1), where 
+the firm trades off πnet and ξ, discarding any optimal solution that fails the constraint. 
+max:  
+πnet = μw – cw  
+ 
+ 
+ 
+ 
+ 
+ 
+(B1) 
+subject to: 
+P( μw < cw ) ≤ ξ 
+Thus, we can back in to the Cpl quite simply as in (B2). 
+
+
+
+
+
+
+
+
+1
+,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+w
+w
+w
+w
+pl
+w
+w
+w
+w
+w
+w
+w
+w
+w
+w
+Q
+c
+w
+GC
+Q
+c
+Q
+c
+Q
+c
+c
+P
+ 
+ 
+ 
+ 
+ 
+(B2) 
+The definition in (B2) is the generalized capability measure GCpl( ξ, w ) of Cooper, et al. (2015) 
+where Q is the inverse cumulative distribution function.  Assuming normality of daily profits 
+under the central limit theorem, this translates into the capability measure in (6).  Thus, we could 
+also view the firm as maximizing the reliability of net profits, 1 - P( πw < cw ). 
+ 
+If, on the other hand, these firms are satisficers, then the characterization of Proposition 1 
+as the capability ratio in (6) captures what these firms actually do in practice.  That is, they first 
+search for strategies that satisfy the constraint and then seek to increase πnet through probing and 
+ex post validated learning. 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2813260
+
+ 
+38 
+ 
+1 That is, assuming the strategy is running in control or to specification.  See Kumiega and Van Vliet [2012]. 
+2 Expected utility theory conveniently assumes away these costs, largely because for longer-term investors they are 
+relatively small. 
+3 What counts as short-term is often not well defined.  I will use it to mean something less than, say, 20 minutes.  
+Strategies that hold positions less than this amount of time depend upon the earning the bid-ask spread (or at least 
+not paying it) for profitability.  Therefore, obtaining advantageous position in the limit order queue is a key source 
+of competitive advantage, which necessitates the use of low latency (or high frequency) technology.  See Cooper 
+and Van Vliet [2015]. 
+4 In equity markets, exchanges often pay a fee, called a rebate, to trading firms that supply liquidity by placing limit 
+orders in the limit order book.   
+5 We may consider that the HFT strategy may run concurrently on or across multiple stocks or sets of stocks.  This 
+would entail an investigation not only of co-moments between the various distributions, but also of codependence 
+among the inter-arrival processes.  Such analysis is beyond the scope of this paper.  Common practice in the industry 
+in such cases is to look at the distribution of trading profits to the entire system (i.e. across all implementations) per 
+unit of time, say per second [see Cooper and Van Vliet 2012].  This paper only considers a single implementation of 
+an HFT strategy, though an explication of capability theory using units of time would unfold quite similarly. 
+6 Given fixed costs of $1000 per month, we can back in to the fixed costs of 0.005 per share traded and 0.05 per 
+trade, though these are not shown in Figure 1. 
+7 Downside violations of the reference distribution should not occur due to real-time risk control [see for example 
+Cooper and Van Vliet 2012].   
+8 Or alternatively, whether the term structure of capability crosses one within an acceptable waiting time given an 
+acceptable level of reliability 1 - ξ.  See Cooper, et al. [2015]. 
+9 Firms may be able to improve on the normality assumption and use other distributions.  Nevertheless, the same 
+methodology idea of percentile criteria for decision-making would apply using the methodology of Cooper et al. 
+[2015]. 
+10 Measuring these variables is beyond the scope of this paper. 
+11 Many individuals declined to be interviewed.  Those who did agree would not divulge whether their strategies 
+counted as high frequency or were merely algorithmic, so I refer to their firms as algo/HFT.  In addition, some of the 
+interviewees preferred to talk in the third person, rather than give the appearance of divulging firm-specific 
+information. 
+12 Such as index arbitrage. 
+13 That is, unmeasurable uncertainties as in Knight [1921]. 
+14 That is, viability does not imply capability. 
+                                                 
+Electronic copy available at: https://ssrn.com/abstract=2813260

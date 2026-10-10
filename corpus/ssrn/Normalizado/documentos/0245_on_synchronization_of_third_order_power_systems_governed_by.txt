@@ -1,0 +1,2165 @@
+Highlights
+On Synchronization of Third-Order Power Systems Governed by
+Second-Order Networked Kuramoto Oscillators Incorporating FirstOrder Magnitude Dynamics
+Shih-Hsin Chen, Chun-Hsiung Hsia, Chia-Chi Chu
+• Explores the suﬃcient conditions for achieving synchronization in the
+third-order one-axis generator models, characterized by the secondorder networked Kuramoto oscillators integrating the ﬁrst-order amplitude dynamics.
+• When the phase diﬀerence of oscillators is less than π
+2 and the initial
+amplitudes are positive, the amplitudes remain bounded and possess a
+positive lower bound.
+• Under speciﬁc conditions on coupling strength, inertia, and oscillator
+parameters, the third-order model exhibits a frequency synchronization
+and the derivatives of amplitudes converge to zero.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+On Synchronization of Third-Order Power Systems
+Governed by Second-Order Networked Kuramoto
+Oscillators Incorporating First-Order Magnitude
+Dynamics
+Shih-Hsin Chena, Chun-Hsiung Hsiaa,b, Chia-Chi Chuc
+aNational Center for Theoretical Sciences Mathematics Division, No. 1, Sec. 4,
+Roosevelt Rd., 10617, Taipei, Taiwan, R.O.C.
+bDepartment of Mathematics and Institute of Applied Mathematics, National Taiwan
+University, No. 1, Sec. 4, Roosevelt Rd., 10617, Taipei, Taiwan, R.O.C.
+cDepartment of Electrical Engineering, National Tsing Hua University, No. 1,Sec. 2,
+KuanFu Rd., 30013, HsinChu, Taiwan, R.O.C.
+Abstract
+This study explores the suﬃcient conditions for achieving synchronization
+in the third-order one-axis generator models, characterized by the secondorder networked Kuramoto oscillators integrating the ﬁrst-order amplitude
+dynamics. We show that if the phase diﬀerence of oscillators is less than π
+2
+and the initial amplitudes are positive, then the amplitudes are bounded and
+possess a positive lower bound. Furthermore, under speciﬁc conditions on
+the coupling strength, inertia, and oscillator parameters, we prove that the
+third-order model exhibits a frequency synchronization and the derivatives of
+amplitudes converge to zero. Numerical simulations are performed to support
+our main results.
+Keywords:
+synchronization, Kuramoto, power system, amplitude, voltage,
+third-order.
+Email addresses: shchen@ncts.tw (Shih-Hsin Chen), willhsia@math.ntu.edu.tw
+(Chun-Hsiung Hsia), ccchu@ee.nthu.edu.tw (Chia-Chi Chu)
+Preprint submitted to Physica D
+March 12, 2024
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+1. Introduction
+Over the years, synchronization phenomena have been extensively studied
+in various domains, such as circadian rhythms [2, 13, 22], ﬁreﬂy ﬂashes [14],
+neural networks [15], biological oscillators [27, 42], and clock synchronization
+[24]. The Kuramoto model [23] proposed to demonstrate synchronization
+reads
+m¨θi + ˙θi = ωi + K
+N
+N
+X
+l=1
+sin(θl −θi)
+(1.1)
+for t > 0 and i = 1, 2, · · · , N. Here, θi is the phase of i-th oscillator, ˙θi = dθi
+dt
+is the frequency, ¨θi = d2θi
+dt2 , m ≥0 is the inertia, ωi is the natural frequency,
+K > 0 is the coupling strength, and N is the number of oscillators. The model
+(1.1) has been applied in a lot of disciplines, including dynamical stability
+of power systems [6, 7, 25, 26, 34], Josephson junction arrays [40, 43], and
+networks science [30, 32, 36, 37, 41]. Synchronization theories related to the
+model (1.1) were explored in [11, 17, 18]. Notably, in [18], it has been demonstrated that under conditions of small inertia and large coupling strength,
+the majority of concentration leads to complete frequency synchronization.
+Meanwhile, bifurcation analyses associated with the Kuramoto model were
+investigated in [8, 9, 28, 29]. For studies involving time delay and phase lag
+in the Kuramoto model, we refer to [3, 20, 21]. The global convergence of
+frequency synchronization for (1.1) with N = 3 was studied in [19]. The
+driving forces behind synchronization in the model (1.1) were addressed in
+[4, 5]. For a comprehensive overview of the Kuramoto model, see [1, 12].
+Traditionally, the classical generator model, known as the networked
+second-order Kuramoto model in the power system [6, 7, 10] and microgrid [38], has been extensively investigated in previous studies, assuming a
+constant voltage for each generator. However, this assumption lacks realism, given the signiﬁcant concern for voltage stability in power engineering
+practices [25, 33, 39, 35]. Indeed, historical blackouts have often been attributed to dynamic voltage instability. In the realm of dynamic stability
+within power systems, it becomes essential to employ more comprehensive
+dynamical models capable of capturing realistic dynamics. In this regard,
+the one-axis generator model was introduced for this purpose [6, 7, 10, 38].
+However, the majority of existing works have predominantly focused on simulation studies, with only a limited amount of research dedicated to analytical
+advancements in this area. For instance, the Lyapunov function approach,
+2
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+also known as the energy function, has been widely explored in the past three
+decades [6, 7, 10, 16, 31, 38]. More recently, [44] established speciﬁc suﬃcient conditions regarding the initial conﬁgurations of a Kuramoto network
+to determine the stability of phases and amplitudes of oscillators.
+In this paper, we shall study the synchronization theory of this new class
+of Kuramoto models involving the eﬀect of amplitude dynamics. Concerning
+power system dynamics, each generator’s angle dynamics can be expressed
+through an oscillator with uniform coupling strength, while the voltage dynamics will be depicted by the amplitude of each oscillator. We ﬁrst study
+the following ﬁrst-order Kuramoto model with the amplitude dynamics which
+reads
+˙θi = pi + K
+N
+N
+X
+l=1
+bibl sin(θl −θi),
+(1.1.a)
+˙bi + kbi = ωi + K
+N
+N
+X
+l=1
+bl cos(θl −θi),
+(1.1.b)
+for t > 0 and i = 1, 2, · · · , N. Here, k and ωi are oscillator parameters and
+are considered to be positive. pi ∈R represents the external force of i-th
+oscillator, or the mechanical power of i-th generator. The dynamics of the
+amplitude of each oscillator, or the voltage magnitude of each generator, are
+described as the ﬁrst-order diﬀerential equation (1.1.b) in which bi represents
+the amplitude of each oscillator. Given that (1.1.b) does not incorporate an
+inertia constant, this model is capable of depicting the dynamics of inertialess power systems, especially when the penetration level of renewable energy
+is suﬃciently high.
+In addition to the ﬁrst-order model, we also investigate the following
+second-order Kuramoto model with the amplitude dynamics which reads
+m¨θi + ˙θi = pi + K
+N
+N
+X
+l=1
+bibl sin(θl −θi),
+(1.2.a)
+˙bi + kbi = ωi + K
+N
+N
+X
+l=1
+bl cos(θl −θi),
+(1.2.b)
+for t > 0 and i = 1, 2, · · · , N. The model (1.2.a)–(1.2.b) can be regarded as
+the third-order Kuramoto model [44]. Since the inertia constant is considered
+3
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+in (1.2.a)–(1.2.b), this model can represent the dynamics of the one-axis
+generator model used in conventional power systems in which both the swing
+equation of the generator angle (1.2.a) with the uniform coupling strength
+and the voltage dynamics of each generator (1.2.b) are considered.
+Our major contribution lies in developing the synchronization theory for
+these new class of networked Kuramoto models described by (1.1.a)–(1.1.b)
+and (1.2.a)–(1.2.b). It is noteworthy that both systems (1.1.a)–(1.1.b) and
+(1.2.a)–(1.2.b) indeed exhibit Lyapunov functions. Together with the mean
+zero condition, this suggests that maintaining the boundedness of the phase
+diﬀerence and the boundedness of the amplitudes can drive frequency synchronization, as presented in Lemma 2.1 and Lemma 2.2. However, achieving
+the desired boundedness poses analytical challenges. We successfully demonstrate that the amplitudes bi(t), for all i = 1, 2, · · · , N, possess a positive
+lower bound b and an upper bound b if the phase diﬀerence of oscillators is
+less than π
+2 over a speciﬁc time interval, as illustrated in Lemma 3.1. Simultaneously, we leverage these bounds to assert that the phase diﬀerence
+of oscillators is less than π
+2 if the amplitudes satisfy b ≤bi(t) ≤b, for all
+i = 1, 2, · · · , N, throughout the time interval, as demonstrated in Lemma 3.2
+for the model (1.1.a)–(1.1.b) and Lemma 3.3 for the model (1.2.a)–(1.2.b),
+and subsequently extend this time interval. Compared to the literature [44],
+the strategy proposed in this paper provides an analytical foundation to
+explore a frequency synchronization theory equipped with milder suﬃcient
+conditions on the initial data. The detailed description is presented in Remark 2.3.
+The rest part of this paper is organized as follows. Section 2 provides
+an introduction to notations, the mean zero condition, and Lyapunov functions, followed by the presentation of our main results. Key lemmas and the
+proofs are given in Section 3. In Section 4, we conduct various numerical
+simulations. Finally, a concluding remark is addressed in Section 5.
+2. Preliminary and Main Results
+2.1. Preliminary
+For further convenience, we deﬁne several notations here. We denote that
+Θ(t) = (θ1(t), θ2(t), · · · , θN(t)), B(t) = (b1(t), b2(t), · · · , bN(t)),
+˙Θ(t) = ( ˙θ1(t), ˙θ2(t), · · · , ˙θN(t)), ˙B(t) = (˙b1(t), ˙b2(t), · · · , ˙bN(t)),
+¨Θ(t) = (¨θ1(t), ¨θ2(t), · · · , ¨θN(t)), P = (p1, p2. · · · , pN), Ω= (ω1, ω2, · · · , ωN),
+4
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+and (Θ(t), B(t)) = (θ1(t), θ2(t), · · · , θN(t), b1(t), b2(t), · · · , bN(t)).
+For any
+vector X = (x1, x2, · · · , xN), we deﬁne the diameter function as
+D(X) := max
+i̸=j {xi −xj}.
+Deﬁnition 2.1. Let Θ(t) be the Kuramoto oscillator.
+1. We say that Θ(t) achieves a phase synchronization asymptotically if
+for any i̸ = j, there exists an integer nij such that
+lim
+t→∞(θi(t) −θj(t)) = 2nijπ.
+2. We say that Θ(t) achieves a frequency synchronization asymptotically
+if for any i̸ = j,
+lim
+t→∞( ˙θi(t) −˙θj(t)) = 0.
+We note that the systems (1.1.a)–(1.1.b) and (1.2.a)–(1.2.b) are invariant
+under a moving frame. More precisely, we consider the change of variables:
+ˆθi(t) = θi(t) −pt and ˆpi = pi −p for i = 1, 2, · · · , N, where
+p := 1
+N
+N
+X
+l=1
+pl.
+Since ˆθi−ˆθj = θi−θj for all i and j, we see that ˆΘ(t) = (ˆθ1(t), ˆθ2(t), · · · , ˆθN(t))
+satisﬁes (1.1.a)–(1.1.b) (and (1.2.a)–(1.2.b)) with the natural frequency ˆP =
+(ˆp1, ˆp2, · · · , ˆpN). Moreover, we observe that PN
+i=1 ˆpi = 0. Hence, in Section 3,
+we may assume the mean zero condition:
+1
+N
+N
+X
+i=1
+pi = 0.
+(2.1)
+It implies the following lemma:
+Lemma 2.1. Suppose the mean zero condition (2.1) holds. Let (Θ(t), B(t))
+be a solution of (1.1.a)–(1.1.b) (or (1.2.a)–(1.2.b)). Then Θ(t) is bounded
+for t > 0 if and only if D(Θ(t)) is bounded for t > 0.
+5
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+Next, we show that the system (1.1.a)–(1.1.b) possesses a Lyapunov function. By multiplying ˙θi in (1.1.a), summing all equations over i = 1, 2, · · · , N,
+and integrating the resultant, we have
+N
+X
+i=1
+Z t
+0
+˙θ2
+i (s) ds =
+N
+X
+i=1
+pi(θi(t) −θi(0))
++ K
+N
+N
+X
+i=1
+N
+X
+l=1
+Z t
+0
+bi(s)bl(s) sin(θl(s) −θi(s)) ˙θi(s) ds.
+(2.2)
+Using the integration by parts, we get that
+N
+X
+i=1
+N
+X
+l=1
+Z t
+0
+bi(s)bl(s) sin(θl(s) −θi(s)) ˙θi(s) ds
+=
+X
+1≤i<l≤N
+Z t
+0
+bi(s)bl(s) sin(θl(s) −θi(s))( ˙θi(s) −˙θl(s)) ds
+=
+X
+1≤i<l≤N
+Z t
+0
+bi(s)bl(s) d
+ds cos(θl(s) −θi(s)) ds
+=
+X
+1≤i<l≤N
+ 
+bi(t)bl(t) cos(θl(t) −θi(t)) −bi(0)bl(0) cos(θl(0) −θi(0))
+−
+Z t
+0
+
+˙bi(s)bl(s) + bi(s)˙bl(s)
+
+cos(θl(s) −θi(s)) ds
+!
+.
+(2.3)
+On the other hand, by multiplying ˙bi in (1.1.b), summing all equations over
+i = 1, 2, · · · , N, and integrating the resultant, we have
+N
+X
+i=1
+Z t
+0
+˙b2
+i (s) ds + k
+2(b2
+i (t) −b2
+i (0))
+
+=
+N
+X
+i=1
+ 
+ωi(bi(t) −bi(0)) + K
+N
+N
+X
+l=1
+Z t
+0
+˙bi(s)bl(s) cos(θl(s) −θi(s)) ds
+!
+=
+N
+X
+i=1
+
+ωi(bi(t) −bi(0)) + K
+2N (b2
+i (t) −b2
+i (0))
+
++ K
+N
+X
+1≤i<l≤N
+Z t
+0
+
+˙bi(s)bl(s) + bi(s)˙bl(s)
+
+cos(θl(s) −θi(s)) ds
+(2.4)
+6
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+which implies that
+N
+X
+i=1
+Z t
+0
+b2
+i (s) ds + 1
+2(k −K
+N )(b2
+i (t) −b2
+i (0))
+
+=
+N
+X
+i=1
+ωi(bi(t) −bi(0))
++ K
+N
+X
+1≤i<l≤N
+Z t
+0
+
+˙bi(s)bl(s) + bi(s)˙bl(s)
+
+cos(θl(s) −θi(s)) ds.
+(2.5)
+Summing (2.2) and (2.5) and applying (2.3), we get that
+N
+X
+i=1
+1
+2(k −K
+N )(b2
+i (t) −b2
+i (0)) +
+Z t
+0
+( ˙θ2
+i (s) + ˙b2
+i (s)) ds
+
+=
+N
+X
+i=1
+
+pi(θi(t) −θi(0)) + ωi(bi(t) −bi(0))
+
++ K
+N
+X
+1≤i<l≤N
+
+bi(t)bl(t) cos(θl(t) −θi(t))
+−bi(0)bl(0) cos(θl(0) −θi(0))
+
+.
+(2.6)
+Hence, we deduce that if Θ(t) and B(t) are bounded for t > 0, then by taking
+t →∞in (2.6) we have
+N
+X
+i=1
+Z ∞
+0
+( ˙θ2
+i (s) + ˙b2
+i (s)) ds < ∞.
+(2.7)
+On the other hand, due to the equations (1.1.a)–(1.1.b) and the boundedness
+of Θ(t) and B(t), we can derive that ˙Θ(t) and ˙B(t) are uniformly continuous
+for t > 0. Due to the uniform continuities of ˙Θ(t) and ˙B(t), (2.7) indicates
+that
+lim
+t→∞
+˙θi(t) = lim
+t→∞
+˙bi(t) = 0
+for all i = 1, 2, · · · , N, which guarantees that the model (1.1.a)–(1.1.b) exhibits a frequency synchronization.
+7
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+Similarly, the model (1.2.a)–(1.2.b) also possesses a Lyapunov function
+that
+N
+X
+i=1
+m
+2 ( ˙θ2
+i (t) −˙θ2
+i (0)) + 1
+2(k −K
+N )(b2
+i (t) −b2
+i (0))
++
+Z t
+0
+( ˙θ2
+i (s) + ˙b2
+i (s)) ds
+
+=
+N
+X
+i=1
+
+pi(θi(t) −θi(0)) + ωi(bi(t) −bi(0))
+
++ K
+N
+X
+1≤i<l≤N
+
+bi(t)bl(t) cos(θl(t) −θi(t))
+−bi(0)bl(0) cos(θl(0) −θi(0))
+
+.
+(2.8)
+If Θ(t) and B(t) are bounded for t > 0, then by taking t →∞in (2.8) we
+have
+N
+X
+i=1
+Z ∞
+0
+( ˙θ2
+i (s) + ˙b2
+i (s)) ds < ∞.
+(2.9)
+On the other hand, by solving (1.2.a) as the ﬁrst-order diﬀerential equation
+of ˙θi, we get that
+˙θi(t) = ˙θi(0)e−t
+m + pi(1 −e−t
+m)
++
+Z t
+0
+K
+mN e−t−s
+m
+N
+X
+l=1
+bi(s)bl(s) sin(θl(s) −θi(s)) ds.
+(2.10)
+Since B(t) is bounded for t > 0, (2.10) indicates that ˙Θ(t) is bounded for
+t > 0. By (1.2.a), it implies that ¨Θ(t) is bounded for t > 0 which implies that
+˙Θ(t) is uniform continuous for t > 0. Together with the uniform continuities
+of ˙Θ(t) and ˙B(t), (2.9) indicates that
+lim
+t→∞
+˙θi(t) = lim
+t→∞
+˙bi(t) = 0
+for all i = 1, 2, · · · , N, which guarantees that the model (1.2.a)–(1.2.b) exhibits a frequency synchronization.
+Consequently, (2.6) and (2.8) imply the following lemma:
+8
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+Lemma 2.2. Let (Θ(t), B(t)) be a solution of (1.1.a)–(1.1.b) (or (1.2.a)–
+(1.2.b)). Suppose that Θ(t) and B(t) are bounded for t > 0. Then we have
+lim
+t→∞
+˙θi(t) = lim
+t→∞
+˙bi(t) = 0
+(2.11)
+for all i = 1, 2, · · · , N.
+Remark 2.1. Combining Lemma 2.1 and Lemma 2.2, we deduce that if the
+solution (Θ(t), B(t)) of (1.1.a)–(1.1.b) (or (1.2.a)–(1.2.b)) satisﬁes that
+sup
+t>0 D(Θ(t)) < ∞,
+sup
+t>0 |bi(t)| < ∞, for i = 1, 2, · · · , N,
+then we have
+lim
+t→∞
+˙θi(t) = p := 1
+N
+N
+X
+l=1
+pl,
+lim
+t→∞
+˙bi(t) = 0,
+for all i = 1, 2, · · · , N. In other words, the boundedness of the phase diameter
+and the boundedness of amplitudes drive a frequency synchronization.
+2.2. Main Results
+Here, we present the main results of frequency synchronization for the
+models (1.1.a)–(1.1.b) and (1.2.a)–(1.2.b).
+For given α ∈(0, π
+2), we ﬁrst
+introduce the following parameters:
+S := max
+( N
+X
+l=1
+bl(0),
+1
+k −K
+N
+X
+l=1
+ωl
+)
+,
+(2.12)
+S := min
+( N
+X
+l=1
+bl(0),
+1
+k −K sin α
+N
+X
+l=1
+ωl
+)
+,
+(2.13)
+b := max
+1≤i≤N
+(
+bi(0), ωi
+k + K
+kN
+N
+X
+l=1
+bl(0), ωi
+k +
+K
+kN(k −K)
+N
+X
+l=1
+ωl
+)
+,
+(2.14)
+b := min
+1≤i≤N
+(
+bi(0), ωi
+k + K sin α
+kN
+N
+X
+l=1
+bl(0),
+ωi
+k +
+K sin α
+kN(k −K sin α)
+N
+X
+l=1
+ωl
+)
+.
+(2.15)
+9
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+A theory of frequency synchronization for the model (1.1.a)–(1.1.b) is given
+as follows.
+Theorem 2.1. Let (Θ(t), B(t)) be the solution of (1.1.a)–(1.1.b). Suppose
+that
+k > K,
+(2.16)
+bi(0) > 0, for i = 1, 2, · · · , N,
+(2.17)
+b S > (b −b)S,
+(2.18)
+D(P) < K
+N
+
+b S −(b −b)S
+
+cos α.
+(2.19)
+If the initial conﬁguration Θ(0) satisﬁes
+D(Θ(0)) < π
+2 −α,
+(2.20)
+then we have
+lim
+t→∞
+˙θi(t) = p := 1
+N
+N
+X
+l=1
+pl,
+(2.21)
+lim
+t→∞
+˙bi(t) = 0,
+(2.22)
+for all i = 1, 2, · · · , N. That is, Θ(t) achieves a frequency synchronization
+asymptotically.
+Remark 2.2. Here, we make several comments on conditions (2.16)–(2.19).
+1. We note that the assumptions ωi > 0, for i = 1, 2, · · · , N, and α ∈(0, π
+2)
+and the conditions (2.16) and (2.17) ensure that S ≥S > 0 and b ≥b > 0.
+2. The condition (2.19) is reasonable due to condition (2.18). To validate
+the condition (2.18), we consider a special case that
+α = π
+2 , ωi = ω > 0, and bi(0) = b0 > 0
+(2.23)
+10
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+for all i = 1, 2, · · · , N. In this case, we have
+S = N · max
+
+b0,
+ω
+k −K
+
+,
+S = N · min
+
+b0,
+ω
+k −K
+
+,
+b = max
+
+b0, ω + Kb0
+k
+,
+ω
+k −K
+
+,
+b = min
+
+b0, ω + Kb0
+k
+,
+ω
+k −K
+
+.
+In particular, we consider a case that
+b0 = ω + Kb0
+k
+=
+ω
+k −K , or equivalently, ω = (k −K)b0.
+(2.24)
+We see that (2.24) implies S = S and b = b, which satisﬁes the condition
+(2.18). Therefore, (2.18) can be obtained by a perturbation of the cases
+(2.23) and (2.24).
+Next, we propose a theory of frequency synchronization for the model
+(1.2.a)–(1.2.b). Let α ∈(0, π
+2) and β > 0 be two constants which satisfy
+α + β
+4 < π
+2 .
+(2.25)
+We denote that
+κ := sin(π
+4 −α
+2 −β
+8 ) cos(π
+4 −α
+2 + β
+4 ) > 0.
+(2.26)
+The parameters S, S, b, and b are given in (2.12)–(2.15).
+Theorem 2.2. Let (Θ(t), B(t)) be the solution of (1.2.a)–(1.2.b). Suppose
+that
+k > K,
+(2.27)
+bi(0) > 0, for i = 1, 2, · · · , N,
+(2.28)
+2κb S > (b −b)S cos α.
+(2.29)
+11
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+Let λ ≥0 and µ ≥0 which satisﬁes
+µ < 1
+N
+
+2κb S −(b −b)S cos α
+
+.
+(2.30)
+Assume that
+D(P) ≤µK,
+(2.31)
+β
+4(λ + µ + 2b S
+N )K
+> m ln
+ 
+λ + 1
+N (2κb S + (b + b)S cos α)
+1
+N (2κb S −(b −b)S cos α) −µ
+!
+.
+(2.32)
+If the initial data satisfy that
+D(Θ(0)) ≤π
+2 −α −β,
+(2.33)
+D( ˙Θ(0)) ≤λK,
+(2.34)
+then we have
+lim
+t→∞
+˙θi(t) = p := 1
+N
+N
+X
+l=1
+pl,
+(2.35)
+lim
+t→∞
+˙bi(t) = 0,
+(2.36)
+for all i = 1, 2, · · · , N. That is, Θ(t) achieves a frequency synchronization
+asymptotically.
+Remark 2.3. Here, we make comments on the conditions (2.25)–(2.34).
+1. The condition (2.25) implies that (2.26) is reasonable. Similar to Remark 2.2, the conditions (2.27) and (2.28) ensure that S ≥S > 0 and
+b ≥b > 0. In addition, condition (2.29) can be obtained by a perturbation of the cases (2.23) and (2.24). Hence, the conditions (2.30) and
+(2.32) are reasonable.
+2. As we mentioned before, the authors in [44] studied the synchronization
+of the third-order Kuramoto model with non-uniform coeﬃcients. The
+suﬃcient conditions therein need the initial data to satisfy that
+∥Θ(0)∥2
+2 + ∥˙Θ(0)∥2
+2 ≤C
+and
+b′ ≤bi(0) ≤b
+′
+12
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+for all i = 1, 2, · · · , N, where ∥· ∥2 is the l2-norm, C > 0 is a constant
+which depends on the parameters of oscillators, inertia, and coupling
+strength, and b′ and b
+′ are two positive constants which satisfy certain
+conditions.
+However, in Theorem 2.2, we only need the amplitudes
+to be positive initially, which is shown in (2.28).
+Additionally, the
+conditions (2.33) and (2.34) exhibit a larger regime of the initial data
+to achieve the frequency synchronization.
+3. Proofs of Main Results
+In this section, we shall prove Theorem 2.1 and Theorem 2.2. We start
+with the following lemma:
+Lemma 3.1. Suppose that all conditions of Theorem 2.1 (respectively Theorem 2.2) hold. Let (Θ(t), B(t)) be the solution of (1.1.a)–(1.1.b) (respectively
+(1.2.a)–(1.2.b)) and T > 0 such that D(Θ(t)) ≤π
+2 −α for t ∈[0, T].
+1. Then we have
+N
+X
+i=1
+
+bi(0)e−(k−K sin α)t +
+ωi
+k −K sin α(1 −e−(k−K sin α)t)
+
+≤
+N
+X
+i=1
+bi(t) ≤
+N
+X
+i=1
+
+bi(0)e−(k−K)t +
+ωi
+k −K (1 −e−(k−K)t)
+
+(3.1)
+for t ∈[0, T]. Moreover, we have
+bi(t) ≤bi(0)e−kt +
+ 
+ωi
+k +
+K
+kN(k −K)
+N
+X
+l=1
+ωl
+!
+(1 −e−kt)
++ 1
+N
+N
+X
+l=1
+
+bl(0) −
+ωl
+k −K
+
+(e−(k−K)t −e−kt)
+(3.2)
+and
+bi(t) ≥bi(0)e−kt +
+ 
+ωi
+k +
+K sin α
+kN(k −K sin α)
+N
+X
+l=1
+ωl
+!
+(1 −e−kt)
++ 1
+N
+N
+X
+l=1
+
+bl(0) −
+ωl
+k −K sin α
+
+(e−(k−K sin α)t −e−kt)
+(3.3)
+for t ∈[0, T] and i = 1, 2, · · · , N.
+13
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+2. Let the parameters S, S, b, and b be given in (2.12)–(2.15). Then we have
+S ≤
+N
+X
+l=1
+bl(t) ≤S,
+(3.4)
+b ≤bi(t) ≤b, for i = 1, 2, · · · , N,
+(3.5)
+for t ∈[0, T].
+Proof. We ﬁrst claim that, for all i = 1, 2, · · · , N,
+bi(t) > 0
+on [0, T].
+(3.6)
+Suppose on the contrary that there exist t0 ∈(0, T] and i such that bi(t0) = 0,
+bj(t0) ≥0 for j̸ = i, and bl(t) > 0 for all t ∈[0, t0) and l = 1, 2, · · · , N. Then
+˙bi(t0) ≤0 due to the condition (2.17) (or (2.28)). On the other hand, we
+note that D(Θ(t0)) ≤π
+2 −α. By plugging t = t0 into (1.1.b) (or (1.2.b)), we
+obtain that
+˙bi(t0) = ωi −kbi(t0) + K
+N
+N
+X
+l=1
+bl(t0) cos(θl(t0) −θi(t0)) ≥ωi > 0
+which leads to a contradiction. Hence, (3.6) holds true.
+By summing (1.1.b) (or (1.2.b)) over i = 1, 2, · · · , N, denoting S(t) =
+PN
+i=1 bi(t), and using (3.6), we have
+N
+X
+i=1
+ωi −(k −K sin α)S ≤˙S ≤
+N
+X
+i=1
+ωi −(k −K)S
+(3.7)
+for t ∈[0, T]. It implies that
+S(0)e−(k−K sin α)t +
+1
+k −K sin α
+N
+X
+i=1
+ωi(1 −e−(k−K sin α)t)
+≤S(t) ≤S(0)e−(k−K)t +
+1
+k −K
+N
+X
+i=1
+ωi(1 −e−(k−K)t)
+(3.8)
+for t ∈[0, T], which shows (3.1).
+14
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+Next, we shall show (3.2) and (3.3). Note that D(Θ(t)) ≤π
+2 −α on [0, T].
+By using (1.1.b) (or (1.2.b)) and (3.6) again, we have
+ωi −kbi + K sin α
+N
+S ≤˙bi ≤ωi −kbi + K
+N S
+(3.9)
+for t ∈[0, T] and i = 1, 2, · · · , N. Together with (3.1), it implies that
+bi(t) ≤bi(0)e−kt +
+Z t
+0
+e−k(t−s)
+
+ωi + K
+N S(s)
+
+ds
+≤bi(0)e−kt + ωi
+k (1 −e−kt)
++ K
+N
+Z t
+0
+e−k(t−s)
+N
+X
+l=1
+
+bl(0)e−(k−K)s
++
+ωl
+k −K (1 −e−(k−K)s)
+
+ds
+= bi(0)e−kt +
+ 
+ωi
+k +
+K
+kN(k −K)
+N
+X
+l=1
+ωl
+!
+(1 −e−kt)
++ 1
+N
+N
+X
+l=1
+
+bl(0) −
+ωl
+k −K
+
+(e−(k−K)t −e−kt)
+(3.10)
+and
+bi(t) ≥bi(0)e−kt +
+Z t
+0
+e−k(t−s)
+
+ωi + K sin α
+N
+S(s)
+
+ds
+≥bi(0)e−kt + ωi
+k (1 −e−kt)
++ K sin α
+N
+Z t
+0
+e−k(t−s)
+N
+X
+l=1
+
+bl(0)e−(k−K sin α)s
++
+ωl
+k −K sin α(1 −e−(k−K sin α)s)
+
+ds
+= bi(0)e−kt +
+ 
+ωi
+k +
+K sin α
+kN(k −K sin α)
+N
+X
+l=1
+ωl
+!
+(1 −e−kt)
++ 1
+N
+N
+X
+l=1
+
+bl(0) −
+ωl
+k −K sin α
+
+(e−(k−K sin α)t −e−kt)
+(3.11)
+15
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+for t ∈[0, T]. Thus, it shows (3.2) and (3.3) and completes Assertion 1.
+Now, we are going to prove Assertion 2. We note that (3.4) is inferred
+from (3.1). To prove (3.5), we start with (3.2) and denote that
+f(t) := Ae−kt + B(1 −e−kt) + C(e−(k−K)t −e−kt)
+= (A −B −C)e−kt + Ce−(k−K)t + B,
+(3.12)
+where
+A = bi(0),
+B = ωi
+k +
+K
+kN(k −K)
+N
+X
+l=1
+ωl,
+C = 1
+N
+N
+X
+l=1
+
+bl(0) −
+ωl
+k −K
+
+.
+We note that f has at most one critical point t∗∈R satisfying the equation:
+k(A −B −C) + C(k −K)eKt∗= 0.
+(3.13)
+In case that t∗exists, by plugging t = t∗into (3.12) and using (3.13), we get
+f(t∗) = K
+k Ce−(k−K)t∗+ B
+(3.14)
+If t∗> 0, then due to (2.16) (or (2.27)) we see 0 < e−(k−K)t∗< 1 which yields
+f(t∗) ≤max
+
+B + K
+k C, B
+
+.
+(3.15)
+On the other hand, we note that f(0) = A and limt→∞f(t) = B. Together
+with (3.10), (3.12), and (3.15), we have
+bi(t) ≤f(t)
+≤max
+
+A, B + K
+k C, B
+
+= max
+(
+bi(0), ωi
+k + K
+kN
+N
+X
+l=1
+bl(0), ωi
+k +
+K
+kN(k −K)
+N
+X
+l=1
+ωl
+)
+(3.16)
+16
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+for t ∈[0, T]. In a similar fashion, we have
+bi(t) ≥min
+(
+bi(0), ωi
+k + K sin α
+kN
+N
+X
+l=1
+bl(0),
+ωi
+k +
+K sin α
+kN(k −K sin α)
+N
+X
+l=1
+ωl
+)
+(3.17)
+for t ∈[0, T]. Therefore, (3.5) is inferred from (3.16) and (3.17). The proof
+is complete.
+3.1. Proof of Theorem 2.1
+We estimate the phase diameter for the system (1.1.a)–(1.1.b) in the
+following lemma:
+Lemma 3.2. Suppose that all conditions of Theorem 2.1 hold. Let (Θ(t), B(t))
+be the solution of (1.1.a)–(1.1.b) and T > 0 such that (3.4) and (3.5) hold
+on [0, T]. Then we have
+D(Θ(t)) < π
+2 −α
+for t ∈[0, T].
+(3.18)
+Proof. Suppose on the contrary that there exists t0 ∈(0, T] such that D(Θ(t0)) =
+π
+2 −α and D(Θ(t)) <
+π
+2 −α for t ∈[0, t0). We assume that D(Θ(t0)) =
+θi(t0) −θj(t0) for some i, j ∈{1, 2, · · · , N}.
+The initial condition (2.20)
+implies that
+˙θi(t0) −˙θj(t0) ≥0.
+(3.19)
+17
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+On the other hand, by (1.1.a) we have
+˙θi −˙θj = pi −pj + K
+N
+N
+X
+l=1
+bl
+
+bi sin(θl −θi) −bj sin(θl −θj)
+
+= pi −pj + K
+N bi
+N
+X
+l=1
+bl
+
+sin(θl −θi) −sin(θl −θj)
+
++ K
+N (bi −bj)
+N
+X
+l=1
+bl sin(θl −θj)
+= pi −pj −2K
+N bi sin(θi −θj
+2
+)
+N
+X
+l=1
+bl cos(θl −θi + θj
+2
+)
++ K
+N (bi −bj)
+N
+X
+l=1
+bl sin(θl −θj).
+(3.20)
+Note that, for 1 ≤l ≤N,
+θl(t0) −θi(t0) + θj(t0)
+2
+ ≤θi(t0) −θj(t0)
+2
+= π
+4 −α
+2 .
+(3.21)
+It indicates that, for 1 ≤l ≤N,
+cos(θl(t0) −θi(t0) + θj(t0)
+2
+) ≥cos(π
+4 −α
+2 ) > 0.
+(3.22)
+Plugging t = t0 into (3.20) and applying (2.19), (3.4), and (3.5), we get that
+˙θi(t0) −˙θj(t0) ≤D(P) −2K
+N b S sin(π
+4 −α
+2 ) cos(π
+4 −α
+2 )
++ K
+N (b −b)S sin(π
+2 −α)
+= D(P) −K
+N
+
+b S −(b −b)S
+
+cos α
+< 0
+(3.23)
+which contradicts to (3.19). The proof is complete.
+Now, we are prepared to prove Theorem 2.1.
+18
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+Proof of Theorem 2.1. We claim that
+D(Θ(t)) < π
+2 −α
+for all t > 0.
+(3.24)
+Suppose on the contrary that there exists T > 0 such that D(Θ(T)) = π
+2 −α
+and D(Θ(t)) < π
+2 −α for t ∈[0, T). Note that D(Θ(t)) ≤π
+2 −α for t ∈[0, T].
+By Lemma 3.1, we see that (3.4) and (3.5) hold for t ∈[0, T]. However,
+Lemma 3.2 indicates that D(Θ(t)) < π
+2 −α for t ∈[0, T]. It violates that
+D(Θ(T)) = π
+2 −α. Hence, (3.24) is shown.
+Applying Lemma 3.1 and (3.24), we obtain that
+b ≤bi(t) ≤b
+(3.25)
+for all t > 0 and i = 1, 2, · · · , N. By taking Lemma 2.1, Lemma 2.2, (3.24),
+and (3.25) into account, it completes the proof.
+Remark 3.1. In particular, if all conditions of Theorem 2.1 hold and pi = p
+for all i = 1, 2, · · · , N, then Θ(t) achieves a phase synchronization asymptotically.
+To see this, for any ﬁxed t > 0, we assume that D(Θ(t)) =
+θi(t) −θj(t) < π
+2 −α for some i and j. By (3.20), (3.24), and (3.25), we
+get that
+˙θi −˙θj = −2K
+N bi sin(θi −θj
+2
+)
+N
+X
+l=1
+bl cos(θl −θi + θj
+2
+)
++ K
+N (bi −bj)
+N
+X
+l=1
+bl sin(θl −θj)
+≤−2K
+N b S sin(θi −θj
+2
+) cos(θi −θj
+2
+) + K
+N (b −b)S sin(θi −θj)
+= −K
+N
+
+b S −(b −b)S
+
+sin(θi −θj)
+≤−K cos α
+N(π
+2 −α)
+
+b S −(b −b)S
+
+(θi −θj),
+(3.26)
+where the last inequality comes from that sin x > cos α
+π
+2 −αx for x ∈[0, π
+2 −α). It
+indicates that D(Θ(t)) decays to 0, which implies that Θ(t) achieves a phase
+synchronization asymptotically.
+19
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+3.2. Proof of Theorem 2.2
+In the following, we give an estimate of the phase diameter for the model
+(1.2.a)–(1.2.b).
+Lemma 3.3. Suppose that all conditions of Theorem 2.2 hold. Let (Θ(t), B(t))
+be the solution of (1.2.a)–(1.2.b) and T > 0 such that (3.4) and (3.5) hold
+on [0, T]. Then we have
+D(Θ(t)) < π
+2 −α
+for t ∈[0, T].
+(3.27)
+Proof. For any i̸ = j, by (2.10), we have
+˙θi(t) −˙θj(t) = ( ˙θi(0) −˙θj(0))e−t
+m + (pi −pj)(1 −e−t
+m)
++
+Z t
+0
+K
+mN e−t−s
+m
+N
+X
+l=1
+bl(s)
+
+bi(s) sin(θl(s) −θi(s))
+−bj(s) sin(θl(s) −θj(s))
+
+ds
+(3.28)
+Firstly, due to (2.31) and (2.34), we see that
+|( ˙θi(0) −˙θj(0))e−t
+m| ≤D( ˙Θ(0)) ≤λK,
+(3.29)
+|(pi −pj)(1 −e−t
+m)| ≤D(P) ≤µK.
+(3.30)
+By (3.4) and (3.5), we get
+
+Z t
+0
+K
+mN e−t−s
+m
+N
+X
+l=1
+bl(s)
+
+bi(s) sin(θl(s) −θi(s))
+−bj(s) sin(θl(s) −θj(s))
+
+ds
+
+≤
+Z t
+0
+K
+mN e−t−s
+m
+
+bi(s) + bj(s)
+
+N
+X
+l=1
+bl(s) ds
+≤2b S
+N K(1 −e−t
+m)
+≤2b S
+N K
+(3.31)
+20
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+for t ∈[0, T]. Combining (3.28)–(3.31), we obtain
+| ˙θi(t) −˙θj(t)| ≤
+
+λ + µ + 2b S
+N
+
+K
+for t ∈[0, T].
+(3.32)
+By (2.33) and denoting
+τ =
+β
+4(λ + µ + 2b S
+N )K
+,
+(3.33)
+we see that
+D(Θ(t)) < π
+2 −α
+for t ∈[0, 4τ).
+(3.34)
+If T < 4τ, then (3.27) holds true. Hence, we assume T ≥4τ and claim
+that
+D(Θ(t)) < π
+2 −α
+for all t ∈[4τ, T].
+(3.35)
+Suppose on the contrary that there is t0 ∈[4τ, T] such that D(Θ(t0)) = π
+2 −α
+and D(Θ(t)) < π
+2 −α for t ∈[0, t0). We assume that D(Θ(t0)) = θi(t0)−θj(t0)
+for some i, j ∈{1, 2, · · · , N}. Due to the condition (2.33), we have
+˙θi(t0) −˙θj(t0) ≥0.
+(3.36)
+On the other hand, by plugging t = t0 into (3.28), we have
+˙θi(t0) −˙θj(t0) = ( ˙θi(0) −˙θj(0))e−t0
+m + (pi −pj)(1 −e−t0
+m )
++
+Z t0
+0
+K
+mN e−t0−s
+m
+N
+X
+l=1
+bl(s)
+
+bi(s) sin(θl(s) −θi(s))
+−bj(s) sin(θl(s) −θj(s))
+
+ds.
+(3.37)
+By (2.31), (2.34), and t0 > τ, we see that
+( ˙θi(0) −˙θj(0))e−t0
+m ≤λKe−τ
+m,
+(3.38)
+(pi −pj)(1 −e−t0
+m ) ≤µK.
+(3.39)
+21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+Next, we split the integral in (3.37) into the following two parts:
+Z t0
+0
+K
+mN e−t0−s
+m
+N
+X
+l=1
+bl(s)
+
+bi(s) sin(θl(s) −θi(s))
+−bj(s) sin(θl(s) −θj(s))
+
+ds
+=
+Z t0−τ
+0
+K
+mN e−t0−s
+m
+N
+X
+l=1
+bl(s)
+
+bi(s) sin(θl(s) −θi(s))
+−bj(s) sin(θl(s) −θj(s))
+
+ds
++
+Z t0
+t0−τ
+K
+mN e−t0−s
+m
+N
+X
+l=1
+bl(s)
+
+bi(s) sin(θl(s) −θi(s))
+−bj(s) sin(θl(s) −θj(s))
+
+ds
+:= I + II.
+(3.40)
+We note that D(Θ(t0)) < π
+2 −α for s ∈[0, t0 −τ]. Together with (3.4) and
+(3.5), we can estimate part I:
+|I| ≤cos α
+Z t0−τ
+0
+K
+mN e−t0−s
+m
+
+bi(s) + bj(s)
+
+N
+X
+l=1
+bl(s) ds
+≤2b S
+N K(e−τ
+m −e−t0
+m ) cos α
+≤2b S
+N Ke−τ
+m cos α.
+(3.41)
+We split part II into the following two terms:
+II =
+Z t0
+t0−τ
+K
+mN e−t0−s
+m bi(s)
+×
+N
+X
+l=1
+bl(s)
+
+sin(θl(s) −θi(s)) −sin(θl(s) −θj(s))
+
+ds
++
+Z t0
+t0−τ
+K
+mN e−t0−s
+m
+
+bi(s) −bj(s)
+
+N
+X
+l=1
+bl(s) sin(θl(s) −θj(s)) ds
+:= II1 + II2.
+(3.42)
+22
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+Using (3.32), (3.33), and the mean value theorem, we see that for all s ∈
+[t0 −τ, t0],
+π
+2 −α −β
+4 = θi(t0) −θj(t0) −β
+4
+≤θi(s) −θj(s)
+≤θi(t0) −θj(t0) + β
+4
+= π
+2 −α + β
+4 ,
+(3.43)
+and
+θl(s) −θi(s) + θj(s)
+2
+ ≤
+θl(t0) −θi(t0) + θj(t0)
+2
+ + β
+4
+= π
+4 −α
+2 + β
+4
+(3.44)
+for l = 1, 2, · · · , N. Due to (2.25), (3.43), and (3.44), we have
+sin(θi(s) −θj(s)
+2
+) ≥sin(π
+4 −α
+2 −β
+8 ) > 0,
+(3.45)
+cos(θl(s) −θi(s) + θj(s)
+2
+) ≥cos(π
+4 −α
+2 + β
+4 ) > 0,
+(3.46)
+for all s ∈[t0 −τ, t0] and l = 1, 2, · · · , N. Therefore, by (2.26), (3.4), (3.5),
+(3.45), and (3.46), we have the following estimate of II1:
+II1 = −
+Z t0
+t0−τ
+2K
+mN e−t0−s
+m bi(s) sin(θi(s) −θj(s)
+2
+)
+×
+N
+X
+l=1
+bl(s) cos(θl(s) −θi(s) + θj(s)
+2
+) ds
+≤−2b S
+N sin(π
+4 −α
+2 −β
+8 ) cos(π
+4 −α
+2 + β
+4 )
+Z t0
+t0−τ
+K
+me−t0−s
+m ds
+= −2κb S
+N K(1 −e−τ
+m).
+(3.47)
+Note that D(Θ(s)) ≤π
+2 −α for s ∈[t0 −τ, t0]. Applying (3.4) and (3.5)
+again, we can estimate II2:
+|II2| ≤(b −b) S
+N cos α
+Z t0
+t0−τ
+K
+me−t0−s
+m ds
+≤(b −b) S
+N K(1 −e−τ
+m) cos α.
+(3.48)
+23
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+Consequently, by taking (3.33), (3.37)–(3.41), (3.47), and (3.48) into account, we obtain that
+˙θi(t0) −˙θj(t0) ≤λKe−τ
+m + µK + 2b S
+N Ke−τ
+m cos α
+−2κb S
+N K(1 −e−τ
+m) + (b −b) S
+N K(1 −e−τ
+m) cos α
+= K
+
+λ + 2b S
+N cos α + 2κb S
+N −(b −b) S
+N cos α
+
+e−τ
+m
++ µ −2κb S
+N + (b −b) S
+N cos α
+
+< 0
+(3.49)
+which violates (3.36), where the last inequality comes from the condition
+(2.32). Hence, (3.35) is shown. Combining (3.34) and (3.35), it shows that
+(3.27) and completes the proof.
+Now, we are going to prove Theorem 2.2.
+Proof of Theorem 2.2. Similar to the proof of Theorem 2.1, Lemma 3.1 and
+Lemma 3.3 guarantee that
+D(Θ(t)) < π
+2 −α,
+b ≤bi(t) ≤b,
+(3.50)
+for all t > 0 and i = 1, 2, · · · , N. By Lemma 2.1, Lemma 2.2, and (3.50), the
+proof is complete.
+Remark 3.2. In general, if pi = p for all i = 1, 2, · · · , N and all conditions
+of Theorem 2.2 hold (the parameter µ can be chosen 0), then Θ(t) achieves
+a phase synchronization asymptotically. To see this, we let p = 0 due to
+the mean zero condition (2.1).
+By Theorem 2.2, we have limt→∞˙Θ(t) =
+0. Plugging (3.50) into (1.2.a)–(1.2.b), we see that ¨Θ(t) is bounded. By
+taking the derivative on (1.2.a) and applying (3.50), we derive that the third
+derivative of Θ(t) is also bounded. Hence, by Lemma 10 in [18], we can
+deduce that limt→∞¨Θ(t) = 0. Therefore, by taking t →∞in (1.2.a) and
+using (3.50) again, we have
+lim
+t→∞
+N
+X
+l=1
+bl(t) sin(θl(t) −θi(t)) = 0
+for all i = 1, 2, · · · , N.
+(3.51)
+24
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+Now we claim that limt→∞D(Θ(t)) = 0. Suppose on the contrary that there
+exist δ > 0 and {tn}∞
+n=1 such that tn ↗∞and δ < D(Θ(tn)) < π
+2 −α for all
+n ∈N. Then for any ﬁxed n′ ∈N, we assume that D(Θ(tn′)) = θj(tn′)−θi(tn′)
+for some i and j. By i-th equation of (3.51) and applying (3.50) again, we
+see that
+N
+X
+l=1
+bl(tn′) sin(θl(tn′) −θi(tn′)) > Nbδ,
+(3.52)
+which violates (3.51).
+Therefore, Θ(t) achieves a phase synchronization
+asymptotically.
+4. Numerical Simulations
+In this section, we demonstrate the numerical simulations of the models
+(1.1.a)–(1.1.b) and (1.2.a)–(1.2.b) with N = 5. In Figure 1–Figure 5, we
+set that the mean zero condition (2.1) holds. In each ﬁgure, the horizontal
+axis represents time t and the vertical axis represents the phase, frequency,
+amplitude of the voltage, and the derivative of the amplitude with respect
+to t in (a), (b), (c), and (d), respectively.
+4.1. Simulations of the model (1.1.a)–(1.1.b)
+Here, we perform the numerical simulations for the model (1.1.a)–(1.1.b).
+In Figure 1, we set α = 0.5, k = 10, K = 5, Ω= (4.9972, 5.0025, 4.9976,
+5.0001, 5.0020), and B(0) = (1.0039, 1.0046, 1.0004, 0.9964, 0.9965). In this
+case, we calculate that
+S = 5.0019,
+S = 3.2881,
+b = 1.0046,
+b = 0.6574,
+1
+N
+
+b S −(b −b)S
+
+cos α = 0.0745.
+Then we choose P = (−0.0837, 0.1337, −0.0849, 0.1238, −0.0889) and Θ(0) =
+(0.9951, 0.3748, 0.2105, 0.2689, 0.6597) so that all suﬃcient conditions of Theorem 2.1 hold. We see that the model (1.1.a)–(1.1.b) exhibits a frequency
+synchronization, B(t) is bounded, and ˙B(t) tends to 0 as t →∞, which
+supports Theorem 2.1.
+25
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+On the other hand, as shown in Figure 2, we take k = 5.5, K = 5,
+and Θ(0) = (π, 0, π, 0, π) and the parameters P and Ωare the same as in
+the previous simulation. The numerical result shows that desynchronization
+emerges but B(t) converges.
+100
+105
+0.2
+0.4
+0.6
+0.8
+1
+(a)
+100
+105
+-3
+-2
+-1
+0
+1
+2
+(b)
+100
+105
+0.96
+0.97
+0.98
+0.99
+1
+1.01
+(c)
+100
+105
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+(d)
+Figure 1: The oscillator Θ(t) of the model (1.1.a)–(1.1.b) achieves a frequency synchronization asymptotically and the amplitude B(t) is bounded with the derivative ˙B(t) converging
+to 0.
+26
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+100
+105
+0
+1
+2
+3
+(a)
+100
+105
+-4
+-2
+0
+2
+4
+6
+(b)
+100
+105
+0
+2
+4
+6
+8
+10
+(c)
+100
+105
+-2
+0
+2
+4
+6
+(d)
+Figure 2: The oscillator Θ(t) of the model (1.1.a)–(1.1.b) does not achieve a frequency
+synchronization asymptotically but the amplitude B(t) converges.
+4.2. Simulations of the model (1.2.a)–(1.2.b)
+Here, we perform the numerical simulations for the model (1.2.a)–(1.2.b).
+In Figure 3, we set α = 0.5, β = 0.1, k = 10, K = 5, Ω= (4.9997, 4.9985,
+5.0033, 5.0009, 5.0005), and B(0) = (1.0042, 0.99786, 1.0026, 1.0025, 0.9988).
+In this case, we calculate that
+κ = 0.4230,
+S = 5.0059,
+S = 3.2886,
+b = 1.0042,
+b = 0.6575,
+1
+N
+
+2κb S −(b −b)S cos α
+
+= 0.0612.
+We choose µ = 0.0306, λ = 1, P = (0.0255, −0.0499, −0.0533, 0.01981, 0.0579),
+m = 3.6339×10−4, Θ(0) = (0.9067, 0.1261, 0.5522, 0.4557, 0.0116), and ˙Θ(0) =
+(1.6856, 0.8109, 3.9714, 1.5561, 2.6427) so that all suﬃcient conditions of Theorem 2.2 hold. We observe that the model (1.2.a)–(1.2.b) exhibits a frequency
+synchronization, B(t) is bounded, and ˙B(t) tends to 0 as t →∞, which veriﬁes Theorem 2.2.
+27
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+However, in Figure 4, we choose k = K = 5 and the parameters P,
+Ω, m and the initial data Θ(0), B(0), and ˙Θ(0) are the same as in the
+previous experiment. The numerical simulation shows that Θ(t) still achieves
+a frequency synchronization asymptotically but B(t) diverges.
+Finally, in Figure 5, we take k = 5.5, K = 5, and Θ(0) = (π, 0, π, 0, π) and
+preserve m, P, Ω, B(0), and ˙Θ(0). We see that frequency synchronization
+also emerges but some amplitudes attain 0 within ﬁnite time. This evidence
+indicates that the initial condition of the phase diameter is essential to ensure
+that (3.6) holds.
+10-5
+100
+105
+0
+0.2
+0.4
+0.6
+0.8
+1
+(a)
+10-5
+100
+105
+-2
+0
+2
+4
+(b)
+10-5
+100
+105
+0.96
+0.97
+0.98
+0.99
+1
+1.01
+(c)
+10-5
+100
+105
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+(d)
+Figure 3: The oscillator Θ(t) of the model (1.2.a)–(1.2.b) achieves a frequency synchronization asymptotically and the amplitude B(t) is bounded with the derivative ˙B(t) converging
+to 0.
+28
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+10-5
+100
+105
+0
+0.2
+0.4
+0.6
+0.8
+1
+(a)
+10-5
+100
+105
+-4
+-2
+0
+2
+4
+(b)
+10-5
+100
+105
+0
+2000
+4000
+6000
+(c)
+10-5
+100
+105
+4
+4.2
+4.4
+4.6
+4.8
+5
+(d)
+Figure 4: The oscillator Θ(t) of the model (1.2.a)–(1.2.b) achieves a frequency synchronization asymptotically but the amplitude B(t) diverges.
+10-5
+100
+-1
+0
+1
+2
+3
+4
+(a)
+10-5
+100
+-1
+0
+1
+2
+3
+4
+(b)
+10-5
+100
+-1
+0
+1
+2
+3
+(c)
+10-5
+100
+-2
+-1
+0
+1
+(d)
+Figure 5: The oscillator Θ(t) of the model (1.2.a)–(1.2.b) achieves a frequency synchronization asymptotically but some amplitudes attain 0 within ﬁnite time.
+29
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+5. Concluding Remark
+In summary, this paper focuses on establishing suﬃcient conditions for
+synchronization in both model (1.1.a)–(1.1.b) and model (1.2.a)–(1.2.b). By
+the mean zero condition and the Lyapunov function, the boundedness of the
+phase diﬀerence and the boundedness of the amplitudes lead to a frequency
+synchronization.
+We prove that if the parameter k exceeds the coupling
+strength, the ratio of the diameter of natural frequencies to the coupling
+strength is small, and the initial oscillator conﬁguration is conﬁned to a
+sector with the arc length less than
+π
+2 and positive amplitudes, then the
+model (1.1.a)–(1.1.b) exhibits an asymptotic frequency synchronization. Additionally, we establish a theory of frequency synchronization for the thirdorder Kuramoto model (1.2.a)–(1.2.b) with a mild condition on the initial
+oscillator conﬁguration. Furthermore, if all natural frequencies are identical, then phase synchronization emerges in both model (1.1.a)–(1.1.b) and
+model (1.2.a)–(1.2.b). Our numerical experiments demonstrate instances of
+synchronization, desynchronization, divergent amplitudes, and amplitudes
+reaching zero within ﬁnite time.
+References
+[1] J. A. Acebr´on, L. L. Bonilla, C. J. P´erez Vicente, F. Ritort, and R.
+Spigler, The Kuramoto model: A simple paradigm for synchronization
+phenomena, Reviews of modern physics, vol. 77 (2005), no. 1, pp. 137.
+[2] T. A. Bargiello, F. R. Jackson, and M. W. Young, Restoration of circadian behavioural rhythms by gene transfer in Drosophila, Nature, vol.
+312 (1984), no. 5996, pp. 752–754.
+[3] J. C. Bronski, and T. Carty, and L. DeVille, Conﬁgurational stability for
+the Kuramoto–Sakaguchi model, Chaos: An Interdisciplinary Journal of
+Nonlinear Science, vol. 28 (2018), no. 10, pp. 103109.
+[4] S.-H. Chen, C.-C. Chu, C.-H. Hsia, and M.-C. Shiue, Synchronization
+of Heterogeneous Forced First-Order Kuramoto Oscillator Networks: A
+Diﬀerential Inequality Approach, IEEE Transactions on Circuits and
+Systems I: Regular Papers, vol. 69 (2021), no. 2, pp. 757–770.
+[5] S.-H. Chen, C.-C. Chu, C.-H. Hsia, and S. Moon, Frequency Synchronization of Heterogeneous Second-Order Forced Kuramoto Oscillator
+30
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+Networks: A Diﬀerential Inequality Approach, IEEE Transactions on
+Control of Network Systems, vol. 10 (2022), no. 2, pp. 530 - 543.
+[6] H.-D. Chiang, C.-C. Chu, and G. Cauley, Direct stability analysis of
+electric power systems using energy functions: theory, applications, and
+perspective, Proceedings of the IEEE, vol. 83 (1995), no. 11, pp. 1497–
+1529.
+[7] H.-D. Chiang, Direct methods for stability analysis of electric power
+systems: theoretical foundation, BCU methodologies, and applications,
+John Wiley & Sons, 2011.
+[8] H. Chiba and D. Paz´o, Stability of an [N/2]-dimensional invariant torus
+in the Kuramoto model at small coupling, Physica D: Nonlinear Phenomena, vol. 238 (2009), no. 13, pp. 1068–1081.
+[9] H. Chiba, A proof of the Kuramoto conjecture for a bifurcation structure of the inﬁnite-dimensional Kuramoto model, Ergodic Theory and
+Dynamical Systems, vol. 35 (2015), no. 3, pp. 762–834.
+[10] C.-C. Chu and H.-D. Chiang, Constructing Analytical Energy Functions
+for Lossless Network-Reduction Power System Models: Framework and
+New Developments, Circuits, Systems and Signal Processing, vol. 18
+(1999), no. 1, pp. 1–16.
+[11] F. D¨orﬂer and F. Bullo, Synchronization and transient stability in power
+networks and nonuniform Kuramoto oscillators, SIAM Journal on Control and Optimization, vol. 50 (2012), no. 3, pp. 1616–1642.
+[12] F. D¨orﬂer and F. Bullo, Synchronization in complex networks of phase
+oscillators: A survey, Automatica, vol. 50 (2014), no. 6, pp. 1539–1564.
+[13] M. Damulewicz, J. I. Ispizua, M. F. Ceriani, and E. M. Pyza, Communication among photoreceptors and the central clock aﬀects sleep proﬁle,
+Frontiers in Physiology, vol. 11 (2020), pp. 993.
+[14] G. B. Ermentrout, An adaptive model for synchrony in the ﬁreﬂy Pteroptyx malaccae, Journal of Mathematical Biology, vol. 29 (1991), no. 6, pp.
+571–585.
+31
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+[15] G. B. Ermentrout and N. Kopell, Multiple pulse interactions and averaging in systems of coupled neural oscillators, Journal of Mathematical
+Biology, vol. 29 (1991), no. 3, pp. 195–217.
+[16] A. A. Fouad and V. Vittal, Power System Transient Stability Analysis Using the Transient Energy Function Method, Prentice Hall, Upper
+Saddle River, NJ, USA, 1991.
+[17] Y. Guo, Q. Wang, L. Yang, D. Zhang, X. Xue, and D. Yu, A transient
+stability analysis method based on second-order nonuniform Kuramoto
+model, International Transactions on Electrical Energy Systems, vol. 30
+(2020), no. 3, pp. e12241.
+[18] C.-H. Hsia, C.-Y. Jung, and B. Kwon, On the synchronization theory
+of Kuramoto oscillators under the eﬀect of inertia, J. Diﬀerential Equations, vol. 267 (2019), no. 2, pp. 742–775.
+[19] C.-H. Hsia, C.-Y. Jung, and B. Kwon, On the global convergence of frequency synchronization for Kuramoto and Winfree oscillators, Discrete
+& Continuous Dynamical Systems-B, vol. 24 (2019), no. 7, pp. 3319.
+[20] C.-H. Hsia, C.-Y. Jung, B. Kwon, and Y. Ueda, Synchronization of
+Kuramoto oscillators with time-delayed interactions and phase lag eﬀect,
+J. Diﬀerential Equations, vol. 268 (2020), no. 12, pp. 7897–7939.
+[21] C.-H. Hsia, C.-Y. Jung, B. Kwon, and S. Moon, Synchronization of
+Kuramoto oscillators with the distributed time-delays and inertia eﬀect,
+Applicable Analysis, vol. 102 (2023), no. 15, pp. 4330–4349.
+[22] P. E. Hardin, J. C. Hall, and M. Rosbash, Feedback of the Drosophila
+period gene product on circadian cycling of its messenger RNA levels,
+Nature, vol. 343 (1990), no. 6258, pp. 536–540.
+[23] Y. Kuramoto, Chemical oscillations, waves, and turbulence, Springer
+Science & Business, Media, vol. 19 (2012).
+[24] M. Kapitaniak, K. Czolczynski, P. Perlikowski, A. Stefanski, and T.
+Kapitaniak, Synchronization of clocks, Physics Reports, vol. 517 (2012),
+no. 1-2, pp. 1–69.
+32
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+[25] P. S. Kundur and O. Malik, Power System Stability and Control, 2nd.
+Ed., McGraw Hill, New York, N. Y., USA, 2022.
+[26] J. Machowski, Z. Lubosny, J. W. Bailek, and J. R. Bumy, Power System
+Dynamics: Stability and Control, John Wiley & Sons, Hoboken, New
+Jersey, USA, 2020.
+[27] R. E. Mirollo and S. H. Strogatz, Synchronization of pulse-coupled biological oscillators, SIAM Journal on Applied Mathematics, vol. 50 (1990),
+no. 6, pp. 1645–1662.
+[28] Y. Maistrenko, O. Popovych, O. Burylko, and P. A. Tass, Mechanism of
+desynchronization in the ﬁnite-dimensional Kuramoto model, Physical
+review letters, vol. 93 (2004), no. 8, pp. 084102.
+[29] Y. L. Maistrenko, O. V. Popovych, and P. A. Tass, Chaotic attractor in
+the Kuramoto model, International Journal of Bifurcation and Chaos,
+vol. 15 (2005), no. 11, pp. 3457–3466.
+[30] Z. N´eda, E. Ravasz, T. Vicsek, Y. Brechet, and A.-L. Barab´asi, Physics
+of the rhythmic applause, Physical Review E, vol. 61 (2000), no. 6, pp.
+6987.
+[31] A. Pai, Energy Function Analysis for Power System Stability, Kluwer
+Academic Publishers, Boston, USA, 1989.
+[32] F. A. Rodrigues, T. K. DM. Peron, P. Ji, and J. Kurths, The Kuramoto
+model in complex networks, Physics Reports, vol. 610 (2016), pp. 1–98.
+[33] G. Rogers, The nature of power system oscillations, Power System Oscillations, pp. 7–30, 2000.
+[34] P. W. Sauer, M. A. Pai, and J. H. Chow, Power System Dynamics and
+Stability: with Synchrophasor Measurement and Power System Toolbox,
+John Wiley & Sons, Hoboken, New Jersey, USA, 2017.
+[35] K. Sharafutdinov, L. R. Gorj˜ao, M. Matthiae, T. Faulwasser, and D.
+Witthaut, Rotor-angle versus voltage instability in the third-order model
+for synchronous generators, Chaos: An Interdisciplinary Journal of Nonlinear Science, vol. 28 (2018), no. 3.
+33
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed
+
+[36] J. Shi and Z. Zeng, Global exponential stabilization and lag synchronization control of inertial neural networks with time delays, Neural Networks, vol. 126 (2020), pp. 11-20.
+[37] H. Song, X. Zhang, J. Wu, and Y. Qu, Low-frequency oscillations in
+coupled phase oscillators with inertia, Physics Reports, Vol. 9 (1) (2019),
+pp. 1–10.
+[38] J. Schiﬀer, D. Eﬁmov, and R. Ortega, Global synchronization analysis
+of droop-controlled microgrids—A multivariable cell structure approach,
+Automatica, vol. 109 (2019), pp. 108550.
+[39] C. W. Taylor, Power System Voltage Stability, McGraw-Hill, New York,
+NY, USA, 1994.
+[40] BR. Trees, V. Saranathan, and D. Stroud, Synchronization in disordered
+Josephson junction arrays: Small-world connections and the Kuramoto
+model, Physical Review E, vol. 71 (2005), no. 1, pp. 016215.
+[41] J.-P. Tseng, A novel approach to synchronization of nonlinearly coupled
+network systems with delays, Physica A, vol. 452 (2016), no. 15, pp.
+266-280.
+[42] A. T. Winfree, Biological rhythms and the behavior of populations of
+coupled oscillators, Journal of theoretical biology, vol. 16 (1967), no. 1,
+pp. 15–42.
+[43] K. Wiesenfeld, P. Colet, and S. H. Strogatz, Frequency locking in Josephson arrays: Connection with the Kuramoto model, Physical Review E,
+vol. 57 (1998), no. 2, pp. 1563.
+[44] L. Wu and H. Chen, Synchronization conditions for a third-order Kuramoto network, 2020 59th IEEE Conference on Decision and Control
+(CDC), pp. 5834–5839, 2020.
+34
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4760578
+Preprint not peer reviewed

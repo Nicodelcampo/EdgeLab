@@ -1,0 +1,122 @@
+{
+  "doc_id": 153,
+  "titulo": "High Frequency Trading and Fragility",
+  "resumen_operativo": "El paper demuestra mediante un modelo teórico cómo la fragmentación de la provisión de liquidez combinada con opacidad de la información genera fragilidad ('flash crashes'). Ofrece a los quants un marco para entender por qué la iliquidez repentina a veces desencadena un bucle de consumo agresivo de liquidez en lugar de estabilizar el mercado.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Negociación electrónica de muy alta velocidad; en el modelo, se asocia a traders ('Full Dealers') que operan continuamente y que, por su ventaja tecnológica, generan fricciones informativas.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "market opaqueness"}
+      ],
+      "cita_textual": "computerized trading creates informational frictions by hampering some traders’ access to reliable and timely market information"
+    },
+    {
+      "nombre": "liquidity fragility",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Condición de inestabilidad donde una escasez inicial de liquidez degenera en una estampida masiva hacia la salida, provocando colapsos de precios severos.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "market impact"}
+      ],
+      "cita_textual": "liquidity can be “fragile” in our setup... a small shock to some parameter values can produce a switch from the high liquidity equilibrium to an equilibrium with low liquidity."
+    },
+    {
+      "nombre": "limited market participation",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Restricción temporal en la que ciertos creadores de mercado solo operan en algunas rondas, obligando a propagar el inventario residual a los siguientes periodos.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "order flow imbalance"}
+      ],
+      "cita_textual": "dealers’ limited market participation favors the propagation of the endowment shock across time, inducing a predictable price pressure."
+    },
+    {
+      "nombre": "strategic complementarity",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Dinámica perversa donde la decisión de un trader de consumir liquidez ante el deterioro del mercado incentiva a otros a ser igual de agresivos, agotando el mercado.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "liquidity fragility"}
+      ],
+      "cita_textual": "strategic complementarities in traders’ liquidity consumption decisions: traders demand more liquidity when the market becomes less liquid, which in turn makes the market more illiquid"
+    },
+    {
+      "nombre": "market opaqueness",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Entorno donde los participantes solo observan señales ruidosas o incompletas sobre los desequilibrios previos en el flujo de órdenes.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "multiple equilibria"}
+      ],
+      "cita_textual": "access to imbalance information is impaired, second period traders’ speculation can boost first period traders’ uncertainty, introducing a feedback, liquidity consumption “expanding” effect of illiquidity."
+    },
+    {
+      "nombre": "multiple equilibria",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Situación teórica en la que el mercado puede estabilizarse en diferentes niveles de liquidez (alta, media, baja) para las mismas condiciones fundamentales.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "strategic complementarity"}
+      ],
+      "cita_textual": "This can create a self-sustaining loop that turns the demand for liquidity into an increasing function of illiquidity... and leading to multiple equilibria."
+    },
+    {
+      "nombre": "order flow imbalance",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Exceso de órdenes direccionales no compensadas que se traslada de un periodo a otro por el desajuste en el inventario de los creadores de mercado.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "market impact"}
+      ],
+      "cita_textual": "This creates an order imbalance driven by the first period endowment shock u1 that adds to the one originating from second period trades, and affects the second period price."
+    },
+    {
+      "nombre": "liquidity provision",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Acto de ofrecer contrapartida en el mercado, el cual al fragmentarse entre algoritmos continuos y dealers lentos, detona inestabilidad estructural.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "market impact"}
+      ],
+      "cita_textual": "the fragmentation of liquidity supply and the informational frictions induced by computerized trading, are important ingredients in the answer to this question."
+    },
+    {
+      "nombre": "endowment shock",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Choque de exposición o inventario exógeno que motiva a los participantes de corto plazo a entrar al mercado y demandar liquidez urgentemente para cubrir riesgos.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "order flow imbalance"}
+      ],
+      "cita_textual": "A short-term trader receives a random endowment of a risky asset u1 whose payoff is perfectly correlated with the one of the asset traded in the market, and posts a market order"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La desconexión temporal de tan solo el 6% de los operadores de alta frecuencia en un entorno opaco provoca un cambio a un equilibrio inferior, reduciendo la liquidez global en un factor de 16.",
+      "mercado": "Teórico (simulación matemática)",
+      "periodo": "no especificado",
+      "magnitud": "16-fold liquidity decrease tras la caída de 6% en FDs",
+      "condiciones": "Mercado opaco con información imperfecta sobre flujos pasados.",
+      "robustez": "media",
+      "cita_textual": "Suppose that a technical “glitch” disconnects 6% of the FDs. In this new situation... a new, unique equilibrium obtains... which corresponds to a 16-fold liquidity decrease."
+    },
+    {
+      "afirmacion": "La relación entre la liquidez y la cantidad de algoritmos de alta frecuencia (HFT) no es lineal: en mercados asimétricos forma una U invertida, siendo excesiva automatización perjudicial si hay poca transparencia.",
+      "mercado": "Teórico (simulación matemática)",
+      "periodo": "no especificado",
+      "magnitud": "Relación con forma de U invertida (hump-shaped)",
+      "condiciones": "Presencia de asimetrías de información y fuerte complementariedad estratégica.",
+      "robustez": "media",
+      "cita_textual": "in an opaque market strategic complementarities can make liquidity U-shaped in this proportion as well as in the degree of transparency."
+    },
+    {
+      "afirmacion": "Un pequeño incremento de entre 5% y 7% en la incertidumbre sobre los shocks de volumen de órdenes elimina el régimen de alta liquidez y desencadena un vaciado casi absoluto del libro de órdenes.",
+      "mercado": "Teórico (simulación matemática)",
+      "periodo": "no especificado",
+      "magnitud": "5-7% de shock negativo al endowment precision elimina el equilibrio óptimo",
+      "condiciones": "Aumento del riesgo asumido por los traders ante shocks imprevistos en cobertura.",
+      "robustez": "media",
+      "cita_textual": "a 5% negative shock to τ u1... leads to a downward shift... large enough to eliminate the HLE and move the market towards a new equilibrium with low liquidity"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Para algoritmos de ejecución algorítmica sobre ES intradía: el paper sugiere no operar con órdenes a mercado o sweeps cuando se detectan latencias en flujos (glitches) o caídas en la profundidad del order book, ya que la iliquidez se retroalimenta provocando severos slippages."
+  }
+}

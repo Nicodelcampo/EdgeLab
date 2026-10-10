@@ -1,0 +1,27 @@
+{
+  "doc_id": 376,
+  "titulo": "Why Most Quantitative Investing and Trading Systems Fail",
+  "resumen_operativo": "Ensayo de opinión (no es un paper académico) que argumenta que la mayoría de los sistemas cuantitativos fallan por la 'falacia de la conversa' (afirmación del consecuente): los sistemas identifican factores presentes en inversiones exitosas en el backtest pero no verifican si esos factores son condición suficiente. Usa el ejemplo del retorno sobre capital (ROC): aunque todo negocio de calidad tiene alto ROC, no todo negocio con alto ROC es de calidad. Recomienda aplicar la inversión de Jacobi ('Invert, always invert') para estudiar casos que comparten las características pero NO funcionaron. Sin datos, sin backtests, sin validación empírica.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "La mayoría de sistemas cuantitativos seleccionan factores presentes en inversiones exitosas durante el período de backtest, cayendo en la 'falacia de la conversa'. No verifican si el factor es condición suficiente o solo necesaria.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "data snooping"}],
+      "cita_textual": "Most, if not all, quantitative systems are designed by selecting factors that were present in successful investments/trades over the selected back-test period."
+    },
+    {
+      "nombre": "data snooping",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo de selección de factores: los quants ejecutan simulaciones para identificar qué factores estuvieron asociados con mejores retornos, sin verificar suficiencia. Esto lleva a modelos que funcionan en backtest pero fallan out-of-sample.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "backtest overfitting"}],
+      "cita_textual": "a system developer will pick up a host of factors and run simulations in order to identify which factors were associated with better investment returns."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "nula",
+    "nota": "Ensayo de opinión sin contenido cuantitativo. La advertencia sobre la falacia de la conversa es conceptualmente relevante para el diseño de cualquier sistema de trading, pero no ofrece herramientas aplicables."
+  }
+}

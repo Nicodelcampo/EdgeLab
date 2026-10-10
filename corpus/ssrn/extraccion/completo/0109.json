@@ -1,0 +1,139 @@
+{
+ "doc_id": 109,
+ "titulo": "Effects of the Limit Order Book on Price Dynamics",
+ "resumen_operativo": "Analiza empíricamente si el estado del limit order book (LOB) afecta los movimientos futuros de precios utilizando datos de alta frecuencia (milisegundos) de la Bolsa de Frankfurt. Construye variables de profundidad (depth) y pendiente (slope) para distintos niveles del LOB y evalúa su impacto en los retornos midquote mediante un modelo de Vectores Autorregresivos (VAR). Demuestra que la información del LOB tiene poder predictivo sobre los retornos tanto a corto como a largo plazo, y que es posible capitalizar económicamente esta relación en estrategias de trading de alta frecuencia.",
+ "calidad_paper": "alta",
+ "conceptos": [
+  {
+   "nombre": "depth",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Cantidad acumulada de demanda (bid) o de oferta (ask) disponible entre niveles específicos del limit order book.",
+   "relaciones": [
+    {
+     "tipo": "PREDICE",
+     "objeto": "midquote return"
+    }
+   ],
+   "cita_textual": "The depth measures the cumulative demand and supply for the stock at different levels of demand and supply schedules, respectively."
+  },
+  {
+   "nombre": "slope",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Cambio en el precio relativo a la cantidad acumulada disponible entre dos niveles del libro de órdenes; mide la sensibilidad del precio a cambios en la cantidad demandada u ofertada.",
+   "relaciones": [
+    {
+     "tipo": "PREDICE",
+     "objeto": "midquote return"
+    }
+   ],
+   "cita_textual": "It is defined as the change in the price relative to the cumulative quantity available between levels l1 and l2 in period t"
+  },
+  {
+   "nombre": "depth ratio",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Diferencia normalizada entre la profundidad acumulada del lado del ask y del bid.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "depth"
+    },
+    {
+     "tipo": "PREDICE",
+     "objeto": "midquote return"
+    }
+   ],
+   "cita_textual": "the (normalized) difference in the cumulative quantity available at different levels of bid and ask sides"
+  },
+  {
+   "nombre": "slope ratio",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Diferencia normalizada entre la pendiente del lado del ask y del bid.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "slope"
+    },
+    {
+     "tipo": "PREDICE",
+     "objeto": "midquote return"
+    }
+   ],
+   "cita_textual": "the (normalized) difference in the slopes of bid and ask sides between different levels"
+  },
+  {
+   "nombre": "VAR system",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Modelo de vectores autorregresivos utilizado para capturar las dinámicas e interacciones lineales entre el retorno, la dirección de la transacción (trade direction) y las variables del limit order book.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "midquote return"
+    }
+   ],
+   "cita_textual": "we estimate a linear vector autoregressive system (VAR) that includes midquote return, trade direction and each limit order book variable one at a time"
+  },
+  {
+   "nombre": "impulse response function",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Función utilizada para analizar el efecto acumulativo a largo plazo de las variables del limit order book sobre el retorno después de varias transacciones.",
+   "relaciones": [
+    {
+     "tipo": "APLICA_A",
+     "objeto": "VAR system"
+    }
+   ],
+   "cita_textual": "We calculate the impulse response functions of return to each limit order book variable... to reveal the long term cumulative effects"
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "La profundidad (depth) y la pendiente (slope) del limit order book causan cambios en los retornos en el siguiente período de transacción, confirmando predicciones teóricas (como las de Goettler, Parlour y Rajan, y Kalay y Wohl).",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "Un incremento en la profundidad en los niveles inferiores del ask (bid) resulta en precios futuros menores (mayores), mientras que en niveles superiores resulta en precios mayores (menores).",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "Un aumento en la pendiente del lado del ask (bid) resulta en precios futuros más altos (bajos), independientemente de los niveles del libro usados para medirlo.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "El efecto acumulativo a largo plazo de estas variables es generalmente en la misma dirección que su impacto inicial, y es más fuerte (y tarda más en materializarse por completo) para variables calculadas sobre los niveles superiores del libro de órdenes.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "Es posible obtener ganancias económicas mediante estrategias simples de trading de alta frecuencia basadas en las señales estadísticas extraídas de estas variables del limit order book, superando a benchmarks que ignoran esta información.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "alta",
+  "nota": "Altamente relevante. El artículo utiliza datos transaccionales en resoluciones de milisegundos y modela explícitamente dinámicas de microestructura (VAR system con retornos y LOB). Las características de liquidez, profundidad y pendiente evaluadas son insumos directos y aplicables al desarrollo de señales intradiarias para el mercado de futuros ES u otros activos de alta liquidez."
+ }
+}

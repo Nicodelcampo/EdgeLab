@@ -1,0 +1,323 @@
+{
+  "doc_id": 44,
+  "titulo": "Algorithmic trading in the Iowa electronic markets",
+  "resumen_operativo": "El paper documenta en detalle un market maker algorítmico basado en utilidad exponencial (CARA) que operó en el mercado presidencial 2008 de la Iowa Electronic Markets, logrando un Sharpe anualizado de 9.9 con capital de $150 y 34-37% del market share. Aporta un modelo cerrado de sizing óptimo de bid/ask (inventory + market impact + risk aversion) y una descomposición de PnL en spread profit vs positioning profit que es directamente reutilizable para auditar estrategias de market making. También documenta explotación sistemática de arbitraje por ineficiencias estructurales del mercado (violaciones de racionalidad de otros traders).",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "market making",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de proveer liquidez continuamente cotizando bid/ask, cobrando el spread como compensación por el riesgo de inventario y la selección adversa, implementada con un modelo de utilidad exponencial.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "inventory risk"},
+        {"tipo": "USA", "objeto": "adverse selection"},
+        {"tipo": "MIDE", "objeto": "Sharpe ratio"}
+      ],
+      "cita_textual": "A computer program was created to employ the market making model and profit from the market's inefficiencies."
+    },
+    {
+      "nombre": "adverse selection",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costo que enfrenta un market maker no informado al operar con contrapartes potencialmente informadas; requiere compensación extra por la asimetría de información.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "market impact"},
+        {"tipo": "PARTE_DE", "objeto": "market making"}
+      ],
+      "cita_textual": "A market maker needs to demand extra compensation to make up for the adverse selection associated with the information asymmetry between itself and liquidity demanders."
+    },
+    {
+      "nombre": "inventory risk",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Riesgo de que el precio se mueva en contra de la posición no deseada que sostiene el market maker mientras espera una operación compensatoria; se modela con la varianza del cambio de riqueza.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "positioning profit"},
+        {"tipo": "PARTE_DE", "objeto": "market making"}
+      ],
+      "cita_textual": "During the time the market maker is waiting for the offsetting trade, it faces the risk that the price will move."
+    },
+    {
+      "nombre": "market impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Cambio permanente en el precio eficiente causado por el contenido informativo de una operación; en el modelo se especifica como función lineal del tamaño de la orden para evitar arbitraje.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "linear market impact model"},
+        {"tipo": "CAUSA", "objeto": "adverse selection"}
+      ],
+      "cita_textual": "According to Huberman and Stanzl (2004), the function G(Z) must be linear in trade size to enforce a “no arbitrage” condition on the market."
+    },
+    {
+      "nombre": "linear market impact model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Especificación del impacto de mercado como proporción lineal (parámetro γ) del tamaño de la operación sobre el precio eficiente, condición necesaria para evitar arbitraje.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "market making"},
+        {"tipo": "MEJORA_A", "objeto": "market impact"}
+      ],
+      "cita_textual": "The linear market impact model is Ppost −P / P = γZ"
+    },
+    {
+      "nombre": "CARA exponential utility market making model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de sizing óptimo de órdenes bid/ask derivado de maximizar una función de utilidad exponencial (equivalente a media-varianza bajo normalidad), parametrizado por spread, volatilidad, tiempo de tenencia esperado, impacto de mercado y aversión al riesgo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "inventory risk"},
+        {"tipo": "USA", "objeto": "market impact"},
+        {"tipo": "APLICA_A", "objeto": "market making"},
+        {"tipo": "EQUIVALE_A", "objeto": "mean-variance utility function"}
+      ],
+      "cita_textual": "the exponential utility function is equivalent to the mean variance utility function when changes in wealth are normally distributed"
+    },
+    {
+      "nombre": "mean-variance utility function",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Función objetivo que pondera el valor esperado del cambio de riqueza contra su varianza escalada por un parámetro de aversión al riesgo λ, usada para derivar el tamaño óptimo de las órdenes del market maker.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "CARA exponential utility market making model"}
+      ],
+      "cita_textual": "We can then write the market making model’s utility function as: U(W) = E[W] −λ/2 Var[W]"
+    },
+    {
+      "nombre": "risk aversion parameter",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Parámetro λ que controla cuánta compensación exige el market maker por aceptar un nivel dado de riesgo; a mayor λ, menor disposición a operar a los mismos precios.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "CARA exponential utility market making model"}
+      ],
+      "cita_textual": "an increase in risk aversion causes the market maker to be less willing to buy or sell the market asset at the same prices"
+    },
+    {
+      "nombre": "efficient price",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Precio de referencia del activo de mercado, calculado como midquote del 'good spread' (el mejor bid y mejor ask entre dos instrumentos económicamente equivalentes), usado para valuar posiciones y calcular spread/positioning profit.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "midquote"},
+        {"tipo": "USA", "objeto": "good spread"}
+      ],
+      "cita_textual": "the current value of the market asset is defined as the midquote of the good spread. This was considered to be the market asset’s efficient price."
+    },
+    {
+      "nombre": "good spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El mejor bid y mejor ask verdaderos del activo de mercado, obtenidos combinando dos valores de mercado (uno de ellos invertido) económicamente equivalentes; contrapuesto al 'bad spread', más ancho e ineficiente.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "bad spread"},
+        {"tipo": "USA", "objeto": "efficient price"}
+      ],
+      "cita_textual": "These two prices make up what can be considered to be the “good spread” and the other two prices make up the “bad spread.”"
+    },
+    {
+      "nombre": "bad spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El peor bid y peor ask verdaderos, resultado de combinar los precios ineficientes de ambos instrumentos equivalentes; operar sobre él implica una violación de racionalidad por parte del trader.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "good spread"},
+        {"tipo": "CAUSA", "objeto": "price-taking violation of individual rationality"}
+      ],
+      "cita_textual": "It would be inefficient for a trader to use a market order to buy the market asset on the bad offer or sell the market asset at the bad bid."
+    },
+    {
+      "nombre": "price-taking violation of individual rationality",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Error de un trader que toma liquidez (market order) en el spread ineficiente ('bad spread') en vez del eficiente ('good spread'), incurriendo en costos de ejecución evitables; el paper mide su frecuencia empírica.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "arbitrage"},
+        {"tipo": "PARTE_DE", "objeto": "market gaming"}
+      ],
+      "cita_textual": "The researchers found that in the 1992 Presidential election, 37.7% of market orders made this error."
+    },
+    {
+      "nombre": "market-making violation of individual rationality",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Error de un trader que coloca una limit order que cruza el good spread, creando una oportunidad de arbitraje libre de riesgo para otros participantes.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "arbitrage"}
+      ],
+      "cita_textual": "If a trader sends a limit order that presents a potential arbitrage opportunity to other traders, that trader is committing a “market-making violation of individual rationality.”"
+    },
+    {
+      "nombre": "arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de comprar/vender bundles de instrumentos económicamente equivalentes con la casa de cambio (a precio fijo $1) contra órdenes mal cotizadas de otros traders, capturando ganancia libre de riesgo cuando el good spread se cruza.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "market-making violation of individual rationality"},
+        {"tipo": "MIDE", "objeto": "arbitrage profit"}
+      ],
+      "cita_textual": "The arbitrage opportunity is to sell both the DEM and REP securities at their respective bid prices and then buy bundles by trading with the exchange."
+    },
+    {
+      "nombre": "market gaming",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Práctica de colocar órdenes de una sola acción en el libro para influir en la percepción de precios de otros participantes, dado que el tamaño de las órdenes no es visible en este mercado.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "About 10% of the system’s 1,267 arbitrage attempts resulted in a trade of only one bundle, indicating that the smaller order for the two securities was for one share."
+    },
+    {
+      "nombre": "spread profit",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Componente del PnL del market maker atribuible a comprar por debajo y vender por encima del precio eficiente; se descompone junto al positioning profit siguiendo la metodología de Menkveld (2011).",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market making"},
+        {"tipo": "SE_OPONE_A", "objeto": "positioning profit"},
+        {"tipo": "MEJORA_A", "objeto": "positioning profit"}
+      ],
+      "cita_textual": "the spread profit is the profit the market making algorithm earns from buying at prices less than the efficient price and selling at prices higher than the efficient price"
+    },
+    {
+      "nombre": "positioning profit",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Componente del PnL atribuible a los movimientos favorables o desfavorables del precio sobre el inventario sostenido; en el paper resultó negativo en promedio, evidenciando desventaja informacional del market maker frente a traders humanos.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "spread profit"},
+        {"tipo": "MIDE", "objeto": "inventory risk"}
+      ],
+      "cita_textual": "the daily positioning profit was positive on only 16% of the trading days"
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica de retorno ajustado por riesgo anualizada usando retornos diarios (365 días); se calcula tanto para retornos totales como para cada estrategia por separado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market making"},
+        {"tipo": "MEJORA_A", "objeto": "buy and hold benchmark"}
+      ],
+      "cita_textual": "The annualized Sharpe ratio over the full period of operation was 9.9."
+    },
+    {
+      "nombre": "information ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Análoga al Sharpe ratio pero calculada sobre retornos residuales (retorno real menos benchmark de buy & hold), anualizada asumiendo 365 días.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "buy and hold benchmark"},
+        {"tipo": "MEJORA_A", "objeto": "Sharpe ratio"}
+      ],
+      "cita_textual": "The information ratio is calculated in the same manner as the Sharpe ratio except it uses the residual returns instead of the actual returns."
+    },
+    {
+      "nombre": "buy and hold benchmark",
+      "tipo": "dato",
+      "definicion_en_contexto": "Retornos simulados asumiendo que el capital se invirtió únicamente en la posición larga del candidato ganador (DEM), usados como benchmark contra la estrategia algorítmica.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "market making"}
+      ],
+      "cita_textual": "the algorithmic trader had higher returns and a higher Sharpe ratio than a trader with advance knowledge of the election outcome would have been able to achieve"
+    },
+    {
+      "nombre": "position limits",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Límites de riesgo incorporados en la implementación para proteger contra pérdidas grandes por movimientos rápidos de precio y para preservar capital disponible para oportunidades de arbitraje.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "inventory risk"}
+      ],
+      "cita_textual": "the implementation of the market making algorithm included position limits to protect it from suffering too great of a loss if the price were to move quickly in one direction"
+    },
+    {
+      "nombre": "operational risk in algorithmic trading",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de fallas técnicas de implementación (ej. comunicación incorrecta de precios límite) que pueden causar pérdidas significativas en un sistema automatizado, independiente de la validez del modelo subyacente.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "drawdown"}
+      ],
+      "cita_textual": "The technical problem the computer program suffered on the day before the election affected its ability to correctly communicate limit prices to the exchange through the web interface"
+    },
+    {
+      "nombre": "drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Pérdida máxima en un período; el paper reporta un único drawdown severo causado por un problema técnico, aislado del resto de un track record consistentemente rentable.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market making"}
+      ],
+      "cita_textual": "There was one serious drawdown on the day before the election, November 3rd, when the system lost $44.84 due to a technical problem with the implementation."
+    },
+    {
+      "nombre": "market structure inefficiency",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Regularidad estructural del mercado IEM (dos títulos, un solo activo real) que genera oportunidades sistemáticas de arbitraje y hace difícil para los traders comportarse racionalmente, incluso involuntariamente.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "arbitrage"},
+        {"tipo": "CAUSA", "objeto": "price-taking violation of individual rationality"}
+      ],
+      "cita_textual": "the structure of the market actually made it difficult to be rational"
+    },
+    {
+      "nombre": "adverse selection informed vs uninformed traders",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El market maker algorítmico es explícitamente no informado (no interpreta noticias), mientras que los traders humanos agregados son más informados; el mecanismo de ganancia viene de arbitrar entre traders sesgados en direcciones opuestas, no de predecir precios.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "positioning profit"},
+        {"tipo": "APLICA_A", "objeto": "market making"}
+      ],
+      "cita_textual": "Because this system could not interpret news, it was never able to foresee price changes and failed to achieve a positioning profit on 84% of the trading days"
+    },
+    {
+      "nombre": "market share by algorithmic trader",
+      "tipo": "dato",
+      "definicion_en_contexto": "Proporción del volumen total de mercado ejecutado por el trader algorítmico, usada como indicador de la magnitud de su presencia e influencia en el mercado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market making"}
+      ],
+      "cita_textual": "Using invested capital, the system traded 34% of the total market volume and achieved a Sharpe ratio of 9.9."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Un market maker algorítmico basado en un modelo de utilidad exponencial (CARA) operando en el mercado electoral IEM 2008 logró un Sharpe ratio anualizado de 9.9 partiendo de $150 de capital, ejecutando el 34-37% del volumen total del mercado durante 7 meses de operación.",
+      "mercado": "Iowa Electronic Markets (mercado presidencial 2008, prediction market)",
+      "periodo": "2008-04-15 a 2008-11-07",
+      "magnitud": "Sharpe=9.9 anualizado, retorno diario promedio=0.76%, profit total=$547.83 sobre $150 iniciales, 34% shares / 37% dólares de market share",
+      "condiciones": "sin costos de transacción explícitos en este mercado (no hay comisiones), evaluado sobre un único período histórico y un único mercado, no hay validación out-of-sample fuera del propio track record real",
+      "robustez": "media",
+      "cita_textual": "Using invested capital, the system traded 34% of the total market volume and achieved a Sharpe ratio of 9.9."
+    },
+    {
+      "afirmacion": "La estrategia de arbitraje (comprar/vender bundles contra órdenes que cruzan el good spread) fue rentable en prácticamente todos los intentos: de 1267 intentos de arbitraje solo 3 resultaron en pequeña pérdida.",
+      "mercado": "Iowa Electronic Markets",
+      "periodo": "2008-04-15 a 2008-11-07",
+      "magnitud": "1267 intentos, 1264 rentables (99.76%), profit total arbitraje=$241.27, profit promedio diario=$1.166",
+      "condiciones": "las 3 pérdidas ocurrieron porque una pata del arbitraje desapareció antes de ejecutar la orden de mercado; posible competencia electrónica",
+      "robustez": "media",
+      "cita_textual": "The system made a total of 1267 arbitrage attempts, 1264 of which were profitable."
+    },
+    {
+      "afirmacion": "La rentabilidad del market making provino mayormente del spread profit, mientras que el positioning profit fue en promedio negativo, evidenciando que la ventaja no vino de predecir movimientos de precio sino de cobrar el spread de forma sistemática.",
+      "mercado": "Iowa Electronic Markets",
+      "periodo": "2008-04-15 a 2008-11-07",
+      "magnitud": "positioning profit positivo solo 16% de los días; spread profit promedio=$2.210/día vs positioning profit promedio=-$0.790/día (total profit promedio=$1.420/día)",
+      "condiciones": "descomposición metodológica siguiendo Menkveld (2011), calculada sobre el track record real completo incluyendo el día del problema técnico",
+      "robustez": "media",
+      "cita_textual": "the daily positioning proﬁt was positive on only 16% of the trading days"
+    },
+    {
+      "afirmacion": "El Sharpe ratio de la estrategia aumentó sustancialmente en el período post-convenciones frente al pre-convenciones, coincidiendo con mayor actividad de mercado y mayores ganancias por spread.",
+      "mercado": "Iowa Electronic Markets",
+      "periodo": "Pre-Convención 2008-04-15/08-24 vs Post-Convención 2008-08-25/10-20",
+      "magnitud": "Sharpe pre-convención=9.21, Sharpe post-convención=14.41; spread profit promedio diario pasó de $0.808 a $5.342",
+      "condiciones": "resultado real de trading, no un experimento controlado; el aumento de volumen de mercado es confundido con otras variables (proximidad a elección)",
+      "robustez": "baja",
+      "cita_textual": "The Sharpe ratio increased from 9.2 before the conventions to 14.4 after."
+    },
+    {
+      "afirmacion": "Un fallo técnico de implementación causó una pérdida grande y aislada equivalente a más del 8% de la ganancia acumulada total en un solo día, mostrando que el riesgo operacional puede dominar el resultado de un sistema algorítmico incluso cuando el modelo subyacente es sólido.",
+      "mercado": "Iowa Electronic Markets",
+      "periodo": "2008-11-03 (día antes de la elección)",
+      "magnitud": "pérdida de $44.84 en un día vs ningún otro día con pérdida mayor a $0.50; Sharpe del período election time cae a 2.58 vs 9.91 del período total",
+      "condiciones": "causado por comunicación incorrecta de precios límite al exchange cuando el precio de REP cayó por debajo de $0.10; datos excluidos de la Tabla 6 pero incluidos en el resto del análisis",
+      "robustez": "alta",
+      "cita_textual": "There was one serious drawdown on the day before the election, November 3rd, when the system lost $44.84 due to a technical problem with the implementation."
+    },
+    {
+      "afirmacion": "La mayoría del volumen de provisión de liquidez del market maker se ejecutó en el 'bad spread' (más ancho, ~1.6 centavos) en vez del 'good spread' (~0.5 centavos), lo que indica que la mayor parte del spread profit provino de contrapartes que cometieron violaciones de racionalidad al tomar precios ineficientes.",
+      "mercado": "Iowa Electronic Markets",
+      "periodo": "2008-04-15 a 2008-11-07",
+      "magnitud": "59.56% del volumen de provisión en bad spread vs 16.94% en good spread (sobre volumen total proveído de 44,419 acciones)",
+      "condiciones": "medición basada en la propia data de trading del sistema, un solo mercado y período",
+      "robustez": "media",
+      "cita_textual": "The volume that traded on the bad spread exceeds the volume that traded on the good spread, indicating that the majority of the spread proﬁt in Table 5 was from traders that committed price taking violations of rationality"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El marco de descomposición spread profit vs positioning profit y el modelo de sizing por utilidad exponencial (inventory risk + market impact + risk aversion) son transferibles conceptualmente a la validación de estrategias de market making/liquidity provision en ES, pero el mercado IEM es de baja frecuencia, sin costos de transacción y con contrapartes no sofisticadas, muy distinto a la microestructura HFT del ES."
+  }
+}

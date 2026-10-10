@@ -1,0 +1,222 @@
+{
+  "doc_id": 221,
+  "titulo": "Market Capitalization, Cross Correlations, The Lead/Lag Structure and Microstructure Effects in the Indian Stock Market",
+  "resumen_operativo": "El paper investiga la relación lead/lag entre índices de alta y baja capitalización bursátil en el mercado accionario indio (Nifty Senior/Junior 1997-2001; SENSEX/BSENI 1990-2001). Los índices de gran capitalización lideran a los de pequeña capitalización, mostrando velocidades de ajuste superiores hacia sus valores intrínsecos. Se descompone el efecto lead/lag hallando que entre el 45% y el 66% proviene de thin trading puro, mientras el resto emana de la interacción entre thin trading y ajuste parcial de precios. Adicionalmente, el proceso de valor intrínseco exhibe sobrecreacción leve, mayor en los índices de menor capitalización, consistente con modelos conductuales de sobreconfianza.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "lead-lag effect",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno por el cual los rendimientos de índices de gran capitalización anticipan temporalmente los movimientos de los índices de pequeña capitalización. Se manifiesta como correlación cruzada asimétrica donde la correlación líder (lead) supera a la rezagada (lag).",
+      "relaciones": [
+        { "tipo": "CAUSA", "objeto": "thin trading" },
+        { "tipo": "CAUSA", "objeto": "speed of adjustment" },
+        { "tipo": "USA", "objeto": "market capitalization" }
+      ],
+      "cita_textual": "The lead/lag relationship between large and small cap firms is investigated by using a number of Indian equity index series that differ in their market capitalisation characteristics."
+    },
+    {
+      "nombre": "market capitalization",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Tamaño de una empresa medido por el valor de mercado de sus acciones en circulación. Sirve como variable instrumental para el grado de thin trading y como criterio de segmentación para estudiar diferencias en la velocidad de ajuste de precios.",
+      "relaciones": [
+        { "tipo": "CAUSA", "objeto": "lead-lag effect" },
+        { "tipo": "USA", "objeto": "thin trading" },
+        { "tipo": "PREDICE", "objeto": "speed of adjustment" }
+      ],
+      "cita_textual": "size or market capitalisation does serve as an instrumental variable for thin trading"
+    },
+    {
+      "nombre": "cross-correlation",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de la relación lineal entre los rendimientos de dos índices en distintos rezagos temporales. Las correlaciones contemporáneas elevadas entre índices reflejan factores comunes subyacentes; la asimetría entre lead y lag evidencia el efecto liderazgo.",
+      "relaciones": [
+        { "tipo": "MIDE", "objeto": "lead-lag effect" },
+        { "tipo": "USA", "objeto": "autocorrelation" }
+      ],
+      "cita_textual": "the contemporaneous cross-correlations are all relatively high, indicative of the presence of common factors underpinning the return generating processes for each of these indices"
+    },
+    {
+      "nombre": "thin trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno microestructural por el cual ciertos activos no negocian en todos los períodos, generando que los precios observados reflejen información con retraso respecto a los precios verdaderos. Es más prevalente en acciones de baja capitalización y en mercados emergentes.",
+      "relaciones": [
+        { "tipo": "PARTE_DE", "objeto": "market microstructure" },
+        { "tipo": "CAUSA", "objeto": "lead-lag effect" },
+        { "tipo": "CAUSA", "objeto": "autocorrelation" },
+        { "tipo": "SE_OPONE_A", "objeto": "market efficiency" }
+      ],
+      "cita_textual": "in general, smaller market capitalisation stocks are more thinly traded than stocks with larger market capitalisations"
+    },
+    {
+      "nombre": "speed of adjustment",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Coeficiente g(i) que mide la proporción del desfase entre precio observado y valor intrínseco que se corrige en cada período. Un valor menor a 1 indica ajuste incompleto (sub-reacción); igual a 1 implica ajuste pleno e instantáneo.",
+      "relaciones": [
+        { "tipo": "MIDE", "objeto": "price discovery" },
+        { "tipo": "PREDICE", "objeto": "lead-lag effect" },
+        { "tipo": "REQUIERE", "objeto": "partial adjustment with noise model" }
+      ],
+      "cita_textual": "the speed of adjustment for the larger cap index... is more commonly larger than for the index that reflects smaller capitalisation stocks"
+    },
+    {
+      "nombre": "intrinsic value process",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Proceso estocástico que gobierna la evolución del valor intrínseco o fundamental de un activo. Típicamente se asume random walk (γ=1), pero el paper permite γ≠1 para capturar mean reversion o sobrecreacción en el proceso subyacente.",
+      "relaciones": [
+        { "tipo": "REQUIERE", "objeto": "partial adjustment with noise model" },
+        { "tipo": "MIDE", "objeto": "overreaction" },
+        { "tipo": "SE_OPONE_A", "objeto": "market efficiency" }
+      ],
+      "cita_textual": "The intrinsic value process may vary with market capitalisation and, indeed, as between developed and emerging markets."
+    },
+    {
+      "nombre": "partial adjustment with noise model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo en el que los precios de mercado se ajustan parcialmente hacia sus valores intrínsecos con ruido i.i.d. La ecuación P(i,t)-P(i,t-1)=g(i){V(i,t)-P(i,t-1)}+u(i,t) captura la velocidad de ajuste g(i). Combinado con un proceso general para V(i,t) permite estimar conjuntamente g(i) y γ(i).",
+      "relaciones": [
+        { "tipo": "USA", "objeto": "intrinsic value process" },
+        { "tipo": "REQUIERE", "objeto": "speed of adjustment" },
+        { "tipo": "EQUIVALE_A", "objeto": "ARMA(1,X) model" }
+      ],
+      "cita_textual": "Market prices are assumed to partially adjust towards their intrinsic values"
+    },
+    {
+      "nombre": "market microstructure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Conjunto de mecanismos, reglas y fricciones que gobiernan el proceso de negociación en los mercados financieros. En este contexto abarca thin trading, ruido en el proceso de ajuste y efectos de spread que inducen autocorrelación espuria en las series de retornos.",
+      "relaciones": [
+        { "tipo": "USA", "objeto": "thin trading" },
+        { "tipo": "CAUSA", "objeto": "autocorrelation" },
+        { "tipo": "SE_OPONE_A", "objeto": "market efficiency" }
+      ],
+      "cita_textual": "Thin trading and less than full price adjustments towards intrinsic value will both induce autocorrelations in return series"
+    },
+    {
+      "nombre": "overreaction",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno conductual por el cual los precios reaccionan de forma excesiva a señales públicas en el corto plazo, desviándose del valor intrínseco. En este paper, el proceso intrínseco (γ) exhibe sobrecreacción leve (γ<1), siendo mayor para índices de menor capitalización. Consistente con el modelo de sobreconfianza de Daniel et al. (1998).",
+      "relaciones": [
+        { "tipo": "SE_OPONE_A", "objeto": "market efficiency" },
+        { "tipo": "SE_OPONE_A", "objeto": "underreaction" },
+        { "tipo": "PARTE_DE", "objeto": "intrinsic value process" }
+      ],
+      "cita_textual": "the intrinsic value process is found to be characterised by small degrees of overreactions, the overreaction being greatest for the small cap indices"
+    },
+    {
+      "nombre": "price discovery",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Proceso mediante el cual los precios de mercado incorporan nueva información y convergen hacia el valor intrínseco. Índices de mayor capitalización logran un price discovery más veloz (g cercano a 1) mientras los de menor capitalización muestran ajuste más lento y estadísticamente incompleto.",
+      "relaciones": [
+        { "tipo": "REQUIERE", "objeto": "speed of adjustment" },
+        { "tipo": "USA", "objeto": "market efficiency" },
+        { "tipo": "SE_OPONE_A", "objeto": "thin trading" }
+      ],
+      "cita_textual": "the adjustments of larger cap stocks (indices) are, effectively, fully efficient (i.e. less than full adjustment does not occur in a statistically significant fashion)"
+    },
+    {
+      "nombre": "emerging markets",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Mercados financieros de países en desarrollo, menos profundos y con menor liquidez que los mercados desarrollados. En este estudio, India representa un mercado emergente donde el thin trading es mayor que en EE.UU., lo que amplifica el efecto lead/lag respecto a lo documentado en mercados desarrollados.",
+      "relaciones": [
+        { "tipo": "CAUSA", "objeto": "thin trading" },
+        { "tipo": "REQUIERE", "objeto": "lead-lag effect" }
+      ],
+      "cita_textual": "the extent of thin trading in a less developed market such as the Indian market is somewhat larger than that encountered in a more developed market such as the U.S."
+    },
+    {
+      "nombre": "autocorrelation",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Correlación de los retornos de un activo consigo mismo en rezagos temporales. Inducida tanto por el thin trading como por el ajuste parcial de precios. Su presencia en retornos diarios es indicio de ineficiencia microestructural o informacional.",
+      "relaciones": [
+        { "tipo": "MIDE", "objeto": "market efficiency" },
+        { "tipo": "USA", "objeto": "cross-correlation" },
+        { "tipo": "CAUSA", "objeto": "lead-lag effect" }
+      ],
+      "cita_textual": "Thin trading and less than full price adjustments towards intrinsic value will both induce autocorrelations in return series"
+    },
+    {
+      "nombre": "ARMA(1,X) model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo autorregresivo de media móvil con orden óptimo X determinado por el Schwartz Information Criterion. La componente MA de orden superior captura los efectos de thin trading, permitiendo estimar velocidades de ajuste depuradas de dichos efectos. Es el estimador preferido cuando coexisten thin trading y ajuste parcial.",
+      "relaciones": [
+        { "tipo": "MEJORA_A", "objeto": "cross-covariance ratio estimator" },
+        { "tipo": "MITIGA", "objeto": "thin trading" },
+        { "tipo": "EQUIVALE_A", "objeto": "partial adjustment with noise model" }
+      ],
+      "cita_textual": "the ARMA (1,X) model will provide the most appropriate estimates of the speeds of adjustment coefficients since the higher order moving average component will be a manifestation of thin trading effects"
+    },
+    {
+      "nombre": "cross-covariance ratio estimator",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Estimador de la velocidad de ajuste g(i) basado en el cociente entre la covarianza cruzada rezagada y la contemporánea: g(S)=cov[R(L,t-1),R(S,t)]/cov[R(L,t),R(S,t)]. Derivado por Theobald y Yallup (1998), asume ausencia de thin trading y proceso intrínseco random walk.",
+      "relaciones": [
+        { "tipo": "MIDE", "objeto": "speed of adjustment" },
+        { "tipo": "REQUIERE", "objeto": "partial adjustment with noise model" }
+      ],
+      "cita_textual": "the cross-covariance ratio estimator (Theobald and Yallup (1998)) where the speed of adjustment, g(i), i=S,L, is given by g(S) = cov [R(L,t-1), R(S,t)] {cov [R(L,t), R(S,t)]}-1"
+    },
+    {
+      "nombre": "market efficiency",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Propiedad de un mercado donde los precios reflejan plena e instantáneamente toda la información disponible, implicando velocidades de ajuste unitarias (g=1) y proceso intrínseco random walk (γ=1). Los resultados muestran que los índices de gran capitalización en India se aproximan a eficiencia plena, pero los de pequeña capitalización no.",
+      "relaciones": [
+        { "tipo": "SE_OPONE_A", "objeto": "thin trading" },
+        { "tipo": "SE_OPONE_A", "objeto": "overreaction" },
+        { "tipo": "REQUIERE", "objeto": "speed of adjustment" }
+      ],
+      "cita_textual": "the adjustments reflect underreactions rather than overreactions"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Los índices de gran capitalización lideran a los de pequeña capitalización en el mercado accionario indio. La correlación cruzada líder supera consistentemente a la rezagada, siendo el efecto más pronunciado en las series Nifty (donde las diferencias de capitalización son más marcadas).",
+      "mercado": "Índices accionarios indios Nifty Senior/Junior y SENSEX/BSENI",
+      "periodo": "Nifty: enero 1997 a febrero 2001; SENSEX/BSENI: enero 1990 a febrero 2001",
+      "magnitud": "Lead Nifty Senior vs Junior = 0.0750, Lag = 0.0200; Lead SENSEX vs BSENI = 0.1641, Lag = 0.1483 (dataset completo). Contemporánea: Nifty 0.7891, SENSEX 0.7801.",
+      "condiciones": "Retornos diarios logarítmicos de precios de cierre. Índices ponderados por capitalización bursátil.",
+      "robustez": "alta",
+      "cita_textual": "In the majority of cases investigated, the index reflecting the larger capitalisation stocks leads the lesser capitalisation index more strongly than lagging it."
+    },
+    {
+      "afirmacion": "Las velocidades de ajuste hacia el valor intrínseco son superiores para los índices de gran capitalización en todas las especificaciones de estimadores. Bajo el modelo ARMA(1,X) —el más apropiado en presencia de thin trading— los índices grandes muestran ajuste pleno (no significativamente distinto de 1), mientras los pequeños sub-reaccionan de forma estadísticamente significativa.",
+      "mercado": "Índices accionarios indios Nifty Senior, Nifty Junior, SENSEX, BSENI",
+      "periodo": "Dataset completo: Nifty 1997-2001, SENSEX/BSENI 1990-2001",
+      "magnitud": "ARMA(1,X): Nifty Senior g=0.956, Nifty Junior g=0.920*; SENSEX g=0.967, BSENI g=0.891*. Cross-covariance ratio: Nifty Senior g=0.905, Nifty Junior g=0.975; SENSEX g=0.839, BSENI g=0.858. (* significativamente <1 al 5%).",
+      "condiciones": "Cuatro estimadores: AR(1), ARMA(1,1), ARMA(1,X), cross-covariance ratio. Modelo ecuación (10) adicionalmente. Proceso intrínseco asumido random walk salvo en ec.(10).",
+      "robustez": "alta",
+      "cita_textual": "for all estimators the speed of adjustment for the larger cap index (the Nifty Senior and SENSEX) is more commonly larger than for the index that reflects smaller capitalisation stocks"
+    },
+    {
+      "afirmacion": "El thin trading contribuye de forma sustancial al efecto lead/lag: entre el 45% y el 66% del efecto proviene puramente de thin trading, mientras el resto emana de la interacción entre thin trading y velocidades de ajuste incompletas. Este hallazgo contrasta con la evidencia de EE.UU., donde el thin trading no se considera una fuente importante de correlación espuria en retornos diarios.",
+      "mercado": "Índices accionarios indios Nifty Senior/Junior y SENSEX/BSENI",
+      "periodo": "Dataset completo",
+      "magnitud": "Nifty (ARMA(1,X)): 50.2% interacción thin-trading/ajuste, 49.8% thin trading puro, 0.1% término mixto cuadrático. Nifty (ec.10): 66% thin trading puro. SENSEX/BSENI (ARMA(1,X)): 44.6% thin trading puro. SENSEX/BSENI (ec.10): 62.3% thin trading puro.",
+      "condiciones": "Descomposición según ecuación (7) con parámetros de thin trading estimados mediante sistema de Theobald y Yallup (1998) y velocidades de ajuste ARMA(1,X) y ecuación (10).",
+      "robustez": "media",
+      "cita_textual": "between 45% and 66% of the lead/lag effect derives purely from thin trading effects, the remainder emanating from an interaction effect between thin trading and adjustment speeds"
+    },
+    {
+      "afirmacion": "El proceso de valor intrínseco no sigue un random walk puro sino que exhibe sobrecreacciones leves pero estadísticamente significativas. Esta sobrecreacción es mayor para los índices de menor capitalización, y es consistente con modelos conductuales de sobreconfianza donde los inversores sobrerreaccionan a señales públicas en el corto plazo.",
+      "mercado": "Índices accionarios indios Nifty Senior, Nifty Junior, SENSEX, BSENI",
+      "periodo": "Dataset completo y subperíodos anuales",
+      "magnitud": "Ecuación (10) dataset completo: Nifty Senior g=0.876, γ=0.923; Nifty Junior g=0.788**, γ=0.916**; SENSEX g=0.983*, γ=1.002*; BSENI g=0.947*, γ=1.005*. (** significativamente <1). Gamma < 1 indica sobrecreacción.",
+      "condiciones": "Estimación por mínimos cuadrados no lineales del modelo con proceso intrínseco V(i,t)=γ(i)V(i,t-1)+e(i,t). γ=1 implica random walk; γ<1 implica sobrecreacción (mean reversion).",
+      "robustez": "media",
+      "cita_textual": "the degrees of overreaction are very small economically, but the overreactions are always greater for the smaller cap indices"
+    },
+    {
+      "afirmacion": "El grado de thin trading —medido como la proporción del retorno verdadero contemporáneo reflejado en el retorno observado— es mayor para los índices de pequeña capitalización. En 11 de 15 casos el parámetro ∅(0) del índice grande supera a θ(0) del índice pequeño (p=0.021), confirmando empíricamente que la capitalización bursátil es una variable instrumental válida para thin trading.",
+      "mercado": "Índices accionarios indios Nifty Senior/Junior y SENSEX/BSENI",
+      "periodo": "Dataset completo y subperíodos anuales 1990-2001",
+      "magnitud": "Dataset completo: θ(0) Nifty Junior=0.926, ∅(0) Nifty Senior=0.962; θ(0) BSENI=0.919, ∅(0) SENSEX=0.933. BSENI subperíodos 1994, 1995, 1996 con θ(0)<0.800.",
+      "condiciones": "Parámetros ∅(0) y θ(0) estimados del sistema de ecuaciones de Theobald y Yallup (1998). Valores cercanos a 1 indican negociación frecuente; valores >1 interpretados como ausencia de thin trading.",
+      "robustez": "alta",
+      "cita_textual": "the degree of thin trading is usually greater for the small cap indices (i.e. ∅(0) > θ(0)). That is, more of the contemporaneous 'true' return is reflected in the large cap indices"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper utiliza datos diarios de cierre (1990-2001) y modelos de corrección parcial y thin trading diseñados para frecuencia diaria; la metodología es extensible a intradía pero los parámetros estimados no son directamente transferibles sin recalibración con datos de alta frecuencia."
+  }
+}

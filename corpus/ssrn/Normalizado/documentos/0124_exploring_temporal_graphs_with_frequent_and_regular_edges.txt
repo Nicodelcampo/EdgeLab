@@ -1,0 +1,2392 @@
+ Electronic copy available at: http://ssrn.com/abstract=2664567 
+Trading Strategies within the Edges of No-Arbitrage$
+´Alvaro Carteaa, Sebastian Jaimungalb, Jason Riccic
+aDepartment of Mathematics, University College London, UK
+bDepartment of Statistics, University of Toronto, Canada
+cDepartment of Statistics, University of Toronto, Canada
+Abstract
+We develop a trading strategy which employs limit and market orders in a multi-asset economy
+where the assets are not only correlated, but can also be structurally dependent. To model the
+structural dependence, the midprice processes follow a multivariate reﬂected Brownian motion
+on the closure of a no-arbitrage region which is dictated by the assets’ bid-ask spreads. We
+provide a formal framework for such an economy and solve for the value function and optimal
+control for an investor who takes positions in these assets. The optimal strategy exhibits two
+dominant features which depend on how far the vector of midprices is from the no-arbitrage
+bounds. When midprices are suﬃciently far from the no-arbitrage edges, the strategy behaves
+as that of a market maker who posts buy and sell limit orders. And when the midprice vector
+is close to the edge of the no-arbitrage region, the strategy executes a combination of market
+orders and limit orders to proﬁt from statistical arbitrages. Moreover, we discuss a numerical
+scheme to solve for the value function and optimal control, and perform a simulation study to
+discuss the main characteristics of the optimal strategy.
+Keywords:
+Optimal Trading; high-frequency Trading; Algorithmic Trading; Limit Orders;
+Market Orders; Stochastic Control; Impulse Control; No-arbitrage bounds.
+$This work expresses the opinion of its authors and is in no way representing the opinion of the institutions
+the authors work for.
+´AC acknowledges the research support of the Oxford-Man Institute for Quantitative
+Finance and the hospitality of the Finance Group at Sa¨ıd Business School. SJ would like to thank NSERC
+and GRI for partially funding this work.
+The authors would like to Robert Almgren for comments on an
+earlier version of this article. We also thank conference and seminar participants at University College London,
+University of Toronto.
+Email addresses: a.cartea@ucl.ac.uk (´Alvaro Cartea), sebastian.jaimungal@utoronto.ca (Sebastian
+Jaimungal), jason.ricci@mail.utoronto.ca (Jason Ricci)
+Preprint submitted to TBA
+September 23, 2015
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+ Electronic copy available at: http://ssrn.com/abstract=2664567 
+1. Introduction
+Over the past decade, advances in technology and computing power have given rise to a
+new age in trading. There has been a movement from traditional pit exchanges to electronic
+exchanges where open quotes get amalgamated into a limit order book (LOB) and agents
+trade by placing limit orders (LOs) with intent to buy/sell at a particular price or by sending
+market orders (MOs). In this paper, we develop a strategy where the investor trades in a
+collection of assets which are not only correlated, but present static arbitrage opportunities if
+their midprices stray outside a no-arbitrage region which is dictated by the bid-ask spreads of
+the assets.
+The investor’s goal is to maximize cash proﬁts at some terminal time T, while controlling for
+inventory risk by penalizing open positions. The investor may trade aggressively and take
+liquidity via MOs if she sees a proﬁtable opportunity in the form of a statistical arbitrage,
+or may trade passively by submitting limit buy and sell orders to the LOB. The trading
+strategy requires aggressive or passive orders depending on where the midprices are relative to
+the boundaries of the no-arbitrage region. The following two examples illustrate how certain
+structural dependencies in a collection of assets determine the no-arbitrage region.
+Suppose that an investor maximizes expected wealth by trading in an equity futures contract
+which matures at time T1 and also trades in its underlying. Furthermore, assume that this
+underlying equity does not pay dividends and the risk-free rate is zero. Let S1
+t denote the
+price of the underlying at time t and S2
+t the price of the futures contract. In an economy
+where assets are traded with a zero bid-ask spread (that is, the price to sell or buy the asset
+is the same), we have, by no-arbitrage, S1
+t = S2
+t for all t ≤T1. If this equality does not hold,
+then there exists an arbitrage.
+Now assume that the underlying equity and its futures contract trade with bid-ask spreads
+ξ1 > 0 and ξ2 > 0, respectively. In this case, it is possible for the market to bear arbitrage-free
+prices of the form S1
+t̸ = S2
+t . To see this, assume that S1
+t > S2
+t . To arbitrage these prices the
+investor sends a buy market order (MO) for the futures contract, for which she must cross the
+spread and pay S2
+t + ξ2/2, and simultaneously sends a sell MO for the underlying and obtains
+S1
+t −ξ1/2. This trade is an arbitrage if (S1
+t −ξ1/2) −(S2
+t + ξ2/2) > 0. Hence, it is simple to
+show that the no-arbitrage region is |S1
+t −S2
+t | < 1
+2(ξ1 + ξ2).
+Another example is one in which an investor takes positions in the following three derivatives:
+i) the ﬁrst nearby futures contract written on an equity having maturity T1, ii) the second
+nearby futures contract written on the same equity having maturity T2 > T1, and iii) the
+1-2 calendar spread contract1 having maturity T1.
+Furthermore, denote the midprices of
+1The 1-2 calendar spread is a derivative that forces one party to exchange the T2 maturity contract for the
+2
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+these three contracts by S1
+t , S2
+t , S3
+t and their spreads ξ1, ξ3, ξ3, thus the no-arbitrage region
+is |S1
+t −S2
+t −S3
+t | < 1
+2
+3P
+j=1
+ξj (below we provide a formal deﬁnition of the no-arbitrage region).
+Midprices outside the no-arbitrage region are immediately corrected by arbitrageurs who exert
+price pressure until these opportunities disappear. In our framework, this arbitrage pressure is
+modelled by assuming that midprices follow a multivariate reﬂected Brownian Motion on the
+closure of the no-arbitrage region. Thus, when the midprice of an asset approaches the edges
+of the no-arbitrage region, market forces will exert pressure so that the midprice is pulled back
+into the interior of the region.
+We solve the investor’s optimal investment strategy and show how it depends on the proximity
+of the midprices to the edges of the no-arbitrage region. When midprices are ‘far’ from the noarbitrage boundary, the investor behaves as a strategic market maker who posts two-sided LOs.
+However, these limit orders are strategically placed in the book to not only control for inventory
+exposure, but also in anticipation of midprices approaching the edges of the no-arbitrage region
+where the strategy employs a mix of market and limit orders to execute statistical arbitrages.
+And when the midprice of one asset is ‘close’ to the no-arbitrage boundary, the investor
+adjusts the depths of her LOs and may also execute MOs to take advantage of statistical
+arbitrage opportunities in anticipation of price pressures which force prices to stay within the
+no-arbitrage bounds, and to control exposure to inventory risk.
+Our work is related to the literature that investigates investment strategies based on a collection of co-integrated assets (see for example Tourin and Yan (2013), Tourin and Lintilhac
+(2015), Cartea et al. (2015), Leung and Li (2015), and Cartea and Jaimungal (2015a)), but
+our approach is diﬀerent because we focus on a collection of assets with stronger structural
+dependencies, and more importantly, we model the no-arbitrage region and the investor employs LOs and MOs in the strategy. Other related literature in investment strategies speciﬁc
+to trading in a single asset to optimally liquidate/acquire shares as in Almgren and Chriss
+(2000), Almgren (2003), Kharroubi and Pham (2010), Gu´eant et al. (2012), Bayraktar and
+Ludkovski (2014), Cartea and Jaimungal (2015b), or in a general proﬁt/utility maximization
+setting as in Avellaneda and Stoikov (2008), Guilbaud and Pham (2013), and Cartea et al.
+(2014).
+The rest of this paper is organized as follows. Section 2 contains deﬁnitions and some modeling
+assumptions. Section 3 states and discusses properties of the optimal trading strategy. Section
+4 discusses the discretization scheme and convergence to the viscosity solution.
+Section 5
+analyzes qualitative features in the interior and edges of the no-arbitrage in the 2-dimensional
+case. Moreover, it uses simulations to study the ﬁnancial performance of the optimal strategy.
+underlying asset at time T1. Its payoﬀcan be decomposed into being long the T1 contract and short the T2
+contract.
+3
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+Section 6 concludes and we collect some additional details of proofs in the Appendix.
+2. The Model
+Here we develop a framework for investors who trade in a basket of assets. Our main focus
+is on assets that exhibit strong structural dependencies as in the examples above where the
+investor trades in futures contracts with the same underlying asset. The main question we
+answer is: How can an investor design an algorithmic strategy to take advantage of this
+structural dependency between assets?
+We assume that the economy trades n risky assets with midprices at time t given by Si
+t,
+i = 1, · · · , n, and respective bid-ask spreads ξi > 0, both of which we arrange in n-dimensional
+vectors St and ξ respectively. We also assume the existence of a risk-free cash asset that oﬀers
+zero return and trades with zero bid-ask spread.
+A well-known result in ﬁnance theory is that when one asset’s payoﬀcan be replicated as a
+linear combination of other traded assets, then there is a redundant asset in the economy.
+However, if some of these assets trade with a bid-ask spread, this redundancy ceases to exist.
+We classify a multiple asset economy as over-complete if there exists a non-zero portfolio and
+a ﬁnite investment horizon T such that at time T the portfolio’s value is a constant, i.e. its
+variance is zero.
+All random variables and stochastic processes in this paper are deﬁned on the completed,
+ﬁltered probability space (Ω, FT , F, P) with ﬁltration F = {Ft}0≤t≤T and where P is the realworld probability measure.
+Note that the ﬁltration F is only deﬁned up to time T < T,
+whereas P is deﬁned on the larger σ-algebra FT . Here, F is the natural ﬁltration generated
+by (St, M±
+t , N±
+t ), all of these processes will be deﬁned later.
+Deﬁnition 1. A ﬁnancial system is said to be over-complete if ∃b ∈Rn , T > 0 with ∥b∥> 0
+such that V
+
+b · ST
+
+= 0, provided ST ∈L2  Ω, FT , P
+
+, where V is the variance operator, and
+the operation · is the dot product.
+One of our motivating examples (ﬁrst two nearby futures and the calendar spread) ﬁts into
+this framework with portfolio b = (1, −1, −1) and T being the maturity of the ﬁrst nearby
+futures. The illustrative example that will be used throughout this paper (ﬁrst nearby futures
+and the underlying equity) also ﬁts into this framework with b = (1, −1) and T being the
+maturity of the futures contract.
+4
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+In Deﬁnition 1, the trivial portfolio b = 0 is excluded from Rn since V
+
+0 · ST
+
+is zero,
+making every economy over-complete and rendering this classiﬁcation trivial. Notice that if
+the economy does not admit such a portfolio (i.e. there does not exist such a vector b), then
+this problem reduces to a (correlated) multiple asset problem, see for example Tourin and
+Yan (2013), and Cartea and Jaimungal (2015a). The no-arbitrage region in this simpliﬁed
+case would be all of Rn.
+Also observe that the set from Deﬁnition 1 consists of all the
+riskless portfolios when considering T as the investment horizon. However, T may be the only
+investment horizon where these portfolios are riskless.
+Deﬁnition 2. Deﬁne the space B as the set of all vectors b from Deﬁnition 1 plus the origin.
+Observe that B is a subspace of Rn.
+We require the set B in Deﬁnition 2 to include the origin so that it is, in fact, a subspace.
+In the simpliﬁed case where the economic system is not over-complete, the set B would only
+consist of the origin.
+Deﬁnition 3. The no-arbitrage region, denoted by A ⊂Rn, is the set of midprices that makes
+this economy arbitrage free.
+It is worth pointing out that the no-arbitrage region is open. More speciﬁcally, A is the set
+of midprices such that the initial cashﬂow from purchasing a portfolio b plus the terminal
+payoﬀ, b · ST , is strictly negative, whenever this portfolio matures at a constant value (i.e.
+when V
+
+b · ST
+
+= 0).
+This observation deserves some explanation. It is clear that the no-arbitrage set A, as previously described, is open. At the boundary, these portfolios have cost equal to their maturity
+value. Also, it has the potential for arbitrage proﬁts via the following strategy: Obtain portfolio b now for cost b · ST . There is a positive probability that prior to T, St will move to a
+value (within A) such that a ﬁlled limit order (LO) on one asset, combined with liquidation
+of the others assets via MOs, produces a net gain. Because there is a positive probability that
+such an opportunity does not arise, having initial cost strictly greater than b · ST is enough
+to ensure it is not an arbitrage portfolio. This is due to the fact that if the agent can only
+execute MOs, the portfolio b (which costs b·ST to obtain) can be liquidated for exactly b·ST
+only in the best case scenario (on the opposite boundary). In fact, this scenario is only in the
+closure of A, and hence the midprice process can only move arbitrarily close to it. Notice that
+the only assumption we have made here is that the spreads are positive constants.
+In the 2-dimensional illustrative example consisting of a futures contract and its underlying,
+we have A =
+
+s ∈R2 : |s1 −s2| < 1
+2(ξ1 + ξ2)
+	
+. That is, at any time t < T, the midprices of
+5
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+these two assets cannot diﬀer by more than the sum of their half-spreads; if they do, then one
+could execute two MOs, for example one order to short the overpriced futures and the other
+to purchase the underpriced underlying, and hold to maturity for an arbitrage.
+In general, arbitrageurs (who are willing to hold the arbitrage portfolio until T) ensure that
+prices are always pulled back within the bounds of no-arbitrage. In our framework the investor
+assumes that for t ∈[0, T], the dynamics of the midprice process St is a multivariate reﬂected
+and correlated Brownian Motion.
+Assumption 1. The n-dimensional midprice process {St}0≤t≤T satisﬁes
+dSt = σdBt
+(1)
+for t ∈[0, T] and St ∈A.
+Here σ is an n-by-n matrix with σσ′ being positive deﬁnite,
+{Bt}0≤t≤T is a standard Brownian Motion on Rn, and St has (normal) reﬂection at the
+boundary of A.
+When the risky assets possess a structural dependence, as in our illustrative example, the
+matrix σ will induce a strong correlation between all or some of the n assets. For example,
+the case discussed above consisting of n = 2, a futures contract and its underlying, σ will
+induce a strong positive correlation.
+In general, for assets that exhibit strong structural
+dependence, σ will induce movements in the midprice processes that are generally in the same
+direction, on average, to some element of the subspace B⊥(the orthogonal complement of B).
+Recall that the agent will be submitting both LOs and MOs and therefore needs to model incoming MOs from other participants in addition to her own executions (which she controls). As
+such, she assumes that other market participants send MOs according to independent Poisson
+Processes. The counting processes representing the total number of MOs submitted by other
+agents up until time t are {N−
+i,t : i = 1, . . . , n}0≤t≤T for sells and {N+
+i,t : i = 1, . . . , n}0≤t≤T for
+buys (i indexes the asset). On the other hand, the total number (including the agent’s trades)
+of market sells and buys up until time t are given by the processes {N
+−
+i,t : i = 1, . . . , n}0≤t≤T
+and {N
++
+i,t : i = 1, . . . , n}0≤t≤T respectively. It is also convenient to have these processes in
+the following vector forms: N±
+t =
+
+N±
+1,t , . . . , N±
+n,t
+′
+and N
+±
+t
+=
+
+N
+±
+1,t , . . . , N
+±
+n,t
+′
+, where ′
+denotes the transpose operator. Finally, the total number of MOs sent by the high-frequency
+trader (HFT) up to time t is N
+±
+t −N±
+t .
+Thus, Nt = Pn
+i=1
+
+N−
+i,t + N+
+i,t
+
+is the total number of MOs executed by other agents up to
+time t, and Nt = Pn
+i=1
+
+N
+−
+i,t + N
++
+i,t
+
+denotes the total number of MOs executed by all agents
+up to time t.
+It is also convenient to have these processes in the following vector forms:
+Nt = (N1,t , . . . , Nn,t)′ and Nt =
+ N1,t , . . . , Nn,t
+′. Thus, the total number of MOs sent by
+the investor up to time t is Nt −Nt.
+6
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+The investor sends LOs to the LOB at depth δi
+t, i = 1, · · · , n, and we summarize this information in the (2n-dimensional) vector-valued process {δt}0≤t≤T . Here we use the convention
+that LO depth is from across the book: the limit buy order is measured from the best ask, and
+the limit sell order is measured from the best bid quote. Therefore, the investor’s buy LOs are
+posted at St +ξ/2−δ−
+t , and her sell LOs are posted at St −ξ/2+δ+
+t . In addition, the running
+counts of the investor’s ﬁlled LOs are given by the processes {M+
+i,t : i = 1, . . . , n}0≤t≤T and
+{M−
+i,t : i = 1, . . . , n}0≤t≤T for sell and buy orders, respectively, and we summarize this information in the vector-valued processes {M+
+t }0≤t≤T and {M−
+t }0≤t≤T . This allows the investor
+to post inside the spread.2
+Assumption 2. The rate of arrival (called the ﬁll rate functions) of MOs which hit/lift the
+agent’s LOs for asset i = 1, . . . , n, as measured from “across the book”, denoted h±
+i (δ), satisfy
+h±
+i (0) < ∞, h±
+i (ξi) = λ±
+i , and lim
+δ→∞δh±
+i (δ) = 0. Furthermore, h±
+i ∈C1 [0, ∞)
+
+with h′ < 0.
+The investor gets ﬁlled when MOs arrive and reach the level that the LO is posted at. More
+speciﬁcally, the deeper in the book the agent posts, the less frequently she gets ﬁlled by a
+matching MO; a dependence that is captured by the functions h±
+i (δ). This is in line with how
+a number of other authors have modeled optimal postings and ﬁll probabilities as in Ho and
+Stoll (1981), Avellaneda and Stoikov (2008), Gu´eant et al. (2013), Bayraktar and Ludkovski
+(2014), and Cartea and Jaimungal (2015c), among others.
+We may suppress the ± and i indices on the function h and the scalar variables λ, κ (deﬁned
+in Example 6), δ, and ξ, when it is clear which element is being represented.
+3. The Investors’s Optimization Problem
+Recall that δt is the depth, as measured from across the book, at which the investor sends
+quotes to the LOB. Let (τ; ς) = {(τ1, ς1), (τ2, ς2), . . . } be an impulse control representing the
+investor’s submission of MOs to the LOB. The ordered sequence of uniformly bounded Ft
+stopping times, 0 ≤τ1 ≤τ2 ≤· · · ≤T, is the sequence of times of the MOs, and the binary
+sequence ς1, ς2, . . . indicates whether the MO is a buy or a sell order. Recall that the ﬁltration
+{Ft}0≤t≤T is generated by the processes St, M±
+t , N±
+t , N
+±
+t .
+The cash process X = {Xt}0≤t≤T of the investor satisﬁes the SDE
+dXt = (St −ξ/2 + δ+
+t−) · dM+
+t −(St + ξ/2 −δ−
+t−) · dM−
+t
++ (St −ξ/2) · d(N
+−
+t −N−
+t ) −(St + ξ/2) · d(N
++
+t −N+
+t ) ,
+(2)
+2Inside the spread refers to LOs that improve upon the current best bid or oﬀer.
+7
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+where St, δ−
+t , δ+
+t , and ξ are all n-dimensional row vectors, and M−
+t , M+
+t , N−
+t , N+
+t , N
+−
+t , N
++
+t
+are all n-dimensional column vectors.
+The terms in the ﬁrst line in (2) of the cash process account for the changes in cash due to
+ﬁlled limit sell and buy orders, and the terms in the second line account for changes in cash
+due to the investor’s own market sell and buy orders.
+The investor seeks the strategy
+
+{δt ≥0}0≤t≤T , τ, ς
+
+which maximizes her expected terminal
+wealth while penalizing and constraining inventories, where δt is a bounded Ft-previsible
+process representing the LO quote depths, τ is an increasing sequence of Ft−stopping times
+(bounded above by T) representing the times of MO submissions, and ς is the binary sequence
+of buy/sell indicators. The collection of all such strategies is called the admissible set and
+denoted by X.
+Thus, for 0 < T ≪T, the investor solves the control problem3
+H(t, x, s, q) =
+sup
+(δt, τ, ς)∈X
+Et,x,s,q
+"
+XT +
+n
+X
+i=1
+qi
+T
+ 
+Si
+T −sign(qi
+T )ξi
+2 −γqi
+T
+
+−φ
+T
+Z
+t
+ℓ(qu) du
+
+, (3)
+where Et,x,s,q[·] denotes the expectation conditional on Xt−= x, St = s, qt−= q. Moreover,
+γ ≥0, φ ≥0, qt = (q1
+t , . . . , qn
+t ) is the investor’s inventory at time t, and ℓ(·) ≥0 is an
+instantaneous inventory penalty.
+In Equation (3), we have included two inventory penalties. The ﬁrst, qi
+T (−sign(qi
+T )ξi
+2 −γqi
+T ),
+is a cost that the investor incurs to unwind terminal inventory. To do so the investor uses
+an MO that crosses the spread, picks up the cost ξi/2, and walks down one side of the LOB
+where these costs are given by the linear “market impact” term γqi
+T . The second,
+TR
+t
+ℓ(qu) du,
+is a running inventory penalty which allows the agent to control her exposure to inventory
+risk through time, but is not a ﬁnancial cost, see Cartea and Jaimungal (2015c) and Cartea
+et al. (2013). Here we assume that
+ℓ(q) = V
+h
+q · bS1
+i
+= q′σσ′q ,
+(4)
+where {bSt}0≤t≤T is the unreﬂected version of {St}0≤t≤T .
+A priori, it is unclear why the unreﬂected version of St in the penalty function (4) is used.
+Classical mean-variance portfolio optimization problems penalize according to the variance of
+the terminal proﬁt and loss (PnL). However, such a penalty fails to characterize how much
+inventory risk was taken on by the investor throughout the entire life of the strategy. In light
+3
+8
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+of this shortfall, we take the penalty to be the intra-trade quadratic variation of the investor’s
+portfolio, similar to what was done in Forsyth et al. (2012), which is a natural characterization
+of the total risk taken on by the investor. The following observation gives a mathematical
+justiﬁcation for the use of the inventory penalty in (4).
+Observation 4. For 0 ≤u ≤v ≤T, we have the following equivalence ( P almost surely):
+v
+Z
+u
+V[qt · bS1]dt = ⟨q · S⟩v −⟨q · S⟩tNv +
+Nv
+X
+k=Nu+1
+
+⟨q · S⟩tk−−⟨q · S⟩tk−1
+	
+,
+(5)
+where tk is the time of the kth MO, tk−is the left limit at tk, and ⟨· ⟩t is the quadratic variation
+operator. Recall that {bSt}0≤t≤T is the unreﬂected version of {St}0≤t≤T .
+The relation in (5) is also highlighted in Cartea and Jaimungal (2015c) where the authors oﬀer
+a similar relation for the one-dimensional case. Thus, the trader penalizes the strategy with
+the “variance per second” of her current portfolio, which is scaled by φ ≥0 according to her
+inventory-risk tolerance. In a single asset economy, this penalty reduces to
+R
+q2
+u du (up to a
+multiplicative constant), which has been shown in Cartea et al. (2013) to stem from ambiguity
+aversion on the drift of the midprice process.
+3.1. Solving the Value Function
+By appealing to Øksendal and Sulem (2007), the value function H(t, x, s, q), as deﬁned in (3),
+satisﬁes the following HJBQVI on the no-arbitrage region A:
+max
+"
+sup
+δ>0
+(
+(∂t + L)H +
+X
+i
+h−
+i (δ−
+i )∆−
+i H +
+X
+i
+h+
+i (δ+
+i )∆+
+i H −φ ℓ(q)
+)
+;
+max
+i , ± {H(t, x ± si −ξi/2, s, q ∓ei) −H}
+
+= 0 ,
+s ∈A ,
+(6)
+with terminal condition H(T, ·) = x +
+nP
+i=1
+qi
+
+si −sign(qi)ξi
+2 −γqi
+
+, the Neumann condition
+on the boundary of A
+∂H
+∂n = ∇H · n = 0 ,
+∀s ∈∂A ,
+(7)
+where n is the normal vector to ∂A, and where L = 1
+2
+nP
+i,j=1
+[σσ′]ij
+∂2
+∂si∂sj is the inﬁnitesimal
+generator of the n-dimensional correlated Brownian Motion B. Finally, we use ∆±
+i to denote
+9
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+the diﬀerence operator
+∆±
+i ϕ(t, x, s, q) = ϕ
+ t, x ± si ± δ±
+i ∓ξi/2, s, q ∓ei
+
+−ϕ(t, x, s, q) ,
+where ei is a vector with 1 in the ith position and 0 elsewhere, and dependence on δ is
+suppressed for convenience. For example, ∆−
+i ϕ denotes the change in ϕ due to the investor’s
+limit buy order being ﬁlled: inventory for asset i increases by 1, and cash x decreases by the
+cost of the transaction si −δ−
+i + ξi/2. The interpretation for ∆+
+i ϕ when the investor’s limit
+sell order is ﬁlled has a similar interpretation.
+Lemma 5. If the midprice process is in the no-arbitrage region (i.e. s ∈A), then the supremum term in (6) is equal to the sum of the supremum over each component.
+Proof. The supremum operator satisﬁes countable sub-additivity. Equality comes from the
+fact that the 2n variables being optimized appear exactly once in all of 2n distinct additive
+terms.
+□
+We apply the following ansatz for the value function
+H(t, x, s, q) = x + q · s + g(t, s, q) ,
+(8)
+and recalling that h(δ) is the ﬁll rate function facing the investor for an LO placed at depth
+δ, the ﬁrst order condition for each component of δ in the continuation region is given by
+h′(δ±,∗
+i
+)
+
+δ±,∗
+i
+−ξi
+2 + ∆±
+i g
+
++ h±
+i (δ±,∗
+i
+) = 0 .
+(9)
+The implicit form in Equation (9) is then used to simplify (6) and obtain a new QVI for g(·):
+max
+"
+(∂t + L)g −P
+i,±
+(h(δ∗))2
+h′(δ∗) −φ ℓ(q) , max
+i , ±
+
+∆±
+i g −ξi/2
+	
+#
+=
+0
+(10)
+with terminal condition g(T, ·) = −P qi
+
+sign(qi)ξi
+2 + γqi
+
+and boundary condition (q+∇g)·
+n = 0 on ∂A.
+In order to obtain an explicit form for δ∗(in feedback control form), we further assume that
+h(δ) is exponential.
+10
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+Example 6. Exponential Fill Rate. Suppose that MOs arrive to the market according
+to a Poisson process and the probability of being ﬁlled decays exponentially. More precisely,
+h±
+i (δ) = λ±
+i e−κ±
+i (δ−ξi) with 0 < κ±
+i ≤1
+ξi .
+Example 6 provides an additional modeling assumption4 on the ﬁll rate facing the investor that
+will be used in all numerical demonstrations throughout this paper. The additional condition
+that κ±
+i ≤1
+ξi is imposed so that a risk-neutral investor following an optimal market making
+strategy does not post limit quotes inside the spread.
+In this exponential ﬁll rate setting, we have
+δ±,∗
+i
+= 1
+κ±
+i
++ ξi
+2 −∆±
+i g ,
+(11)
+and Equation (10), in the continuation region, further reduces to
+gt + 1
+2
+n
+X
+i,j=1
+[σσ′]ij
+∂2g
+∂si∂sj
++
+X
+i,±
+λ±
+i
+κ±
+i
+exp
+
+−1 + κ±
+i ξi
+2
++ κ±
+i ∆±
+i g
+
+−φ ℓ(q) = 0 .
+(12)
+The optimal LO depth has two main components. The ﬁrst is given by the two ﬁrst terms
+on the right-hand side in (11) which is the optimal depth chosen by an investor who does not
+impose any inventory penalty, nor does she pick up any costs for unwinding terminal inventory,
+γ = φ = 0. The second component, given by the third term on the right-hand of the equation,
+is a correction to the optimal posting to account for the adjustment to the LO depth as a
+result of the investor’s inventory management strategy.
+Proposition 7. The max
+i , ± {∆±
+i g−ξi/2} component in the QVI (10) give rise to the LO spread
+bounds
+1
+κ±
+i < δ±
+i ≤
+1
+κ±
+i + ξi for each i = 1, . . . , n.
+When considering δ−, the stated lower bound is because the agent is eager to obtain another
+unit of the asset. Therefore, rather than posting an LO at the strict lower bound of 1/κ±
+i , she
+executes an MO. The upper bound corresponds to posting at a deep level (since the investor
+does not want the asset), and if the LO is ﬁlled, the agent immediately posts an MO to unwind
+and attempts to make a proﬁt. Proﬁts in this case are not guaranteed and depend on the
+resilience of the LOB. Note that δ−
+i (q) is arbitrarily close to 1/κ±
+i if and only if δ+
+i (q + ei) is
+close to
+1
+κ±
+i + ξi and similarly, δ+
+i (q) is arbitrarily close to 1/κ±
+i if and only if δ−
+i (q −ei) is
+4It is also common for a power law function to be used as the ﬁll rate function.
+11
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+close to
+1
+κ±
+i + ξi.
+4.
+Viscosity Solution and Numerical Scheme for Exponential Fill Rate
+This section outlines the technical details regarding the existence of a unique viscosity solution
+to the dynamic programming equation (DPE), speciﬁes a dimensional reduction in the spacial
+variables, gives explicit details regarding the discrete numerical scheme, and proves that the
+discretized value function converges to the unique viscosity solution.
+4.1. Dimensional Reduction of Spatial Variables
+We ﬁrst prove the following lemma to demonstrate a dimensional reduction in the spacial
+variable s. Due to this lemma, the relevant s values live in a compact domain. For a ﬁxed
+error, the total computational run time will then be proportional to cdim B(2Q + 1)n, where c
+is some constant that depends on the spreads ξ1, ξ2, . . . , ξn, the basis vectors that span B (or
+equivalently on the number of discrete steps on the dimensionally reduced s-grid), and Q is
+the maximum inventory the investor can be long or short for each asset.
+Lemma 8. There exists an
+C2, surjective function Γ : A −→A
+′ such that:
+(I) For all s ∈A, g(s, ·) = g((Γ(s), 0), ·),
+(II) s ∈∂A
+⇐⇒
+Γ(s) ∈∂A′,
+(III) A
+′ is the cartesian product of closed, bounded intervals.
+Proof. Deﬁne m := dim B. Then B = span{b1, . . . , bm}, where b1, . . . , bm is an orthogonal
+basis, and for each i = 1, . . . , m we have (wlog) P[bi · S ¯T = 0] = 1. No arbitrage (i.e. s ∈A)
+is equivalent to the system of inequalities
+y · s +
+n
+X
+j=1
+|yj|ξj
+2 > 0
+for y = (±b1, . . . , ±bm)′ ,
+which simpliﬁes to
+−
+n
+X
+j=1
+|yj|ξj
+2 < y · s <
+n
+X
+j=1
+|yj|ξj
+2
+for y = (b1, . . . , bm)′ .
+(13)
+12
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+Because the bi’s are linearly independent, one can see that (13) is equivalent to Γ(s) being
+inside some rectangular subset of Rm for the function Γ(s) = [bj · s]j, which is also clearly C2.
+At this point, (II) should be obvious from (13) and the deﬁnition of Γ, (III) is proven, and
+linear independence of the basis vectors gives (IV ).
+To prove (I), we must appeal to some invariance properties of g. Notice that A can now be
+reparameterized to the product space
+m
+Q
+i=1
+"
+−
+nP
+j=1
+|bi · ej|ξj
+2 ,
+nP
+j=1
+|bi · ej|ξj
+2
+#
+× Rn−m. Looking at
+(10) and the Neumann boundary condition (only depends on s via the direction of the normal
+vector, which only depends on which piece of the boundary s is on; this can be determined
+uniquely via Γ(s) by taking a limiting sequence in s to the boundary), we see that under
+this new parameterization, g only depends on s through the ﬁrst m components. Hence, if
+s1, s2 ∈A are such that Γ(s1) = Γ(s2), then g(s1) = g(s2) and (I) is proved.
+□
+Lemma 8 states that it is not necessary to know s to obtain the value of g(s, ·); we only
+require the information contained in Γ(s). Furthermore, there exists such a function Γ that
+provides a nice, smooth mapping between the original n-dimensional no-arbitrage region A
+and the new n′-dimensional no-arbitrage region A
+′, and that this new region is a bounded
+rectangle.
+The fact that the new region is bounded improves the accuracy of the numerical
+scheme discussed below in Section 4.2 since we no longer have to approximate the unbounded
+set A by a bounded one.
+There is, however, a minor
+detail that has been overlooked. The form (Γ(s), 0), where 0 is
+an (n −n′)-dimensional vector of 0’s, requires the assets to be ordered in a certain way. In an
+arbitrary ordering, the components of (Γ(s), 0) will need to be re-ordered. We continue with
+the labels that produce a simpliﬁcation of this form as it is more compact to write (Γ(s), 0)
+instead of having the 0’s in arbitrary positions (i.e. not consecutive nor all at the beginning
+or end).
+In some sense, Γ(s) is suﬃcient5 for g. That is, Γ(s) contains the same amount of information
+as s when computing g. Furthermore, one could say that Γ(s) is minimal suﬃcient since it can
+be written as a function of any other function of s that is suﬃcient for g. Stated heuristically,
+Γ(s) contains the smallest amount of information about s that still allows us to know g(s) with
+certainty. The construction of Γ in the proof of Lemma 8 is used in what follows to obtain a
+5In mathematical statistics, a statistic U is said to be suﬃcient for an unknown model parameter Θ if the
+conditional distribution of the data, conditional on U, is independent of Θ. Heuristically speaking, U contains
+the same amount of information about Θ as the data itself.
+13
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+dimensional reduction, and is given by
+Γ(s) = [bj · s]j .
+(14)
+In our 2-dimensional illustrative example, we take Γ(s) = s1 −s2. For the 3-dimensional
+example with two nearby futures and the 1-2 calendar spread, one could take Γ(s) = s1−s2−s3.
+More details for these two examples are provided in Appendix A.
+The following Corollary states that the function g is invariant to movements in the direction
+of any element of B⊥. This would correspond to vectors of the form (1, 1) in our illustrative
+example (i.e. g is remains unchanged when the futures and its underlying both increase or
+decrease by exactly the same amount).
+Corollary 9. Dvg = 0 on A whenever v ∈B⊥.
+Proof. Let s ∈A and v ∈B⊥. Note that we necessarily have s + v ∈A by Equation (13)
+since bi·v = 0 for i = 1, . . . , n′. We then have Γ(s) = Γ(s+v) by (14). But v ∈B⊥is arbitrary
+and B⊥is a subspace, so one can consider a limiting sequence of the form {ηk v}, with the
+scalar sequence ηk ↓0, which yields Dvg = 0.
+□
+4.2. Description of Numerical Scheme
+We numerically solve (12) by applying upper and lower bounds to each component in q, and
+solving the corresponding ODEs backwards in time using an explicit numerical scheme. For
+any ﬁxed q, we have an n-dimensional discrete grid to solve for various values of s. Once we
+have this grid for each q, we propagate one step backwards in t and repeat the process.
+Deﬁne the domain for s, A′ ⊂Rn′, on the dimensionally reduced grid. Let Tdt be a regular
+partition of [0, T], Sds be an n′-dimensional regular rectangular partition of the dimensionally
+reduced s-grid A
+′, and YQ be the subset of Zn that corresponds to inventory with maximum
+Q as previously described (i.e. YQ = Zn ∩[−Q, Q]n). Throughout the rest of this paper,
+dt > 0 and ds > 0 refer to the discrete step sizes in the time (t) and space (Γ(s)) variables,
+respectively.
+Deﬁne, for any function ϕ : [0, T] × A
+′ × Zn −→R, the discrete dynamic evolution operator
+Sdt,ds,Q(t, s, q, ϕ) = max
+h
+T dt,ds,Q(t, s, q, ϕ) , Mdt,ds,Q(t, s, q, ϕ)
+i
+,
+14
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+with the component corresponding to the continuation region given by
+T dt,ds,Q(t, s, q, ϕ) = ϕ + dt
+
+1
+2
+n
+X
+i,j=1
+[σσ′]ij bT dt,ds,Q
+ij
+(·, ϕ) +
+X
+i,±
+λ
+κe exp
+κξ
+2 + κ∆ϕ
+
+−φ ℓ(q)
+
+,
+bT dt,ds,Q
+ij
+(t, s, q, ϕ) = ϕ(Γ(si + ds, sj + ds), ·) −ϕ(Γ(si + ds), ·) −ϕ(Γ(sj + ds), ·) + ϕ(·)
+ds2
+,
+and the component corresponding to the impulse region given by
+Mdt,ds,Q(t, s, q, ϕ) = max
+i , ± {ϕ(t, s, q ± ei) −ξi/2} .
+We approximate the solution g by gdt,ds,Q : Tdt × Sds × YQ −→R deﬁned by:
+
+
+
+gdt,ds,Q(T, s, q)
+=
+−P qi
+
+sign(qi)ξi
+2 + γqi
+
+gdt,ds,Q(dt · k, s, q)
+=
+Sdt,ds,Q  dt · (k + 1), s, q, gdt,ds,Q
+.
+(15)
+We employ an explicit scheme backwards in time as follows:
+• When t = T, for each s and q on their respective grids, set
+gdt,ds,Q(T, s, q) = −
+X
+qi
+
+sign(qi)ξi
+2 + γqi
+
+.
+• For t < T and s ∈A′, we perform the following:
+– Compute T dt,ds,Q(t+dt, s, q, gdt,ds,Q) and store the optimal control δ. Some details
+for handling the mixed partial term are given in Appendix A.1.
+– Compute Mdt,ds,Q(t + dt, s, q, gdt,ds,Q) and store the optimal impulse τ.
+– If T dt,ds,Q(t + dt, s, q, gdt,ds,Q) ≥Mdt,ds,Q(t + dt, s, q, gdt,ds,Q), then set
+gdt,ds,Q(t, s, q) = T dt,ds,Q(t + dt, s, q, gdt,ds,Q). Otherwise, set
+gdt,ds,Q(t, s, q) = Mdt,ds,Q(t + dt, s, q, gdt,ds,Q).
+• For t < T and s ∈∂A′, we perform the following:
+– Numerically approximate the condition (q + ∇g) · n = 0, similar to what is done in
+Appendix A.3 and Appendix A.4 for the n = 2 and n = 3 examples, respectively.
+4.3. Convergence of the Numerical Scheme
+We require the following bounds on the value function to ensure the existence of a unique
+viscosity solution to the DPE.
+15
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+Lemma 10. There exists constants c0, c1, c2 ∈R such that
+x +
+X
+i
+qi
+
+si −sign(qi)ξi
+2
+
+≤H ≤x + q · s + c0(T −t) + c1∥q∥1 + c2 .
+(16)
+Proof. The lower bound is attained by the strategy that immediately liquidates and then
+does nothing until time T. For the upper bound we have
+H ≤
+sup
+(δ,τ)∈U
+Et
+
+XT + qT · ST −φ
+T
+Z
+t
+ℓ(qu)du
+
+
+
+q=0
++ q · s + ∥q∥1
+X
+i
+ξi
+≤
+sup
+(δ,τ)∈U′ Et
+
+XT + qT · ST −φ
+T
+Z
+t
+ℓ(qu)du
+
+
+
+q=0
++ q · s
++ (T −t)
+ X
+i
+ξi + sup
+δ , i , ±
+δh(δ)
+!
++ ∥q∥1
+X
+i
+ξi
+= x +
+X
+i
+ξi sup
+ω , t , i
+(qt · ei)c3(σ)
+√
+T −tE [χ1] + (T −t)
+X
+i
+ξi sup
+δ , i , ±
+δh(δ)
++ q · s + (T −t)
+ X
+i
+ξi + sup
+δ , i , ±
+δh(δ)
+!
++ ∥q∥1
+X
+i
+ξi ,
+where χu is the maximum (in absolute value) of a standard n-dimensional Brownian motion
+up to time u and U′ ⊂U is the subset of admissible controls with δ = ∞whenever ∥q∥= 0.
+Finally, the result follows from Assumption 2.
+□
+Although this upper bound is not necessarily sharp, it is suﬃcient to continue. We now turn
+our attention to each term in the upper bound in this proof. The terms q · s + ∥q∥1
+P
+i
+ξi
+correspond to free liquidation to q = 0 with an added bonus of P
+i
+ξi per unit of each open
+position. The investor cannot do better than this (or even come close) on an expected value
+basis. The term (T −t)
+ 
+P
+i
+ξi +
+sup
+ω , t , i , ±
+δh(δ)
+!
+is an upper bound on the proﬁt of all future
+open positions that use ﬁlled LOs. Lastly, we must consider all MO initiated open positions
+(for the case where q = 0 is not an element of the continuation region). If these positions are
+aided with ﬁlled LOs, then we have already accounted for such events. Otherwise, in order
+to produce a proﬁt, the Brownian motion must travel a certain distance from where the open
+position was initiated. The total number of times this happens is proportional to
+√
+T −t, and
+φ > 0 guarantees that qt(ω) is uniformly bounded. We are able to bound the expected round
+trip proﬁt because the dimensionally reduced no-arbitrage region is bounded.
+16
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+Similar to Guilbaud and Pham (2015), we ﬁrst prove monotonicity, stability, and consistency
+properties (Propositions 11, 12, and 13, respectively) of the discrete dynamic evolution operator Sdt,ds,Q(t, s, q, ·). These properties are critical in the proof of Theorem 14, which states
+that the solution to the numerical scheme, as given by (15), converges locally uniformly to the
+unique viscosity solution g(t, s, q).
+Proposition 11. (Monotonicity) For any ds > 0, there exists ht > 0 (depends on ds) such
+that for any 0 < dt < ht, Q ∈N, and ϕ1, ϕ2 ∈C1,2
+b
+
+[0, T] × A
+′ × Zn
+with ϕ1 ≤ϕ2, we have
+Sdt,ds,Q(t, s, q, ϕ1) ≤Sdt,ds,Q(t, s, q, ϕ2).
+Proof. Let ϕ1 ≤ϕ2, Q ∈N, and ds > 0.
+Monotonicity of the operator M is obvious.
+Because ϕ and its derivatives are continuous, and the domain of ϕ is compact, there exists
+ﬁnite constants A1, A2 > 0 such that
+eκ∆ϕ2 −eκ∆ϕ1 ≥(e−κϕ2 −e−κϕ1)eκSϕ1 = (e−κ(ϕ2−ϕ1) −1)eκ∆ϕ1 ≥−A1(ϕ2 −ϕ1) ,
+(17)
+where A1 does not depend on ϕ1 or ϕ2, S is the shift operator associated with ∆, and
+ˆT dt,ds,Q
+ij
+(t, s, q, ϕ2) −ˆT dt,ds,Q
+ij
+(t, s, q, ϕ1) ≥−A2(ϕ2 −ϕ1) ,
+(18)
+where A2 only depends on ds.
+Using (17) and (18) gives
+T dt,ds,Q(t, s, q,ϕ2) −T dt,ds,Q(t, s, q, ϕ1)
+= ϕ2 −ϕ1 + dt1
+2
+n
+X
+i,j=1
+[σσ′]ij
+
+ˆT dt,ds,Q
+ij
+(·, ϕ2) −ˆT dt,ds,Q
+ij
+(·, ϕ1)
+
++ dt
+X
+i,±
+λ
+κe−1+κξ/2  eκ∆ϕ2 −eκ∆ϕ1
+≥(ϕ2 −ϕ1)
+
+1 −dt
+
+
+A1
+X
+i,±
+λ
+κe−1+κξ/2 + A2
+2
+n
+X
+i,j=1
+[σσ′]ij
+
+
+
+
+.
+17
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+Taking
+dt <
+
+A1
+X
+i,±
+λ
+κe−1+κξ/2 + A2
+2
+n
+X
+i,j=1
+[σσ′]ij
+
+
+−1
+(19)
+gives monotonicity of T .
+□
+Proposition 12. (Stability) For any dt, ds > 0 and Q ∈N, there exists a unique solution
+gdt,ds,Q(t, s, q) to (15).
+Furthermore, the sequence {gdt,ds,Q} is uniformly bounded.
+More
+formally, there exists c0, c1, c2 ∈R such that for any (t, s, q) ∈Tdt × Sds × YQ,
+−
+X
+i
+qisign(qi)ξi
+2 ≤gdt,ds,Q(t, s, q) ≤c0(T −t) + c1∥q∥1 + c2 .
+(20)
+Proof. Existence and uniqueness follows immediately from the deﬁnition of the explicit discretization scheme given in (15). The upper bound is a direct consequence of Lemma 10 since
+gdt,ds,Q(t, s, q) ≤g(t, s, q) = H −x−q·s ≤c0(T −t)+c1∥q∥1+c2. The lower bound is attained
+by immediate liquidation of the current inventory and then doing nothing until t = T.
+□
+Proposition 13. (Consistency) For all (t, s, q) ∈[0, T) × A
+′ × Zn and
+ϕ ∈C1,2
+b
+
+[0, T] × A
+′ × Zn
+, we have
+lim
+(dt, ds, Q) →(0, 0, ∞)
+(t′, s′) →(t, s)
+1
+dt
+
+T dt,ds,Q(t′ + dt, s′, q, ϕ) −ϕ(t′, s′, q)
+
+=
+∂ϕ
+∂t + 1
+2
+nP
+i,j=1
+[σσ′]ij
+∂2ϕ
+∂si∂sj + P
+i,±
+λ
+κ exp
+n
+−1 + κξ
+2 + κ∆ϕ
+o
+−φ ℓ(q)
+(21)
+and
+lim
+(dt, ds, Q) →(0, 0, ∞)
+(t′, s′) →(t, s)
+Mdt,ds,Q(t′ + dt, s′, q, ϕ) = max
+i , ± {∆±
+i ϕ −ξi/2} .
+(22)
+Proof. Equation (22) follows by continuity of ϕ. To prove (21), let (t′, s′, q) ∈[0, T)×A
+′×Zn
+and observe:
+18
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+1
+dt
+h
+T dt,ds,Q(t′ + dt, s′, q, ϕ) −ϕ(t′, s′, q)
+i
+= 1
+dt
+
+ϕ(t′ + dt, s′, q) −ϕ(t′, s′, q)
+
+−φ ℓ(q)
++ 1
+2
+n
+X
+i,j=1
+[σσ′]ij ˆT dt,ds,Q
+ij
+(t′ + dt, s′, q, ϕ)
++
+X
+i,±
+λ
+κ exp
+
+−1 + κξ
+2 + κ∆ϕ(t′ + dt, s′, q)
+
+.
+The only term that does not trivially converge is ∆ϕ(t′ + dt, s′, q) (the other terms clearly
+converge since ϕ ∈C1,2
+b ). But ∆ϕ(t′ + dt, s′, q) is also continuous in (t, s) whenever Q ≥
+∥q∥∞+ 1, thus proving (21).
+□
+Observe that we do not need to include a sequence of inventory levels due to the fact that q
+resides on the sparse grid Zn. More formally, one could only consider the limiting sequence
+(t′ + dt, s′, q′) →(t, s, q) suﬃciently far in the tail when q′ = q onwards.
+Theorem 14. (Convergence) The solution gdt,ds,Q to the numerical scheme (15) converges
+locally uniformly to the unique viscosity solution g(t, s, q) on [0, T)×A
+′ ×Zn, as (dt, ds, Q) →
+(0, 0, ∞), provided dt < f(ds) for some f : R+ →R+.
+Proof. Follows from Propositions 11, 12, 13, and Barles and Souganidis (1991). For completeness, the details are provided.
+The limits
+g∗(t, s, q) :=
+lim inf
+(dt, ds, Q) →(0, 0, ∞)
+(t′, s′) →(t, s)
+gdt,ds,Q(t′, s′, q)
+g∗(t, s, q) :=
+lim sup
+(dt, ds, Q) →(0, 0, ∞)
+(t′, s′) →(t, s)
+gdt,ds,Q(t′, s′, q)
+are lower/upper semi-continuous functions on [0, T] × A
+′ × Zn, and inherit the boundedness
+19
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+of {gdt,ds,Q} by the stability result in Proposition 12. It suﬃces to show (by symmetry and
+the strong comparison principle) that g∗possesses the viscosity supersolution property. To
+this end, let (¯t,¯s, ¯q) ∈[0, T) × A
+′ × Zn and ϕ ∈C1,2
+b
+
+[0, T] × A
+′ × Zn
+such that (¯t,¯s, ¯q)
+attains the strict global minimum of g∗−ϕ. Then there exists sequences {(t′
+k, s′
+k, q′
+k)}k in
+[0, T) × A
+′ × Zn and {(dtk, dsk, Qk)}k such that
+(t′
+k, s′
+k, q′
+k) −→(¯t,¯s, ¯q) ,
+(dtk, dsk, Qk) −→(0, 0, ∞) ,
+gdtk,dsk,Qk −→g∗(¯t,¯s, ¯q) ,
+and (t′
+k, s′
+k, q′
+k) is the global minimizer of gdtk,dsk,Qk −ϕ .
+Observe that for us to apply the monotonicity result in Proposition 11, the sequence {(dtk, dsk, Qk)}k
+must have dtk suﬃciently small for each dsk, as prescribed by (19).
+Denote the sequence of minimum values {βk}k by βk := (gdtk,dsk,Qk −ϕ)(t′
+k, s′
+k, q′
+k). Then we
+have the relation gdtk,dsk,Qk ≥ϕ+βk. Applying the deﬁnition of the numerical scheme in (15)
+and the monotonicity result from Proposition 11 gives:
+βk + ϕ(t′
+k, s′
+k, q′
+k) = gdtk,dsk,Qk(t′
+k, s′
+k, q′
+k)
+= Sdtk,dsk,Qk(t′
+k + dtk, s′
+k, q′
+k, gdtk,dsk,Qk)
+≥Sdtk,dsk,Qk(t′
+k + dtk, s′
+k, q′
+k, ϕ + βk)
+= Sdtk,dsk,Qk(t′
+k + dtk, s′
+k, q′
+k, ϕ) + βk
+= max
+h
+T dtk,dsk,Qk(t′
+k + dtk, s′
+k, q′
+k, ϕ) , Mdtk,dsk,Qk(t′
+k + dtk, s′
+k, q′
+k, ϕ)
+i
++ βk .
+We then have the relation
+min
+ 1
+dtk
+h
+ϕ(t′
+k, s′
+k, q′
+k) −T dtk,dsk,Qk(t′
+k + dtk, s′
+k, q′
+k, ϕ)
+i
+,
+ϕ(t′
+k, s′
+k, q′
+k) −Mdtk,dsk,Qk(t′
+k + dtk, s′
+k, q′
+k, ϕ)
+
+≥0 ,
+and applying the consistency result in Proposition 13 while taking k →∞ﬁnally yields the
+20
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+viscosity supersolution property
+min
+
+−∂ϕ
+∂t −1
+2
+n
+X
+i,j=1
+[σσ′]ij
+∂2ϕ
+∂si∂sj
+−
+X
+i,±
+λ
+κ exp
+
+−1 + κξ
+2 + κ∆ϕ
+
++ φ ℓ(q) ,
+ϕ −max
+i , ±
+
+∆±
+i ϕ −ξi
+2
+
+(¯t,¯s,¯q)
+≥0 .
+□
+5. Optimal Trading: no-arbitrage region and performance of strategy
+5.1. No-Arbitrage region
+We use our 2-dimensional illustrative example to explore the behavior of the optimal strategy.
+Recall that the ﬁrst asset S1
+t is a traded equity and the second asset, S2
+t , is a T-maturity
+futures contract written on S1
+t . In this economy, we have V
+
+(1 , −1)′ · ST
+
+= 0, yielding a
+market that is over-complete. To this end, we take b = (1 , −1)′ as the basis of B for this
+illustrative example, and other parameters are given in Table 1.
+Parameter
+Value
+φ
+1
+σ
+ 0.005
+0.009
+0
+0.015
+
+γ
+0.001
+ξ1 , ξ2
+0.02
+λ−
+1 , λ+
+1
+1.2
+λ−
+2 , λ+
+2
+1.0
+κ−
+1 , κ+
+1
+40
+κ−
+2 , κ+
+2
+25
+T −t
+60
+Table 1: Model parameters used in the analysis of the function g(t, s, q), the continuation region, and the
+optimal inventory level. Recall that the ﬁll rate assumption h±
+i (δ) = λ±
+i e−κ±
+i (δ−ξi) from Example 6 is being
+made.
+For simplicity, we assume that the ﬁll rates on both sides of the LOB are the same (see Table 1)
+and that the arrival of buy and sell MOs are also the same, but both the ﬁll rate parameter and
+arrival of MOs diﬀer across the two assets. For example, the underlying equity S1
+t is modeled
+with a higher rate of incoming MOs than S2
+t which is the T-maturity futures contract. This
+21
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+is because the underlying trades more actively than the ﬁrst nearby futures and so we assume
+that there is more liquidity in the equity than the futures by taking κ±
+1 > κ±
+2 .6
+Finally, note that because ξi > 0, we do not require their correlation to be 1 or even for their
+volatilities to be the same. However, it is ﬁnancially sound for their volatilities to be similar
+and for their correlation to be positive. This leads to our choice of volatility matrix, σ, which
+induces a correlation of approximately 0.87. The total volatility of Asset 1 turns out to be less
+than that of Asset 2. The rationale behind this is that the sources of quadratic variation of the
+futures contract not only include the underlying equity (Asset 1), but also with that of interest
+rates and stochastic volatility (which aﬀects the futures price via the convexity correction).
+So the futures contract should then have a larger total volatility than its underlying.
+For a ﬁxed time t, Figures 1(a) and 1(c) show g(t, s, q) as a function of q for ﬁxed s =
+(100, 100). It is clear that it attains its maximum at q = (0, 0). The asymmetry in g with
+respect to inventory is due to the fact that the risk associated with a single unit of Asset 1
+is less than that of Asset 2. Furthermore, portfolios of the form (a, b) with sign(a)̸ = sign(b)
+are less risky than portfolios with sign(a) = sign(b) as the two assets are strongly positively
+correlated. This is depicted in the dark blue regions in the upper right and lower left corners
+of Figure 1(c), which corresponds to large long positions and large short positions in both
+assets, respectively.
+The left and right panels of Figure 1 show g(t, s, q) as a function of q for two diﬀerent values
+of s1 −s2. When s1 = s2, the maximum of g(t, s, q) is again obtained at q = (0, 0). However,
+this is no longer the case when s1̸ = s2. When s1 < s2, the investor would rather be long
+Asset 1 and short Asset 2, and she will post LOs in a way that reﬂects this desire to hold
+such an inventory. This is because the process S1
+t −S2
+t is bounded from below by the sum
+of the assets’ half-spreads. Hence, when this process is near the lower boundary, there is the
+potential for proﬁts as we have assumed reﬂection on this boundary.
+Figure 2 shows how the continuation region also depends on s1 −s2. When s1 = s2, the
+continuation region is centered around the origin, just as one would expect. However, when
+one asset is cheap relative to the other, i.e. s1 < s2, then the agent prefers to long Asset 1 and
+short Asset 2 in an attempt to proﬁt when Asset 1 increases relative to Asset 2. Furthermore,
+she will be aggressive and execute MOs if she is caught holding a portfolio that is short Asset 1
+and long Asset 2 when this shift in the midprices occurs, as demonstrated by the absence of the
+continuation region in the upper left corner of Figure 2(b). As the price discrepancy becomes
+larger, the investor adjusts her strategy to accumulate inventory in a way that positions her
+to proﬁt from these market conditions.
+6Although this is true for equities, there are cases (such as commodities) when a future’s underlying does
+not actively trade or is a non-traded asset (e.g., electricity).
+22
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+−50
+0
+50
+−50
+0
+50
+3
+3.5
+4
+4.5
+q1
+q2
+g
+(a) s1 = s2
+−50
+0
+50
+−50
+0
+50
+3
+3.5
+4
+4.5
+q1
+q2
+g
+(b) s1 < s2
+−40
+−20
+0
+20
+40
+−40
+−20
+0
+20
+40
+q1
+q2
+(c) s1 = s2
+−40
+−20
+0
+20
+40
+−40
+−20
+0
+20
+40
+q1
+q2
+(d) s1 < s2
+Figure 1: g surface for various s. Figures 1(a) and 1(c) show the surface and heatmap, respectively, of g(t, s, q)
+when the assets’ midprices are equal. Figures 1(b) and 1(d) show the surface and heatmap, respectively, of
+g(t, s, q) when Asset 1 is cheap relative to Asset 2 (s1 = s2 −0.012).
+As discussed earlier, inventory control plays a critical role in investment strategies.
+The
+investor actively tries to liquidate outstanding long positions and cover outstanding short
+positions. In a single asset scenario, the logistics behind this are clear. However, in a multiple
+asset setting with correlated assets, the investor may attempt to partially hedge a long position
+in one asset with a short position in another asset that is positively correlated.
+Corollary 15. Mean Reversion of Inventory. Given the optimal strategy δ∗, the expected
+drift of the inventory process qt inside the continuation region is given by
+lim
+u→t+
+1
+u −tE[qu −qt | Ft] =
+h
+λ−
+i h−
+i (δ−
+i,t) −λ+
+i h+
+i (δ+
+i,t)
+i
+i .
+(23)
+Proof. By observing that each element of δt is a right continuous with left limits (RCLL)
+23
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+−40
+−20
+0
+20
+40
+−40
+−20
+0
+20
+40
+q1
+q2
+(a) s1 = s2
+−40
+−20
+0
+20
+40
+−40
+−20
+0
+20
+40
+q1
+q2
+(b) s1 < s2
+Figure 2: Continuation region for various s. The diﬀerent coloured regions correspond to diﬀerent MO submissions. Namely, light blue: Asset 1 buy MO; orange: Asset 1 sell MO; dark blue: Asset 2 buy MO; burgundy:
+Asset 2 sell MO; green: continuation region; and white: unattainable. Recall that Figure 2(b) is speciﬁed by
+s1 = s2 −0.012.
+function of t (for ﬁxed ω ∈Ω), we can conclude that the expected drift in inventories inside
+the continuation region is given by the diﬀerence in the arrival rates of ﬁlled LOs at time t. □
+Figure 3 shows the inventory drift as a function of the midprice s. When the trader is ﬂat
+(holding zero inventory) and Asset 1 is cheap relative to Asset 2 (i.e. when s1−s2 is small), she
+wants to acquire a long position in Asset 1 and short position in Asset 2. The corresponding
+drifts in the q1
+t and q2
+t processes become more pronounced as the inventory penalty parameter
+φ decreases.
+Figures 4 and 5 show the drift in the process qt as a function of the current inventory q for
+ﬁxed values of s1 −s2 (and φ = 1 as taken in previous plots where not explicitly stated). The
+inventory will be attracted to the curve where the reversion rate is 0 (colored green). Notice
+how in each ﬁgure the qi process is attracted to a curve and not a point. More speciﬁcally,
+for each value of q, the component qi is attracted to a particular point that depends on the
+values of the other components of q. When q1 = 0 and s1 = s2, then the optimal amount
+of Asset 2 to hold is 0. However, when q1 > 0, then the optimal amount of Asset 2 to hold
+is less than 0. This highlights the behaviour that the investor tries to partially hedge a long
+position in one asset by acquiring a short position in the other (as well as try to reduce the
+long position in Asset 1 as well).
+The intersection point of the corresponding attraction curves for q1 and q2 then acts as the
+attraction point for the vector-valued inventory process qt. Figure 6 is a graphical depiction
+of this attraction point as a function of s1 −s2.
+24
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+−0.02
+−0.01
+0
+0.01
+0.02
+−0.4
+−0.3
+−0.2
+−0.1
+0
+0.1
+0.2
+s1 −s2
+drift of q1
+ 
+ 
+φ = 1
+φ = 10
+φ = 100
+(a) Asset 1
+−0.02
+−0.01
+0
+0.01
+0.02
+−0.4
+−0.3
+−0.2
+−0.1
+0
+0.1
+0.2
+s1 −s2
+drift of q2
+ 
+ 
+φ = 1
+φ = 10
+φ = 100
+(b) Asset 2
+Figure 3: Inventory drift when the investor is ﬂat (i.e. q1 = q2 = 0).
+5.2. Simulation Study: PnL of the Strategy
+In this section we use simulations to analyze the ﬁnancial performance of an investor who
+follows the optimal strategy in the last section. We use the time limiting strategy for T −t
+large since the
+. The investor’s operating frequency is every 5 milliseconds, the maximum
+amount of inventory the investor can hold long or short7 is Q = 40 for each asset, and the
+trading horizon is T = 300 seconds. Other model parameters are provided in Table 2. Recall
+that we continue with the ﬁll rate assumption h±
+i (δ) = λ±
+i e−κ±
+i (δ−ξi) from Example 6.
+5.3. Facing Adverse Selection
+Here we analyze the strategy under more realistic scenarios, in particular we assume that an
+important source of risk faced by the investor is adverse selection. The investor might be
+trading with better informed counterparties and therefore faces the risk of buying assets right
+before prices drop or selling assets right before prices rise. In our analysis, we include adverse
+selection by assuming that some MOs will aﬀect the midprice of the asset, but the investor
+does not account for this in her model.
+With this in mind, we suppose that an MO originates from one of two sources. It was either
+executed by an informed trader, or an uninformed one.
+We assume that the probability
+7This bound on the investor’s inventory only plays a role in the numerical solution of the value function and
+was not imposed in the optimal control problem above, but it is trivial to include it. Depending on the penalty
+parameter φ > 0, the exact strategy will dictate uniform (over time and Ω) bounds on the investor’s inventory
+since the continuation region is bounded, as argued in Section 4.3. This is visually depicted in Figure 2 where
+the optimal strategy keeps inventory inside the rhombus shaped region.
+25
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+−40
+−20
+0
+20
+40
+−40
+−20
+0
+20
+40
+ 
+q1
+ 
+q2
+−0.2
+−0.1
+0
+0.1
+0.2
+(a) Asset 1
+−40
+−20
+0
+20
+40
+−40
+−20
+0
+20
+40
+ 
+q1
+ 
+q2
+−0.1
+−0.05
+0
+0.05
+0.1
+(b) Asset 2
+Figure 4: Inventory drift when the assets’ midprices are equal (i.e. s1 = s2).
+that any particular MO comes from an informed trader is constant, and we shall denote this
+probability by ρ. We describe the two possible eﬀects by example. Suppose the current best
+bid-ask quotes for Assets 1 and 2 are 100.00/100.02 and 100.01/100.03, respectively. A large
+buy MO on Asset 1 arrives, widening the spread to 100.00/100.06. At this point, one of two
+things will happen immediately:
+• The MO was executed by an informed trader:
+The best bid-ask quotes for Asset 1
+becomes 100.04/100.06, giving an immediate impact of $0.04.
+This impacts Asset 2
+in the same way causing the BBO to move to 100.05/100.07.
+The informed trader
+knows that there will be upward pressure on the price, and some other informed market
+participants (on both assets) move their current quotes to reﬂect this.
+• The MO was executed by an uninformed trader: The best bid-ask quotes for both assets
+remains unchanged. There is nothing special about this MO, and the depleted portion
+of the LOB reﬁlls with LOs.
+This describes the immediate eﬀect on the midprice process which now follows
+dSt = αtdt + σdBt + d(Nt−+1)
+ 
+1
+1
+1
+1
+!
+d
+
+bN+
+t + bN−
+t
+
+,
+dαt = −ζ αt dt + e(Nt−+1) Ψ d
+
+bN+
+t −bN−
+t
+
+.
+(24)
+Here the vector-valued processes { bN−
+t }0≤t≤T and { bN+
+t }0≤t≤T are the total number of informed
+market sell and buy orders up to time t, respectively, with the ith component representing
+Asset i. The process αt denotes the persistent impact of an informed MO which aﬀects the
+26
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+−40
+−20
+0
+20
+40
+−40
+−20
+0
+20
+40
+ 
+q1
+ 
+q2
+−0.2
+−0.1
+0
+0.1
+0.2
+(a) Asset 1
+−40
+−20
+0
+20
+40
+−40
+−20
+0
+20
+40
+ 
+q1
+ 
+q2
+−0.1
+−0.05
+0
+0.05
+0.1
+(b) Asset 2
+Figure 5: Inventory drift when Asset 1 is cheap relative to Asset 2 (i.e. s1 = s2 −0.012).
+−40
+−20
+0
+20
+40
+−40
+−20
+0
+20
+40
+q1
+q2
+Figure 6: Mean reversion point of q as a function of s1 −s2. The red (blue) dots correspond to small (large)
+values of s1 −s2.
+drift of the midprice process.8 Moreover, St has (normal) reﬂection at the boundary of A, ζ
+and Ψ are n × n matrices with non-negative entries, d(1), d(2), . . . is the sequence of random
+variables representing immediate market impact (will be non-negative for market buy orders
+and non-positive for market sell orders), and e(1), e(2), . . . is an i.i.d. sequence of exponential
+random variables with mean 1.
+Note that because the immediate market impact term adds a random multiple of (1, 1)′ to
+St, the resulting value of the midprice vector is guaranteed to remain inside the no-arbitrage
+region A (recall from Section 2 that A =
+
+s ∈R2 : |s1 −s2| < 1
+2(ξ1 + ξ2)
+	
+) and α1
+t = α2
+t
+8Since all of these eﬀects occur simultaneously (or faster than the HFT can respond), this model does not
+admit latency arbitrage.
+27
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+Parameter
+Value
+T
+300
+φ
+0.3, 1, 3, 10, 30, 100, 200
+σ
+ 0.005
+0.009
+0
+0.015
+
+γ
+0.001
+ξ1 , ξ2
+0.02
+λ−
+1 , , λ+
+1
+1.2
+λ−
+2 , λ+
+2
+1.0
+κ−
+1 , κ+
+1
+40
+κ−
+2 , κ+
+2
+25
+ζ
+ 2
+0
+0
+2
+
+ρ
+0.40, 0.50, 0.60
+ϵ
+0, 0.01, 0.02, 0.04
+Table 2:
+Model parameters used in the simulation study.
+Recall that the ﬁll rate assumption h±
+i (δ) =
+λ±
+i e−κ±
+i (δ−ξi) from Example 6 is being made.
+(which will be denoted αt). Equation (24) is the natural multivariate extension of the drift
+dynamics presented in Cartea et al. (2014).
+When an informed buy MO arrives on Asset i, then there will immediately be a jump in αt
+equal to the ith column of Ψ multiplied by a random exponential random variable. The matrix
+ζ serves as the decay matrix which forces each component of the process αt to mean revert
+to zero. The eﬀect of an informed sell MO is similar, except it induces a negative jump in αt.
+Observe that we are using bN±
+t instead of N±
+t or N
+±
+t in (24). This has the interpretation that
+only the MOs of informed traders will have an impact on αt. Furthermore, our own MOs do
+not move the market, unlike the informed traders’ MOs, as our MOs are quite small in size and
+we are a small player without superior market information. For the purposes of illustration,
+we make the further assumption that Ψ = ϵ
+ 
+1
+1
+1
+1
+!
+, where ϵ ≥0 is a scale parameter.
+Figure 7 shows sample paths for the midprice process St and its drift process αt. Observe the
+jumps in both the midprice process and in the short-term drift component due to the activity
+of informed traders. On this particular time window, Asset 1 is priced lower than Asset 2.
+Observe in Figure 7(c) how the midprice spends most of the time near the upper boundary.
+It will be shown in Section 4.1 that g is only a function of s through the function s1 −s2. We
+provide a sample path of this process in Figure 7(d). Again, notice that on this particular
+window S(1)
+t
+−S(2)
+t
+< 0, but still obeying the bound S(1)
+t
+−S(2)
+t
+> −1
+2(ξ1 + ξ2) = −0.02.
+28
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+270
+271
+272
+273
+274
+275
+99.35
+99.4
+99.45
+99.5
+99.55
+99.6
+99.65
+t
+ 
+ 
+S(1)
+t
+S(2)
+t
+(a) Midprice Process
+270
+271
+272
+273
+274
+275
+−0.03
+−0.02
+−0.01
+0
+0.01
+0.02
+0.03
+t
+αt
+(b) Drift Process, αt = α1
+t = α2
+t
+99.4
+99.45
+99.5
+99.55
+99.6
+99.65
+99.7
+99.4
+99.45
+99.5
+99.55
+99.6
+99.65
+99.7
+S(1)
+S(2)
+(c) Midprice Process
+270
+271
+272
+273
+274
+275
+−0.02
+−0.015
+−0.01
+−0.005
+0
+t
+S(1)
+t
+−S(2)
+t
+(d) Dimensionally Reduced Midprice Process
+Figure 7: Sample paths of the midprice process St and drift process αt. The red lines in Figure 7(c) represent
+the boundary of the no-arbitrage region.
+Notice how the investor’s buy LO quote for Asset 1 (as depicted in Figure 8(a)) varies as the
+process S(1)
+t
+−S(2)
+t
+varies over time in Figure 7(d). The discrete jumps in δ−
+1,t are due to the
+state variable s1 −s2 moving to another (discrete) grid point (recall that g(t, s, q) was solved
+numerically on a sparse grid for the spacial variable s). In this plot, the cheaper Asset 1 is
+relative to Asset 2 (i.e. when S(1)
+t
+−S(2)
+t
+is close to -0.02), the more willing the investor is to
+acquire an additional unit of Asset 1. Hence, she posts her limit buy order closer to the best
+bid for Asset 1 and her limit sell order closer to the best oﬀer for Asset 2. Along this sample
+path, the investor manages to acquire a long position in Asset 1, as shown in 8(b), and is
+using her short position in Asset 2 to partially hedge away the risk associated with being long
+the underlying equity.
+Although these adverse selection eﬀects are present in the DGP, the trader cannot estimate
+the correct drift of the asset so she assumes that it is zero. Recall that the investor assumes
+that the dynamics of St are given by Assumption 1, and that this was the assumption used
+29
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+270
+271
+272
+273
+274
+275
+0.025
+0.026
+0.027
+0.028
+0.029
+0.03
+0.031
+0.032
+0.033
+t
+δ−
+1,t
+ 
+ 
+Buy MO
+Sell MO
+Buy LO fill
+Sell LO fill
+(a) Optimal Asset 1 Buy LO Depth
+270
+271
+272
+273
+274
+275
+−6
+−4
+−2
+0
+2
+4
+6
+t
+ 
+ 
+q1,t
+q2,t
+(b) Inventory Process
+Figure 8: Sample paths of the investor’s LO depth and her inventory level for φ = 10.
+when solving the stochastic control problem above.
+5.4. Results of the Simulation Study
+Here we show how the investor’s strategy performs when we vary the running inventory penalty
+φ and her exposure to adverse selection by varying the scale parameter ϵ. The investor starts
+with zero inventory in both assets and will trade for T = 300 seconds. We run 2,500 simulations
+and record the PnL for each run. Figure 9 provides histograms depicting the distribution of
+the terminal PnL for two levels of running inventory penalty. In Figure 9(a) we assume that
+the investor is not exposed to adverse selection costs by assuming ϵ = 0 and in Figure 9(b) we
+show the histogram of the PnLs when the investor is exposed to adverse selection eﬀects by
+setting ϵ = 0.02.
+However, when we increase the scale parameter ϵ in the jump size of the short-term drift
+process, we observe that the less inventory averse investor does not necessarily outperform
+her more inventory averse counterpart. This is because the less inventory averse investor is
+willing to hold larger inventories for a longer period of time which further exposes her to the
+drift of St, while the more inventory averse investor cuts her losses early in an attempt to
+reduce inventory risk. The ϵ = 0.04 case in Figure 10 illustrates this result very well.
+There is some debate about which risk metric better characterizes the riskiness of a strategy.
+Classical work in ﬁnance is typically only concerned with the terminal distribution of PnL (at
+time T); namely, its variance (or standard deviation) and possibly higher moments that give
+information about the weight of the tails. However, considering the penalty term in (3), we
+see that we are concerned with the optimal portfolio’s risk throughout the entire time interval
+[0, T], not just at the end.
+To this end, we classify a strategy’s riskiness via the penalty
+30
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+(a) ϵ = 0
+(b) ϵ = 0.02
+Figure 9: Distribution of terminal proﬁt and loss. The probability of an informed MO is ﬁxed at ρ = 0.50.
+0
+1
+2
+3
+4
+5
+6
+−3
+−2
+−1
+0
+1
+2
+3
+4
+Standard Deviation of PnL
+Mean PnL
+ 
+ 
+ϵ = 0
+ϵ = 0.01
+ϵ = 0.02
+ϵ = 0.04
+(a) Mean PnL vs Std Dev PnL
+0
+0.2
+0.4
+0.6
+0.8
+−3
+−2
+−1
+0
+1
+2
+3
+4
+Mean Inventory Risk
+Mean PnL
+ 
+ 
+ϵ = 0
+ϵ = 0.01
+ϵ = 0.02
+ϵ = 0.04
+(b) Mean PnL vs Mean Inventory Risk
+Figure 10: Performance of strategy for various φ with diﬀerent drift impact scale parameters ϵ. The probability
+of an informed MO is ﬁxed at ρ = 0.50.
+R T
+0 ℓ(qu) du and consider the mean of this quantity. This is what is termed mean inventory
+risk, see Cartea and Jaimungal (2015c) in the context of algorithmic trading.
+Figures 10 and 11 provide ‘eﬃcient frontiers’ comparing expected PnL against both standard
+deviation of PnL and mean inventory risk for a variety of adverse selection parameters (ϵ and
+ρ, respectively). Decreasing φ (i.e. increasing inventory-risk appetite) corresponds to moving
+in the rightward direction of this plot. As stated in Table 2, φ ranges from 0.3 to 200.
+Recall that the investor assumes that the drift of St is zero, when in fact there is a short-term
+component in the drift that aﬀects midprices when informed traders send MOs. As outlined
+in detail in Section 5.3, we have a scale parameter ϵ ≥0 that represents the magnitude of
+31
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+0
+1
+2
+3
+4
+5
+−4
+−2
+0
+2
+4
+6
+8
+Standard Deviation of PnL
+Mean PnL
+ 
+ 
+ρ = 0.40
+ρ = 0.50
+ρ = 0.60
+(a) Mean PnL vs Std Dev PnL
+0
+0.2
+0.4
+0.6
+0.8
+−4
+−2
+0
+2
+4
+6
+8
+Mean Inventory Risk
+Mean PnL
+ 
+ 
+ρ = 0.40
+ρ = 0.50
+ρ = 0.60
+(b) Mean PnL vs Mean Inventory Risk
+Figure 11: Performance of strategy for various φ with diﬀerent probabilities of informed MOs ρ. The drift
+impact scale parameter is ﬁxed at ϵ = 0.01.
+such eﬀects. The larger the parameter, the stronger the eﬀects of adverse selection are in the
+market. It is clear from Figure 10, that adverse selection generally has a negative eﬀect on the
+investor’s PnL. In the extreme case of ϵ = 0.04, these eﬀects are so strong that decreasing the
+investor’s inventory aversion actually decreases return because she is allowing her portfolio to
+be exposed to these eﬀects for a longer period of time.
+Up until this point, we have assumed that 50% of all incoming MOs are from informed traders
+and thus have an impact on the drift of the midprice. Recall that MOs of this type have
+two eﬀects: an immediate eﬀect and a persistent eﬀect. If we increase the probability ρ that
+an MO comes from an informed trader, then this will directly translate into an increase in
+the number of MOs that immediately move the market. Because this movement is always
+against the investor when her LO is ﬁlled, it will always have a negative impact on her PnL
+(in contrast to increasing ϵ where this was not the case). The resulting eﬃcient frontiers are
+reported in Figure 11 for three diﬀering values of ρ.
+Figure 12 shows that the larger the inventory penalty parameter φ is, the more MOs are
+executed by the investor.
+Larger φ means that the investor imposes a higher penalty on
+running inventory, which induces higher mean reversion in inventories. This is attained by
+adjusting the depth of LOs and by executing MOs to unwind positions. For example, if the
+inventory is long, the sell LO will be posted very close to the midprice, the buy LO far away
+from the midprice, and if necessary execute a sell MO. One can also see that see that the larger
+φ is, the smaller the continuation region, so the boundary gets breached more often inducing
+MOs that force the investor to cross the bid-ask spread to bring q back into the continuation
+region.
+Although there is symmetry between the buy and sell sides of the LOB, there is an intuitive
+32
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+(a) Asset 1 – Market Buy
+(b) Asset 1 – Market Sell
+(c) Asset 2 – Market Buy
+(d) Asset 2 – Market Sell
+Figure 12: Distribution of the number of executed MOs for various inventory penalty levels when ϵ = 0.01 and
+ρ = 0.50.
+explanation for the drastic diﬀerence in number of executed MOs between the two assets.
+Asset 2 has a higher total volatility, which increases the penalty for holding a position in it,
+hence, the continuation region is smaller in the q2 direction than in the q1 direction (as seen
+in Figure 2).
+6. Conclusions
+We develop a trading strategy which employs limit and market orders in a multi-asset economy
+where assets exhibit structural dependence. For example, i) trading in a futures contract and
+its underlying, or ii) trading in the ﬁrst and second nearby futures and the 1-2 calendar spread.
+When structurally dependent assets trade with positive bid-ask spread, midprices live in a no33
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+arbitrage region and we show how an investor can take positions in these assets to maximize
+expected cash over a trading horizon.
+The investor’s performance criteria is linear in wealth and penalizes inventory positions. Key
+to the strategy is the behaviour of midprices close to the edges of the no-arbitrage region.
+Price pressure from arbitrageurs and other traders push prices to the interior of the region,
+and in our framework this is modeled assuming that midprices follow a multivariate Brownian
+motion that is reﬂected on the boundaries of this region.
+The optimal strategy exhibits two dominant features which depend on how far the vector of
+midprices is from the no-arbitrage bounds. When midprices are suﬃciently far from the noarbitrage edges, the strategy behaves as that of a market maker who posts buy and sell limit
+orders. However, these limit orders are strategically placed in the book to not only control
+for inventory exposure, but also in anticipation of midprices approaching the edges of the
+no-arbitrage region where the strategy employs a mix of market and limit orders to execute
+statistical arbitrages.
+We employ simulations to show the qualitative features of the optimal trading strategy. Market
+orders, employed for statistical arbitrages and inventory management, play a key role in the
+success of the strategy. Limit orders are posted in the book to earn the spread, and to manage
+inventories where the instantaneous correlation between multiple assets is also used to partially
+hedge away the inventory risk associated with a large open position in the less liquid assets.
+Finally, an explicit numerical scheme is provided to solve the derived HJBQVI and convergence
+results are discussed to ensure that the given discretization scheme converges to the true
+viscosity solution. Lastly, we derive a dimensional reduction in the spacial variable for the
+midprice which signiﬁcantly reduces the computational time of the numerical solution, thus
+making it viable for practical applications.
+References
+Almgren, R. (2003, January). Optimal execution with nonlinear impact functions and tradingenhanced risk. Applied Mathematical Finance 10(1), 1–18.
+Almgren, R. and N. Chriss (2000). Optimal execution of portfolio transactions. Journal of
+Risk 3.
+Avellaneda, M. and S. Stoikov (2008, November). High-frequency trading in a limit order
+book. Quantitative Finance 8, 217–224.
+Barles, G. and P. Souganidis (1991). Convergence of approximation schemes for fully nonlinear
+second order equations. Asymptotic Analysis 4, 271–283.
+34
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+Bayraktar, E. and M. Ludkovski (2014). Liquidation in limit order books with controlled
+intensity. Mathematical Finance 24(4), 627–650.
+Cartea, ´A., S. Jaimungal, , and J. Ricci (2014). Buy low, sell high: A high-frequency trading
+perspective. SIAM Journal of Financial Mathematics 5, 415–444.
+Cartea, ´A. and S. Jaimungal (2015a). Algorithmic trading of co-integrated assets. Available
+at SSRN 2637883.
+Cartea, ´A. and S. Jaimungal (2015b). Optimal execution with limit and market orders. Quantitative Finance 15(8), 1279–1291.
+Cartea, ´A. and S. Jaimungal (2015c). Risk metrics and ﬁne tuning of high-frequency trading
+strategies. Mathematical Finance 25(3), 576–611.
+Cartea, ´A., S. Jaimungal, and R. Donnelly (2013). Algorithmic trading with model uncertainty.
+SSRN: http://ssrn.com/abstract=2310645.
+Cartea, ´A., S. Jaimungal, and J. Penalva (2015). Algorithmic and High-Frequency Trading.
+Cambridge University Press.
+Forsyth, P., S. Kennedy, J. Tse, and H. Windcliﬀ(2012). Optimal trade execution: a meanquadratic-variation approach. Journal of Economic Dynamics and Control 36, 1971–1991.
+Gu´eant, O., C.-A. Lehalle, and J. Fernandez Tapia (2012). Optimal portfolio liquidation with
+limit orders. SIAM Journal on Financial Mathematics 3(1), 740–764.
+Gu´eant, O., C.-A. Lehalle, and J. Fernandez Tapia (2013). Dealing with the inventory risk:
+a solution to the market making problem. Mathematics and Financial Economics 7(4),
+477–507.
+Guilbaud, F. and H. Pham (2013). Optimal high frequency trading with limit and market
+orders. Quantitative Finance 13(1), 79–94.
+Guilbaud, F. and H. Pham (2015). Optimal high-frequency trading in a pro rata microstructure
+with predictive information. Mathematical Finance 25(3), 545–575.
+Ho, T. and H. R. Stoll (1981). Optimal dealer pricing under transactions and return uncertainty. Journal of Financial Economics 9, 47–73.
+Kharroubi, I. and H. Pham (2010). Optimal portfolio liquidation with execution cost and risk.
+SIAM Journal on Financial Mathematics 1, 897–931.
+Leung, T. and X. Li (2015).
+Optimal mean reversion trading with transaction costs and
+stop-loss exit. International Journal of Theoretical and Applied Finance, 1550020.
+Øksendal, B. and A. Sulem (2007). Applied Stochastic Control of Jump Diﬀusions, Volume 2.
+Berlin, Heidelberg, New York: Universitext, Springer Verlag.
+35
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+Tourin, A. and P. Lintilhac (2015). A dynamic model for pairs trading strategies. Working
+paper.
+Tourin, A. and R. Yan (2013). Dynamic pairs trading using the stochastic control approach.
+Journal of Economic Dynamics and Control 37(10), 1972 – 1981.
+Appendix A. Evaluating Non-Trivial Terms in the Numerical Scheme of Section
+4.2
+This section illustrates how to apply the dimensional reduction to terms where the result is
+non-trivial. All expressions are given explicitly for the n = 2 example. In what follows, all
+functions are evaluated at a ﬁxed inventory level, q, and this dependence is suppressed.
+Appendix A.1. The Mixed Partial Term
+For i̸ = j, we numerically approximate the following term that appears in (12):
+∂2g
+∂si∂sj
+≈g(si + d˜s, sj + d˜s, ·) −g(si + d˜s, ·) −g(sj + d˜s, ·) + g(·)
+d˜s2
+,
+(A.1)
+where d˜s is the step size of the ﬁnite diﬀerence approximation. Note that if we require the
+grids to line up in our n = 2 example, we must have d˜s = ds, where ds is the step size on the
+dimensionally reduced grid given in Appendix A.3.
+Appendix A.2. Dimensional Reduction
+Recall that Corollary 9 states that there exists v ∈Rn \ {0} such that Dvg = 0. In our
+example, v = 1, so we take s := s1 −s2.
+Continuing from (A.1), we then have
+∂2g
+∂s1∂s2
+≈2g(·) −g(s −ds, ·) −g(s + ds, ·)
+ds2
+,
+(A.2)
+where the right hand side is deﬁned on the dimensionally reduced grid and taken at the
+previous time step (t + dt).
+For the 2-dimensional illustrative example studied in this paper, the full numerical approximation for the diﬀusive term in Lg is then given by
+g(s + ds, t + dt) + g(s −ds, t + dt) −2g(s, t + dt)
+2ds2
+ [σσ′]11 + [σσ′]22 −2[σσ′]12
+
+.
+(A.3)
+36
+Electronic copy available at: https://ssrn.com/abstract=2664567
+
+Appendix A.3. The Neumann Condition
+For s ∈∂A, numerically impose (q + ∇g) · n = 0. Take d¯s = c0ds so the grids match up,
+where c0 depends only on the choice of orthogonal basis of B.
+In our n = 2 example, we have the normal vector n = (1 , −1) and c0 = 1 resulting in
+∇g ≈∓
+
+g(s)−g(s±ds)
+ds
+, g(s±ds)−g(s)
+ds
+
+with the upper (lower) symbol for reﬂection on the upper
+(lower) boundary when viewed graphically. The relation is only approximate because we are
+using a ﬁnite diﬀerence method. Finally, for s ∈∂A, we have
+g(s) ≈g(s ± ds) ± (q1 −q2)ds
+2
+.
+(A.4)
+Appendix A.4. Explicit Example when n = 3
+The analogue of the right-most coeﬃcient in (A.3) is given by
+[σσ′]11 + [σσ′]22 + [σσ′]33 −2[σσ′]12 −2[σσ′]13 + 2[σσ′]23
+(A.5)
+and, for s ∈∂A, we have
+g(s) ≈g(s ± ds) ± (q1 −q2 −q3)ds
+3
+.
+(A.6)
+37
+Electronic copy available at: https://ssrn.com/abstract=2664567

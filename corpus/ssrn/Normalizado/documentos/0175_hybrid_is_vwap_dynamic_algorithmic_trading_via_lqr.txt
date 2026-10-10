@@ -1,0 +1,1473 @@
+ Electronic copy available at: https://ssrn.com/abstract=2984297 
+Hybrid IS-VWAP Dynamic Algorithmic Trading via LQR ∗
+Jackie Jianhong Shen
+Electronic Trading Model Risk, Goldman Sachs
+New York, New York, USA
+June 10, 2017
+Abstract
+For optimal trade execution, static models are useful for pre-trade estimation or benchmarking, but real trading must be based on dynamic decision making or dynamic programming
+(DP). DP algorithms can adjust execution automatically to real-time market price waves as
+well as inventory positions, and thus are more responsive and realistic. Development of DP
+models however faces a few notorious obstacles including the curse of dimensionality, absence of
+closed-form solutions for general formulations, and diﬃculty in incorporating hard constraints.
+The DP approach based on linear-quadratic regulators (LQR) was ﬁrst introduced to algorithmic trading by Hora [6]. In Dynamic Control Theory, LQR models allow closed-form solutions
+thanks to the Bellman equations and quadratic value functions. The resulted optimal policies
+are aﬃne functions of the state variables. The current work improves the LQR model of Hora [6]
+in several important areas, including (a) the unconditional stability (or convexity), (b) retiring of the second-order small term of stagewise risk aversion, (c) quasi risk aversion achieved
+by time-varying delay costs, (d) incorporation of the bid-oﬀer spreads, and (e) hybridizing the
+implementation shortfall (IS) algorithm with the VWAP approach to softly enforce the constraint of completion. The impact models and price dynamics still follow the earlier framework
+of Huberman and Stanzl [7]. The motivations behind every component of the improved model
+are elaborated, and the closed-form LQR solutions are derived (Theorem 1 and 2). Numerical
+simulation of the LQR trading paths is presented, which conﬁrms several desirable properties
+of the hybrid IS-VWAP model.
+Keywords:
+dynamic programming, LQR, IS, VWAP, slippage, spread, delay cost, impact
+cost, Bellman equation, value function, optimal policy, positive matrix, stability.
+Attention:
+The current work is designed to be exclusively published in the Social Sciences
+Research Network (SSRN) preprint server. Any commercial or open journal is prohibited
+from publishing it without the prior endorsement from the author. As such, the paper
+in her current free form can enjoy some modern latex styles and enhance users’ reading
+experiences, e.g., by creating book-style informative cover pages or colored text areas.
+∗Dr. Jackie Shen is an incoming member for Electronic Trading Model Risk at Goldman Sachs, New York, USA.
+Previously, he had been working for the equities Algorithmic Trading desks at both J.P. Morgan and Barclays, New
+York, USA. Email: jhshen@alum.mit.edu; URL: alum.mit.edu/www/jhshen
+1
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+ Electronic copy available at: https://ssrn.com/abstract=2984297 
+Contents
+1
+Introduction
+4
+2
+Basic Modeling Assumptions and Trading Settings
+5
+3
+Quest for a More Versatile LQR Execution Model
+5
+4
+The Improved IS Model via LQR
+7
+4.1
+Basic Market Settings
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+4.2
+Market Impacts . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+8
+4.3
+State Variables and Transition
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+9
+4.4
+Construction of Stage Costs . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+10
+4.5
+Delay Costs . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+11
+4.6
+The LQR Model
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+12
+4.7
+The LQR Solution . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+12
+5
+The Hybrid IS-VWAP Model via LQR
+16
+6
+Computing and Simulation
+17
+7
+Disclaimers and Cautions
+22
+2
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+ Electronic copy available at: https://ssrn.com/abstract=2984297 
+The following terms are frequently used throughout the paper.
+term
+meaning
+IS
+implementation shortfall
+VWAP
+volume-weighted average price
+PoV
+participation of volume (rate)
+COP
+child order placement
+DP
+dynamic programming
+LQR
+linear quadratic regulator
+H-ADV
+average daily volume over a given horizon
+NBBO
+national best bid and oﬀer (price)
+ITM/OTM
+in the money or out of the money
+SEC
+Securities and Exchange Commission (of the USA)
+Bps
+a basis point: 1 penny out of 100 dollars
+“true” price
+the mid point of the NBBO
+horizon
+the designated intraday window for execution
+non-negative matrix
+a symmetric real matrix with non-negative eigenvalues
+The following symbols have been consistently used in the paper.
+symbol
+meaning
+controlled by
+usage examples
+∆t
+time bin size
+house
+σt,∆t
+t
+discrete or continuous time
+model
+Jt, Vt, xt
+St
+raw security price
+market
+arrival price S0
+pt
+price slippage pt = (St −S0)/S0
+market
+p0 = 0, pT
+xt
+state variable xt = (qt, pt)′
+market, trading
+u∗
+t = Ktxt + ft
+σt,∆t
+pt’s volatility over [t, t + 1)
+security, history
+εt = σt,∆tZt
+vt
+market volume over [t, t + 1)
+security, history
+H-ADV= v0 + . . . + vT−1
+st
+half spread relative to S0
+security, history
+stxt/Q0
+xt
+shares traded over [t, t + 1)
+model output
+x0 + . . . + xT−1
+ut
+PoV rate over [t, t + 1)
+model output
+xt = utvt
+Qt
+outstanding shares at t
+client, trading
+Qt+1 = Qt −xt
+qt
+outstanding % at t
+client, trading
+Qt = qtQ0
+at
+intermediate quantity vt/Q0
+model, scaling
+(atst)ut
+µt
+stagewise permanent impact
+security, COP
+see Eqn. (3)
+ηt
+stagewise instantaneous impact
+security, COP
+see Eqn. (4)
+γt
+cost on cumulative impact
+house
+see Eqn. (10)
+βt
+stagewise delay cost
+house
+see Eqn. (15)
+λ
+overall delay cost/risk aversion
+client, house
+see Eqn. (16)
+3
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+1
+Introduction
+In a complex and yet constantly evolving trading environment, algorithmic execution has to be
+dynamic in order to rationally swim through the dynamic waves of market prices or volumes, as
+well as one’s own inventory positions. This has been discussed or demonstrated in a number of
+existing works, e.g., Bertsimas and Lo [4], and many others [1, 7, 6, 10, 5], just to cite a few.
+The main tigers along the path of dynamic-programming (DP) based trading include the curse
+of dimensionality and the absence of closed-form solutions for most DP models. This has baﬄed
+any serious attempts of formulating self-contained and rigorous DP trading models that both allow
+tractable solutions and make actual economic sense. For example, there have been even no rigorous
+DP models with tractable solutions that could solidly implement the two basic client requests:
+• Completion: to successfully acquire or liquidate a requested position Q0 by a pre-determined
+ending time T, and
+• PoV Limit: to trade within the participation-of-volume (PoV) limit range often speciﬁed
+by a savvy client, e.g., PoV ≤15.0%.
+Let Qt denote the residual position at time t that still needs to be ﬁlled.
+A naive scheme for
+completion, such as requesting on the last trading bin [T −1, T) to trade xT−1 = QT−1, could be
+highly risky. It could temporarily deplete the market liquidity and stir up the ﬂash-crash kind of
+market instabilities. Neither market regulators (e.g., SEC, FINRA, or CFTC in the US) nor clients
+would like to see this to happen.
+Among all the DP trading models that allow explicit closed-form solutions and whose solutions
+also make actual ﬁnancial sense, is the LQR approach ﬁrst proposed by Hora [6]. Recall in Dynamic
+Control Theory that the linear-quadratic regulator (LQR) is a classic type of control problems and
+solutions under linear state transitions and additive quadratic cost functions [3].
+Hora’s LQR model is built upon the price dynamics initially proposed by Huberman and
+Stanzl [7], i.e., linear instantaneous price impacts settled into linear permanent impacts. Unlike
+Huberman and Stanzl [7] who targeted at the global mean-variance cost function (as by Almgren
+and Chriss [2]), Hora formulated the DP model using stagewise or localized mean-variance costs
+instead. The stagewise costs also incorporated a new quadratic term dubbed “the holding cost.”
+In combination, Hora showed that under certain conditions the proposed LQR model can result in
+well-behaved solutions that actually react to price waves.
+The current work attempts to improve Hora’s model [6] in a number of important areas: (a)
+choice of working variables, (b) reformulation of holding costs, or what we call the “delay” cost,
+(c) incorporation of a new quadratic term to penalize market price slippages caused by cumulative
+permanent impacts, (d) inclusion of the bid-oﬀer spread cost, and (e) hybridizing the improved
+IS algorithm with the popular VWAP algorithm. In combination, these improvements result in a
+novel hybrid IS-VWAP DP model
+• that for each bin t directly outputs the optimal PoVs, instead of absolute shares;
+• that softly enforces the completion constraint;
+• that has an unconditionally stable LQR solution; and
+• that trades in a style hybridizing both the IS and VWAP algorithms.
+The rest of the paper has been organized as follows. The general model assumptions and trading
+settings are introduced in Section 2. In Section 3, we elaborate further on areas where Hora’s model
+in [6] needs further improvements. We then develop in details the improved IS model based on
+the LQR framework in Section 4, and the hybrid IS-VWAP model in Section 5. Computational
+examples and simulation results are demonstrated in Section 6. The work is concluded with several
+disclaimers and cautions in Section 7.
+4
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+2
+Basic Modeling Assumptions and Trading Settings
+The basic trading settings and key assumptions for the current work are listed as follows.
+In
+summary, the current work focuses on the optimal execution of a single name at the parent-slicing
+level, assuming an in-house child order placement (COP) scheme is already available.
+(i) (Single Name) The current work focuses on single-name execution problems, preferably
+in the equity space where a single liquid stock or ETF is to be acquired or liquidated. The
+security must be liquid enough so that a continuous and positive intraday volume proﬁle
+exists.
+(ii) (Running Example: Buy) The running example throughout is a buy trade. For a sell
+trade, simply ﬂip the signs of the residual positions Qt’s and trading shares xt’s or the PoVs
+ut’s. In actual implementation, one can introduce a new side variable, i.e., side = +1 for a
+buy trade and side = −1 for a sell trade.
+(iii) (Position Size) We assume that the initial position Q0 to be acquired or liquidated can be
+executed during an intraday window (i.e., “the horizon”) without much risk of disrupting the
+market. This means that if the VWAP algorithm is to be adopted, the associated PoV rate
+over the execution horizon sits somewhere below 20% or 30%. PoV rates at the lower end enjoy
+more eﬀective linear approximations, and thus allow us to adopt the linear impact models by
+Huberman and Stanzl [7].
+This choice is the same as in Hora [6] and is fundamental for
+generating both linear state transitions and quadratic costs required by the LQR framework.
+(iv) (COP and SOR) It is assumed that a child order placement (COP) scheme has been in
+place. The current work only deals with the parent slicing problem, and the output is a series
+of optimal trading policies that specify how many (child) shares xt to trade on any incoming
+time bin [t, t+1). The COP then manages the actual execution of the xt shares over [t, t+1),
+by a combination of sophisticated order placement strategies and a smart order routing (SOR)
+algorithm. The SOR is key for eﬀectively accessing diﬀerent liquidity venues. We refer to our
+earlier works in [10, 9] for related discussion on COP and SOR, and their potential impact on
+in-house model calibration.
+(v) (Child Bin) We assume that an intraday execution horizon [0, T] has been discretized to N
+equal-length child bins with duration ∆t. For a liquid name, for instance, one can set ∆t = 30
+seconds or 1 minute.
+To compress and simplify notations, unless a confusing scenario arises, the time variable t
+is used to represent both the continuous time and the associated discretized bin index. For
+example, t+1 means the next bin index from t, while t+∆t means the same in the continuous
+setting. The same practice applies to the terminal time T, which could represent the actual
+continuous time or the discretized terminal index N = T/∆t.
+Finally, we have listed on one of the cover pages both the terms and variables used throughout
+the paper frequently and consistently.
+3
+Quest for a More Versatile LQR Execution Model
+In this section, some symbols follow the usage by Hora [6] for easier discussion. Their meaning can
+temporarily diﬀer from the symbol list on one of the cover pages.
+5
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+Working Variables
+Most existing DP models, including Hora [6] and Huberman and Stanzl [7] for example, work with
+the trading shares xt directly. But working with the PoV variable ut is more natural and beneﬁcial
+for the following reasons.
+First, the market impact caused by shares xt is always relative to a security’s liquidity level.
+The total market volume vt is a good proxy for gauging market liquidity (though it could be
+deceptive during disruptive trading sessions as cautioned in SEC’s investigation reports). Then
+market impacts can be better formulated on the PoV variable:
+ut = xt
+vt
+,
+for any time bin t.
+When the PoVs are moderate, both the permanent and instantaneous market impacts can be
+reasonably approximated by linear functions of ut.
+Another advantage of working with the PoV variable ut is that model parameters can remain
+invariant for diﬀerent trades of a same security. Ideally model parameters should depend only on
+the market or security information, but not on speciﬁc trade requests such as the position size Q0.
+The PoV control ut also allows the solutions to integrate seamlessly with any in-house volume
+predictor ˆVt, which is an indispensable component in any heuristic implementation of a DP model.
+The trading position at t is then given by xt = ut ˆVt, and clearly reacts to the volume ˆVt.
+Finally, in Section 5 we shall demonstrate that the PoV variable ut serves as a bridge between
+IS and VWAP that results in a more eﬀective hybrid IS-VWAP model.
+Flat Delay Costs and Quasi Risk Aversion
+Let Qt denote the residual position still outstanding at time t. Then
+Qt+1 = Qt −xt,
+t = 0, 1, . . . .
+In [6], Hora ﬁrst introduced a penalty term into the stage cost jt:
+jt = ρQ2
+t + other terms.
+In the current work, we shall call it the delay cost.
+With a possible intraday discounting factor β ∈(0, 1] as introduced by Hora [6], which is applied
+to jt as a powered weight βt, one sees that the delay costs remain ﬂat (i.e., ρ) or decreasing (i.e.,
+βtρ) even as the execution gets closer to the designated ending time T.
+This is a bit counter-intuitive since most clients do care about successful completion by a
+designated time, e.g., T = 3:30pm. Ideally, the weights for the delay costs should head up instead
+of remaining ﬂat or decreasing, when an execution approaches its ending time T.
+In the current work, we shall discuss how to design monotonically increasing weights for the
+delay costs. In particular, we show how such a design can create a proxy for risk aversion that
+previously can only be implemented by static pre-trade models [2, 7].
+Necessity of Stagewise Risk Aversion
+Inspired by the global mean-variance framework of Huberman and Stanzl [7] as well as Almgren
+and Chriss [2], Hora introduced the stagewise mean-variance costs (ref. Eqn. (5) in Hora [6]):
+jt = E
+
+∆t
+xt
+Q0
+
++ λ
+2 var
+
+∆t
+xt
+Q0
+
++ ρQ2
+t ,
+6
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+where ∆t denotes the execution price shortfall (i.e., execution price above the arrival price).
+For the well-behavedness of the model, Hora argues in [6] that it requires Q0 ≫1 (ref. Eqn. (8)
+in Hora [6]). Then the ﬁrst term for the mean is of order O(1/Q0), but the second term of variance
+is only of order O(1/Q2
+0). This forces the above stagewise risk aversion parameter λ to depend on
+the trading position Q0 in order to materialize the variance eﬀect (e.g., λ = O(Q0)).
+This is a bit undesirable since ideally model parameters should depend only on the market or
+the trading settings (e.g., choice of a horizon), but not on any speciﬁc trade request.
+For this reason, the local variance term will be retired in the current model. Instead, we will
+revamp the delay cost term so that it can play a similar role of risk aversion.
+Lack of Positivity and Unconditional Stability
+In the settings of Hora’s model [6], the stagewise costs are quadratic but not positive deﬁnite (ref.
+Eqn. (7) and the matrix form between Eqn. (9) and (10) in Hora [6]). The three eigenvalues of
+the matrix are:
+λ0 = ρ,
+λ± = θ
+2 ± 1
+2
+q
+θ2 + Q−2
+0 ,
+where ρ, θ > 0 are model parameters in [6]. In particular, λ−< 0.
+As a result, there is no mechanism to guarantee the positivity of the Riccati matrices (i.e., vt’s in
+Eqn. (11) of Hora [6]). Then the inversion of θ + βB′vt+1B in Eqn. (12) of [6] can be unstable. An
+inequality condition was proposed in Eqn. (8) of [6], which however involves an unknown random
+variable ∆T at the terminal time. Thus the well-behavedness cannot hold unconditionally.
+The solution we propose here is to introduce an extra quadratic cost into the stagewise cost
+function jt. It penalizes the market price slippages caused by the cumulative permanent impacts,
+and makes the model unconditionally stable.
+It is now ready to design the improved IS model based on the LQR approach.
+4
+The Improved IS Model via LQR
+Throughout we assume that the main task is to execute Q0 shares of a given single name during
+a designated intraday horizon. For convenience, the horizon is normalized to a time interval [0, T],
+and T is called the terminal time. Notice that in general t = 0 does not have to be the start of the
+open trading session, e.g., 9:30am for the equity market in the USA. In fact, a savvy client would
+usually prefer to stay away from the volatile opening minutes.
+As in Section 2, it is assumed that a child window length ∆t has been chosen (e.g., 2 minutes),
+and the horizon is discretized to time bins indexed by n = 0, 1, . . . , N with N∆t = T. As explained
+earlier, to compress notation usage, we shall use the same symbol t for both the continuous time
+and the associated discrete bin index n (= t/∆t). Thus for example, we will denote the bins also
+by 0, . . . , t, . . . , T, and t + 1 refers to the next bin following the t-bin.
+4.1
+Basic Market Settings
+The current work does not address speciﬁcally stochastic volumes. Instead, we assume that the
+average daily volume for the horizon (H-ADV) is M shares, and that the volume proﬁle is given by
+v0, . . . , vt, . . . , vT−1,
+with vt shares on [t, t + 1).
+(1)
+In particular, one has M = v0 + . . . + vT−1.
+7
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+Let St denote the true price of the security at time t, and S0 the arrival price. In reality, St can
+be identiﬁed with the mid price of the National Best Bid and Oﬀer (NBBO) prices. Let
+pt = St −S0
+S0
+denote the price slippage per dollar. For intraday trading, pt is assumed to follow a Brownian
+motion:
+pt+1 = pt + σt,∆tZt,
+(2)
+where σt,∆t refers to the volatility over the single bin [t, t + ∆t), and Zt a canonical Gaussian with
+zero mean and unit variance. Zt’s are assumed to be independent for t = 0, 1, . . . , T −1. If the
+intraday volatility turns out to be ﬂat, one can drop the bin notation by writing σ∆t. For example,
+if σday denotes a single-day volatility and a single day is normalized to one unit of time, one has:
+σ∆t = σday
+√
+∆t. For execution houses with high data processing capacities, one could study and
+calibrate more realistic intraday volatility proﬁles.
+4.2
+Market Impacts
+Following Hora [6], we also employ the linear impact models of Huberman and Stanzl [7]. These
+models are simple and applicable for trades with low PoVs, as discussed earlier. They result in
+linear state transitions and quadratic cost functions required by the LQR framework.
+Let xt denote the shares to be traded over an incoming bin [t, t + 1). Then
+ut = xt
+vt
+is the PoV rate over the bin.
+Both impact models are expressed via this PoV variable.
+Under the trading activity ut, the dynamics of the price slippage in Eqn. (2) is now updated to:
+pt+1 = pt + µtut + σt,∆tZt,
+(3)
+where µt is the coeﬃcient for permanent impact. In actual implementation (such as in the numerical
+simulation in Section 6), µt should be benchmarked by the bin volatility σt,∆t, and hence rewritten
+by: µt = µ0
+t σt,∆t with a normalized coeﬃcient µ0
+t . Furthermore, the time subscript t can be dropped
+if it is ﬂat.
+The permanent impact over the t-bin only aﬀects all trades after t+1. It is the “instantaneous”
+impact that directly costs the current trade xt or ut over [t, t + 1), which is modeled by:
+˜pt+0.5 = pt + st + ηtut + ωt.
+(4)
+The components are explained as follows.
+(i) ˜pt+0.5 is the average execution slippage (with respect to the arrival price S0) for all the xt
+shares executed over the t-bin [t, t + 1). The notation 0.5 in the subscript emphasizes that it
+is not a point-in-time quantity but associated with a duration.
+(ii) st denotes the half spread in relative to the arrival price S0. It has been added to the slippage
+pt of the true price St (or the mid quote of the NBBO). In the current work, the spread st is
+assumed to be deterministic and can be approximated from historic intraday proﬁles.
+This slippage component was neglected in both works of [7] and [6]. For even liquid securities traded near 10 dollars, for example, the “Sub-Penny Rule” of the SEC (Securities and
+Exchange Commission of the USA) requires quotes be no ﬁner than a penny, which results
+in a spread about 10 Bps. Recall that a basis point (Bps) is one penny out of 100 dollars.
+8
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+(iii) ηt is the instantaneous impact coeﬃcient. At the micro level, it reﬂects the premium cost for
+liquidity taking when the trading event progressively reveals itself to the market and before
+the limit order book (LOB) restores itself at t + 1. For liquid securities, in general one should
+have
+ηt ≥µt, i.e., instantaneous impact is greater than the ﬁnal settled permanent impact.
+This is because market participants will inject new liquidity into the temporarily depleted
+high quote levels. Often this is called market resilience. (The actual transition mechanisms
+are discussed in earlier works such as [8] or [9]). ηt should be benchmarked by the bin volatility
+σt,∆t. In the numerical simulations later, we have adopted ηt = η0
+t σt,∆t with η0
+t = 1.0.
+(iv) Finally, the stochastic component ωt reﬂects the general behavior of market participants when
+the market ﬂuctuates around its equilibrium. In both [6] and [7], ωt was assumed to be a
+Gaussian with zero mean and independent of the random component Zt associated with the
+true price in Eqn. (3).
+We argue that ωt and Zt should be highly correlated, instead. For example, when the COP
+program executes trading at a constant rate over the child bin [t, t + 1) and when the POV is
+low and thus negligible, the theory of Brownian bridge should result in:
+ωt = 0.5σt,∆tZt,
+meaning that it actually correlates with Zt 100%! In the current work, we only require ωt to
+have a zero mean. In particular,
+E[˜pt+0.5 | pt] = pt + st + ηtut.
+(5)
+4.3
+State Variables and Transition
+Let Qt denote the outstanding shares that still need to be ﬁlled at time t. Deﬁne the residual rate:
+qt = Qt
+Q0
+,
+t = 0, 1, . . . , T.
+Notice that the initial value is always q0 = 100%, and ideally one wishes for qT = 0 for promised
+completion.
+In this work, the state variable xt consists of the price slippage rate pt and the inventory
+residual rate qt:
+xt := (qt, pt)′,
+where the superscript means vector or matrix transposition.
+The ﬁrst component reﬂects the
+inventory position and the second the market environment.
+The control variable is the PoV rate ut = xt/vt deﬁned in the preceding subsection, where xt
+is the number of shares to be executed over the t-bin [t, t + 1) and vt the total market shares over
+the same bin. In this work, market volumes are assumed to be deterministic and established via
+historic intraday volume proﬁles.
+As in the preceding subsection, the transition of the price slippage is given by:
+pt+1 = pt + µtut + εt,
+with
+εt = σt,∆tZt.
+(6)
+For the inventory residual rate qt, one has
+qt+1 = Qt+1
+Q0
+= Qt −xt
+Q0
+= qt −atut,
+with
+at = vt/Q0.
+(7)
+9
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+In combination, the complete state transition is expressed by
+xt+1 = xt −atvtut + (0, εt)′,
+with
+vt = (1, −µt/at)′.
+(8)
+It is a linear transition with an additive stochastic component of zero mean. The introduction of
+the quantity at will simplify the expressions for the ﬁnal solutions.
+4.4
+Construction of Stage Costs
+We seek a stagewise cost function in the form of:
+J0 =
+T−1
+X
+t=0
+jt + jT ,
+where the last term jT is the terminal cost. In general, at any time t, the forward cost is
+Jt =
+T−1
+X
+τ=t
+jτ + jT ,
+Let xt = utvt denote the number of shares to be executed over the t-bin, with a PoV rate ut
+and market volume vt. Then conditioning on the state at t, the expected execution slippage of all
+these shares is, thanks to Eqn. (5),
+E
+
+˜pt+0.5
+ xt
+Q0
+
+| pt, qt
+
+= atutE [˜pt+0.5] = (atηt)u2
+t + atptut + (atst)ut.
+(9)
+This term is the main backbone of the stagewise cost jt. Unlike the model by Hora [6] which is based
+upon the localized mean-variance framework, we will not incorporate the associated conditional
+variance into jt as explained in the preceding section.
+Instead, we introduce an extra quadratic cost to the price slippage pt:
+(atγt)p2
+t ,
+with
+γtηt > 1
+4.
+(10)
+The inequality condition on the weight parameter γt is to ensure that the two terms in Eqn. (9)
+and (10) can be integrated into a positive and deﬁnite quadratic form:
+(atηt)u2
+t + atptut + (atst)ut + (atγt)p2
+t = at(pt, ut)
+γt
+1
+2
+1
+2
+ηt
+ pt
+ut
+
++ (atst)ut.
+(11)
+Deﬁne m = 4γtηt −1. Then
+γt = 1 + m
+4ηt
+,
+with
+m > 0.
+This can be used to design γt with any positive free parameter m. Notice that m/4 is exactly the
+determinant of the quadratic matrix in Eqn. (11).
+This new cost term penalizes the cumulative permanent impact, as explained below. From the
+dynamics of the price slippage in Eqn. (3), one has
+pt = p0 +
+t−1
+X
+τ=0
+στ,∆tZτ +
+t−1
+X
+τ=0
+µτuτ,
+10
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+where p0 actually vanishes since pt = (St −S0)/S0. Since the second term of Brownian motion
+reﬂects market behavior and is independent of the execution plan, to penalize pt via p2
+t thus amounts
+to penalizing the last term of cumulative permanent impacts.
+Similar to Hora [6], we wrap up model design by adding the third component of delay cost:
+βtq2
+t ,
+with
+βt > 0.
+(12)
+In Hora [6], it was called the holding cost and had a constant weight. In the next subsection, we
+elaborate on the necessity and actual design of a time-varying weight βt.
+In combination, the stage cost jt is deﬁned by
+jt = λβtq2
+t + at(pt, ut)
+γt
+1
+2
+1
+2
+ηt
+ pt
+ut
+
++ (atst)ut,
+(13)
+for any t < T. At the end of the execution horizon t = T, the terminal cost is given by
+jT = λβT q2
+T ,
+(14)
+since upon termination there will be no further execution uT beyond T, and aT = vT /Q0 is no
+longer applicable.
+The new constant parameter λ > 0 balances the relative weights between the delay cost and
+the slippage and spread costs. Its role will be further elucidated next.
+4.5
+Delay Costs
+We now discuss how to properly design the delay cost weights βt’s, which must be time varying.
+In the extreme case if one sets βT = +∞at the terminal, completion is then enforced, i.e.,
+qT = 0,
+or equivalently, QT = 0.
+However, this may disrupt the market since it demands on the last execution bin [T −1, T):
+xT−1 = QT−1 −QT = QT−1,
+i.e., liquidating whatever positions still outstanding by T −1. It could deplete the market liquidity
+if the outstanding position QT−1 is substantive.
+In reality, to softly enforce the completion condition, we shall design the βt’s so that they are
+monotonically increasing and penalize more any delayed executions. The objective is to achieve
+some degree of quasi risk aversion as in the traditional mean-variance algorithms [7, 2, 9].
+This line of reasoning inspires the following approach to achieving quasi risk aversion. At time
+t, the variance of the price slippage pt grows to
+σ2
+t =
+t−1
+X
+τ=0
+σ2
+τ,∆t
+Notice that it grows linearly with t if intraday volatilities are assumed to be ﬂat. In general, this
+variance series increase monotonically. At any time t, σ2
+t represents the uncertainty level of the
+price slippage that the residual position Qt is exposed to, at least on paper (i.e., without considering
+the impact it may self inﬂict).
+Furthermore, to have an extra degree of freedom to internally distribute delay costs, we introduce a new parameter ρ ∈(0, 1] and deﬁne
+βt = ρT−tσ2
+t ,
+t = 0, 1, . . . , T.
+(15)
+11
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+For ρ’s strictly less than 1.0, the algorithm can be more reactive to price slippages instead of being
+compelled to trade more aggressively in the beginning (i.e., the typical front-loading behavior under
+traditional risk aversion). This is because the delay penalties become relatively negligible in the
+beginning phase of an execution. For example, for ρ = 0.95 and T = 120 minutes, one has at t = 0:
+β0 = ρT−0 = 0.0021. The simulation results in Section 6 conﬁrm this desirable behavior.
+4.6
+The LQR Model
+To summarize, we observe the following behavior about the stagewise cost jt in Eqn. (13).
+• Impact Cost. Both the second and third terms favor slow trading in order to reduce costs
+associated with instantaneous and permanent impact costs, as well as the spread cost.
+• Market Risk. The ﬁrst term for delay cost, however, encourages fast trading, as any delay
+in execution raises cost.
+Thus like the more traditional mean-variance framework [2, 7, 9], the current model can potentially
+achieve a balance between the impact cost and the market risk, even without the localized variance
+term of Hora [6].
+It then becomes clear that the constant parameter λ plays a role very similar to the risk aversion
+parameter in traditional mean-variance models. We have coined the term of “quasi” risk aversion
+for this special role.
+To conclude the design, the global objective function for the new model is given by:
+Jτ =
+T
+X
+t=τ
+jt =
+T
+X
+t=τ
+
+λβtq2
+t + at(pt, ut)
+γt
+1
+2
+1
+2
+ηt
+ pt
+ut
+
++ (atst)ut
+
+.
+(16)
+A bigger λ penalizes more the delay cost, and hence achieves a higher level of risk aversion.
+Next, we seek optimal execution policies that are purely state driven:
+u∗
+t = φt(qt, pt),
+t = 0, 1, . . . , T −1,
+so that
+ u∗
+0, . . . , u∗
+T−1
+
+= argmin(u0,...,uT −1)E[J0 (u0, . . . , uT−1) | q0, p0].
+The expectation is over the sample space of market price waves: (Z0, . . . , ZT−1), as in Eqn. (6).
+4.7
+The LQR Solution
+Deﬁne the value function Vt by:
+Vt(qt, pt) =
+min
+(ut,...,uT −1) E[Jt (ut, . . . , uT−1) | qt, pt].
+Then one has to solve the Bellman equations:
+Vt(qt, pt) = min
+ut jt(ut | qt, pt) + E [Vt+1(qt+1, pt+1) | qt, pt, ut] .
+(17)
+12
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+The Solution at T −1 and Interpretation
+To get a direct sense about the solution, we ﬁrst manually work out the solution at T −1.
+The value function at the terminal is given by:
+VT = jT = λβT q2
+T .
+Set t = T −1, and recall the state transition in Eqn. (7). Then the optimal policy u∗
+t = u∗
+T−1
+should minimize:
+λβtq2
+t + at(pt, ut)
+γt
+1
+2
+1
+2
+ηt
+ pt
+ut
+
++ (atst)ut + λβT (qt −atut)2.
+The solution to this quadratic optimization at t = T −1 is:
+u∗
+T−1 = AT−1qT−1 + BT−1(pT−1 + sT−1),
+with
+AT−1 =
+λβT
+ηT−1 + λaT−1βT
+,
+and
+BT−1 =
+−0.5
+ηT−1 + λaT−1βT
+.
+(18)
+In particular, when the penalty for the delay cost at terminal βT →+∞, one has
+u∗
+T−1 →
+1
+aT−1
+qT−1 + 0(pT−1 + sT−1) =
+Q0
+VT−1
+QT−1
+Q0
+= QT−1
+VT−1
+,
+meaning that one trades all the QT−1 shares still outstanding at T −1: x∗
+T−1 = u∗
+T−1VT−1 = QT−1.
+Furthermore, one notices the following desirable properties from the explicit solution.
+• The optimal policy is positively proportional to the outstanding position, i.e., AT−1 > 0. As
+a result, it trades more if there are more residual positions still outstanding.
+• It is negatively proportional to the market price slippage (for the running example of a buy
+trade), i.e., BT−1 < 0.
+Let us look into the meaning in a realistic trading context.
+Since the true market price
+slippage pt is associated with the mid quote of the NBBO and st is the half spread, pt + st
+therefore corresponds to the price slippage of the national best oﬀer (NBO). As our running
+example is a buy trade, the NBO represents the execution price for a buying market order.
+The negativity of BT−1 means to buy less when the NBO shoots up with a positive slippage,
+and more when the opposite occurs.
+Such behavior is clearly in line with the heuristic but popular street practice of trading
+aggressively while in the money (ITM) (and passively while out of the money (OTM)).
+An important observation is that the denominator involved in the solution:
+gT−1 = ηT−1 + λaT−1βT ,
+is strictly positive. This makes the solution well-posed and stable. We will establish the same
+property for the general case coming next.
+13
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+The Complete LQR Solution
+Since the objective function J is not in the standard or popular form of LQR, we give the full
+details on the Bellman solution process. The standard formulation of LQR in the literature always
+assumes a separable quadratic form for the stage costs, with no cross interaction between the state
+and control variables [3].
+In our model, however, the cross term atptut that couples the state
+variable pt and control variable ut represents the slippage costs and hence plays a key role.
+First we recall the state transition established earlier in Eqn. (8) (with at = vt/Q0 as deﬁned
+in Eqn. (7)):
+xt+1 = xt −atutvt +
+0
+εt
+
+,
+with
+xt =
+qt
+pt
+
+and
+vt =
+
+1
+−µt/at
+
+.
+(19)
+Also the stochastic component is given by εt = σt,∆Zt, with Zt’s being i.i.d. canonical Gaussians.
+Theorem 1 At each time t, there exist a non-negative 2 by 2 matrix Pt, a 2 by 1 vector bt, a
+scalar et, such that the value function Vt is given by:
+Vt(qt, pt) = x′
+tPtx + b′
+txt + et = (qt, pt)Pt
+qt
+pt
+
++ b′
+t
+qt
+pt
+
++ et.
+(20)
+The optimal policy is given by the aﬃne form:
+u∗
+t = φt(xt) = Ktxt + ft,
+with
+Kt = 1
+gt
+(v′
+tPt+1 −(0, 0.5)),
+(a single-row matrix)
+and
+ft = 0.5
+gt
+(b′
+t+1vt −st),
+(21)
+where st denotes the half spread as before, and
+gt = ηt + atv′
+tPt+1vt.
+Furthermore, the structure of the value functions cascades backwards as follows:
+Pt = Pt+1 + ∆t −atgtK′
+tKt,
+bt = bt+1 −2atgtftK′
+t,
+and
+et = et+1 + c(2,2)
+t+1 σ2
+t,∆t −atgtf2
+t ,
+(22)
+where c(2,2)
+t+1 denotes the (2,2)-element of Pt+1, and ∆t = diag(λβt, atγt). The terminal data
+are:
+PT = diag(λβT , 0),
+bT = (0, 0)′,
+and
+eT = 0.
+(23)
+Proof. First, one deﬁnes
+ht(ut | xt) = Eεt[Vt+1(xt+1) | xt, ut].
+Then the Bellman equation in Eqn. (17) becomes:
+Vt = min
+ut jt(ut | xt) + ht(ut | xt).
+14
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+Assuming Vt+1 is indeed in the form of Eqn. (20) and noticing the state transition in Eqn. (19),
+one has
+ht(ut | xt) = (xt −atutvt)′Pt+1(xt −atutvt) + b′
+t+1(xt −atutvt) +
+
+et+1 + c(2,2)
+t+1 σ2
+t,∆t
+
+.
+(24)
+On the other hand, the stage cost in Eqn. (16) can be rewritten as a quadratic function of ut:
+jt(ut | xt) = x′
+t∆txt + at(pt + st)ut + atηtu2
+t .
+(25)
+Rearrange all the terms in jt(ut | xt) + ht(ut | xt) to a canonical quadratic function of ut:
+jt + ht = C −2But + Au2
+t ,
+with
+C = x′
+t(Pt+1 + ∆t)xt + b′
+t+1xt +
+
+et+1 + c(2,2)
+t+1 σ2
+t,∆t
+
+,
+B = at
+ v′
+tPt+1xt + 0.5b′
+t+1vt −0.5(pt + st)
+
+,
+and
+A = at
+ ηt + atv′
+tPt+1vt
+
+= atgt.
+Here gt is as introduced in the theorem.
+As a result, the optimal policy is given by u∗
+t = B/A, which can be easily expressed as an aﬃne
+function of the state variable xt:
+u∗
+t = Ktxt + ft,
+where Kt and ft are as given in Eqn. (21).
+Furthermore, the value function is given by:
+Vt(xt) = jt(u∗
+t | xt) + ht(u∗
+t | xt)
+= C −A (u∗
+t )2 = C −A(Ktxt + ft)2
+= x′
+t(Pt+1 + ∆t)xt + b′
+t+1xt +
+
+et+1 + c(2,2)
+t+1 σ2
+t,∆t
+
+−atgt(x′
+tK′
+t + ft)(Ktxt + ft)
+Rearranging it into the quadratic form of the state variable xt gives the cascading formulae in
+Eqn. (22).
+Finally, let us prove the non-negativity of the Pt’s. This clearly holds for PT . For a general
+t < T, recall that
+Vt = min Jt = min
+T
+X
+τ=t
+jτ,
+and by Eqn. (16),
+jτ = λβτq2
+τ + aτ(pτ, uτ)
+γτ
+0.5
+0.5
+ητ
+ pτ
+uτ
+
++ (aτsτ)uτ.
+By design, the (strict) positivity of the middle term implies that there exists a time-independent
+positive constant d > 0, such that for any τ = 0, . . . , T −1,
+(pτ, uτ)
+γτ
+0.5
+0.5
+ητ
+ pτ
+uτ
+
+≥d(p2
+τ + u2
+τ).
+Consequently,
+jτ ≥(aτd)u2
+τ + (aτsτ)uτ ≥−1
+4daτs2
+τ.
+15
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+This also holds at τ = T since jT ≥0. As a result, for any value of the state variable xt,
+Vt = Vt(xt) ≥−1
+4d
+T
+X
+τ=t
+aτs2
+τ.
+Since we have just established recursively that Vt is given by the quadratic form of xt in Eqn. (20),
+this lower bound reveals that Pt has to be non-negative. This completes the proof.
+□
+In particular, the common denominator gt for the optimal policy is strictly positive:
+gt = ηt + atv′
+tPt+1vt ≥ηt > 0,
+where ηt is the instantaneous impact coeﬃcient introduced in Eqn. (4). This ensures that both Kt
+and ft, and hence also u∗
+t are well deﬁned and unconditionally stable.
+5
+The Hybrid IS-VWAP Model via LQR
+Assume that one is given a task of buying Q0 shares for a security and an intraday horizon [0, T]
+endorsed by both the client and the execution house. Let M = v0 +v1 +. . .+vT−1 denote the total
+market shares over the horizon (e.g., the H-ADV). Then the PoV rate for a VWAP algorithm is:
+PoV = Q0
+M .
+A pure VWAP algorithm would require:
+ut ≡PoV,
+t = 0, 1, . . . , T −1.
+If we incorporate this VWAP strategy softly into the implementation shortfall (IS) model in
+the preceding section by, for t = 0, 1, . . . , T −1,
+˜jt = jt + atθ(ut −PoV)2
+= λβtq2
+t + at(pt, ut)
+γt
+1
+2
+1
+2
+ηt
+ pt
+ut
+
++ (atst)ut + atθ(ut −PoV)2,
+(26)
+with a VWAP weighting parameter θ > 0, one ends up with a hybrid IS-VWAP model. Here at in
+this new term is for order normalization, as coordinated with the second and third terms above.
+When the weight θ is suﬃciently substantive, this hybrid model trades in a neighborhood of
+the VWAP algorithm, meaning that the optimal PoV policies must stay in a vicinity of the
+VWAP PoV. In particular, this can softly enforce the completion constraint since the VWAP
+PoV is designed to achieve so. This contrasts with most DP trading models that often lose
+touch with the completion requirement, except for ones that are too heavily risk averse and
+hence miss price improvement opportunities at the later stages of execution.
+As the VWAP weight θ →+∞, clearly this hybrid model recovers the VWAP algorithm. The
+general solution to this new hybrid IS-VWAP model is given below in Theorem 2, which is very
+similar to Theorem 1.
+The major updates from Theorem 1 have been highlighted in red. The proof follows exactly
+the same steps as for Theorem 1 and has been omitted.
+The solution clearly reveals the following properties.
+• (IS) When θ →+0, the solution converges to the IS model in Theorem 1.
+16
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+• (VWAP) When θ →+∞and hence gt ≃θ →∞, it can be easily seen that:
+Kt →0,
+and
+ft →PoV.
+Indeed the optimal policy converges to the VWAP algorithm: u∗
+t ≡PoV.
+• (Hybrid) In between, it is a hybrid model between IS and VWAP. A client or the execution
+house can tune the VWAP weight θ to achieve a desirable inclination. But in order to softly
+honor the completion constraint, as discussed earlier, one should work with a suﬃciently
+heavy weight θ. This becomes especially important when the quasi risk aversion parameter
+λ is not strong enough.
+Theorem 2 At each time t, there exist a non-negative 2 by 2 matrix Pt, a 2 by 1 vector bt, a
+scalar et, such that the value function Vt is given by:
+Vt(qt, pt) = x′
+tPtx + b′
+txt + et = (qt, pt)Pt
+qt
+pt
+
++ b′
+t
+qt
+pt
+
++ et.
+(27)
+The optimal policy is given by the aﬃne form:
+u∗
+t = φt(xt) = Ktxt + ft,
+with
+Kt = 1
+gt
+(v′
+tPt+1 −(0, 0.5)),
+(a single-row matrix)
+and
+ft = 0.5
+gt
+(b′
+t+1vt −st + 2θPoV),
+(28)
+where st denotes the half spread as before, and
+gt = ηt + atv′
+tPt+1vt + θ.
+Furthermore, the structure of the value functions cascades backwards as follows:
+Pt = Pt+1 + ∆t −atgtK′
+tKt,
+bt = bt+1 −2atgtftK′
+t,
+and
+et = et+1 + c(2,2)
+t+1 σ2
+t,∆t −atgtf2
+t + θatPoV2,
+(29)
+where c(2,2)
+t+1 denotes the (2,2)-element of Pt+1, and ∆t = diag(λβt, atγt). The terminal data
+are:
+PT = diag(λβT , 0),
+bT = (0, 0)′,
+and
+eT = 0.
+(30)
+The development in this section also demonstrates the power of using the PoV variable ut as
+the control variable, instead of the absolute shares xt as in works such as [7, 6]. It reaches out
+seamlessly to popular algorithms such as the PoV or the WAP.
+6
+Computing and Simulation
+In this section we simulate several generic trading paths output from the proposed hybrid IS-VWAP
+model. The assumed market and trading settings are as shown in Table 1 below.
+17
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+Table 1: Market and trading settings for the simulation
+variable
+simulation value
+day in minutes
+390 (9:30am to 4:00pm, typical for the US equity market)
+single name symbol
+ABC XYZ (hypothetical)
+ADV
+3,000,000 (shares)
+arrival price S0
+$20.00
+raw half spread
+half penny ($0.005)
+daily volatility
+1.00% (with roughly annual volatility 16.0%)
+trade side
+buy
+trade position Q0
+100,000 (shares)
+horizon in minutes
+120 (11:00am to 1:00pm)
+time bin size ∆t
+1 minute
+By assuming ﬂat intraday volatilities, we obtain the bin volatility:
+σt,∆t = σ∆t = σday ·
+r
+1
+390 = 5.1 Bps.
+(31)
+And at any time t, the volatility of the price slippage pt is given by σt = σ∆t ·
+√
+t. Similarly,
+assuming a ﬂat intraday volume distribution, one obtains the horizon ADV and the VWAP PoV:
+H-ADV = ADV · T
+390 = 923, 077,
+and
+PoV =
+Q0
+H-ADV = 10.8%.
+(32)
+Listed in Table 2 are model parameters used in the simulation. Following the above assumption
+on ﬂat intraday volatilities, the impact parameters are assumed to be time independent. Also as
+discussed earlier, µt < ηt due to market resilience.
+Table 2: Default parameters for market impacts or trading style in the simulation
+parameter symbol
+meaning or control
+simulated value
+ηt
+stagewise instantaneous impact
+ηt = η0 · σt,∆t with η0 = 1.0
+µt
+stagewise permanent impact
+µt = µ0 · σt,∆t with µ0 = 0.8
+γt and m
+cost of cumulative impact
+γt = 1+m
+4ηt with m = 1.0
+βt and ρ
+stagewise delay cost
+βt = ρT−t · σ2
+t with ρ = 1.0
+λ
+overall delay cost (quasi risk aversion)
+λ = 1000.0
+θ
+VWAP weight
+θ = 1.0
+In addition, a moderate U-shaped volume proﬁle has been assumed over the 2-hour trading
+horizon [0, T] (see the blue volume proﬁles in the upper panels of the following three ﬁgures). Its
+eﬀect on the simulation is minor though it does provide a more realistic ﬂavor.
+Figure 1, 2, and 3 illustrate three generic trading paths under diﬀerent choices of the trading
+or model parameters. In general, they conﬁrm the desirable eﬀects induced by the major trading
+parameters, including quasi risk aversion by the delay cost parameter λ.
+When the quasi risk aversion is not too strong, the traditional front-loading behavior is weakened, and the DP algorithm becomes more sensitive and reactive to price waves. The captions of
+these three ﬁgures elaborate more on these details.
+18
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+On the Soft Implementation of the Completion Constraint
+In terms of softly enforcing the completion constraint, both λ and θ play a key role. A stronger λ
+enhances risk aversion and front loading, and hence in general helps complete the execution even
+before the ending time T. However, such early completion may come at the potential cost of missing
+later opportunities of price improvement.
+Thus a better way to honor completion is to employ both a moderately strong λ and a moderately strong θ. The resulting moderate front loading helps execute a major portion in the beginning
+phase. At the later stages of execution, the moderately strong θ ensures that the hybrid model
+trades in a neighborhood of the VWAP model. This means that the optimal PoV rate u∗
+t will stay
+in the vicinity of the VWAP PoV rate (i.e., 10.8% for these examples), and hence the algorithm
+virtually trades above some minimum PoV rate. In the three examples in Figure 1, 2, and 3, for
+instance, the algorithms all trade above the PoV of 5% or 6%. This eﬀectively prohibits idling and
+promotes timely completion during the later stages of execution.
+0
+20
+40
+60
+80
+100
+120
+time t (in minute)
+0
+500
+1000
+1500
+2000
+2500
+trading shares xt
+6000
+7000
+8000
+9000
+10000
+market volume vt
+trading shares (left y-axis, red) vs. market volumes (right y-axis, blue)
+0
+20
+40
+60
+80
+100
+120
+time t (in minute)
+5
+10
+15
+20
+25
+trading PoV ut (in %)
+0
+10
+20
+30
+40
+50
+60
+70
+price slippage pt (in Bps)
+trading PoVs (left y-axis, red) vs. market price slippages (right y-axis, blue)
+Figure 1: A single trading path by the hybrid IS-VWAP algorithm, simulated with the default
+parameters in Table 2. As explained in Section 4, the parameter λ for the delay cost serves as a
+proxy for traditional risk aversion. This results in the front-loading behavior, i.e., the red lines for
+trading shares xt (in the upper panel) and trading PoVs ut (in the lower panel).
+19
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+0
+20
+40
+60
+80
+100
+120
+time t (in minute)
+500
+600
+700
+800
+900
+1000
+1100
+1200
+1300
+1400
+trading shares xt
+6000
+7000
+8000
+9000
+10000
+market volume vt
+trading shares (left y-axis, red) vs. market volumes (right y-axis, blue)
+0
+20
+40
+60
+80
+100
+120
+time t (in minute)
+6
+8
+10
+12
+14
+16
+18
+trading PoV ut (in %)
+20
+10
+0
+10
+20
+30
+40
+50
+60
+70
+price slippage pt (in Bps)
+trading PoVs (left y-axis, red) vs. market price slippages (right y-axis, blue)
+Figure 2: A single trading path by the hybrid IS-VWAP algorithm with the same default parameters
+as for Figure 1, except for ρ which is updated from 1.0 to 0.98. This reduces the strength of the
+quasi risk aversion λ as the combination λ · ρT−t is now less. As observed from the plotting, the
+front loading behavior is weakened, and the algorithm becomes more responsive to price waves. It
+trades more aggressively when the price slippages drop, and slows down when they start to hike.
+20
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+0
+20
+40
+60
+80
+100
+120
+time t (in minute)
+200
+400
+600
+800
+1000
+1200
+1400
+1600
+1800
+trading shares xt
+6000
+7000
+8000
+9000
+10000
+market volume vt
+trading shares (left y-axis, red) vs. market volumes (right y-axis, blue)
+0
+20
+40
+60
+80
+100
+120
+time t (in minute)
+4
+6
+8
+10
+12
+14
+16
+18
+20
+trading PoV ut (in %)
+0
+20
+40
+60
+80
+100
+price slippage pt (in Bps)
+trading PoVs (left y-axis, red) vs. market price slippages (right y-axis, blue)
+Figure 3: A single trading path by the hybrid IS-VWAP algorithm with the same parameters as for
+Figure 2, except for the delay cost λ and the VWAP weight θ, which are updated from λ = 1000.0
+to 1500.0 and from θ = 1.0 to 0.5. The smaller θ value reduces the VWAP eﬀect (with PoV = 10.8%
+as in Eqn. (32)) and allows a broader range of PoV variations compared with Figure 2. On the other
+hand, the increment of the delay cost λ is to softly enforce front loading and hence the completion
+constraint. Notice how the model properly reacts to the sudden price hike near t = 60.
+21
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+7
+Disclaimers and Cautions
+We conclude the current work with a few necessary disclaimers and cautions.
+(1) The proposed trading model has not been the internal or external product of any execution
+houses where the author had worked. Any potential industrial conﬂict should be promptly
+directed to the attention of the author.
+(2) Due to the proprietary nature of the industry and the resulting scarcity of real trading data to
+the public, the current academic work does not dive deeper into the data aspects. Interested
+execution houses are thus encouraged to further tailor the current framework to the available
+trade or market databases, e.g., to use dynamically projected volumes, or to calibrate the
+impact cost parameters via in-house trading records.
+(3) While the outputs (i.e., the optimal PoV policies u∗
+t ’s) can be heuristically applicable to even
+stochastic volumes, the current model itself is not built upon stochastic volumes nor stochastic
+volatilities. Interested readers are refer to works such as Almgren [1] for related explorations.
+(4) As the current work focuses mainly on the closed-form solutions of the LQR approach, any
+actual implementation must take necessary post-processing steps to make the solutions more
+practical and operationally safer.
+For example, one may have to ﬂoor or cap the optimal
+PoV policies u∗
+t ’s using a minimum or maximum PoV rate. Similarly, the DP nature of the
+algorithm in general cannot guarantee completion before the horizon ends, though many of our
+simulation experiments have shown that completion is generally achieved when the quasi risk
+aversion parameter λ is strong enough, or when λ and θ are both moderately strong.
+(5) Execution houses who are interested in the current work and plan to implement it in their
+systems should be aware of any other securities or operational risks that are not speciﬁcally
+addressed in the current work, including for examples, IPO’s (initial public oﬀerings) without
+much trading histories, complex market opens or closes, trading halts, or any unexpected
+disruptive market events, etc.
+Acknowledgments
+Jackie Shen is grateful to Merrell Hora for the initial introduction to the ﬁeld of dynamic algorithmic
+trading and for encouraging him to experiment with its multiple facets, while working together at
+the Barclays’ equities electronic trading desk.
+Jackie Shen is also very grateful to all the colleagues previously at the electronic trading desks of
+J.P. Morgan and Barclays, in particular many of our hard-working IT and RISK colleagues whose
+names hardly appear in the headlines, for their daily professional assistance as well as generous
+personal support. Reliable and healthy electronic trading would be impossible without solid IT
+implementations or eﬀective risk controls.
+22
+Electronic copy available at: https://ssrn.com/abstract=2984297
+
+References
+[1] R. Almgren.
+Optimal trading with stochastic liquidity and volatility.
+SIAM J. Financial
+Math., 3:163–181, 2012.
+[2] R. Almgren and N. Chriss. Optimal execution of portfolio transactions. J. Risk, 3:5–39, 2000.
+[3] D. P. Bertsekas. Dynamic Programming and Optimal Control. Athena Scientiﬁc, 2007.
+[4] D. Bertsimas and A. W. Lo. Optimal control of execution costs. J. Financial Markets, 1(1):1–
+50, 1998.
+[5] B. Bouchard, N.-M. Dang, and C.-A. Lehalle. Optimal control of trading algorithms: a general
+impulse control approach. SIAM J. Finan. Math., 2(1):404–438, 2011.
+[6] Merell Hora. Tactical liquidity trading and intraday volume. Preprint, pages 1–28, 2006.
+[7] G. Huberman and W. Stanzl. Optimal liquidity trading. Yale School of Management Working
+Papers, YSM 165, 2001.
+[8] A. Obizhaeva and J. Wang.
+Optimal trading strategy and supply/demand dynamics.
+J.
+Financial Markets, 16(1):1–32, 2013.
+[9] J. Shen. A pre-trade algorithmic trading model under given volume measures and generic price
+dynamics. Applied Math. Res. eXpress, Oxford Univ. Press, 2015(1):64–98, 2015.
+[10] J. Shen and Y. Yu. Styled dynamic algorithmic trading and the MV-MVP style. Social Sci.
+Res. Network (SSRN) Preprint, (2507002):1–18, 2014.
+23
+Electronic copy available at: https://ssrn.com/abstract=2984297

@@ -1,0 +1,216 @@
+{
+  "doc_id": 9,
+  "titulo": "A dynamic market microstructure model with market orders and random order book depth",
+  "resumen_operativo": "Modelo teórico multiperíodo tipo Kyle donde un market maker estratégico (monopolista) compite con un trader informado, con noise traders y limit order traders que forman un libro de profundidad aleatoria. Demuestra que existe equilibrio único incluso con UN solo market maker siempre que la profundidad del libro sea no nula; si el libro es vacío no hay equilibrio y el market maker puede extraer beneficio infinito. Aporta intuiciones estructurales (no empíricas): mayor profundidad del libro reduce el beneficio del insider, el market maker aprende del order flow combinado, y en el caso competitivo los precios son martingala. Útil como marco conceptual sobre por qué la profundidad del libro disciplina al proveedor de liquidez, no como fuente de señales operables.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "strategic market maker",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Market maker que no está sujeto a una condición de beneficio cero sino que maximiza su beneficio esperado eligiendo cuánta liquidez provee y la pendiente de su regla de precios, tras observar el order flow combinado y el libro.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order flow imbalance"},
+        {"tipo": "SE_OPONE_A", "objeto": "competitive market maker"},
+        {"tipo": "APLICA_A", "objeto": "market making"}
+      ],
+      "cita_textual": "This paper studies a dynamic market microstructure model, in which a strategic market maker competes with an informed trader."
+    },
+    {
+      "nombre": "informed trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El insider conoce el valor verdadero del activo y elige cantidades lineales en la diferencia entre ese valor y el precio esperado, maximizando beneficio esperado en N períodos; su ventaja informacional se traduce en beneficio cuadrático en la distancia precio-valor.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "adverse selection"},
+        {"tipo": "USA", "objeto": "Kyle model"},
+        {"tipo": "PREDICE", "objeto": "price discovery"}
+      ],
+      "cita_textual": "The insider knows the true value of the asset, whereas the market maker observes the order book depth and the combined order ‡ow"
+    },
+    {
+      "nombre": "order book depth",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Profundidad (aleatoria) del libro creado por los limit order traders; en el modelo es uniforme por período y su positividad es condición necesaria y suficiente para que exista equilibrio con un solo market maker.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "MITIGA", "objeto": "market maker monopoly power"},
+        {"tipo": "REQUIERE", "objeto": "liquidity provision"}
+      ],
+      "cita_textual": "we do have an equilibrium under certain conditions once the order book depth is not zero"
+    },
+    {
+      "nombre": "limit order trader",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Agentes que colocan órdenes límite formando el libro; su demanda es lineal en la diferencia entre su estimación del valor y el precio, y su participación se determina por una condición de beneficio esperado cero.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "USA", "objeto": "zero expected profit condition"},
+        {"tipo": "APLICA_A", "objeto": "liquidity provision"}
+      ],
+      "cita_textual": "The limit order traders create the limit order book with depth n"
+    },
+    {
+      "nombre": "hybrid market",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estructura de mercado donde la liquidez es provista simultáneamente por el market maker/especialista y por limit order traders, como en NYSE/Amex; el paper argumenta que modelar solo una fuente ignora la interacción entre ambas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "limit order book"},
+        {"tipo": "USA", "objeto": "market making"}
+      ],
+      "cita_textual": "many real markets work as hybrid markets, where liquidity is supplied both by the market maker and limit order traders"
+    },
+    {
+      "nombre": "Kyle model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo canónico de subastas continuas con insider (Kyle 1985) que este paper generaliza: se recupera como caso particular cuando la profundidad del libro es nula y el market maker es competitivo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market microstructure"},
+        {"tipo": "APLICA_A", "objeto": "informed trading"}
+      ],
+      "cita_textual": "Our framework is general enough to obtain several wellknown models as a particular case, among them the models by Kyle (1985)"
+    },
+    {
+      "nombre": "Kyle lambda",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Pendiente de la regla lineal de precios del market maker (lambda_n): cuánto mueve el precio cada unidad de order flow combinado. En el modelo depende de la profundidad del libro y de la varianza condicional del valor; es la medida de impacto de precio.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market impact"},
+        {"tipo": "PARTE_DE", "objeto": "Kyle model"}
+      ],
+      "cita_textual": "The market maker sets the price pn at time tn as"
+    },
+    {
+      "nombre": "noise trader",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Agentes que envían órdenes normales de media cero, independientes del valor; pierden dinero en esperanza frente al insider y al market maker pero participan por motivos de liquidez.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market microstructure"},
+        {"tipo": "CAUSA", "objeto": "adverse selection"}
+      ],
+      "cita_textual": "They do participate, no matter how much they lose."
+    },
+    {
+      "nombre": "asymmetric information",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Cada agente tiene un conjunto de información distinto (sigma-álgebras): el insider conoce el valor, el market maker observa el order flow combinado y la profundidad, los limit order traders solo los precios pasados. El interjuego entre información de precio e información de order flow es el eje del paper.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "adverse selection"},
+        {"tipo": "USA", "objeto": "Bayesian updating"}
+      ],
+      "cita_textual": "One is the information about the asset price, the other is the information on the order ‡ow."
+    },
+    {
+      "nombre": "order flow observation advantage",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Ventaja informacional de poder observar el order flow ANTES de fijar el precio (a diferencia de postear price schedules ex-ante); es lo que permite al market maker monopolista extraer beneficio y sostener el equilibrio.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "market maker profit"},
+        {"tipo": "USA", "objeto": "order flow imbalance"}
+      ],
+      "cita_textual": "namely the e¤ects of being able to observe the order ‡ow before posting a price"
+    },
+    {
+      "nombre": "zero expected profit condition",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Condición de equilibrio impuesta a los limit order traders (y al market maker en el caso competitivo): su beneficio esperado condicional a su información es cero, lo que determina endógenamente la profundidad del libro.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "limit order trader"},
+        {"tipo": "EQUIVALE_A", "objeto": "competitive market maker"}
+      ],
+      "cita_textual": "the limit order trader’s strategy satis…es a no expected pro…t condition"
+    },
+    {
+      "nombre": "competitive market maker",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Caso donde la maximización del market maker se reemplaza por la condición de que el precio iguala la expectativa condicional del valor (beneficio cero); bajo esta condición los precios siguen una martingala.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "strategic market maker"},
+        {"tipo": "CAUSA", "objeto": "martingale price process"}
+      ],
+      "cita_textual": "the maximizing behaviour is replaced by the condition"
+    },
+    {
+      "nombre": "martingale price process",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "En el caso competitivo, los precios fijados por el market maker forman una martingala respecto de las filtraciones tanto del market maker como de los limit order traders; con un market maker estratégico esto no vale.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "competitive market maker"}
+      ],
+      "cita_textual": "In the competitive case, the prices pn follow a martingale with respect to the …ltration"
+    },
+    {
+      "nombre": "Bayesian updating",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Actualización recursiva de la media y varianza condicional del valor del activo por parte del market maker a partir del order flow combinado observado (proyección gaussiana); la varianza condicional decrece con la actividad del insider.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order flow imbalance"},
+        {"tipo": "APLICA_A", "objeto": "price discovery"}
+      ],
+      "cita_textual": "The market participants update their information on the true value of the asset in each trading round."
+    },
+    {
+      "nombre": "backward induction",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de resolución del equilibrio dinámico: se postulan formas cuadráticas para los beneficios máximos esperados del insider y del market maker y se derivan recursiones hacia atrás con condiciones de frontera nulas en el último período.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Kyle model"},
+        {"tipo": "USA", "objeto": "dynamic programming"}
+      ],
+      "cita_textual": "This backward iteration procedure approach already appears in Kyle 1985."
+    },
+    {
+      "nombre": "depth-profit tradeoff for insider",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Resultado estructural: cuanto mayor es la profundidad del libro (más limit order traders), menor es el beneficio del trader informado, porque la pendiente de la regla de precios se ajusta.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "informed trading"},
+        {"tipo": "USA", "objeto": "order book depth"}
+      ],
+      "cita_textual": "if there are many limit order traders in the market, the pro…t of the informed trader is low"
+    },
+    {
+      "nombre": "equilibrium nonexistence with empty book",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Si la profundidad del libro es cero en algún período, el market maker monopolista puede fijar una pendiente arbitrariamente grande y obtener beneficio infinito, por lo que no existe equilibrio; el libro no trivial es lo que disciplina al monopolista.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "order book depth"},
+        {"tipo": "CAUSA", "objeto": "market maker profit"}
+      ],
+      "cita_textual": "If n = 0 for some n = 1; : : : ; N; then the market maker can make in…nite pro…ts with probability one."
+    },
+    {
+      "nombre": "aggressive informed trading speeds price discovery",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Cuanto más agresivamente opera el insider sobre su información (beta grande), más rápido converge el precio al valor verdadero; formalizado como cota sobre la desviación esperada precio-valor.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "price discovery"},
+        {"tipo": "USA", "objeto": "informed trading"}
+      ],
+      "cita_textual": "if the insider trades very aggressively on his information, i.e. if n is very large, the price will approach the true value very fast"
+    },
+    {
+      "nombre": "linear pricing rule",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Supuesto estándar de equilibrio lineal: el precio nuevo es el anterior más lambda por el order flow combinado, y la cantidad del insider es lineal en la brecha valor-precio esperado; el paper solo considera equilibrios lineales.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Kyle model"},
+        {"tipo": "USA", "objeto": "Kyle lambda"}
+      ],
+      "cita_textual": "We only consider linear market equilibria"
+    },
+    {
+      "nombre": "market maker participation rate",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio con signo y_n/(x_n+z_n) entre lo que opera el market maker y el order flow de mercado; su signo indica si el market maker acompaña o va contra el flujo, y depende de si la liquidez la aportan los limit order traders.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "liquidity provision"},
+        {"tipo": "USA", "objeto": "order book depth"}
+      ],
+      "cita_textual": "if n is large, the limit order traders provide the necessary liquidity and therefore, both market traders and the market maker can take liquidity out of the market"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Paper puramente teórico sin datos; aporta el marco conceptual (profundidad del libro disciplina el impacto de precio, el order flow combinado es la señal de aprendizaje del proveedor de liquidez) pero nada directamente testeable en el pipeline ES salvo como motivación para features de profundidad vs impacto."
+  }
+}

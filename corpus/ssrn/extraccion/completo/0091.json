@@ -1,0 +1,149 @@
+{
+  "doc_id": 91,
+  "titulo": "Speed and Learning in High-Frequency Auctions",
+  "resumen_operativo": "El paper desarrolla un modelo teórico comparando mercados continuos con subastas periódicas (batch auctions) para el trading de alta frecuencia. Propone que una mayor velocidad tecnológica de los HFTs y subastas de mayor duración son factores sustitutos que reducen el spread al forzar la competencia entre francotiradores y mitigar la selección adversa del market maker.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "batch auction",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Mecanismo de mercado que acumula órdenes continuas pero las empareja y compensa en intervalos discretos de tiempo para mitigar las ventajas de velocidad pura.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "limit order book"
+        }
+      ],
+      "cita_textual": "While traders can submit orders at any time, the batch auction market clears at discrete intervals, for example every second, through a uniform auction."
+    },
+    {
+      "nombre": "limit order book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estructura de mercado continuo predominante donde las órdenes pueden ser cruzadas en cualquier momento, lo que desencadena carreras de velocidad entre traders.",
+      "relaciones": [
+        {
+          "tipo": "SE_OPONE_A",
+          "objeto": "batch auction"
+        }
+      ],
+      "cita_textual": "Modern exchanges are largely organized as continuoustime limit order books: One can buy and sell assets at any given time."
+    },
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Participación en el mercado caracterizada por tiempos de reacción ultracortos para procesar noticias y capturar oportunidades de liquidez o arbitraje.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "latency"
+        }
+      ],
+      "cita_textual": "High-frequency traders still require time, albeit a short one, to process and react to trading signals"
+    },
+    {
+      "nombre": "latency",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El retraso o tiempo de procesamiento tecnológico que requieren los HFTs para reaccionar a nueva información del mercado.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "adverse selection"
+        }
+      ],
+      "cita_textual": "We interpret ψ as a technology-driven parameter: for example, the speed of incoming data feeds from trading platforms, the round-trip order latency"
+    },
+    {
+      "nombre": "adverse selection",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El riesgo que enfrenta el proveedor de liquidez cuando los especuladores operan direccionalmente contra sus cotizaciones desactualizadas tras una innovación en el valor del activo.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "bid-ask spread"
+        }
+      ],
+      "cita_textual": "Asymmetric information or asymmetric speed across traders may lead to “stale” quotes and adverse selection costs for market-makers"
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "El costo de liquidez que refleja la compensación requerida por los creadores de mercado para asumir el riesgo de ser interceptados por especuladores más rápidos.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "adverse selection"
+        }
+      ],
+      "cita_textual": "The positive spread emerges as a compensation for the adverse selection cost of being sniped by an HFS"
+    },
+    {
+      "nombre": "stale quote sniping",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia donde los especuladores de alta frecuencia operan direccionalmente contra órdenes límite de los creadores de mercado que aún no han sido canceladas.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "adverse selection"
+        },
+        {
+          "tipo": "USA",
+          "objeto": "latency"
+        }
+      ],
+      "cita_textual": "The other HFTs assume the role of high-frequency speculators, or snipers (HFS), who try to profit from short-term stale quotes."
+    },
+    {
+      "nombre": "market making",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de proveer liquidez mediante la colocación de órdenes límite a ambos lados del libro, enfrentando el riesgo de que las cotizaciones queden obsoletas.",
+      "relaciones": [
+        {
+          "tipo": "SE_OPONE_A",
+          "objeto": "stale quote sniping"
+        }
+      ],
+      "cita_textual": "The HFT that succeeds in posting their quotes becomes the high-frequency market-maker (HFM)."
+    },
+    {
+      "nombre": "continuous-time market",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo clásico de microestructura donde el mercado siempre puede ejecutar cruces, tratado aquí como el caso límite de una subasta discreta infinitamente rápida.",
+      "relaciones": [
+        {
+          "tipo": "EQUIVALE_A",
+          "objeto": "limit order book"
+        }
+      ],
+      "cita_textual": "In our model, continuous-time markets emerge naturally as a limiting case of periodic batch auction markets, as the duration of the auction interval becomes arbitrarily small."
+    },
+    {
+      "nombre": "monopoly rent",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Beneficio asimétrico extraído por un único francotirador HFT cuando llega a una subasta sin la presencia de otros competidores que eliminen el arbitraje.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "bid-ask spread"
+        }
+      ],
+      "cita_textual": "For very short auctions, there is a positive probability that only one HFT becomes informed, who can subsequently extract monopoly rents."
+    },
+    {
+      "nombre": "Bertrand competition",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Competencia agresiva en precios que ocurre cuando múltiples especuladores HFT actúan en la misma subasta, llevando el precio al valor fundamental y eliminando las rentas.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "adverse selection"
+        }
+      ],
+      "cita_textual": "Conversely, in a competitive-auction high-frequency speculators engage in Bertrand competition on prices."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Al ser un modelo teórico macroscópico sobre diseño de mercados (batch auctions vs LOB), no brinda señales operativas directas, aunque profundiza en la microestructura de selección adversa útil al diseñar estrategias de market making."
+  }
+}

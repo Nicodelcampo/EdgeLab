@@ -1,0 +1,41 @@
+{
+  "doc_id": 373,
+  "titulo": "Visualizing Fundamental Statistical Principles in Quantitative Finance",
+  "resumen_operativo": "Paper educativo que desarrolla visualizaciones basadas en simulación para ilustrar principios estadísticos fundamentales en finanzas cuantitativas: (i) convergencia de la media muestral y realized volatility vía LLN, (ii) normalidad aproximada de retornos agregados vía CLT, y (iii) contraste entre autocorrelación débil en retornos y fuerte en proxies de volatilidad (volatility clustering). Incluye proofs sketches de LLN, CLT, y modelos toy AR(1) para volatilidad. Sin aplicación de trading, sin backtests, sin datos reales. Útil como material didáctico.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "volatility clustering",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno donde retornos muestran autocorrelación lineal débil pero fuerte dependencia en proxies de volatilidad (squared/absolute returns). Ilustrado con modelo toy: Rt = σt·εt donde σt sigue AR(1) con persistencia.",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "GARCH"}],
+      "cita_textual": "Empirical asset returns often display weak linear autocorrelation but strong dependence in volatility proxies such as squared or absolute returns."
+    },
+    {
+      "nombre": "GARCH",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelos GARCH-type mencionados como enfoque estándar para capturar volatility clustering, motivados por los patrones de ACF de retornos vs retornos absolutos.",
+      "relaciones": [{"tipo": "APLICA_A", "objeto": "volatility clustering"}],
+      "cita_textual": "Such plots are standard diagnostics in volatility modeling: they motivate the use of GARCH-type models and challenge the assumption of i.i.d. returns."
+    },
+    {
+      "nombre": "realized volatility",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Varianza realizada como aplicación directa de LLN: (1/n)ΣR²t → E[R²t] = σ² + μ². Bajo el supuesto común μ²≪σ² en horizontes cortos, la varianza realizada aproxima σ² y la varianza de n-períodos escala como nσ².",
+      "relaciones": [{"tipo": "MIDE", "objeto": "volatility clustering"}],
+      "cita_textual": "Under the common assumption that μ² ≪ σ² at short horizons, the realized variance approximates σ² and the n-period variance scales approximately as nσ²."
+    },
+    {
+      "nombre": "tail risk",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Colas pesadas en retornos financieros ilustradas mediante QQ-plots de retornos t-Student vs normal: las colas se desvían sistemáticamente de la línea de 45°, indicando eventos extremos más frecuentes que lo predicho por Gaussianidad.",
+      "relaciones": [{"tipo": "SE_OPONE_A", "objeto": "GARCH"}],
+      "cita_textual": "Deviations from the 45-degree line in the tails highlight the presence of heavier-than-Gaussian tails, a common feature of financial returns."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Material educativo/pedagógico sin aplicación de trading. Los conceptos ilustrados (LLN, CLT, volatility clustering, heavy tails) son fundamentales para cualquier analista cuantitativo pero el paper no ofrece herramientas nuevas."
+  }
+}

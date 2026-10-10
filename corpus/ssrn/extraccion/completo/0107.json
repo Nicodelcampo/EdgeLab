@@ -1,0 +1,102 @@
+{
+  "doc_id": 107,
+  "titulo": "Exploring Temporal Graphs with Frequent and Regular Edges",
+  "resumen_operativo": "El paper realiza un análisis teórico sobre la exploración de grafos temporales (redes donde las aristas cambian en el tiempo). Los autores estudian principalmente grafos con aristas frecuentes (que aparecen al menos una vez cada f pasos) y aristas regulares (que aparecen periódicamente). Demuestran cotas superiores para el tiempo necesario para que un agente explore (visite todos los nodos de) estos grafos. Además, aplican estos resultados a modelos específicos como redes de transporte público, grafos de conexión secuencial y redes de difusión (broadcast).",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "temporal graphs",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Una clase de grafos definidos por un conjunto constante de vértices y un conjunto cambiante de aristas, cada uno conocido como un paso de tiempo (timestep).",
+      "relaciones": [],
+      "cita_textual": "Temporal graphs are a class of graphs defined by a constant set of vertices and a changing set of edges, each of which is known as a timestep."
+    },
+    {
+      "nombre": "temporal graphs with frequent edges",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Grafos temporales donde cada arista e está activa al menos una vez cada fe pasos de tiempo (frecuencia).",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "temporal graphs"}
+      ],
+      "cita_textual": "temporal graphs with frequent edges, temporal graphs where each edge e is active at least once every fe timesteps, called the frequency of the edge."
+    },
+    {
+      "nombre": "temporal graphs with regular edges",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Grafos temporales donde cada arista está activa en cualquier paso de tiempo que cumple una condición modular respecto a su tiempo de inicio y regularidad.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "temporal graphs"}
+      ],
+      "cita_textual": "temporal graphs with regular edges, graphs where each edge e is active at any timestep t where t ≡se mod re, with se being the start time of the edge, and re the regularity."
+    },
+    {
+      "nombre": "public transport graphs",
+      "tipo": "dato",
+      "definicion_en_contexto": "Grafos temporales formados por la unión de varias rutas o caminatas temporales, modelando los horarios de tránsito.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "temporal graphs"}
+      ],
+      "cita_textual": "public transport graphs, temporal graphs formed by the union of several routes, corresponding to the schedules of some modes of transit"
+    },
+    {
+      "nombre": "sequential connection graphs",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Grafos temporales en los cuales cada vértice activa exactamente una arista de entrada en cada paso de tiempo, siguiendo una permutación de sus aristas de entrada.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "temporal graphs"}
+      ],
+      "cita_textual": "sequential connection graphs, temporal graphs in which each vertex has a single active in-edge per timestep, iterating over the set of edges in some order"
+    },
+    {
+      "nombre": "broadcast networks",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Clase de grafos temporales que representan la comunicación en redes distribuidas donde un vértice transmite a todos sus vecinos o a ninguno en cada paso de tiempo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "temporal graphs"}
+      ],
+      "cita_textual": "broadcast networks, a representation of communication within distributed networks where each vertex broadcasts a message either to all vertices, or none at each timestep."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Los grafos temporales con aristas frecuentes pueden ser explorados en O(Fn) pasos de tiempo, donde F es la máxima frecuencia de una arista y n es el número de vértices.",
+      "mercado": "Teórico (Teoría de Grafos Computacional)",
+      "periodo": "N/A",
+      "magnitud": "O(F n)",
+      "condiciones": "Demostración matemática analítica constructiva mediante minimum weight spanning trees.",
+      "robustez": "alta",
+      "cita_textual": "We show that graphs with frequent edges can be explored in O(Fn) timesteps, where F = maxe∈E fe"
+    },
+    {
+      "afirmacion": "Los grafos temporales con aristas regulares pueden ser explorados en O(Rn) pasos de tiempo, donde R es la máxima regularidad.",
+      "mercado": "Teórico (Teoría de Grafos Computacional)",
+      "periodo": "N/A",
+      "magnitud": "O(R n)",
+      "condiciones": "Demostración matemática que se desprende de la generalización del concepto de frecuencia.",
+      "robustez": "alta",
+      "cita_textual": "that graphs with regular edges can be explored in O(Rn) timesteps, where R = maxe∈E re"
+    },
+    {
+      "afirmacion": "Los sequential connection graphs pueden ser explorados en a lo sumo 4|E| pasos de tiempo.",
+      "mercado": "Teórico",
+      "periodo": "N/A",
+      "magnitud": "4|E|",
+      "condiciones": "Basado en la frecuencia de arista definida por el grado del vértice de destino.",
+      "robustez": "alta",
+      "cita_textual": "We show that these graphs can be explored in at most 4|E| timesteps, where E is the set of edges in the underlying graph."
+    },
+    {
+      "afirmacion": "Las redes broadcast siempre conectadas pueden ser exploradas en O(δn) pasos de tiempo, siendo δ el grado mínimo de cualquier vértice.",
+      "mercado": "Teórico",
+      "periodo": "N/A",
+      "magnitud": "O(δn)",
+      "condiciones": "Restricción a broadcast networks donde el grafo temporal está conectado en cada paso.",
+      "robustez": "alta",
+      "cita_textual": "show that such graphs can be explored in O(dn2) timesteps, where d is diameter of the graph and, further, in O(δn) timesteps if the graph is always connected, where δ is the minimum degree of any vertex"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "nula",
+    "nota": "El documento pertenece a la ciencia de la computación teórica (teoría de grafos y algoritmos distribuidos). No aborda conceptos financieros, de mercado, ni técnicas estadísticas predictivas que se puedan aplicar directa o indirectamente al trading intradía del ES."
+  }
+}

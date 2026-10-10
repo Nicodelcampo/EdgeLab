@@ -1,0 +1,1458 @@
+Electronic copy available at: http://ssrn.com/abstract=1404905
+Review of Statistical Arbitrage, Cointegration,
+and Multivariate Ornstein-Uhlenbeck
+Attilio Meucci1
+attilio_meucci@symmys.com
+this version: December 04, 2010
+latest version available at http://ssrn.com/abstract=1404905
+Abstract
+We introduce the multivariate Ornstein-Uhlenbeck process, solve it analytically,
+and discuss how it generalizes a vast class of continuous-time and discretetime multivariate processes. Relying on the simple geometrical interpretation
+of the dynamics of the Ornstein-Uhlenbeck process we introduce cointegration
+and its relationship to statistical arbitrage.
+We illustrate an application to
+swap contract strategies. Fully documented code illustrating the theory and the
+applications is available for download.
+JEL Classiﬁcation: C1, G11
+Keywords: "alpha", z-score, signal, half-life, vector-autoregression (VAR),
+moving average (MA), VARMA, stationary, unit-root, mean-reversion, Levy
+processes
+1The author is grateful to Gianluca Fusai, Ali Nezamoddini and Roberto Violi for their
+helpful feedback
+1
+Electronic copy available at: https://ssrn.com/abstract=1404905
+
+Electronic copy available at: http://ssrn.com/abstract=1404905
+The multivariate Ornstein-Uhlenbeck process is arguably the model most
+utilized by academics and practitioners alike to describe the multivariate dynamics of ﬁnancial variables. Indeed, the Ornstein-Uhlenbeck process is parsimonious, and yet general enough to cover a broad range of processes. Therefore,
+by studying the multivariate Ornstein-Uhlenbeck process we gain insight into
+the properties of the main multivariate features used daily by econometricians.
+continuous time
+discrete
+⇔
+Levy
+Brownian
+OU
+OU
+unit root
+(1)
+VAR
+( )
+VAR n
+Brownian
+direct coverage
+indirect coverage
+random
+walk
+motion
+time
+stationary
+Levy
+processes
+stat-arb
+cointegration ⇔
+Figure 1: Multivariate processes and coverage by OU
+Indeed, the following relationships hold, refer to Figure 1 and see below for
+a proof. The Ornstein-Uhlenbeck is a continuous time process. When sampled
+in discrete time, the Ornstein-Uhlenbeck process gives rise to a vector autoregression of order one, commonly denoted by VAR(1). More general VAR(n)
+processes can be represented in VAR(1) format, and therefore they are also covered by the Ornstein-Uhlenbeck process. VAR(n) processes include unit root
+processes, which in turn include the random walk, the discrete-time counterpart
+of Levy processes. VAR(n) processes also include cointegrated dynamics, which
+are the foundation of statistical arbitrage. Finally, stationary processes are a
+special case of cointegration.
+In Section 1 we derive the analytical solution of the Ornstein-Uhlenbeck
+process. In Section 2 we discuss the geometrical interpretation of the solution.
+Building on the solution and its geometrical interpretation, in Section 3 we
+introduce naturally the concept of cointegration and we study its properties.
+In Section 4 we discuss a simple model-independent estimation technique for
+cointegration and we apply this technique to the detection of mean-reverting
+trades, which is the foundation of statistical arbitrage. Fully documented code
+2
+Electronic copy available at: https://ssrn.com/abstract=1404905
+
+Electronic copy available at: http://ssrn.com/abstract=1404905
+that illustrates the theory and the empirical aspects of the models in this article
+is available at www.symmys.com ⇒Teaching ⇒MATLAB.
+1
+The multivariate Ornstein-Uhlenbeck process
+The multivariate Ornstein-Uhlenbeck process is deﬁned by the following stochastic diﬀerential equation
+dXt = −Θ (Xt −µ) dt + SdBt.
+(1)
+In this expression Θ is the transition matrix, namely a fully generic square
+matrix that steers the deterministic portion of the evolution of the process; µ is
+a fully generic vector, which represents the unconditional expectation when this
+is deﬁned, see below; S is the scatter generator, namely a fully generic square
+matrix that drives the dispersion of the process; Bt is typically assumed to be a
+vector of independent Brownian motions, although more in general it is a vector
+of independent Levy processes, see Barndorﬀ-Nielsen and Shephard (2001) and
+refer to Figure 1.
+To integrate the process (1) we introduce the integrator
+Yt ≡eΘt (Xt −µ) .
+(2)
+Using Ito’s lemma we obtain
+dYt = eΘtSdBt.
+(3)
+Integrating both sides and substituting the deﬁnition (2) we obtain
+Xt+τ =
+¡
+I −e−Θτ¢
+µ + e−ΘτXt + ²t,τ,
+(4)
+where the invariants are mixed integrals of the Brownian motion and are thus
+normally distributed
+²t,τ ≡
+Z t+τ
+t
+eΘ(u−τ)SdBu ∼N (0, Στ) .
+(5)
+The solution (4) is a vector autoregressive process of order one VAR(1), which
+reads
+Xt+τ = c + CXt + ²t,τ,
+(6)
+for a conformable vector and matrix c and C respectively. A comparison between the integral solution (4) and the generic VAR(1) formulation (6) provides
+the relationship between the continuous-time coeﬃcients and their discrete-time
+counterparts.
+The conditional distribution of the Ornstein-Uhlenbeck process (4) is normal
+at all times
+Xt+τ ∼N (xt+τ, Στ) .
+(7)
+3
+Electronic copy available at: https://ssrn.com/abstract=1404905
+
+The deterministic drift reads
+xt+τ ≡
+¡
+I −e−Θτ¢
+µ + e−Θτxt
+(8)
+and the covariance can be expressed as in Van der Werf (2007) in terms of the
+stack operator vec and the Kronecker sum ⊕as
+vec (Στ) ≡(Θ ⊕Θ)−1 ³
+I −e−(Θ⊕Θ)τ´
+vec (Σ) ,
+(9)
+where Σ ≡SS0, see the proof in Appendix A.2. Formulas (8)-(9) describe the
+propagation law of risk associated with the Ornstein-Uhlenbeck process: the
+location-dispersion ellipsoid deﬁned by these parameters provides an indication
+of the uncertainly in the realization of the next step in the process.
+Notice that (8) and (9) are deﬁned for any speciﬁcation of the input parameters Θ, µ, and S in (1). For small values of τ, a Taylor expansion of these
+formulas shows that
+Xt+τ ≈Xt + ²t,τ,
+(10)
+where ²t,τ is a normal invariant:
+²t,τ ∼N (τΘµ, τΣ) .
+(11)
+In other words, for small values of the time step τ the Ornstein-Uhlenbeck
+process is indistinguishable from a Brownian motion, where the risk of the invariants (11), as represented by the standard deviation of any linear combination
+of its entries, displays the classical "square-root of τ" propagation law.
+As the step horizon τ grows to inﬁnity, so do the expectation (8) and the
+covariance (9), unless all the eigenvalues of Θ have positive real part. In that
+case the distribution of the process stabilizes to a normal whose unconditional
+expectation and covariance read
+x∞
+=
+µ
+(12)
+vec (Σ∞)
+=
+(Θ ⊕Θ)−1 vec (Σ)
+(13)
+To illustrate, we consider the bivariate case of the two-year and the ten-year
+par swap rates. The benchmark assumption among buy-side practitioners is
+that par swap rates evolve as the random walk (10), see Figure 3.5 and related
+discussion in Meucci (2005).
+However, rates cannot diﬀuse indeﬁnitely. Therefore, they cannot evolve as
+a random walk for any size of the time step τ: for steps of the order of a month
+or larger, mean-reverting eﬀects must become apparent.
+The Ornstein-Uhlenbeck process is suited to model this behavior. We ﬁt this
+process for diﬀerent values of the time step τ and we display in Figure 2 the
+location-dispersion ellipsoid deﬁned by the expectation (8) and the covariance
+4
+Electronic copy available at: https://ssrn.com/abstract=1404905
+
+2y swap rate
+τ = 10y
+τ = 2y
+τ =1y
+τ =6m
+τ =1m
+τ =1d
+τ =1w
+5y swap rate
+daily rates 
+observations
+Figure 2: Propagation law of risk for OU process ﬁtted to swap rates
+(9), refer to www.symmys.com ⇒Teaching ⇒MATLAB for the fully documented
+code.
+For values of τ of the order of a few days, the drift is linear in the step and
+the size increases as the square root of the step, as in (11). As the step increases
+and mean-reversion kicks in, the ellipsoid stabilizes to its unconditional values
+(12)-(13).
+2
+The geometry of the Ornstein-Uhlenbeck dynamics
+The integral (4) contains all the information on the joint dynamics of the
+Ornstein-Uhlenbeck process (1). However, that solution does not provide any
+intuition on the dynamics of this process. In order to understand this dynamics
+we need to observe the Ornstein-Uhlenbeck process in a diﬀerent set of coordinates.
+Consider the eigenvalues of the transition matrix Θ: since this matrix has
+real entries, its eigenvalues are either real or complex conjugate: we denote them
+respectively by (λ1, . . . , λK) and (γ1 ± iω1) , . . . , (γJ ± iωJ), where K + 2J =
+N.
+Now consider the matrix B whose columns are the respective, possibly
+complex, eigenvectors and deﬁne the real matrix A ≡Re (B)−Im (B). Then the
+transition matrix can be decomposed in terms of eigenvalues and eigenvectors
+5
+Electronic copy available at: https://ssrn.com/abstract=1404905
+
+as follows
+Θ ≡AΓA−1,
+(14)
+where Γ is a block-diagonal matrix
+Γ ≡diag (λ1, . . . , λK, Γ1, . . . , ΓJ) ,
+(15)
+and the generic j-th matrix Γj is deﬁned as
+Γj ≡
+µ
+γj
+ωj
+−ωj
+γj
+¶
+.
+(16)
+With the eigenvector matrix A we can introduce a new set of coordinates
+z ≡A−1 (x −µ) .
+(17)
+The original Ornstein-Uhlenbeck process (1) in these coordinates follows from
+Ito’s lemma and reads
+dZt = −ΓZtdt + VdBt,
+(18)
+where V ≡A−1S. Since this is another Ornstein-Uhlenbeck process, its solution
+is normal
+Zt ∼N (zt, Φt) ,
+(19)
+for a suitable deterministic drift zt and covariance Φt. The deterministic drift
+zt is the solution of the ordinary diﬀerential equation
+dzt = −Γztdt,
+(20)
+Given the block-diagonal structure of (15), the deterministic drift splits into
+separate sub-problems. Indeed, let us partition the N-dimensional vector zt
+into K entries which correspond to the real eigenvalues in (15), and J pairs of
+entries which correspond to the complex-conjugate eigenvalues summarized by
+(16):
+zt ≡
+³
+z1,t, . . . , zK,t, z(1)
+1,t , z(2)
+1,t , . . . , z(1)
+J,t , z(2)
+J,t
+´0
+.
+(21)
+For the variables corresponding to the real eigenvalues, (20) simpliﬁes to:
+dzk,t = −λkzk,tdt.
+(22)
+For each real eigenvalue indexed by k = 1, . . . , K the solution reads
+zk;t ≡e−λktzk,0.
+(23)
+This is an exponential shrinkage at the rate λk. Note that (23) is properly deﬁned also for negative values of λk, in which case the trajectory is an exponential
+explosion. If λk > 0 we can compute the half-life of the deterministic trend,
+namely the time required for the trajectory (23) to progress half way toward
+the long term expectation, which is zero:
+et ≡ln 2
+λk
+.
+(24)
+6
+Electronic copy available at: https://ssrn.com/abstract=1404905
+
+5
+10
+15
+20
+-1
+-0.5
+0
+0.5
+1
+-0.5
+0
+0.5
+1
+0
+γ >
+0
+λ <
+cointegrated
+plane
+( )
+1
+z
+( )
+2
+z
+z
+Figure 3: Deterministic drift of OU process
+As for the variables among (21) corresponding to the complex eigenvalue
+pairs (20) simpliﬁes to
+dzj,t = −Γjzj,tdt,
+j = 1, . . . , J.
+(25)
+For each complex eigenvalue, the solution reads formally
+zj,t ≡e−Γjtzj,0.
+(26)
+This formal bivariate solution can be made more explicit component-wise. First,
+we write the matrix (16) as follows
+Γj = γj
+µ 1
+0
+0
+1
+¶
++ ωj
+µ
+0
+1
+−1
+0
+¶
+.
+(27)
+As we show in Appendix A.1, the identity matrix on the right hand side generates an exponential explosion in the solution (26), where the scalar γj determines
+the rate of the explosion. On the other hand, the second matrix on the right
+hand side in (27) generates a clockwise rotation, where the scalar ωj determines
+the frequency of the rotation. Given the minus sign in the exponential in (26) we
+obtain an exponential shrinkage at the rate γj, coupled with a counterclockwise
+rotation with frequency ωj
+z(1)
+j;t
+≡
+e−γjt ³
+z(1)
+j,0 cos ωjt −z(2)
+j,0 sin ωjt
+´
+(28)
+z(2)
+j;t
+≡
+e−γjt ³
+z(1)
+j,0 sin ωjt + z(2)
+j,0 cos ωjt
+´
+.
+(29)
+7
+Electronic copy available at: https://ssrn.com/abstract=1404905
+
+Again, (28)-(29) are properly deﬁned also for negative values of γj, in which
+case the trajectory is an exponential explosion.
+To illustrate, we consider a tri-variate case with one real eigenvalue λ and
+two conjugate eigenvalues γ + iω and γ −iω, where λ < 0 and γ > 0. In Figure
+3 we display the ensuing dynamics for the deterministic drift (21), which in
+this context reads
+³
+zt, z(1)
+t
+, z(2)
+t
+´
+: the motion (23) escapes toward inﬁnity at an
+exponential rate, whereas the motion (28)-(29) whirls toward zero, shrinking at
+an exponential rate. The animation that generates Figure 3 can be downloaded
+from www.symmys.com ⇒Teaching ⇒MATLAB.
+Once the deterministic drift in the special coordinates zt is known, the deterministic drift of the original Ornstein-Uhlenbeck process (4) is obtained by
+inverting (17). This is an aﬃne transformation, which maps lines in lines and
+planes in planes
+xt ≡µ + Azt
+(30)
+Therefore the qualitative behavior of the solutions (23) and (28)-(29) sketched
+In Figure 3 is preserved.
+Although the deterministic part of the process in diagonal coordinates (18)
+splits into separate dynamics within each eigenspace, these dynamics are not
+independent. In Appendix A.3 we derive the quite lengthy explicit formulas for
+the evolution of all the entries of the covariance Φt in (19). For instance, the
+covariances between entries relative to two real eigenvalues reads:
+Φk,hk;t =
+Φk,hk
+λk + λhk
+³
+1 −e−(λk+λhk)t´
+,
+(31)
+where Φ ≡VV0. More in general, the following observations apply. First, as
+time evolves, the relative volatilities change: this is due both to the diﬀerent
+speed of divergence/shrinkage induced by the real parts λ’s and γ’s of the eigenvalues, and to diﬀerent speed of rotation, induced by the imaginary parts ω’s
+of the eigenvalues. Second, the correlations only vary if rotations occur: if the
+imaginary parts ω’s are null, the correlations remain unvaried.
+Once the covariance Φt in the diagonal coordinates is known, the covariance
+of the original Ornstein-Uhlenbeck process (4) is obtained by inverting (17) and
+using the aﬃne equivariance of the covariance, which leads to Σt = AΦtA0.
+3
+Cointegration
+The solution (4) of the Ornstein-Uhlenbeck dynamics (1) holds for any choice
+of the input parameters µ, Θ and S.
+However, from the formulas for the
+covariances (31), and similar formulas in Appendix A.3, we verify that if some
+λk ≤0, or some γj ≤0, i.e. if any eigenvalues of the transition matrix Θ
+are null or negative, then the overall covariance of the Ornstein-Uhlenbeck Xt
+8
+Electronic copy available at: https://ssrn.com/abstract=1404905
+
+does not converge: therefore Xt is stationary only if the real parts of all the
+eigenvalues of Θ are strictly positive.
+Nevertheless, as long as some eigenvalues have strictly positive real part, the
+covariances of the respective entries in the transformed process (18) stabilizes
+in the long run. Therefore these processes and any linear combination thereof
+are stationary. Such combinations are called cointegrated: since from (17) they
+span a hyperplane, that hyperplane is called the cointegrated space, see Figure
+3.
+To better discuss cointegration, we write the Ornstein-Uhlenbeck process (4)
+as
+∆τXt = Ψτ (Xt −µ) + ²t,τ,
+(32)
+where ∆τ is the diﬀerence operator ∆τXt ≡Xt+τ −Xt and Ψτ is the transition
+matrix
+Ψτ ≡e−Θτ −I.
+(33)
+If some eigenvalues in Θ are null, the matrix e−Θτ has unit eigenvalues: this
+follows from
+e−Θτ = Ae−ΓτA−1,
+(34)
+which in turn follows from (14). Processes with this characteristic are known as
+unit-root processes. A very special case arises when all the entries in Θ are null.
+In this circumstance, e−Θτ is the identity matrix, the transition matrix Ψτ is
+null and the Ornstein-Uhlenbeck process becomes a multivariate random walk.
+More in general, suppose that L eigenvalues are null. Then Ψτ has rank
+N −L and therefore it can be expressed as
+Ψτ ≡Φ0
+τΥτ,
+(35)
+where both matrices Φτ and Υτ are full-rank and have dimension (N −L)×N.
+The representation (35), known as the error correction representation of the
+process (32), is not unique: indeed any pair eΦτ ≡P0Φτ and eΥτ ≡P−1Υτ gives
+rise to the same transition matrix Ψτ for fully arbitrary invertible matrices P.
+The L-dimensional hyperplane spanned by the rows of Υτ does not depend
+on the horizon τ.
+This follows from (33) and (34) and the fact that since
+Γ generates rotations (imaginary part of the eigenvalues) and/or contractions
+(real part of the eigenvalues), the matrix e−Γτ maps the eigenspaces of Θ into
+themselves. In particular, any eigenspace of Θ relative to a null eigenvalue is
+mapped into itself at any horizon.
+Assuming that the non-null eigenvalues of Θ have positive real part2, the
+rows of Υτ, or of any alternative representation, span the contraction hyperplanes and the process ΥτXt is stationary and would converge exponentially
+fast to the the unconditional expectation Υτµ, if it were not for the shocks ²t,τ
+in (32).
+2One can take diﬀerences in the time series of Xt until the ﬁtted transition matrix does
+not display negative eigenvalues. However, the case of eigenvalues with pure imaginary part
+is not accounted for.
+9
+Electronic copy available at: https://ssrn.com/abstract=1404905
+
+4
+Statistical arbitrage
+Cointegration, along with its geometric interpretation, was introduced above,
+building on the multivariate Ornstein-Uhlenbeck dynamics. However, cointegration is a model-independent concept. Consider a generic multivariate process
+Xt.
+4.1
+Model-independent cointegration
+This process is cointegrated if there exists a linear combination of its entries
+which is stationary. Let us denote such combination as follows
+Y w
+t
+≡X0
+tw,
+(36)
+where w is normalized to have unit length for future convenience.
+If w belongs to the cointegration space, i.e. Y w
+t
+is cointegrated, its variance
+stabilizes as t →∞. Otherwise, its variance diverges to inﬁnity. Therefore,
+the combination that minimizes the conditional variance among all the possible
+combinations is the best candidate for cointegration:
+ew ≡argmin
+kwk=1
+[Var {Y w
+∞|x0}] .
+(37)
+Based on this intuition, we consider formally the conditional covariance of
+the process
+Σ∞≡Cov {X∞|x0} ,
+(38)
+although we understand that this might not be deﬁned. Then we consider the
+formal principal component factorization of the covariance
+Σ∞≡EΛE,
+(39)
+where E is the orthogonal matrix whose columns are the eigenvectors
+E ≡
+³
+e(1), . . . , e(N)´
+;
+(40)
+and Λ is the diagonal matrix of the respective eigenvalues, sorted in decreasing
+order
+Λ ≡diag
+³
+λ(1), . . . , λ(N)´
+.
+(41)
+Note that some eigenvalues might be inﬁnite.
+The formal solution to (37) is ew ≡e(N), the eigenvector relative to the
+smallest eigenvalue λ(N). If e(N) gives rise to cointegration, the process Y e(N)
+t
+is stationary and therefore the eigenvalue λ(N) is not inﬁnite, but rather it
+represents the unconditional variance of Y e(N)
+t
+.
+If cointegration is found with e(N), the next natural candidate for another
+possible cointegrated relationship is e(N−1). Again, if e(N−1) gives rise to cointegration, the eigenvalue λ(N−1)
+t
+converges to the unconditional variance of
+Y e(N−1)
+t
+.
+10
+Electronic copy available at: https://ssrn.com/abstract=1404905
+
+In other words, the PCA decomposition (39) partitions the space into two
+portions: the directions of inﬁnite variance, namely the eigenvectors relative to
+the inﬁnite eigenvalues, which are not cointegrated, and the directions of ﬁnite
+variance, namely the eigenvectors relative to the ﬁnite eigenvalues, which are
+cointegrated.
+The above approach assumes knowledge of the true covariance (38), which
+in reality is not known.
+However, the sample covariance of the process Xt
+along the cointegrated directions approximates the true asymptotic covariance.
+Therefore, the above approach can be implemented in practice by replacing the
+true, unknown covariance (38) with its sample counterpart.
+To summarize, the above rationale yields a practical routine to detect the
+cointegrated relationships in a vector autoregressive process (1). Without analyzing the eigenvalues of the transition matrix ﬁtted to an autoregressive dynamics, we consider the sample counterpart of the covariance (38); then we extract
+the eigenvectors (40); ﬁnally we explore the stationarity of the combinations
+Y e(n)
+t
+for n = N, . . . , 1.
+To illustrate, we consider a trading strategy with swap contracts. First, we
+note that the p&l generated by a swap contract is faithfully approximated by the
+change in the respective swap rate times a constant, known among practitioners
+as "dv01". Therefore, we analyze linear combinations of swap rates, which map
+into portfolios p&l’s, hoping to detect cointegrated patterns.
+In particular, we consider the time series of the 1y, 2y, 5y, 7y, 10y, 15y,
+and 30y rates. We compute the sample covariance and we perform its PCA
+decomposition. In Figure 4 we plot the time series corresponding with the ﬁrst,
+second, fourth and seventh eigenvectors, refer to www.symmys.com ⇒Teaching
+⇒MATLAB for the fully documented code.
+4.2
+Z-score, alpha, horizon adjustments
+To test for the stationarity of the potentially cointegrated series it is convenient
+to ﬁt to each of them a AR(1) process, i.e. the univariate version of (4), to the
+cointegrated combinations:
+Yt+τ ≡
+¡
+1 −e−θτ¢
+µ + e−θτYt + t,τ.
+(42)
+In the univariate case the transition matrix Θ becomes the scalar θ. Consistently
+with (23) cointegration corresponds to the condition that the mean-reversion
+parameter θ be larger than zero.
+By specializing (12) and (13) to the one-dimensional case, we can compute
+the expected long-term gain
+αt,∞≡|Yt −E {Y∞}| = |Yt −µ| ;
+the z-score
+zt,∞≡|Yt −E {Y∞}|
+Sd {Y∞}
+= |Yt −µ|
+p
+σ2/2θ
+;
+(43)
+11
+Electronic copy available at: https://ssrn.com/abstract=1404905
+
+96
+97
+98
+99
+00
+01
+0 2
+0 3
+0 4
+05
+-30
+-25
+-20
+-15
+-10
+-5
+0
+5
+e ig e n d ire ctio n n . 4,    th e ta = 6.07 15
+ye a r
+b asis p o in ts
+96
+9 7
+9 8
+99
+0 0
+01
+0 2
+0 3
+04
+0 5
+-2 000
+-1 500
+-1 000
+-500
+e ig e n dire c tio n n . 1 ,    th e ta = 0.271 14
+ye a r
+ba sis p oin ts
+9 6
+9 7
+98
+9 9
+00
+01
+0 2
+03
+04
+05
+40 0
+45 0
+50 0
+55 0
+60 0
+65 0
+70 0
+75 0
+80 0
+e ig e n d ire c tio n n. 2 ,    th e ta = 1 .40 5
+ye a r
+b a sis po in ts
+9 6
+9 7
+98
+9 9
+00
+01
+0 2
+03
+04
+05
+-3 .5
+-3
+-2 .5
+-2
+-1 .5
+-1
+-0 .5
+0
+0 .5
+1
+1 .5
+e ig e n dire ctio n n . 7,    th e ta = 27 .03 31
+ye a r
+b as is p o in ts
+eigendirection 1,  θ = 0.27 
+basis points
+eigendirection 2,  θ = 1.41 
+eigendirection 7,  θ = 27.03 
+eigendirection 4,  θ = 6.07 
+basis points
+basis points
+basis points
+current value
+1 z-score bands
+long-term expectation
+Figure 4: Cointegration search among swap rates
+and the half-life (24) of the deterministic trend
+eτ ∝ln 2
+θ .
+(44)
+The expected gain (4.2) is also known as the "alpha" of the trade. The z-score
+represents the ex-ante Sharpe ratio of the trade and can be used to generate
+signals: when the z-score is large we enter the trade; when the z-score has
+narrowed we cash a proﬁt; and if the z-score has widened further we take a loss.
+The half-life represents the order of magnitude of the time required before we
+can hope to cash in any proﬁt: the higher the mean-reversion θ, i.e. the more
+cointegrated the series, the lesser the wait.
+In practice, traders cannot aﬀord to wait until the half-life of the trade to
+deliver the expected (half) alpha. The true horizon is typically one day and the
+computations for the alpha and the z-score must be adjusted accordingly. The
+horizon-adjusted z-score is deﬁned as
+zt,τ ≡|Yt −E {Yt+τ}|
+Sd {Yt+τ}
+= zt,∞
+1 −e−θτ
+(1 −e−2θτ)
+1
+2 .
+(45)
+In practice θeτ is close to zero. Therefore we can write the adjustment as
+zt,τ
+zt,∞
+≈
+r
+ln 2
+2
+τ
+eτ .
+(46)
+12
+Electronic copy available at: https://ssrn.com/abstract=1404905
+
+Notice that the relative adjustment for two cointegrated strategies rescales as
+the square root of the ratio of their half-lives eτ (1) and eτ (2):
+z(1)
+t,τ
+z(1)
+t,∞
+/ z(2)
+t,τ
+z(2)
+t,∞
+≈
+s
+eτ (1)
+eτ (2) .
+(47)
+To illustrate, for a horizon τ ≡1 day and a signal with a half-life eτ ≈2 weeks
+the adjustment (46) is ≈2; for a short signal eτ j ≈1 day and a long signal eτ k ≈
+1 month the relative adjustment (47) is ≈5.
+A caveat is due at this point: based on the above recipe, one would be
+tempted to set up trades that react to signals from the most mean-reverting
+combinations. However, such combinations face two major problems. First, insample cointegration does not necessarily correspond to out-of-sample results:
+as a matter of fact, the eigenseries relative to the smallest eigenvalues, i.e.
+those that allow to make quicker proﬁts, are the least robust out-of-sample.
+Second, the "alpha" (4.2) of a trade has the same order of magnitude as its
+volatility. In the case of cointegrated eigenseries, the volatility is the square
+root of the respective eigenvalue (41): this implies that the most mean-reverting
+series correspond to a much lesser potential return, which is easily oﬀset by the
+transaction costs.
+In the example in Figure 4 the AR(1) ﬁt (42) conﬁrms that cointegration
+increases with the order of the eigenseries. In the ﬁrst eigenseries the meanreversion parameter θ ≈0.27 is close to zero: indeed, its pattern is very similar
+to a random walk. On the other hand, the last eigenseries displays a very high
+mean-reversion parameter θ ≈27.
+The current signal on the second eigenseries appears quite strong: one would
+be tempted to set up a dv01-weighted trade that mimics this series and buy it.
+However, the expected wait before cashing in on this trade is of the order of
+eτ ∝1/1.41 ≈0.7 years.
+The current signal on the seventh eigenseries is not strong, but the meanreversion is very high, therefore, soon enough the series should hit the 1-z-score
+bands: if the series ﬁrst hits the lower 1-z-score band one should buy the series,
+or sell it if the series ﬁrst hits the upper 1-z-score band, hoping to cash in
+in eτ ∝252/27 ≈9 days. However, the "alpha" (43) on this trade would be
+minuscule, of the order of the basis point: such "alpha" would not justify the
+transaction costs incurred by setting up and unwinding a trade that involves
+long-short positions in seven contracts.
+The current signal on the fourth eigenseries appears strong enough to buy
+it and the expected wait before cashing in is of the order of eτ ∝12/6.07 ≈2
+months.
+The "alpha" is of the order of ﬁve basis points, too low for seven
+contracts. However, the dv01-adjusted presence of the 15y contract is almost
+null and the 5y, 7y, and 10y contracts appear with the same sign and can be
+replicated with the 7y contract only without aﬀecting the qualitative behavior
+of the eigenseries. Consequently the trader might want to consider setting up
+this trade.
+13
+Electronic copy available at: https://ssrn.com/abstract=1404905
+
+References
+Barndorﬀ-Nielsen, O.E., and N. Shephard, 2001, Non-Gaussian OrnsteinUhlenbeck-based models and some of their uses in ﬁnancial economics (with
+discussion), J. Roy. Statist. Soc. Ser. B 63, 167—241.
+Meucci, A., 2005, Risk and Asset Allocation (Springer).
+Van der Werf, K. W., 2007, Covariance of the Ornstein-Uhlenbeck process,
+Personal Communication.
+14
+Electronic copy available at: https://ssrn.com/abstract=1404905
+
+A
+Appendix
+In this appendix we present proofs, results and details that can be skipped at
+ﬁrst reading.
+A.1
+Deterministic linear dynamical system
+Consider the dynamical system
+µ ˙z1
+˙z2
+¶
+=
+µ a
+−b
+b
+a
+¶ µ z1
+z2
+¶
+.
+(48)
+To compute the solution, consider the auxiliary complex problem
+˙z = µz,
+(49)
+where z ≡z1 +iz2 and µ ≡a+ib. By isolating the real and the imaginary parts
+we realize that (48) and (49) coincide.
+The solution of (49) is
+z (t) = eµtz (0) .
+(50)
+Isolating the real and the imaginary parts of this solution we obtain:
+z1 (t)
+=
+Re
+¡
+eµtz0¢
+= Re
+³
+e(a+ib)t (z1 (0) + iz2 (0))
+´
+(51)
+=
+Re
+¡
+eat (cos bt + i sin bt) (z1 (0) + iz2 (0))
+¢
+z2 (t)
+=
+Im
+¡
+eµtz0¢
+= Im
+³
+e(a+ib)t (z1 (0) + iz2 (0))
+´
+(52)
+=
+Im
+¡
+eat (cos bt + i sin bt) z1 (0) + iz2 (0)
+¢
+or
+z1 (t)
+=
+eat (z1 (0) cos bt −z2 (0) sin bt)
+(53)
+z2 (t)
+=
+eat (z1 (0) sin bt + z2 (0) cos bt)
+(54)
+The trajectories (53)-(54) depart from (shrink toward) the origin at the exponential rate a and turn counterclockwise with frequency b.
+A.2
+Distribution of Ornstein-Uhlenbeck process
+We recall that the Ornstein-Uhlenbeck process
+dXt = −Θ (Xt −m) dt + SdBt.
+(55)
+integrates as follows
+Xt = m+e−Θt (x0 −m) +
+Z t
+0
+eΘ(u−t)SdBu.
+(56)
+15
+Electronic copy available at: https://ssrn.com/abstract=1404905
+
+The distribution of Xt conditioned on the initial value x0 is normal
+Xt|x0 ∼N (µt, Σt) .
+(57)
+The expectation follows from (56) and reads
+µt = m+e−Θt (x0 −m) .
+(58)
+To compute the covariance we use Ito’s isometry:
+Σt ≡Cov {Xt|x0} =
+Z t
+0
+eΘ(u−t)ΣeΘ0(u−t)du,
+(59)
+where Σ ≡SS0. We can simplify further this expression as in Van der Werf
+(2007). Using the identity
+vec (ABC) ≡(C0 ⊗A) vec (B) ,
+(60)
+where vec is the stack operator and ⊗is the Kronecker product. Then
+vec
+³
+eΘ(u−t)ΣeΘ0(u−t)´
+=
+³
+eΘ(u−t) ⊗eΘ(u−t)´
+vec (Σ) .
+(61)
+Now we can use the identity
+eA⊕B = eA ⊗eB,
+(62)
+where ⊕is the Kronecker sum
+AM×M ⊕BN×N ≡AM×M ⊗IN×N + IM×M ⊗BN×N.
+(63)
+Then we can rephrase the term in the integral (61) as
+vec
+³
+eΘ(u−t)ΣeΘ(u−t)´
+=
+³
+e(Θ⊕Θ)(u−t)´
+vec (Σ) .
+(64)
+Substituting this in (59) we obtain
+vec (Σt)
+=
+µZ t
+0
+³
+e(Θ⊕Θ)(u−t)´
+du
+¶
+vec (Σ)
+(65)
+=
+(Θ ⊕Θ)−1 e(Θ⊕Θ)(u−t)¯¯¯
+t
+0 vec (Σ)
+=
+(Θ ⊕Θ)−1 ³
+I −e−(Θ⊕Θ)t´
+vec (Σ)
+More in general, consider the process monitored at arbitrary times 0 ≤t1 ≤
+t2 ≤. . .
+Xt1,t2,... ≡
+⎛
+⎜
+⎝
+Xt1
+Xt2
+...
+⎞
+⎟
+⎠.
+(66)
+16
+Electronic copy available at: https://ssrn.com/abstract=1404905
+
+The distribution of Xt1,t2,... conditioned on the initial value x0 is normal
+Xt1,t2,...|x0 ∼N
+¡
+µt1,t2,..., Σt1,t2,...
+¢
+.
+(67)
+The expectation follows from (56) and reads
+µt1,t2,... ≡
+⎛
+⎜
+⎝
+m+e−Θt1 (x0 −m)
+m+e−Θt2 (x0 −m)
+...
+⎞
+⎟
+⎠
+(68)
+For the covariance, it suﬃces to consider two horizons. Applying Ito’s isometry
+we obtain
+Σt1,t2
+≡
+Cov {Xt1, Xt2|x0} =
+Z t1
+0
+eΘ(u−t1)ΣeΘ0(u−t2)du
+=
+Z t1
+0
+eΘ(u−t1)ΣeΘ0(u−t1)−Θ0(t2−t1)du = Σt1e−Θ0(t2−t1)
+Therefore
+Σt1,t2,... =
+⎛
+⎜
+⎜
+⎜
+⎜
+⎝
+Σt1
+Σt1e−Θ0(t2−t1)
+Σt1e−Θ0(t3−t1)
+· · ·
+e−Θ(t2−t1)Σt1
+Σt2
+Σt2e−Θ0(t3−t2)
+· · ·
+...
+e−Θ(t3−t2)Σt2
+Σt3
+...
+...
+⎞
+⎟
+⎟
+⎟
+⎟
+⎠
+,
+(69)
+This expression is simpliﬁed heavily by applying (65).
+A.3
+OU (auto)covariance: explicit solution
+For t ≤z the autocovariance is
+Cov {Zt, Zt+τ|Z0}
+=
+E
+©
+(Zt −E {Zt|Z0}) (Zt+τ −E {Zt+τ|Z0})0 |Z0
+ª
+(70)
+=
+E
+(µZ t
+0
+eΓ(u−t)VdBu
+¶ µZ t+τ
+0
+dBuV0eΓ0(u−t)
+¶0)
+e−Γ0τ
+=
+E
+(µZ t
+0
+eΓ(u−t)VdBu
+¶ µZ t
+0
+dBuV0eΓ0(u−t)
+¶0)
+e−Γ0τ
+=
+µZ t
+0
+eΓ(u−t)VV0eΓ0(u−t)du
+¶
+e−Γ0τ
+=
+µZ t
+0
+e−ΓsVV0e−Γ0sdu
+¶
+e−Γ0τ
+=
+µZ t
+0
+e−ΓsΣe−Γ0sds
+¶
+e−Γ0τ,
+where
+Σ ≡VV0 = A−1SSA0−1.
+(71)
+17
+Electronic copy available at: https://ssrn.com/abstract=1404905
+
+In particular, the covariance reads
+Σ (t) ≡Cov {Zt|Z0} =
+Z t
+0
+e−ΓsΣe−Γ0sds.
+(72)
+To simplify the notation, we introduce three auxiliary functions:
+Eγ (t)
+≡
+1
+γ −e−γt
+γ
+(73)
+Dγ,ω (t)
+≡
+ω
+γ2 + ω2 −e−γt (ω cos ωt + γ sin ωt)
+γ2 + ω2
+(74)
+Cγ,ω (t)
+≡
+γ
+γ2 + ω2 −e−γt (γ cos ωt −ω sin ωt)
+γ2 + ω2
+.
+(75)
+Using (73)-(73), the conditional covariances among the entries k = 1, . . . K
+relative to the real eigenvalues read:
+Σk,hk (t)
+=
+Z t
+0
+e−λkΣk,hke−λhksds
+(76)
+=
+Σk,hkE
+¡
+t; λk + λhk
+¢
+.
+Similarly, the conditional covariances (72) of the pairs of entries j = 1, . . . J
+relative to the complex eigenvalues with the entries k = 1, . . . K relative to the
+real eigenvalues read:
+Ã
+Σ(1)
+j,k (t)
+Σ(2)
+j,k (t)
+!
+=
+Z t
+0
+e−Γjs
+Ã
+Σ(1)
+j,k
+Σ(1)
+j,k
+!
+e−λksds
+(77)
+=
+Z t
+0
+e−(γj+λk)s
+Ã
+Σ(1)
+j,k cos (ωjs) −Σ(2)
+j,k sin (ωjs)
+Σ(1)
+j,k sin (ωjs) + Σ(2)
+j,k cos (ωjs)
+!
+ds,
+which implies
+Σ(1)
+j,k (t)
+≡
+Σ(1)
+j,k
+Z t
+0
+e−(γj+λk)s cos (ωjs) ds
+(78)
+−Σ(2)
+j,k
+Z t
+0
+e−(γj+λk)s sin (ωjs) ds
+=
+Σ(1)
+j,kC
+¡
+t; γj + λk, ωj
+¢
+−Σ(2)
+j,kS
+¡
+t; γj + λk, ωj
+¢
+and
+Σ(2)
+j,k (t)
+≡
+Σ(1)
+j,k
+Z t
+0
+e−(γj+λk)s sin (ωjs) ds
+(79)
++Σ(2)
+j,k
+Z t
+0
+e−(γj+λk)s cos (ωjs) ds
+=
+Σ(1)
+j,kS
+¡
+t; γj + λk, ωj
+¢
++ Σ(2)
+j,kC
+¡
+t; γj + λk, ωj
+¢
+.
+18
+Electronic copy available at: https://ssrn.com/abstract=1404905
+
+Finally, using again (73)-(73), the conditional covariances (72) among the pairs
+of entries j = 1, . . . J relative to the complex eigenvalues read:
+Ã
+Σ(1,1)
+j,hj
+(t)
+Σ(1,2)
+j,hj
+(t)
+Σ(2,1)
+j,hj
+(t)
+Σ(2,2)
+j,hj
+(t)
+!
+=
+Z t
+0
+e−Γjs
+Ã
+Σ(1,1)
+j,hj
+Σ(1,2)
+j,hj
+Σ(2,1)
+j,hj
+Σ(2,2)
+j,hj
+!
+e−Γ0
+hjsds
+(80)
+=
+Z t
+0
+e−(γj+γhj)s
+µ cos ωjs
+−sin ωjs
+sin ωjs
+cos ωjs
+¶
+Ã
+Σ(1,1)
+j,hj
+Σ(1,2)
+j,hj
+Σ(2,1)
+j,hj
+Σ(2,2)
+j,hj
+! µ
+cos ωhjs
+sin ωhjs
+−sin ωhjs
+cos ωhjs
+¶
+ds
+Using the identity
+Ã
+ea
+eb
+ec
+ed
+!
+≡
+µ cos ω
+−sin ω
+sin ω
+cos ω
+¶ µ a
+b
+c
+d
+¶ µ
+cos α
+sin α
+−sin α
+cos α
+¶
+,
+(81)
+where
+ea
+≡
+1
+2 (a + d) cos (α −ω) + 1
+2 (c −b) sin (α −ω)
+(82)
++1
+2 (a −d) cos (α + ω) −1
+2 (b + c) sin (α + ω)
+eb
+≡
+1
+2 (b −c) cos (α −ω) + 1
+2 (a + d) sin (α −ω)
+(83)
++1
+2 (b + c) cos (α + ω) + 1
+2 (a −d) sin (α + ω)
+ec
+≡
+1
+2 (c −b) cos (α −ω) −1
+2 (a + d) sin (α −ω)
+(84)
++1
+2 (b + c) cos (α + ω) + 1
+2 (a −d) sin (α + ω)
+ed
+≡
+1
+2 (a + d) cos (α −ω) + 1
+2 (c −b) sin (α −ω)
+(85)
++1
+2 (d −a) cos (α + ω) + 1
+2 (b + c) sin (α + ω)
+we can simplify the matrix product in (80). Then, the conditional covariances
+among the pairs of entries j = 1, . . . J relative to the complex eigenvalues read
+S(1,1)
+j,hj;t
+=
+1
+2
+³
+S(1,1)
+j,hj
++ S(2,2)
+j,hj
+´
+Cγj+γhj,ωhj−ωj (t)
+(86)
++1
+2
+³
+S(2,1)
+j,hj
+−S(1,2)
+j,hj
+´
+Dγj+γhj,ωhj−ωj (t)
++1
+2
+³
+S(1,1)
+j,hj
+−S(2,2)
+j,hj
+´
+Cγj+γhj,ωhj+ωj (t)
+−1
+2
+³
+S(1,2)
+j,hj
++ S(2,1)
+j,hj
+´
+Dγj+γhj,ωhj+ωj (t) ;
+19
+Electronic copy available at: https://ssrn.com/abstract=1404905
+
+S(1,2)
+j,hj;t
+≡
+1
+2
+³
+S(1,2)
+j,hj
+−S(2,1)
+j,hj
+´
+Cγj+γhj,ωhj−ωj (t)
+(87)
++1
+2
+³
+S(1,1)
+j,hj
++ S(2,2)
+j,hj
+´
+Dγj+γhj,ωhj−ωj (t)
++1
+2
+³
+S(1,2)
+j,hj
++ S(2,1)
+j,hj
+´
+Cγj+γhj,ωhj+ωj (t)
++1
+2
+³
+S(1,1)
+j,hj
+−S(2,2)
+j,hj
+´
+Dγj+γhj,ωhj+ωj (t) ;
+S(2,1)
+j,hj;t
+≡
+1
+2
+³
+S(2,1)
+j,hj
+−S(1,2)
+j,hj
+´
+Cγj+γhj,ωhj−ωj (t)
+(88)
+−1
+2
+³
+S(1,1)
+j,hj
++ S(2,2)
+j,hj
+´
+Dγj+γhj,ωhj−ωj (t)
++1
+2
+³
+S(1,2)
+j,hj
++ S(2,1)
+j,hj
+´
+Cγj+γhj,ωhj+ωj (t)
++1
+2
+³
+S(1,1)
+j,hj
+−S(2,2)
+j,hj
+´
+Dγj+γhj,ωhj+ωj (t) ;
+S(2,2)
+j,hj;t
+≡
+1
+2
+³
+S(1,1)
+j,hj
++ S(2,2)
+j,hj
+´
+Cγj+γhj,ωhj−ωj (t)
+(89)
++1
+2
+³
+S(2,1)
+j,hj
+−S(1,2)
+j,hj
+´
+Dγj+γhj,ωhj−ωj (t)
++1
+2
+³
+S(2,2)
+j,hj
+−S(1,1)
+j,hj
+´
+Cγj+γhj,ωhj+ωj (t)
++1
+2
+³
+S(1,2)
+j,hj
++ S(2,1)
+j,hj
+´
+Dγj+γhj,ωhj+ωj (t) .
+Similar steps lead to the expression of the autocovariance.
+20
+Electronic copy available at: https://ssrn.com/abstract=1404905

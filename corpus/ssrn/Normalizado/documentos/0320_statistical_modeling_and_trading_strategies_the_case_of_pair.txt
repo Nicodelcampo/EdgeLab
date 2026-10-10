@@ -1,0 +1,1114 @@
+1 
+ 
+ 
+Statistical Modelling and Trading Strategies: the Case of Pairs 
+Trading 
+ 
+Binh Do† 
+ 
+Department of Accounting and Finance 
+Monash University 
+ 
+ 
+This draft: August 2012 
+ 
+Preliminary draft – Please do not quote without permission 
+ 
+ 
+Abstract:  
+Advance in time series analysis has enabled us to examine various economic phenomena for 
+descriptive purposes, but does it translate to trading profits? Using pairs trading as a testing 
+ground, this paper finds that strategies that are formulated around stationary pricing relations 
+using autoregressive and cointegration models are better able to identify predictable pricing 
+relations compared to simple non-parametric methods. However, the mispricings that are 
+picked up by these time series models are smaller in magnitude compared to the nonparametric counterpart. Overall, strategies using statistical modelling do not generate greater 
+pairs trading profits.  
+ 
+ 
+JEL Classification:  G11, G12, G14. 
+ 
+Keywords:  Pairs trading, trading strategies, cointegration, autoregressive models 
+ 
+ 
+ 
+                                                           
+† Email: binh.do@monash.edu. Tel: +613 9903 1399. 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+2 
+ 
+I. 
+Introduction 
+Do fancy maths help to enhance trading profits? This question carries significant 
+implications for both money management and the perpetual debate of market efficiency. 
+Whilst the power of mathematics in the pricing and hedging of derivatives is proven, it is not 
+clear if using sophisticated techniques leads to improved trading outcomes. Reliable answers 
+to this question are rarely in public domain at least for two reasons. Practitioners have little 
+incentive to publish their proprietary algorithms. On the other hand, efficient market 
+researchers are typically constrained by the need to keep their trading rules simple in their 
+pursuit of interesting economic questions.  Perhaps for this reason, portfolio sorting continues 
+to dominate the trading strategy literature as the analytical framework. For example, in both 
+momentum and contrarian strategies, although the philosophy is that the time series 
+behaviour of stock prices is informative of futures returns, the empirical strategy is simply 
+compare a stock’s past return performance against the market (e.g. Conrad and Kaul, 1998). 
+Similarly, the technical analysis literature is also restricted to simple trading rules based on 
+moving averages (e.g. Brock, Lakonishok and LeBaron, 1992) or chart patterns (Lo, 
+Mamaysky and Wang, 2000). 
+In this paper, I explore this question by comparing the performance of alternative pairs 
+trading strategies.1 Some of the strategies are based on simple rules that have been tested in 
+prior studies, whereas others are formulated using time series models. In particular, the latter, 
+parametric strategies make use of the concept of stationarity, a time series property that 
+describes stable stochastic processes. I search for stationary pricing relations by using a firstorder autoregressive model for pricing spreads between two securities, and by identifying 
+cointegrating prices. Whilst autoregressive and cointegration models are by no means fancy 
+                                                           
+1 Pairs trading is a popular Wall Street trading idea which belongs to the family of statistical arbitrage. Similar stocks (pairs) 
+are monitored for temporary mispricings. Long-short positions are simultaneously established to bet on future corrections of 
+the mispricings.  Section II discusses in details. 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+3 
+ 
+maths, they offer a formal statistical framework in which the time series behaviour of stock 
+prices can be rigorously investigated.  
+Using CRSP daily stock data from 1962-2011, I find that the sophisticated strategies based on 
+time series modelling do not outperform the more simple non-parametric counterparts. 
+However, an attribution analysis shows that the time series models appear to be better able to 
+capture pairs that frequently exhibit mispricings that were subsequently corrected. This 
+evidence of better modelling is offset by the fact that mispricings that get exploited by the 
+time series models are smaller in magnitude. Future extensions will consider how to 
+capitalize on this modelling strength. 
+The study makes contribution to the pairs trading literature by proposing new trading 
+methods. Some of these methods have been touted in investment forums without a formal 
+framework and practical implementation. The methodology part in this paper provides just 
+that plus extensive empirical testing. As such it should be valuable to trading desks wishing 
+to extend the ideas to incorporate additional information sets. 
+Section II describes pairs trading, theoretical foundations and existing strategies. Section III 
+proposes new strategies using statistical models. Statistical testing procedures are briefly 
+discussed. Whilst the implementation is restricted to pairwise combinations, some discussion 
+on how it can be extended by multiple stock relations is provided in the Appendix. Section IV 
+describes empirical implementation and data. Section V reports results. Section VI concludes. 
+ 
+II. 
+Review of theoretical underpinnings and existing methods 
+In the field of international trade, the Law of One Price proposes that goods of close 
+substitution should be priced uniformly (in common currency units) across different markets. 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+4 
+ 
+Arbitrage ensures any violations will be traded away, subject to usual caveats such as absence 
+of transaction costs. Pairs trading is essentially an interpretation and enforcement of the Law 
+of One Price in the equity market: similar stocks should be trading at similar prices. Whilst 
+the concept of economic substitution is well defined in the consumption market, there is no 
+such luxury in securities markets where goods represent claims on future payoffs that are 
+random. This distinction implies whereas arbitrage in commodity markets is relatively risk 
+free, equity arbitrage is risky and conditional on how successfully the relationship amongst 
+the arbitraged assets is modelled.  
+ 
+Traditional asset pricing frameworks such as the equilibrium based CAPM  and 
+empirically motivated models such as Fama and French’s (1993) three-factor model 
+potentially provide a tool to capture the relative pricing amongst assets. Unfortunately, 
+empirical evidence on the performance of these models (see Fama and French, 2004 for a 
+review of evidence) suggests that they are more suited for tasks such as estimating the cost of 
+capital, the financial consequence of which is arguably less visible than say implementing a 
+trading strategy.  
+ 
+Indeed, the literature on pairs trading is confined to applications of simple non-parametric 
+methods to identify stocks of close economic substitution. The seminal study by Gatev, 
+Goetzmann and Rouwenhorst (2006) uses a simple rule whereby pairs are chosen so as to 
+minimize the sum of the squared differences (hereafter, SSD) in the normalized prices of the 
+stocks. That is, for each stock i, find stock j that solves: 
+ 
+ ܵܵ
+ܦ௜,௝≡݉݅݊
+௝∑
+ሺ݌௜,௧െ݌௝,௧ሻଶ
+஻
+௧ୀଵ
+ 
+ 
+ 
+ 
+ 
+(1) 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+5 
+ 
+where p is the total return index scaled to start at $1 at the beginning of the formation period 
+(the standard implementation is 1 year). In other words, the partner to each stock i is one 
+whose price distance with stock i is the smallest amongst all possible pair combinations. The 
+resulting pairs are subjected to a trading rule that takes a long-short position in a pair 
+whenever its spread st=p1t-p2t exceeds or falls below two historical standard deviations. I 
+refer to this strategy as Distance-All. 
+One variant to this strategy is to admit to the trading portfolio only pairs that have the lowest 
+SSDs will be admitted to the trading portfolio. These select pairs are deemed to be the best 
+representatives of the Law of One Price pairs, hence the risk of divergence is the lowest. I 
+call this strategy Distance – Top 20”. 
+One can see that the SSD metric primarily picks up the ‘closeness’ in the historical price 
+movements between two stocks, and does not capture how this closeness is maintained over 
+time. In other words, the time series aspect in the relation should also enter into the pair 
+matching algorithm to ensure it picks up pairs of stocks that have not only moved together 
+but also exhibited frequent divergence and convergence. Do and Faff (2010) suggest a 
+concept termed the “number of zero crossings” or NZC, that counts the number of times the 
+normalized price spread between two stocks switches sign during the formation period 
+ 
+ 
+ ܼܰ
+ܥ௜,௝ൌ∑
+ܫ௧
+஻
+௧ୀଶ
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+(2) 
+ܫ௧ൌ1݂݅
+൫݌௜,௧െ݌௝,௧൯൫݌௜,௧ିଵെ݌௝,௧ିଵ൯൐0
+0
+݋ݐ݄݁
+ݎݓ݅ݏ݁
+ 
+ 
+(3) 
+To put it simply, the NZC captures the frequency of price divergence and convergence 
+between a pair. Integrating both SSD and NZC metrics, for example, by choosing the top 20 
+pairs in terms of highest NZCs within the top 50 pairs in terms of the lowest SSDs (Do and 
+Faff, 2010) or by intersecting the lowest SSD decile with the highest NZC decile (Do and 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+6 
+ 
+Faff, 2012) will identify pairs whose stocks have not only moved along each other very 
+closely but also moved around each other most frequently. Do and Faff (2010, 2012) find that 
+portfolios of pairs that are matched using both SSD and NZC outperform those that employ 
+only SSD.  
+In this paper, I examine two variants of this method. The first, referred to as Oscillation – 1st 
+Decile, comprises pairs that fall into the intersection of the lowest SSD decile and the top 
+NZC decile. The second variant, Oscillation – 2nd Decile, admits to the trading portfolio pairs 
+that intersects the second lowest SSD decile with the top NZC decile. The idea is to avoid 
+low risk/low return pairs whose components move too closely, or mispricings are minute.  Do 
+and Faff (2012) find this strategy is particularly profitable.2  
+Both of the Distance and Oscillation methods are non-parametric. Whilst they are simple to 
+implement and intuitive, these pairs matching methods are an empirical procedure that lacks 
+formal inferences afforded by parametric analysis.  Stock A ends up pairing with stock B not 
+because their co-movements have passed some statistical test, but their distance happens to be 
+the shortest amongst all possible combinations between A and other stocks. A corollary is 
+that pair traders would have to make some arbitrary choice when choosing pairs for the 
+trading portfolio. If SSD is used as the pair selection metric, should traders choose a fixed 
+number of pairs that have the lowest SSDs, or should they filter out pairs that have SSDs 
+exceeding a pre-specified threshold? 3 In addition, the non-parametric methods described 
+above implicitly impose a one-to-one restriction on the relationship between two stocks. That 
+is, these methods look for pairs of stocks that exhibit a “hedge ratio” of 1 between themselves 
+                                                           
+2 The second lowest SSD decile is used instead of the lowest decile so as to avoid pairs that have moved tightly 
+together with low mispricing to be exploited. 
+3 As an illustration, the average SSD in the top 20 pairs in the US market is in the order of 0.1‐0.2 (see Do and 
+Faff, 2010, Table 2). My work on the Australian market shows the average SSD amongst the top 20 pairs is 
+about 1. Clearly, fixing the number of pairs in the latter market would end up with worse matches than in the 
+former. Fixing the threshold may be a better solution, but once again, involves making arbitrary decisions.  
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+7 
+ 
+(e.g. a stock’s increase of x% is consistently accompanied by an increase of about x% in the 
+other stock).  
+A natural question is that, given vast knowledge in time series analysis, can one use time 
+series modelling to identify statistical relationships in securities markets that are predictable? 
+If predictable relationships can be parametrically formulated and tested (in the sense of the 
+null hypothesis of no predictability being rejected), a pair can be unambiguously classified as 
+either “close economic substitutes” or not, thus the arbitrariness problem can be avoided. 
+Such parametric methods may also be able to accommodate relationships that are not strictly 
+one-to-one as the pair trader can let the data determine the “hedge ratio” between the two 
+stocks. 
+On the other hand, would the supposedly more rigorous parametric methods predict the future 
+behaviour better in the form of generating greater trading profits compared to the simpler 
+“model free” approaches? When the future is plagued with random shocks that induce 
+departure from the past pattern, there is no certainty this is the case. 
+The next section proposes and describes two parametric approaches to identifying pairs of 
+stocks that are statistically predictable. The following section tests whether they lead to more 
+profitable results. 
+ 
+III. 
+Stationarity and pairs trading 
+Pairs trading is based on the idea that the prices of two stocks exhibit predictable behaviour 
+over time. In time series analysis, such predictable evolution is the quality of what is known 
+as stationary stochastic process, or a random process in which the distribution at every point 
+in time has the same mean and variance (and the covariance between different points only 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+8 
+ 
+depends on their distance). Formally, the process for yt is said to be stationary, denoted yt
+ 
+~I(0)4 if 
+ܧሺݕ௧ሻൌߤ  
+ 
+ 
+ 
+for all t 
+ 
+ܧሺݕ௧െߤሻଶൌߪଶ 
+ 
+ 
+for all t 
+ 
+ܧሾሺݕ௧െߤሻ൫ݕ௧ି௝െߤ൯ሿൌߙ௝   
+for all t and any j≠0 
+ 
+ 
+ 
+Since a stationary process is stable over time, future realizations are predictable in the sense 
+that if an observation falls in the tails of the distribution, it is likely subsequent moves will 
+take the process nearer to the long term mean µ. For this reason, mean reversion is sometimes 
+used to refer to stationarity. 
+This mathematic concept is particularly fitting to pairs trading. If one can identify a relation 
+amongst different asset prices that is stationary, they can formulate a trading strategy that is 
+long (short) on this relation/portfolio if its current value is well below (above) its long run 
+average.5The finite variance in a stationary process enables one to use it as a basis to 
+determine whether a given observation is too high or too low relative to the mean. When 
+implementing the models in this paper, I use 2 standard deviations to identify extreme values. 
+This choice, albeit arbitrary, is reasonable and consistent with the 2 standard deviation rule 
+used in the non-parametric methods. 
+The methods described below are two statistical approaches to identifying stationary pricing 
+relationships. Technical discussions of these statistical models are covered in standard time 
+                                                           
+4 Technically speaking, this definition of stationarity really refers to covariance stationarity as opposed to strict stationarity, 
+the latter is a more stringent process in which not only the first two moments but also higher moments are constant.  
+5 It is worth pointing out at this juncture that endeavours to find stationary relationships do not mean trying to refute the 
+random walk hypothesis that underpins asset pricing. Indeed, much of financial theory is built on the ground that log price Xt 
+follows a random walk process: ܺ
+௧ൌߤ൅ܺ
+௧ିଵ൅ߝ௧. Unlike a stationary process such as ܺ
+௧ൌߤ൅ߩܺ
+௧ିଵ൅ߝ௧, with ||<1, 
+this process has infinite variance, thus  unpredictable. Although studies abound that reject the random walk model (e.g. Lo 
+and MacKinlay, 1988), this paper does not seek to participate in that debate. Here, the effort is to identify stationary relative 
+spreads amongst different securities. 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+9 
+ 
+series texts such as Hamilton (1994). More advanced treatments can  be found in Johansen 
+(1995).  
+A. Mean Reverting Spreads 
+In this method, I look for pairs of stocks that have moved together such that the price spread 
+sijt=pit-pjt is a stationary process, with p being the normalized stock price as defined 
+previously. Such stationary price spread suggests that the price gap between the two stocks 
+converges to a constant in the long term and any short term departure from this long term 
+mean should be corrected in the future. The spread formulation implies the two assets are 
+near identical and that the trading portfolio is dollar neutral. This formulation is perhaps the 
+most basic yet intuitive interpretation of pairs trading. 
+A.1 Autoregressive spread strategy 
+A well-known candidate for stationary processes is the first-order autoregressive process or 
+AR(1), with a Gaussian error term: 
+ݏ௧ൌܿ
+൅ܽ
+ݏ௧ିଵ൅ݑ௧  
+ 
+ 
+ 
+ 
+ 
+(4) 
+where |a|<1 and ut is N(0, h2). 
+The solution to this process is: 
+ݏ௧ൌሺܿ൅ݑ௧ሻ൅ܽ
+ሺܿ൅ݑ௧ିଵሻ൅ܽ
+ଶሺܿ൅ݑ௧ିଶሻ൅⋯ൌ
+௖
+ሺଵି௔ሻ൅ݑ௧൅ܽݑ௧ିଵ൅ܽ
+ଶݑ௧ିଶ൅⋯ (5) 
+Based on this solution, one can compute the mean of the process as 
+ 
+ 
+ 
+ܧሺݏ௧ሻൌ 
+௖
+ሺଵି௔ሻ  
+ 
+ 
+ 
+ 
+ 
+ 
+(6) 
+And the variance is 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+10 
+ 
+ܧሾݏ௧െܧሺݏ௧ሻሿଶൌ 
+௛మ
+ሺଵି௔మሻ 
+ 
+ 
+ 
+ 
+ 
+(7) 
+One can see that when |a|≥1, the process is non-stationary. The covariance term, which is 
+suppressed here to save space, also does not depend on t. 
+Whilst the error term ut needs only be white noise for the process to be stationary, the 
+Gaussian assumption is required for the estimation and testing of the model, which I turn to. 
+A.2 Empirical execution 
+I wish to identify pairs of stocks whose price spread exhibits AR(1) behaviour. Whilst fitting 
+a time series to Eq. (4) can be easily accomplished by performing an OLS regression, one 
+needs to ensure the model is indeed a valid representation of the true process. Two empirical 
+issues need addressing here. 
+First, if the true process is non-stationary, that is, the true value of a is 1 although the OLS 
+estimate of a is different from 1 based on incorrect inference, one falsely concludes that the 
+process is stationary and consequentially trades on a quantity that is not mean reverting.  The 
+approach therefore is to test for non-stationarity in the spread s, a test known as unit root tests. 
+In particular, for each pairwise combination (and for each implementation cycle with 1 year 
+formation period), I wish to test the null 
+ݏ௧ൌܿ
+൅ݏ௧ିଵ൅ݑ௧ 
+ 
+ 
+ 
+ 
+ 
+ 
+(8) 
+against the alternative model (4) with |a|<1. The Dickey-Fuller test performs this test by 
+performing the regression as specified by (4), then making inference on the estimated 
+coefficients. Since the data generating process under the null is non-stationary, the asymptotic 
+distribution of the estimates is not the standard t distribution. The Dickey-Fuller test is based 
+on the correct asymptotic distribution. Pairs that are admitted to the trading portfolio are 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+11 
+ 
+those that the null hypothesis of unit root can be rejected at the standard level of significance, 
+taken to be 5%. 
+A related issue is of model misspecification. For the above statistical inference to be valid, 
+the model being tested needs to be correctly specified. For out-of-sample applications such as 
+pairs trading, misspecification checks are critical. Following Johansen (1995), I perform three 
+misspecification checks on the regression residuals ݑොt. The Ljung-Box Q test is used to test 
+for autocorrelation in the residuals. The Jarque-Bera test checks for deviations from 
+normality. The Engle test ensures there is no heteroschedasticity in the residuals.  
+The Dickey-Fuller test for unit root is susceptible to serial correlation in the error term ut. 
+That is, if the true data generating process is a random walk with serially correlated error 
+terms, the test can be invalid. The Augmented Dickey-Fuller test addresses this potential 
+serial correlation by using lag differences st-2, st-3 etc. as additional regressors. The optimal 
+number of lags can be determined using some form of information criteria such as the Akaike 
+information criterion. In this paper, since unit root tests are performed on a large number of 
+pairwise spreads over different periods, such approach adds computational costs to what is 
+already an intensive task. Instead, I use the misspecification tests as outlined above to filter 
+out pairs that have serially correlated residuals even though they may pass the stationarity 
+test.6  
+In summary, under the first parametric method, each month, I look for pairs whose price 
+spread exhibits AR(1) behaviour in the past 1 year. For these pairs, the Dickey-Fuller test 
+(without any lag terms) is rejected AND none of the misspecification tests can be rejected. 
+Like the non-parametric methods, candidate pairs continue to be matched within industry 
+groups. Once pairs are identified for trading, the same trading rule applies: a pair is to be 
+                                                           
+6 With this empirical strategy, I may also end up excluding stationary pairs that are autoregressive of higher 
+orders. This exclusion is necessary to simplify the empirical execution. 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+12 
+ 
+opened (by shorting the overpriced stock and long the under-priced stock) whenever the 
+current spread exceeds two historical standard deviations of s. This sample standard deviation 
+should approach the population standard deviation as computed in Eq. (7).  I refer to this 
+strategy as Mean Reverting Spread.  
+A.3. Alternative trading strategy using reversion strength 
+The strategy above does not make use of the strength of mean reversion in those stationary 
+pairs. Intuitively, pairs that exhibit the strongest mean reversion are expected to correct 
+divergence the most quickly, thus enhancing profitability. Fortunately, this concept of 
+reversion strength can be quantified via the half-life measure: ݄
+௜,௝ൌെ
+୪୬ ሺଶሻ
+୪୬ ሺ௔ොሻ  
+ 
+ 
+ 
+ 
+ 
+ 
+(9) 
+where ܽො is the estimate from regression (4). The half-life is a measure of how many time 
+intervals it takes for an AR(1) process to correct half of the distance to the long term mean. 
+Therefore, in addition to the standard Mean Reverting Spread strategy that trades all pairs 
+that pass the statistical tests, I also examine a strategy that trades only the top N pairs whose 
+half-lives are the lowest. These pairs are expected to converge within the shortest period of 
+times, hence increasing the number of trades and profitability. I choose N=20 refer to this 
+strategy as Mean Reverting Spread-Top 20.  
+To conclude this session, a comment is worth making on the statistical nature of the strategies. 
+Whilst it makes no reference to any theoretical framework, the underlying AR(1) model is an 
+intuitive way to describe the mispricing process between similar stocks. The model has also 
+been used for several applications in finance. Indeed, the continuous-time equivalence of the 
+discrete-time AR(1) model with Gaussian noise is the Orstein-Uhlenbeck process. In the term 
+structure literature, it is used to model the instantaneous interest rate (see Vasicek, 1977 for 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+13 
+ 
+the theoretical development, Chan, Karolyi, Longstaff and Saunders, 1992 for empirical 
+evaluation). In the volatility literature, stochastic volatility models assume the logarithm of 
+conditional volatility is an AR(1) (see Andersen, Chung and Sorensen, 1999). In their study 
+of convenience yield in the futures market, Casassus and Collin-Dufresne (2005) use the 
+mean reversion model for the state variables that drive the log commodity price.  
+B. Cointegrating prices 
+An alternative avenue to identify stationary processes is cointegration. To define the concept, 
+consider two non-stationary time series p1t ~ I(1) and p2t ~ I(1), I(1) denotes that these 
+processes are integrated of order 1 such that the differencing process pt-pt-1 is stationary, or 
+I(0). In general, linear combination p1t - βp2t ~ I(1) as well. However, there may exist a 
+special value β that renders p1t - βp2t ~ I(0). In this exception, p1 and p2 are said to be 
+cointegrated of order (1,1) and the vector a=[1 –β]T is the cointegrating vector. Intuitively, 
+the two processes may wander unpredictably but they wander together. This co-movement as 
+specified by the cointegrating vector possesses all attributes of a stationary process.  This 
+cointegration concept, introduced in Granger (1981), has turned out to be an extremely useful 
+tool in analyzing non-stationary time series. Applications are numerous. In finance, Campbell 
+and Shiller (1987) examine bubbles in asset prices by modelling cointegration between 
+market index levels and dividends . Lettau and Ludvigson (2001) study predictability of stock 
+market returns based on consumption and aggregate wealth.  Blanco, Brennan and Marsh 
+(2005) analyse the dynamic relation between corporate bonds and credit default swaps. 
+Interestingly, few studies have applied cointegration to model stock prices cross-sectionally 
+despite the fact that prices are typically non-stationary and intuition suggests there can be 
+common trends amongst these prices. One exception is Bossaerts (1988) who examines 
+market settings that admit cointegrated stock prices. Using data on five stock portfolios, 
+Bossaerts (1988) documents two cointegration relationships amongst these portfolios. This 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+14 
+ 
+section shows a pairs trading strategy that is formulated on cointegration amongst individual 
+stocks. 
+B.1. Cointegration trading strategies and execution 
+In this set of strategies, I look for pairs that are cointegrated, estimate the cointegrating vector 
+a=[1 –β]T and compute the sample standard deviation for quantity qt= p1t- βp2t. All 
+cointegrated pairs are then subject a trading rule that takes a long/short position in the pair 
+whenever qt exceeds or fall below two standard deviations. The logic is once again based on 
+the concept of stationarity: cointegration means qt is stationary with finite variance such that 
+extreme values of the process suggest it should eventually correct towards the mean. Since β 
+can be different from 1, this cointegration strategy allows for comovements that are not 1-to1, hence more general than the mean reversion spread strategies. Since the concept of 
+cointegration applies to any n time series, the pairwise strategy tested in this paper is 
+necessarily a restricted exercise although extension to n>2 can be easily accomplished. 
+Obviously, central to the strategy is to test for cointegration and estimate the cointegrating 
+vector. Engle and Granger (1987) propose a two-stage method in which the first stage 
+involves regressing one time series on the other 
+݌ଵ௧ൌߙ൅ߚ݌ଶ௧൅߳
+௧    
+ 
+ 
+ 
+ 
+ 
+(10) 
+In the second stage, a unit root test is performed on the regression residual ߳௧ෝ in the form of 
+the Dickey-Fuller test. Rejection of a unit root on ߳௧ෝ  means ߳௧ൌ݌ଵ௧െߚ݌ଶ௧െߙ is stationary. 
+Since the stationarity test is performed on the regression residual ߳௧ෝ , inference is made based 
+on a special table of critical values (provided in Engle and Granger, 1987).  
+Based on this Engle-Granger test, the first cointegration trading strategy is as follows. For 
+each pairwise combination, test for cointegration using the Engle-Granger test (with a 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+15 
+ 
+constant in the regression). The unit root test on the residual is performed using the DickeyFuller test with no lag differences, for the same reasons outlined previously in section A.2. In 
+addition, three misspecification tests are carried out on the residuals of the residual regression: ߳
+௧ൌߛ߳௧ିଵ൅ߟ௧    
+ 
+ 
+ 
+ 
+ 
+ 
+(11) 
+These tests for autocorrelation, ARCH effects and normality, as described in section A.2, are 
+once again to ensure the validity of the cointegration test and the estimated coefficients. The 
+testing is done using the past 1 year of daily prices. 
+Cointegrated pairs are then subjected to a trading rule as follows. During the trading period, 
+whenever the quantity qt= p1t- βp2t-α for a pair exceeds 2 standard deviations computed on the 
+pair, short $1 on stock 1, long β on stock 2 and invest (1- β) in the cash account. The cash 
+component is to achieve a zero-cost setup. If β>1, (1- β) is the amount to borrow. The 
+position is closed out when qt falls below zero. An opposite rule applies when qt falls below 2 
+standard deviations, in which case long $1 on stock 1, short β$ on stock 2 and invest (β-1) in 
+the cash account. qt is equivalent to the spread st=p1t-p2t. I refer to this strategy as 
+Cointegrating Prices.  
+One can also take advantage of the long run mean reversion strength in the spread qt by 
+estimating the half-life measure for qt using Eq. (9) with ܽො now replaced by ߛො. Thus, a variant 
+to the above strategy is one that admits the top 20 pairs with the lowest half-lives, which I 
+refer to as Cointegrating Prices - Top20. 
+ 
+B.2. Issues in cointegration tests and potential extension 
+The econometric literature on cointegration highlights several shortcomings under the EngleGranger test. For instance, the procedure requires making arbitrary choice as to which series 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+16 
+ 
+is normalized to unity and thus appears in regression (10) as the dependent variable. When 
+that series is p1 as shown, the cointegrating coefficient is β. When p2 is chosen as the 
+normalized series, the coefficient by regressing p2 against p1 is not 1/β. Thus, this 
+normalization choice leads to different estimates of the cointegrating relation and possibly 
+different conclusions about cointegration. A second problem is when there is more than one 
+cointegration relation (a situation potentially arising when n>2), the procedure just provides 
+one such relation. One approach that overcomes both of these problems is the maximum 
+likelihood procedure proposed by Johansen (1988, 1991). Under that approach, cointegrating 
+relations play the role of long-run stochastic trends in describing the dynamics amongst the 
+series. The MLE estimator produces all coefficients for the whole system including the 
+various cointegrating vectors that require no normalization. In addition, hypothesis testing on 
+the number of cointegrating relations is also possible. The Appendix describes this approach 
+and how it can be applied to pairs trading, especially when n>2. For the empirical analysis in 
+the remaining of the paper, pairs trading is implemented on pairwise combinations, or n=2. 
+ 
+IV. 
+Summary of Methodologies and Data 
+Section II reviews four strategies that have been examined in other studies. Section III 
+proposes four new strategies based on time series modelling. The eight strategies are 
+summarized in Table 1. 
+[Table 1 here] 
+A few more notes on the implementation are in order. First, following the existing literature, 
+stocks are matched with other stocks within the same industry group, using Fama and 
+French’s (1997) industry classifications. Second, stocks are matched using daily data in the 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+17 
+ 
+previous twelve months, and traded using closing prices in the subsequent six months. Over 
+this trading period, pairs can be opened and closed multiple times and non-converged pairs 
+are to be closed at the end of the six month horizon. The strategies are rolled over every 
+month, giving rise to overlapping portfolios (and return time series). Third, returns are 
+computed for each calendar month by averaging across the overlapping portfolios. Statistical 
+testing on the resulting monthly returns is based on the Newey-West standard error that 
+corrects for autocorrelation. Monthly returns for each portfolio are built up from daily 
+marked-to-market payoffs, and computed on a buy-and-hold basis in the spirit of Liu and 
+Strong (2008). 
+Data is drawn from the daily CRSP files over period July 1962-December 2011. Given the 
+huge computational requirement in this study due to numerous statistical tests on pairwise 
+combinations, I limit the sample to the top 3 size deciles. Other usual filters apply. Only 
+stocks with share codes 10 and 11 are included. Those with prices less than $5 or that do not 
+trade in any day over the formation period are excluded. For delisted stocks, their delisting 
+returns are incorporated in return calculation.  
+V. 
+Results 
+Table 2 contains raw and risk-adjusted returns on eight strategies where risk adjustment is 
+performed using Fama and French’s (1993) three-factor model as well a five-factor model 
+that incorporates momentum and short term reversal. 
+[Table 2 here] 
+All strategies generate positive and statistically significant excess returns, both before and 
+after risk adjustment. Whilst the magnitude of these returns is rather small, ranging from 30 – 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+18 
+ 
+80 bps per month, the t-stats are large, up to 11.42, reflecting the low variation in the time 
+series. This is consistent with the general low risk characteristic of pairs trading.  
+Overall, the Oscillation, Mean Reverting Spread and Cointegration strategies outperform the 
+Distance strategies. The respective second variant in these strategies seem to outperform the 
+first. For the parametric strategies, this means conditioning on reversion strength appears to 
+enhance profitability. More interestingly, the parametric models (the last 4) do not 
+outperform the much simpler strategies. The best parametric model (Mean Reverting Spread 
+– Top 20) generates a five-factor alpha of 76 bps whereas the Oscillation – 2nd Decile strategy 
+reports 81 bps. The Cointegration strategies report similar, albeit slightly lower returns than 
+the Mean Reverting strategies. 
+To better understand the sources of performance differential amongst the various strategies, I 
+adopt the attribution analysis in Do and Faff (2010 in which pairs are classified into four 
+mutually exclusive groups based on their ex post performance. The first group (“Non-traded”) 
+contains pairs that did not trade at all over the trading period, due to absence of divergence. 
+Whilst these pairs may represent strongly co-moving stocks, they are not desirable from a 
+trading perspective. The second group (“Non-converged”) comprises pairs that did diverge 
+but this divergence was not corrected by the end of the trading period, resulting in a loss. The 
+third group (“Single-roundtrip”) represents pairs that had a successful convergence, or a 
+roundtrip trade, possibly plus a non-converged second trade. The fourth group (“Multiple 
+roundtrips”) consists of pairs that experienced multiple divergences and convergences over 
+the trading period (possibly plus a non-converged last trade). Whilst the first group may 
+represent strongly co-moving stocks, they are not desirable from a trading perspective. The 
+second group is the least desirable for obvious reasons whereas the third and especially the 
+fourth are the most desirable.  
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+19 
+ 
+Table 3 – Panel A reports the classification, as well as the average portfolio size and return 
+for the eight strategies. The return figures are the average return per pair over the entire six 
+month trading period. Whilst the returns are different from the monthly portfolio returns 
+reported in Table 2, they portray a similar pattern across the strategies.  
+[Table 3 here] 
+Focusing on the better implementation under each of the strategies, namely, Distance – 20, 
+Oscillation – 2nd decile, Mean Reverting Spread – Top 20 and Cointegrating Prices – Top 20, 
+one can see the parametric methods produce a greater proportion of profitable pairs, i.e. pair 
+groups 3 and 4. These groups account for 60% of the pairs in the Mean Reverting strategy, 63% 
+in the Cointegration strategy, compared to 57% in the Distance strategy and 53% in the 
+Oscillation strategy. This ability to pick up “good” pairs seems to be offset by lower levels of 
+returns, however. To dissect performance differential across the strategies, I perform an 
+attribution analysis using the following equation: ܴ
+஺െܴ
+஻ൌ݉
+஻
+ᇱሺݎ஺െݎ஻ሻ൅ݎ஺′ሺ݉
+஺െ݉
+஻ሻ 
+Scalars RA and RB are the average return per pair for strategies A and B respectively. m is a 
+4x1 vector of the pair proportion as reported in “Pair type” columns in Panel A. r is a 4x1 
+vector of returns for the four pair groups, as reported in “Return” columns in Panel A. The 
+first term measures the extent to which strategy A outperforms strategy B due to the former 
+able to pick up greater mispricing opportunities. I call this quantity “magnitude” impact. The 
+second term measures the extent to which strategy A outperforms strategy B due to the 
+former able to pick up pairs that exhibited frequent mispricings that were subsequently 
+corrected. I call this quantity “mix” impact. Panel B reports this attribution across different 
+pairs of strategies. 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+20 
+ 
+Panel B shows that both of the parametric methods report positive mix impacts when 
+compared against the non-parametric methods. This is consistent with the previous 
+observation that the former have more pairs classified as groups 3 and 4. These positive mix 
+impacts imply the parametric strategies are better able to model and forecast the time series 
+behaviour of pricing relations amongst stocks. On the other hand, the negative magnitude 
+impact when compared against the Oscillation strategy suggests the mispricings that got 
+picked up by the parametric models are smaller in magnitude compared to those by the nonparametric models. The next step is to ask if the trading rule can be modified to capitalize on 
+the strength of the parametric strategies. 
+[…] 
+ 
+VI. 
+Conclusion 
+New pairs trading methods are proposed using the concept of stationarity. Stationary 
+processes have finite variance such that extreme deviations from the stationary mean are 
+expected to correct in the future. This mean reversion property is particularly attractive to 
+pairs trading. I use two time series models to identify stationary processes and formulate pairs 
+trading strategies: the first-order autoregressive model and cointegrating price model. The 
+performance of these parametric trading strategies is evaluated against the existing nonparametric methods. The results show that the sophisticated methods which are based on a 
+rigorous statistical framework do not outperform the simple methods. However those time 
+series models appear to be better able to capture pairs that frequently exhibit mispricings that 
+were subsequently corrected. This is evidence of better modelling. Further extensions may 
+need to consider how to leverage on this property. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+21 
+ 
+APPENDIX – Johansen Cointegration Tests and Pairs Trading When n≥2  
+ 
+An alternative to the Engle-Granger test for cointegration is a maximum-likelihood (MLE) 
+framework introduced by Johansen (1988, 1991). By design, the Johansen approach is 
+deemed to be superior to the Engle-Granger test in several aspects. In this appendix, I 
+consider trading strategies that use this testing framework. Pairs trading amongst more than 2 
+stocks is also discussed. 
+Granger representation theorem (Engle and Granger, 1987) shows that if p1t and p2t are 
+cointegrated, their dynamics can be represented by a vector error correction model VEC: 
+Δ࢖௧ൌܥ࢖௧ିଵ൅ܤଵΔ࢖௧ିଵ൅⋯൅ܤ௤Δ࢖௧ି௤൅ࢿ௧ 
+ 
+ 
+ 
+(12) 
+Where ࢖௧ൌሾ݌ଵ௧
+݌ଶ௧ሿ′, Δ࢖௧ൌሾ݌ଵ௧െ݌ଵ௧ିଵ
+݌ଶ௧െ݌ଶ௧ିଵሿ′, C is a 2x2 matrix such that: 
+ ܥ࢖௧ିଵൌܣܤ′࢖௧ିଵ 
+ 
+ 
+ 
+ 
+ 
+ 
+(13) 
+Under this dynamic, changes in each series are related to past changes in that series itself and 
+past changes in the other series, as well as the scalar ܤ′࢖௧ିଵ, ܤൌሾߚଵ
+ߚଶሿ′. That is, the level 
+of p2 contains information that is useful for forecasting p1 beyond that contained in a finite 
+number of lagged changes in p1 and p2. When C is zero, the system collapses to a vector 
+autoregressive model (VAR) which means the variables may be relevant to forecasting one 
+another but they do not move together along some common stochastic trend.  
+Of interest to the pairs trading application is that ܤ′࢖௧ିଵ is stationary and B is the 
+cointegrating vector. When the series p is n-dimensional, B is an n-by-r matrix that contains r 
+independents cointegrating vectors. Whereas the Engle-Granger test is for the null hypothesis 
+of no cointegration against the alternative of cointegration, Johansen (1988, 1991) provides 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+22 
+ 
+procedures to test for the number of cointegrating relations, and in the process, obtain MLE 
+estimates of the coefficients in Eq. (12).  
+Two hypothesis tests are possible under the Johansen “approach”. The first test, known as 
+“Trace” test, is for the null of r cointegrating relations against the alternative of n 
+cointegrating relations, r<n. Note that the presence of n cointegrating vectors amongst n I(1) 
+series means the series themselves are already stationary. The second test, using “L-max” 
+statistics, allows one to test the null of r cointegrating relations against the alternative of r+1 
+relations. For the pairs trading application, the interest is whether or not there is at least 1 
+cointegrating relation. Therefore, in my opinion, the “L-max” approach is more relevant.7 In 
+particular, since this paper considers only pairwise relations, n=2, the appropriate method is 
+to use the “L-max” approach and test the null of no cointegrating vector against the 
+alternative of 1 cointegrating vector. Rejection of the null means the pair can be admitted to 
+the trading portfolio (subject to misspecification checks) and the estimated cointegrating 
+vector is used to identify trading triggers.  
+For n>2, more than 1 trading portfolio may ensue. Consider n=3: a three-way pairs trading 
+strategy. The L-max test provides results on testing the null of (1) r=0 (H0) against 1 
+cointegrating relation, (2) r=1 (H1) against 2 cointegrating relations, and (3) r=2 (H2) against 
+3 cointegrating relations. For the stocks to be of interest, H0 must be rejected. Rejection of 
+H1 means two cointegrating vectors exist. In this case, there is no reason not to trade on both 
+of them. After all, there should be diversification benefits in doing so.  
+What is the trading rule in this n=3 case? Assume one cointegrating vector is [1.5 -3.0 3.0]T 
+and constant c0= -1.5. First, normalize the first stock to unity and the cointegrating vector 
+                                                           
+7 In Lettau and Ludvigson’s (2001) study, the Trace test is found to provide questionable results. In particular, with n=3, 
+under the Trace test, the null of no cointegrating relation cannot be rejected against the alternative of three cointegrating 
+relations, hence suggesting the series themselves may be stationary. However, separate unit root tests point to evidence 
+that each series is non‐stationary.  
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+23 
+ 
+becomes [1 -2 2]T with c0 = -1. Note that this normalization is different in nature compared to 
+the normalization in the Engle-Granger test. The spread is now qt = 1p1t - 2p2t + 2p3t -1. 
+Sample standard deviation is computed on this quantity and used as the trading trigger. The 
+trading rule is whenever qt exceeds two standard deviations, short $1 of stock 1, long $2 of 
+stock 2 and short $2 of stock 3 and invest $1 in the cash account. The position is unwound 
+when this spread crosses zero. Similar logic applies to n>3.  
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+24 
+ 
+ 
+ 
+REFERENCES 
+ 
+Andersen,  Torben  G.,  Hyung‐Jin  Chung,  and  Bent  Sorensen,  1999,  Efficient  Method  of  Moments 
+Estimation of a Stochastic Volatility Model: A Monte Carlo Study, Journal of Econometrics 91, 
+61‐87. 
+Blanco,  R.,  S.  Brennan,  and  I.  W.  Marsh,  2005,  An  Empirical  Analysis  of  the  Dynamic  Relation 
+between Investment‐Grade Bonds and Credit Default Swaps, Journal of Finance 60, 2255‐
+2281. 
+Bossaerts,  Peter,  1988,  Common  nonstationary  components  of  asset  prices,  Journal  of  Economic 
+Dynamics and Control 12, 347‐364. 
+Brock, William , Josef  Lakonishok, and Blake LeBaron, 1992, Simple Technical Trading Rules and the 
+Stochastic Properties of Stock Returns, Journal of Finance 47, 1731‐1764. 
+Campbell, J. Y., and R. J. Shiller, 1987, Cointegration and tests of present value models, Journal of 
+Political Economy 95, 1062‐1088. 
+Casassus,  Jaime,  and  Pierre  Collin‐Dufresne,  2005,  Stochastic  Convenience  Yield  Implied  from 
+Commodity Futures and Interest Rates, Journal of Finance 40, 2283‐2331. 
+Chan,  K.  C.,  G.  Andrew  Karolyi,  Francis  A.  Longstaff,  and  Anthony  B.  Sanders,  1992,  An  Empirical 
+Comparison of Alternative Models of the Short‐Term Interest Rate, Journal of Finance 47, 
+1209‐1227. 
+Conrad, Jennifer S., and Gautam Kaul, 1998, An Anatomy of Trading Strategies, Review of Financial 
+Studies 11, 489‐519. 
+Do,  Binh,  and  Robert  Faff,  2012,  Are  Pairs  Trading  Profits  Robust  to  Trading  Costs?,  Journal  of 
+Financial Research 35, 261‐287. 
+Do, Binh, and Robert Faff, 2010, Does Simple Pairs Trading Still Work?, Financial Analysts Journal 66, 
+1‐13. 
+Engle, Robert F., and C. W. J. Granger, 1987, Co‐Integration and Error Correction: Representation, 
+Estimation, and Testing, Econometrica 55, 251‐276. 
+Fama,  Eugene  F.,  and  Kenneth  R.  French,  2004,  The  Capital  Asset  Pricing  Model:  Theory  and 
+Evidence, The Journal of Economic Perspectives 18, 25‐46. 
+Fama,  Eugene  F.,  and  Kenneth  R.  French,  1997,  Industry  Costs  of  Equity,  Journal  of  Financial 
+Economics 43, 153‐193. 
+Fama, Eugene, and Kenneth French, 1993, Common Risk Factors in the Returns on Stocks and Bonds, 
+Journal of Financial Economics 33, 3‐56. 
+Gatev, Evan, William Goetzmann, and K. Geert Rouwenhorst, 2006, Pairs Trading: Performance of a 
+Relative‐Value Arbitrage Rule, Review of Financial Studies 19, 797‐827. 
+Hamilton, James D., 1994. Time Series Analysis (Princeton University Press, New Jersey). 
+Johansen,  S∅ren,  1991,  Estimation  and  Hypothesis  Testing  of  Cointegrating  Vectors  in  Gaussian 
+Vector Autoregressive Models, Econometrica 56, 1551‐1580. 
+Johansen, S∅ren, 1995. Likelihood‐Based Inference in Cointegrated Vector Auto‐Regressive Models 
+(Oxford University Press, Oxford). 
+Johansen, Soren, 1988, Statistical Analysis of Cointegration Vectors, Journal of Economic Dynamics 
+and Control 12, 231‐254. 
+Lettau,  M.,  and  S.  Ludvigson,  2001,  Consumption,  aggregate  wealth,  and  expected  stock  returns, 
+Journal of Finance 56, 815—850. 
+Liu,  W.,  and  N.  Strong,  2008,  Biases  in  Decomposing  Holding  Period  Portfolio  Returns,  Review  of 
+Financial Studies 21, 2243‐2274. 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+25 
+ 
+Lo,  Andrew  W.,  H.  Mamaysky,  and  Jiang  Wang,  2000,  Foundations  of  Technical  Analysis: 
+Computational  Algorithms,  Statistical  Inference,  and  Empirical  Implementation,  Journal  of 
+Finance 55, 1705‐1765. 
+Lo, AW, and AC MacKinlay, 1988, Stock market prices do not follow random walks: evidence from a 
+simple specification test, Review of Financial Studies 1, 41‐66. 
+Vasicek, Oldrich, 1977, An equilibrium characterization of the term structure, Journal of Financial 
+Economics 5. 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+26 
+ 
+Table 1 – Summary of pairs trading strategies 
+ 
+Strategy 
+Description 
+Distance - All 
+Stocks are matched that minimize the sum of squared differences (SSD) in 
+normalized prices over the past one year. All matched pairs are traded. 
+Distance – Top20 
+Like “Distance-All”, except that the trading portfolio comprises the top 20 pairs 
+whose SSDs are the lowest. 
+Oscillation – 1st Decile 
+First, stocks are matched that minimize the sum of squared differences (SSD) in 
+normalized prices. Resulting pairs are sorted into deciles based on SSD. Second, 
+the number of zero crossings (NZC) are computed for each of the matched pairs. 
+The trading portfolio comprises pairs in the intersection of the lowest SSD decile 
+and the top NZC decile.  
+Oscillation – 2nd Decile 
+Like “Oscillation – 1st Decile”, except that the trading portfolio comprises pairs 
+in the intersection of the second lowest SSD decile and the top NZC decile. The 
+idea is to avoid pairs that move too closely, hence potential profits are too small. 
+Mean Reverting Spread 
+Pairwise spreads st=p1t-p2t are fitted to an AR(1) process using Dickey-Fuller test 
+for unit root and three misspecification tests on the model’s error term: serial 
+correlation, ARCH effects and non-normality. All pairs with an AR(1) spread are 
+traded. 
+Mean Reverting Spread – Top20 
+Like “Mean Reverting Spread”, except that the trading portfolio comprises the 
+top 20 pairs with the lowest half-life measures. 
+Cointegrating Prices 
+Each pairwise combination is subjected to the Engle-Granger (1987) two-stage 
+cointegration test. For pairs where the null of no cointegration is rejected, the 
+residuals from the second stage regression are then subjected to three 
+misspecification tests: serial correlation, ARCH effects and non-normality. All 
+pairs that past these tests are traded. 
+Cointegrating Prices – Top20 
+Like “Cointegrating Prices”, except that the trading portfolio comprises the top 
+20 pairs that have the lowest half-life measures. This measure is computed on the 
+cointegrating relation obtained from the first stage in the Engle-Granger test. 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+27 
+ 
+Table 2 – Pairs trading returns at the portfolio level 
+This table reports raw and risk-adjusted returns and t-stat for eight pairs trading strategies, as described in Table 1. These 
+returns are monthly excess returns, before trading costs. The returns are averaged across portfolios that overlap by one 
+month. Newey-West standard errors are used to adjust for serial correlation. *** denotes statistical significance at 1% level 
+ 
+Strategy 
+Raw Return 
+Risk-Adjusted Return 
+Risk-Adjusted Return 
+  
+  
+Fama-French Model 
+Five Factor Model 
+Distance - All 
+0.40% 
+0.38% 
+0.42% 
+11.69*** 
+10.88*** 
+12.89*** 
+Distance – Top20 
+0.62% 
+0.60% 
+0.61% 
+9.49*** 
+8.88*** 
+9.14*** 
+Oscillation – 1st Decile 
+0.68% 
+0.66% 
+0.67% 
+9.26*** 
+8.36*** 
+8.63*** 
+Oscillation – 2nd Decile 
+0.81% 
+0.79% 
+0.81% 
+11.57*** 
+10.78*** 
+11.42*** 
+Mean Reverting Spread 
+0.55% 
+0.54% 
+0.56% 
+9.66*** 
+9.16*** 
+9.66*** 
+Mean Reverting Spread – Top20 
+0.76% 
+0.74% 
+0.76% 
+9.32*** 
+8.80*** 
+9.07*** 
+Cointegrating Prices 
+0.55% 
+0.54% 
+0.55% 
+9.89*** 
+9.39*** 
+9.94*** 
+Cointegrating Prices – Top20 
+0.74% 
+0.71% 
+0.72% 
+  
+10.02*** 
+9.54*** 
+9.57*** 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2132488
+
+28 
+ 
+Table 3 – Comparing performance at the pair level 
+For each strategy, pairs are broken down into 4 mutually exclusive groups. “Non-traded pairs” are those that were admitted to the portfolio but did not trade due to non-divergence over the 
+trading period. “Non-converged pairs” are those that did diverge once but did not successfully converge. “Single roundtrip pairs” are pairs that had one successful trade (by which they diverged 
+and subsequently converged) plus possibly another unconverged trade over the trading period. “Multiple roundtrip pairs” experienced more than one convergence plus possibly another 
+nonconverged trade. Description of the strategies is in Table 1. Panel A reports the proportion and average return for each pair group. Panel B uses this information to attribute performance 
+differential to a “magnitude” impact and a “mix” impact. “Magnitude” impact measures the size of mispricings picked by the first strategy compared to the second strategy. Positive value means 
+the first strategy picks up greater mispricings than the second, hence enhancing profitability. “Mix” impact measures the outperformance due to ability to forecast future convergence. Positive 
+value means the first strategy is able to pick up more pairs that will experience frequent mispricings which are subsequently corrected.  
+ 
+Panel A- Performance by pair group 
+  
+  
+  
+  
+  
+  
+  
+  
+Strategy 
+Mean number of 
+pairs 
+Mean return per 
+pair 
+Pair type 
+Return 
+  
+Non-traded 
+pairs 
+Non-converged 
+pairs 
+Single 
+roundtrip  
+Multiple 
+roundtrips 
+Non-converged 
+pairs 
+Single 
+roundtrip  
+Multiple 
+roundtrips 
+Distance - All 
+325 
+2.40% 
+21% 
+47% 
+24% 
+8% 
+-5.99% 
+13.30% 
+26.21% 
+Distance – Top20 
+20 
+4.03% 
+5% 
+38% 
+33% 
+24% 
+-4.52% 
+5.40% 
+16.45% 
+Oscillation – 1st Decile 
+14 
+4.63% 
+4% 
+36% 
+33% 
+27% 
+-5.37% 
+5.65% 
+17.63% 
+Oscillation – 2nd Decile 
+7 
+5.12% 
+6% 
+40% 
+34% 
+20% 
+-6.38% 
+8.87% 
+23.95% 
+Mean Reverting Spread 
+200 
+4.66% 
+12% 
+41% 
+32% 
+15% 
+-4.28% 
+10.01% 
+21.98% 
+Mean Reverting Spread – Top20 
+19 
+5.07% 
+4% 
+36% 
+32% 
+27% 
+-6.83% 
+7.26% 
+19.03% 
+Cointegrating Prices 
+178 
+4.28% 
+7% 
+41% 
+34% 
+19% 
+-5.15% 
+8.02% 
+19.61% 
+Cointegrating Prices – Top20 
+20 
+4.93% 
+3% 
+35% 
+32% 
+30% 
+-7.09% 
+5.81% 
+18.12% 
+Panel B - Attribution analysis 
+  
+Magnitude 
+Mix 
+Total 
+Oscillation vs Distance 
+0.0286 
+-0.0099 
+0.0187 
+Mean Reverting Spread vs Distance 
+0.0062 
+0.0064 
+0.0126 
+Cointegrating Price vs Distance 
+5.00E-04 
+0.0123 
+0.0128 
+Mean Reverting Spread vs Oscillation 
+-0.0208 
+0.0147 
+-0.0061 
+Cointegrating Prices vs Oscillation 
+-0.0262 
+0.0203 
+-0.0059 
+  
+  
+  
+  
+  
+  
+ 
+Electronic copy available at: https://ssrn.com/abstract=2132488

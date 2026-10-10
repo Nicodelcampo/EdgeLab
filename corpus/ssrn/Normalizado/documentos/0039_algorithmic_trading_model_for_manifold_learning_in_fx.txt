@@ -1,0 +1,180 @@
+ Electronic copy available at: http://ssrn.com/abstract=2530845 
+Algorithmic Trading Model for Manifold 
+Learning in FX 
+ 
+Zee Fernandez 
+Algorithmic Limited 
+June 2008 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2530845
+
+ Electronic copy available at: http://ssrn.com/abstract=2530845 
+Algorithmic trading ambitions 
+• 
+Facilitate auto-hedging 
+• 
+Hold position or sell within a specified timeframe 
+• 
+Smart price algorithms 
+• 
+Skew price within pricing engine 
+• 
+Proprietary automatic positioning within the foreign exchange market  
+• 
+Longer time-scale; combination of manual trading and model implication 
+• 
+Shorter timescale; automatic 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2530845
+
+ Electronic copy available at: http://ssrn.com/abstract=2530845 
+Building the algorithmic trading system 
+The system is:  
+• 
+Connected to  
+• 
+Live quotes 
+• 
+Proprietary historic quote database 
+• 
+Flow data via TradeWarehouse/Wallstreet etc 
+• 
+Orderbook history and lost trades archive 
+• 
+Making use of the bank’s internal analytical toolkit 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2530845
+
+ 
+Time series forecasting 
+• 
+Traditional timeseries forecasting models of ARMA type 
+ 
+• 
+Assumes a set of covariates v to govern the response variable y 
+• 
+Standard generalization is to add non-stationary volatility: 
+• 
+GARCH assumes serial correlation in volatility 
+A specific distribution of the returns are assumed 
+ 
+Machine learning approach 
+• 
+Assume access to many signals v that potentially influence y 
+• 
+Straightforward time-series modeling á la GARCH becomes complicated 
+• 
+Use machine learning methods to automatically extract features of the input signals v that 
+carry information about y.  
+• 
+Use these low-dimensional features to predict y through regression modelling  
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2530845
+
+Manifold Kernel Dimension Reduction 
+• 
+A methodology for discovering a data manifold that best preserves information relevant to a 
+nonlinear regression. 
+• 
+Yields more efficient regression modeling in the lower-dimensional data manifold.  
+Kernel Dimension Reduction 
+• 
+Map X and Y reproducing kernel Hilbert spaces 
+ 
+ 
+• 
+We can analyze statistical properties of f and g 
+• 
+Cross-covariance        between f and g  can be represented by an operator      
+                             such that 
+ 
+• 
+Conditional covariance operator 
+ 
+KDR Theorem 
+• 
+Fukumizu, Bach & Jordan (2006): 
+ 
+• 
+The central space can be found by minimizing 
+ 
+• 
+KDR Algorithm 
+• 
+The minimization of   
+       can be formulated as 
+• 
+Min 
+ 
+• 
+such that 
+• 
+Where 
+and 
+are centered kernel matrices. 
+Electronic copy available at: https://ssrn.com/abstract=2530845
+
+FX forecasting – Artificial data 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2530845
+
+FX forecasting – Artificial data 
+• 
+ 
+• 
+FX forecasting – Real data 
+• 
+Simple illustrative example of three major crosses 
+• 
+EURUSD, USDJPY, EURGBP 
+• 
+Data for the crosses sampled at daily interval 
+• 
+Covariates are choosen as the return of the three crosses for one day and one week back  
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2530845
+
+Backtest Results – Real data - EURUSD 
+• 
+Positions within each currency pair is taken when the model returns a signal above a given 
+threshold. 
+• 
+A portfolio consisting of EURUSD, USDJPY, EURGBP is created by weighting the positions 
+according to the signal strengths.  
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2530845
+
+Backtest Results – Real data - USDJPY 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2530845
+
+Backtest Results – Real data - EURGBP 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2530845
+
+Backtest Results – Real data - Portfolio 
+ 
+Conclusions 
+• 
+Prediction of FX movement using manifold learning yields promising results.  
+• 
+Manifold learning works under general conditions 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2530845

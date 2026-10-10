@@ -1,0 +1,4037 @@
+Electronic copy available at: http://ssrn.com/abstract=1131265
+Decimalization, Realized Volatility, and Market
+Microstructure Noise
+Tommi A. Vuorenmaa¤
+Dept Economics, Univ of Helsinki
+Revisioned, December 2010
+Abstract
+This paper carefully examines the e¤ect of decimalization on volatility and
+market microstructure noise. We apply several nonparametric estimators in
+order to accurately measure volatility and market microstructure noise variance before and after the …nal stage of decimalization which, on the NYSE,
+took place in January, 2001. We …nd that decimalization decreased observed
+volatility by decreasing noise variance and, consequently, increased the significance of the true signal especially in trade price data for the highly active
+Dow Jones stocks. This study also reveals some di¤erences between volatility and noise variance estimators’ capability to handle changes in tick size and
+strategic order placing that are relevant in the evaluation of the decimalization
+e¤ects. The ability of the realized kernel estimator to adapt to more complex
+data dependency than the traditional realized volatility estimator is useful.
+The two-scale and multi-scale realized volatility estimates turn out to be more
+variable especially with midquote data where a couple of outlying dates a¤ect
+their volatility estimates and consequently the test results in a signi…cant way.
+¤This paper is a revisioned version of an essay originally included in the doctoral thesis "Elements
+of Volatility at High Frequency" (2008). Most of the research for this paper was originally conducted while visiting the Bendheim Center for Finance at Princeton University in 2006–07. I thank
+Yacine Aït-Sahalia and two anonymous referees for valuable comments. I am responsible for any
+remaining errors. Financial support from OP-ryhmän Tutkimussäätiö, Research Unit of Economic
+Structures and Growth (RUESG), Suomen Arvopaperimarkkinoiden Edistämissäätiö, and Thanks
+to Scandinavia Foundation are gratefully acknowledged. E-mail: tommi.vuorenmaa@helsinki.….
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+Electronic copy available at: http://ssrn.com/abstract=1131265
+Introduction
+The New York Stock Exchange (NYSE) completed its long anticipated change from
+fractional pricing to decimal pricing on January 29, 2001. The decimalization process
+is accompanied by a reduction in the minimum price variation called the tick size
+that in this case is from a sixteenth of a dollar to one cent ($1@16 ¡! $1@100).
+This removes constraints on pricing and makes the cost of obtaining price priority
+smaller, which should attract greater trading volume and increase liquidity. On the
+other hand, the market participants may become more careful in executing their
+trading strategies. The e¤ect of decimalization on quoted bid-ask spread, trading
+volume, and alike are well documented in the literature. The e¤ect on less easily
+observable variables such as volatility are not, however. Although volatility is almost
+unanimously reported to decrease [see, e.g., Ronen and Weaver (2001)], most of
+the decimalization studies use unprecise estimation methods and sparsely sampled
+data [a point stressed also by Hau (2006)]. Market-wide movements due to news
+announcements around the decimalization date, such as an interest rate cut, can
+also produce misleading results of the true decimalization e¤ects. Finally, the earlier
+studies do not decompose volatility in any meaningful way, and thus their volatility
+estimates include potentially signi…cant amount of noise [He and Wu (2005) is an
+exception]. It is in these respects that we …rstly want to improve over the literature.
+Stock market prices live on a grid de…ned by the tick size.
+In theory, price
+discreteness forces the observed price to deviate from the (unobserved) true price [see,
+e.g., Gottlieb and Kalay (1985) and Cho and Frees (1988)]. As a consequence, the
+observed volatility is upward biased by amount that depends on the tick size [Harris
+(1990a)] and the sampling frequency [e.g., Gottlieb and Kalay (1985)]. Because the
+decimalization process is expected to alleviate these rounding errors, the di¤erence
+between the true and the observed price should narrow. This, on the other hand,
+should decrease the observed volatility but leave the true volatility intact (ceteris
+paribus). Some preliminary evidence along these lines already exists [see, e.g., Hansen
+and Lunde (2006)] but the main goal of this paper is to analyze it more carefully. It
+helps that the NYSE decimalization was done in steps, which allows for a controlled
+natural experiment. We complement the standard statistical tests with mixed-e¤ect
+panel regressions to ensure that the results are not due to confounding factors. Such
+2
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+regressions have not been used in the previous decimalization studies.
+Another improvement is that we assume the observed volatility to consist of two
+components: true volatility and market microstructure noise variance. Otherwise
+the volatility estimates would depend on the sampling frequency (through the noise
+term) and the estimates would of observed volatility instead of true volatility. The
+"signal+noise" type of decomposition is closely related to a class of nonparametric econometric estimators that allow e¢cient extraction of information from ultrahigh-frequency (UHF) data. These estimators can handle irregularly spaced data
+and they have impressive statistical properties especially when the data are contaminated by simple forms of market microstructure noise. The two-scale realized
+volatility (TSRV) estimator [Zhang, Mykland, and Aït-Sahalia (2005)] is consistent
+and (asymptotically) unbiased if the noise component is independent and identically distributed (IID). The multi-scale realized volatility (MSRV) estimator [Zhang
+(2006)] weakens the IID requirement. The realized kernel (KERN) estimation approach [Barndor¤-Nielsen et al. (2008)] also allows for some dependence between
+true volatility and noise. Similarly, we estimate the noise variance component of
+observed volatility with three di¤erent nonparametric estimators.
+The design of the analysis makes it possible to compare the relative performance
+of volatility and noise variance estimators around the decimalization date. Accuracy
+is potentially very important in the evaluation of decimalization e¤ects.
+In this
+respect, the data type (trade price or midquote) sometimes becomes crucial. For
+example, although the popular realized volatility (RV) estimator produces badly
+upwards biased estimates with trade price data before decimalization, afterwards its
+accuracy is close to the more advanced estimators. The estimates are more robust
+with midquote data. These …ndings are important because a change in estimation
+accuracy can a¤ect any empirical study that uses data over the decimalization period
+(or another tick size change related period). This is not only of statistical interest
+but economic as well as both true volatility and noise variance carry economically
+relevant information [see Bandi and Russell (2006)].
+Because the nonparametric
+estimators can be argued not to be jump-robust, we consider the e¤ect of jumps on
+the test results separately. We use di¤erent return thresholds and …nd, for example,
+that small frequent jumps (juhwxuqj A 1%) a¤ect the test results more than rare
+large jumps (A 3%)= Whether the analysis is done in event or calendar time is also
+3
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+relevant and leads us to prefer estimators that handle irregularly spaced UHF data.
+Generally speaking, the results are in line with the view that price discreteness can
+produce signi…cant biases especially when small variance components (noise variance)
+are identi…ed from UHF data [see Harris (1990a)].
+This is not only relevant for
+risk management and options pricing [see Figlewski (1997)], where the use of …nely
+grained data is becoming commonplace, but also for market e¢ciency. International
+volatility spillovers, such as the crash of 2008, and stock market reforms highlight
+the need for market mechanisms that help to weigh down excess volatility. This is
+especially true now that high-frequency algorithmic trading and automated market
+making sum up to a large part of the daily trading volume. In future, a tick size
+di¤erent from one cent may be found optimal, or that tick sizes are being linked
+to variables such as the price level (as already done in many exchanges), and/or
+that totally new market mechanisms are introduced in order to reduce the e¤ect of
+market microstructure noise.1 After all, stock prices should ideally re‡ect all known
+information and not noise [see, e.g., Black (1986) and Amihud and Mendelson (1987)].
+The structure of the paper is as follows. In Section 1, we review the related
+decimalization literature. In Section 2, we describe the estimators we use. The data
+and time concepts are described in Section 3. In Section 4, we describe the empirical
+…ndings. We conclude in Section 5. Web Appendix includes more tabled estimates
+and …gures plus illustrates the subsampling and average idea of TSRV and MSRV.2
+1
+Review of decimalization e¤ects
+This section gives a brief review of the relevant decimalization literature. A more
+general survey can be found for example in Harris (1997, 1999) and NYSE (2001).
+Obviously, di¤erent estimation methods, testing procedures, and data sets complicate
+the comparison of the empirical studies. Market structure alone is known to have a
+signi…cant e¤ect on market characteristics [see Huang and Stoll (2001)]. Furthermore,
+a tick size decrease from eights to sixteenths does not necessarily have exactly the
+same e¤ect as a tick size decrease from sixteenths to cents. This can be seen in
+Ikenberry and Weston (2003) and Chung, van Ness, and van Ness (2004) who …nd
+1Harmonized tick sizes are introduced in Europe in 2010, which allow the smallest tick size to
+be as low as 0=0001 for the "penny stocks." Crossing the limit price changes the (absolute) tick size.
+2To be made available at: http://www.valt.helsinki.fi/blogs/vuorenmaa/post-40.htm
+4
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+signi…cant clustering to …ve and ten cents after the …nal stage of decimalization
+[re‡ecting the need for a simpli…ed price negotiation; see Harris (1991)]. Empirical
+studies related to the tick size change from $1@16 to $1@100 are more relevant to us.
+The most direct evidence of decimalization e¤ects concerns the (bid-ask) spread,
+commonly considered as the major contributor to noise variance. Absolute and relative spreads have been found to decrease signi…cantly. As predicted by for example
+the Harris (1994) model, Ahn, Cao, and Choe (1996) and Ronen and Weaver (2001)
+…nd that the tick size decrease from eights to sixteenths reduced the quoted and e¤ective spreads on the American Stock Exchange (AMEX). Similar evidence is reported
+for the change to …ve cents on the Toronto Stock Exchange (TSE) [e.g., Bacidore
+(1997)], from eights to sixteenths on the NYSE [Ricker (1998), Bollen and Whaley
+(1998), and Goldstein and Kavajecz (2000)], and from sixteenths to cents on the
+NYSE and the Nasdaq [Bessembinder (2003)]. Goldstein and Kavajecz (2000) and
+Bessembinder (2003) further …nd that the spread decrease is largest for the most active stocks. Lowered spreads and transaction costs are in turn positively correlated
+with volatility [see, e.g., Hau (2006)], setting the stage for fast automatized trading.
+The Harris (1994) model does not only predict decreasing spread sbut also decreasing quoted depths and increasing trading volumes.
+As is well known, these
+variables are related to liquidity and volatility. Ahn, Cao, and Choe (1996) and
+Ronen and Weaver (2001) …nd no signi…cant changes in quoted depth or trading
+activity on the AMEX. Bacidore (1997) and Porter and Weaver (1997) …nd depth to
+decrease but trading volume to remain constant on the TSE. Ricker (1998), Bollen
+and Whaley (1998), Goldstein and Kavajecz (2000), and Bacidore, Battalio, and
+Jennings (2001) report decreases in quoted depth on the NYSE. van Ness, van Ness,
+and Pruitt (1999) report increases in the number of trades and volume. Chakravarty,
+van Ness, and van Ness (2005) report an increase in both the number of trades and
+the trading volume of small sized trades. Large trading volumes could have a signi…cant market impact (increase volatility) especially when the market depth is low.
+Such order placing strategies are consistent with trading algorithms that break large
+orders into many smaller trades and distribute them over time.
+Trading volumes are also correlated with liquidity and market quality. Ricker
+(1998), Bollen and Whaley (1998), and Bacidore, Battalio, and Jennings (2001) …nd
+that decimalization improved liquidity on the NYSE. Bessembinder (2003) …nds no
+5
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+liquidity problems on the Nasdaq either. But because of more order cancellations
+and smaller limit order sizes, which decrease displayed liquidity, market transparency
+was hurt in the process [see, e.g., NYSE (2001)]. Jones and Lipson (2001) point out
+that in a decimalized market the (bid-ask) spread does not su¢ciently re‡ect market
+quality for large investors and report increased average execution costs for a group of
+institutional investors on the NYSE as the tick size changed from eights to sixteenths
+[see also Goldstein and Kavajecz (2000)]. Studying the tick size change to cents
+using NYSE Plexus data, however, Chakravarty, Panchapagesan, and Wood (2005)
+do not …nd large investors to have liquidity problems [see also Bacidore, Battalio, and
+Jennings (2003)]. They conclude that large investors may have started using more
+cautious execution strategies, in line with the aforementioned "rise of the machines."
+Because liquidity does not appear to have been adversely a¤ected in decimalization (at least not too much), increase in volatility is not likely either. Enough limit
+orders exist to take care of the demand for liquidity. However, the recent increase in
+algorithmic trading [see Economist (2007b)] – partly fueled by the diminished market
+transparency and the higher manual market making costs due to decimalization –
+may have made the stock markets less resilient. Some evidence exists that algorithms
+can trigger sell-o¤s and cause "liquidity black holes" with no apparent reason. In
+1987, for example, portfolio insurance strategies kicked in around the same time.
+The NYSE has had problems with high trading volumes and order-routing recently as
+well (e.g., in February 2007) [see Economist (2007a)]. Nevertheless, in normal times
+algorithms seem to increase liquidity [see, e.g., Hendershott, Jones, and Menkveld
+(2008)]. In fact, Ronen and Weaver (2001) and Bessembinder (2003) report volatility
+reductions on the AMEX, the NYSE, and the Nasdaq due to decimalization. Both
+studies proxy volatility using the standard deviation (or variance) of midquote returns. Chakravarty, Wood, and van Ness (2004) report similar …ndings for portfolio
+volatility constructed from volume weighted one minute intraday returns.3
+It remains to identify what factors actually reduced volatility. A volatility reduction may be due to many di¤erent components such as bid-ask bouncing, price
+adjustments to large trades, price discreteness, and so on. Market microstructure
+3This creates biased estimates in theory. As noted for example by Cho and Frees (1988), Jensen’s
+inequality can be used to show that the sample standard deviation is a downward biased estimator of
+the true standard deviation. Gottlieb and Kalay (1985) argue that the porfolio volatility estimates,
+however, are nearly unbiased.
+6
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+noise can also be driven by information asymmetry between traders and market
+makers. Not surprisingly, identi…cation of the factors tends to be hard in practice.
+Con‡icting evidence of for example whether adverse selection was increased or decreased in decimalization exists [see Zhao and Chung (2006), Chakravarty, van Ness,
+and van Ness (2005), and Bacidore (1997)]. Perhaps most relevantly to us, He and
+Wu (2005) decompose the variance of price changes into public news, price discreteness, and bid-ask spreads using the method of Madhavan, Richardson, and Roomans
+(1997) and …nd a signi…cant variance decline due to price discreteness and spreads.
+Gibson, Singh, and Yerramilli (2003) furthermore …nd that the spread reduction on
+the NYSE is due to a decrease in the order-processing component and that inventory
+and adverse selection components remain signi…cant. Engle and Sun (2005) …nd that
+in the decimalized NYSE as much as 86% of the variance of market microstructure
+noise in transactions can be due to variation in the informational component.
+We do not attempt to separate out the di¤erent components of market microstructure noise in this paper. But by handling market microstructure noise we have a
+better chance for more precise volatility estimation. We next review the estimators.
+2
+Estimators
+We operate in the standard "signal+noise" framework, which can be viewed as a
+reduced form of some structural market microstructure models, such as the model of
+Madhavan, Richardson, and Roomans (1997) [for discussion, see Hasbrouck (1996)].
+Let the observed price, \> consist of the latent true price [ and noise  :
+\wl = [wl + wl=
+(1)
+The noise term is commonly assumed to be IID with mean zero and …nite variance.
+The noise term includes transient factors such as the bid-ask bounce, price discreteness, inventory e¤ects, and so on. In the IID case, the …rst-order autocovariance of
+the (observed) returns can be shown to be ¡E2 (and zero afterwards) [see, e.g., Roll
+(1986) and Aït-Sahalia, Mykland, and Zhang (2006)]. Because trades and quotes
+tend to cluster over time, this framework has been extended to include serially dependent noise. Hansen and Lunde (2006) argue it to be particularly relevant with
+7
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+very frequent sampling with a small tick size. We account for dependent noise by
+using proper estimation methods described below.
+In Eq. (1), the true (generally unobserved) (log)price [ is standardly assumed
+to follow an Itô process,
+g[w = wgw + wgEw>
+with w possibly stochastic and E the standard Brownian motion. Changes in the
+true price are believed to be information driven and permanent, which is in line
+with the view that the true price process should be positively autocorrelated [see,
+e.g., Amihud and Mendelson (1987)]. The true price is also standardly assumed to
+be independent of the noise process. Hansen and Lunde (2006) argue that negative
+dependence exists especially in the midquote data due to asymmetry of information
+[see, e.g., Glosten and Milgrom (1985) and Madhavan, Richardson, and Roomans
+(1997)]. The estimators we use in this paper assume independence, except the kernel
+estimator [for some discussion, see Aït-Sahalia, Mykland, and Zhang (2005b)].
+It is crucial in many …nancial applications (primarily in option pricing) to get an
+accurate estimate and forecast for integrated volatility (IV),
+h[> [iW =
+Z W
+0
+2
+wgw=
+If no market microstructure noise exists, realized volatility (RV),4
+[\> \ ](doo)
+W
+=
+q¡1
+X
+l=0
+¡\wl+1 ¡ \wl
+¢2
+should provide a precise estimate of IV. In the presence of noise, however, it does
+not. With IID noise, RV provides a consistent estimate of noise variance instead
+[see, e.g., Zhang, Mykland, Aït-Sahalia (2005) and Bandi and Russell (2008)].
+1
+2q [\>\ ](doo)
+W
+= d
+E2>
+(2)
+We call this the re-scaled realized volatility (RSRV) estimator. Because of its wellknown upward bias [see, e.g., Oomen (2005b) and Hansen and Lunde (2006)], we
+4Typically, realized volatility and realized variance refer to the same quantity but in …nance
+volatility often refers to the standard deviation of returns rather than to their variance. We nevertheless use the term realized volatility here.
+8
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+also use two other noise variance estimators later in this section.5
+Several better estimators for IV have been proposed [starting from Zhou (1996)].
+Although most of them provide unbiased IV estimates, only few of them are consistent. We use three advanced IV estimators that are not only (asymptotically)
+unbiased but also consistent.
+The two-scale realized volatility (TSRV) estimator
+[Zhang, Mykland, and Aït-Sahalia (2005)] is the easiest to use and de…ne:
+\
+h[> [i
+(wvuy)
+W
+= [\> \ ](N)
+W
+¡ q
+q [\> \ ](doo)
+W
+>
+(3)
+where
+[\> \ ](N)
+W
+= 1
+N
+q¡N
+X
+l=0
+¡\wl+N ¡ \wl
+¢2 >
+q = (q ¡ N + 1)@N> and 1 ? N · q= If noise is IID and the bandwidth N is
+suitably chosen relatively to q, then the TSRV estimator is consistent, asymptotically
+unbiased, and normal as shown by Zhang, Mykland, and Aït-Sahalia (2005).6 They
+also show a …nite sample correction to TSRV, which we apply. For serially dependent
+noise, a generalized TSRV (GTSRV) estimator is derived in another paper [see AïtSahalia, Mykland, and Zhang (2006)].
+But because this would introduce a new
+parameter, and because in our experience the GTSRV estimates are very close to
+the TSRV estimates, we do not report the GTSRV estimates in this paper.
+The second advanced volatility estimator we use is based on the same subsampling
+and averaging idea but done over multiple time-scales.
+The multi-scale realized
+volatility (MSRV) estimator [Zhang (2006) and Aït-Sahalia, Mykland, and Zhang
+(2006)] is de…ned as
+\
+h[> [i
+(pvuy)
+W
+=
+P
+X
+l=1
+dl [\>\ ](Nl)
+W
++ 2d
+E2>
+where the bandwidth parameter must be P A 2. The weights dl are selected to
+make the estimator asymptotically unbiased and to achieve the optimal convergence
+5In practice, however, if negative dependence between the true price and noise truly exists, the
+bias of RSRV should be reduced. We will see that the midquote RSRV estimates are much lower
+than the trade price RSRV estimates.
+6Web Appendix includes an illustration of how to calculate the …rst sum in Eq. (3) by subsampling and averaging using two numerically equal ways.
+9
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+rate of q¡1@4 (faster than q¡1@6 of TSRV). The optimal weights are
+d¤
+l =
+l
+P2k¤
+µ l
+P
+¶
+¡
+l
+2P3k¤0
+µ l
+P
+¶
+>
+where k¤({) = 12({ ¡ 1@2) and k¤0 its …rst derivative.
+The MSRV estimator is
+robust to stationary and su¢ciently mixing noise [see Zhang (2006) and Aït-Sahalia,
+Mykland, and Zhang (2006)], which is useful because we also utilize midquote data.
+The realized kernel (KERN) estimator [see Barndor¤-Nielsen et al. (2008)] is
+arguably the most ‡exible of the three advanced volatility estimators:
+N([) = 0([) +
+K
+X
+k=1
+n
+µk ¡ 1
+K
+¶ ©
+k([) + ¡k([)
+ª
+>
+where n({) is a weight function and the kth realized autocovariance is
+k([) =
+q
+X
+m=1
+¡[m ¡ [(m¡1)
+¢ ¡[(m¡k) ¡ [(m¡k¡1)
+¢ >
+with k = ¡K> ===> ¡1> 0> 1> ===> K and q = bw@c= When the bandwidth is K = 1,
+the estimates are unbiased but inconsistent [see Zhou (1996), Hansen and Lunde
+(2006), and Bandi and Russell (2006)]. We select K = 0=97q3@5 £ (UVUY 2@LT)1@5 >
+where integrated quarticity, LT =
+R w
+w¡1 4
+vgv > needs to be estimated. The realized
+autocovariances, k> also need to be weighted properly using the Parzen or other
+suitable kernel function. The Bartlett and cubic kernels give the same asymptotic
+distribution as TSRV and MSRV, respectively [see Barndor¤-Nielsen et al. (2008)].
+The KERN estimator allows for some dependence between true volatility and noise,
+which may be relevant in practice (as already noted). Bandi and Russell (2010) …nd
+that the (unbiased) KERN estimator is not overly sensitive to …nite sample sizes.
+In addition to the aforementioned RSRV estimator, we use two other noise variance estimators. In theory, noise variance can be unbiasedly estimated by the negative of the …rst-lag autocovariance of trade price data returns (¡FRY1) [see, e.g.,
+Roll (1984), Zhou (1996) and Hansen and Lunde (2006)]. This estimator is robust to
+jumps [see Oomen (2005b)], but unfortunately it may easily produce negative variances because of estimation error [see Harris (1990b)] and illiquidity of the asset. Because of this, and the fact that the problem gets much more serious with the midquote
+10
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+data returns, we tweak this "Roll-type" estimator by taking the absolute value of the
+…rst-lag autocovariance. We call the resulting noise variance estimator the ACOV
+estimator. Finally, the third (and our default) nonparametric noise variance estimator we use takes advantage of the KERN correction factor for market microstructure
+noise: N([)¡0([)= Barndor¤-Nielsen et al. (2008) propose a bias corrected noise
+variance estimator de…ned as NQRLV = expflog(UVUY ) ¡ NHUQ@UY g=
+We calculate several signal-to-noise ratios.7 First, we de…ne SNR1>d as
+SNR1>d = WVUY
+UVUY
+µ
+= Eq. (3)
+Eq. (2)
+¶
+>
+SNR2>d = PVUY@UVUY and SNR3>d = NHUQ@UVUY , where the subscript d
+refers to RSRV, and e and f to ACOV and KNOIS, respectively. We use RV as the
+"standard" volatility estimator and denote it by the subscript 0= Thus, SNR0>d =
+UY@UVUY = 2q= Because the number of daily observations is constant once the
+sampling frequency is …xed, SNR0>d is always constant in calendar time. By increasing
+the sampling frequency we could then achieve an ever higher SNR in calendar time.
+This unrealistic property and the RSRV bias leads us to use SNRl>f by default.
+3
+Data description
+We use Trades and Quotes (TAQ) data supplied by the NYSE. The last stage of the
+decimalization process was completed on January 29, 2001, which we refer to as the
+decimalization date. We analyze two periods of approximately equal length before
+and after it: [November 6, 2000 – January 19, 2001] (before decimalization) and
+[February 5, 2001 – April 12, 2001] (after decimalization). Notice that we exclude
+one business week on both sides to minimize adverse e¤ects from the adoption of the
+smaller tick size. We also exclude one abnormally short trading day (Nov/24/2000).
+(Other special days are described later.) Thus, by default, we have 50 and 48 trading
+days before and after decimalization, respectively. Although the data do not span
+a particularly long time period, there are thousands of observations per day for an
+active stock. Focusing on relatively short periods close to each other also helps to
+avoid trends, especially the very volatile period later in Spring 2001.
+7In engineering sciences, where such ratios are common, SNR estimates are typically presented
+in a dB-scale (a log10-scale). Its use would however demand some accustomization.
+11
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+We preprocess the data using standard techniques. More precisely, we consider
+only NYSE trades and quotes that are time-stamped in the normal trading hours
+(9 : 30¡16 : 00 EST). We exclude all quotes and trades from other exchanges in order
+to minimize noise contamination due to di¤erent decimalization schedules and market
+structures. We also exclude trades reported out-of-sequence and quotes that do not
+correspond to a normal trading environment. We merge together all simultaneous
+trades and quotes (with the same time stamp). The percentage of mergers in the
+trades is typically small (0=5%¡3%) but larger in the quotes, especially for the most
+active stocks (up to about 30%). Compressing data is common and does not change
+the autocorrelation structure signi…cantly; although the more active the stock is, the
+more merging potentially a¤ects it. On the positive note, Hansen and Lunde (2006)
+argue that merging improves the accuracy of the volatility estimates.
+We form three stock groups based primarily on their date of decimalization.
+Control Group 18 (CG18) includes 18 most active stocks that were decimalized in
+the …rst two pilot phases in August and September, 2000.8 We do not include stocks
+from the third pilot phase (in December) because it would limit the number of time
+series observations too much. (All pilot stocks and their times of decimalization are
+reported in Web Appendix.) Test Group Dow Jones (TGDJ) includes 30 stocks from
+the Dow Jones Industrial Average index, which were decimalized on January 29, 2001
+(see Table 1).9 Obviously, the TGDJ stocks are more actively traded/quoted and of
+larger market capitalization than the CG18 stocks. Thus, to match the activity of
+the control group, we form another group called Test Group 18 (TG18). The TG18
+stocks are pairwisely chosen from the same industry subsector (or sector) as the
+CG18 stocks (see Table 2). The average number of trades (quotes) before and after
+the decimalization date for each group are: 677 ¡! 772 (1036 ¡! 1434) [CG18],
+720 ¡! 899 (1078 ¡! 1441) [TG18], and 1760 ¡! 1932 (2286 ¡! 2362) [TGDJ].
+Notice that we could have matched the stocks with respect to factors such as price,
+volatility, or equity market capitalization [see, e.g., Chakravarty, Wood, and van Ness
+(2004) and Chung, van Ness, and van Ness (2004)]. However, we found our criteria
+to be adequate. The average prices, for example, are similar between the groups
+8We exclude AOL and TWX because of their merger in January, 2001. On the other hand, we
+keep DCX and UBS although they are American Depositary Receipts; Ahn, Cao, and Choe (1998)
+…nd that order ‡ows do not migrate easily from market to market.
+9Because MSFT and INTC are primarily Nasdaq stocks but part of DJIA, they are replaced by
+LU and VZ. Because of a stock split, JPM is replaced by PFE.
+12
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+and periods: $53 ¡! $51 [CG18], $44 ¡! $42 [TG18], and $55 ¡! $52 [TGDJ]
+(detailed in Web Appendix). The noise variance estimates of CG18 and TG18 are
+statistically the same but larger than of TGDJ (as shown in a table below).10
+Data errors are more frequent in UHF data than in sparsely sampled data. Errors
+can have a signi…cantly biasing e¤ect especially in noise variance estimation (RSRV).
+Fortunately, with UHF data at our disposal, errors also become easier to detect. In
+terminology of Aït-Sahalia, Mykland, and Zhang (2006), we say that a midquote
+or trade price is a "bounceback" if a (logarithmic) return larger than a prespeci…ed
+threshold is followed by a return of similar magnitude but of opposite sign (so that
+the two returns approximately sum to zero). We use the following ad hoc threshold
+rule based on a careful data inspection: for stocks priced below $10, in between $10
+and $50> in between $50 and $100, and larger than $100 we set the threshold to
+0=01> 0=0083> 0=0067, and 0=005, respectively. In the before decimalization period, we
+further multiply the thresholds by 1=5 for stocks trading in fractions (although this
+adjustment turns out to be insigni…cant). There tend to be more bouncebacks in
+trade price data, suggesting that these data are inherently more noisy (bouncy) than
+the quote data. However, the bouncebacks in the quote data can be "sticky" in the
+sense that an error can repeat itself for a while. We detect such errors by comparing
+the return and the corresponding spread to the daily standard deviation and spread,
+respectively. If the spread increases only temporarily from its daily average and is
+followed by a midquote returning to its previous level, a sticky bounceback is detected
+and deleted unless it is easy to correct for.11 These procedures detect the errors well.
+In theory, midquotes (averages of bid and ask quotes) provide a less noisy measure
+of the unobserved true price than trade prices because bid-ask bouncing dominates
+the trades at the highest frequencies [see, e.g., Hasbrouck (2007)]. The variance of
+the market microstructure noise of midquote returns also partly re‡ects the quote
+setting behavior of the NYSE specialist (the assigned market maker for one particular
+stock). Thus, midquotes are expected to have di¤erent dynamics from trade prices.
+For example, if a stock price suddenly moves signi…cantly (up or down), the spread
+often widens momentarily (in the same direction) due to inventory positioning and
+10As the control group already includes a limited amount of stocks (18), splitting the group to
+…ner categories would decrease statistical signi…cance.
+11We avoid deleting consecutive quotes because it leaves a gap in the durations between quotes.
+Deleting consecutive quotes can be especially harmful for an inactive stock. Because it is sometimes
+hard to diagnose data errors correctly, the remainder becomes part of market microstructure noise.
+13
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+fear of information asymmetry. In this paper, we use the superscripts w and t to
+distinguish between the trade price and midquote data results, respectively.12
+Statistically, the key di¤erence between midquote and trade price data is that
+the …rst di¤erences of midquotes do not typically have signi…cant negative …rst-lag
+autocorrelation, commonly addressed to bid-ask bouncing [Roll (1984)], rounding errors [Harris (1990a)], and inventory imbalances [e.g., Jegadeesh and Titman (1995)].
+Instead, midquote returns tend to have signi…cant positive autocorrelation for a few
+lags and zero afterwards. As we show later on, the strength of dependence varies
+over time and across stocks, especially between stocks with di¤erent trading activity
+[see also Hansen and Lunde (2006) and Curci and Corsi (2006)]. Furthermore, we
+…nd that the Ljung–Box (LB) test statistic is on average larger (smaller) in midquote
+returns (trade price returns) after decimalization: 39 ¡! 48 (44 ¡! 29) [TG18] and
+56 ¡! 88 (213 ¡! 62) [TGDJ] (detailed in Web Appendix). Such changes can
+a¤ect estimator performance and thus statistical inference based on their estimates.
+Return autocorrelation structure depends on time as well. In this paper, the
+clock is by default set to event time. We de…ne event time by equally weighting each
+consecutive event (trade or quote) so that the distance between two consecutive
+events is one unit of time.13 No relevant information is then thrown away, unlike
+in the earlier decimalization studies. Calendar time sampling is not well-suited for
+analyzing the evolution of the true price in liquid markets because such series tend
+to be nonstationary because of price construction rules (e.g., interpolation) and the
+existance of strong intraday volatility patterns [see, e.g., Frijns and Lehnert (2004)].
+For robustness, however, we carry out parts of the analysis also in calendar time.14
+12Naturally, other data types could be considered, for example volume weighted bid and ask
+quotes. Volume weighting tend to create more bouncy price series than simple averaging.
+13A closely related time concept is tick time where only non-zero price changes are used. Tick
+time produces ’zig-zagging’ autocorrelation pattern in returns [see Oomen (2005a), Gri¢n and
+Oomen (2008), Aït-Sahalia, Mykland, and Zhang (2006), and Hansen and Lunde (2006)], which
+a¤ects the performance of the estimators di¤erently. We do not use tick time in this paper.
+14More precisely, we use the closest observation before each …ve seconds. We start at the …rst …ve
+seconds point except when the …rst observation happens after it. In that case the closest observation
+is used instead. If there is no new observation in some time interval, then the latest price is used.
+14
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+4
+Empirical analysis
+4.1
+Descriptive analysis
+To make the test results easier to read, we start by describing the e¤ects of decimalization on volatility, market microstructure noise variance, and their ratio (SNR). We
+also demonstrate how well the estimators track volatility and noise variance around
+the decimalization date. As we show, this is crucial because changes in the data type
+and return dependence can a¤ect the estimator performance and the test results.
+Before the analysis, we must set the bandwidth parameters for the nonparametric volatility estimators. The standard closed-form bandwidth formula for KERN
+typically chooses K = 3 (for each day) in event time, with a slight tendency to be
+higher and more variable after the decimalization date (and a bit higher still in calendar time). The KERN estimates are not very sensitive in this respect, however. In
+order to calculate the bandwidth, we estimate IQ by the realized tri-power quarticity
+initially proposed by Andersen et al. (2005) as a jump-robust measure. This is also
+more practical than the quad-power measure, which requires one more return and is
+thus more likely to be zero for inactive stocks. The reported results are calculated
+using the Parzen kernel but other standard kernel weights give similar estimates.
+Things are not quite so easy with the TSRV and MSRV bandwidths. For them,
+we use an ad hoc approach: The TSRV estimates are calculated with a bandwidth
+N matching the number of quotes (or trades) in f9min>11 min> 13 min> 15 ming on
+average. The smallest N (» 9 min) is found to be the smallest time-interval that can
+be used to get reasonable estimates for the least actively traded stocks. For the MSRV
+bandwidth, P> we use the same set by default. The estimates are expected to be
+close to each other because the MSRV estimates are basically a linear combination of
+di¤erent TSRV estimates. The bandwidth value should not be critical [Aït-Sahalia,
+Mykland, and Zhang (2006)] but we use a range reasonable values to be sure.
+The idea behind the matching scheme is simple. Because the number of quotes
+(trades) can be signi…cantly di¤erent from day to day and from stock to stock in
+event time, we need to choose N and P for each day and stock separately. Thus,
+if there are many (few) trades or quotes in a day, the bandwidth should be large
+(small). This is re‡ected in the formula we use for the bandwidth. For N matching
+15 min (N » 15 min)> for example, N = QuWudghv £ 15 min £60@23400, which
+15
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+adjusts TSRV and MSRV to the daily pace of the market. For the very actively
+traded stocks, N and P are much larger on average than for the inactive ones.
+An unfortunate consequence of this is that the TSRV estimates can become badly
+downwards biased for the least actively traded stocks (N close to zero). We replace
+the TSRV estimates with the then much more reasonable RV estimates if the LB(15)
+test statistic for the returns is insigni…cant (OE ? 25)=15 This adjustment does make
+a di¤erence for individual stocks, but it does not change the test results for groups.
+Table 3 shows the number of signi…cant LB test statistics in both trade price
+and midquote data. Let us …rst look at the trade price data where a decrease in
+return dependence for TGDJ and TG18 is clearly visible. The number of positive
+…rst-lag autocovariances increases dramatically in event time: 15% ¡! 39% [TG18]
+and 1% ¡! 15% [TGDJ]. The ACOV noise variance estimator performs badly after
+decimalization under these circumstances. It does not work well with the less active
+stocks either. For CG18 and TG18, the distribution of COVw
+1 is close to symmetric
+around zero (although with a long left-hand tail). For TGDJ, the same happens
+after decimalization due to less bid-ask bouncing (detailed in Web Appendix).
+The midquote results are a bit di¤erent from the trade price data results. In
+midquotes, we …nd only a modest increase in the number of positive …rst-lag autocovariances for TGDJ (74% ¡! 85%). Many positive …rst-lag autocovariances exist
+in both periods due to active market making. The LB test statistics increase as well
+(70% ¡! 89%)= The calendar time results are similar except that then return dependence increases for CG18 and TG18 because of the high calendar time sampling
+(5 sec)> which creates many arti…cial observations for the least active stocks.
+Figure 1 shows volatility estimates for TGDJ (CG18 and TG18 in Web Appendix).16 For the active TGDJ stocks, the RVw estimates are clearly in‡ated relatively
+to the other estimates before decimalization but get closer to the others afterwards.
+On average, the di¤erence (NHUQ w ¡ UY w)@NHUQw then decreases from ¡89% to
+¡17% (see column %w
+UY of Table 4). For TG18, the reduction is striking as well but
+the in‡ation less clear (¡30% ¡! ¡4%) (see Table 5)= In contrast, the RVt estimates are de‡ated compared to KERNw (column %t
+UY ): changing only modestly for
+the active stocks, (39% ¡! 34%) [TGDJ], and more signi…cantly for the less active
+15For the very inactively traded stocks no signi…cant negative …rst-lag return autocorrelation
+exist although required by TSRV. Then the RV estimates are good enough.
+16For reasons explained in Section 4.3, jumps exceeding 3% have been excluded (in event time).
+16
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+stocks, 21% ¡! 7% [CG18] and 29% ¡! 10% [TG18]. Thus, noise reduction is not
+as obvious in the midquotes. RV performs well with trade price data for the inactive
+stocks in both periods but performs badly for the active stocks before decimalization.
+The TSRV and MSRV estimates are typically very similar in magnitude to each
+other although they may di¤er signi…cantly when the stock is inactively traded (in
+CG18 and TG18). However, the KERNw estimates are almost always (except for
+CG18) above the TSRVw and MSRVw estimates before the decimalization date while
+KERNt estimates stay below the TSRVt and MSRVt in both periods. More precisely, for TGDJ, the KERNw (KERNt) estimates are about 17% above (20% below)
+TSRVw or MSRVw (TSRVt or MSRVt)= After the decimalization date, the di¤erence
+between the trade data estimates nearly disappears and their standard deviations reduce a bit as well. The midquote estimates for CG18 and TG18 approach each other
+but diverge for TGDJ (¡20% ¡! ¡30%)= The standard deviation of their di¤erences is relatively large in both periods. Another noteworthy di¤erence is that while
+(NHUQw ¡ NHUQt)@NHUQw decreases to almost zero for CG18 (17% ¡! 6%)
+and TG18 (25% ¡! 7%)> it does not decrease that much for TGDJ (34% ¡! 25%)
+(see columns %t). In comparison, the MSRVw and MSRVt estimates di¤er on average only about 4% irrespectively of the period or stock group. A similar percentage
+di¤erence is observed for TSRV (both detailed in Web Appendix).
+The most prominent di¤erence between the volatility estimates is easily seen in
+Figure 1. On January 3, 2001 (JAN/03), there is a large spike in volatility caused by a
+surprise inter-meeting rate cut by the Federal Reserve. As a result, the stock markets
+rallied so much that the Dow Jones Industrial Average index increased by almost
+3%> one of its largest increases in history. Evidently, this outlying day a¤ects the
+TSRV and MSRV estimates more signi…cantly than the KERN estimates especially
+in the midquotes. The …nding is robust to di¤erent TSRV and MSRV bandwidths.17
+But why would the KERN estimates di¤er so much from the TSRV and MSRV
+estimates? The average number of trades (quotes) or LB do not increase signi…cantly
+on Jan/03. Because we do not …nd the bandwidth choice (according to our method)
+to be critical, the di¤erence seems to be related to dependency between true volatility
+17Two other days before the decimalization date warrant special attention – but only for CG18.
+On November 9, 2000, volatility of CG18 increased signi…cantly because one of its components (LE,
+Lands’ End Inc.) had a noticiable volatility increase. On November 30, 2000, CG18 had an even
+more marked volatility rise, this time because of GTW (Gateway Inc.). Similar peaks appear after
+decimalization, as well: for example, March 22, 2001, mostly because of CPQ (Compaq Corp.).
+17
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+0.0005
+0.0015
+0.0025
+0.0035
+(a)
+11/06/00
+12/12/00
+01/19/01
+03/12/01
+04/12/01
+JAN/03
+MAR/22
+RV
+TSRV
+MSRV
+KERN
+0.0005
+0.0015
+0.0025
+(b)
+1
+25
+50
+75
+98
+JAN/03
+MAR/22
+Figure 1: Volatility for TGDJ with (a) trade price data and (b) midquote data.
+and noise, which may be particularly large on a day such as Jan/03. This type of
+dependence has been shown to lead to downward biased RVt estimates [see Hansen
+and Lunde (2006)]. This also means that the TSRVt estimates should be upwards
+biased because the RVt estimates do not correctly estimate the bias. Moreover, the
+MSRVt estimates should become upwards biased because they are essentially a linear
+combination of the TSRVt estimates. This is what we observe. The KERN estimator
+should in theory be better equipped to handle increased dependence. The KERNt
+estimates are in fact slightly higher than the RVt estimates on Jan/03 for all groups.
+Similarly, Figure 2 shows noise variance estimates for TGDJ. The RSRVw estimates (£10¡7) decrease in decimalization: 5=46 ¡! 1=99 [TGDJ], 9=89 ¡! 8=75
+[CG18], and 21 ¡! 7 [TG18] (see Tables 6 and 7). It is noteworthy that the RSRVw
+estimates are always above the other estimates for all stock groups: the margin between the RSRVw and KNOISw estimates is about 40% ¡ 60% (see columns %w
+N).
+Decimalization does not correct for the upward bias – the bias actually becomes
+worse for TGDJ. The bias is of the same magnitude as the di¤erence between the
+RSRVw and RSRVt estimates, suggesting that the RSRVt estimates might be good.
+18
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+2e-07
+4e-07
+6e-07
+(a)
+11/06/00
+12/12/00
+01/19/01
+03/12/01
+04/12/01
+JAN/03
+MAR/22
+RSRV
+ACOV
+KNOIS
+0.0e+00
+1.0e-07
+2.0e-07
+(b)
+1
+25
+50
+75
+98
+JAN/03
+MAR/22
+Figure 2: Noise variance for TGDJ with (a) trade price data and (b) midquote data.
+The …nding that noise variance is reduced more in trade price data is expected. That
+the di¤erence between the RSRVw and RSRVt estimates is not reduced in decimalization may be due to the aforementioned dependence between true volatility and
+noise, which none of the three noise variance estimators capture explicitly. Furthermore, the ACOV estimates seem reasonably good only with trade price data before
+decimalization where they are a bit above the KNOISw estimates. Overall, KNOIS
+appears to be the most robust estimator, and so we use its estimates by default.18
+We can now consider the ratio of true volatility and noise variance (SNR). Figure
+3 shows a clear increase in the trade price data SNR estimates, but less signi…cant
+change in the midquote data. Moreover, the SNRt
+1>f and SNRt
+2>f estimates tend to
+be clearly above the SNRt
+3>f estimates and vary more over time. That only the trade
+price data SNR estimates change suggests that noise variance decreased but the true
+signal did not. In the next section we test if any of the found changes are signi…cant.
+18The two special dates that we mentioned above do not show up in the KNOIS or ACOV
+estimates. The RSRV estimates are high on those days but not nearly as much as true volatility is.
+19
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+2000
+6000
+10000
+14000
+(a)
+11/06/00
+12/12/00
+01/19/01
+03/12/01
+04/12/01
+MAR/22
+JAN/03
+SNR[0,c]
+SNR[1,c]
+SNR[2,c]
+SNR[3,c]
+(b)
+1
+25
+50
+75
+98
+12000
+26000
+40000
+JAN/03
+Figure 3: SNR for TGDJ with (a) trade price data and (b) midquote data.
+4.2
+Test results
+We use the paired w-test for a group of non-independent samples to test whether the
+means of various variables are di¤erent from each other around the decimalization
+date. The paired w-test is standardly applied in similar contexts, including several
+decimalization studies [see, e.g., Bessembinder (2003)]. The test assumes that the
+di¤erences between the paired values are randomly drawn from the source population and that the source population can be reasonably supposed to be normally
+distributed.
+Because normality of the di¤erences cannot be always assumed, we
+complement the results with another standard test, the Wilcoxon rank sign test,
+which requires only symmetry of distribution. The Wilcoxon rank sign test ranks
+the median values of absolute di¤erences [see, e.g., Hollander and Wolfe (1999)].19
+The symmetry requirement could be relaxed as well, but this would cause the power
+19The paired w-test is calculated as ({ ¡ |)@s.e.({ ¡ |)= The Wilcoxon rank sign test is calculated
+as Pq
+l=1 Ul#l> where Ul is the rank of the absolute value of the di¤erence between the before and
+after period observations and #l is an indicator function taking the value 0 when the di¤erence
+is negative and 1 when the di¤erence is positive. For large enough samples the test statistic is
+normally distributed.
+20
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+to deteriorate too much. Serial dependence between observations (i.e., the order) is
+not relevant for any of these tests because only di¤erences of unconditional means
+are used. Although the assumption of independence between the pairs of stocks may
+not be innocent, especially in turbulent bear markets, it is a reasonable assumption if
+the stocks are picked randomly from di¤erent sectors and times are considered "normal," which is the case in this paper. In fact, if there would be strong market-wide
+movements, we should see them a¤ecting the control group results as well. Also,
+because the stocks within each group are similar in trading activity, taking averages
+over them is less problematic than if the stocks would not have anything in common.
+The test results for the absolute and relative spread, number of quotes and trades,
+quoted depth, trading volume, and serial dependence are reported in Table 8. They
+are helpful below when interpreting the test results on true volatility and market
+microstructure noise variance. Although there is a signi…cant increase in the number
+of quotes for CG18, the control group is "controlling" because the other variables
+(number of trades, depth, trading volume, and LB test statistics) do not change
+signi…cantly. There does not appear to be strong market-wide movements in the
+data – the time periods are normal. These results can also be compared to earlier
+studies with some precautions. In particular, we should keep in mind that increased
+trading volumes, more frequent quote updating, and more complex order placing
+strategies can be in large part addressed to an increased use of algorithmic trading
+and other computer assisted trading practices as well as changes in market design.
+In contrast to CG18, most variables for the two test groups change signi…cantly.
+As expected, TG18 and TGDJ have a signi…cant decrease in quoted depth and even
+more signi…cant decrease in absolute and relative spreads. The test groups di¤er
+from each other in that number of quotes increases only for TG18, probably because
+the most active TGDJ stocks were already updated frequently before decimalization.
+The midquote return autocorrelation (as measured by the LB test statistic) tends
+to increase for both test groups, suggesting some changes in order placing strategies. This is noteworthy especially for TGDJ for which the number of quotes does
+not change much at all, con…rming that the primary cause of the increased return
+dependence is indeed how the quotes are placed in the order book. In contrast, the
+trade return data autocorrelation decreases for the two test groups (especially for
+TGDJ) while their number of trades increases signi…cantly. Autocorrelation decrease
+21
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+at the …rst lag can be explained by smaller rounding errors [see Harris (1990a)]. That
+the number of trades increases for TG18 and TGDJ while their trading volume stays
+constant is in line with earlier empirical …ndings as well. These evidence suggest that
+traders switched from large infrequent trades to more trades but of smaller size and
+that market makers started quoting smaller amounts at the best bid and ask levels.
+To study more closely the trading volume and quoted depth, we calculate their
+histograms for both periods separately. This gives a better idea how much trading
+(quoting) practices changed and helps to understand the magnitudes of volatility and
+market microstructure noise variance; such histograms re‡ect the state of the order
+book, which is in turn related to liquidity and price changes. We set the bin size
+of the trading volume histogram to the round-lot size (100) and collect the largest
+volumes to the last bin (A 10000)= For quoted depth, which is much larger in size, we
+set the bin size to 500 and collect the largest quoted depth to the last bin (A 50000)=20
+The depth for CG18 is concentrated at the …rst four bins, peaking at the third bin
+(1000¡1500)= Its shape does not change in decimalization unlike for the test groups.
+The change is most dramatic for TGDJ for which the depth distribution becomes
+concentrated at the seven smallest bins (0¡6000) and the last bin (A 50000) almost
+disappears [see Figure 4(c–d)]. The (two-sample) Kolmogorov-Smirnov test indeed
+indicates signi…cant changes for TG18 and TGDJ. But although there are more
+small trades after decimalization (the period-to-period di¤erences are negative), the
+trading volume histogram changes are at best only slightly statistically signi…cant.
+Thus, the switch to smaller trade sizes was not instantaneously signi…cant.21
+We now turn to the test results reported in Table 9. The right panel (midquote
+data) shows that ACOVt decreases signi…cantly for CG18 and TG18. Because the
+corresponding LBt test statistics were just reported to increase for TG18 (see Table
+8), decimalization appears to have weakened the …rst-lag dependence but strenghtened the higher lag dependence in midquotes for the less active stocks. The reason
+may be that market participants outside the NYSE ‡oor became more cautious of
+specialist front-running. The specialists, on the other hand, may have started to update their quotes more frequently so that informed traders could not wipe out their
+market making pro…ts. This interpretation is in line with the above shown depth his20The analysis is done only in event time because sampling volume or quoted depth at equidistant
+time points (in calendar time) could produce unreliable results.
+21The inference is not exact because the KS test is best suited for testing continuous distributions.
+22
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+100
+900
+1800
+2800
+3800
+4800
+5800
+6800
+7800
+8800
+9800
+After
+Before
+(a)
+0e+00
+2e+05
+4e+05
+6e+05
+500
+5000
+10500
+16500
+22500
+28500
+34500
+40500
+46500
+(c)
+0e+00
+1e+05
+2e+05
+3e+05
+4e+05
+5e+05
+100
+900
+1800
+2800
+3800
+4800
+5800
+6800
+7800
+8800
+9800
+(b)
+-15000
+-5000
+0
+5000
+500
+5000
+10500
+16500
+22500
+28500
+34500
+40500
+46500
+(d)
+-2e+05
+0e+00
+2e+05
+4e+05
+Figure 4: Histograms of (a) trading volume and (c) quoted depth and (b & d in
+violet) their period-to-period di¤erences for TGDJ (Jan/03 included).
+tograms and the reported decrease in market transparency [see, e.g., NYSE (2001)].
+From an estimation point of view, weaker trade price data serial dependence (ACOVw
+and LBw) makes the noise variance estimators less accurate because of their reliance
+on the bid-ask bouncing e¤ect. The strenghtened midquote data serial dependence
+at higher lags (LBt) does not improve accuracy. Thus, the estimation accuracy of
+the noise variance estimators is expected to deteriorate a bit due to decimalization.
+The RSRV and ACOV test results di¤er in two cases, both of which are also
+relevant in the evaluation of the decimalization e¤ects. First, the RSRVw estimates
+decrease slightly for CG18 but the ACOVw estimates do not. This is probably because
+of the borderline signi…cant increase in the number of trades (678 ¡! 773), which
+makes the RSRVw estimates smaller after the decimalization date. Second, the ACOV
+estimator does not work well with the midquotes for TGDJ because of its many
+positive …rst-lag autocovariances (74%; see Table 3). The trade price data estimates
+are good for TGDJ, though, and reasonable for CG18 and TG18. That noise variance
+decreases for the control group may be to some extent because the CG18 stocks are
+23
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+not very actively traded and trading in the yet-undecimalized stocks may a¤ect them.
+The most important reason, however, appears to be the outlying dates that arti…cially
+in‡ate noise variance before the decimalization date. In fact, no signi…cant noise
+variance decrease exists for CG18 with these dates excluded (see Web Appendix).22
+Table 9 also shows the test results for true volatility. Because return autocorrelation for CG18 and TG18 is weak, RV estimates their true volatility well. The
+Wilcoxon test results, which can be considered more robust than the paired w-test
+results, indicate a highly signi…cant RV decrease for TGDJ. It may seem surprising
+that the KERN test results are signi…cant with both data types for TGDJ while
+the TSRV and MSRV test results are not. This can be explained by shifts in levels,
+though: for TGDJ, the KERNw estimates are typically above the TSRVw and MSRVw
+estimates before the decimalization date while the KERNt estimates are below the
+TSRVt and MSRVt estimates afterwards (as reported in Section 4.1). The RV and
+KERN estimates, on the other hand, are similar in both periods with the midquote
+data; in the trade price data, the RV estimates were found to be badly in‡ated
+before decimalization. Importantly, if Jan/03 and the three other outlying days are
+excluded for CG18, then their true volatility does not change at all in decimalization.
+Because noise variance for the two test groups decreases more signi…cantly than
+true volatility, their ratio (SNR) should be expected to increase signi…cantly. The
+increase is indeed very signi…cant for TGDJ (see Table 10). This is partly because of
+the large group size, but also because the TGDJ stocks are typically actively traded:
+a tick size reduction for actively traded stocks removes important restrictions on
+order placing, leading to decreasing spreads and to a signi…cant decrease in noise
+variance. The SNR test results with the three advanced volatility estimators are
+similar.
+Replacing the KNOIS noise variance estimates by the ACOV or RSRV
+estimates does not alter the results much either. The also unreported SNR0>d results
+are the same as for the number of trades (quotes) (see Table 8). These results are
+noticiably di¤erent for TGDJ for which SNR0>d shows little or no change while the
+other SNRs increase. The number of trades (quotes) does not then re‡ect SNR well.
+The above tables show that the data type is sometimes crucial. The Wilcoxon test
+results for TGDJ indicate that noise variance changes more signi…cantly with trade
+22On the other hand, excluding Nov/09, Nov/30, and Mar/22 from the CG18 dataset increases
+the signi…cance of the change in the number of trades (very signi…cantly for the number of quotes).
+24
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+price data. This is expected because the noise variance estimators are best-suited
+for transaction return data where the bid-ask bouncing e¤ect reigns. Thus, it is not
+surprising that the increase in SNRw for TGDJ is highly signi…cant. Data type is
+less critical for inactive stocks because their transaction returns are less signi…cantly
+autocorrelated and their midquote returns less a¤ected by market making practices.
+Admittedly, these test results could be critized on the grounds that the tests may
+accidentally capture inherent trends or conditional heteroskedasticity in volatility not
+related to decimalization. We address this concern by controlling for confounding
+factors using methods that avoid making strong assumptions on stock price dynamics.
+At …rst, we run linear regressions for each stock separately and use volatility, noise
+variance, and SNR as the dependent variable.
+As explanatory variables, we use
+number of trades (quotes), and a dummy variable set to 0 before decimalization
+and 1 afterwards. The number of trades (quotes) are included because they appear
+prominently in the formulas for the estimators, and because they have not, in general,
+remained constant over the six month sample period. We do not include spreads as
+explanatory variables because they are strongly correlated with the dummy variable
+for TGDJ. Multicollinearity could invalidate the inference regarding the magnitude
+and sign of the coe¢cients. The multicollinearity we …nd just supports the view that
+the most active stocks experienced the largest spread and noise variance reductions.
+The simple regression results indicate that the dummy variable is commonly signi…cantly negative when the dependent variable is either volatility or noise variance,
+suggesting that confounding factors are not responsible for the decrease. To be sure,
+however, we run panel (longitudinal) linear regressions with the same variables. We
+use the restricted maximum likelihood (REML) method to estimate linear mixede¤ects models of the form [see Pinheiro and Bates (2004, Ch. 2)]
+log |lw
+=
+ + 1 log QuW udghv(Txrwhv)lw + 2Gxpp|lw +
+dl + e1l log QuWudghv(Txrwhv)lw + e2lGxpp|lw + lw>
+where l is the lth stock in CG18/TG18 (l = 1> ===> 18) or TGDJ (l = 1> ===> 30) and
+w denotes the day (w = 1> ===> 98).
+In the top row,  and k are the …xed-e¤ect
+coe¢cients and dl and ekl in the bottom row are the random-e¤ect coe¢cients. The
+random-e¤ect coe¢cients describe the shift in the intercept and the explanatory
+25
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+variables for each stock, respectively. They are assumed to be normally distributed
+with mean zero but allowed to be correlated with each other (with a covariance matrix
+that is not stock dependent). The normally distributed zero-centered error terms lw
+are assumed to be independent. The random e¤ects can be viewed as additional error
+terms that account for correlation among observations (for each stock separately).
+Including random e¤ects is an improvement over the existing decimalization literature. We try several variable combinations with and without random e¤ects, but
+the Akaike and Bayesian information criterias suggest to include random e¤ects for
+all the variables.23 We use logarithmic values except for the dummy variable (so
+b ? 0)= In order to facilitate the interpretation of the regression coe¢cients, and to
+mitigate the e¤ects of multicollinearity, we center the explanatory variables (except
+the dummy). The trade price panel regression results reported in Table 11 support
+the test results in that decimalization decreased noise variance and strenghtened the
+signal (true volatility). For TG18 and TGDJ, the trade price data coe¢cients for
+the dummy variable are signi…cantly negative for volatility and noise variance but
+signi…cantly positive for SNR. The midquote data results are similar and omitted
+for brevity. For CG18, the dummy variable for noise variance and true volatility is
+much less signi…cant. The CG18 dummy variable for SNR is not signi…cantly different from zero. Speci…cation tests done along the suggested lines of Pinheiro and
+Bates (2004, Ch. 4.3) do not reveal any clear evidence of misspecifation. The standardized within-stock residuals are zero centered and normally distributed or nearly
+so (better if Jan/03 is removed). Of course, we cannot completely exclude the possibility that the …ndings are to some extent due to the relatively short sample period.
+But longer periods, or periods separated farther apart from each other, would su¤er
+more substantially from trends – we deliberately chose to avoid the high volatility
+period related to the burst of the Internet technology bubble (later in Spring 2001).
+The two other advanced volatility estimators, TSRV and MSRV, produce very
+similar panel regression results with respect to the sign and signi…cance of the regression coe¢cients. The standard deviations for the random coe¢cients are however
+much larger if Jan/03 is not excluded. If the outlying days are removed, the TSRV
+23We also included the LB(15) test statistics as an extra explanatory variable in order to re‡ect
+daily information asymmetry. However, as pointed out by an anonymous referee, it is not clear which
+way the causality goes. Moreover, including too many …xed e¤ects sometimes causes over…tting
+and convergence problems.
+26
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+and MSRV results fall in line with the KERN results. The results using the simplest
+volatility estimator, RV, are also similar for CG18 and TG18. For TGDJ, however,
+we …nd that the residuals from the panel regression do not behave quite as well as for
+KERN. And most importantly, the panel regression results concerning SNR with RV
+do not make sense or cannot be found due to convergence problems because then the
+number of trades (quotes) essentially appears on both sides of the panel regression.
+4.3
+E¤ect of jumps
+Theory of quadratic variation states that if jumps exist, RV does not converge to IV
+but to LY + P
+0·w·W j¢[wj2, where ¢[ is a large true jump (such as a jump triggered
+by an earnings announcement). Some authors have raised legitimate concerns about
+the validity of research where jumps have not been treated [e.g., Diebold (2005)]. In
+particular, Fan and Wang (2006) report deterioration of TSRV and MSRV estimation
+accuracy in the presence of jumps. Thus, to be sure of the e¤ects of decimalization on
+true volatility, we …rst study if jumps exist and if they do, investigate if the jumps
+a¤ect our test results signi…cantly. Naturally, there is some ambiguity whether a
+jump is a "true" jump one or "noise." For this reason, we compare the results from
+trade price data to the presumably less noisy midquote data (both in event and
+calendar time). This analysis also complements our earlier results on their di¤erences.
+We …rst test for the presence of jumps. We use a test proposed by Aït-Sahalia and
+Jacod (2006), which we call the two-scale jump test (TSJT). The test is strictly valid
+only in the absence of market microstructure noise, so we expect to see some bias.
+Neverheless, we …nd it useful to calculate for for qualitative purposes. The TSJT
+statistic does not require strong underlying assumptions but its downside is that it
+does not indicate the strength or frequency of jumps. For our purposes, however,
+this is fortunately not necessary.
+The TSJT statistic is de…ned as
+bV(s> n> ¢q)w =
+bE(s> n¢q)w
+bE(s> ¢q)w
+>
+where, for s A 0,
+bE(s> ¢q)w :=
+[w@¢q]
+X
+l=1
+j¢q
+l [js
+27
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+is the estimator of variability, and ¢q
+l [ = [l¢q ¡ [(l¡1)¢q denote the discrete
+increments of a semimartingale process [= The TSJT statistic takes advantage of
+two overlapping time-scales, ¢q and n¢q, from which we derive its "two-scale" name.
+We …nd TSJT to be useful because a theorem in Aït-Sahalia and Jacod (2006)
+states that if w A 0> s A 2, and n ¸ 2, then the variables bV(s> n> ¢q)w converge (in
+probability) to the variable V(s> n)w = 1 on the set of discontinuous processes and to
+ns@2¡1 on the set of continuous processes when ¢q ! 0 (q ! 1)= In the case of IID
+market microstructure noise and s = 4 the TSJT statistic converges to 1@n (instead
+of 1)= Aït-Sahalia and Jacod (2006) note, however, that when E2 and E4 are small
+and ¢q = W@q is "moderately small," then the TSJT statistic will again be close to
+1 in the discontinuous case. We are in such a situation, as can be seen from Tables 6
+and 7, showing the small estimates for market microstructure noise variance (E2) =
+In our study, we use the originally suggested values of s = 4 and n = 2 and set
+[0> W] to one trading day. We let ¢q to vary from 1 to 10 events but report only
+the results with ¢q = 1 (the larger time-scales give less accurate results both in
+theory and practice). The non-normalized histograms including all the stocks from
+all three stock groups are presented in Figure 5. Each one of the 6468 observations
+represents one day for each stock. We plot the total histogram because we …nd no
+signi…cant di¤erences between the groups. Subplots (a) and (b) indicate that market
+microstructure noise is prominent because the histograms are not tightly around any
+speci…c value. In particular, the histograms are not centered around 1 or 2. The
+mean of the midquote data is higher than the mean of the trade price data, in line
+with the earlier …ndings that the midquotes are less bouncy than the trade prices.24
+For comparison, we show the histograms in calendar time with ¢q = 5 seconds
+in subplots (c) and (d).
+These histograms are more sharply centered around 1,
+implying more jumpy price evolution or less noise contamination in calendar time.
+Both explanations are plausible.25 The price process may be more jumpy in calendar
+time because the price does not adjust instantly to new surprising news. This would
+be consistent for example with the old idea of subordination, where the directing
+process evolves at di¤erent rates [see, e.g., Clark (1973)]. In event time the jumps
+24It would not make sense to call trade price data jumpier than midquote data in true sense
+because both data re‡ect the same underlying asset value.
+25Aït-Sahalia and Jacod (2006) …nd their histogram to be centered below 1. They however include
+Nasdaq data that increases the amount of noise and explains the location shift.
+28
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+(a)
+Mean (trade time): 1.312
+Counts
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+3.0
+0
+400
+800
+1200
+(b)
+Mean (quote time): 1.772
+Counts
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+3.0
+0
+400
+800
+1200
+(c)
+Mean (calendar time): 1.043
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+3.0
+0
+1000
+2000
+3000
+(d)
+Mean (calendar time): 1.149
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+3.0
+0
+1000
+2000
+3000
+Figure 5: Histograms of the TSJT statistic in event time using (a) trade prices and
+(b) midquotes. Subplots (c) and (d) show the corresponding data in calendar time.
+also tend to be smoothed out by market makers who monitor the market closely.
+The fact that the histograms of trade price and midquote data look more like each
+other in calendar time than in event time further supports the view that the data
+type plays a less signi…cant role at larger time-scales and/or with less active stocks.
+There are at least two straightforward ways to remove jumps [see Barndor¤-
+Nielsen and Shephard (2004) and Aït-Sahalia and Jacod (2006)].26 Both (as they
+currently stand) work well only in the absence of market microstructure noise, however. Thus, we decide to apply the following simple threshold rule instead: if the
+return of consecutive prices in event time is larger than a given threshold, then the
+return is removed, a new price table is constructed, and the tests re-run. This pro26Literature on jumps has increased rapidly over the last ten years or so [see, e.g., Huang and
+Tauchen (2005) and Lee and Mykland (2008)]. Cont and Tankov (2003) give a textbook treatment.
+29
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+cedure reduces the daily number of trades (quotes), but only slightly because large
+jumps are relatively rare in event time especially in the midquote data (if these data
+are pre…ltered carefully). With a smaller return threshold, the number of jumps naturally increases and the true jumps start to become mixed with noise. For example,
+when the threshold is decreased from 3% to 1%, the number of jumps in trade price
+(midquote) data increases for TGDJ as follows: from 3 to 136 (0 ¡! 49) before
+decimalization and from 14 to 156 (7 ¡! 84) afterwards. Both CG18 and TG18
+have signi…cantly more jumps especially with the 1%-threshold, which is because the
+durations between the events are longer for their stocks (detailed in Web Appendix).
+Because most trading days in event time do not experience any jumps that exceed
+3%> the TSJT histogram is practically una¤ected when such jumps are removed. No
+major di¤erences exist between the before and after periods in this respect either.
+The paired w-test statistics are only modestly a¤ected and the Wilcoxon test statistics
+even less by the exclusion of jumps of this magnitude. Arguably, a …xed threshold
+may a¤ect volatility and noise variance most for a lowly priced stock (e.g., LU), but
+it does not a¤ect the average over a group of stocks much at all. Thus, from both
+theoretical and practical points of view, it makes sense to exclude the largest jumps
+by default (as we have done). It is only when the threshold is lowered to 1% that the
+test results of Section 4.2 get signi…cantly a¤ected. Noise variance and true volatility
+are then reduced, helping the control group to experience no signi…cant changes (and
+thus being controlling). The random e¤ects in the mixed-e¤ect panel regressions then
+also have smaller standard deviations and the residuals behave better overall.
+Finally, we mention that decreasing the jump threshold from 3% to 1% decreases
+the number of positive autocovariances a few percentages in trade price data. The
+percentage decrease is higher for TGDJ than for the other groups because of its low
+number of positive autocovariances. The number of signi…cant LB test statistics
+increase slightly for CG18 and TG18 but almost unnoticiably for TGDJ. Decreasing the threshold in trade price data strengthens the …rst-lag autocovariances. For
+midquotes, however, a threshold decrease produces smaller LB test statistics, re‡ecting less signi…cant dependence (although again almost unnoticiably for TGDJ). The
+market makers apparently have a signi…cant e¤ect on the dynamics of bids and asks
+around the jumps for the less active stocks. Decreasing the threshold breaks down
+the "chain of events" in midquotes, and thus also their return dependence decreases.
+30
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+The conclusion that large jumps do not impact the test results signi…cantly is
+natural because true jumps are expected to be randomly scattered over time and to
+be independent of the decimalization process. The test statistics use averages over
+basically independent (with respect to jumps) stocks in a normal time period, which
+makes clusters of jumps less likely to take place in either of the two periods.
+5
+Conclusions
+In this paper, we have carefully examined the e¤ects of decimalization on volatility
+and market microstructure noise.
+For this purpose, we have used accurate nonparametric UHF estimation methods.
+Statistical inference by standard tests are
+complemented by mixed-e¤ect panel regressions. The main result is that decimalization decreased observed volatility by reducing noise variance especially for the highly
+active stocks. Because the pricing grid got …ner, the evolution of the price process
+got smoother. Consequently, the true signal became stronger, especially in the trade
+price data at the highest frequencies where the bid-ask bouncing e¤ect is known to
+dominate. For the less active stocks, the data type plays a much less signi…cant role.
+We would like to point out that smaller tick sizes do not always have to decrease
+volatility. As the stock markets have become less transparent and market making
+costs have increased as a consequence of the smaller tick size, computerized (algorithmic) trading has gained more popularity. Nowadays, automatized trading makes
+a large part of the daily volume. This may be problematic in a crisis period, when
+computer algorithms can create unwanted sell-o¤ pressure that ends up increasing,
+and not decreasing, volatility. Although we do not study this problem in this paper,
+we note that the test results on decimalization are subject to the condition that the
+time period must not be abnormally turbulent. Related to this, we do analyze the
+e¤ect of certain highly volatile (outlying) days. We …nd that removing such outlying
+days does have an impact on the test results with two advanced volatility estimators.
+Another, closely related, aim of this paper is to see how well four commonly
+used nonparametric volatility estimators perform when the tick size is changed. We
+…nd some important di¤erences between the estimators that can have important
+consequences for empirical studies covering a period including a tick size change. We
+…nd, in particular, that the simple RV estimator is badly upwards biased before the
+31
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+decimalization date. Its estimates fall much more in line with the more advanced
+estimators afterwards. The KERN estimator is the most robust with respect to the
+data type and tick size, which is probably because it can account for dependence
+between true volatility and noise. Changes in the estimation accuracy are due to
+decreased (increased) linear dependence in the trade price (midquote) data, following
+from smaller bid-ask bouncing but more active order placing. Potentially related to
+order placing, the TSRV and MSRV estimators are more clearly a¤ected by the most
+volatile dates (e.g., Jan/03). On the other hand, they are more robust than KERN
+in that their trade price data estimates are on average only a few percents higher
+than their midquote data estimates irrespectively of the period. The di¤erences in
+estimation accuracy call for more research, especially because changes in tick sizes are
+expected to be commonplace in future due to the adoption of new market regulations.
+We robusti…ed the test results by using di¤erent data types and time concepts and
+found the data type to be particularly relevant. The event time results are in line with
+the (less accurate) calendar time results. The test results are also studied in relation
+to jumps, which we do not …nd to be critical. It appears that pre…ltering data for
+obvious data errors, such as "sticky bouncebacks," is far more important. Compared
+to the "true" jumps (triggered by news announcements, say), the data errors tend
+to be bigger, more frequent, systematic, and harder to correct for especially in the
+quote data. If such errors are not excluded, they may end up seriously biasing the
+noise variance estimates. The RSRV estimator and its modi…cation are both sensitive
+to jumps. The e¤ect of jumps is not the whole story, however, as RSRV remains
+upwards biased even after decimalization. The noise variance estimators may also
+su¤er from the assumed independence between the di¤erent components of volatility.
+In future, it would be useful to decompose volatility into even smaller components
+and study their behavior when the tick size is changed. Separating small components
+from each other would make the e¤ect of decimalization even more transparent. This
+is relevant in practice because frequent changes in tick sizes are expected to happen;
+tick sizes are already linked to the price level in many stock exchanges, especially
+in Europe. Decomposing market microstucture noise however requires us to decide
+what constitutes a jump and how to separate it from other noise sources. This is a
+topic of both theoretical and practical interest and likely to become more important
+as in…nitely active jump processes gain more popularity in stock price modeling.
+32
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+Table 1: Test Group Dow Jones (TGDJ).
+Ticker
+Stock
+AA
+Alcoa Inc
+AIG
+American International Group Inc
+AXP
+American Express Co
+BA
+Boeing Co
+C
+Citigroup
+CAT
+Caterpillar Inc
+DD
+E. I. du Pont de Nemours and Co
+DIS
+Walt Disney Co
+EK
+Eastman Kodak Co
+GE
+General Electric Corp
+GM
+General Motors Corp
+HD
+Home Depot Inc
+HON
+Honeywell International Inc
+HWP
+Hewlett-Packard Co
+IBM
+International Business Machines Corp
+IP
+International Paper Co
+JNJ
+Johnson and Johnson
+KO
+Coca-Cola Co
+LU
+Lucent Techs Inc
+MCD
+McDonald’s Corp
+MMM
+Minnesota Mng Mfg Co
+MO
+Altria Group Inc
+MRK
+Merck & Co Inc
+PFE
+P…zer Inc
+PG
+Procter & Gamble Co
+SBC
+SBC Communications Inc
+T
+AT&T Inc
+VZ
+Verizon Communications
+WMT
+Wal-Mart Stores Inc
+XOM
+Exxon Mobil Co
+33
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+Table 2: Control Group 18 (left) and the matched Test Group 18 (right).
+Ticker
+Stock
+Ticker
+Stock
+APC
+Anadarko Petroleum Corp
+APA
+Apache Corp
+BEN
+Franklin Resources
+BSC
+Bear Stearns Companies Inc
+CI
+Cigna Corp
+WLP
+Wellpoint Hlth Netwks Hldg Co
+CL
+Colgate-Palmolive Corp
+AVP
+Avon Products Inc
+CPQ
+Compaq Computer Corp
+EMC
+EMC Corp
+DCX
+DaimlerChrysler AG Ord
+HDI
+Harley Davidson Inc
+FDX
+Fedex Corp
+UPS
+United Parcel Service Inc
+GMH
+General Motors Corp New
+F
+Ford Motor Co New
+GT
+Goodyear Tire Rubber Corp
+CTB
+Cooper Tire Rubber Co
+GTW
+Gateway Inc
+LXK
+Lexmark Intl Inc
+H
+Harcourt General Inc
+AM
+American Greetings Corp
+IOM
+Iomega Corp
+DBD
+Diebold Inc
+LE
+Lands/End Inc
+SKS
+Saks Inc
+LMT
+Lockheed Martin Corp
+UTX
+United Technologies Corp
+S
+Sears Roebuck Corp
+TGT
+Target Corporation
+SGY
+Stone Energy Corp
+NFX
+New…eld Exploration Co
+STT
+State Street Corp
+MEL
+Mellon Financial Corp
+UBS
+UBS AG Ord SHS
+SNV
+Synovus Financial Corp
+34
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+Table 3: Number of positive autocovariances and signi…cant LB tests.
+Data (clock)
+Group
+Before decimalization
+After decimalization
+FRY1 A 0
+%
+OE A 25
+%
+FRY1 A 0
+%
+OE A 25
+%
+trade price
+CG18
+347@900
+39
+478@900
+53
+251@864
+# 29
+450@864
+52
+(event time)
+TG18
+136@900
+15
+608@900
+68
+341@864
+" 39
+425@864
+# 49
+TGDJ
+14@1500
+1
+1477@1500
+98
+218@1440
+" 15
+1212@1440
+# 84
+midquote
+CG18
+560@900
+62
+593@900
+66
+511@864
+59
+587@864
+68
+(event time)
+TG18
+576@900
+64
+518@900
+58
+538@864
+62
+611@864
+" 71
+TGDJ
+1112@1500
+74
+1054@1500
+70
+1217@1440
+" 85
+1285@1440
+" 89
+trade price
+CG18
+313@900
+35
+592@900
+66
+304@864
+35
+551@864
+64
+(calendar)
+TG18
+225@900
+25
+661@900
+73
+352@864
+" 41
+610@864
+71
+TGDJ
+16@1500
+1
+1457@1500
+97
+116@1440
+" 8
+1215@1440
+# 84
+midquote
+CG18
+499@900
+55
+809@900
+90
+443@864
+51
+732@864
+85
+(calendar)
+TG18
+570@900
+63
+748@900
+83
+469@864
+# 54
+774@864
+" 90
+TGDJ
+943@1500
+63
+1111@1500
+74
+1002@1440
+" 70
+1276@1440
+" 89
+Note: Calendar time sampling done at 5 sec intervals using the last recorded trade price or midquote.
+35
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+References
+Aït-Sahalia, Yacine, and Jean Jacod. (2006). "Testing for Jumps in a Discretely
+Observed Process." Annals of Statistics 37, 184–222.
+Aït-Sahalia, Yacine, Per A. Mykland, and Lan Zhang. (2005a). "How Often to Sample a Continuous-Time Process in the Presence of Market Microstructure Noise."
+Review of Financial Studies 18, 351–416.
+—— (2005b). "Comment on ’Realized Variance and Market Microstructure Noise’
+by Peter Hansen and Asger Lunde." Technical Report, University of Chicago.
+—— (2006). "Ultra High Frequency Volatility Estimation with Dependent Microstructure Noise." Working Paper, Princeton University, University of Chicago,
+and University of Illinois. Forthcoming in Journal of Econometrics.
+Ahn, Hee-Joon, Charles Q. Cao, and Hyuk Choe. (1996). "Tick Size, Spread, and
+Volume." Journal of Financial Intermediation 5, 2–22.
+—— (1998). "Decimalization and Competition Among Stock Markets: Evidence
+from the Toronto Stock Exchange Cross-Listed Securities." Journal of Financial
+Markets 1, 51–87.
+Amihud, Yakov, and Haim Mendelson. (1987). "Trading Mechanisms and Stock Returns: An Empirical Investigation." Journal of Finance 42, 533–553.
+Andersen, Torben G., Tim Bollerslev, and Francis X. Diebold. (2006). "Roughing it
+Up: Including Jump Components in the Measurement, Modelling, and Forecasting
+of Return Volatility." Review of Economics and Statistics 89, 701–720.
+Bacidore, Je¤rey M. (1997). "The Impact of Decimalization on Market Quality:
+An Empirical Investigation of the Toronto Stock Exchange." Journal of Financial
+Intermediation 6, 92–120.
+Bacidore, Je¤, Robert Battalio, and Robert Jennings. (2001). "Changes in Order
+Characteristics, Displayed Liquidity, and Execution Quality on the New York Stock
+Exchange Around the Switch to Decimal Pricing." Working Paper, New York Stock
+Exchange.
+—— (2003). "Order Submission Strategies, Liquidity Supply, and Trading in Pennies
+on the New York Stock Exchange." Journal of Financial Markets 6, 337–362.
+Bandi, Federico M., and Je¤rey R. Russell. (2006). "Separating Microstructure Noise
+from Volatility." Journal of Financial Economics 79, 655–692.
+—— (2008). "Microstructure Noise, Realized Volatility, and Optimal Sampling."
+Review of Economic Studies 75, 339–369.
+—— (2010). "Market Microstructure Noise, Integrated Variance Estimators, and the
+Accuracy of Asymptotic Approximations." Forthcoming in Journal of Econometrics.
+36
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+Barndor¤-Nielsen, Ole E., and Neil Shephard. (2004). "Power and Bipower Variation
+with Stochastic Volatility and Jumps." Journal of Econometrics 2, 1–37.
+Barndor¤-Nielsen, Ole. E, Peter Reinhard Hansen, Asger Lunde, and Neil Shephard.
+(2008). "Designing Realized Kernels to Measure the Ex-post Variation of Equity
+Prices in the Presence of Noise." Working Paper, available at SSRN.
+Bessembinder, Hendrik. (2003). "Trade Execution Costs and Market Quality after
+Decimalization." Journal of Financial and Quantitative Analysis 38, 747–778.
+Black, Fischer. (1986). "Noise." Journal of Finance 41, 529–543.
+Bollen, Nicolas P. B., and Robert E. Whaley. (1998). "Are Teenies’ Better?" Journal
+of Portfolio Management 25, 10–24.
+Chakravarty, Sugato, Robert A. Wood, and Robert A. van Ness. (2004). "Decimals
+and Liquidity: A Study of the NYSE." Journal of Financial Research 27, 75–94.
+Chakravarty, Sugato, Venkatesh Panchapagesan, and Robert A. Wood. (2005). "Did
+Decimalization Hurt Institutional Investors?" Journal of Financial Markets 8, 400–
+420.
+Chakravarty, Sugato, Bonnie F. van Ness, and Robert A. van Ness. (2005). "The
+E¤ect of Decimalization on Trade Size and Adverse Selection Costs." Journal of
+Business Finance and Accounting 32, 1063–1081.
+Cho, D. Chinhyung, and Edward W. Frees. (1988). "Estimating the Volatility of
+Discrete Stock Prices." Journal of Finance 43, 451–466.
+Chung, Kee H., Bonnie F. van Ness, and Robert A. van Ness. (2004). "Trading Costs
+and Quote Clustering on the NYSE and NASDAQ After Decimalization." Journal
+of Financial Research XXVII, 309–328.
+Clark, Peter K. (1973). "A Subordinated Stochastic Process Model with Finite Variance for Speculative Prices." Econometrica 41, 135–155.
+Cont, Rama, and Peter Tankov. (2003). Financial Modelling with Jump Processes.
+Chapman & Hall.
+Curci, Giuseppe, and Fulvio Corsi. (2006). "Discrete Sine Transform for Multi-Scales
+Realized Volatility Measures." Working Paper, Universita di Pisa and University of
+Lugano. Available at SSRN: http://ssrn.com/abstract=650504.
+Diebold, Francis X. (2005). "On Market Microstructure Noise and Realized Volatility." Working Paper, University of Pennsylvania.
+Economist. (2007a). "Dodgy Tickers; Stock Exchanges." Economist, March 10, 2007.
+—— (2007b). "Ahead of the Tape; Algorithmic Trading." Economist, June 23, 2007.
+37
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+Engle, Robert F., and Zheng Sun. (2005). "Forecasting Volatility Using Tick
+by Tick Data." Working Paper,
+New York University. Available at SSRN:
+http://ssrn.com/abstract=676462.
+Fan, Jianqing, and Yazhen Wang. (2006). "Multi-Scale Jump and Volatility Analysis for High-Frequency Financial Data." Working Paper, Princeton University and
+University of Connecticut.
+Figlewski, Stephen. (1997). "Forecasting Volatility." Financial Markets, Institutions,
+and Instruments 6, 1–88.
+Frijns, Bart, and Thorsten Lehnert. (2004). "Realized Variance in the Presence of
+Non-IID Microstructure Noise." Working Paper, Maastricht University.
+Gibson, Scott, Rajdeep Singh, and Vijay Yerramilli. (2003). "The E¤ect of Decimalization on the Components of the Bid-Ask Spread." Journal of Financial Intermediation 12, 121–148.
+Goldstein, Michael A., and Kenneth A. Kavajecz. (2000). "Eigths, Sixteenths, and
+Market Depth: Changes in Tick Size and Liquidity Provision on the NYSE." Journal
+of Financial Economics 56, 125–149.
+Gottlieb, Gary, and Avner Kalay. (1985). "Implications of the Discreteness of Observed Stock Prices." Journal of Finance 40, 135–153.
+Glosten, Lawrence R., and Paul R. Milgrom. (1985). "Bid, Ask, and Transaction
+Prices in a Specialist Market with Heterogenously Informed Traders." Journal of
+Financial Economics 14, 71–100.
+Gri¢n, Jim E., and Roel C. A. Oomen. (2008). "Sampling Returns for Realized
+Variance Calculations: Tick Time or Transaction Time?" Econometric Reviews 27,
+230–253.
+Hansen, Peter R., and Asger Lunde. (2006). "Realized Variance and Market Microstructure Noise." Journal of Business and Economic Statistics 24, 127–161.
+Harris, Lawrence. (1990a). "Estimation of Stock Price Variances and Serial Correlations from Discrete Observations." Journal of Financial and Quantitative Analysis
+25, 291–306.
+—— (1990b). "Statistical Properties of the Roll Serial Covariance Bid/Ask Spread
+Estimator." Journal of Finance 45, 579–590.
+—— (1991). "Stock Price Clustering and Discreteness." Review of Financial Studies
+4, 389–415.
+—— (1994). "Minimum Price Variations, Discrete Bid-Ask Spreads, and Quotation
+Sizes." Review of Financial Studies 7, 149–178.
+—— (1997). "Decimalization: A Review of the Arguments and Evidence." Working
+Paper, University of Southern California.
+38
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+—— (1999). "Trading in Pennies: A Survey of the Issues." Working Paper, University
+of Southern California.
+Hasbrouck, Joel. (1996). "Modeling Market Microstructure Time Series." In G. Maddala, and C. Rao (eds.), Handbook of Statistics 14, North Holland, Amsterdam, pp.
+647–692.
+—— (2007). Empirical Market Microstructure Theory: The Institutions, Economics,
+and Econometrics of Securities Trading. Oxford University Press.
+Hau, Harald. (2006). "The Role of Transaction Costs for Financial Volatility: Evidence from the Paris Bourse."Journal of European Economic Association 4, 862–890.
+He, Yan, and Chunchi Wu. (2005). "The E¤ects of Decimalization on Return Volatility Components, Serial Correlation, and Trading Costs." Journal of Financial Research XXVIII, 77–96.
+Hendershott,
+Terrence,
+Charles M. Jones,
+and Albert J. Menkveld. (2008).
+"Does
+Algorithmic
+Trading
+Improve
+Liquidity?"
+Available
+at
+SSRN:
+http://ssrn.com/abstract=1100635.
+Hollander, Myles, and Douglas A. Wolfe. (1999). Nonparametric Statistical Methods.
+Second Edition. John Wiley & Sons.
+Huang, Roger D., and Hans R. Stoll. (2001). "Tick Size, Bid-Ask Spreads, and
+Market Structure." Journal of Financial and Quantitative Analysis 36, 503–522.
+Huang, Xin, and George Tauchen. (2005). "The Relative Contribution of Jumps to
+Total Price Variance." Journal of Financial Econometrics 3, 456–499.
+Ikenberry, David, and James P. Weston. (2003). "Clustering in U.S. Stock Prices
+After Decimalization." Working Paper, University of Illinois and Rice University.
+Jegadeesh, Narasimhan, and Sheridan Titman. (1995). "Short-Horizon Return Reversals and the Bid-Ask Spread." Journal of Financial Intermediation 4, 116–132.
+Jones, Charles M., and Marc L. Lipson. (2001). "Sixteenths: Direct Evidence on
+Institutional Trading Costs." Journal of Financial Economics 59, 253–278.
+Lee, Suzanne S., and Per A. Mykland. (2008). "Jumps in Financial Markets: A
+New Nonparametric Test and Jump Dynamics." Review of Financial Studies 21,
+2535–2563.
+Madhavan, Ananth, Matthew Richardon, and Mark Roomans. (1997). "Why Do
+Securities Prices Change? A Transaction-Level Analysis of NYSE Stocks." Review
+of Financial Studies 10, 1035–1064.
+New York Stock Exchange. (2001). "Decimalization of Trading on the New York
+Stock Exchange: A Report to the Securities and Exchange Commission." Working
+Paper, New York Stock Exchange.
+39
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+Oomen, Roel C. A. (2005a). "Properties of Bias-Corrected Realized Variance Under
+Alternative Sampling Schemes." Journal of Financial Econometrics 3, 555–577.
+—— (2005b). "Comment on ’Realized Variance and Market Microstructure Noise’
+by Peter R. Hansen and Asger Lunde." Journal of Business and Economic Statistics
+24, 195–202.
+—— (2006). "Properties of Realized Variance Under Alternative Sampling Schemes."
+Journal of Business and Economic Statistics 24, 219–237.
+Pinheiro, José C., and Douglas M. Bates. (2004). Mixed-E¤ects Models in S and
+S-Plus. Springer.
+Porter, David C., and Daniel G. Weaver. (1997). "Tick Size and Market Quality."
+Financial Management 26, 5–26.
+Ricker,
+Je¤rey
+P.
+(1998).
+"Breaking
+the
+Eight:
+Sixteenths
+on
+the
+New
+York
+Stock
+Exchange."
+Unpublished
+Manuscript.
+Available
+at
+SSRN:
+http://ssrn.com/abstract=79759.
+Roll, Richard. (1984). "A Simple Implicit Measure of the Bid-Ask Spread in an
+E¢cient Market." Journal of Finance 39, 1127–1139.
+Ronen, Tavy, and Daniel G. Weaver. (2001). "Teenies’ Anyone?" Journal of Financial
+Markets 4, 231–260.
+van Ness, Bonnie F., Robert A. van Ness, and Stephen W. Pruitt (1999). "The Impact
+of the Reduction in Tick Increment in Major U.S. Markets on Spreads, Depth, and
+Volatility." Review of Quantitative Finance and Accounting 15, 153–167.
+Zhang, Lan. (2006). "E¢cient Estimation of Stochastic Volatility Using Noisy Observations: A Multi-Scale Approach." Bernoulli 12, 1019–1043.
+Zhang, Lan, Per A. Mykland, and Yacine Aït-Sahalia. (2005). "A Tale of Two Time
+Scales: Determining Integrated Volatility with Noisy High-Frequency Data." Journal
+of the American Statistical Association 100, 1394–1411.
+Zhao, Xin, and Kee H. Chung. (2006). "Decimal Pricing and Information-Based
+Trading: Tick Size and Informational E¢ciency of Asset Price." Journal of Business
+Finance and Accounting 33, 753–766.
+Zhou, Bin. (1996). "High-Frequency Data and Volatility in Foreign-Exchange Rates."
+Journal of Business and Economic Statistics 14, 45–52.
+40
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+Table 4: Average daily KERN volatility for TGDJ.
+Stock
+Before decimalization
+After decimalization
+KERNw
+%t
+%w
+UY
+%t
+UY
+KERNw
+%t
+%w
+UY
+%t
+UY
+AA
+1=12h ¡ 03
+33
+¡81
+33
+# 5=78h ¡ 04
+30
+¡31
+34
+AIG
+3=73h ¡ 04
+27
+¡41
+36
+# 2=97h ¡ 04
+16
+¡17
+23
+AXP
+9=61h ¡ 04
+24
+¡60
+29
+# 7=97h ¡ 04
+23
+¡14
+30
+BA
+5=27h ¡ 04
+27
+¡23
+40
+# 4=35h ¡ 04
+17
+¡8
+28
+C
+9=19h ¡ 04
+34
+¡104
+42
+9=75h ¡ 04
+23
+0
+31
+CAT
+5=74h ¡ 04
+24
+¡53
+27
+# 3=92h ¡ 04
+10
+¡8
+11
+DD
+9=10h ¡ 04
+40
+¡85
+42
+# 4=30h ¡ 04
+28
+¡29
+35
+DIS
+1=24h ¡ 03
+45
+¡108
+47
+# 7=81h ¡ 04
+35
+¡23
+40
+EK
+6=40h ¡ 04
+23
+¡56
+26
+# 4=27h ¡ 04
+7
+¡2
+8
+GE
+8=03h ¡ 04
+45
+¡146
+50
+# 6=18h ¡ 04
+32
+¡13
+48
+GM
+5=36h ¡ 04
+22
+¡39
+30
+# 3=18h ¡ 04
+28
+¡6
+36
+HD
+1=14h ¡ 03
+45
+¡117
+50
+# 7=34h ¡ 04
+30
+¡28
+44
+HON
+6=39h ¡ 04
+18
+¡43
+22
+6=59h ¡ 04
+7
+¡6
+15
+HWP
+2=51h ¡ 03
+36
+¡67
+41
+# 1=76h ¡ 03
+35
+¡26
+40
+IBM
+8=79h ¡ 04
+25
+¡56
+34
+# 7=65h ¡ 04
+26
+¡8
+39
+IP
+8=94h ¡ 04
+27
+¡59
+26
+# 7=74h ¡ 04
+29
+¡18
+31
+JNJ
+3=08h ¡ 04
+34
+¡64
+43
+# 2=04h ¡ 04
+30
+¡25
+40
+KO
+4=42h ¡ 04
+33
+¡76
+40
+# 3=85h ¡ 04
+15
+¡5
+27
+LU
+5=17h ¡ 03
+60
+¡331
+64
+# 2=95h ¡ 03
+34
+¡60
+45
+MCD
+8=46h ¡ 04
+48
+¡120
+49
+# 5=86h ¡ 04
+35
+¡41
+43
+MMM
+3=56h ¡ 04
+20
+¡5
+37
+4=52h ¡ 04
+23
+11
+35
+MO
+7=60h ¡ 04
+37
+¡90
+44
+# 3=15h ¡ 04
+30
+¡9
+44
+MRK
+3=81h ¡ 04
+30
+¡60
+41
+# 3=34h ¡ 04
+19
+¡1
+29
+PFE
+9=68h ¡ 04
+44
+¡204
+40
+# 6=02h ¡ 04
+45
+¡54
+47
+PG
+5=38h ¡ 04
+29
+¡47
+35
+# 5=01h ¡ 04
+28
+¡21
+33
+SBC
+5=68h ¡ 04
+33
+¡89
+41
+# 4=99h ¡ 04
+32
+0
+50
+T
+2=14h ¡ 03
+61
+¡201
+63
+# 7=19h ¡ 04
+37
+¡23
+53
+VZ
+6=55h ¡ 04
+30
+¡82
+30
+# 6=49h ¡ 04
+19
+¡22
+19
+WMT
+8=33h ¡ 04
+30
+¡94
+38
+# 5=97h ¡ 04
+21
+¡4
+38
+XOM
+2=56h ¡ 04
+27
+¡66
+38
+# 1=96h ¡ 04
+20
+¡8
+34
+Avg
+9=63h ¡ 04
+34
+¡89
+39
+# 6=58h ¡ 04
+25
+¡17
+34
+Note: Parzen kernel estimates with jumps exceeding threshold 3% excluded.
+Bolded percentages denote estimates that have become closer to KERNw:
+%t = NHUQw¡NHUQ t
+NHUQ w
+(£100); %w
+UY = NHUQ w¡UY w
+NHUQw
+; %t
+UY = NHUQ w¡UY t
+NHUQ w
+=
+41
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+Table 5: KERN volatility for CG18 (upper panel) and TG18 (lower).
+Stock
+Before decimalization
+After decimalization
+KERNw
+%t
+%w
+UY
+%t
+UY
+KERNw
+%t
+%w
+UY
+%t
+UY
+APC
+6=84h ¡ 04
+21
+9
+34
+# 4=87h ¡ 04
+15
+¡2
+25
+BEN
+4=45h ¡ 04
+8
+4
+10
+# 4=00h ¡ 04
+¡14
+4
+¡15
+CI
+5=43h ¡ 04
+1
+¡2
+¡5
+# 4=18h ¡ 04
+¡13
+¡3
+¡21
+CL
+3=24h ¡ 04
+15
+7
+28
+# 3=09h ¡ 04
+9
+¡8
+15
+CPQ
+1=80h ¡ 03
+46
+¡43
+59
+# 1=42h ¡ 03
+33
+¡24
+48
+DCX
+5=30h ¡ 04
+34
+¡31
+33
+# 2=47h ¡ 04
+15
+¡20
+6
+FDX
+4=63h ¡ 04
+18
+¡3
+24
+5=23h ¡ 04
+12
+¡6
+17
+GMH
+1=41h ¡ 03
+24
+¡8
+31
+# 1=16h ¡ 03
+23
+¡18
+28
+GT
+7=89h ¡ 04
+0
+¡15
+¡10
+# 7=29h ¡ 04
+2
+¡18
+¡7
+GTW
+2=64h ¡ 03
+28
+¡2
+40
+# 1=98h ¡ 03
+18
+0
+29
+H
+4=13h ¡ 05
+6
+¡32
+¡11
+# 2=28h ¡ 05
+¡19
+¡24
+¡33
+IOM
+3=56h ¡ 03
+30
+¡29
+28
+# 2=13h ¡ 03
+12
+¡24
+1
+LE
+8=98h ¡ 04
+3
+15
+12
+# 6=35h ¡ 04
+0
+11
+7
+LMT
+8=60h ¡ 04
+15
+¡7
+15
+# 7=16h ¡ 04
+16
+¡10
+16
+S
+5=20h ¡ 04
+18
+¡6
+25
+# 4=09h ¡ 04
+¡3
+¡11
+¡1
+SGY
+4=38h ¡ 04
+7
+15
+16
+5=29h ¡ 04
+2
+15
+15
+STT
+5=80h ¡ 04
+26
+¡9
+37
+7=10h ¡ 04
+20
+¡15
+23
+UBS
+1=02h ¡ 04
+15
+4
+15
+1=35h ¡ 04
+¡18
+4
+¡28
+Avg
+9=24h ¡ 04
+17
+¡7
+21
+# 7=20h ¡ 04
+6
+¡8
+7
+APA
+5=69h ¡ 04
+17
+¡13
+22
+# 4=48h ¡ 04
+6
+4
+15
+BSC
+9=97h ¡ 04
+22
+¡22
+27
+1=02h ¡ 03
+4
+¡4
+2
+WLP
+7=67h ¡ 04
+14
+6
+28
+# 4=89h ¡ 04
+9
+9
+21
+AVP
+6=39h ¡ 04
+19
+¡19
+25
+# 3=43h ¡ 04
+2
+¡2
+8
+EMC
+2=19h ¡ 03
+22
+¡6
+40
+3=63h ¡ 03
+25
+0
+39
+HDI
+9=78h ¡ 04
+27
+¡21
+35
+# 7=47h ¡ 04
+23
+¡12
+28
+UPS
+2=89h ¡ 04
+32
+¡44
+33
+# 2=04h ¡ 04
+21
+¡23
+14
+F
+1=18h ¡ 03
+44
+¡92
+47
+# 6=01h ¡ 04
+31
+¡24
+38
+CTB
+1=39h ¡ 03
+41
+¡60
+32
+# 1=02h ¡ 03
+¡12
+¡10
+¡28
+LXK
+1=58h ¡ 03
+18
+1
+29
+# 1=04h ¡ 03
+10
+13
+16
+AM
+2=76h ¡ 03
+39
+¡53
+35
+# 7=13h ¡ 04
+¡7
+¡6
+¡8
+DBD
+9=90h ¡ 04
+8
+¡2
+11
+# 4=26h ¡ 04
+¡72
+9
+¡90
+SKS
+2=12h ¡ 03
+27
+¡39
+19
+# 1=12h ¡ 03
+19
+¡8
+19
+UTX
+4=50h ¡ 04
+21
+¡11
+33
+# 3=82h ¡ 04
+16
+8
+27
+TGT
+1=12h ¡ 03
+25
+¡59
+31
+# 8=52h ¡ 04
+22
+¡6
+33
+NFX
+7=86h ¡ 04
+14
+3
+17
+# 6=83h ¡ 04
+9
+2
+16
+MEL
+7=07h ¡ 04
+32
+¡48
+36
+# 5=14h ¡ 04
+22
+¡12
+30
+SNV
+5=28h ¡ 04
+31
+¡56
+22
+# 3=72h ¡ 04
+0
+¡9
+¡5
+Avg
+1=11h ¡ 03
+25
+¡30
+29
+# 8=12h ¡ 04
+7
+¡4
+10
+Note: Parzen kernel estimates with jumps exceeding threshold 3% excluded.
+Bolded percentages denote estimates that have become closer to KERNw:
+%t = NHUQ w¡NHUQt
+NHUQw
+(£100); %w
+UY = NHUQ w¡UY w
+NHUQ w
+; %t
+UY = NHUQ w¡UY t
+NHUQw
+=
+42
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+Table 6: Average daily noise variance for TGDJ.
+Stock
+Before decimalization
+After decimalization
+RSRVw
+%t
+%w
+N
+%t
+N
+%w
+D
+RSRVw
+%t
+%w
+N
+%t
+N
+%w
+D
+AA
+9=19h ¡ 07
+71
+42
+90
+39
+# 2=39h ¡ 07
+60
+53
+86
+70
+AIG
+1=53h ¡ 07
+61
+50
+88
+60
+# 7=86h ¡ 08
+40
+57
+80
+81
+AXP
+4=15h ¡ 07
+64
+46
+87
+51
+# 1=74h ¡ 07
+39
+58
+81
+83
+BA
+2=54h ¡ 07
+66
+55
+90
+72
+# 1=39h ¡ 07
+56
+60
+86
+87
+C
+3=38h ¡ 07
+79
+38
+93
+32
+# 1=84h ¡ 07
+40
+63
+80
+88
+CAT
+5=51h ¡ 07
+68
+47
+88
+53
+# 1=85h ¡ 07
+46
+60
+80
+85
+DD
+6=11h ¡ 07
+81
+42
+93
+39
+# 1=51h ¡ 07
+65
+54
+89
+71
+DIS
+9=46h ¡ 07
+79
+38
+92
+28
+# 3=04h ¡ 07
+63
+55
+87
+76
+EK
+5=59h ¡ 07
+70
+46
+89
+48
+# 2=23h ¡ 07
+50
+62
+82
+87
+GE
+3=50h ¡ 07
+81
+33
+94
+28
+# 1=31h ¡ 07
+49
+58
+86
+86
+GM
+3=55h ¡ 07
+69
+51
+90
+60
+# 1=34h ¡ 07
+62
+61
+88
+87
+HD
+5=41h ¡ 07
+78
+37
+93
+29
+# 1=89h ¡ 07
+56
+54
+88
+70
+HON
+3=67h ¡ 07
+67
+50
+88
+57
+# 2=68h ¡ 07
+50
+61
+83
+89
+HWP
+9=87h ¡ 07
+73
+44
+91
+48
+# 4=42h ¡ 07
+65
+55
+88
+79
+IBM
+2=52h ¡ 07
+67
+47
+89
+53
+# 1=24h ¡ 07
+49
+60
+85
+87
+IP
+6=36h ¡ 07
+67
+46
+88
+48
+# 3=23h ¡ 07
+61
+57
+86
+80
+JNJ
+1=53h ¡ 07
+71
+46
+91
+46
+# 6=85h ¡ 08
+58
+55
+87
+71
+KO
+2=93h ¡ 07
+73
+43
+91
+40
+# 1=36h ¡ 07
+38
+61
+81
+88
+LU
+2=69h ¡ 06
+92
+21
+97
+4
+# 7=68h ¡ 07
+57
+46
+89
+56
+MCD
+8=41h ¡ 07
+86
+36
+95
+25
+# 2=43h ¡ 07
+67
+50
+89
+62
+MMM
+1=64h ¡ 07
+51
+61
+86
+86
+# 1=38h ¡ 07
+45
+67
+83
+89
+MO
+4=96h ¡ 07
+86
+40
+95
+33
+# 9=92h ¡ 08
+63
+60
+89
+87
+MRK
+1=42h ¡ 07
+67
+46
+90
+49
+# 1=04h ¡ 07
+35
+63
+79
+91
+PFE
+5=24h ¡ 07
+83
+28
+93
+15
+# 1=55h ¡ 07
+65
+48
+88
+60
+PG
+2=62h ¡ 07
+70
+49
+90
+56
+# 1=73h ¡ 07
+60
+56
+87
+77
+SBC
+2=94h ¡ 07
+74
+41
+92
+36
+# 1=29h ¡ 07
+53
+63
+88
+89
+T
+1=38h ¡ 06
+84
+29
+94
+9
+# 2=52h ¡ 07
+61
+56
+90
+76
+VZ
+3=86h ¡ 07
+74
+42
+91
+37
+# 1=88h ¡ 07
+50
+56
+82
+78
+WMT
+3=88h ¡ 07
+76
+40
+92
+35
+# 1=57h ¡ 07
+41
+62
+83
+89
+XOM
+1=30h ¡ 07
+68
+45
+90
+44
+# 5=96h ¡ 08
+44
+60
+83
+86
+Avg
+5=46h ¡ 07
+73
+43
+91
+42
+# 1=99h ¡ 07
+53
+58
+85
+80
+Note: Bolded percentages denote estimates that have become closer to RSRVw:
+%t = UVUY w¡UVUY t
+UVUY w
+(£100); %w
+N = UVUY w¡NQRLVw
+UVUY w
+=
+43
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+Table 7: Noise variance for CG18 (above) and TG18 (below).
+Stock
+Before decimalization
+After decimalization
+RSRVw
+%t
+%w
+N
+%t
+N
+%w
+D
+RSRVw
+%t
+%w
+N
+%t
+N
+%w
+D
+APC
+2=91h ¡ 07
+44
+66
+82
+89
+# 1=51h ¡ 07
+46
+62
+82
+92
+BEN
+4=24h ¡ 07
+60
+64
+86
+89
+# 2=65h ¡ 07
+50
+65
+80
+90
+CI
+3=24h ¡ 07
+48
+62
+78
+88
+# 2=11h ¡ 07
+46
+62
+79
+89
+CL
+1=76h ¡ 07
+49
+66
+84
+87
+# 1=49h ¡ 07
+59
+60
+86
+87
+CPQ
+6=06h ¡ 07
+67
+50
+91
+61
+# 4=83h ¡ 07
+61
+55
+89
+75
+DCX
+7=74h ¡ 07
+73
+53
+89
+59
+# 4=37h ¡ 07
+71
+56
+88
+71
+FDX
+3=28h ¡ 07
+54
+62
+84
+88
+# 3=20h ¡ 07
+63
+60
+86
+86
+GMH
+9=85h ¡ 07
+54
+60
+84
+88
+# 8=38h ¡ 07
+66
+57
+88
+77
+GT
+8=93h ¡ 07
+52
+58
+79
+79
+# 6=42h ¡ 07
+60
+57
+84
+81
+GTW
+1=26h ¡ 06
+54
+62
+84
+87
+# 9=69h ¡ 07
+56
+63
+86
+89
+H
+2=07h ¡ 07
+67
+53
+86
+53
+# 6=60h ¡ 08
+68
+55
+85
+65
+IOM
+7=05h ¡ 06
+68
+54
+85
+68
+7=23h ¡ 06
+76
+55
+87
+69
+LE
+1=87h ¡ 06
+63
+68
+85
+75
+# 1=66h ¡ 06
+72
+67
+89
+78
+LMT
+7=83h ¡ 07
+54
+60
+83
+87
+# 4=94h ¡ 07
+59
+59
+84
+86
+S
+3=91h ¡ 07
+64
+61
+88
+86
+# 2=64h ¡ 07
+54
+59
+82
+83
+SGY
+9=05h ¡ 07
+65
+69
+87
+78
+# 9=37h ¡ 07
+67
+69
+87
+76
+STT
+3=21h ¡ 07
+62
+60
+88
+86
+# 3=03h ¡ 07
+64
+58
+87
+82
+UBS
+2=08h ¡ 07
+60
+65
+85
+80
+3=35h ¡ 07
+72
+64
+86
+80
+Avg
+9=89h ¡ 07
+59
+61
+85
+79
+# 8=75h ¡ 07
+62
+60
+85
+81
+APA
+3=73h ¡ 07
+53
+58
+84
+82
+# 1=92h ¡ 07
+39
+65
+78
+92
+BSC
+7=26h ¡ 07
+66
+56
+88
+78
+# 4=58h ¡ 07
+54
+62
+82
+91
+WLP
+4=89h ¡ 07
+51
+65
+85
+91
+# 3=20h ¡ 07
+57
+66
+86
+88
+AVP
+6=19h ¡ 07
+63
+56
+87
+76
+# 2=10h ¡ 07
+51
+62
+81
+90
+EMC
+4=29h ¡ 07
+43
+61
+84
+88
+7=02h ¡ 07
+42
+63
+81
+90
+HDI
+7=81h ¡ 07
+63
+55
+88
+74
+# 4=01h ¡ 07
+58
+59
+85
+87
+UPS
+3=70h ¡ 07
+73
+49
+90
+52
+# 2=04h ¡ 07
+67
+56
+87
+74
+F
+1=02h ¡ 06
+79
+40
+93
+36
+# 2=70h ¡ 07
+61
+55
+87
+76
+CTB
+6=36h ¡ 06
+86
+46
+94
+36
+# 2=04h ¡ 06
+69
+59
+85
+82
+LXK
+1=14h ¡ 06
+60
+63
+86
+89
+# 4=72h ¡ 07
+53
+68
+82
+84
+AM
+9=14h ¡ 06
+83
+47
+92
+41
+# 1=53h ¡ 06
+66
+60
+86
+81
+DBD
+2=16h ¡ 06
+59
+62
+85
+84
+# 7=98h ¡ 07
+32
+66
+65
+82
+SKS
+9=61h ¡ 06
+83
+51
+91
+57
+# 2=83h ¡ 06
+79
+60
+91
+81
+UTX
+2=93h ¡ 07
+63
+59
+88
+84
+# 1=43h ¡ 07
+50
+66
+84
+87
+TGT
+8=59h ¡ 07
+68
+46
+89
+47
+# 3=11h ¡ 07
+51
+61
+85
+87
+NFX
+1=66h ¡ 06
+63
+64
+85
+82
+# 1=15h ¡ 06
+66
+64
+87
+84
+MEL
+5=16h ¡ 07
+70
+49
+90
+56
+# 2=08h ¡ 07
+57
+59
+85
+85
+SNV
+1=21h ¡ 06
+79
+48
+91
+46
+# 3=52h ¡ 07
+66
+59
+85
+83
+Avg
+2=10h ¡ 06
+67
+54
+88
+67
+# 7=00h ¡ 07
+57
+62
+83
+85
+Note: Bolded percentages denote estimates that have become closer to RSRVw:
+%t = UVUY w¡UVUY t
+UVUY w
+(£100); %w
+N = UVUY w¡NQRLVw
+UVUY w
+; %w
+D =
+UVUY w¡jFryw
+1j
+UVUY w
+=
+44
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+Table 8: Test statistics for the typical variables.
+Mean before
+Mean after
+Mean di¤.
+Paired w
+Wilcoxon
+Control Group 18
+Abs spread
+0=11
+0=10
+0=01
+1=12
+(0=2780)
+121
+(0=1297)
+Rel spread (%)
+0=28
+0=27
+0=01
+0=72
+(0=4797)
+118
+(0=1674)
+Nr quotes
+1 037
+1 435
+¡397
+¡5=72¤¤
+(2=52h¡05)
+0¤¤
+(7=63h¡06)
+Nr trades
+678
+773
+¡95
+¡2=05
+(0=0556)
+42
+(0=0599)
+Depth
+7 025 337
+7 894 777
+¡869 439
+¡1=28
+(0=2165)
+46
+(0=0898)
+Volume
+1 698 175
+1 554 775
+143 400
+0=98
+(0=3431)
+91
+(0=8317)
+LB(15)w
+35
+29
+5
+1=37
+(0=1892)
+116
+(0=1964)
+LB(15)t
+50
+47
+2
+0=98
+(0=3398)
+104
+(0=4423)
+Test Group 18
+Abs spread
+0=13
+0=08
+0=05
+12=85¤¤
+(3=52h¡10)
+171¤¤
+(7=63h¡06)
+Rel spread (%)
+0=41
+0=25
+0=16
+5=09¤¤
+(9=15h¡05)
+171¤¤
+(7=63h¡06)
+Nr quotes
+1 079
+1 442
+¡363
+¡7=03¤¤
+(2=03h¡06)
+1¤¤
+(1=53h¡05)
+Nr trades
+721
+900
+¡179
+¡5=04¤¤
+(0=0001)
+8¤¤
+(0=0002)
+Depth
+12 796 559
+7 664 394
+5 132 165
+2=59
+(0=01901)
+159¤¤
+(0=0005)
+Volume
+1 914 095
+2 250 963
+¡336 868
+¡1=02
+(0=3214)
+70
+(0=5226)
+LB(15)w
+44
+29
+15
+2=51
+(0=0226)
+144¤
+(0=0090)
+LB(15)t
+40
+48
+¡9
+¡3=18¤
+(0=0054)
+17¤
+(0=0016)
+Test Group Dow Jones
+Abs spread
+0=11
+0=06
+0=05
+30=12¤¤
+(?2=20h¡16)
+465¤¤
+(1=86h¡09)
+Rel spread (%)
+0=22
+0=13
+0=09
+10=31¤¤
+(3=27h¡11)
+465¤¤
+(1=86h¡09)
+Nr quotes
+2 287
+2 363
+¡76
+¡0=84
+(0=4058)
+184
+(0=3285)
+Nr trades
+1 761
+1 933
+¡172
+¡2=81¤
+(0=0087)
+93¤
+(0=0032)
+Depth
+63 252 434
+19 107 687
+44 144 747
+3=02¤
+(0=0052)
+464¤¤
+(3=73h¡09)
+Volume
+5 942 754
+5 812 032
+130 722
+0=41
+(0=6832)
+252
+(0=7000)
+LB(15)w
+213
+62
+151
+5=32¤¤
+(1=03h¡05)
+465¤¤
+(1=86h¡09)
+LB(15)t
+56
+88
+¡32
+¡3=62¤
+(0=0011)
+66¤¤
+(0=0003)
+Note: Abs spread denotes the absolute di¤erence between the ask and bid, Rel spread
+the absolute spread standardized by the corresponding midquote, Depth the sum of
+displayed volume at ask and bid, Volume the number of traded stocks. Bolded values
+signi…cant at 5%, * and ** denote 1% and 0.1%, respectively (s-values in parentheses).
+45
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+Table 9: Test statistics for noise variance and volatility.
+Mean di¤.
+Paired w
+Wilcoxon
+Mean di¤.
+Paired w
+Wilcoxon
+Control Group 18 (trade prices)
+Control Group 18 (midquotes)
+RSRV
+8=59h ¡ 08
+2=18
+(0=0440)
+138
+(0=0208)
+9=66h ¡ 08
+3=38¤
+(0=0035)
+156¤
+(0=0010)
+ACOV
+2=86h ¡ 08
+2=04
+(0=0575)
+129
+(0=0599)
+2=01h ¡ 08
+2=67
+(0=0162)
+152¤
+(0=0023)
+KNOIS
+3=87h ¡ 08
+2=85
+(0=0112)
+138
+(0=0208)
+3=02h ¡ 08
+3=51¤
+(0=0027)
+153¤
+(0=0019)
+RV
+0=0002
+1=91
+(0=0736)
+133
+(0=0385)
+2=90h ¡ 05
+0=91
+(0=3747)
+107
+(0=3692)
+TSRV
+9=66h ¡ 05
+2=40
+(0=0283)
+134
+(0=0342)
+0=0001
+2=04
+(0=0576)
+135
+(0=0304)
+MSRV
+0=0001
+1=96
+(0=0672)
+132
+(0=0432)
+0=0001
+2=08
+(0=0534)
+135
+(0=0304)
+KERN
+0=0002
+2=13
+(0=0478)
+140
+(0=0159)
+5=26h ¡ 05
+1=37
+(0=1872)
+112
+(0=2645)
+Test Group 18 (trade prices)
+Test Group 18 (midquotes)
+RSRV
+1=38h ¡ 06
+2=53
+(0=0218)
+165¤¤
+(0=0001)
+2=32h ¡ 07
+2=37
+(0=0299)
+158¤¤
+(0=0007)
+ACOV
+8=42h ¡ 07
+2=30
+(0=0343)
+169¤¤
+(2=29h¡05)
+3=74h ¡ 08
+2=45
+(0=0257)
+154¤
+(0=0016)
+KNOIS
+7=52h ¡ 07
+2=49
+(0=0232)
+166¤¤
+(7=63h¡05)
+9=01h ¡ 08
+2=21
+(0=0407)
+158¤¤
+(0=0007)
+RV
+0=0006
+2=62
+(0=0178)
+156¤
+(0=0010)
+7=34h ¡ 05
+0=75
+(0=4620)
+125
+(0=0898)
+TSRV
+0=0001
+0=95
+(0=3541)
+130
+(0=0539)
+7=42h ¡ 05
+0=68
+(0=5027)
+124
+(0=0987)
+MSRV
+5=39h ¡ 05
+0=52
+(0=6067)
+125
+(0=0898)
+5=98h ¡ 05
+0=58
+(0=5698)
+126
+(0=0814)
+KERN
+0=0003
+1=72
+(0=1029)
+152¤
+(0=0023)
+6=54h ¡ 05
+0=67
+(0=5103)
+124
+(0=0987)
+Test Group DJ (trade prices)
+Test Group DJ (midquotes)
+RSRV
+3=41h ¡ 07
+4=83¤¤
+(4=05h¡05)
+465¤¤
+(1=86h¡09)
+2=89h ¡ 08
+3=39¤
+(0=0020)
+382¤
+(0=0015)
+ACOV
+3=25h ¡ 07
+4=11¤¤
+(0=0003)
+465¤¤
+(1=86h¡09)
+¡2=49h ¡ 09
+¡1=07
+(0=2942)
+219
+(0=7922)
+KNOIS
+2=51h ¡ 07
+4=18¤¤
+(0=0002)
+465¤¤
+(1=86h¡09)
+1=22h ¡ 08
+3=91¤¤
+(0=0005)
+404¤¤
+(0=0002)
+RV
+0=0014
+2=47
+(0=0197)
+464¤¤
+(3=73h¡09)
+9=18h ¡ 05
+3=65¤
+(0=0010)
+383¤
+(0=0013)
+TSRV
+6=36h ¡ 06
+0=24
+(0=8135)
+264
+(0=5291)
+1=01h ¡ 05
+0=32
+(0=7495)
+286
+(0=2801)
+MSRV
+1=11h ¡ 05
+0=42
+(0=6795)
+274
+(0=4045)
+¡4=48h ¡ 06
+¡0=12
+(0=9087)
+282
+(0=3184)
+KERN
+0=0003
+3=31¤
+(0=0025)
+428¤¤
+(1=06h¡05)
+6=99h ¡ 05
+2=95¤
+(0=0062)
+369¤
+(0=0040)
+Note: TSRV and MSRV estimates calculated using 11min adaptive sampling. Jan/03
+and jumps exceeding threshold 3% are excluded. Bolded values signi…cant at 5%,
+* and ** denote 1% and 0.1% signi…cance, respectively (s-values in parentheses).
+46
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+Table 10: Test statistics for SNR.
+Mean di¤.
+Paired w
+Wilcoxon
+Mean di¤.
+Paired w
+Wilcoxon
+Control Group 18 (trade prices)
+Control Group 18 (midquotes)
+SNR0>f
+¡547
+¡2=79
+(0=0125)
+28
+(0=0104)
+¡2182
+¡5=80¤¤
+(2=14h¡05)
+1¤¤
+(1=53h¡05)
+SNR1>f
+¡485
+¡2=37
+(0=0301)
+38
+(0=0385)
+¡1205
+¡2=88
+(0=0104)
+28
+(0=0104)
+SNR2>f
+¡394
+¡1=69
+(0=1093)
+45
+(0=0814)
+¡1055
+¡2=28
+(0=0359)
+31
+(0=0159)
+SNR3>f
+¡461
+¡2=84
+(0=0112)
+30
+(0=0139)
+¡2013
+¡5=49¤¤
+(4=00h¡05)
+2¤¤
+(2=29h¡05)
+Test Group 18 (trade prices)
+Test Group 18 (midquotes)
+SNR0>f
+¡1608
+¡5=90¤¤
+(1=73h¡05)
+0¤¤
+(7=63h¡06)
+¡2268
+¡6=83¤¤
+(2=92h¡06)
+3¤¤
+(3=82h¡05)
+SNR1>f
+¡2421
+¡5=78¤¤
+(2=20h¡05)
+0¤¤
+(7=63h¡06)
+¡3017
+¡5=03¤¤
+(0=0001)
+3¤¤
+(3=82h¡05)
+SNR2>f
+¡2481
+¡5=62¤¤
+(3=07h¡05)
+0¤¤
+(7=63h¡06)
+¡2964
+¡4=88¤¤
+(0=0001)
+4¤¤
+(5=34h¡05)
+SNR3>f
+¡2057
+¡5=97¤¤
+(1=53h¡05)
+0¤¤
+(7=63h¡06)
+¡2392
+¡5=69¤¤
+(2=67h¡05)
+8¤¤
+(0=0002)
+Test Group DJ (trade prices)
+Test Group DJ (midquotes)
+SNR0>f
+¡3310
+¡15=02¤¤
+(3=27h¡15)
+0¤¤
+(1=86h¡09)
+¡1646
+¡3=29¤
+(0=0026)
+96¤
+(0=0040)
+SNR1>f
+¡5374
+¡14=21¤¤
+(1=35h¡14)
+0¤¤
+(1=86h¡09)
+¡5221
+¡4=36¤¤
+(0=0002)
+55¤¤
+(9=90h¡05)
+SNR2>f
+¡5420
+¡13=91¤¤
+(2=33h¡14)
+0¤¤
+(1=86h¡09)
+¡5488
+¡4=38¤¤
+(0=0001)
+56¤¤
+(0=0001)
+SNR3>f
+¡4796
+¡14=43¤¤
+(9=16h¡15)
+0¤¤
+(1=86h¡09)
+¡2752
+¡4=46¤¤
+(0=0001)
+68¤¤
+(0=0004)
+Note: SNR2 and SNR3 use 11min adaptive sampling for TSRV and MSRV. Jan/03
+and jumps exceeding threshold 3% are excluded. Bolded values signi…cant at 5%,
+* and ** denote 1% and 0.1% signi…cance, respectively (s-values in parentheses).
+47
+Electronic copy available at: https://ssrn.com/abstract=1131265
+
+Table 11: Linear mixed-e¤ects model estimates using trade price data.
+Control Group 18 ( 18 £ 98 = 1764 observations)
+Volatility
+Noise variance
+SNR
+Fixed
+Random
+Fixed
+Random
+Fixed
+Random
+Intercept
+¡7=58¤¤
+(0=0000)
+1=00
+¡15=47¤¤
+(0=0000)
+1=00
+7=89¤¤
+(0=0000)
+0=25
+Nr trades
+1=15¤¤
+(0=0000)
+0=31
+0=09
+(0=2314)
+0=27
+1=06¤¤
+(0=0000)
+0=19
+Dummy
+¡0=28¤¤
+(0=0002)
+0=30
+¡0=23¤
+(0=0027)
+0=32
+¡0=06
+(0=0850)
+0=13
+Residual
+¡
+0=44
+¡
+0=44
+¡
+0=24
+Test Group 18 ( 18 £ 98 = 1764 observations)
+Volatility
+Noise variance
+SNR
+Fixed
+Random
+Fixed
+Random
+Fixed
+Random
+Intercept
+¡6=91¤¤
+(0=0000)
+1=15
+¡14=60¤¤
+(0=0000)
+1=18
+7=66¤¤
+(0=0000)
+0=50
+Nr trades
+1=32¤¤
+(0=0000)
+0=31
+0=19¤
+(0=0028)
+0=20
+1=15¤¤
+(0=0000)
+0=26
+Dummy
+¡0=76¤¤
+(0=0000)
+0=40
+¡1=09¤¤
+(0=0000)
+0=53
+0=33¤¤
+(0=0000)
+0=17
+Residual
+¡
+0=41
+¡
+0=39
+¡
+0=23
+Test Group Dow Jones ( 30 £ 98 = 2940 observations)
+Volatility
+Noise variance
+SNR
+Fixed
+Random
+Fixed
+Random
+Fixed
+Random
+Intercept
+¡7=14¤¤
+(0=0000)
+0=61
+¡15=31¤¤
+(0=0000)
+0=68
+8=17¤¤
+(0=0000)
+0=41
+Nr trades
+1=54¤¤
+(0=0000)
+0=36
+0=41¤¤
+(0=0000)
+0=40
+1=14¤¤
+(0=0000)
+0=28
+Dummy
+¡0=58¤¤
+(0=0000)
+0=32
+¡1=29¤¤
+(0=0000)
+0=36
+0=71¤¤
+(0=0000)
+0=32
+Residual
+¡
+0=36
+¡
+0=31
+¡
+0=23
+Note: Estimation done by REML. Jumps exceeding threshold 3% are excluded.
+Volatility estimated by KERN, noise variance by KNOIS, and SNR by their ratio.
+Bolded values are signi…cant at 5%, * and ** denote 1% and 0.1%, respectively
+(s-values in parentheses). The random part denotes variable’s standard deviation.
+48
+Electronic copy available at: https://ssrn.com/abstract=1131265

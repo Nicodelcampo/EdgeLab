@@ -1,0 +1,261 @@
+{
+  "doc_id": 34,
+  "titulo": "AI-Powered Energy Algorithmic Trading: Integrating Hidden Markov Models with Neural Networks",
+  "resumen_operativo": "El paper propone un sistema dual-modelo (HMM de 5 estados + red neuronal feedforward) para generar señales de compra/venta en acciones energéticas de gran capitalización, combinadas con optimización de portafolio Black-Litterman y dos modelos de riesgo (max drawdown y trailing stop). Backtest sobre QuantConnect (2019-2022, COVID) con solo 40 operaciones. Sirve como referencia de arquitectura de señal por consenso multi-modelo y de métricas de reporte estándar, pero el rigor estadístico es bajo (n muy chico, sin OOS, sin múltiples mercados/períodos).",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "hidden Markov model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Framework estocástico con 5 estados ocultos entrenado sobre log-retornos para simular fluctuaciones de precio e identificar regímenes de mercado (bull, bear, transicional).",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "regime switching"},
+        {"tipo": "USA", "objeto": "Viterbi algorithm"},
+        {"tipo": "PARTE_DE", "objeto": "dual-model alpha system"}
+      ],
+      "cita_textual": "An HMM is formally defined by the tuple λ = (S, O, A, B, π)"
+    },
+    {
+      "nombre": "regime switching",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Los cinco estados ocultos del HMM representan distintas condiciones de mercado (alcista, bajista, transicional), usados como vista amplia del régimen vigente.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "hidden Markov model"}
+      ],
+      "cita_textual": "The five hidden states represent various market conditions, such as bull, bear, and transitional phases, offering a broader market view."
+    },
+    {
+      "nombre": "Viterbi algorithm",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo usado para hallar la secuencia óptima de estados ocultos dado el historial de observaciones del HMM.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "hidden Markov model"}
+      ],
+      "cita_textual": "The optimal state sequence is determined using the Viterbi algorithm"
+    },
+    {
+      "nombre": "feedforward neural network",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Red neuronal totalmente conectada con cuatro capas ocultas (ReLU) que recibe cinco diferencias de precio históricas y predice el próximo cambio de precio, entrenada con Adam minimizando MSE.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "dual-model alpha system"},
+        {"tipo": "PREDICE", "objeto": "short-term returns"}
+      ],
+      "cita_textual": "The architecture is a fully connected feedforward neural network with the following mathematical formulation"
+    },
+    {
+      "nombre": "dual-model alpha system",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Sistema de generación de señales que combina la predicción de estado del HMM con la predicción de precio de la red neuronal; solo emite señal cuando ambos modelos coinciden en la dirección.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "hidden Markov model"},
+        {"tipo": "USA", "objeto": "feedforward neural network"},
+        {"tipo": "REQUIERE", "objeto": "signal consensus"},
+        {"tipo": "USA", "objeto": "Black-Litterman model"}
+      ],
+      "cita_textual": "This consensus mechanism ensures that a trading signal is only generated when both models agree on the direction of price movement, thereby reducing false signals and improving overall strategy reliability."
+    },
+    {
+      "nombre": "signal consensus",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Regla de decisión que ejecuta una operación solo si el signo del retorno esperado del HMM coincide con el signo del cambio de precio predicho por la red neuronal.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "false signal rate"}
+      ],
+      "cita_textual": "Executet = True if sign(E[r|s = ˆst+1]) = sign( ˆPt+1 −Pt) False otherwise"
+    },
+    {
+      "nombre": "false signal rate",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de generar señales de trading incorrectas por depender de un único modelo; el paper argumenta que el consenso entre HMM y red neuronal lo reduce.",
+      "relaciones": [],
+      "cita_textual": "thereby reducing false signals and improving overall strategy reliability"
+    },
+    {
+      "nombre": "Black-Litterman model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de optimización de portafolio que combina retornos de equilibrio de mercado con las vistas del inversor (derivadas de las señales de los modelos) para producir pesos óptimos.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "market equilibrium return"},
+        {"tipo": "MEJORA_A", "objeto": "signal-based portfolio construction"}
+      ],
+      "cita_textual": "The Black-Litterman model combines market equilibrium returns with investor views to produce posterior expected returns."
+    },
+    {
+      "nombre": "signal-based portfolio construction",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Enfoque alternativo donde el tamaño de posición se determina directamente por señales del modelo, sin separación entre generación de alfa y gestión de portafolio; el paper argumenta que es inferior al enfoque Black-Litterman.",
+      "relaciones": [],
+      "cita_textual": "Unlike signal-based portfolio construction, it reduces the probability of inaccurate signals, preventing inefficient management in achieving the optimal Sharpe ratio."
+    },
+    {
+      "nombre": "market equilibrium return",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Vector de retorno de equilibrio de mercado derivado de los pesos de capitalización bursátil y usado como prior en Black-Litterman.",
+      "relaciones": [],
+      "cita_textual": "Π = λΣwmkt"
+    },
+    {
+      "nombre": "maximum drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Mide la mayor caída pico-valle en el valor de una posición individual; se cierra automáticamente la posición si la caída supera un umbral (10-20%).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "portfolio robustness"}
+      ],
+      "cita_textual": "A position in security i is automatically closed if: DDi(t) > MDDthreshold"
+    },
+    {
+      "nombre": "portfolio robustness",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Objetivo de robustez del portafolio que se busca reforzar combinando dos modelos de gestión de riesgo (max drawdown y trailing stop) junto al sistema de alfa.",
+      "relaciones": [],
+      "cita_textual": "This study integrates two risk management models to enhance portfolio robustness."
+    },
+    {
+      "nombre": "trailing stop",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de riesgo que ajusta dinámicamente el nivel de stop-loss para asegurar ganancias mientras protege contra pérdidas, con parámetro δ típicamente entre 5% y 15%.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "portfolio robustness"}
+      ],
+      "cita_textual": "The trailing-stop model locks in profits in trending markets while providing downside protection."
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Retorno ajustado por riesgo del portafolio; reportado en 0.77 para la estrategia durante el período COVID.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"}
+      ],
+      "cita_textual": "the algorithm achieving a 83% return and a Sharpe ratio of 0.77 during the COVID period (2019–2022)"
+    },
+    {
+      "nombre": "probabilistic Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Versión probabilística del Sharpe ratio reportada al 41%/30% (valores inconsistentes entre tabla y texto), usada para cuantificar la confianza del retorno ajustado por riesgo.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Sharpe ratio"}
+      ],
+      "cita_textual": "The probabilistic Sharpe ratio at 41% quantifies returns relative to risk, with higher ratios denoting more efficient risk management."
+    },
+    {
+      "nombre": "Sortino ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica de retorno ajustado por riesgo que penaliza solo la desviación a la baja; reportada en 0.6.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "downside risk"}
+      ],
+      "cita_textual": "The Sortino Ratio of 0.6 focuses on downside risk"
+    },
+    {
+      "nombre": "information ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Compara el desempeño de la estrategia contra el S&P 500 como benchmark; resultó negativo (-0.1), indicando desempeño inferior ajustado por tracking error.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "benchmark-relative performance"}
+      ],
+      "cita_textual": "The Information Ratio of −0.1 compares performance to a benchmark"
+    },
+    {
+      "nombre": "benchmark-relative performance",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Comparación de la estrategia contra el S&P 500 como benchmark estándar para evaluar algoritmos de trading en acciones.",
+      "relaciones": [],
+      "cita_textual": "How does the unified model perform under market conditions compared with the S&P 500, a standard benchmark for evaluating equity trading algorithms?"
+    },
+    {
+      "nombre": "warm-up period",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Período de preparación de tres años con datos históricos para que los modelos reconozcan patrones antes de generar predicciones.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "dual-model alpha system"}
+      ],
+      "cita_textual": "A three-year preparation period provides historical data to help models recognize patterns and understand market dynamics before making predictions."
+    },
+    {
+      "nombre": "rolling window",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Ventana de tamaño k que se mantiene y actualiza continuamente con los precios históricos más recientes para alimentar la extracción de features de ambos modelos.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "dual-model alpha system"}
+      ],
+      "cita_textual": "At each time step t, a window of size k is maintained"
+    },
+    {
+      "nombre": "universe selection",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Selección dinámica del universo tradeable usando dos filtros: liquidez por volumen en dólares y capitalización de mercado dentro del sector energético (top 20 compañías).",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "dual-model alpha system"}
+      ],
+      "cita_textual": "This study used a dynamic universe with two filters to select tradable securities."
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo reconocido por los autores de que el HMM sobreajuste datos pasados, afectando la precisión predictiva ante cambios abruptos de mercado; el paper no aplica validación cruzada real para mitigarlo, solo lo menciona como trabajo futuro.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "hidden Markov model"}
+      ],
+      "cita_textual": "The HMM can overfit past data, affecting the prediction accuracy with respect to abrupt market changes."
+    },
+    {
+      "nombre": "low trading frequency",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El sistema de consenso produjo muy pocas señales operables (40 órdenes en 3 años), reflejando su enfoque conservador basado en acuerdo entre modelos.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "signal consensus"}
+      ],
+      "cita_textual": "The low trading frequency (40 total orders) reflects the conservative, signal-based approach of the dual-model system."
+    },
+    {
+      "nombre": "profit-loss ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Relación entre ganancia promedio (7.70%) y pérdida promedio (-3.29%) por operación, reportada en 2.34.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "dual-model alpha system"}
+      ],
+      "cita_textual": "An average win rate of 7.70% and an average loss of −3.29%, with a 60% success rate, highlight the effectiveness of the strategy."
+    },
+    {
+      "nombre": "strategy capacity",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Nivel de inversión óptimo estimado en 10 millones de dólares para sostener la estrategia sin degradar su desempeño.",
+      "relaciones": [],
+      "cita_textual": "Further details include the Capacity (USD) at $10 million, which represents the optimal investment level for strategy sustainability and achieving target returns."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El sistema dual HMM+red neuronal con Black-Litterman generó un retorno total del 83% (equity de $100,000 a $182,761) con Sharpe ratio de 0.77 durante el período COVID en acciones energéticas de gran capitalización.",
+      "mercado": "US equities (energy sector, large-cap)",
+      "periodo": "enero 2019 - enero 2022 (1096 días)",
+      "magnitud": "retorno total 82.76%, CAGR 22.2%, Sharpe 0.77, Sortino 0.6, Information Ratio -0.1, Treynor 0.924-0.951, MaxDD 17.1%",
+      "condiciones": "backtest único en QuantConnect, incluye comisiones de broker ($972), sin período OOS separado, sin múltiples mercados ni ventanas temporales adicionales, solo 40 operaciones ejecutadas",
+      "robustez": "baja",
+      "cita_textual": "The initial equity of $100,000 increased to $182,761.12, indicating substantial gain. A Sharpe Ratio of 0.77 demonstrates a risk-return trade-off."
+    },
+    {
+      "afirmacion": "La estrategia tuvo una tasa de acierto del 60% sobre 40 operaciones totales, con ganancia promedio de 7.70% y pérdida promedio de -3.29% por operación.",
+      "mercado": "US equities (energy sector, large-cap)",
+      "periodo": "enero 2019 - enero 2022",
+      "magnitud": "win rate 60%, loss rate 40%, avg win 7.70%, avg loss -3.29%, profit-loss ratio 2.34, n=40 trades",
+      "condiciones": "muestra muy pequeña (40 trades) en un solo período/mercado, sin test estadístico de significancia",
+      "robustez": "baja",
+      "cita_textual": "The metrics evaluate trading outcomes over a specified period, revealing a relatively low frequency, with only 40 trades."
+    },
+    {
+      "afirmacion": "La estrategia superó puntualmente al benchmark S&P 500 durante episodios específicos de volatilidad (inicio de COVID-19 en mayo 2020 y septiembre 2021), pero en general replicó de cerca el movimiento del benchmark.",
+      "mercado": "US equities vs S&P 500",
+      "periodo": "enero 2019 - enero 2022",
+      "magnitud": "Information Ratio -0.1 (bajo desempeño relativo neto pese a picos puntuales)",
+      "condiciones": "comparación visual de curva acumulada, sin test estadístico de outperformance; Information Ratio negativo contradice la narrativa de outperformance sostenida",
+      "robustez": "baja",
+      "cita_textual": "Notably, the strategy outperformed the benchmark at specific points, such as during the onset of the COVID-19 pandemic in May 2020 and September 2021"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper opera en frecuencia baja (swing/posición, 40 trades en 3 años) sobre acciones individuales con Black-Litterman, un contexto muy distinto al intradía de futuros ES; lo único transferible es la idea de arquitectura de consenso multi-modelo (HMM de régimen + red neuronal) como filtro de señal, no la estrategia en sí."
+  }
+}

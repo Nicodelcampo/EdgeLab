@@ -1,0 +1,97 @@
+{
+  "doc_id": 100,
+  "titulo": "Pairs Trading in Crypto",
+  "resumen_operativo": "El paper desarrolla un framework automatizado para pairs trading en futuros perpetuos de criptomonedas usando la plataforma Hummingbot. A través de un embudo (funnel) multi-etapa evalúan el historial, ecosistema (misma blockchain), correlación de precios/retornos y el poder predictivo del spread (Information Coefficient). Implementan señales de Z-score sobre spreads de regresión de precios logarítmicos, sin requerir cointegración estricta (ADF). El framework incluye dimensionamiento basado en el hedge ratio, apalancamiento, y controles de riesgo (stop-loss, cooldown). Demuestran alta rentabilidad y escalabilidad en un backtest a nivel portfolio (Sharpe 3.44 OOS) y prueban su viabilidad mediante trading en vivo, destacando los efectos adversos de problemas de ejecución y límites de API (rate limits).",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "log-price regression spread",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Uso de regresión lineal sobre precios logarítmicos entre dos activos de criptomonedas para estimar la relación de equilibrio y generar un spread residual apto para estrategias de reversión a la media.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Z-score normalization"},
+        {"tipo": "PREDICE", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "We regress the log price of asset A on the log price of asset B... representing the deviation from the long-run equilibrium and forms the spread."
+    },
+    {
+      "nombre": "Z-score normalization",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Estandarización del spread residual dividiéndolo por su desviación estándar in-sample, lo cual provee una medida libre de escala de la divergencia del par, usada como umbral de entrada/salida (trading signal).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "log-price regression spread"}
+      ],
+      "cita_textual": "To quantify the magnitude of spread deviations, we standardize the residual ut using a Z-score... This provides a scale-free measure of divergence"
+    },
+    {
+      "nombre": "Information Coefficient (IC) for spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Correlación entre el Z-score contemporáneo y el retorno futuro del spread. Se usa en el filtro final del universo de pares para identificar aquellos con mayor poder predictivo de convergencia.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "predictive mean reversion"},
+        {"tipo": "USA", "objeto": "Z-score normalization"}
+      ],
+      "cita_textual": "For each pair, we compute the correlation between the contemporaneous Z-score and the future spread return... negative IC values indicate that positive Z-scores tend to be followed by downward spread moves"
+    },
+    {
+      "nombre": "Same-Blockchain Constraint",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Filtro inicial cualitativo que restringe el universo de pares candidatos a aquellos en donde ambos tokens pertenecen al mismo ecosistema blockchain, asumiendo mayor estabilidad estructural y flujos de liquidez compartidos.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "structural instability"}
+      ],
+      "cita_textual": "we assign each asset in our universe to its corresponding underlying chain and restrict attention to pairs whose constituents originate from the same blockchain."
+    },
+    {
+      "nombre": "ADF cointegration test filter",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Test estadístico clásico (Engle-Granger) de estacionariedad que el paper elimina de su pipeline final tras demostrar que descarta oportunidades rentables de reversión local a corto plazo en mercados cripto de rápida evolución.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "long-run stationarity"}
+      ],
+      "cita_textual": "Although the ADF test offers a theoretically rigorous notion of stationarity, it proves too restrictive for fast-evolving crypto markets, discarding many short-lived but profitable dislocations."
+    },
+    {
+      "nombre": "stop-loss cooldown window",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Mecanismo de control de riesgo algorítmico que impone una pausa antes de permitir que un par que acaba de golpear su umbral de stop-loss vuelva a abrir nuevas posiciones, evitando reentradas a regímenes inestables.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "drawdown accumulation"}
+      ],
+      "cita_textual": "After a stop-loss event, the corresponding pair becomes temporarily ineligible for new entries for a duration of ∆cool... This rule helps avoid immediate re-entry into an unstable regime"
+    },
+    {
+      "nombre": "event-driven backtesting engine",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Simulación implementada algorítmicamente para evaluar las reglas de trade con regresión dinámica, dimensionamiento con apalancamiento y reglas de stop-loss continuo sobre series horarias, reflejando transacciones discretas.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "pairs trading strategy"}
+      ],
+      "cita_textual": "The strategy is simulated over the hourly training window... using the event–driven engine described in Algorithm 1."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Eliminar la prueba estadística de cointegración (ADF test) en la selección de pares aumenta la frecuencia de trades e incrementa significativamente la rentabilidad, ya que captura eventos de reversión local a corto plazo (propios del mercado cripto) a expensas de mayor volatilidad.",
+      "mercado": "Futuros Perpetuos de Criptomonedas (Binance)",
+      "periodo": "Training (2023-02-28 a 2025-02-28)",
+      "magnitud": "Annual Return sube de 41.66% a 91.12%, mejorando el Sharpe ratio de 2.68 a 2.98. Trades incrementan un 29%.",
+      "condiciones": "Backtest de desarrollo in-sample, sin optimización hiperparamétrica final out-of-sample.",
+      "robustez": "media",
+      "cita_textual": "Removing the ADF filter increases the number of completed trades... annual return more than doubles from 41.66% to 91.12%. This asymmetry indicates that the additional trades... include several high-impact mean-reversion events that the ADF filter would otherwise exclude."
+    },
+    {
+      "afirmacion": "Un pipeline puramente estadístico enfocado en Z-scores y reglas de control de riesgo es capaz de producir una estrategia de portafolio out-of-sample altamente rentable y estable a pesar de incurrir en fuertes costos de taker fees en un mercado fragmentado.",
+      "mercado": "Futuros Perpetuos de Criptomonedas (Binance, top 100 pares)",
+      "periodo": "Validación Out-of-Sample (2025-03-01 a 2025-09-30)",
+      "magnitud": "Sharpe Ratio 3.44, Max Drawdown 10.97%, Retorno anualizado 102.29%. Taker fees representan el 17.6% del gross profit.",
+      "condiciones": "Apalancamiento 5x, taker fee asumido de 5 bps, ejecución asincrónica (simulada) a precios de cierre horarios, control portfolio 100 assets.",
+      "robustez": "alta",
+      "cita_textual": "Despite this sizable fee drag, the portfolio maintains strong out-of-sample performance, achieving a Sharpe ratio of 3.44 with a maximum drawdown of 10.97%."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El enfoque en descartar test ADF en favor de Z-scores dinámicos y umbrales reactivos (estilo Bollinger-bands en residuales) podría inspirar estrategias de pairs/statistical arbitrage intradiarias entre futuros (ej. ES vs NQ). Sin embargo, no usa microestructura (Order Book) y modela en barras horarias."
+  }
+}

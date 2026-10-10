@@ -1,0 +1,445 @@
+Pairs Trading Strategy Based on Cointegration
+Model and ECM
+Yourui Wang
+School of Economics, Shanghai University of Finance and Economics
+wangyourui@stu.sufe.edu.cn
+Abstract
+I present a proposition for an ECM-based pairs trading strategy and conduct
+an extensive and rigorous examination of the performance of two distinct pairs
+trading strategies - the cointegration method and the ECM method - across the
+entire Chinese equity market spanning from 2010 to 2023. For both the cointegration and ECM methods, I devise a computationally efficient two-step pairs
+trading approach. In terms of economic outcomes, the cointegration and ECM
+methods exhibit a mean monthly excess return of 57 and 67 basis points respectively. Regarding sustained profitability, the frequency of trading opportunities
+via the cointegration and ECM methods experiences a significant reduction during the period from 2016 to 2018, likely due to the stable nature of the sluggish
+bull stock market in that period. However, from 2019 onwards, this frequency
+has been on an upward trajectory. Additionally, the ECM method demonstrates
+superior performance in terms of mean monthly excess, final values, and Sharpe
+ratio for trades involving short-term equilibrium relationships, when compared
+to the cointegration method. Notably, the ECM method consistently maintains
+a high Sharpe ratio of around 1.5, in contrast to the 0.75 observed in the cointegration method.
+1
+Introduction
+A paired trading strategy (PTS) is a market-neutral approach that seeks to capitalize
+on the price relationship between the purchase of one stock and the short sale of another
+stock in order to generate returns. This strategy typically focuses on two highly correlated stocks, such as those belonging to the same industry or market segment. PTS
+tends to perform Ill during periods of heightened market volatility. In practice, PTS can
+be implemented through various methods, including statistical arbitrage, fundamental
+analysis, or technical analysis.
+Initially, due to restrictions on short selling, PTS only existed in theory within the
+Chinese stock market. However, with the introduction and rapid development of the
+Chinese margin trading market in 2010, the short-selling mechanism became accessible
+to investors, providing a new foundation for paired trading in the Chinese stock market. From the perspective of investors, paired trading can effectively mitigate market
+risks by establishing both long and short positions in stocks, enabling them to achieve
+1
+Electronic copy available at: https://ssrn.com/abstract=4627907
+
+stable returns. From the perspective of the market as a whole, moderate statistical arbitrage through paired trading can reduce market volatility, enhance resource allocation
+efficiency, and diminish systemic risks.
+There are various approaches to pair trading, as classified by Krauss (2017) into
+five categories: the minimum distance method, cointegration method, stochastic control method, time series method, and others (such as machine learning and principal
+component analysis). Pair trading strategies consist of two stages: first, the method
+used to identify suitable pairs, and second, the criteria for opening and closing positions. The cointegration-based pair trading strategy revolves around the long-term
+equilibrium relationship between paired stock prices.
+My study presents a novel paired trading strategy based on the Error Correction
+Model (ECM), which captures opportunities for returns arising from the short-term
+volatility relationship between paired stock prices. I compare this strategy with the
+paired trading strategy based on cointegration relationships.
+2
+Literature review
+The research on paired trading strategies (PTS) falls under the financial category of
+”statistical arbitrage.” Statistical arbitrage refers to strategies that utilize statistical
+models or methods to exploit potential mispricing between assets while maintaining
+market neutrality.
+One of the earliest comprehensive studies on pairs trading is conducted by Gatev
+et al. (2006). They examine the most commonly used and simplest method of pairs
+trading, known as DM, using CRSP stocks from 1962 to 2002. The strategy yields a
+monthly excess return of 1.3% (before transaction costs) for the top five unrestricted
+pairs, and 1.4% for the top 20 pairs. This study provides an unbiased assessment of the
+strategy’s performance and considers the simplest method employed by practitioners
+as a PTS. The authors address concerns regarding data mining by re-evaluating the
+original strategy after four years and demonstrating its ongoing profitability.
+Cointegration can be employed to implement PTS. Vidyamurthy (2004) presents a
+theoretical framework for pairs trading using cointegration based on the error correction model (ECM) representation of cointegrated series proposed by Engle and Granger
+(1987). Huck (2015) implement PTS using the cointegration method, specifically focusing on S&P 500 and Nikkei 225 stocks, and they show that it generates positive
+returns. Bogomolov (2011) examines the performance of three different PTS methods:
+DM, cointegration, and stochastic spread strategies, testing them on the Australian
+share market from 1996 to 2010. The study finds that while all three trading strategies
+are profitable before transaction costs, a significant portion of the profits diminishes
+after considering costs and liquidity issues. Caldeira and Moura (2013) also employ a
+cointegration-based trading strategy on the Sao Paulo exchange, indicating a 16.38%
+annual excess return and a Sharpe ratio of 1.34 from 2005 to 2012. Lin et al. (2006)
+emphasize the use of cointegration as a model capable of capturing the long-term price
+spread equilibrium, overcoming the limitations of simpler statistical techniques such
+as correlation and regression analysis. Galenko et al. (2012) implement a PTS based
+on cointegration and examine its performance with four exchange-traded funds. However, these studies share a common limitation in terms of empirical evidence supporting
+2
+Electronic copy available at: https://ssrn.com/abstract=4627907
+
+cointegration-based PTS, with either non-existent or limited analysis. For instance, the
+strategy proposed by Vidyamurthy (2004) is not analyzed using real data, and Caldeira
+and Moura (2013) utilize data from the Sao Paulo stock exchange for a period of fewer
+than seven years.
+Building upon the cointegration relationship of paired stocks, My study further
+incorporates the ECM to capture the short-term volatility relationship of paired stock
+prices. I utilize the ECM to reconstruct paired trading strategies, proposing ECMbased paired trading strategies that offer new research perspectives and directions for
+academia.
+3
+Data
+My dataset encompasses daily data of stocks eligible for securities lending in the Shanghai, Shenzhen, and Beijing stock markets of China. The data spans from 1 April 2010
+to 1 April 2023, covering a sample period of approximately 3100 days (156 months).
+Within this dataset, I have information on 3237 individual stocks. The data for the
+securities lending targets is sourced from the Choice financial terminal1, while the stock
+data is obtained from the Tushare financial data source2.
+4
+Research method
+Pairs trading is an investment strategy that is categorized as either mean-reverting or
+contrarian. This strategy operates on the premise of a specific price relationship existing
+betIen two securities. By capitalizing on short-term deviations, pairs trading allows for
+the simultaneous purchase of undervalued securities and short selling of overvalued
+ones. When the price relationship is restored, the two positions are closed or reversed,
+resulting in a realized profit. In My research, I evaluate the performance of three distinct
+pairs trading strategies using the Choice and Tushare databases, which contain data on
+Chinese stocks from 2010 to 2023. Each strategy is executed over a six-month trading
+period, utilizing parameters estimated during the preceding 12-month formation period.
+The strategies are run every six months, resulting in one portfolio at the end of each
+period.
+By leveraging the concept of cointegration, which implies that certain time series
+maintain a long-term equilibrium and any deviations from this equilibrium are only
+caused by random fluctuations, I can incorporate the mean-reverting characteristic into
+pairs trading (Vidyamurthy, 2004). Through the two-step Engle-Granger method (Engle and Granger, 1987), I identify pairs of securities that exhibit cointegration and
+extract their stationary spread. Any deviations from this spread are considered temporary and can be utilized to initiate long and short positions. In section 4.1, I provide
+elaborate details on the cointegration model employed in my pairs trading strategy.
+Additionally, I incorporate the error correction model (ECM) into pairs trading.
+Similar to the cointegration method, I first use the Engle-Granger approach to select
+pairs of cointegrated securities. I then extract their stationary spread. However, the
+1https://choice.eastmoney.com/
+2https://www.tushare.pro/
+3
+Electronic copy available at: https://ssrn.com/abstract=4627907
+
+ECM differs from the cointegration method in its application. In section 4.3, I provide comprehensive information on how I incorporate the ECM into My pairs trading
+strategy, utilizing any deviations from the spread to initiate suitable long and short
+positions.
+4.1
+The cointegration method
+4.1.1
+Framework
+A non-stationary time series Xt is called I(1) if its first difference forms a stationary
+process, i.e.
+I(0).
+Consider X1,t and X2,t to be two I(1) time series.
+If exists a
+linear combination of the two time series that is stationary, X1,t and X2,t are said to
+be cointegrated. Thus, X1,t and X2,t are cointegrated if there exists a non-zero real
+number β0 and β1 such that:
+X2,t −β1X1,t −β0 = ut
+(1)
+where β1 is the cointegration coefficient and ut is a zero-mean stationary series known
+as the cointegration errors. β1 can been considered as the long-term elasticity between
+X1,t and X2,t.
+Vidyamurthy (2004) provides a basic framework to apply cointegration to pairs
+trading. The cointegration relation shows the deviation of the process from its longterm equilibrium. The spread series is defined as the scale difference in the price of two
+stocks:
+spreadt = X2,t −β1X1,t −β0
+(2)
+Assume that I buy one share of stock 2 and sell short β1 share of stock 1 at time
+t −1. X1,t and X2,t represent the price series of stocks 1 and 2, respectively. The profit
+of this trade at time t, is given by:
+(X2,t −X2,t−1) −β1(X1,t −X1,t−1)
+By rearranging the above equation I get:
+(X2,t −X2,t−1) −β1(X1,t −X1,t−1 = spreadt −spreadt−1)
+Thus, the profit of buying one share of stock 2 and selling β1 share of stock 1 for the
+period ∆t is given by the change in the spread for that period. From Equation (1),
+the spread is stationary by definition and exhibits mean-reverting properties. I can use
+this to construct a quantitative trading strategy that uses deviations from the longterm equilibrium of a cointegrated pair to open long and short positions. Positions are
+unwound once the equilibrium is restored, as a consequence of being-stationary.
+4.2
+Trading strategy
+I use two criteria to implement the pairs selection phase of the cointegration PTS.
+First, I sort all possible combinations of pairs based on their SSD in their normalized
+price during the formation period. Second, I test each of the pairs with the least sum
+4
+Electronic copy available at: https://ssrn.com/abstract=4627907
+
+of squared differences (SSD) for cointegration, using their cumulative return series in
+the formation period. Pairs that are not cointegrated are eliminated in the selection
+process. Pairs that are cointegrated will have their cointegration coefficient estimated.
+I continue until 20 cointegrated pairs with minimum SSD are selected to be traded in
+the following trading period.
+I use the two-step Engle-Granger approach (Engle and Granger, 1987) to test for
+the existence of cointegration betIen nominated pairs and to estimate cointegration
+coefficient β1. In this procedure, the cointegration regression is estimated using OLS
+in the first step and the error correction model (ECM) is estimated in the second step.
+For each nominated pair, I then form the spread defined in Equation (2) and calculate
+the spread’s mean µe and standard deviation σe, with the data of the formation period.
+These parameters are used in the trading period as trades’ open and close triggers.
+spreadt ∼I(0), with mean µe and standard deviation σe. The normalized cointegration
+spread as:
+spreadnormalized = spread −µe
+σe
+(3)
+I simultaneously open and close long and short positions when the normalized spread
+diverges beyond 2. By construction, if the spread drops below -2, I buy 1 dollar worth
+of stock 2 and sell short β dollar worth of stock 1. Equivalently, I sell short 1/β dollar
+worth of stock 2 and buy 1 dollar worth of stock 1, when the spread moves above the
++2 threshold. I close both positions once the spread returns to zero, which translates
+into the pair returning to their long-term equilibrium. The pair is again monitored for
+other potential round-trip trades for the remainder of the trading period.
+4.3
+The ECM method
+4.3.1
+Framework
+Using the Granger’s theorem (Engle and Granger, 1987), the cointegration relationship
+can be equivalently shown in an Error Correction Model framework (ECM) (Vidyamurthy, 2004). Based on ECM, the cointegrated series exhibits long-term equilibrium
+and , while short-term deviations from this equilibrium can occur, they will be corrected, through time, by the error term in the ECM. The ECM representation of the
+cointegration relationship between time series X1,t and X2,t is:
+∆X2,t = α∆X1,t −λecmt−1 + vt
+(4)
+where ecmt = X2,t −β1X1,t −β0 which is exactly the cointegration errors and vt is a
+zero-mean stationary series. Equation (2) shows the evolution of a time series in short
+term and α can been considered as the short-term elasticity between X1,t and X2,t.
+I provide a basic framework to apply ECM model not just cointegration to pairs
+trading. The ECM model shows the deviation of the process from its short-term equilibrium. The short-spread series of two stocks is defined as below:
+spread.normalizedt = ∆X2,t −α∆X1,t + λecmt−1
+(5)
+5
+Electronic copy available at: https://ssrn.com/abstract=4627907
+
+Assume that I buy one share of stock 2 and sell short α share of stock 1 at time
+t −1. X1,t and X2,t represent the price series of stocks 1 and 2, respectively. The profit
+of this trade at time t, is given by:
+(X2,t −X2,t−1)−α(X1,t −X1,t−1) = ∆X2,t −α∆X1,t = −λspreadt−1 +spread.shortt (6)
+Thus, the profit of buying one share of stock 2 and selling β share of stock 1 for
+the period 1 is given by the spread in the beginning and the short-spread at time t.
+As long as the spread at time t −1 is negative, I may get positive profit at time t as
+spread.shortt is a zero-mean stationary seires. I can use this to construct a quantitative
+trading strategy that uses deviations from the long-term equilibrium of a cointegrated
+pair and the distribution of vt to open long and short positions.
+4.3.2
+Trading strategy
+As I know ECM model is based on cointegration. Thus, the pairs selection phase in
+ECM PTS is the same as that in cointegration PTS.
+I still use the two-step Engle-Granger approach (Engle and Granger, 1987) to test for
+the existence of cointegration between nominated pairs and to estimate cointegration
+coefficient β1 and α in Equation (4). For each nominated pair, I then form the shortspread defined in Equation (5) and calculate the short-spread’s mean µs and standard
+deviation σs, with the data of the formation period. These parameters are used in the
+trading period as trades’ open and close triggers. spread.shortt ∼I(0), with mean µs
+and standard deviation σs.
+I simultaneously open and close long and short positions when the (λspread−µs)/σs
+diverges beyond 2. By construction, if the (λspread −µs)/σs drops below -2, I buy 1
+dollar worth of stock 2 and sell short α dollar worth of stock 1. Equivalently, I sell short
+1/α dollar worth of stock 2 and buy 1 dollar worth of stock 1, when the (λspread−µs)/σs
+moves above the +2 threshold. I close both positions once the (λspread −µs)/σs to
+(−2, 2), which translates into the pair returning to their short-term equilibrium. The
+pair is again monitored for other potential round-trip trades for the remainder of the
+trading period.
+4.4
+Performance calculation
+The performance of the cointegration and ECM PTS are recorded and compared based
+on various performance measures including returns. In accordance with Gatev et al.
+(2006) and Do and Faff (2010), two types of returns are calculated: return on employed
+capital (see Equation (7)) and return on committed capital (see Equation (8)). Return
+on employed capital for month m, REC
+m , is calculated as the sum of marked-to-market
+returns on that month’s traded pairs divided by the number of pairs that have traded
+during that month. Return on committed capital for month m, RCC
+m , is calculated as
+the sum of marked-to-market returns on traded pairs divided by the number of pairs
+that Ire nominated to trade in that month (20 if 20 pairs chosen), regardless of whether
+they actually traded or not. In comparison to the return on employed capital, return
+on committed capital is a more conservative measure that mimics what a hedge fund
+6
+Electronic copy available at: https://ssrn.com/abstract=4627907
+
+might use to report returns, as it takes into account the opportunity cost of the capital
+that has been allocated for trading.
+REC
+m
+=
+Pn
+i=1 ri
+n
+(7)
+RCC
+m
+=
+Pn
+i=1 ri
+NP
+(8)
+I execute the PTS each month and do not wait for a trading period to be complete,
+resulting in six overlapping ‘portfolios’ each month. The monthly excess return of a
+strategy is calculated as the equally Iighted average return on these six portfolios. As
+the trades neither necessarily open at the beginning of the trading period nor close
+exactly at the end of the trading period, the full capital is not always locked in a trade.
+In addition, there are months where no trading occurs. As interest is not accrued to the
+capital when it is not involved in a trade, the performance outcomes are underestimated.
+In the cointegration and ECM method, by definition, long and short positions are not
+valued equally. However, since I have designed the method to ensure a $1 long position
+for every trade, I assume an average $1 value for each long–short position.
+5
+Result
+Table 1: Pairs trading strategies’ monthly excess return
+Strategy
+Mean
+Std. Dev.
+Sharpe ratio
+Skewness
+Kurtosis
+VaR
+CVaR
+JB test
+-95%
+-95%
+p.value
+Section1: Return on employed capital
+Coint
+0.00572
+0.0243
+0.794
+2.934
+14.352
+-0.0255
+-0.0335
+0
+ECM
+0.00665
+0.0208
+1.105
+3.414
+15.643
+-0.0114
+-0.0181
+0
+Section2: Return on committed capital
+Coint
+0.00580
+0.0245
+0.800
+2.865
+13.885
+-0.0255
+-0.0339
+0
+ECM
+0.00737
+0.0229
+1.113
+2.940
+12.562
+-0.0147
+-0.0232
+0
+* This table reports key distribution statistics for the monthly excess return time series of two different PTS - i.e. the
+cointegration and EC methods - for April 2010 to April 2023. The formation and trading period for all strategies
+are set to 12 and 6 months, respectively. The column labeled‘JB Test’ tests the null hypothesis of normality of the
+series using the Jarque-Bera Test.
+Table 1 displays the monthly distribution of excess returns for the two strategies
+employed from 2010 to 2023. The table is organized into two sections. Section 1 provides
+information on the return achieved on employed capital, while section 2 presents the
+return on committed capital.
+The calculations for these measures are described in
+detail in section 4.3. Based on the similarity of results and rankings between the two
+measures, the return on employed capital, hereafter referred to as ”return,” is primarily
+used to report the findings in the rest of this paper, unless otherwise specified.
+In section 1 of table 1, the cointegration method exhibits a relatively modest average
+monthly excess return of 0.572%. On the other hand, the ECM method shows a slightly
+higher average monthly excess return of 0.665%. It is worth noting that both strategies
+do not demonstrate normally distributed returns.
+However, in section 1, the ECM
+method is distinctive in that its returns display a positive skewness. In terms of risk
+performance, the ECM method exhibits a smaller standard deviation in both sections
+7
+Electronic copy available at: https://ssrn.com/abstract=4627907
+
+Figure 1: Cumulative excess return
+of the table, resulting in a significantly higher Sharpe ratio (greater than 1 in both
+sections).
+The return on committed capital measure, presented in section 2 of table 1, yields
+very similar results to those observed in section 1.
+To provide a visual representation of the relative performance of the strategies,
+Figure 1 illustrates the cumulative excess return comparison for each of the two methods from 2010 to 2023. The figure demonstrates that the cointegration method’s performance is relatively similar across both return calculations. In contrast, the ECM
+method significantly outperforms the cointegration method in terms of cumulative excess return. This observation aligns with the findings presented in Figure 2.
+Figure 2 presents the 3-year rolling window Sharpe ratio comparison for each of the
+two strategies from 2010 to 2023. Consistent with the observations made in Figure 1, the
+cointegration method exhibits minimal discrepancy between the two return calculations.
+This indicates that most of the selected stocks based on the cointegration method
+were actively traded during the trading period. In contrast, the ECM method shows
+a noticeable difference between the two calculations, particularly from 2016 to 2018.
+During this period, which corresponds to a relatively stable and gradual upward trend
+in the Chinese stock market (referred to as a ”stable slow bull” market), it is notable
+that the strategies did not fully trade all pairs during the trading period.
+The crucial aspect to highlight is that the ECM method consistently maintains a
+Sharpe ratio of approximately 1.5, which is considered a favorable performance indicator
+and signifies a highly effective strategy.
+6
+Conclusion
+Pairs trading is a well-known trading strategy that aims to generate profits regardless
+of market conditions.
+It originated in the 1980s, pioneered by traders Gerry Bamberger and the quantitative trading group led by Nunzio Tartaglia at Morgan Stanley
+(Bookstaber, 2007). Long-Term Capital Management (LTCM), prior to its downfall,
+also employed pairs trading strategies (Lowenstein, 2001). While early studies such as
+Gatev et al. (2006) found that a simplistic pairs trading strategy was profitable from
+1962 to 2002, subsequent research by Do and Faff (2012, 2010) revealed a decline in
+8
+Electronic copy available at: https://ssrn.com/abstract=4627907
+
+Figure 2: Five-year rolling sample Sharpe ratio
+profitability when accounting for transaction costs. To enhance the strategy, other researchers (Vidyamurthy, 2004) introduced more sophisticated methodologies utilizing
+cointegration frameworks.
+In this study, I propose a novel approach to improve pairs trading strategies by
+incorporating Error Correction Model (ECM) based on cointegration. Both the cointegration method and ECM method utilize spread to develop the trading strategy.
+However, while the spread in the cointegration method is linked to its own distribution, the spread in the ECM method relates to the distribution of residuals in ECM.
+Theoretically, the ECM method has the potential to capture more short-term opportunities. Thus, this study aims to investigate the following questions: Can ECM-based
+pairs trading strategies lead to increased profits in the Chinese market over a long-term
+period? Are these profits sustainable?
+To address these questions, I examine and compare the performance of two pairs
+trading strategies, namely the cointegration method and the ECM method, using daily
+shortable China stock data from April 2010 to April 2023. The findings indicate that
+the ECM method yields a slightly higher monthly return and a marginally smaller
+standard deviation compared to the cointegration method.
+Furthermore, the ECM
+method demonstrates a significantly higher Sharpe ratio.
+In conclusion, pairs trading strategies remain profitable and robust even in highly
+volatile market conditions. The ECM method, proposed in this study, exhibits superior
+performance compared to the traditional cointegration method. Pairs trading is essentially a statistical arbitrage process, and the limited arbitrage ability of traditional
+paired trading strategies based solely on long-term equilibrium relationships hinders
+the exploitation of short-term income opportunities. By incorporating an ECM to capture short-term fluctuations, pairs trading strategies can achieve enhanced performance.
+These findings suggest that there is still considerable arbitrage potential in the Chinese
+stock market, indicating that stock prices may not fully reflect market information.
+This suggests that the Chinese stock market is not yet fully efficient, or even weakly
+efficient.
+9
+Electronic copy available at: https://ssrn.com/abstract=4627907
+
+References
+Bogomolov, T., 2011. Pairs trading in the land down under, in: Finance and Corporate
+Governance Conference.
+Bookstaber, R.M., 2007. A demon of our own design: Markets, hedge funds, and the
+perils of financial innovation. (No Title) .
+Caldeira, J., Moura, G.V., 2013. Selection of a portfolio of pairs based on cointegration:
+A statistical arbitrage strategy. Available at SSRN 2196391 .
+Do, B., Faff, R., 2010. Does simple pairs trading still work? Financial Analysts Journal
+66, 83–95.
+Do, B., Faff, R., 2012. Are pairs trading profits robust to trading costs?
+Journal of
+Financial Research 35, 261–287.
+Engle, R.F., Granger, C.W., 1987. Co-integration and error correction: representation,
+estimation, and testing. Econometrica: journal of the Econometric Society , 251–276.
+Galenko, A., Popova, E., Popova, I., 2012. Trading in the presence of cointegration.
+Journal of Alternative Investments 15, 85.
+Gatev, E., Goetzmann, W.N., Rouwenhorst, K.G., 2006. Pairs trading: Performance
+of a relative-value arbitrage rule. The Review of Financial Studies 19, 797–827.
+Huck, N., 2015. Pairs trading: does volatility timing matter? Applied economics 47,
+6239–6256.
+Krauss, C., 2017. Statistical arbitrage pairs trading strategies: Review and outlook.
+Journal of Economic Surveys 31, 513–545.
+Lin, Y.X., McCrae, M., Gulati, C., 2006. Loss protection in pairs trading through
+minimum profit bounds: A cointegration approach. Advances in Decision Sciences
+2006.
+Lowenstein, R., 2001. When genius failed: The rise and fall of Long-Term Capital
+Management. Random House trade paperbacks.
+Vidyamurthy, G., 2004. Pairs Trading: quantitative methods and analysis. volume 217.
+John Wiley & Sons.
+10
+Electronic copy available at: https://ssrn.com/abstract=4627907

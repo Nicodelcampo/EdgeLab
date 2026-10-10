@@ -1,0 +1,198 @@
+{
+  "doc_id": 4,
+  "titulo": "A Closed-Form Execution Strategy to Target Volume Weighted Average Price",
+  "resumen_operativo": "Cartea y Jaimungal derivan dos estrategias de ejecución óptima en forma cerrada para trackear VWAP (una que apunta al POV instantáneo y otra al volumen acumulado POCV), bajo un proceso estocástico general para el volumen y con impacto permanente del order-flow de todos los traders, no solo el propio. Calibran impacto temporal y permanente con datos ITCH de Nasdaq 2013 (FARO, SMH, NTAP, ORCL, INTC) y muestran por simulación que las estrategias superan al VWAP en 0.10-8 bps en promedio. La intuición operativa clave: la velocidad óptima es TWAP/Almgren-Chriss ajustada por order-flow instantáneo y por el order-flow neto esperado futuro (si el flujo neto es comprador, ralentizar la liquidación; si es vendedor, acelerarla).",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "VWAP",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Precio promedio ponderado por volumen sobre la ventana de ejecución; benchmark estándar para medir la calidad de ejecución de un broker o algoritmo, fácil de calcular ex-post pero difícil de trackear ex-ante porque el volumen futuro es aleatorio.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "execution quality"},
+        {"tipo": "REQUIERE", "objeto": "intraday volume forecasting"}
+      ],
+      "cita_textual": "execution prices close to VWAP indicate that they obtained prices similar to what the market bore over the execution window"
+    },
+    {
+      "nombre": "optimal execution",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Familia de estrategias que parten una orden grande (parent order) en órdenes hijas ejecutadas secuencialmente en una ventana temporal para reducir impacto de mercado, con el trade-off de mayor incertidumbre de precio a mayor ventana.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "market impact"},
+        {"tipo": "APLICA_A", "objeto": "algorithmic trading"}
+      ],
+      "cita_textual": "Typically, algorithms break large orders into smaller child orders and these are sequentially executed over a trading window."
+    },
+    {
+      "nombre": "percentage of volume strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia (POV) que apunta a que la velocidad de trading propia sea una fracción fija del order-flow total del mercado (incluyendo las propias órdenes) en cada instante; trackear POV exactamente da VWAP pero no garantiza liquidar el inventario objetivo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "optimal execution"},
+        {"tipo": "APLICA_A", "objeto": "VWAP"}
+      ],
+      "cita_textual": "If the investor were tracking precisely the POV, then her average execution price per share would equal the volume weighted average price (VWAP)."
+    },
+    {
+      "nombre": "percentage of cumulative volume strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Variante (POCV) donde el objetivo es que las acciones ya liquidadas igualen una fracción del volumen acumulado del mercado; la solución óptima resulta ser Almgren-Chriss corregida por volumen futuro esperado y order-flow neto esperado.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Almgren-Chriss framework"},
+        {"tipo": "APLICA_A", "objeto": "VWAP"}
+      ],
+      "cita_textual": "The other strategy consists of the Almgren-Chriss execution strategy adjusted by the expected volume and net order-ﬂow during the remaining life of the strategy."
+    },
+    {
+      "nombre": "TWAP",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Liquidar el inventario restante en partes iguales sobre el tiempo restante; aparece como el componente base de la estrategia óptima POV y como el límite de ambas estrategias cerca del vencimiento, cuando el objetivo de completar la liquidación domina al de trackear el order-flow.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "percentage of volume strategy"}
+      ],
+      "cita_textual": "the so-called time-weighted-averageprice strategy which consists in liquidating shares by slicing the remaining inventory in equal parts over the remaining time to expiry"
+    },
+    {
+      "nombre": "Almgren-Chriss framework",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Marco clásico de ejecución óptima con impacto temporal y permanente; la estrategia POCV óptima tiene su forma (senos hiperbólicos en el tiempo restante) más correcciones por order-flow futuro esperado.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "optimal execution"}
+      ],
+      "cita_textual": "These expressions show how the strategy is similar to Almgren-Chriss with corrections that depend on the expected future order-ﬂow relative to amount already liquidated."
+    },
+    {
+      "nombre": "temporary price impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costo por caminar el limit order book: el precio de ejecución es peor que el midprice en k·ν (lineal en la velocidad de trading); se asume que el libro se repone rápido y el midprice no queda afectado. Lo estiman por regresión sobre snapshots del LOB cada segundo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "limit order book"},
+        {"tipo": "CAUSA", "objeto": "slippage"}
+      ],
+      "cita_textual": "MOs that walk the limit order book (LOB) have price impact because they obtain average execution prices worse than the best quote"
+    },
+    {
+      "nombre": "permanent price impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Efecto duradero del order-flow sobre el midprice: el flujo neto (compras menos ventas) empuja el precio linealmente con parámetro b, porque el order-flow transmite información. A diferencia de trabajos previos, acá el impacto permanente incluye el flujo de todos los demás traders, no solo el del agente.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "midprice drift"},
+        {"tipo": "USA", "objeto": "net order flow"}
+      ],
+      "cita_textual": "order-ﬂow conveys information that aﬀects the midprice of the asset"
+    },
+    {
+      "nombre": "net order flow",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Diferencia entre volumen de market orders compradoras y vendedoras en un intervalo; empíricamente cuando es positivo el midprice tiende a subir y viceversa. Es el insumo central de la corrección direccional de las estrategias: comprador → frenar la venta, vendedor → acelerarla.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "midprice drift"},
+        {"tipo": "EQUIVALE_A", "objeto": "order flow imbalance"}
+      ],
+      "cita_textual": "when there is positive net order-ﬂow (more buy than sell MOs) midprices tend to drift up, and when there is negative net order-ﬂow (more sell than buy MOs) the midprice tends to drift down"
+    },
+    {
+      "nombre": "intraday U-shaped volume pattern",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El volumen negociado sigue una forma de U (más actividad en apertura y cierre), pero con mucha variabilidad día a día e intradía, lo que obliga a modelar el volumen como estocástico en cualquier algoritmo VWAP.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "intraday seasonality"}
+      ],
+      "cita_textual": "Traded volume generally follows a U-shaped pattern where at the beginning and the end of the trading day there is more trading than throughout the rest of the day."
+    },
+    {
+      "nombre": "mean-reverting jump model for order flow",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelan las tasas de order-flow comprador y vendedor como procesos con reversión a la media impulsados por saltos de un proceso de Poisson compuesto: la actividad llega en ráfagas que persisten segundos y decaen; permite calcular en cerrado las expectativas de flujo futuro que entran en la estrategia óptima.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Ornstein-Uhlenbeck process"},
+        {"tipo": "APLICA_A", "objeto": "net order flow"}
+      ],
+      "cita_textual": "a reasonable ﬁrst order model is that traded volume comes in bursts of activity which persists for a while (seconds for instance) and then decays to zero"
+    },
+    {
+      "nombre": "target deviation penalty",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Penalización cuadrática corriente en el criterio de performance por desviarse de la tasa objetivo (fracción del order-flow); su parámetro φ controla el trade-off entre trackear POV al instante y explotar el drift causado por el order-flow.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "dynamic programming"},
+        {"tipo": "MITIGA", "objeto": "tracking error"}
+      ],
+      "cita_textual": "high values of ˜ϕ constrain the strategy to closely track the target χν"
+    },
+    {
+      "nombre": "terminal inventory liquidation penalty",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Penalización α·q² sobre el inventario remanente al final; llevando α→∞ se fuerza liquidación completa, requisito para alcanzar VWAP. El orden de los límites (α antes que φ) importa porque no conmutan: cerca del vencimiento la estrategia abandona el target y se vuelve TWAP.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "optimal execution"},
+        {"tipo": "MITIGA", "objeto": "incomplete liquidation"}
+      ],
+      "cita_textual": "The order in which we take the limits is important for they do not commute."
+    },
+    {
+      "nombre": "dynamic programming",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de control óptimo estocástico usada para resolver el problema: la función de valor satisface una ecuación HJB que, con ansatz cuadrático en inventario, se reduce a EDOs/EDPs lineales resolubles con Feynman-Kac, dando la estrategia en forma cerrada.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Feynman-Kac representation"},
+        {"tipo": "APLICA_A", "objeto": "optimal execution"}
+      ],
+      "cita_textual": "Applying the dynamic programming principle suggests that the value function should satisfy the dynamic programming equation (DPE)"
+    },
+    {
+      "nombre": "linear market impact model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Supuesto de impacto (temporal y permanente) lineal, justificado porque los modelos de impacto tienen poder predictivo bajísimo (R² < 5%) y la complejidad de modelos no lineales no compensa la pérdida de tractabilidad analítica.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "market impact"},
+        {"tipo": "SE_OPONE_A", "objeto": "non-linear impact function"}
+      ],
+      "cita_textual": "given the extremely low predictive accuracy of market impact models (typically < 5% R2), the cost of increased complexity arising from moving away from a linear model would outweigh any gains"
+    },
+    {
+      "nombre": "opportunistic buy-back in liquidation",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "En el problema no restringido, la estrategia de liquidación óptima puede comprar acciones cuando el order-flow neto es fuertemente positivo, para aprovechar el trend alcista de corto plazo que ese flujo causa en el midprice antes de seguir vendiendo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "net order flow"},
+        {"tipo": "CAUSA", "objeto": "VWAP outperformance"}
+      ],
+      "cita_textual": "if net order-ﬂow is positive and large, the strategy anticipates an upward trend in the midprice and to proﬁt from this short-term trend it is optimal to purchase shares"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La relación lineal entre order-flow neto (ventanas de 5 min) y cambios en el midprice es estadísticamente significativa casi todos los días y explica una fracción sustancial de la varianza del midprice en acciones líquidas de Nasdaq.",
+      "mercado": "US equities (Nasdaq: FARO, SMH, NTAP, ORCL, INTC)",
+      "periodo": "2013",
+      "magnitud": "R² mediano: 0.66 (INTC), 0.52 (ORCL), 0.45 (NTAP), 0.40 (FARO), 0.15 (SMH); p-value < 0.05 en 98-99.6% de los días para NTAP/ORCL/INTC; b entre 6.15E-07 (INTC) y 1.41E-04 (FARO)",
+      "condiciones": "Regresión robusta diaria con datos winsorizados (0.5% colas), τ = 5 min, in-sample descriptivo",
+      "robustez": "media",
+      "cita_textual": "We assume a linear relationship between net order-ﬂow and changes in the midprice"
+    },
+    {
+      "afirmacion": "Las estrategias POV y POCV en forma cerrada trackean VWAP muy de cerca y en promedio lo superan entre 0.10 y 8 basis points, monto económicamente significativo dado que las comisiones de brokerage por targeting de VWAP rondan 10-20 bps.",
+      "mercado": "US equities (Nasdaq: FARO, SMH, NTAP, ORCL, INTC), simulado con parámetros calibrados",
+      "periodo": "calibración con datos Nasdaq 2013",
+      "magnitud": "Error relativo medio (bps): POV 8.9 (FARO), 2.98 (SMH), 0.19 (NTAP), 0.13 (ORCL), 0.16 (INTC); POCV 5.0, 2.75, 1.88, 1.81, 1.81; distribución sesgada a la derecha",
+      "condiciones": "10.000 simulaciones Monte Carlo, horizonte 1 hora, liquidar 5% del volumen esperado, ρ̃=5%, VWAP computado sin impacto temporal pero con impacto permanente propio; no es backtest sobre datos reales",
+      "robustez": "media",
+      "cita_textual": "the strategies target VWAP very closely and on average outperform the target by between 0.10 and 8 basis points"
+    },
+    {
+      "afirmacion": "Las estrategias POV que targetean VWAP pasan una fracción no trivial del tiempo recomprando acciones durante una liquidación (hasta 27% en acciones ilíquidas), mientras que las POCV casi nunca recompran.",
+      "mercado": "US equities (Nasdaq: FARO, SMH, NTAP, ORCL, INTC), simulado",
+      "periodo": "calibración con datos Nasdaq 2013",
+      "magnitud": "% de tiempo comprando (POV): 27.3% FARO, 18.4% SMH, 0.4-0.6% NTAP/ORCL/INTC; (POCV): 0-0.83%",
+      "condiciones": "Mismas 10.000 simulaciones; problema no restringido que permite recompras",
+      "robustez": "media",
+      "cita_textual": "strategies that target VWAP employing POV spend a percentage of time between 0.5% and 27.3% buying back shares"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "No es una estrategia de alfa sino de ejecución, pero dos piezas son directamente testeables en el ecosistema ES: (i) la regresión ΔS = b·(flujo neto 5 min) como medida del impacto permanente del order flow en ES (análoga al Kyle lambda, con los ticks L1 ya disponibles), y (ii) la regla direccional 'flujo neto comprador → esperar / vendedor → acelerar' como filtro de timing intradía para entradas/salidas de las estrategias de zonas."
+  }
+}

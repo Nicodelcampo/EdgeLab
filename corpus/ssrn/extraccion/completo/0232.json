@@ -1,0 +1,99 @@
+{
+  "doc_id": 232,
+  "titulo": "MiFID II: Regulating High Frequency Trading, Other Forms of Algorithmic Trading and Direct Electronic Market Access",
+  "resumen_operativo": "Artículo jurídico que analiza el marco regulatorio de MiFID II para high-frequency trading, algorithmic trading y direct electronic access. Describe definiciones legales, beneficios (mayor liquidez, spreads más estrechos, menor volatilidad) y riesgos (sobrecarga de sistemas, ghost liquidity, exacerbación de volatilidad en estrés). Examina el caso Navinder Sarao (flash crash 2010) como ejemplo de spoofing y concluye que MiFID II adopta un enfoque de supervisión sin prohibir HFT.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "MiFID II",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Directiva europea (2014/65/EU) que regula los mercados de instrumentos financieros, introduciendo por primera vez definiciones y supervisión específica para algorithmic trading, high-frequency trading y direct electronic access, efectiva desde enero 2018.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "High-Frequency Trading"},
+        {"tipo": "APLICA_A", "objeto": "Algorithmic Trading"}
+      ],
+      "cita_textual": "MiFID II adopts a middle course: it does not prohibit high frequency trading, but it does subject it and other forms of algorithmic trading to specific supervision as they entail specific risks."
+    },
+    {
+      "nombre": "High-Frequency Trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Subtipo de algorithmic trading caracterizado por alta velocidad de mensajes intradiarios, uso de co-location, y tiempo mínimo de retención de posiciones. MiFID II lo define operativamente sin prohibirlo, sujetándolo a requisitos de sistemas y controles de riesgo.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "MiFID II compliance"},
+        {"tipo": "CAUSA", "objeto": "ghost liquidity"}
+      ],
+      "cita_textual": "The technology of high frequency trading is said to have provided benefits to the market and market participants generally, such as wider participation in markets, increased liquidity, narrower spreads."
+    },
+    {
+      "nombre": "Algorithmic Trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Trading donde un algoritmo informático determina automáticamente aspectos de una orden con mínima o nula intervención humana. Definido legalmente en MiFID II para someterlo a regulación de sistemas y controles.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "MiFID II"},
+        {"tipo": "USA", "objeto": "Direct Electronic Access"}
+      ],
+      "cita_textual": "Many market participants now make use of algorithmic trading where a computer algorithm automatically determines aspects of an order with minimal or no human intervention."
+    },
+    {
+      "nombre": "Spoofing",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Técnica de manipulación de mercado donde un trader coloca grandes órdenes sin intención de ejecutarlas para crear una falsa impresión de oferta/demanda y mover el precio a su favor. Prohibido explícitamente por MAR en Europa y por Dodd-Frank en EE.UU.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Market Abuse Regulation"},
+        {"tipo": "EQUIVALE_A", "objeto": "layering algorithm"}
+      ],
+      "cita_textual": "Spoofing has now been banned in the U.S. and constitutes market manipulation in Europe. The new European Market Abuse Regulation (MAR) explicitly prohibits this technique."
+    },
+    {
+      "nombre": "Flash Crash (May 6, 2010)",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Evento donde el Dow Jones perdió casi el 10% en 36 minutos recuperándose inmediatamente. Investigaciones del CFTC concluyeron que HFTs no lo causaron pero contribuyeron demandando inmediatez; el trader Navinder Sarao fue arrestado en 2015 por manipulación vía spoofing.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "MiFID II regulation"},
+        {"tipo": "ASOCIADO_CON", "objeto": "Spoofing"}
+      ],
+      "cita_textual": "In the space of just 36 minutes the Dow Jones Index lost almost a tenth of its value, only to rebound immediately as though nothing had happened. This event is commonly referred to as the 'flash crash'."
+    },
+    {
+      "nombre": "Ghost Liquidity",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Liquidez aparente creada por órdenes HFT que desaparecen tan pronto como se ejecutan en una pata de un arbitraje, creando la ilusión de mayor profundidad del libro y dificultando la evaluación de la liquidez real.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "HFT arbitrage strategies"},
+        {"tipo": "SE_OPONE_A", "objeto": "market transparency"}
+      ],
+      "cita_textual": "HFT can lead to what is known as ghost liquidity ... the liquidity previously shown completely disappears as soon as the relevant orders of the arbitrage trade have been executed on one of the trading venues."
+    },
+    {
+      "nombre": "Direct Electronic Access (DEA)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Acceso electrónico directo que permite a clientes de una firma de inversión 'ponerse detrás de los controles' y enviar órdenes al mercado sin intermediación activa del broker. Sujeto a requisitos específicos de sistemas y controles de riesgo bajo MiFID II.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "MiFID II"},
+        {"tipo": "REQUIERE", "objeto": "risk controls"}
+      ],
+      "cita_textual": "Providers of DEA are now required to ensure that this access complies with the appropriate systems and risk controls."
+    },
+    {
+      "nombre": "Market Abuse Regulation (MAR)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Regulación europea (Reg. 596/2014) que prohíbe explícitamente estrategias de manipulación de mercado como spoofing, incluyendo la colocación de grandes volúmenes de órdenes sin intención de ejecución que perturben el sistema de trading.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Spoofing"},
+        {"tipo": "PARTE_DE", "objeto": "MiFID II framework"}
+      ],
+      "cita_textual": "MAR prohibits a number of strategies carried out by algorithmic trading, in particular high frequency trading, which are not intended to result in the actual execution of a transaction."
+    },
+    {
+      "nombre": "Van Kervel and Menkveld Study on HFT Impact",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Estudio que muestra que HFTs se benefician principalmente de inversores institucionales que ejecutan órdenes grandes en períodos largos, haciendo que el costo de ejecución aumente hasta un 64% al 'ir con la orden' (front-running pasivo).",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "higher execution costs for institutional investors"}
+      ],
+      "cita_textual": "Van Kervel and Menkveld indicates that flash traders benefit mainly from institutional investors that take a long time to execute their order ... the execution of an order can become up to 64% more expensive."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "nula", "nota": "Artículo jurídico descriptivo sobre regulación; no contiene modelos cuantitativos ni evidencia empírica propia."}
+}

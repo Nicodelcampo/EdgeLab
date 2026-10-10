@@ -1,0 +1,117 @@
+{
+  "doc_id": 73,
+  "titulo": "Bubbles in Hybrid Markets: How Expectations about Algorithmic Trading Affect Human Trading",
+  "resumen_operativo": "Estudio experimental de laboratorio que demuestra que los traders humanos se comportan de forma más racional, reduciendo las burbujas de precios y la volatilidad, simplemente cuando esperan la presencia de algoritmos. Para un quant, esto ilustra que el mercado híbrido moderno está influenciado no solo por la microestructura HFT, sino también por el impacto pasivo que ejerce sobre la psicología y las expectativas del actor humano.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "hybrid market",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Mercado donde interactúan traders humanos y programas computacionales, sin que las partes sepan si la contraparte es un humano o un bot.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "algorithmic trading"}
+      ],
+      "cita_textual": "modern markets are hybrid markets where computers and humans trade and where neither party gets information whether they sold to or bought from humans or algorithmic traders."
+    },
+    {
+      "nombre": "algorithmic trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Uso de sistemas computarizados para comerciar activos de forma autónoma. En este marco experimental se evalúa cómo las creencias humanas sobre ellos alteran la dinámica del mercado.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "bubble"}
+      ],
+      "cita_textual": "sophisticated algorithmic traders which can learn and autonomously decide which assets they sell or buy"
+    },
+    {
+      "nombre": "price discovery",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Proceso mediante el cual el mercado converge al precio real de un activo, el cual se acelera en presencia de trading algorítmico según literatura previa.",
+      "relaciones": [],
+      "cita_textual": "Gsell (2008) shows with the help of simulations that the presence of algorithmic traders in hybrid markets reduces volatility of prices and speeds up price discovery."
+    },
+    {
+      "nombre": "bubble",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Patrón de precios donde el valor negociado supera por mucho los dividendos máximos posibles y luego colapsa hacia el valor fundamental.",
+      "relaciones": [],
+      "cita_textual": "the price per asset starts below the fundamental value, but then quickly rises, often above the sum of maximum possible dividends. Towards the end the price drops again quickly"
+    },
+    {
+      "nombre": "fundamental value",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Valor teórico subyacente de un activo, calculado como la suma esperada de sus pagos futuros (dividendos), respecto al cual se miden las desviaciones en burbujas.",
+      "relaciones": [],
+      "cita_textual": "The fundamental value of an asset in round 1 is 15 × 24 = 360 ECU, decreasing by 24 ECU at the end of each round."
+    },
+    {
+      "nombre": "volatility",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Variación absoluta de los precios entre operaciones sucesivas, que decae ante la expectativa de que participen ordenadores en el mercado.",
+      "relaciones": [],
+      "cita_textual": "volatility measured as the absolute change of prices between trades |∆Pikt|."
+    },
+    {
+      "nombre": "strategic uncertainty",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Incertidumbre que tienen los participantes sobre las estrategias de sus contrapartes, elemento que difiere fuertemente entre mercados humanos puros y mercados con bots.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "bubble"}
+      ],
+      "cita_textual": "In 6H subjects know that they trade with humans. Hence, in the 6H treatment there is substantial strategic uncertainty while in 1H5C there is no strategic uncertainty at all."
+    },
+    {
+      "nombre": "risk aversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Rechazo psicológico a tomar apuestas volátiles frente a resultados seguros, utilizado como control individual en los modelos de regresión mixtos.",
+      "relaciones": [],
+      "cita_textual": "Robin, Straznicka, and Villeval (2012) and Fellner and Maciejovsky (2007) find that risk-aversion leads to smaller bubbles and less trade in asset markets."
+    },
+    {
+      "nombre": "overconfidence",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Sesgo cognitivo en el que los individuos perciben erróneamente su rendimiento como superior al promedio. Es medido y controlado porque fomenta las burbujas.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "bubble"}
+      ],
+      "cita_textual": "we operationalize overconfidence specifically in the context of asset market"
+    },
+    {
+      "nombre": "loss aversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Inclinación a sufrir un impacto psicológico mayor ante pérdidas que ante ganancias equivalentes, medido mediante un instrumento de Holt & Laury.",
+      "relaciones": [],
+      "cita_textual": "Since loss-aversion is closely related to risk-aversion we chose to measure loss-aversion as well."
+    },
+    {
+      "nombre": "continuous double auction",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Arquitectura de mercado donde se permite introducir y cruzar posturas continuamente, empleada para los mercados de los experimentos en el laboratorio.",
+      "relaciones": [],
+      "cita_textual": "As in SSW subjects trade in a continuous double auction during 15 rounds and receive a random dividend per round."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La simple expectativa de la presencia de algoritmos reduce la magnitud de las burbujas generadas por traders humanos.",
+      "mercado": "Laboratorio (Smith-Suchanek-Williams)",
+      "periodo": "Julio-Noviembre 2014",
+      "magnitud": "Posterior odds de 20000:1 a favor de un coeficiente negativo para los excesos de precio (βAT < βNAT).",
+      "condiciones": "Evaluado comparando mercados de puros humanos sin bots y mercados de humanos donde se les informa que podrían haber bots.",
+      "robustez": "media",
+      "cita_textual": "we have very strong evidence (in the sense of Kass and Raftery, 1995) that the mere expectation of the presence of algorithmic traders reduces bubbles."
+    },
+    {
+      "afirmacion": "Pensar que un mercado es híbrido hace que los humanos negocien con menor volatilidad en los precios (cambios menores por trade) y de forma más veloz.",
+      "mercado": "Laboratorio (Smith-Suchanek-Williams)",
+      "periodo": "Julio-Noviembre 2014",
+      "magnitud": "Odds para menor salto de precios absolutos (1:6.58) y tiempo más corto entre negociaciones (1:3.36).",
+      "condiciones": "Modelo de efectos aleatorios con controles para factores cognitivos.",
+      "robustez": "media",
+      "cita_textual": "we have positive evidence that information about algorithmic traders increases the frequency of trades."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El entorno es netamente psicológico y de laboratorio, por lo tanto carece de granularidad para extraer estrategias operables para trading HFT real en mercados híbridos modernos como el ES."
+  }
+}

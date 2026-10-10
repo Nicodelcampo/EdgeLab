@@ -1,0 +1,221 @@
+{
+  "doc_id": 48,
+  "titulo": "AlphaGen — An Adaptive Algorithmic Trading Ecosystem",
+  "resumen_operativo": "Paper conceptual/promocional que propone una arquitectura bio-inspirada para coordinar múltiples estrategias con detección de régimen, un 'meta-learner' que reasigna pesos y un modo de crisis por fases. No define ecuaciones, código ni backtests reproducibles; ofrece solo un esqueleto narrativo de diseño de sistema con dos apéndices de validación muy livianos (estabilidad de régimen 2010-2024 y caso COVID-19). Utilidad práctica limitada para un quant salvo como checklist de alto nivel (regime switching, reponderación adaptativa, gestión de crisis por fases).",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "regime switching",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Framework central del paper: clasifica el mercado en estados discretos (tendencia baja volatilidad, consolidación mean-reversion, expansión alta volatilidad, crisis) para condicionar señales, exposición y riesgo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "hidden Markov model"},
+        {"tipo": "APLICA_A", "objeto": "position sizing"},
+        {"tipo": "PARTE_DE", "objeto": "regime intelligence module"}
+      ],
+      "cita_textual": "A probabilistic classifier maps feature vectors to discrete regime labels."
+    },
+    {
+      "nombre": "regime intelligence module",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Componente que infiere el entorno estructural prevaleciente a partir de volatilidad, correlación y liquidez, guiando la asignación de pesos del meta-learner, el énfasis de señales y la modulación de riesgo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "hidden Markov model"},
+        {"tipo": "USA", "objeto": "Gaussian Mixture Model"},
+        {"tipo": "MIDE", "objeto": "volatility clustering"}
+      ],
+      "cita_textual": "AlphaGenâ€™s Regime Intelligence module operationalizes market regimes as statistically distinct states â€” defined by return distribution, volatility structure, and cross-asset correlation."
+    },
+    {
+      "nombre": "hidden Markov model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de clasificación probabilística propuesta (entre otras) para mapear vectores de features a etiquetas discretas de régimen; usada con tres estados latentes en el apéndice de validación.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "regime switching"}
+      ],
+      "cita_textual": "Classifier: Hidden Markov Model (HMM) with three latent states"
+    },
+    {
+      "nombre": "Gaussian Mixture Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica alternativa mencionada para la clasificación de régimen, junto a HMM y clustering jerárquico, sin desarrollo matemático propio.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "regime switching"}
+      ],
+      "cita_textual": "Techniques include: - Hidden Markov Models (HMMs) - Gaussian Mixture Models (GMMs) - Hierarchical clustering"
+    },
+    {
+      "nombre": "meta-learner spine",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Capa de inteligencia adaptativa central que actualiza continuamente los pesos de contribución de cada módulo de estrategia según performance, sensibilidad a drawdown y compatibilidad de régimen, combinando reinforcement learning y actualización bayesiana.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "reinforcement learning"},
+        {"tipo": "USA", "objeto": "Bayesian updating"},
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "Continuously updates contribution weights for each strategy module based on performance, drawdown sensitivity, and regime compatibility."
+    },
+    {
+      "nombre": "reinforcement learning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Uno de los dos paradigmas de aprendizaje del meta-learner, empleado para rastrear estructuras de recompensa sobre ventanas móviles.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "meta-learner spine"}
+      ],
+      "cita_textual": "Reinforcement Learning: Tracks reward structures over rolling windows"
+    },
+    {
+      "nombre": "Bayesian updating",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Segundo paradigma de aprendizaje del meta-learner, usado para ajustar priors sobre la confiabilidad de señales y las probabilidades de régimen.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "meta-learner spine"}
+      ],
+      "cita_textual": "Bayesian Updating: Adjusts priors on signal reliability and regime probabilities"
+    },
+    {
+      "nombre": "signal fabric",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Ensemble cooperativo de 'especies de estrategia' (trend, mean-reversion, expansión de volatilidad) cuyas propuestas direccionales se combinan con pesos no negativos que suman uno para formar una señal agregada.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "ensemble"},
+        {"tipo": "PARTE_DE", "objeto": "ecosystem architecture"}
+      ],
+      "cita_textual": "AlphaGenâ€™s Signal Fabric is a cooperative ensemble of strategy species â€” each representing a distinct behavioral hypothesis about market dynamics."
+    },
+    {
+      "nombre": "ensemble",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Mecanismo de agregación de múltiples propuestas direccionales (una por 'especie de estrategia') en una señal unificada, en vez de depender de un único modelo predictivo.",
+      "relaciones": [],
+      "cita_textual": "Rather than relying on a single predictive model, AlphaGen aggregates multiple directional proposals into a unified signal expression."
+    },
+    {
+      "nombre": "ecosystem architecture",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Diseño bio-inspirado que organiza el sistema en 'regiones funcionales' análogas a un sistema nervioso (capa sensorial de datos, cortex de señales, núcleo de reconocimiento de régimen, meta-learner, sistema nervioso de riesgo, motor de ejecución) en lugar de un pipeline lineal.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "signal fabric"},
+        {"tipo": "USA", "objeto": "crisis mode operating system"},
+        {"tipo": "USA", "objeto": "meta-learner spine"}
+      ],
+      "cita_textual": "AlphaGen is architected as a bio-inspired decision ecosystem â€” not a linear pipeline, but a living computational organism."
+    },
+    {
+      "nombre": "crisis mode operating system",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Submódulo que ajusta dinámicamente exposición, ponderación de señales y comportamiento de ejecución cuando se detectan condiciones de crisis, operando en tres fases: Shock, Instability y Stabilization.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "liquidity fluctuation"},
+        {"tipo": "USA", "objeto": "correlation compression"},
+        {"tipo": "SE_OPONE_A", "objeto": "risk-on/risk-off"}
+      ],
+      "cita_textual": "AlphaGen incorporates a dedicated Crisis Mode Operating System (CMOS) to maintain performance stability and strategic coherence during periods of elevated market stress."
+    },
+    {
+      "nombre": "risk-on/risk-off",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Enfoque binario de gestión de riesgo que el CMOS busca evitar, prefiriendo una adaptación continua y basada en datos por fases.",
+      "relaciones": [],
+      "cita_textual": "This framework avoids binary â€œrisk-on/risk-offâ€​ behavior and enables continuous, data-driven adaptation."
+    },
+    {
+      "nombre": "post-crisis recovery protocol",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Protocolo de re-expansión gradual de exposición tras la resolución de una crisis, en tres fases (defensiva, reintroducción selectiva de tendencia, amplitud operativa completa), condicionado a que persistan señales de normalización en volatilidad, liquidez y correlación.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "crisis mode operating system"},
+        {"tipo": "MITIGA", "objeto": "correlation compression"}
+      ],
+      "cita_textual": "AlphaGen follows a three-stage re-entry framework"
+    },
+    {
+      "nombre": "volatility clustering",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Regularidad empírica de persistencia en la incertidumbre colectiva del mercado, usada como feature de entrada para la clasificación de régimen y detección de crisis.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "regime switching"}
+      ],
+      "cita_textual": "Volatility Clustering: Persistent shifts in collective uncertainty over time"
+    },
+    {
+      "nombre": "correlation compression",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Regularidad empírica en la que las correlaciones entre activos convergen hacia la unidad durante períodos de estrés, socavando la diversificación de cartera.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "crisis mode operating system"}
+      ],
+      "cita_textual": "Correlation Compression: Convergence toward unity during stress, undermining diversification"
+    },
+    {
+      "nombre": "liquidity fluctuation",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Variación de costos de ejecución e impacto de mercado en función de la presión del order flow, usada como input tanto de la detección de régimen como del CMOS.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "market impact"}
+      ],
+      "cita_textual": "Liquidity Fluctuation: Execution costs and market impact vary with order flow pressure"
+    },
+    {
+      "nombre": "adaptive markets hypothesis",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Marco teórico citado (Lo, 2004) que fundamenta la premisa de que los mercados no son estacionarios y que la eficiencia se entiende desde una perspectiva evolutiva, base conceptual implícita de todo el diseño de AlphaGen.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "regime switching"}
+      ],
+      "cita_textual": "Financial markets are not stationary systems."
+    },
+    {
+      "nombre": "regime detection stability test",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Prueba empírica de largo horizonte (2010-2024) sobre datos diarios de Nifty 50, S&P 500, EUR/USD, oro y crudo, con HMM de tres estados y ventanas móviles de 60 días, para evaluar estabilidad e interpretabilidad de la detección de régimen.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "hidden Markov model"},
+        {"tipo": "MIDE", "objeto": "regime intelligence module"}
+      ],
+      "cita_textual": "a long-horizon empirical test was conducted using daily market data from 2010 to 2024"
+    },
+    {
+      "nombre": "transition entropy",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica reportada en la validación de estabilidad de régimen que cuantifica la aleatoriedad de las transiciones entre estados; un valor bajo indica regímenes persistentes y poco erráticos.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "regime detection stability test"}
+      ],
+      "cita_textual": "Transition entropy | 0.27"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo mencionado de forma genérica: el paper afirma que su balance entre reinforcement learning y actualización bayesiana asegura capacidad de respuesta sin sobreajuste, aunque no aporta evidencia cuantitativa de ello.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "meta-learner spine"}
+      ],
+      "cita_textual": "This balance ensures responsiveness without overfitting."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "En una prueba de detección de régimen con HMM de tres estados sobre datos diarios 2010-2024 de cinco activos (Nifty 50, S&P 500, EUR/USD, oro, crudo), el modelo reporta duración media de régimen, entropía de transición y precisión de detección de crisis con valores específicos, aunque no se describe metodología de validación fuera de muestra ni división train/test.",
+      "mercado": "multi-activo: Nifty 50, S&P 500, EUR/USD, Gold, Crude Oil",
+      "periodo": "2010-2024",
+      "magnitud": "duración media de régimen 42 días de trading; entropía de transición 0.27; precisión de régimen de crisis 91.3%; confianza posterior promedio 87.6%",
+      "condiciones": "sin descripción de costos de transacción, sin mención de conjunto out-of-sample separado, sin comparación contra benchmark ni intervalos de confianza; parece ser un resultado in-sample o no especificado.",
+      "robustez": "baja",
+      "cita_textual": "Average regime duration | 42 trading days"
+    },
+    {
+      "afirmacion": "En el caso de estudio cualitativo de la crisis COVID-19 (feb-jun 2020), el sistema describe narrativamente reducción de exposición durante el shock, reenganche selectivo en la fase de inestabilidad y restauración completa de la cartera hacia junio 2020, sin reportar retornos, Sharpe, drawdown ni ninguna métrica de performance cuantitativa del propio AlphaGen.",
+      "mercado": "US equities (S&P 500) / multi-activo genérico",
+      "periodo": "febrero-junio 2020",
+      "magnitud": "sin magnitud cuantitativa propia del sistema (solo referencias descriptivas: VIX > 80 en el shock, VIX < 30 en la estabilización)",
+      "condiciones": "estudio de caso narrativo, sin backtest ejecutable, sin métricas de retorno/riesgo del sistema, sin comparación con buy-and-hold u otra referencia",
+      "robustez": "baja",
+      "cita_textual": "AlphaGen preserved capital during systemic shock, avoided premature re-risking, and re-engaged with structural confirmation."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper no define ecuaciones, código ni umbrales operables; a lo sumo aporta la idea general de condicionar señales/tamaño de posición del ecosistema ES a un clasificador de régimen (HMM/GMM) sobre volatilidad realizada, liquidez y correlación, pero sin ningún detalle implementable ni validación rigurosa."
+  }
+}

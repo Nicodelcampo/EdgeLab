@@ -1,0 +1,38 @@
+{
+  "doc_id": 318,
+  "titulo": "Statistical Arbitrage via Single-View and Multi-View Spectral Clustering on Mixed Frequency Data",
+  "resumen_operativo": "Propone usar spectral clustering (single-view y multi-view) para identificar clusters de activos similares incorporando realized estimators (volatilidad, beta, etc.) derivados de datos intradiarios de alta frecuencia además de precios de cierre diarios. Evalúa múltiples reglas de trading (distance method, cointegración, cópulas, entrada/salida óptima OU) sobre S&P 500 (2000-2022), futuros, ETFs y FX. Hallazgo clave: la rentabilidad depende más de los features y método de clustering que de la señal o regla de trading. Estrategias multi-view con realized estimators consistentemente entregan mejores retornos ajustados por riesgo y menores drawdowns.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Multi-View Spectral Clustering",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo de clustering que preserva información espacial y temporal entre features evitando la concatenación del enfoque single-view. Toma como input una colección de matrices de features (precios, realized variance, realized beta, etc.) en lugar de una sola matriz concatenada.",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Single-View Spectral Clustering"}, {"tipo": "USA", "objeto": "Realized Estimators"}],
+      "cita_textual": "Multi-view clustering algorithms aim to preserve spatial and temporal information by forgoing the concatenation step. The input to multi-view clustering algorithms is a collection of features matrices."
+    },
+    {
+      "nombre": "Realized Estimators from High-Frequency Data",
+      "tipo": "dato",
+      "definicion_en_contexto": "Estimadores de cantidades variacionales (realized volatility, realized beta, quadratic variation) derivados de datos intradiarios de alta frecuencia a cadencia diaria. Incorporan información de procesos estocásticos continuos que los precios de cierre solos no capturan, reduciendo clustering espurio.",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Closing Price Only Features"}, {"tipo": "USA", "objeto": "Quadratic Variation"}],
+      "cita_textual": "We incorporate realized estimators (i.e. realized volatility, realized beta, and others) derived from high-frequency intraday data into the daily feature set."
+    },
+    {
+      "nombre": "Spurious Clustering Risk",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de que activos disímiles sean agrupados erróneamente en el período de formación. Si esto ocurre, los gaps de precio percibidos en el período de trading son espurios (no cierran o se amplían) y el arbitrajista pierde. Features adicionales mitigan este riesgo.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Trading Losses"}, {"tipo": "MITIGA", "objeto": "Multi-View Spectral Clustering"}],
+      "cita_textual": "If dissimilar assets are erroneously clustered together, then any perceived price gaps are spurious, the gaps will not close or even widen, and the statistical arbitrageur will almost surely lose on the trade."
+    },
+    {
+      "nombre": "Feature Supremacy over Signal Type",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Hallazgo central: la rentabilidad del trading está más influenciada por la selección de features y métodos de clustering que por la elección de señales o reglas de trading. Esto implica que mejorar el paso de identificación de similares (clustering) es más rentable que sofisticar las reglas de entrada/salida.",
+      "relaciones": [{"tipo": "CONTRADICE_A", "objeto": "Trading Rule Optimization Focus"}, {"tipo": "APLICA_A", "objeto": "Asset Clustering Quality"}],
+      "cita_textual": "Trading profitability is influenced more by the selection of feature sets and clustering methods than by the choice of signals or trading rules."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Incorpora explícitamente realized estimators de datos intradiarios de alta frecuencia. Estrategia diseñada para mixed frequency: clustering diario con features intradiarios."}
+}

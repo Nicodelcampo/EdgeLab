@@ -1,0 +1,178 @@
+{
+  "doc_id": 215,
+  "titulo": "Mathematics for Finance: A Review of Quantitative Methods in Loan Portfolio Optimization",
+  "resumen_operativo": "Revisión sistemática PRISMA 2020 que sintetiza 87 artículos (2000-2024) sobre optimización cuantitativa de carteras de préstamos. Para un trader cuantitativo, los hallazgos transferibles más relevantes son: (1) la optimización estocástica domina el modelado bajo incertidumbre con 5300+ citas acumuladas; (2) las cópulas capturan dependencias de cola que la correlación de Pearson subestima, crítica en regímenes de estrés; (3) los clasificadores de machine learning (gradient boosting, SVM, redes neuronales) superan a la regresión logística en scoring crediticio, especialmente post-2015; y (4) el CVaR se prefiere al VaR por ser una medida coherente de riesgo con sensibilidad a eventos extremos.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Stochastic Optimization",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Marco de programación matemática que incorpora parámetros probabilísticos para tomar decisiones secuenciales bajo incertidumbre. En carteras de crédito se implementa mediante programación en dos etapas o multi-etapa, usando generadores de escenarios económicos para simular tasas de default, migraciones crediticias y shocks macroeconómicos. Es el enfoque dominante en la literatura revisada, presente en 42 de 87 estudios.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Monte Carlo Simulation"},
+        {"tipo": "MEJORA_A", "objeto": "Mean-Variance Optimization"},
+        {"tipo": "REQUIERE", "objeto": "Stress Testing"}
+      ],
+      "cita_textual": "Stochastic optimization remains the most dominant methodological approach, cited in 42 studies with over 5,300 cumulative citations."
+    },
+    {
+      "nombre": "Mean-Variance Optimization",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica fundacional de Markowitz que maximiza retorno esperado para un nivel dado de varianza. En carteras de préstamos su aplicación es limitada porque los retornos crediticios no son normales (son binarios: default o repago), presentan asimetría y curtosis, y las correlaciones de default aumentan en crisis, violando los supuestos de estabilidad de covarianza. Sirve como benchmark pedagógico contra el cual se evalúan métodos más sofisticados.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Modern Portfolio Theory"},
+        {"tipo": "SE_OPONE_A", "objeto": "Stochastic Optimization"},
+        {"tipo": "USA", "objeto": "Value-at-Risk"}
+      ],
+      "cita_textual": "Loans do not typically follow a normal return distribution due to the binary nature of default and repayment, which causes significant skewness and kurtosis in return patterns."
+    },
+    {
+      "nombre": "Value-at-Risk",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida probabilística de la pérdida máxima esperada en un horizonte temporal y nivel de confianza dados. En carteras de crédito, el VaR se cuantifica mediante simulaciones de pérdidas por default, movimientos de credit spreads y matrices de migración crediticia. Sus limitaciones principales son la falta de subaditividad y la insensibilidad al riesgo de cola más allá del umbral seleccionado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Tail Dependence"},
+        {"tipo": "MEJORA_A", "objeto": "Conditional Value-at-Risk"},
+        {"tipo": "REQUIERE", "objeto": "Monte Carlo Simulation"}
+      ],
+      "cita_textual": "Value-at-Risk (VaR) as a standard risk metric revolutionized financial risk management by providing a probabilistic measure of maximum expected loss over a given time horizon and confidence level."
+    },
+    {
+      "nombre": "Conditional Value-at-Risk",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de riesgo coherente, también llamada expected shortfall, que captura la pérdida promedio más allá del umbral del VaR. A diferencia del VaR, el CVaR es subaditivo y sensible al riesgo de cola, lo que lo hace preferible para optimización de carteras crediticias donde las distribuciones de pérdidas son asimétricas. Es la métrica preferida en aplicaciones regulatorias y de stress testing bajo Basilea III.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Value-at-Risk"},
+        {"tipo": "MIDE", "objeto": "Tail Dependence"},
+        {"tipo": "APLICA_A", "objeto": "Stochastic Optimization"}
+      ],
+      "cita_textual": "CVaR as an optimization-friendly coherent risk measure that captures average losses beyond the VaR threshold."
+    },
+    {
+      "nombre": "Probability of Default",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Parámetro central de riesgo crediticio que estima la probabilidad de que un prestatario incumpla sus obligaciones en un horizonte temporal definido. Junto con LGD y EAD, forma la tríada de inputs del enfoque IRB (Internal Ratings-Based) de Basilea II. Se estima mediante modelos estadísticos, scoring crediticio y, crecientemente, algoritmos de machine learning que capturan relaciones no lineales en datos de alta dimensionalidad.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Internal Ratings-Based Approach"},
+        {"tipo": "PREDICE", "objeto": "Credit Scoring"},
+        {"tipo": "USA", "objeto": "Machine Learning Classifier"}
+      ],
+      "cita_textual": "Credit risk is quantified using parameters like probability of default (PD), loss given default (LGD), and exposure at default (EAD), which are statistically estimated using historical loan performance data."
+    },
+    {
+      "nombre": "Loss Given Default",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Estimación de la severidad de la pérdida en caso de default, expresada como porcentaje de la exposición que no se recupera. Bajo Basilea II/III se requiere usar estimaciones downturn LGD —conservadoras, calibradas en condiciones de estrés— para garantizar que el capital regulatorio sea resiliente. Es un input crítico en modelos de pérdida esperada y en la optimización de carteras con restricciones de capital.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Internal Ratings-Based Approach"},
+        {"tipo": "USA", "objeto": "Stress Testing"},
+        {"tipo": "REQUIERE", "objeto": "Probability of Default"}
+      ],
+      "cita_textual": "The IRB models also require conservative estimation practices, such as through-the-cycle ratings and downturn LGDs, to ensure resilience in stressed conditions."
+    },
+    {
+      "nombre": "Exposure at Default",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Monto total de exposición crediticia en el momento del default del prestatario. Es el tercer componente del enfoque IRB de Basilea y, junto con PD y LGD, determina la pérdida esperada y el capital regulatorio requerido. Su estimación debe considerar líneas de crédito no utilizadas y fluctuaciones en la exposición a lo largo del ciclo de vida del préstamo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Internal Ratings-Based Approach"},
+        {"tipo": "USA", "objeto": "Probability of Default"},
+        {"tipo": "MIDE", "objeto": "Risk-Weighted Assets"}
+      ],
+      "cita_textual": "Under the IRB approach, institutions are required to estimate three key parameters: Probability of Default (PD), Loss Given Default (LGD), and Exposure at Default (EAD), which together inform the expected loss and unexpected loss calculations."
+    },
+    {
+      "nombre": "Copula Dependency Modeling",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica matemática que construye distribuciones multivariadas acoplando distribuciones marginales individuales mediante una función cópula. En riesgo crediticio, modela el comportamiento conjunto de defaults entre obligados. La cópula Gaussiana es la más usada por simplicidad computacional pero subestima dependencias de cola; las cópulas t-Student y Arquimedianas (Clayton, Gumbel) capturan mejor eventos extremos simultáneos y dependencias asimétricas.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Tail Dependence"},
+        {"tipo": "USA", "objeto": "Monte Carlo Simulation"},
+        {"tipo": "MEJORA_A", "objeto": "Mean-Variance Optimization"}
+      ],
+      "cita_textual": "A copula is a mathematical function that allows for the construction of multivariate distribution functions by linking marginal distributions of individual risk factors."
+    },
+    {
+      "nombre": "Monte Carlo Simulation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de simulación que genera miles de escenarios aleatorios para estimar distribuciones de pérdidas en carteras crediticias. Es el método no paramétrico preferido frente a enfoques de varianza-covarianza porque no asume normalidad y captura eventos de cola. Se integra con cópulas, matrices de migración crediticia y stress testing para cuantificar VaR, CVaR y capital económico bajo múltiples escenarios macroeconómicos.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Copula Dependency Modeling"},
+        {"tipo": "PARTE_DE", "objeto": "Stress Testing"},
+        {"tipo": "APLICA_A", "objeto": "Value-at-Risk"}
+      ],
+      "cita_textual": "Monte Carlo simulations and bootstrapping techniques enhanced risk quantification by capturing tail events."
+    },
+    {
+      "nombre": "Credit Scoring",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Sistema de evaluación predictiva del riesgo de default de un prestatario usando datos históricos y algoritmos estadísticos o de machine learning. Evolucionó desde el análisis discriminante y la regresión logística hacia modelos no lineales como árboles de decisión, random forests, SVM y redes neuronales. Es la base del enfoque IRB y se valida mediante métricas como AUC, Gini, precisión y calibración de probabilidades.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "Probability of Default"},
+        {"tipo": "USA", "objeto": "Machine Learning Classifier"},
+        {"tipo": "APLICA_A", "objeto": "Stochastic Optimization"}
+      ],
+      "cita_textual": "Supervised learning has become a cornerstone of modern credit scoring systems, offering scalable and data-driven alternatives to traditional statistical techniques."
+    },
+    {
+      "nombre": "Stress Testing",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso de evaluación de la resiliencia de una cartera bajo escenarios adversos hipotéticos pero plausibles —recesiones macroeconómicas, shocks de tasas, disrupciones sectoriales— generados mediante modelos macro-financieros. Bajo Basilea III es obligatorio e integra riesgo de cola, estructuras de dependencia y efectos no lineales. Se valida con backtesting (Kupiec, Christoffersen) y se incorpora como restricción activa en modelos de optimización.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Monte Carlo Simulation"},
+        {"tipo": "APLICA_A", "objeto": "Basel Regulatory Framework"},
+        {"tipo": "USA", "objeto": "Copula Dependency Modeling"}
+      ],
+      "cita_textual": "Stress testing evaluates the resilience of credit portfolios under hypothetical but plausible adverse scenarios, assessing the impact on capital adequacy, liquidity, and earnings."
+    },
+    {
+      "nombre": "Machine Learning Classifier",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmos de aprendizaje supervisado —árboles de decisión, random forests, support vector machines, gradient boosting y redes neuronales— que superan a la regresión logística en precisión predictiva para clasificación de default. Destacan en entornos con datos de alta dimensionalidad y relaciones no lineales. Más del 60% de los estudios que los emplean son posteriores a 2015, impulsados por fintech. Su adopción regulatoria requiere interpretabilidad mediante herramientas XAI como SHAP y LIME.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Credit Scoring"},
+        {"tipo": "PREDICE", "objeto": "Probability of Default"},
+        {"tipo": "SE_OPONE_A", "objeto": "Model Misspecification Risk"}
+      ],
+      "cita_textual": "Algorithms such as decision trees, support vector machines, and neural networks have demonstrated superior accuracy in credit scoring and borrower segmentation."
+    },
+    {
+      "nombre": "Risk-Weighted Assets",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica regulatoria que pondera cada exposición crediticia por su nivel de riesgo para determinar el capital mínimo requerido bajo Basilea. Se calcula mediante la función de ponderación de Vasicek (modelo ASRF de un solo factor) usando PD, LGD y EAD como inputs. En optimización de carteras, los RWA operan como restricción o componente objetivo, forzando el balance entre rentabilidad y consumo de capital regulatorio.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Basel Regulatory Framework"},
+        {"tipo": "USA", "objeto": "Probability of Default"},
+        {"tipo": "MIDE", "objeto": "Tail Dependence"}
+      ],
+      "cita_textual": "Thirty-five studies embed elements like risk-weighted assets (RWA), capital adequacy ratios, and stress testing protocols directly into optimization objectives."
+    },
+    {
+      "nombre": "Tail Dependence",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno por el cual pérdidas extremas tienden a ocurrir simultáneamente en múltiples activos o prestatarios, especialmente durante crisis financieras. La correlación de Pearson es insuficiente para capturarlo, como se evidenció en la crisis de 2007-2008. Se modela mediante cópulas con dependencia de cola (t-Student, Clayton, Gumbel), coeficientes de dependencia de cola y modelos de switching markoviano que ajustan la estructura de dependencia según el régimen de volatilidad.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Copula Dependency Modeling"},
+        {"tipo": "CAUSA", "objeto": "Model Misspecification Risk"},
+        {"tipo": "MITIGA", "objeto": "Stress Testing"}
+      ],
+      "cita_textual": "Tail dependencies, which refer to the tendency of extreme losses to occur simultaneously across multiple assets, have become a focal point in credit portfolio risk modeling."
+    },
+    {
+      "nombre": "Model Misspecification Risk",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de que un modelo cuantitativo falle por supuestos incorrectos sobre la distribución de datos subyacentes. En carteras de préstamos se manifiesta cuando se asume normalidad de retornos (MVO), estabilidad de correlaciones, o independencia de defaults. El uso de MVO subestima el riesgo en condiciones de estrés. Se mitiga mediante optimización robusta (distributionally robust optimization) y técnicas de validación como backtesting y stress testing con escenarios adversos.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Tail Dependence"},
+        {"tipo": "MITIGA", "objeto": "Conditional Value-at-Risk"},
+        {"tipo": "SE_OPONE_A", "objeto": "Stochastic Optimization"}
+      ],
+      "cita_textual": "The simplification of loss distributions in mean-variance setups leads to fragile optimization outcomes when credit spreads widen."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Los conceptos individuales (VaR, CVaR, cópulas, Monte Carlo, ML classifiers, stochastic optimization) son plenamente transferibles a trading intradía, pero el dominio del paper es carteras de préstamos —horizontes de mediano/largo plazo— y no aborda microestructura de mercado ni frecuencias intradiarias."
+  }
+}

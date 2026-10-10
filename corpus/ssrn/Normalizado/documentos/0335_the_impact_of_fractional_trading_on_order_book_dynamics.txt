@@ -1,0 +1,2940 @@
+1 
+ 
+FinTech, Fractional Trading and the Order Book Dynamics: A Study of US Equities 
+Markets12 
+JANHAVI SHANKAR TRIPATHI3 AND ERICK W. RENGIFO4 
+ 
+ 
+Abstract: We study the impact of fintech and fractional trading (FT) on the price levels and order 
+book dynamics observed in stock markets. FT has recently been introduced on multiple trading 
+platforms in equities markets, allowing individuals to buy a fraction of a share of stocks or ETFs 
+(exchange-traded funds). FT, along with direct and easier access to the markets through 
+commission-less trading apps, can potentially modify the risk appetite of non-professional 
+investors (who are generally myopic and risk-averse) and create opportunities for portfolio 
+creation and diversification, hence increasing the demand for stocks. It can also impact nonprofessional investors' investment behavior, price levels, and market volatility. Using Nasdaq data 
+feed at a minute frequency, we show that there has been a significant increase in the slope of the 
+price-volume structure and average tick size. In some cases, there has been an increase in the 
+number of steps required to place a limit order post-FT. Our results suggest that increased demand 
+for stocks led by easiness to trade stocks and FT impacts the order book's price formation process 
+and price-volume structure.  
+ 
+Keywords: fintech, fractional trading, order book dynamics, investor behavior, risk aversion. 
+ 
+JEL classifications: C0, G0, G1, G4, G5  
+ 
+ 
+ 
+1 A preliminary version of the paper titled “The Impact of Fractional Trading on Order Book Dynamics” earlier 
+circulated and published in the NYSEA 2023 Conference Proceedings. 
+2 The authors would like to thank the seminar participants and discussants at the FFEA-WPI Finance Conference 2023, 
+NYSEA 2023 Conference, World Finance Conference 2023, SQA-CQA 2023 Trading Day Conference, Fordham Fall 
+2022 Finance workshop for their helpful comments and suggestions, and the referees for their careful reading and 
+constructive comments. 
+3 School of Business, St. Bonaventure University, St. Bonaventure, NY 14778, USA, USA. Email: jstripathi@sbu.edu 
+4 Department of Economics, and the Center for International Policy Studies, Fordham University, NY 10458, USA. 
+Email: rengifomina@fordham.edu 
+
+2 
+ 
+1. Introduction 
+Financial technology (fintech) has significantly transformed trading by improving market 
+efficiency, reducing transaction costs, and enabling advancements such as algorithmic trading, 
+blockchain-based systems, robo-advisors, and AI-driven analytics. Algorithmic and high 
+frequency trading (HFT) have enhanced liquidity and price discovery process (Chordia et al. 
+2011), though there have been concerns around market stability (Kirilenko et al. 2017). Artificial 
+intelligence (AI) and machine learning applications, including deep learning and sentiment 
+analysis, have significantly improved the predictive abilities in markets (Zhang et al. 2019), but 
+there are challenges around interpretability and bias mitigation (Lo 2015).  
+Blockchain technology has introduced decentralized exchanges that enhance transparency and 
+reduce the counterparty risk (Cong and He 2019), though there have been issues like liquidity 
+fragmentation on decentralized exchanges (Harz and Knottenbelt 2018). Robo-advisors and 
+fintech based trading applications along with features like fractional trading have democratized 
+access to trading to increasing retail investor participation (D’Acunto et al. 2019, Tripathi and 
+Rengifo 2023), but there have been concerns around gamification-driven excessive risk taking 
+(Barber et al. 2021, Tripathi and Rengifo 2023). Fractional trading has recently emerged as a 
+significant innovation, allowing investors to buy a fraction of a share of stock or exchange-traded 
+fund (ETF), which has increased accessibility and market participation. Studies suggest that 
+fractional trading enhances financial inclusion by lowering entry barriers for retail investors while 
+also contributing to increased market liquidity (Berk and van Binsbergen 2021, Tripathi and 
+Rengifo 2023). 
+Fractional trading (FT) has been recently introduced on multiple trading platforms in equities 
+markets, a feature that already existed in cryptocurrency markets. In December 2019, Robinhood 
+was one of the early trading apps to launch FT on their platform. Other trading apps that currently 
+provide FT option include Charles Schwab, Fidelity Investments, Interactive Brokers, M1 Finance, 
+TD Ameritrade, E-Trade, among others. These platforms vary in terms of minimum purchase, the 
+stocks available in the program and order types. With FT, individuals can now buy a fraction of a 
+share of stock or ETF (exchange-traded fund). FT, along with direct and easier access to the 
+markets through commission-less trading apps, can potentially modify the risk appetite of nonprofessional investors (who are generally myopic and risk-averse) and create opportunities for 
+portfolio creation and diversification (Tripathi and Rengifo 2023). It can also impact non-
+
+3 
+ 
+professional investors' investment behavior, price levels, and market volatility. In this paper, we 
+study the impact of fintech and FT on price levels and the order book dynamics observed in the 
+market. 
+Non-professional investors are individuals for whom their main occupations do not concern 
+financial investments and/or who lack the necessary knowledge, expertise, time, or any 
+combination of them for making more sophisticated investment decisions and that often rely on 
+the help of professional portfolio managers in devising an optimal mix of risky assets.5 They are, 
+in general, frequent evaluators of their financial investments and are reluctant to make losses, 
+which affects their risk perception and makes them behave myopically, i.e. pursuance of shortterms results without considering future consequences  (Rengifo and Trifan 2010). These 
+individuals tend to prefer outcomes that are certain and underweight outcomes that are only 
+probable (Kahneman and Tversky 1979, Tversky and Kahneman 1992). However, this behavior 
+might have changed with the introduction of FT and direct and easier market access through 
+commission-less fintech trading apps. Without FT, the smallest amount an individual can buy of 
+any stock is a single share. For large investors and institutions, this is generally fine as they prefer 
+high-priced stocks (Gompers and Metrick 2001) and trade large numbers of shares, and as such, 
+FT should have no impact on them. However, non-professional investors tend to prefer low-priced 
+stocks (Kumar and Lee 2006) and often allocate funds at the level of asset categories (categorybased investing), making stocks move together more than justified by economic fundamentals 
+(Barberis et al. 2003, 2005). These individuals allocate capital at the style level using the size and 
+value-growth dimensions. Their investment preferences are influenced by past style returns, 
+earning differentials, and advice from investment newsletters rather than innovations in 
+macroeconomic variables or shifts in expectations about future cash flows (Kumar 2009). Without 
+FT, non-professional investors will likely look for ways to reduce their risky allocations based on 
+their frequency of portfolio checks and volatility and, in the extreme case, to completely move 
+their investments to risk-free assets (Rengifo and Trifan 2010). Thus, FT becomes a significant 
+market development for non-professional investors (and potentially with low disposable income), 
+ 
+5 Recently, non-professional investors rely less on the advice of traditional professional investors (like professional 
+advisors, portfolio managers among others) and rely more on the so call social media influencers. Social media 
+influencers and users of the subreddit wallstreetbets, a social news website Reddit, appeared to have influenced Game 
+Stop’s short squeeze. On January 28, 2021, the short squeeze caused the stock price to reach a pre-market value of 
+over US$500 per share, nearly 30 times the $17.25 valuation at the beginning of that month. 
+
+4 
+ 
+especially those looking for ways of getting access to stock markets (perceived as much more 
+profitable than banks, for example) to diversify their holdings or for those willing to buy in 
+companies with high share prices (say greater than $1,000). 
+The fintech-based trading applications provide commission-free trading opportunities to 
+non-professional investors. They claim their mission is to democratize access to different financial 
+instruments in the financial system. When an individual buys or sells stocks, ETFs, or options with 
+a fintech-trading app, they send the orders to market makers that typically would offer better prices 
+than the public exchanges. These market-makers in turn pay a small fee to these fintech-based 
+applications for sending these trades to process through their platform. The market makers are 
+competing with the exchanges, so they also offer rebates to the brokerages like fintech-trading 
+apps. This is one of the ways for platforms like Robinhood to remain competitive and provide 
+different financial products and services at low costs. The objective of these fintech-trading apps 
+is to fulfil these orders in stocks and ETFs at the fastest rate possible. To ensure this fast and 
+seamless order execution in case few market makers are unable to execute orders, some of these 
+orders in stocks and ETFs posted by retail investors using these apps are routed to exchanges, 
+depending on the quality of exchanges past executions. The fintech-trading platform will pay the 
+exchange when they take liquidity and are paid when they provide liquidity.6  
+The rise of non-professional investors, driven by fintech innovations such as commissionfree trading platforms and fractional trading, has significantly altered the interaction between 
+traders, brokers, and exchanges. Non-professional traders, empowered by easier access to markets 
+and lower capital requirements, are participating more actively in trading, which has increased 
+market demand and liquidity. Electronic Brokerage platforms like Robinhood, in turn, have 
+adapted by offering user-friendly applications and tools to cater to this new wave of nonprofessional retail traders. This has led to greater competition among brokers and changes in order 
+routing strategies to ensure better execution prices. Exchanges have responded by adjusting their 
+systems to accommodate smaller trade sizes, such as fractional shares, and modifying order book 
+structures to handle increased volumes and maintain market stability. Overall, the interaction 
+among these parties has become more complex, with greater emphasis on providing accessibility, 
+ 
+6 Based on the description provided by Robinhood (https://robinhood.com/us/en/support/articles/stock-orderrouting/). 
+
+5 
+ 
+liquidity, and efficient price discovery, while also managing the impact of increased retail 
+participation on market dynamics. 
+In this paper, we study the impact of fintech and FT on the price-volume structure observed 
+in the limit order books. Our paper contributes to the growing literature on FinTech and Market 
+Microstructure. This paper enhances our understanding of the impact of fintech based trading 
+applications and features like fractional trading on financial markets and the order book dynamics. 
+In this sense and to our knowledge, this is one of the earliest papers to study the impact of fintech, 
+fractional trading on the order book dynamics.  
+The rest of the paper is organized as follows. Section 2 presents a brief literature review about 
+limit order books and their information content, followed by Section 3 with the data description. 
+Next, in section 4, we present the analysis by the top 5 and top 10 best quotes on the buy and sell 
+sides, followed by section 5 with analysis by fixed cumulative volume, discussing the implications 
+for the stock markets, and finally, section 6 concludes. 
+ 
+2. Limit Order Books and their Information Content 
+The most important features of stock markets are liquidity and a fundamental value signal. 
+Liquidity implies that there is enough volume available at, or close to, the best quote, i.e., that 
+there is a minimum price impact when investors trade. Fundamental value signal allows market 
+participants to do informed trading based on the price formation process (Madhavan 2000). Order 
+books (market depth) data measures the supply and demand for liquid, tradeable assets. In 
+measuring real-time supply and demand, market depth is used by traders to assess the likely 
+direction of an asset's price. The limit order book is resilient if it promptly reverts to its normal 
+shape after large trades (Large 2007). Increased low-latency activity improves traditional market 
+quality measures - decreasing spreads, increasing displayed depth in the limit order book, and 
+lowering short-term volatility (Hasbrouck and Saar 2013, Riordan and Storkenmaier 2012). 
+Further, there is an increase in execution costs and volatility when limit order books are 
+displayed publicly. An increase in transparency reduces liquidity (Madhavan et al. 2005). Rosu 
+(2019) shows that competition among speculators reveals much private information to the public, 
+and the value of the information decays very fast. This speed increases the aggressiveness of the 
+traders, leading to higher price volatility. Malceniece et al. (2019), using the European equity 
+markets data, show that high-frequency trading (HFT) leads to increased liquidity, which is 
+
+6 
+ 
+somewhat offset by an increase in comovement. Comovement affects how shocks are transmitted 
+between stocks and, thus, the level of systemic risk. HFT has two opposing effects on the cost of 
+capital. Firstly, HFT leads to increased comovement in returns, and liquidity is associated with 
+cross-sectional returns that increase the cost of capital. On the other hand, HFT also increases the 
+level of liquidity, which tends to lower the cost of capital. 
+Eaton et al. (2022) contrast outages at Robinhood, a platform more popular with 
+inexperienced investors than traditional retail brokers, showing that herding by inexperienced 
+investors can create inventory risks and harm liquidity in stocks with high retail interest, while 
+other retail trading improves market quality. Leverage attracts speculative traders who do not 
+necessarily contribute to market quality. By providing leverage, financial intermediaries 
+exacerbate speculation, which increases trading volume and their intermediation revenues, but this 
+is at the expense of traders' profits and social welfare (Heimer and Simsek 2019). Retail trading 
+activity positively affects the volatility of stock returns, which suggests that retail investors behave 
+as noise traders (Foucault et al. 2011). Further, Foucault et al. (2005) find that the proportion of 
+patient traders in the population and the order arrival rate are the key determinants of the limit 
+order book dynamics. Traders submit aggressive limit orders (improve upon quoted spreads by 
+large amounts) when the proportion of patient traders is large or when the order arrival rate is low. 
+For this reason, markets with a high proportion of patient traders or a small order arrival 
+rate are more resilient. Also, a reduction in the tick size reduces market resiliency and, in some 
+cases, increases the average spread. Baker and Stein (2004) discuss that market liquidity can be a 
+sentiment indicator. An unusually liquid market is one in which pricing is dominated by irrational 
+investors, who tend to underreact to the information embodied in either order flow or equity issues. 
+Thus, high liquidity is a sign that the sentiment of these irrational investors is positive and that 
+expected returns are, therefore, abnormally low. 
+Market liquidity is an important indicator representing the market depth and showing the 
+absorption power of risk premium on trading execution. It also affects price discovery and market 
+efficiency. We can improve market efficiency by increasing market liquidity. More precisely, a 
+decline in the market price uncertainties and increased market liquidity leads to more efficient 
+markets. Further, market liquidity is essential for financial system stability. Maintaining sufficient 
+liquidity under normal conditions will autonomously improve market stability by expanding the 
+
+7 
+ 
+market boundaries and improving the participants' confidence in market sustainability. (Muranaga 
+and Shimizu 1999). 
+With FT, these investors could be more willing to take the risk of investing in these markets 
+despite higher portfolio checks and significantly higher price volatility of the securities they trade. 
+This could have multiple implications for non-professional investors' risk behavior and the 
+financial markets in general. Firstly, with the option to buy a fraction of stocks or ETFs, the risk 
+appetite of non-professional individuals might go up given the much lower required investment 
+and money-risk exposure, which can increase market participation and stock demand. Secondly, 
+it has the potential to modify the behavior of prices and volumes in limit order books7, making 
+them steeper by either keeping the same volume as before and increasing the prices or by keeping 
+the same prices and reducing the offered volume (in either or both the buy and sell sides). These 
+situations create abnormal price movements due to the rise in demand that faces the same or even 
+lower supply of shares available for trade. This increase in demand could potentially have a domino 
+effect in the dynamics of price formation by influencing regular professional investors by either 
+making them reluctant to go to the market (and thus reducing their activity as liquidity providers 
+or takers) or making them behave more like "gamblers" that professional investor (since there is a 
+potential for significant gains). FT can modify the structure of the limit order book to support the 
+additional market demands when the market supply has remained the same. These situations create 
+abnormal price behavior that could translate into price volatility increases (as recently observed in 
+the market) and, at the same time, that could influence professional investors' behavior by making 
+them reluctant to go to the market, contributing in this way to the supply reduction. Fig. 1 illustrates 
+these changes.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+7 A limit order is an order to buy or sell a security at a specific price or better. Buy limit orders can only be executed 
+at the limit price or lower and sell limit orders can only be executed at the limit price or higher. 
+
+8 
+ 
+Fig. 1: Limit order book structure 
+ 
+This figure illustrates a hypothetical limit order book structure. The 'lob_normal' line presents the structure under a 
+normal scenario without FT. With FT, as the market demand increases and the supply remains the same, it has the 
+potential to modify the limit order book structure, making it steeper to keep the same volume ('lob_ft_samevol'). 
+Another situation that can arise is that the limit order book becomes even steeper with the reduced volume 
+('lob_ft_reducedvol'). These situations create abnormal price behavior that could translate into price volatility 
+increases (as recently observed in the market) and, at the same time, that could influence professional investors' 
+behavior by making them reluctant to go to the market, contributing in this way to the supply reduction. 
+ 
+These commission-less trading platforms like Robinhood also allow investors to place limit 
+orders in their platforms.8 They also maintain inventory to execute regular market orders in regular 
+exchanges. Increases in demand for stock trading with fractional trading on these platforms can 
+potentially increase the demand for limit orders in regular markets. With FT and commission-less 
+trading apps, the demand for investing in the stock market has increased (Tripathi and Rengifo 
+2023, Da et al. 2021, Gempesaw et al. 2022), increasing the volatility of the mid-quote prices. As 
+such, the volatility of mid-quote prices is positively related to the average size at a given price. 
+Further, when price impact functions are highly volatile, the stock markets do not provide 
+fundamental value signals, making it hard to do informed trading. This goes against liquidity and 
+the fundamental value signal as well. Investors are now faced with limit order books that are 
+steeper (high price impact) and riskier (more volatile). Both contribute to market uncertainty that 
+could affect professional and non-professional investors alike. Further, (Bartlett et al. 2002a, 
+ 
+8 Source: https://robinhood.com/us/en/support/articles/limit-order/ 
+Price
+Volume
+lob_normal
+lob_ft_samevol
+lob_ft_reducedvol
+Sell-side
+Buy-side
+
+9 
+ 
+2002b) discuss that fractional trading has been a recent introduction and currently does not fit into 
+the current national market system of trade reporting. The recent "rounding up" rule of trade 
+reporting by FINRA can potentially distort market efficiency.9  
+To better understand these aspects and the impact of FT on limit order book price-volume 
+structure, we analyze Nasdaq data at the minute level to test hypotheses that are a feature of 
+efficient markets and relevant to aspects such as market liquidity and financial stability. The main 
+testable hypothesis of the paper is that FT does not have any impact on the market liquidity, i.e., 
+FT has no impact on the price levels and the order book dynamics. According to this hypothesis, 
+the limit order book should be similar during pre-and post-FT, i.e., to buy/ sell a certain volume of 
+shares, the change in the price levels should be similar as pre-and post-FT (controlling for time of 
+the day, day of the month and month of the year, to try to have clear comparison observations). 
+ 
+3. Data and Methodology 
+This section presents the details of the data sources used in the study. Order books are the primary 
+source of market data. They provide real-time updates throughout the day, reflecting all trading 
+activities. The order books reveal the market depth throughout the day by listing the number of 
+shares being bid on or offered at each price point. Market depth is the key indicator of liquidity 
+and the potential price impact of sizable market orders. 
+ 
+We use Historical Total View-ITCH data from Nasdaq, providing historical tick-by-tick 
+Nasdaq order data. It allows subscribers to track individual orders for equity instruments from 
+placement to execution or cancellation. The data comprise the time-sequenced messages 
+describing the history of trade and book activity. Each message is time-stamped to the nanosecond 
+and hence provides a detailed picture of the trading process and the state of the Nasdaq book. We 
+use the Historical Total View-ITCH data during the trading hours (09:30 – 16:00) for February 
+2019, July 2019, November 2019, February 2020, July 2020, November 2020, February 2021, July 
+2021, and November 2021. The stocks chosen for this study are Apple (AAPL), Amazon (AMZN), 
+Google (GOOG), and Tesla (TSLA), as these are the stocks with the most trades during the day. 
+ 
+9 The Rounding up rule says: "When reporting a trade for a fractional number of shares, firms should delete the fraction 
+and report the whole number, except if the whole number would be zero. If the whole number would be zero, firms 
+should round up to 1. Where a trade is executed for less than one share, firms should round up and report a share 
+quantity of 1." (Source: FINRA Filing and Reporting – Trade Reporting FAQs). 
+
+10 
+ 
+These stocks cover, on average, 15 – 20 % of the daily traded value (see Fig. 2).10 We perform this 
+analysis for both the buy and sell sides. To test the hypothesis, the analysis is done for November 
+2019 (pre-FT) vs. February 2020 (post-FT). Further, we also performed the analysis for February 
+2019 vs. February 2020, November 2019 vs. November 2020, February 2019 vs. February 2021, 
+and November 2019 vs. November 2021 to compare at the month level to deal with any calendar 
+effect that could be present in the study. As there was a stock split for Apple and Tesla in August 
+2020, we performed the month-wise comparison analysis using July 2019 vs. July 2020 (instead 
+of November 2019 vs. November 2020) for these stocks. Also, we leave out the 2021 comparison 
+to avoid any ambiguity in results due to the stock split for these stocks. 
+ 
+Fig. 2: Percentage of average daily traded value 
+ 
+This figure presents a stacked bar chart with the average percentage of traded value for Apple, Amazon, Google, and 
+Tesla during the trading day for the months under study. We see that post-FT, these four stocks account for 15-25% 
+of the average daily traded value. 
+ 
+ 
+10 Further, the processing of these daily tick-by-tick Nasdaq data files is a highly time intensive and requires large 
+storage spaces for data processing and analysis. This also becomes a constraint in terms of how many stocks and days/ 
+months we can analyze. We have ensured that our data is a good representative sample using daily trade value to select 
+the stocks for analysis. We also select months before and after fractional trading to gauge the effect of fractional 
+trading on order book dynamics. Further, to cancel any calendar effect, we analyze and compare numbers for same 
+months in different years for the representative stocks. The study period includes 2019 Q1 – 2021 Q4. This allows us 
+to compare the order book dynamics pre- and post- fractional trading. Part of the study period (specifically 2020Q1 
+and 2020Q2) overlaps with the COVID-19 pandemic, so the effects could be exacerbated during this period. To 
+separate the effects of COVID-19 in our analysis, we analyze the data for 2020 Q3 Q4, and 2021 all quarters as well 
+for all the stocks in study. The results are consistent across all the quarters.   
+0
+5
+10
+15
+20
+25
+30
+Feb'19
+Jul'19
+Nov'19
+Feb'20
+Jul'20
+Nov'20
+Feb'21
+Jul'21
+Nov'21
+% of daily traded value
+AAPL
+AMZN
+GOOG
+TSLA
+
+11 
+ 
+Price-Volume structure such as the one illustrated in Fig. 1 shows the relationship between 
+asset prices and trading volume. These are analyzed using liquidity measures, order book depth 
+and price impact functions. We analyze how buy and sell orders are distributed across price levels 
+and how volume concentration at different price points in-fluences price formation and market 
+efficiency. To study the impact of fintech and fractional trading on limit order book dynamics, we 
+focus on two metrics namely the price impact factor and the tick size.  
+Price Impact Factor (PIF) measures how a given trade (order flow) affects the assets’ price, 
+i.e. the sensitivity of prices to the volume of trades. A higher price impact factor means that large 
+trades cause more significant price changes. The PIF depends on the liquidity in the limit order 
+book. If the book is shallow (steeper slope), large trades will move the prices more significantly, 
+as the filling of these orders will significantly walk up or down the limit order books in order to 
+absorb the trade. On the other hand, a deeper order book (flatter slope) absorbs trade more 
+effectively, resulting in smaller price changes.  
+Further, tick size measures the minimum price movement for a given asset while the trade 
+orders are placed on buy- and sell- sides. A smaller tick size allows for a smoother price discovery, 
+i.e. the market participants can place orders close to mid-price (the lowest ask minus the highest 
+bid prices). Smaller tick sizes are known to allow efficient price adjustments as new information 
+becomes available. On the other hand, a larger tick-size can reduce the ability of the order book to 
+reflect the price changes efficiently. With larger tick sizes, the prices move in a larger number of 
+steps (either up or down the books), the market may experience less responsiveness to new 
+information, and price adjustments may be slower and less gradual, which goes against 
+fundamental value signal and market efficiency. Smaller tick sizes tend to increase market 
+efficiency, reduce bid-ask spread, and enhance liquidity, while larger tick sizes might reduce 
+granularity, widen spreads and create a less responsive market.  
+In this paper, we perform three types of analysis – analysis by top 5 and top 10 best quotes, 
+and analysis by fixed cumulative volume. 
+ 
+4. Analysis by top 5 and top 10 best quotes 
+In this first part of the analysis, we fetch the best 5 and 10 quotes at each minute for the stocks 
+under study. Then, we calculate the cumulative volume of shares of the stock till the best 5 (10) 
+quote price is reached. We get the change in price, defined as Δ𝑝5 = 𝑝5 −𝑝1; Δ𝑝10 = 𝑝10 −𝑝1. 
+
+12 
+ 
+Similarly, we calculate the change in the cumulative volume of the shares of the stock traded. We 
+get the change in cumulative volume as Δ𝑞5 = 𝑞5 −𝑞1; Δ𝑞10 = 𝑞10 −𝑞1. Further, we calculate 
+the slope of the price-volume structure (i.e., price impact factor), 𝑃𝐼𝐹5 =
+Δ𝑝5
+Δ𝑞5 ; 𝑃𝐼𝐹10 =
+Δ𝑝10
+Δ𝑞10. 
+Using these price impact factors, we test the changes observed in the price-volume structure postintroduction of FT.  
+ 
+4.1. Empirical Tests and Results – Buy Side 
+In this section, we perform the analysis for the buy and sell sides. We compute the price impact 
+factor at each minute level for all the trading dates during the months under study and perform the 
+test for equality of means and variances. In Table 1, we present the results of the test based on the 
+analysis of the best 5 quotes at each minute.11  
+Table 1 shows that the averages of the slopes (buy-side) are statistically different pre- and 
+post-FT. The results suggest that the price impact factors increased in February 2020 (post-FT) vs. 
+November 2019 (pre-FT) by 56%, 124%, 100%, and 171% for Apple, Amazon, Google, and Tesla, 
+respectively. This suggests that placing a buy order for these stocks costs significantly higher postFT. Further, Apple's price impact factors are 75% and 50% higher for February 2020 vs. February 
+2019 and July 2020 vs. July 2019, respectively. For Amazon, the price impact factors have 
+increased by 93%, 124%, 145%, and 472% for February 2020 vs. February 2019, November 2020 
+vs. November 2019, February 2021 vs. February 2019, and November 2021 vs. November 2019, 
+respectively. For Google, the price impact factors have increased by 130%, 40%, 145%, and 273% 
+for February 2020 vs. February 2019, November 2020 vs. November 2019, February 2021 vs. 
+February 2019, and November 2021 vs. November 2019, respectively. Furthermore, we find the 
+price impact factors for Tesla are 156% and 332% higher for February 2020 vs. February 2019 
+and July 2020 vs. July 2019, respectively.  
+ 
+Furthermore, we also analyze variances in the slope of the limit order book. We find that 
+the variances of price impact factors are significantly different and have increased in February 
+2020 vs. November 2019 by 3, 18, 20, and 10 times for Apple, Amazon, Google, and Tesla, 
+respectively.12 
+ 
+11 The results for tests based on the analysis of the best 10 quotes are presented in Appendix section A.1. 
+12 Except for Amazon (February 2020 vs February 2019 and February 2021 vs. February 2019), the variances of price 
+impact factors are statistically different and significantly higher post- FT. 
+
+13 
+ 
+Table 1. Price Impact Factor (buy and sell sides) using the best 5 quotes at each minute level 
+PIF5 
+ 
+AAPL 
+AMZN 
+GOOG 
+TSLA 
+Buy-side 
+Sell-side 
+Buy-side 
+Sell-side 
+Buy-side 
+Sell-side 
+Buy-side 
+Sell-side 
+Dates 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Mean 
+-0.0009 
+-0.0014* 
+0.001 
+0.0013* 
+-0.0025 
+-0.0056* 
+0.0028 
+0.0048* 
+-0.0015 
+-0.0030* 
+0.0014 
+0.0026* 
+-0.0017 
+-0.0046* 
+0.0024 
+0.0062* 
+Ratio of Means 
+1 
+1.47 
+1 
+1.36 
+1 
+2.26 
+1 
+1.74 
+1 
+1.96 
+1 
+1.82 
+1 
+2.69 
+1 
+2.59 
+Variance 
+3E-08 
+9E-08* 
+1E-08 
+5E-08* 
+2E-07 
+3E-06* 
+4E-07 
+2E-06* 
+1E-08 
+2E-07* 
+3E-08 
+5E-07* 
+7E-08 
+7E-07* 
+2E-07 
+1E-06* 
+Ratio of Variances 
+1 
+3.36 
+1 
+3.63 
+1 
+18.14 
+1 
+4.88 
+1 
+19.81 
+1 
+16.11 
+1 
+9.89 
+1 
+4.84 
+Dates 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Mean 
+-0.0008 
+-0.0014* 
+0.0008 
+0.0013* 
+-0.0029 
+-0.0056* 
+0.0021 
+0.0048* 
+-0.0013 
+-0.0030* 
+0.0011 
+0.0026* 
+-0.0018 
+-0.0046* 
+0.0017 
+0.0062* 
+Ratio of Means 
+1 
+1.74 
+1 
+1.63 
+1 
+1.89 
+1 
+2.28 
+1 
+2.27 
+1 
+2.43 
+1 
+2.56 
+1 
+3.64 
+Variance 
+2E-08 
+9E-08* 
+2E-08 
+5E-08* 
+7E-06 
+3E-06 
+8E-08 
+2E-06* 
+1E-08 
+2E-07* 
+4E-09 
+5E-07* 
+1E-07 
+7E-07* 
+1E-07 
+1E-06* 
+Ratio of Variances 
+1 
+3.83 
+1 
+2.41 
+1 
+0.42 
+1 
+26.79 
+1 
+20.22 
+1 
+110.46 
+1 
+5.27 
+1 
+10.1 
+Dates 
+Jul'19 
+Jul'20 
+Jul'19 
+Jul'20 
+Nov'19 
+Nov'20 
+Nov'19 
+Nov'20 
+Nov'19 
+Nov'20 
+Nov'19 
+Nov'20 
+Jul'19 
+Jul'20 
+Jul'19 
+Jul'20 
+Mean 
+-0.001 
+-0.0015* 
+0.0007 
+0.0019* 
+-0.0025 
+-0.0056* 
+0.0028 
+0.0103* 
+-0.0015 
+-0.0021* 
+0.0014 
+0.0029* 
+-0.0019 
+-0.0082* 
+0.0022 
+0.0043* 
+Ratio of Means 
+1 
+1.46 
+1 
+2.43 
+1 
+2.26 
+1 
+3.69 
+1 
+1.4 
+1 
+2.03 
+1 
+4.25 
+1 
+1.91 
+Variance 
+7E-08 
+3E-09* 
+7E-09 
+9E-08* 
+2E-07 
+7E-07* 
+4E-07 
+4E-06* 
+1E-08 
+5E-07* 
+3E-08 
+6E-08* 
+7E-08 
+2E-06* 
+5E-07 
+2E-07 
+Ratio of Variances 
+1 
+1.56 
+1 
+12.62 
+1 
+4.09 
+1 
+10 
+1 
+45.08 
+1 
+1.97 
+1 
+35.93 
+1 
+0.51 
+Dates 
+ 
+ 
+ 
+ 
+Feb'19 
+Feb'21 
+Feb'19 
+Feb'21 
+Feb'19 
+Feb'21 
+Feb'19 
+Feb'21 
+ 
+ 
+ 
+ 
+Mean 
+ 
+ 
+ 
+ 
+-0.0029 
+-0.0071* 
+0.0021 
+0.0111* 
+-0.0013 
+-0.0025* 
+0.001 
+0.0042* 
+ 
+ 
+ 
+ 
+Ratio of Means 
+ 
+ 
+ 
+ 
+1 
+2.38 
+1 
+5.17 
+1 
+1.93 
+1 
+3.89 
+ 
+ 
+ 
+ 
+Variance 
+ 
+ 
+ 
+ 
+7E-06 
+3E-06 
+8E-08 
+2E-06* 
+1E-08 
+2E-07* 
+4E-09 
+1E-07* 
+ 
+ 
+ 
+ 
+Ratio of Variances 
+ 
+ 
+ 
+ 
+1 
+0.36 
+1 
+26.72 
+1 
+19.4 
+1 
+32.29 
+ 
+ 
+ 
+ 
+Dates 
+ 
+ 
+ 
+ 
+Nov'19 
+Nov'21 
+Nov'19 
+Nov'21 
+Nov'19 
+Nov'21 
+Nov'19 
+Nov'21 
+ 
+ 
+ 
+ 
+Mean 
+ 
+ 
+ 
+ 
+-0.0025 
+-0.0143* 
+0.0028 
+0.0127* 
+-0.0015 
+-0.0056* 
+0.0014 
+0.0073* 
+ 
+ 
+ 
+ 
+Ratio of Means 
+ 
+ 
+ 
+ 
+1 
+5.74 
+1 
+4.54 
+1 
+3.62 
+1 
+5.00 
+ 
+ 
+ 
+ 
+Variance 
+ 
+ 
+ 
+ 
+3E-07 
+4E-06* 
+4E-07 
+8E-06* 
+1E-08 
+2E-06* 
+3E-08 
+3E-06* 
+ 
+ 
+ 
+ 
+Ratio of Variances 
+ 
+ 
+ 
+ 
+1 
+22.96 
+1 
+18.18 
+1 
+148.09 
+1 
+104.78 
+ 
+ 
+ 
+ 
+This table presents the results of the tests for equality of means and equality of variances of the averages of the slopes of the order books (i.e., price impact factors) using the best 5 quotes on the buy and sell sides at each minute 
+level. The results suggest that the averages of slopes are statistically different pre- and post-FT. The price impact factor has increased post-introduction of FT significantly. Note: The number of observations for the analysis is 
+391 for the monthly comparison tests, and * suggests that mean/ variance is statistically different in post-FT compared to pre-FT.  
+
+14 
+ 
+4.2. Empirical Tests and Results – Sell Side 
+Table 1 shows that the averages of the slopes (sell-side) are statistically different pre- and postFT. The results suggest that the price impact factors have increased in February 2020 vs. November 
+2019 by 30%, 71%, 86%, and 158% for Apple, Amazon, Google, and Tesla, respectively. This 
+suggests that placing a sell order for these stocks post-FT costs significantly higher. Further, for 
+Apple, the price impact factors are 63% and 171% higher for February 2020 vs. February 2019 
+and July 2020 vs. July 2019, respectively. For Amazon, the price impact factors have increased by 
+129%, 268%, 429%, and 354% for February 2020 vs. February 2019, November 2020 vs. 
+November 2019, February 2021 vs. February 2019, and November 2021 vs. November 2019, 
+respectively. For Google, the price impact factors have increased by 136%, 107%, 320%, and 
+421% for February 2020 vs. February 2019, November 2020 vs. November 2019, February 2021 
+vs. February 2019, and November 2021 vs. November 2019, respectively. Furthermore, the price 
+impact factors for Tesla are 265% and 95% higher for February 2020 vs. February 2019 and July 
+2020 vs. July 2019, respectively.  
+ 
+Furthermore, we also analyze variances in the slope of the limit order book. We find that 
+the variances of price impact factors are significantly different and have increased in February 
+2020 vs. November 2019 by 4, 5, 16, and 5 times for Apple, Amazon, Google, and Tesla, 
+respectively.13 
+ 
+5. Analysis by fixed cumulative volume 
+As a robustness check, in this section, we set the cumulative volume at 50,000 shares and collect 
+its corresponding price for each stock at each minute (see Fig. 3). Then, we compute the change 
+in price, Δ𝑝50,000  I.e., the change in price to place a buy/ sell limit order of 50,000 shares of the 
+stock under study. Further, we calculate the slope of the price-volume structure, i.e., the price 
+impact factor, 𝑠𝑙𝑜𝑝𝑒50,000 =
+Δ𝑝
+50,000. Using this price impact factor, we test the changes observed 
+in the price-volume structure post-introduction of FT.  
+Finally, we also calculate the number of steps required to place a limit order to buy/ sell 
+50,000 shares at each minute level and denoted this variable as 𝑠𝑡𝑒𝑝𝑠50,000. Further, using the 
+ 
+13 Except for Tesla (July 2020 vs. July 2019), the variances of price impact factors are statistically different and 
+significantly higher post- FT. 
+
+15 
+ 
+steps, we calculate the average tick size (defined as the minimum price movement of the stock) at 
+each minute level. We define average tick size as 𝑎𝑣𝑒𝑟𝑎𝑔𝑒 𝑡𝑖𝑐𝑘 𝑠𝑖𝑧𝑒=
+Δ𝑝50,000
+𝑠𝑡𝑒𝑝𝑠50,000.  
+ 
+Fig 3. Limit order book structure with fixed cumulative volume at 50,000 shares 
+ 
+This figure illustrates a hypothetical limit order book structure with a fixed cumulative volume of 50,000 shares. 
+ 
+In what follows, we use these variables to perform equality of means and equality of variances 
+analysis for the buy and sell sides. 
+ 
+5.1. Empirical Tests and Results – Buy Side 
+Table 2. presents the test results based on the analysis of slopes pre- and post-FT. We can see that 
+the averages of the slopes (buy-side) when we fix cumulative volume at 50,000 shares are 
+statistically different pre- and post-FT. The results suggest that the price impact factors have 
+increased in February 2020 vs. November 2019 by 44%, 178%, 22%, and 210% for Apple, 
+Amazon, Google, and Tesla, respectively. This suggests that placing a buy order for these stocks 
+post-FT costs significantly higher. Further, for Apple, the price impact factors are 86% and 67% 
+higher for February 2020 vs. February 2019 and July 2020 vs. July 2019, respectively. For 
+Amazon, the price impact factors have increased by 52%, 204%, 145%, and 570% for February 
+2020 vs. February 2019, November 2020 vs. November 2019, February 2021 vs. February 2019, 
+and November 2021 vs. November 2019, respectively. For Google, the price impact factors have 
+Price
+Volume
+lob_normal
+lob_ft_samevol
+lob_ft_reducedvol
+Sell-side
+Buy-side
+50,000 shares
+
+16 
+ 
+increased by 38%, 44%, 100%, and 428% for February 2020 vs. February 2019, November 2020 
+vs. November 2019, February 2021 vs. February 2019, and November 2021 vs. November 2019, 
+respectively. Furthermore, we find the price impact factors for Tesla are 226% and 313% higher 
+for February 2020 vs. February 2019 and July 2020 vs. July 2019, respectively.  
+ 
+Furthermore, we also analyzed variances in the slope of the limit order book. We find that 
+the variances of price impact factors are significantly different and have increased in February 
+2020 vs. November 2019 by 5, 13, 2, and 5 times for Apple, Amazon, Google, and Tesla, 
+respectively. 
+Next, we analyze the average number of steps required to place an order for 50,000 shares. 
+Table 3. presents the test results for the equality of the average number of steps needed to place an 
+order for 50,000 shares and their variances during the month at each minute level of pre-and postFT. 
+Table 3 shows that the average number of steps (buy-side) when we fix cumulative volume 
+at 50,000 shares are similar for Apple, Amazon, Google, and Tesla pre- and post-FT. This suggests 
+that there has not been a significant increase in the average number of steps to place an order for 
+50,000 shares.14 
+Next, we use these two variables, i.e., the price impact function and the average number of 
+steps, to calculate the average tick size15. In Table 4., we present the test results for the equality of 
+average tick size while placing an order for 50,000 shares and their variances during the month at 
+each minute level pre-and post-FT. 
+Table 4. shows that the average tick size (buy-side) when we fix cumulative volume at 
+50,000 shares is statistically different pre- and post-FT. The results suggest that the average tick 
+size increased in February 2020 vs. November 2019 by 44%, 174%, 16%, and 219% for Apple, 
+Amazon, Google, and Tesla, respectively. Further, for Apple, we find the average tick sizes are 
+50% and 43% higher for February 2020 vs. February 2019 and July 2020 vs. July 2019, 
+respectively. For Amazon, the average tick size has increased by 39%, 153%, 78%, and 470% for 
+February 2020 vs. February 2019, November 2020 vs. November 2019, February 2021 vs. 
+February 2019, and November 2021 vs. November 2019, respectively. For Google, the average 
+ 
+14 In some cases, there has been an increase in number of steps to place an order for 50,000 shares post- FT but the 
+result is not conclusive. We find similar results for the test of equality of variances.  
+15 Tick size is the minimum upward or downward movement in the price of a security. 
+
+17 
+ 
+tick size has increased by 21%, 22%, 63%, and 273% for February 2020 vs. February 2019, 
+November 2020 vs. November 2019, February 2021 vs. February 2019, and November 2021 vs. 
+November 2019, respectively. Furthermore, we find the average tick sizes for Tesla are 221% and 
+324% higher for February 2020 vs. February 2019 and July 2020 vs. July 2019, respectively.  
+ 
+Furthermore, we also analyzed variances in the slope of the limit order book. We find that 
+the variances of average tick size are significantly different and have increased significantly in 
+February 2020 vs. November 2019 by 11, 52, 2, and 7 times for Apple, Amazon, Google, and 
+Tesla, respectively.16 
+ 
+16 Except for Amazon (February 2021 vs. February 2019), the variances of price impact factors are statistically 
+different and significantly higher post- FT. 
+
+18 
+ 
+Table 2. Price impact factor of the price-volume structure (buy and sell sides) while placing an order for 50,000 shares 
+ 
+PIF50k 
+ 
+AAPL 
+AMZN 
+GOOG 
+TSLA 
+Buy-side 
+Sell-side 
+Buy-side 
+Sell-side 
+Buy-side 
+Sell-side 
+Buy-side 
+Sell-side 
+Dates 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Mean 
+-0.0009 
+-0.0013* 
+0.0017 
+0.0036* 
+-0.0023 
+-0.0064* 
+0.0096 
+0.0190* 
+-0.0018 
+-0.0022* 
+0.0033 
+0.0051* 
+-0.002 
+-0.0062* 
+0.0042 
+0.0181* 
+Ratio of Means 
+1 
+1.47 
+1 
+2.14 
+1 
+2.77 
+1 
+1.97 
+1 
+1.2 
+1 
+1.55 
+1 
+3.04 
+1 
+4.29 
+Variance 
+1E-08 
+6E-08* 
+5E-09 
+9E-08* 
+1E-07 
+2E-06* 
+1E-06 
+5E-06* 
+2E-08 
+4E-08* 
+9E-08 
+1E-07* 
+1E-07 
+5E-07* 
+2E-07 
+1E-06* 
+Ratio of Variances 
+1 
+4.87 
+1 
+16.79 
+1 
+12.68 
+1 
+4.38 
+1 
+2.01 
+1 
+1.58 
+1 
+5.05 
+1 
+5.16 
+Dates 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Mean 
+-0.0007 
+-0.0013* 
+0.0013 
+0.0036* 
+-0.0042 
+-0.0064* 
+0.0124 
+0.0190* 
+-0.0016 
+-0.0022* 
+0.003 
+0.0051* 
+-0.0019 
+-0.0062* 
+0.0055 
+0.0181* 
+Ratio of Means 
+1 
+1.69 
+1 
+2.65 
+1 
+1.53 
+1 
+1.53 
+1 
+1.34 
+1 
+1.67 
+1 
+3.23 
+1 
+3.28 
+Variance 
+2E-08 
+6E-08* 
+3E-08 
+9E-08* 
+7E-07 
+2E-06* 
+2E-06 
+5E-06* 
+2E-08 
+4E-08* 
+2E-08 
+1E-07* 
+7E-08 
+5E-07* 
+2E-07 
+1E-06* 
+Ratio of Variances 
+1 
+3.37 
+1 
+3.12 
+1 
+2.56 
+1 
+2.85 
+1 
+2.15 
+1 
+5.77 
+1 
+7.82 
+1 
+4.41 
+Dates 
+Jul'19 
+Jul'20 
+Jul'19 
+Jul'20 
+Nov'19 
+Nov'20 
+Nov'19 
+Nov'20 
+Nov'19 
+Nov'20 
+Nov'19 
+Nov'20 
+Jul'19 
+Jul'20 
+Jul'19 
+Jul'20 
+Mean 
+-0.0009 
+-0.0015* 
+0.0012 
+0.0029* 
+-0.0023 
+-0.0070* 
+0.0096 
+0.0202* 
+-0.0018 
+-0.0026* 
+0.0033 
+0.0051* 
+-0.0016 
+-0.0066* 
+0.0038 
+0.0225* 
+Ratio of Means 
+1 
+1.64 
+1 
+2.82 
+1 
+3.01 
+1 
+2.09 
+1 
+1.41 
+1 
+1.56 
+1 
+3.94 
+1 
+5.89 
+Variance 
+2E-08 
+8E-08* 
+3E-08 
+7E-08* 
+1E-07 
+4E-06* 
+1E-06 
+2E-06* 
+2E-08 
+8E-08* 
+9E-08 
+4E-07* 
+5E-08 
+5E-07* 
+4E-07 
+6E-06* 
+Ratio of Variances 
+1 
+3.66 
+1 
+2.01 
+1 
+27.4 
+1 
+1.52 
+1 
+4.59 
+1 
+5.04 
+1 
+9.56 
+1 
+14.9 
+Dates 
+ 
+ 
+ 
+ 
+Feb'19 
+Feb'21 
+Feb'19 
+Feb'21 
+Feb'19 
+Feb'21 
+Feb'19 
+Feb'21 
+ 
+ 
+ 
+ 
+Mean 
+ 
+ 
+ 
+ 
+-0.0042 
+-0.0103* 
+0.0124 
+0.0183* 
+-0.0016 
+-0.0032* 
+0.003 
+0.0081* 
+ 
+ 
+ 
+ 
+Ratio of Means 
+ 
+ 
+ 
+ 
+1 
+2.44 
+1 
+1.48 
+1 
+1.95 
+1 
+2.66 
+ 
+ 
+ 
+ 
+Variance 
+ 
+ 
+ 
+ 
+7E-07 
+3E-06* 
+2E-06 
+2E-06 
+2E-08 
+7E-08* 
+2E-08 
+3E-07* 
+ 
+ 
+ 
+ 
+Ratio of Variances 
+ 
+ 
+ 
+ 
+1 
+3.87 
+1 
+0.98 
+1 
+4.12 
+1 
+12.1 
+ 
+ 
+ 
+ 
+Dates 
+ 
+ 
+ 
+ 
+Nov'19 
+Nov'21 
+Nov'19 
+Nov'21 
+Nov'19 
+Nov'21 
+Nov'19 
+Nov'21 
+ 
+ 
+ 
+ 
+Mean 
+ 
+ 
+ 
+ 
+-0.0023 
+-0.0154* 
+0.0096 
+0.0279* 
+-0.0018 
+-0.0095* 
+0.0033 
+0.0147* 
+ 
+ 
+ 
+ 
+Ratio of Means 
+ 
+ 
+ 
+ 
+1 
+6.6 
+1 
+2.89 
+1 
+5.08 
+1 
+4.47 
+ 
+ 
+ 
+ 
+Variance 
+ 
+ 
+ 
+ 
+1E-07 
+2E-06* 
+1E-06 
+1E-05* 
+2E-08 
+3E-06* 
+9E-08 
+2E-06* 
+ 
+ 
+ 
+ 
+Ratio of Variances 
+ 
+ 
+ 
+ 
+ 
+1 
+11.37 
+1 
+7.95 
+1 
+184.88 
+1 
+27.34 
+ 
+ 
+ 
+ 
+This table presents the equality of means and variances for the averages of the price impact factor based on the first 50,000 shares on the buy and sell sides at each minute level. The results suggest that the averages of price 
+impacts are statistically different pre- and post-FT. The slopes have increased post-introduction of FT. Note: The number of observations for the analysis is 391 for the monthly comparison tests, and * suggests that mean/ 
+variance is statistically different in post-FT compared to pre-FT.  
+ 
+ 
+
+19 
+ 
+ 
+Table 3. Number of steps needed to place an order of 50,000 shares pre-and post-FT (buy and sell sides) 
+ 
+steps50k 
+ 
+AAPL 
+AMZN 
+GOOG 
+TSLA 
+Buy-side 
+Sell-side 
+Buy-side 
+Sell-side 
+Buy-side 
+Sell-side 
+Buy-side 
+Sell-side 
+Dates 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Mean 
+38.95 
+39.90* 
+40.94 
+40.94 
+50.93 
+54.70* 
+53.23 
+54.85* 
+51.18 
+52.18* 
+54.9 
+53.84* 
+51.76 
+51.82 
+52.46 
+49.46* 
+Ratio of Means 
+1 
+1.02 
+1 
+1 
+1 
+1.07 
+1 
+1.03 
+1 
+1.02 
+1 
+0.98 
+1 
+1 
+1 
+0.94 
+Variance 
+2E+00 
+1E+00 
+9E-01 
+1.81* 
+2E+01 
+1E+01 
+2E+01 
+1E+01 
+4E+00 
+3E+00 
+4E+00 
+3E+00 
+4E+00 
+16.43* 
+5E+00 
+14.13* 
+Ratio of Variances 
+1 
+0.64 
+1 
+2.13 
+1 
+0.66 
+1 
+0.55 
+1 
+0.81 
+1 
+0.67 
+1 
+4.1 
+1 
+2.65 
+Dates 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Mean 
+35.17 
+39.90* 
+37.05 
+35.94* 
+48.37 
+54.70* 
+49.57 
+54.85* 
+47.58 
+52.18* 
+47.84 
+53.84* 
+49.02 
+51.82* 
+50.09 
+49.46* 
+Ratio of Means 
+1 
+1.13 
+1 
+0.97 
+1 
+1.13 
+1 
+1.11 
+1 
+1.09 
+1 
+1.13 
+1 
+1.06 
+1 
+0.99 
+Variance 
+3E+00 
+1E+00 
+6E-01 
+1.81* 
+4E+01 
+1E+01 
+3E+01 
+1E+01 
+2E+00 
+3.08* 
+2E+00 
+2.90* 
+8E+00 
+16.43* 
+1E+01 
+1E+01 
+Ratio of Variances 
+1 
+0.45 
+1 
+2.92 
+1 
+0.29 
+1 
+0.38 
+1 
+2.03 
+1 
+1.74 
+1 
+2.09 
+1 
+1.01 
+Dates 
+Jul'19 
+Jul'20 
+Jul'19 
+Jul'20 
+Nov'19 
+Nov'20 
+Nov'19 
+Nov'20 
+Nov'19 
+Nov'20 
+Nov'19 
+Nov'20 
+Jul'19 
+Jul'20 
+Jul'19 
+Jul'20 
+Mean 
+37.52 
+43.14* 
+36.9 
+42.37* 
+50.93 
+59.83* 
+53.23 
+56.94* 
+51.18 
+59.38* 
+54.9 
+57.78* 
+50.76 
+50.79 
+50.33 
+49.64* 
+Ratio of Means 
+1 
+1.15 
+1 
+1.15 
+1 
+1.17 
+1 
+1.07 
+1 
+1.16 
+1 
+1.05 
+1 
+1 
+1 
+0.99 
+Variance 
+1E+00 
+1E+00 
+7E-01 
+1E+00 
+2E+01 
+30.19* 
+2E+01 
+30.94* 
+4E+00 
+4E+00 
+4E+00 
+4E+00 
+2E+00 
+17.08* 
+4E+00 
+21.00* 
+Ratio of Variances 
+1 
+0.92 
+1 
+1.66 
+1 
+1.77 
+1 
+1.49 
+1 
+1.17 
+1 
+0.96 
+1 
+11.16 
+1 
+4.82 
+Dates 
+ 
+ 
+ 
+ 
+Feb'19 
+Feb'21 
+Feb'19 
+Feb'21 
+Feb'19 
+Feb'21 
+Feb'19 
+Feb'21 
+ 
+ 
+ 
+ 
+Mean 
+ 
+ 
+ 
+ 
+48.37 
+62.14* 
+49.56 
+57.82* 
+47.58 
+57.46* 
+47.84 
+58.23* 
+ 
+ 
+ 
+ 
+Ratio of Means 
+ 
+ 
+ 
+ 
+1 
+1.28 
+1 
+1.17 
+1 
+1.21 
+1 
+1.22 
+ 
+ 
+ 
+ 
+Variance 
+ 
+ 
+ 
+ 
+4E+01 
+43.59* 
+3E+01 
+48.91* 
+2E+00 
+4.68* 
+2E+00 
+3.49* 
+ 
+ 
+ 
+ 
+Ratio of Variances 
+ 
+ 
+ 
+ 
+1 
+1.14 
+1 
+1.60 
+1 
+3.09 
+1 
+2.09 
+ 
+ 
+ 
+ 
+Dates 
+ 
+ 
+ 
+ 
+Nov'19 
+Nov'21 
+Nov'19 
+Nov'21 
+Nov'19 
+Nov'21 
+Nov'19 
+Nov'21 
+ 
+ 
+ 
+ 
+Mean 
+ 
+ 
+ 
+ 
+50.93 
+62.82* 
+53.23 
+61.56* 
+51.18 
+65.97* 
+54.89 
+63.86* 
+ 
+ 
+ 
+ 
+Ratio of Means 
+ 
+ 
+ 
+ 
+1 
+1.23 
+1 
+1.16 
+1 
+1.29 
+1 
+1.16 
+ 
+ 
+ 
+ 
+Variance 
+ 
+ 
+ 
+ 
+2E+01 
+61.19* 
+2E+01 
+1E+01 
+4E+00 
+14.76* 
+4E+00 
+12.66* 
+ 
+ 
+ 
+ 
+Ratio of Variances 
+ 
+ 
+ 
+ 
+1 
+3.59 
+1 
+0.66 
+1 
+3.9 
+1 
+2.94 
+ 
+ 
+ 
+ 
+This table presents the test results for equality of means and variances for the average number of steps needed to order 50,000 shares on the buy and sell sides at each minute level. Note: The number of observations for the 
+analysis is 391 for the monthly comparison tests, and * suggests that mean/ variance is statistically different in post-FT compared to pre-FT.
+
+20 
+ 
+Table 4. Average Tick Size to place an order of 50,000 shares pre-and post-FT (buy and sell sides) 
+ 
+Average Tick Size 
+ 
+AAPL 
+AMZN 
+GOOG 
+TSLA 
+Buy-side 
+Sell-side 
+Buy-side 
+Sell-side 
+Buy-side 
+Sell-side 
+Buy-side 
+Sell-side 
+Dates 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Mean 
+0.0117 
+0.0169* 
+0.0209 
+0.045* 
+0.0231 
+0.0632* 
+0.0899 
+0.1843* 
+0.0183 
+0.0212* 
+0.0301 
+0.0503* 
+0.02 
+0.0638* 
+0.0414 
+0.1927* 
+Ratio of Means 
+1 
+1.44 
+1 
+2.15 
+1 
+2.73 
+1 
+2.05 
+1 
+1.16 
+1 
+1.67 
+1 
+3.18 
+1 
+4.65 
+Variance 
+1E-06 
+1E-05* 
+1E-06 
+1E-05* 
+5E-06 
+3E-04* 
+1E-04 
+4E-04* 
+1E-06 
+3E-06* 
+8E-06 
+1E-05* 
+1E-05 
+9E-05* 
+3E-05 
+2E-04* 
+Ratio of Variances 
+1 
+10.61 
+1 
+14.69 
+1 
+52.43 
+1 
+3.45 
+1 
+2.42 
+1 
+1.66 
+1 
+6.89 
+1 
+7.54 
+Dates 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Mean 
+0.0113 
+0.0169* 
+0.0184 
+0.0450* 
+0.0454 
+0.0632* 
+0.1321 
+0.1843* 
+0.0175 
+0.0212* 
+0.0333 
+0.0503* 
+0.0199 
+0.0638* 
+0.0566 
+0.1927* 
+Ratio of Means 
+1 
+1.49 
+1 
+2.44 
+1 
+1.39 
+1 
+1.39 
+1 
+1.21 
+1 
+1.51 
+1 
+3.19 
+1 
+3.4 
+Variance 
+2E-06 
+1E-05* 
+5E-06 
+1E-05* 
+8E-05 
+3E-04* 
+3E-04 
+4E-04* 
+1E-06 
+3E-06* 
+2E-06 
+1E-05* 
+1E-05 
+9E-05* 
+5E-05 
+2E-04* 
+Ratio of Variances 
+1 
+6.79 
+1 
+2.88 
+1 
+3.03 
+1 
+1.4 
+1 
+1.8 
+1 
+5.76 
+1 
+9.17 
+1 
+3.98 
+Dates 
+Jul'19 
+Jul'20 
+Jul'19 
+Jul'20 
+Nov'19 
+Nov'20 
+Nov'19 
+Nov'20 
+Nov'19 
+Nov'20 
+Nov'19 
+Nov'20 
+Jul'19 
+Jul'20 
+Jul'19 
+Jul'20 
+Mean 
+0.0129 
+0.0184* 
+0.0173 
+0.0345* 
+0.0231 
+0.0585* 
+0.0899 
+0.1882* 
+0.0183 
+0.0223* 
+0.0301 
+0.0454* 
+0.0168 
+0.0712* 
+0.0383 
+0.2314* 
+Ratio of Means 
+1 
+1.43 
+1 
+1.99 
+1 
+2.53 
+1 
+2.09 
+1 
+1.22 
+1 
+1.51 
+1 
+4.22 
+1 
+6.04 
+Variance 
+3E-06 
+1E-05* 
+6E-06 
+7E-06* 
+5E-06 
+1E-04* 
+1E-04 
+2E-04* 
+1E-06 
+6E-06* 
+8E-06 
+4E-05* 
+5E-06 
+8E-05* 
+4E-05 
+8E-04* 
+Ratio of Variances 
+1 
+3.88 
+1 
+1.23 
+1 
+19.71 
+1 
+2.04 
+1 
+5.74 
+1 
+4.85 
+1 
+16.82 
+1 
+18.95 
+Dates 
+ 
+ 
+ 
+ 
+Feb'19 
+Feb'21 
+Feb'19 
+Feb'21 
+Feb'19 
+Feb'21 
+Feb'19 
+Feb'21 
+ 
+ 
+ 
+ 
+Mean 
+ 
+ 
+ 
+ 
+0.0454 
+0.0808* 
+0.1321 
+0.1709* 
+0.0175 
+0.0286* 
+0.0333 
+0.0712* 
+ 
+ 
+ 
+ 
+Ratio of Means 
+ 
+ 
+ 
+ 
+1 
+1.78 
+1 
+1.29 
+1 
+1.63 
+1 
+2.13 
+ 
+ 
+ 
+ 
+Variance 
+ 
+ 
+ 
+ 
+8E-05 
+5E-05 
+3E-04 
+2E-04 
+1E-06 
+4E-06* 
+2E-06 
+3E-05* 
+ 
+ 
+ 
+ 
+Ratio of Variances 
+ 
+ 
+ 
+ 
+1 
+0.64 
+1 
+0.74 
+1 
+2.78 
+1 
+10.89 
+ 
+ 
+ 
+ 
+Dates 
+ 
+ 
+ 
+ 
+Nov'19 
+Nov'21 
+Nov'19 
+Nov'21 
+Nov'19 
+Nov'21 
+Nov'19 
+Nov'21 
+ 
+ 
+ 
+ 
+Mean 
+ 
+ 
+ 
+ 
+0.0231 
+0.1317* 
+0.0898 
+0.2545* 
+0.0183 
+0.0682* 
+0.0301 
+0.1117* 
+ 
+ 
+ 
+ 
+Ratio of Means 
+ 
+ 
+ 
+ 
+1 
+5.69 
+1 
+2.83 
+1 
+3.73 
+1 
+3.71 
+ 
+ 
+ 
+ 
+Variance 
+ 
+ 
+ 
+ 
+5E-06 
+1E-04* 
+1E-04 
+7E-04* 
+1E-06 
+1E-04* 
+8E-06 
+1E-04* 
+ 
+ 
+ 
+ 
+Ratio of Variances 
+ 
+ 
+ 
+ 
+1 
+20.86 
+1 
+6.24 
+1 
+135.03 
+1 
+15.26 
+ 
+ 
+ 
+ 
+This table presents the test results for equality of means and equality of variances of the averages of average tick size to place an order of 50,000 shares on the buy and sell sides at each minute level. The results suggest that the 
+average tick size is statistically different pre- and post-FT. The average tick sizes have increased post-introduction of FT. Note: The number of observations for the analysis is 391 for the monthly comparison tests, and * suggests 
+that mean/ variance is statistically different in post-FT compare
+
+21 
+ 
+5.2.Empirical Test and Results – Sell Side 
+Further, we also perform the analysis for the sell side. We find that the average tick size for the 
+sell-side when we fix cumulative volume at 50,000 shares is statistically different pre- and postFT (please see Table 4.). The results suggest that the average tick size has increased in February 
+2020 vs. November 2019 by 115%, 105%, 67%, and 365% for Apple, Amazon, Google, and Tesla, 
+respectively. This suggests that it costs significantly higher to buy these stocks post-FT. Further, 
+for Apple, we find the average tick sizes are 145% and 99% higher for February 2020 vs. February 
+2019 and July 2020 vs. July 2019, respectively. For Amazon, the average tick size has increased 
+by 40%, 109%, 29%, and 183% for February 2020 vs. February 2019, November 2020 vs. 
+November 2019, February 2021 vs. February 2019, and November 2021 vs. November 2019, 
+respectively. For Google, the average tick size has increased by 51%, 51%, 114%, and 271% for 
+February 2020 vs. February 2019, November 2020 vs. November 2019, February 2021 vs. 
+February 2019, and November 2021 vs. November 2019, respectively. Furthermore, we find the 
+average tick size for Tesla is 240% and 504% higher for February 2020 vs. February 2019 and 
+July 2020 vs. July 2019, respectively.  
+ 
+Furthermore, we also analyzed variances in the slope of the limit order book. We find that 
+the variances of average tick size are significantly different and have increased in February 2020 
+vs. November 2019 by 15, 3, 2, and 8 times for Apple, Amazon, Google, and Tesla, respectively.17 
+ 
+6. Conclusion and Discussion 
+In this paper, we perform three types of analysis, showing that the market dynamics have 
+significantly changed post the introduction of fractional trading (FT), along with direct and easier 
+access to the markets through commission-less trading apps. These two recent developments can 
+potentially modify the risk appetite of non-professional investors (who are generally myopic and 
+risk-averse) and create opportunities for portfolio creation and diversification, hence increasing 
+the demand for stocks. 
+We find that post-introduction of FT, there has been a significant increase in price levels, 
+price volatility, and average tick sizes. The results suggest that buying the same number of shares 
+ 
+17 Except for Amazon (February 2021 vs. February 2019), the variances of price impact factors are statistically 
+different and significantly higher post- FT. 
+
+22 
+ 
+post-FT costs significantly more. This modifies the price-volume structure and raises concerns 
+about the fundamental value signal and market liquidity, which are important factors for market 
+efficiency and stability. Investors are now faced with limit order books that are steeper (high price 
+impact) and riskier (more volatile). Both of these contribute to market uncertainty that could affect 
+professional and non-professional investors alike. 
+The results suggest that fintech and fractional trading have significant impact on the 
+financial markets, impacting market liquidity, price formation process, and investor behavior. 
+While fintech and FT enhance retail participation and create diversification opportunities, it also 
+increases the market noise, volatility and the risk of speculative trading surges. The rise in smallorder flow can fragment liquidity, making large trade executions more challenging for institutional 
+investors. Furthermore, FT may shift price discovery dynamics, influencing market-making 
+strategies and order book depth.  
+To address these challenges, policymakers can implement enhanced market surveillance to 
+monitor FT-driven volatility and detect potential manipulative trading patterns. Regulators may 
+consider adjusting the tick size rules or incentivizing the institutional market makers to maintain 
+liquidity. Investor protection, such as improved financial literacy programs and risk disclosures 
+can help mitigate speculative behavior. Further, ensuring the best execution standards for retail 
+traders and requiring more granular trade reporting can enhance market transparency. Balancing 
+the benefits of fintech and fractional trading along with market stability will require dynamic 
+regulatory adjustments and continuous assessment of its long-term impact on financial markets.  
+Further research will focus on analyzing more stocks with a special focus on small cap/low 
+price stocks. We expect to find similar conclusions. However, we believe that volatility will be 
+higher and that as such the price discovery mechanism of these type of stocks will be even harder 
+to understand. In another paper, we have studied the impact of earnings announcements before and 
+after the regular market hours on the asset price dynamics in the fintech era (Tripathi and Rengifo 
+2025). Using Nasdaq data at a minute frequency, we show that there is a significant increase in the 
+slope of the price-volume structure during extended market hours (after-hours, or pre-market 
+hours) as compared to the regular market hours. The results suggest that the liquidity is much less 
+during the extended market hours. We suggest that the earnings announcement should not be made 
+during the extended market hours given the significantly lower liquidity and larger price impacts, 
+
+23 
+ 
+that determines the price for the next trading session and sets the new “funda-mental” price signals 
+for the stocks. 
+ 
+References 
+Baker, M., & Stein, J. C. (2004). Market liquidity as a sentiment indicator. Journal of financial 
+Markets, 7(3), 271-299.  
+Barber, B. M., Morse, A., & Yasuda, A. (2021). Impact investing. Journal of Financial Economics, 
+139(1), 162-185.  
+Barberis, Nicholas, and Andrei Shleifer. "Style investing." Journal of Financial Economics 68, no. 
+2 (2003): 161-199.  
+Barberis, Nicholas, Andrei Shleifer, and Jeffrey Wurgler. "Comovement." Journal of financial 
+economics 75, no. 2 (2005): 283-317.  
+Barberis, Nicholas, and Richard Thaler. A survey of behavioral finance. Princeton University 
+Press, 2005.  
+Bartlett, R. P., McCrary, J., & O'Hara, M. (2022). A fractional solution to a stock market mystery. 
+Available at SSRN.  
+Bartlett, R. P., McCrary, J., & O'Hara, M. (2022). Tiny trades, big questions: Fractional shares. 
+Big Questions: Fractional Shares (October 14, 2022).  
+Berk, J. B., & Van Binsbergen, J. H. (2025). The impact of impact investing. Journal of Financial 
+Economics, 164, 103972.  
+Chordia, T., Roll, R., & Subrahmanyam, A. (2011). Recent trends in trading activity and market 
+quality. Journal of Financial Economics, 101(2), 243-263.  
+Cong, L. W., & He, Z. (2019). Blockchain disruption and smart contracts. The Review of Financial 
+Studies, 32(5), 1754-1797.  
+Da, Z., Fang, V. W., & Lin, W. (2021). Fractional trading. Available at SSRN 3949697.  
+D’Acunto, F., Prabhala, N., & Rossi, A. G. (2019). The promises and pitfalls of robo-advising. 
+The Review of Financial Studies, 32(5), 1983-2020.  
+Eaton, G. W., Green, T. C., Roseman, B. S., & Wu, Y. (2022). Retail trader sophistication and 
+stock market quality: Evidence from brokerage outages. Journal of Financial Economics, 146(2), 
+502-528.  
+
+24 
+ 
+Foucault, T., Sraer, D., & Thesmar, D. J. (2011). Individual investors and volatility. The Journal 
+of Finance, 66(4), 1369-1406.  
+Foucault, T., Kadan, O., & Kandel, E. (2005). Limit order book as a market for liquidity. The 
+review of financial studies, 18(4), 1171-1217.  
+Gempesaw, D., Henry, J. J., & Velthuis, R. (2022). Piecing together the extent of retail fractional 
+trading. Global Finance Journal, 54, 100757.  
+Gompers, Paul A., and Andrew Metrick. "Institutional investors and equity prices." The quarterly 
+journal of Economics 116, no. 1 (2001): 229-259.  
+Harz, D., & Knottenbelt, W. (2018). Towards safer smart contracts: A survey of languages and 
+verification methods. arXiv preprint arXiv:1809.09805.  
+Hasbrouck, J., & Saar, G. (2013). Low-latency trading. Journal of Financial Markets, 16(4), 646679.  
+Heimer, R., & Simsek, A. (2019). Should retail investors' leverage be limited?. Journal of Financial 
+Economics, 132(3), 1-21.  
+Kahneman, Daniel, and Amos Tversky. "Prospect Theory: An Analysis of Decision under Risk." 
+Econometrica 47, no. 2 (1979): 263-91. Accessed May 7, 2021. doi:10.2307/1914185.  
+Kirilenko, A., Kyle, A. S., Samadi, M., & Tuzun, T. (2017). The flash crash: High-frequency 
+trading in an electronic market. The Journal of Finance, 72(3), 967-998.  
+Kumar, Alok, and Charles MC Lee. "Retail investor sentiment and return comovements." The 
+Journal of Finance 61, no. 5 (2006): 2451-2486.  
+Kumar, Alok. "Dynamic style preferences of individual investors and stock returns." Journal of 
+Financial and Quantitative Analysis 44, no. 3 (2009): 607-640.  
+Large, J. (2007). Measuring the resiliency of an electronic limit order book. Journal of Financial 
+Markets, 10(1), 1-25.  
+Lo, A. W. (2015). The Gordon Gekko effect: The role of culture in the financial industry (No. 
+w21267). National Bureau of Economic Research.  
+Madhavan, A., Porter, D., & Weaver, D. (2005). Should securities markets be transparent?. Journal 
+of Financial Markets, 8(3), 265-287.  
+Madhavan, A. (2000). Market microstructure: A survey. Journal of financial markets, 3(3), 205258.  
+
+25 
+ 
+Malceniece, L., Malcenieks, K., & Putniņš, T. J. (2019). High frequency trading and comovement 
+in financial markets. Journal of Financial Economics, 134(2), 381-399.  
+Muranaga, J., & Shimizu, T. (1999). Market microstructure and market liquidity. Bank of Japan.  
+Rengifo, Erick W., and Emanuela Trifan. "How Investors Face Financial Risk: Loss Aversion and 
+Wealth Allocation." Journal of CEN-TRUM Cathedra 3, no. 1 (2010): 41-59.  
+Riordan, R., & Storkenmaier, A. (2012). Latency, liquidity and price discovery. Journal of 
+Financial Markets, 15(4), 416-437.  
+Roşu, I. (2019). Fast and slow informed trading. Journal of Financial Markets, 43, 1-30.  
+Tripathi, J. S., & Rengifo, E. W. (2023). The Impact of Fractional Trading on Risk Aversion for 
+Non-professional Investors. Finance Research Letters, 52, 103547.  
+Tripathi, J. S., & Rengifo, E. W. (2025). The Impact of Earnings Announcements Before and After 
+Regular Market Hours on Asset Price Dynamics in the Fintech Era. Journal of Risk and Financial 
+Management, 18(2), 75.  
+Tversky, Amos, and Daniel Kahneman. "Advances in prospect theory: Cumulative representation 
+of uncertainty." Journal of Risk and uncertainty 5, no. 4 (1992): 297-323.  
+Zhang, Z., Zohren, S., & Roberts, S. (2019). Deep reinforcement learning for trading. arXiv 
+preprint arXiv:1911.10107.  
+ 
+Appendix 
+ 
+A.1. Price Impact Factors using the best 10 quotes  
+ 
+
+26 
+ 
+Table A.1. Price Impact factor (buy and sell sides) using the best 10 quotes at each minute level 
+ 
+PIF10 
+ 
+AAPL 
+AMZN 
+GOOG 
+TSLA 
+Buy-side 
+Sell-side 
+Buy-side 
+Sell-side 
+Buy-side 
+Sell-side 
+Buy-side 
+Sell-side 
+Dates 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Nov'19 
+Feb'20 
+Mean 
+-0.0009 
+-0.0014* 
+0.0009 
+0.0015* 
+-0.0022 
+-0.0055* 
+0.003 
+0.0064* 
+-0.0015 
+-0.0024* 
+0.0014 
+0.0022* 
+-0.0017 
+-0.0045* 
+0.0021 
+0.0059* 
+Ratio of Means 
+1 
+1.48 
+1 
+1.54 
+1 
+2.52 
+1 
+2.11 
+1 
+1.62 
+1 
+1.51 
+1 
+2.57 
+1 
+2.76 
+Variance 
+2E-08 
+9E-08* 
+1E-08 
+7E-08* 
+1E-07 
+3E-06* 
+3E-07 
+4E-06* 
+7E-09 
+7E-08* 
+3E-08 
+3E-07* 
+6E-08 
+4E-07* 
+1E-07 
+7E-07* 
+Ratio of Variances 
+1 
+3.97 
+1 
+5.97 
+1 
+24.39 
+1 
+12.5 
+1 
+9.42 
+1 
+9.54 
+1 
+5.93 
+1 
+5.39 
+Dates 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Feb'19 
+Feb'20 
+Mean 
+-0.0008 
+-0.0014* 
+0.0008 
+0.0015* 
+-0.0029 
+-0.0055* 
+0.0024 
+0.0064* 
+-0.0013 
+-0.0024* 
+0.0011 
+0.0022* 
+-0.0017 
+-0.0045* 
+0.0018 
+0.0059* 
+Ratio of Means 
+1 
+1.75 
+1 
+1.77 
+1 
+1.92 
+1 
+2.65 
+1 
+1.81 
+1 
+2.03 
+1 
+2.54 
+1 
+3.25 
+Variance 
+2E-08 
+9E-08* 
+2E-08 
+7E-08* 
+2E-06 
+3E-06* 
+1E-07 
+4E-06* 
+1E-08 
+7E-08* 
+4E-09 
+3E-07* 
+1E-07 
+4E-07* 
+9E-08 
+7E-07* 
+Ratio of Variances 
+1 
+3.73 
+1 
+4.53 
+1 
+1.33 
+1 
+30.79 
+1 
+5.39 
+1 
+62.31 
+1 
+3.21 
+1 
+7.56 
+Dates 
+Jul'19 
+Jul'20 
+Jul'19 
+Jul'20 
+Nov'19 
+Nov'20 
+Nov'19 
+Nov'20 
+Nov'19 
+Nov'20 
+Nov'19 
+Nov'20 
+Jul'19 
+Jul'20 
+Jul'19 
+Jul'20 
+Mean 
+-0.001 
+-0.0016* 
+0.0007 
+0.0019* 
+-0.0022 
+-0.0058* 
+0.003 
+0.0139* 
+-0.0015 
+-0.0022* 
+0.0014 
+0.0030* 
+-0.0019 
+-0.0068* 
+0.0025 
+0.0047* 
+Ratio of Means 
+1 
+1.63 
+1 
+2.53 
+1 
+2.64 
+1 
+4.58 
+1 
+1.45 
+1 
+2.06 
+1 
+3.56 
+1 
+1.82 
+Variance 
+6E-08 
+2E-07* 
+6E-09 
+9E-08* 
+1E-07 
+6E-07* 
+3E-07 
+3E-06* 
+7E-09 
+1E-07* 
+3E-08 
+5E-08* 
+6E-08 
+1E-06* 
+1E-06 
+3E-07 
+Ratio of Variances 
+1 
+2.69 
+1 
+14.47 
+1 
+5 
+1 
+10.91 
+1 
+22.79 
+1 
+1.84 
+1 
+18.4 
+1 
+0.26 
+Dates 
+ 
+ 
+ 
+ 
+Feb'19 
+Feb'21 
+Feb'19 
+Feb'21 
+Feb'19 
+Feb'21 
+Feb'19 
+Feb'21 
+ 
+ 
+ 
+ 
+Mean 
+ 
+ 
+ 
+ 
+-0.0029 
+-0.0071* 
+0.0024 
+0.0102* 
+-0.0013 
+-0.0026* 
+0.0011 
+0.0041* 
+ 
+ 
+ 
+ 
+Ratio of Means 
+ 
+ 
+ 
+ 
+1 
+2.48 
+1 
+4.21 
+1 
+1.95 
+1 
+3.78 
+ 
+ 
+ 
+ 
+Variance 
+ 
+ 
+ 
+ 
+2E-06 
+2E-06 
+1E-07 
+1E-06* 
+1E-08 
+2E-07* 
+4E-09 
+1E-07* 
+ 
+ 
+ 
+ 
+Ratio of Variances 
+ 
+ 
+ 
+ 
+1 
+0.99 
+1 
+9.12 
+1 
+13.63 
+1 
+23.61 
+ 
+ 
+ 
+ 
+Dates 
+ 
+ 
+ 
+ 
+Nov'19 
+Nov'21 
+Nov'19 
+Nov'21 
+Nov'19 
+Nov'21 
+Nov'19 
+Nov'21 
+ 
+ 
+ 
+ 
+Mean 
+ 
+ 
+ 
+ 
+-0.0022 
+-0.0147* 
+0.003 
+0.0124* 
+-0.0015 
+-0.0053* 
+0.0014 
+0.0068* 
+ 
+ 
+ 
+ 
+Ratio of Means 
+ 
+ 
+ 
+ 
+1 
+6.63 
+1 
+4.09 
+1 
+3.54 
+1 
+4.64 
+ 
+ 
+ 
+ 
+Variance 
+ 
+ 
+ 
+ 
+1E-07 
+2E-06* 
+3E-07 
+4E-06* 
+7E-09 
+1E-06* 
+3E-08 
+2E-06* 
+ 
+ 
+ 
+ 
+Ratio of Variances 
+ 
+ 
+ 
+ 
+1 
+13.94 
+1 
+13.86 
+1 
+143.15 
+1 
+67 
+ 
+ 
+ 
+ 
+This table presents the results of the tests for equality of means and equality of variances of the averages of the slopes of the order books (i.e., price impact factors) using the best 10 quotes on the buy side at each minute level. 
+The results suggest that the averages of slopes are statistically different pre- and post-FT. The price impact factor has increased post-introduction of FT significantly. Note: The number of observations for the analysis is 391 for 
+the monthly comparison tests, and * suggests that mean/ variance is statistically different in post-FT compared  

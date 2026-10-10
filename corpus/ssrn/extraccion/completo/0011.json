@@ -1,0 +1,262 @@
+{
+  "doc_id": 11,
+  "titulo": "A Market Microstructure Analysis of Foreign Exchange Intervention",
+  "resumen_operativo": "Paper teórico (ECB WP 629, 2006) que modela microestructura de FX con dealers, brokers y banco central, derivando cómo la intervención cambiaria afecta el spot rate, la volatilidad, el volumen y los costos de transacción vía canales de señalización y de balance de portafolio. Aporta a un quant framework conceptual de order flow como vector informativo (relevante para entender por qué el order flow predice retornos de corto plazo) y una calibración numérica ilustrativa en USD/JPY, no un backtest de estrategia. Útil sobre todo para entender el mecanismo de price impact y liquidez en mercados con dealers, y como referencia de por qué las intervenciones de bancos centrales pueden generar régimen de alta volatilidad/iliquidez transitoria.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "order flow",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Suma del flujo interdealer y del flujo de clientes; es la variable de estado central del modelo, agrega la información dispersa que los agentes usan para inferir shocks fundamentales.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "exchange rate returns"},
+        {"tipo": "USA", "objeto": "market microstructure model"},
+        {"tipo": "APLICA_A", "objeto": "FX intervention"}
+      ],
+      "cita_textual": "net order ﬂow is an important determinant of exchange rate dynamics in the short term and possibly even in the medium term"
+    },
+    {
+      "nombre": "informed trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Componente informativo de las órdenes del banco central que anticipan shocks fundamentales futuros, distinto del ruido de los clientes no sofisticados.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "price impact"},
+        {"tipo": "PARTE_DE", "objeto": "order flow"}
+      ],
+      "cita_textual": "the central bank’s intervention activity might present an informative content"
+    },
+    {
+      "nombre": "adverse selection",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Los dealers no privilegiados ajustan su precisión condicional y su exposición porque parte del order flow que reciben proviene de un agente (el banco central) con información superior sobre fundamentals.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "bid-ask spread"},
+        {"tipo": "PARTE_DE", "objeto": "market microstructure model"}
+      ],
+      "cita_textual": "monetary authorities have a better understanding of the economic environment and possess superior information on monetary policy"
+    },
+    {
+      "nombre": "inventory risk",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Los dealers son inversores rentables de un día (short-sighted, CARA) que deben absorber el desequilibrio de order flow de sus clientes y son compensados con un cambio en el precio esperado; el canal de balance de portafolio surge de esta aversión al riesgo de inventario.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "price impact"},
+        {"tipo": "PARTE_DE", "objeto": "market making"}
+      ],
+      "cita_textual": "trade innovations perturb the inventories of FX investors which need to be compensated with a shift in expected returns"
+    },
+    {
+      "nombre": "price impact",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Coeficientes de liquidez (lambda_b, lambda_c) que miden cuánto se mueve el spot rate por unidad de order flow interdealer o de clientes; el paper los usa como proxy de costos de transacción/liquidez.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market impact"},
+        {"tipo": "USA", "objeto": "order flow"},
+        {"tipo": "EQUIVALE_A", "objeto": "market impact"}
+      ],
+      "cita_textual": "We measure transaction costs in the two markets with the liquidity coeﬃcients λc and λb, which respectively indicate the price impact of customer and inter-dealer order ﬂow"
+    },
+    {
+      "nombre": "market microstructure model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de equilibrio de expectativas racionales (RE) del spot rate FX con dealers de aversión al riesgo CARA, brokers pasivos y una plataforma centralizada de subastas walrasianas, usado para derivar cómo la intervención cambiaria se transmite a precios y condiciones de mercado.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "rational expectations equilibrium"},
+        {"tipo": "APLICA_A", "objeto": "FX intervention"}
+      ],
+      "cita_textual": "We formulate a market microstructure model of exchange determination we employ to investigate the impact of foreign exchange intervention on exchange rates"
+    },
+    {
+      "nombre": "rational expectations equilibrium",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Equilibrio lineal donde el spot rate agrega la información dispersa entre dealers; el paper prueba que puede existir multiplicidad de puntos fijos y que para valores altos de la intensidad de intervención el equilibrio deja de existir.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market microstructure model"},
+        {"tipo": "MITIGA", "objeto": "information asymmetry"}
+      ],
+      "cita_textual": "we can now isolate two diﬀerent rational expectations (RE) equilibria, which identify the equilibrium spot rate which prevails in the FX market in the two scenarios"
+    },
+    {
+      "nombre": "central bank intervention",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Operaciones esterilizadas de compra/venta de divisas por parte de la autoridad monetaria, que el modelo trata como una señal parcialmente informativa sobre shocks futuros a los fundamentals; puede canalizarse vía mercado bilateral (directo) o vía mercado interdealer/broker (indirecto).",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "exchange rate volatility"},
+        {"tipo": "CAUSA", "objeto": "trading volume"},
+        {"tipo": "APLICA_A", "objeto": "order flow"}
+      ],
+      "cita_textual": "sterilized intervention conditions currency values and exchange volatility"
+    },
+    {
+      "nombre": "signalling channel",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Canal por el cual la intervención cambiaria transmite información sobre shocks futuros a los fundamentals a través del order flow que el banco central genera.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "central bank intervention"},
+        {"tipo": "SE_OPONE_A", "objeto": "portfolio-balance channel"}
+      ],
+      "cita_textual": "how foreign exchange intervention inﬂuences exchange rates via both a portfolio-balance and a signalling channel"
+    },
+    {
+      "nombre": "portfolio-balance channel",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Canal por el cual la intervención mueve el precio simplemente porque los dealers averse al riesgo exigen compensación de precio para absorber el cambio de inventario, incluso sin contenido informativo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "central bank intervention"},
+        {"tipo": "USA", "objeto": "inventory risk"}
+      ],
+      "cita_textual": "even when they do not carry any information content intervention operations by a central bank inﬂuence exchange rates"
+    },
+    {
+      "nombre": "exchange rate volatility",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Desviación estándar incondicional de la variación del spot rate; el paper muestra que su respuesta a la intervención depende de la ruta elegida (directa vs indirecta) y no es necesariamente monótona en la intensidad de intervención.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "central bank intervention"},
+        {"tipo": "SE_OPONE_A", "objeto": "market liquidity"}
+      ],
+      "cita_textual": "foreign exchange intervention may either increase or reduce exchange rate volatility depending on the route chosen by the central bank to implement its intervention operations"
+    },
+    {
+      "nombre": "trading volume",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Volumen esperado de transacciones en el mercado bilateral e interdealer; aumenta con la intensidad de la intervención del banco central, más rápido en el mercado interdealer/brokered que en el bilateral.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "central bank intervention"},
+        {"tipo": "CAUSA", "objeto": "market liquidity"}
+      ],
+      "cita_textual": "trading volume increases very rapidly with the intensity of foreign exchange intervention"
+    },
+    {
+      "nombre": "market liquidity",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Condiciones de liquidez de los mercados bilateral e interdealer, medidas por los coeficientes de impacto de precio; se deteriora fuertemente (orden de magnitud) cuando el banco central interviene con contenido informativo.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "transaction costs"},
+        {"tipo": "SE_OPONE_A", "objeto": "exchange rate volatility"}
+      ],
+      "cita_textual": "the impact of foreign exchange intervention on the liquidity conditions of the FX markets is very large, as transaction costs increase by an order of magnitude"
+    },
+    {
+      "nombre": "direct intervention scenario",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Ruta de intervención en la que el banco central negocia bilateralmente con un subconjunto pequeño de dealers privilegiados; transmite más información y reduce la volatilidad del spot rate pero aumenta mucho los costos de transacción en ese mercado.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "indirect intervention scenario"},
+        {"tipo": "CAUSA", "objeto": "exchange rate volatility"},
+        {"tipo": "REQUIERE", "objeto": "central bank intervention"}
+      ],
+      "cita_textual": "in the direct intervention scenario the central bank chooses to negotiate in day t with a subset of the FX dealers"
+    },
+    {
+      "nombre": "indirect intervention scenario",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Ruta de intervención en la que el banco central emplea un broker para colocar órdenes de mercado directamente en el libro de órdenes centralizado interdealer; transmite menos información pero aumenta la volatilidad del spot rate.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "direct intervention scenario"},
+        {"tipo": "USA", "objeto": "limit order book"}
+      ],
+      "cita_textual": "the central bank now decides to conduct its intervention operation via the brokered section of the FX market"
+    },
+    {
+      "nombre": "limit order book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Plataforma electrónica centralizada (EBS, Reuters D2) donde los dealers añaden/borran órdenes límite o las ejecutan con órdenes de mercado de signo opuesto; domina el mercado interdealer brokered.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market microstructure model"},
+        {"tipo": "REQUIERE", "objeto": "order flow"}
+      ],
+      "cita_textual": "transactions are completed via a centralized limit order book, where subscribers can at any time either add/delete limit orders or hit outstanding limit orders with market orders of opposed sign"
+    },
+    {
+      "nombre": "market making",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Actividad de los FX dealer-investors que cotizan bid/ask y absorben el desequilibrio del order flow de sus clientes, seleccionando portafolios óptimos como agentes averse al riesgo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "inventory risk"},
+        {"tipo": "PARTE_DE", "objeto": "market microstructure model"}
+      ],
+      "cita_textual": "the FX dealer-investors (dealers henceforth) are active traders which absorb all the imbalance in the customer order ﬂow"
+    },
+    {
+      "nombre": "information asymmetry",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Diferencia de precisión condicional entre dealers privilegiados (que observan la orden del banco central) y no privilegiados; el paper la mide y muestra que no es monótona en la intensidad de la intervención.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "adverse selection"},
+        {"tipo": "PARTE_DE", "objeto": "market microstructure model"}
+      ],
+      "cita_textual": "the average FX dealer is less uncertain on next day fundamental shock when the central bank operates in the bilateral market"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "El paper aclara explícitamente que no calibra el modelo con estimación formal sino que elige valores 'razonables' de parámetros, un riesgo metodológico relevante para juzgar la solidez cuantitativa de sus resultados numéricos.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "market microstructure model"}
+      ],
+      "cita_textual": "Here we do not attempt to calibrate our model. Rather, we intend to choose reasonable values for the aforementioned parameters"
+    },
+    {
+      "nombre": "regime switching",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El modelo predice un régimen de no-existencia de equilibrio (crash) cuando la intensidad de intervención supera un umbral, ilustrando un cambio discreto de régimen de estabilidad del mercado FX.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "market liquidity"},
+        {"tipo": "PARTE_DE", "objeto": "central bank intervention"}
+      ],
+      "cita_textual": "for β large enough no RE equilibria exist in the two scenarios. This suggests that, whatever the route chosen for its intervention operations, a very aggressive central bank is destabilizing"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "En la calibración del modelo para USD/JPY, la intervención directa (bilateral) del banco central reduce la volatilidad del spot rate en casi 10%, mientras que la intervención indirecta (vía broker/interdealer) la aumenta en casi 20%; la diferencia entre ambas rutas puede llegar a casi 25%.",
+      "mercado": "FX USD/JPY",
+      "periodo": "calibración con datos de julio 1993 a marzo 2004 (tasas de interés) y encuesta BIS 2004 (volúmenes)",
+      "magnitud": "reducción de volatilidad ~10% (directa) vs. incremento ~20% (indirecta); diferencia entre escenarios hasta ~25%",
+      "condiciones": "resultado de simulación numérica de un modelo teórico calibrado con parámetros 'razonables' (no estimados formalmente), sin backtest de estrategia, sin costos de transacción reales, sin validación OOS",
+      "robustez": "baja",
+      "cita_textual": "in the direct intervention scenario foreign exchange intervention may reduce exchange rate instability by nearly 10 percent, in the indirect intervention scenario, the intervention activity of the central bank may increase the unconditional standard deviation of the spot rare variation by almost 20 percent"
+    },
+    {
+      "afirmacion": "El impacto de la intervención cambiaria sobre las condiciones de liquidez es de un orden de magnitud: el coeficiente de impacto de precio del mercado bilateral en el escenario de intervención directa puede llegar a ser casi 25 veces mayor que su valor sin intervención.",
+      "mercado": "FX USD/JPY",
+      "periodo": "no especificado (simulación calibrada, no serie histórica de eventos)",
+      "magnitud": "coeficiente de liquidez lambda_c hasta ~25x el valor sin intervención",
+      "condiciones": "resultado de simulación teórica calibrada, no de backtest transaccional; consistente cualitativamente con evidencia de Payne y Vitale (2003) para USD/CHF",
+      "robustez": "baja",
+      "cita_textual": "the coeﬃcient λD c can be nearly 25 times larger than its no intervention value"
+    },
+    {
+      "afirmacion": "El volumen de transacciones esperado aumenta muy rápidamente con la intensidad de intervención del banco central, lo que hace que valores realistas de intervención sean pequeños y que un colapso de mercado (crash) por intervención extrema sea un evento remoto en la práctica.",
+      "mercado": "FX USD/JPY",
+      "periodo": "no especificado (simulación calibrada)",
+      "magnitud": "sin magnitud numérica única; se describe como incremento 'muy rápido' del volumen relativo (ver Figura 5, rango relativo 1x-8x)",
+      "condiciones": "basado en parametrización de referencia (benchmark) elegida por el autor, no estimada; sin backtest ni datos de eventos reales de intervención",
+      "robustez": "baja",
+      "cita_textual": "given our benchmark parametrization trading volume increases very rapidly with the intensity of foreign exchange intervention, β"
+    },
+    {
+      "afirmacion": "La desviación estándar incondicional de la variación del spot rate que produce el modelo (0.30-0.40) es más baja que el valor observado de referencia para USD/JPY (0.88), señal de que el modelo subestima la volatilidad real del mercado.",
+      "mercado": "FX USD/JPY",
+      "periodo": "no especificado",
+      "magnitud": "modelo: 0.30-0.40; dato de referencia real: 0.88",
+      "condiciones": "comparación directa entre output de modelo calibrado y un solo valor de referencia empírico, sin test estadístico de bondad de ajuste",
+      "robustez": "baja",
+      "cita_textual": "in Figure 4 this standard deviation varies in the 0.30-0.40 range, whereas our reference data for the USD/JPY rate indicate a value of 0.88"
+    },
+    {
+      "afirmacion": "Payne y Vitale (2003), citados como referencia externa consistente con el modelo, estiman que una operación de intervención de 100 millones de dólares del banco central suizo tiene un impacto de precio de 50 puntos básicos en el spot USD/CHF, aproximadamente 10 veces mayor que el impacto de precio de las operaciones de clientes en el mismo mercado.",
+      "mercado": "FX USD/CHF",
+      "periodo": "1986-1995",
+      "magnitud": "50 bps de impacto por USD 100 millones de intervención; ~10x el impacto de trades de clientes",
+      "condiciones": "resultado empírico de un estudio externo (Payne y Vitale 2003) con datos transaccionales reales, no generado por el propio modelo de este paper",
+      "robustez": "media",
+      "cita_textual": "using transaction data for the spot USD/CHF market between 1986 and 1995, they estimate in 50 basis point the price impact on the spot USD/CHF rate of an intervention operation of $100 millions on the part of the Swiss central bank"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper es un modelo teórico de dealers en FX calibrado ilustrativamente, sin backtest ni datos de tick de futuros; solo aporta marco conceptual (order flow como señal informativa, price impact, canales de transmisión) transferible cualitativamente al análisis de order flow y liquidez en ES, no reglas ni parámetros operables directamente."
+  }
+}

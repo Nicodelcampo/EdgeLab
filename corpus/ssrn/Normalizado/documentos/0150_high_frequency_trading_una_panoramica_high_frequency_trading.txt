@@ -1,0 +1,2279 @@
+ Electronic copy available at: http://ssrn.com/abstract=2369311 
+Questioni di Economia e Finanza
+(Occasional Papers)
+High Frequency Trading: una panoramica
+di Alfonso Puorro
+Numero
+198
+Settembre 2013
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+ Electronic copy available at: http://ssrn.com/abstract=2369311 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+ Electronic copy available at: http://ssrn.com/abstract=2369311 
+Questioni di Economia e Finanza
+(Occasional papers)
+Numero 198 – Settembre 2013
+High Frequency Trading: una panoramica
+di Alfonso Puorro
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+La serie Questioni di economia e finanza ha la finalità di presentare studi e 
+documentazione su aspetti rilevanti per i compiti istituzionali della Banca d’Italia e dell’Eurosistema. 
+Le Questioni di economia e finanza si affiancano ai Temi di discussione volti a fornire contributi 
+originali per la ricerca economica.
+La serie comprende lavori realizzati all’interno della Banca, talvolta in collaborazione con 
+l’Eurosistema o con altre Istituzioni. I lavori pubblicati riflettono esclusivamente le opinioni degli autori, 
+senza impegnare la responsabilità delle Istituzioni di appartenenza.
+La serie è disponibile online sul sito www.bancaditalia.it . 
+ISSN 1972-6627 (stampa)
+ISSN 1972-6643 (online)
+Stampato presso la Divisione Editoria e stampa della Banca d’Italia
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+HIGH FREQUENCY TRADING: UNA PANORAMICA 
+ 
+ 
+di Alfonso Puorro* 
+ 
+ 
+Sommario 
+ 
+Nel seguente lavoro si propone un’analisi dei sistemi di trading ad alta frequenza 
+(Hft); il  fenomeno ha avuto origine e si è sviluppato sul mercato azionario statunitense, ma, 
+nel corso degli ultimi anni si sta progressivamente espandendo alla maggioranza delle asset 
+class sui principali mercati finanziari globali. L’analisi si compone di un approfondimento 
+delle attuali strutture regolamentari e tecnologiche dei mercati, di una definizione delle 
+inefficienze e dei vantaggi informativi che gli Hfts cercano di sfruttare e delle diverse 
+strategie utilizzate. In conclusione si cercherà di identificare gli impatti positivi e negativi per 
+la qualità complessiva dei mercati finanziari derivanti dalla presenza di tale, nuova tipologia 
+di player.  
+ 
+ 
+JEL Classification: G14 
+Keywords: trading ad alta frequenza, efficienza di mercato 
+ 
+ 
+Indice 
+ 
+Introduzione............................................................................................................................. 5 
+1. Ambiente regolamentare alla base dello sviluppo del trading  ad alta frequenza ....... 6 
+1.1 Smart Order Routing........................................................................................................... 8 
+2. Definizione di trading ad alta frequenza........................................................................... 9 
+3. Caratteristiche tecniche degli HFTs ................................................................................ 10 
+3.1 Bassa Latenza.............................................................................................................. 10 
+3.2 Co – location ............................................................................ ……………………...11 
+4. Funzionamento e principali strategie utilizzate dagli HFTs ............ ………………….12 
+4.1 Arbitraggio da Latenza (Statistical Passive Arbitrage ............................................... 13 
+4.2 Offerta di liquidità al mercato (Liquidity Providing) ................................................ 14 
+4.3 Arbitraggio su commissioni di negoziazione (Passive Rebate Arbitrage).................. 15 
+4.4 Trading on News (Momentum Trading)...................................................................... 16 
+4.5 Flash Trading ............................................................................................................. 16 
+4.6 Ricerca di liquidità (Liquidity Detection) 
+............................................................. 18 
+4.7 Ignition Momentum ..................................................................................................... 19 
+4.8 Pinging/Smoking/Layering/Spoofing .......................................................................... 20 
+4.9 Quote Stuffing.............................................................................................................. 21 
+                                                 
+*  Banca d’Italia, Servizio Investimenti Finanziari, Divisione Operazioni di Investimento.  
+Email: alfonso.puorro@bancaditalia.it. Le opinioni espresse sono personali e non impegnano necessariamente 
+l’Istituzione di appartenenza.  
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+5. Impatti positivi del trading ad alta frequenza ............................................................... 22 
+6. Possibili effetti distorsivi sul mercato ............................................................................. 23 
+6.1 Asimmetria informativa .............................................................................................. 23 
+6.2 Selezione avversa ....................................................................................................... 24 
+6.3 Front Running ............................................................................................................ 25 
+6.4 Liquidità  .................................................................................................................... 25 
+6.5 Flash Crashes (effetto palla di neve) ......................................................................... 26 
+      6.6 Case study sul flash crash del 23/04/2013 ................................................................. 27 
+7. Portata del fenomeno ....................................................................................................... 32 
+7.1 Struttura del mercato ................................................................................................. 32 
+7.2 Order to Trade Ratio (OTR) ....................................................................................... 33 
+7.3 Profittabilità complessiva dell’industria ad alta frequenza ....................................... 34  
+7.4 Fenomeno della colonizzazione ................................................................................. 35 
+7.5 Collusione ................................................................................................................... 36 
+7.6 Impatto sui mercati di negoziazione ........................................................................... 36 
+8. Conclusioni ........................................................................................................................ 37 
+Bibliografia ........................................................................................................................... 39 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+5 
+ 
+Introduzione
+1 
+ 
+La presenza dei sistemi di trading ad alta frequenza (High frequency trading, Hft) è stata 
+svelata dall’improvviso, rapido e apparentemente immotivato crollo (flash crash) del Dow Jones 
+avvenuto il 6 maggio 20102 (Cfr. Graf 1). Tale evento, ad una prima analisi frutto di sistemi 
+elettronici fuori controllo, ha determinato sia un’immediata indagine da parte della Security and 
+Exchange Commission (SEC), sia l’inevitabile attenzione delle principali testate giornalistiche 
+mondiali. 
+ 
+ 
+           Graf 1 
+ 
+Andamento intraday indice Dow Jones – 6 maggio 2010; elaborazione dati Bloomberg 
+ 
+Sebbene la SEC3 abbia accertato che i sistemi di trading ad alta frequenza sono stati 
+coinvolti nel crollo del 6 maggio 2010, risulta complesso provare se essi hanno avuto un impatto 
+positivo o negativo sul funzionamento del mercato in quella situazione; infatti, la presenza di 
+sistemi capaci di effettuare operazioni ad altissima velocità ha sicuramente esacerbato la fase di 
+discesa dei prezzi, ma, nel momento in cui il trend si è interrotto, gli stessi sistemi hanno permesso 
+il vigoroso recupero dei successivi 10 minuti. Si tenga presente che dopo il famoso crollo azionario 
+del 19874, l’indice Dow Jones impiegò più di un anno per recuperare una percentuale di perdita 
+paragonabile a quella recuperata in soli 10 minuti nel 2010. La semplice constatazione degli effetti 
+contrastanti che i sistemi ad alta frequenza possono aver causato in un episodio della durata di meno 
+di un’ora è un segnale della complessità dell’argomento5.  
+                                                 
+1  
+L’Autore desidera ringraziare il dott. Roberto Violi per gli utili suggerimenti e commenti. 
+2  
+Il 6 maggio 2010 l’indice Dow Jones, nel giro di pochi minuti, perse circa l’8%, scendendo dai 10650 punti 
+fino a meno di 10.000 punti, per poi risalire a 10.520 punti nei successivi 10 minuti. 
+3  
+“Preliminary Findings Regarding the Market Events of May 6, 2010”; CFTC – SEC Advisory Committee, May 
+18, 2010.  
+4 
+Il 19 ottobre 1987 (lunedì nero) l'indice Dow Jones crollò senza alcun preavviso; le massicce vendite fecero 
+precipitare l'indice da circa 2250 a 1740 punti, causando una perdita giornaliera maggiore del 20%. 
+5  
+Negli ultimi anni si è sviluppata la tendenza di imputare ogni improvviso crollo del mercato all’attività dei 
+trader ad alta frequenza; ad esempio, quando il 5 ottobre 2012 l’indice NIFTY5 ha perso circa il 16% in meno di trenta 
+minuti, prima di recuperare altrettanto rapidamente la maggior parte delle perdite, immediatamente la stampa 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+6 
+ 
+Tramite il seguente lavoro si descriveranno alcune delle strategie comunemente associate ai trader 
+ad alta frequenza, offrendo un’interpretazione dei possibili effetti che ogni singola strategia può 
+arrecare al comportamento delle altre categorie di trader e al funzionamento e alla struttura stessa 
+dei moderni mercati finanziari. Allo scopo si analizzeranno preventivamente le innovazioni 
+regolamentari e tecnologiche che hanno determinato la nascita di una nuova tipologia di player 
+caratterizzati da una velocità sempre maggiore e le motivazioni di trading che hanno poi contribuito 
+alla diffusione degli Hfts. Si ritiene che un’analisi approfondita dell’operatività e dei relativi 
+vantaggi e svantaggi possa rappresentare un passo in avanti nella comprensione dell’universo del 
+trading ad alta frequenza, contribuendo, inoltre, a creare il background necessario per effettuare una 
+separazione tra Hft “buono” e Hft “cattivo” e poter calibrare al meglio gli interventi normativi e 
+regolamentari. Esula dal presente lavoro analizzare le risposte delle autorità pubbliche alle sfide 
+poste dal trading ad alta frequenza. Una recente e dettagliata disanima degli aspetti di policy, in una 
+prospettiva internazionale e con riferimenti alla letteratura scientifica, è fornita da Caivano et al. 
+(2012), che offre anche un’articolata evidenza empirica sulla rilevanza del fenomeno per il mercato 
+azionario italiano. 
+ 
+ 
+ 
+1. 
+Ambiente regolamentare alla base dello sviluppo del trading ad alta frequenza. 
+ 
+Un precursore del trading ad alta frequenza può essere riconosciuto nel fenomeno dei SOES 
+bandits6, sviluppatosi nella prima metà degli anni ’90. Questa tipologia di trader, considerata al 
+tempo particolarmente aggressiva, effettuava numerose operazioni di trading al giorno (diverse 
+centinaia) con lo scopo di trarre vantaggio da minime oscillazioni del prezzo degli strumenti 
+finanziari o da ritardi dei market maker nell’aggiornare i prezzi offerti in denaro o lettera. Questi 
+trader erano attivi per lo più sul mercato azionario, soprattutto sul Nasdaq, dove lo Small Order 
+Execution System7 (SOES) permetteva loro di trarre vantaggio da piccole inefficienze o da micro 
+trend in atto.   
+ 
+L’espansione del fenomeno del trading ad alta frequenza risale all’inizio degli anni duemila 
+ed è stata permessa, oltre che dai progressi tecnologici in termini di potenza dei sistemi hardware e 
+di sofisticatezza dei programmi di trading, soprattutto da un ambiente normativo e regolamentare 
+che ha offerto nuove possibilità di trading, sfruttabili solo tramite strumenti tecnologicamente più 
+evoluti.  
+ 
+Uno dei primi stimoli alla nascita dell'Hft è stato offerto dalla decisione con cui la Securities 
+and Exchange Commission ha permesso, all’inizio degli anni ’90, l’utilizzo degli Electronic 
+Communications Networks8 (ECN) come sistemi di trading alternativi rispetto ai mercati 
+regolamentati.  
+ 
+Tramite un ECN, usando la tecnologia computerizzata in forte sviluppo in quel periodo, era 
+possibile usufruire di un mercato alternativo dove venditori e compratori potevano incontrarsi in 
+                                                                                                                                                                  
+specializzata si è scagliata contro l’industria del trading ad alta frequenza, accusandola di essere la causa nascosta di 
+crolli di questo tipo; successivamente la borsa indiana ha emesso un comunicato ufficiale in cui ha specificato che il 
+crollo era da imputare ad un errore umano e non ad ordini di mercato di natura algoritmica. 
+6  
+Un’approfondita descrizione del fenomeno dei “Banditi del SOES” è offerta da Harris e Schults (1997).  
+7  
+Il SOES permetteva l’esecuzione automatica di piccoli ordini di acquisto o vendita. 
+8  
+Per Electronic Communications Network si intende una rete elettronica estranea ai mercati regolamentati che 
+consente gli scambi di strumenti finanziari garantendo la best execution. Nel sistema regolamentare comunitario gli 
+ECN corrispondono approssimativamente agli MTF (Multilateral Trading Facility) disciplinati dalla MIFID.  
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+7 
+ 
+maniera automatica, senza passare attraverso i servizi offerti dai broker - dealer (come invece 
+avveniva sui tradizionali mercati regolamentati).  
+ 
+Una delle principali debolezze della struttura dei primi ECN consisteva nella sostanziale 
+presenza di una “chinese wall” tra gli ECN e i mercati regolamentati e tra gli ECN stessi, in quanto 
+gli ordini di contrattazione inviati agli ECN non dovevano essere trasmessi ai mercati 
+regolamentati, potendo, quindi, essere eseguiti al miglior prezzo presente sull’ECN che avesse 
+ricevuto l’ordine. Ciò comportava che, se su un ECN non fosse presente il miglior prezzo di 
+acquisto e/o vendita9, l’operazione sarebbe comunque stata eseguita, rappresentando per 
+l’acquirente/venditore un prezzo di negoziazione meno vantaggioso di quello ottenibile sul mercato. 
+ 
+Tale inefficienza ha offerto il primo impulso alla nascita di sistemi in grado di operare in 
+maniera molto rapida; infatti, la potenziale presenza di prezzi diversi per gli stessi strumenti 
+finanziari aumentava le possibilità di arbitraggi per gli operatori in grado di sfruttare tali 
+discrepanze. L’arbitraggio, però, avveniva sistematicamente ai danni dei trader che non potevano 
+conoscere il miglior prezzo presente sul mercato, in quanto gli arbitraggisti compravano 
+(vendevano) dal trader “non informato” e vendevano (compravano) al prezzo migliore presente sul 
+mercato. In questo modo, un’asimmetria informativa offerta dalla struttura stessa del mercato 
+comportava, per gli operatori in grado di sfruttarla, un guadagno sostanzialmente privo di rischio, 
+ottenuto ai danni di operatori meno evoluti e non a conoscenza di tutte le informazioni relative ai 
+migliori prezzi presenti sul mercato10. 
+ 
+L’impulso decisivo allo sviluppo dell’industria ad alta frequenza è stato dato offerto dalla 
+Regulation National Market System11 (Regulation NMS) del 2005, soprattutto attraverso due 
+specifiche regole: 
+ 
+i. 
+Sub Penny Rule (Rule 612); 
+ii. 
+Order Protection Rule (Rule 611). 
+ 
+Con la Sub Penny Rule12, la SEC ha imposto a tutti i mercati presenti sul territorio 
+statunitense di utilizzare il sistema decimale per calcolare le quote dei prezzi dei titoli azionari 
+superiori o uguali all’unità. La decimalizzazione aveva lo scopo di rendere il più piccolo possibile 
+(0,01$, un centesimo di dollaro) e, soprattutto, univoco il minimo incremento possibile per i prezzi 
+delle azioni. In questo modo il bid – ask spread si è ristretto, rendendo meno costosa la 
+compravendita di azioni statunitensi; ciò ha spinto gli operatori a sviluppare sistemi in grado di 
+sfruttare il nuovo minimo intervallo possibile di profitto, dal momento che la rischiosità di tale 
+strategia è proporzionalmente diminuita (1 centesimo per azione) e le opportunità di trading, 
+sebbene di valore atteso minore, sono incrementate13.  
+ 
+La Rule 611, “Order Protection Rule14” ha stabilito che ogni ordine immesso sul mercato o 
+su un ECN deve essere necessariamente eseguito al NBBO, prevedendo che il mercato 
+                                                 
+9 
+In quanto il miglior prezzo poteva essere presente su un diverso ECN o sul mercato regolamentato 
+10  
+Per evitare tale sistematico svantaggio per alcune categorie di trader, la SEC è intervenuta nel 1997 inserendo 
+l’obbligo del “Limit Order Display” con il quale, allo scopo di migliorare la trasparenza del mercato, ha imposto ai 
+Market Maker di mostrare a tutti i trader quale fosse il miglior prezzo di acquisto e vendita (National Best Bid Offer, 
+NBBO) presente in qualsiasi momento sull’intero mercato (ECN compresi). 
+11 
+Per maggiori informazioni si consulti il sito:  http://www.sec.gov/rules/final/34-51808.pdf 
+12  
+http://www.sec.gov/divisions/marketreg/subpenny612faq.htm 
+13  
+L’aumento delle opportunità era da imputare al maggior numero di piccoli movimenti di prezzo possibili a 
+seguito della decimalizzazione. 
+14  
+http://www.sec.gov/divisions/marketreg/nmsfaq610-11.htm 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+8 
+ 
+regolamentato o l’ECN che riceve l’ordine, nel caso in cui non fosse in grado di offrire il NBBO, 
+debba necessariamente trasferirlo per l’esecuzione al mercato sul quale è presente il miglior 
+prezzo15.  
+ 
+Alcune delle modifiche apportate dalla regulation NMS al mercato azionario statunitense 
+sono state introdotte in Europa tramite la MIFID che ha offerto i presupposti per l’ingresso dei 
+sistemi ad alta frequenza nel Vecchio Continente16 attraverso due importanti modifiche normative: 
+ 
+i. 
+rimozione dell’obbligo di concentrazione degli scambi azionari sui soli mercati 
+regolamentati, permettendo lo sviluppo delle Multilateral Trading Facilities, 17 
+(MTF - sostanzialmente simili agli ECN statunitensi); 
+ii. 
+inserimento dell’obbligo della Best Execution. 
+ 
+ 
+ 
+1.1    Smart Order Routing 
+ 
+L’obbligo di eseguire gli ordini di contrattazione al NBBO (USA) o al Best Price (Europa), 
+in concomitanza con la tendenza alla frammentazione dei mercati in atto negli ultimi anni18, ha 
+introdotto la necessità di creare un’infrastruttura tecnologica in grado di garantire ai trader l’accesso 
+al miglio prezzo di contrattazione presente su ciascun mercato, in ogni istante. Ad esempio, l’order 
+protection rule stabilisce che “i mercati creino, mantengano e rinforzino regolamenti e procedure 
+ragionevolmente volte ad evitare i trade- through - l’esecuzione di trades a prezzi peggiori delle 
+quotazioni protette (i.e. NBBO).  
+ 
+Quest’obbligo si è tradotto non solo nel bisogno di connettere tra di loro mercati 
+regolamentati e ECN (o MTF), ma anche e soprattutto di sistemi in grado di analizzare i prezzi e le 
+relative quantità presenti su ogni singola trading venue e di offrire poi all’investitore il miglior 
+prezzo. Lo Smart Order Reuting (SOR) è un sistema che permette di analizzare in tempo reale i 
+prezzi e le quantità degli strumenti finanziari presenti su tutte le trading venues su cui sono 
+negoziabili e, in base ad un set di regole, garantire l’esecuzione di ordini di compravendita ai prezzi 
+migliori presenti sul mercato.  
+ 
+Allo scopo di definire al meglio il funzionamento di un SOR, si propone il seguente esempio: 
+ 
+un investitore invia un ordine di acquisto a mercato (market order19) per mille azioni XYZ, la cui 
+quotazione è prevista su tre diverse trading venues (1-2-3) che presentano le seguenti caratteristiche 
+di domanda e offerta:  
+ 
+A: miglior prezzo in vendita                €20.05    n. di azioni XZY offerte a €20.05                500 
+  A: 2° miglior prezzo in vendita                €20.06    n. di azioni XZY offerte a €20.06                500 
+                                                 
+15  
+Si veda: Smith (2010). 
+16  
+Per una panoramica sulla situazione europea si veda: Fioravanti e Gentile (2011). 
+17  
+Per una descrizione sul funzionamento delle MTF, si consulti: Frediani e Santoro (2008). 
+18  
+Causata dalla presenza contemporanea di numerosi ECN (MTF) su cui vengono quotati strumenti finanziari 
+presenti anche sui mercati regolamentati. 
+19 
+Per ordine a mercato (market order) si intende la manifestazione della volontà negoziale da parte di un 
+operatore che desidera acquistare una determinata quantità di uno strumento finanziario a qualsiasi prezzo presente sul 
+mercato, fino ad esaurimento della quantità richiesta. Ad esempio, se un operatore desidera acquistare 1000 azioni della 
+società XYZ tramite un ordine a mercato e sul mercato (sia regolamentato che ECN- MTF) è presente un ordine per 500 
+azioni in vendita a €20.00 e un altro ordine pari a 500 azioni a €20.01, l’acquisto sarà eseguito per le prime 500 azioni 
+al prezzo di €20.00, e per le restanti 500 a €20.01, ottenendo un prezzo medio ponderato di acquisto di €20.005. 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+9 
+ 
+ 
+B: miglior prezzo in vendita                €20.04    n. di azioni XZY offerte a €20.04                500 
+  B: 2° miglior prezzo in vendita                €20.05    n. di azioni XZY offerte a €20.05                500 
+ 
+C: miglior prezzo in vendita                €20.02    n. di azioni XZY offerte a €20.02                500 
+  C: 2° miglior prezzo in vendita                €20.03    n. di azioni XZY offerte a €20.03                300 
+    C: 3° miglior prezzo in vendita                €20.05    n. di azioni XZY offerte a €20.05                300 
+ 
+Lo Smart Order Router, connettendo le tre distinte trading venues, permette all’investitore di 
+comprare 500 azioni nel mercato C al prezzo di €20.02, le successive 300 sempre sul mercato C al 
+prezzo di €20.03, e le ultime 200 (necessarie a completare l’ordine di acquisto di 1000 azioni) sul 
+mercato B al prezzo di €20.04. In questo modo l’investitore riesce ad ottenere un prezzo medio di 
+acquisto di €20.027, migliore dei prezzi ottenibili su qualsiasi trading venue presa singolarmente 
+(sul mercato C, il più economico, l’investitore avrebbe ottenuto un prezzo medio pari a €20,029).  
+ 
+ 
+ 
+2. 
+Definizione di trading ad alta frequenza. 
+ 
+High Frequency Trading è un termine associato ad un ampio spettro di strategie operative 
+automatizzate, confondendolo spesso con il più semplice trading algoritmico; i sistemi ad alta 
+frequenza, pur appartenendo alla famiglia del trading algoritmico, da questi ultimi si differenziano, 
+rappresentandone una sorta di step evolutivo successivo. Gli Hfts, inoltre, sono spesso programmati 
+allo scopo di trarre vantaggio economico dalla presenza sui book di contrattazione di sistemi 
+algoritmici meno evoluti e facilmente prevedibili. 
+ 
+Una definizione di Hft può essere la seguente: 
+ 
+Una tipologia di trading completamente automatizzato (della famiglia del trading 
+algoritmico) in grado di eseguire una moltitudine di calcoli in pochissimo tempo; dispone d un 
+collegamento con il mercato estremamente rapido, analizza dati tick – by – tick avvalendosi di 
+infrastrutture tecnologiche e informatiche in grado di eseguire operazioni in un arco temporale di 
+pochi millisecondi. Un sistema ad alta frequenza è progettato in modo tale da eseguire le proprie 
+strategie in maniera autonoma, analizzando il mercato e trasmettendo migliaia di messaggi di 
+acquisto e vendita al secondo e inserendo contestualmente ordini di esecuzione, di cancellazione o 
+di sostituzione che si adattano immediatamente al flusso informativo disponibile. L’obiettivo 
+principale di un sistema ad alta frequenza è di identificare e trarre vantaggio da rapidi 
+sbilanciamenti di liquidità o da inefficienze dei prezzi di brevissima durata; solitamente chiude la 
+giornata di contrattazioni flat20.  
+ 
+Mentre per Trading Algoritmico (AT) si intende:  
+  
+Un metodo di trading i cui parametri sono determinati da uno specifico set di regole con lo 
+scopo di automatizzare le decisioni di investimento, eliminando la componente emotiva e 
+comportamentale. Gli algoritmi di trading tipicamente specificano timing, prezzo, quantità e 
+ruotine degli ordini, monitorando le condizioni del mercato in maniera continua21.  
+ 
+ 
+                                                 
+20 
+Fabozzi, Focardi e Jonas (2010). 
+21  
+Si veda anche: Deutsche Bank Research (febbraio 2011). 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+10 
+ 
+ 
+Graf 2 
+ 
+ 
+ 
+3. 
+Caratteristiche tecniche degli HFTs. 
+ 
+Gli Hfts fondano la propria esistenza su un vantaggio competitivo di tipo tecnologico – 
+logistico, senza il quale entrerebbero nella categoria dei semplici sistemi algoritmici, sebbene 
+evoluti. La caratteristica principale che caratterizza i sistemi ad alta frequenza è la velocità di: 
+immissione, cancellazione, esecuzione e modifica degli ordini inviati al mercato; infatti solo tale 
+vantaggio permette agli Hfts di poter sfruttare inefficienze e opportunità altrimenti neanche 
+percepibili. Corollario a questa caratteristica è un supporto tecnologico – informatico in grado di 
+permettere ai trader ad alta frequenza di eseguire le operazioni in un intervallo temporale di pochi  
+millisecondi; affinché ciò possa avvenire sono necessari due requisiti: 
+ 
+i. 
+Bassa latenza (Low Latency); 
+ii. 
+Co - location 
+ 
+ 
+ 
+3.1 
+Bassa Latenza (Low Latewncy)  
+ 
+Per latenza s’intende il tempo necessario all’implementazione della serie di operazioni 
+necessarie a tramutare una decisione economica in un’effettiva contrattazione (esecuzione).  
+Esistono diversi aspetti del procedimento di negoziazione in cui la latenza deve essere presa in 
+considerazione:  
+ 
+i. 
+la velocità con cui i trader ricevono il dato (informazione) dal mercato e lo 
+processano (analisi del dato e reazione operativa). Ad esempio, la capacità di 
+analizzare in tempo reale la maggior quantità possibile di dati e riuscire a tramutare il 
+flusso informativo in scelte di investimento. 
+ALGORITHMIC TRADING 
+HIGH FREQUENCY 
+TRADING 
+TRADING ELETTRONICO A 
+LUNGO TERMINE & 
+AUTOMATIC ORDER 
+EXECUTION 
+PERIODO MEDIO DI DURATA DELLE OPERAZIONI 
+LUNGO 
+BREVE 
+ALTA 
+BASSA 
+VELOCITA’  
+DI ACCESSO  
+AL MERCATO 
+(LATENZA) 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+11 
+ 
+ii. 
+il tempo che intercorre tra la processazione del dato e la trasmissione del dato ad un 
+broker. Dopo aver effettuato una scelta di investimento, infatti, vi è un tempo 
+necessario alla predisposizione dell’ordine di contrattazione stesso e un tempo 
+affinché l’ordine possa essere materialmente inviato al broker per la negoziazione.  
+iii. 
+il tempo tra la ricezione dell’ordine da parte del broker, la processazione del dato e 
+l’invio dell’ordine di contrattazione alla piazza di negoziazione da parte del broker. 
+Ad esempio, il tempo necessario ai sistemi informatici del broker per riconoscere la 
+tipologia di ordine ricevuto (Buy o Sell), la tipologia e la quantità di strumenti 
+finanziari oggetto di negoziazione, le caratteristiche tecniche dell’ordine, il mercato 
+su cui è trattato lo strumento finanziario e inviare l’ordine;  
+iv. 
+il tempo tra l’invio dell’ordine dal broker e la ricezione da parte del mercato. Il lasso 
+temporale che l’ordine impiega ad arrivare sul mercato dal momento in cui viene 
+rilasciato dal broker;  
+v. 
+il tempo tra la ricezione del dato da parte del mercato e la divulgazione del dato a 
+tutti i partecipanti al mercato. Nel momento in cui un ordine viene ricevuto dal 
+mercato, è importante anche il tempo che il mercato stesso impiega per informare  
+gli altri trader di tutte le caratteristiche del nuovo ordine. 
+ 
+Un sistema ad alta frequenza necessita del minor tempo possibile per coprire tutti i passi del 
+processo di investimento; un intervallo temporale che il progresso tecnologico ha spinto fino a 
+pochi millisecondi (low latency).  
+ 
+Appare chiaro, quindi, che un Hft non solo deve disporre di un apparato informatico e 
+tecnologico in grado di ricevere, analizzare e processare i dati e le informazioni di mercato in un 
+intervallo temporale estremamente piccolo, ma anche avvalersi di un broker che disponga della 
+tecnologia necessaria a minimizzare la latenza dei processi di sua pertinenza ( punti ii, iii eiv). 
+ 
+ 
+ 
+3.2 
+Co - location 
+ 
+Gli ordini di borsa sono impulsi elettrici che, pur viaggiando a velocità altissime, incontrano 
+il limite dello spazio; avere la possibilità che il proprio impulso elettrico (o insieme di impulsi) 
+impieghi il minore tempo possibile per essere attivo, rappresenta un importante punto di forza 
+competitivo. La vicinanza fisica al server di borsa permette ai trader ad alta frequenza di sfruttare 
+un vantaggio che, seppur infinitesimale, consente di poter agire più velocemente rispetto ad 
+operatori non ad alta frequenza e, di conseguenza, di poter sfruttare alcune finestre di investimento 
+che si aprono solo per alcuni secondi o frazioni di secondo.  
+ 
+La vicinanza del proprio server, o di quello del proprio broker, rispetto al server della borsa 
+su cui si è scelto di effettuare operazioni ad alta frequenza (co - location)22 diventa un notevole 
+vantaggio competitivo per la profittabilità di un sistema ad alta frequenza. La presenza stessa sul 
+mercato di altri trader ad alta frequenza rende il settore estremamente competitivo e la mancanza 
+del requisito della co - location comporterebbe la perdita di opportunità di profitto che verrebbero 
+invece sfruttate dai trader più veloci. 
+ 
+                                                 
+22 
+Il primo e più grande mercato ad offrire accordi di co – location per i clienti è stato il NYSE Euronext (si veda 
+anche la brochure informativa del servizio: “Co - location: Nyse Euronext’s US Liquidity Center”, presente sul sito 
+istituzionale del NYSE)  
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+12 
+ 
+Risulta evidente che senza la co - location la low latency sarebbe di scarsa efficacia e 
+viceversa; i due requisiti sono quindi complementari nell’infrastruttura di un Hft. 
+ 
+ 
+ 
+4. 
+Funzionamento e principali strategie utilizzate dagli HFTs. 
+ 
+Il trading ad alta frequenza è un insieme di tecniche estremamente evolute che permettono 
+l’implementazione di particolari strategie il cui elemento comune è la capacità di inserire, cancellare 
+e modificare migliaia di ordini di contrattazione ad elevatissima velocità. Il vantaggio tecnologico e 
+l’elevata capacità computazionale rispetto al mercato determinano per i trader ad alta frequenza la 
+possibilità di sfruttare i cosiddetti arbitraggi da latenza23, cioè guadagni sostanzialmente privi di 
+rischio ottenibili grazie alla possibilità di effettuare la totalità delle operazioni del processo di 
+investimento in un intervallo temporale minimo (low latency). Gli Hfts sono in grado, infatti, di 
+battere sempre sul tempo i trader tradizionali, riuscendo, in questo modo, a sfruttare completamente 
+i vantaggi offerti dalla priorità temporale24. Gli arbitraggi da latenza sono strettamente connessi alla 
+possibile presenza di prezzi diversi per lo stesso strumento finanziario causati dalla frammentazione 
+delle piattaforme di scambio; tramite la possibilità di sfruttare appieno il collegamento intramarket 
+offerto dallo Smart Order Routing, un sistema ad alta frequenza è in grado di avvantaggiarsi di tali  
+discrepanze, anche minime, riuscendo a chiudere in maniera estremamente rapida le possibilità di 
+arbitraggio che si presentano.  
+ 
+Un’altra caratteristica del funzionamento degli Hfts risiede nell’attività pressoché continua, 
+che consente a tali sistemi di adattarsi in maniera immediata alle diverse situazioni di mercato. Per 
+fare ciò sfruttano un’estrema velocità nel prendere posizione, nel modificare immediatamente il 
+proprio posizionamento, adattandolo al comportamento del mercato e nell’inserire e cancellare le 
+proposte di acquisto/vendita dai book di negoziazione. I sistemi sono in grado di analizzare 
+costantemente il grado di liquidità presente sul mercato, adattandovi il proprio posizionamento; la 
+caratteristica dell’alta frequenza, infatti, permette agli Hft di reagire prontamente ad improvvisi 
+aumenti/cali della liquidità, cercando di sfruttarli o di evitarli, se ritenuti insostenibili; Gli Hfts, 
+sono in grado di agire sia attivamente (price taker25) che passivamente (liquidity provider26), in 
+qualsiasi momento, in risposta alla quasi totalità delle situazioni di mercato. 
+                                                 
+23  
+Per una descrizione degli arbitraggi da latenza sfruttabili tramite il flash trading si veda: Arnuk e Saluzzi 
+(2009).  
+24  
+Quando si decide di inserire una proposta di acquisto (o di vendita) per una determinata quantità, tale proposta 
+verrà eseguita solo se siano state precedentemente eseguite le proposte in acquisto o in vendita eventualmente già 
+presenti per lo stesso prezzo al momento dell’inserimento dell’ordine. Ciò significa che vige il criterio del “primo ad 
+essere presente in coda su determinati livelli di prezzo, primo ad essere eseguito”; ciò rende evidente il vantaggio di 
+disporre di sistemi in grado di battere sistematicamente sul tempo i trader tradizionali nel prendere i vantaggi derivanti 
+dalla priorità temporale. 
+25  
+Per operatore “price taker” si intende chi è disposto a comprare o vendere al miglior prezzo che il mercato 
+offre in un determinato momento. L’acquirente price taker, quindi, accetterà per il proprio acquisto il miglior prezzo 
+offerto in lettera (il prezzo più basso a cui uno o più venditori sono disposti a vendere), se le quantità presenti in vendita 
+sono in grado di soddisfare il proprio ordine. Nel caso in cui il miglior prezzo in vendita soddisfi solo parzialmente 
+l’ordine di acquisto, la parte non soddisfatta verrà automaticamente comprata al miglior prezzo successivo (più alto), 
+fino al completo soddisfacimento della quantità richiesta; viceversa un venditore price taker verrà soddisfatto dal 
+miglior prezzo presente in denaro (dal prezzo più alto al quale uno o più acquirenti sono disposti a comprare). La 
+tipologia di ordine attraverso la quale si effettua un operazione di price taking è il “market order” (ordine a mercato).   
+26  
+Per “liquidity provider” si intende l’operatore che non è disposto a comprare o vendere al miglior prezzo 
+presente sul mercato al momento dell’immissione dell’ordine, ma intende posizionare le proprie quantità sul book di 
+negoziazione in attesa che un operatore price taker le soddisfi; ad esempio un compratore liquidity provider posizionerà 
+il proprio ordine di acquisito sul primo livello del denaro (o su livelli diversi dal primo, cioè in corrispondenza di prezzi 
+più bassi), in attesa che un venditore price taker venda un quantitativo pari o superiore a quello proposto in acquisto; in 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+13 
+ 
+ 
+Si sottolinea che il concetto di liquidità utilizzato nei prossimi paragrafi è diverso da quello 
+comunemente utilizzato dall’analisi finanziaria che per liquidità solitamente  intende l’ampiezza del 
+bid - ask spread o i volumi di contrattazione di un determinato strumento finanziario. In questo 
+contesto, invece, per liquidità si fa riferimento al combinato di: 
+ 
+ i.   
+ il numero di proposte in acquisto o in vendita presenti sui book di negoziazione; 
+ ii. 
+ il numero e di proposte in acquisto o vendita che arrivano sul mercato, incrociando 
+ 
+ 
+le proposte presenti sul book di negoziazione;  
+iii.  
+ i volumi associati alle proposte di acquisto o di vendita. 
+ 
+Esistono varie strategie attraverso le quali gli Hfts cercano di massimizzare il ritorno 
+economico derivante dai vantaggi di tipo temporale e tecnico – computazionale che essi detengono 
+rispetto al resto del mercato. Tutte le strategie cercano di sfruttare piccole inefficienze del mercato 
+e, in alcuni casi, mirano ad esplorare la liquidità del mercato con il solo scopo di identificarle.  
+ 
+Di seguito si propone una breve descrizione delle principali strategie utilizzate dai trader ad 
+alta frequenza: 
+ 
+i. 
+Arbitraggio da latenza (Statistical Passive Arbitrage) 
+ii. 
+Offerta di liquidità al mercato (Liquidity Providing Strategy) 
+iii. 
+Arbitraggio su commissioni di negoziazione (Passive Rebate Arbitrage) 
+iv. 
+Trading on News (Momentum trading) 
+v. 
+Flash Trading  
+vi. 
+Ricerca di liquidità (Liquidity Detection)  
+vii. 
+Trade Ignition 
+viii. 
+Pinging/Smoking/Layering/Spoofing  
+ix. 
+Quote Stuffing 
+ 
+ 
+ 
+ 
+4.1    Arbitraggio da Latenza (Statistical Passive Arbitrage). 
+ 
+Le strategie di arbitraggio passivo rappresentano un naturale campo di applicazione per gli 
+Hfts. Per arbitraggi s’intendono le divergenze di prezzo tra attività identiche che non trovano 
+giustificazione economica, se non in una momentanea inefficienza nel funzionamento dei mercati 
+su cui sono negoziati. Nonostante la teoria economica tenda a considerarle come un evento raro e di 
+immediato assorbimento, le opportunità di arbitraggio sono costantemente presenti, ma nel corso 
+degli anni hanno richiesto un livello tecnologico sempre più sofisticato per essere sfruttate, a causa 
+della maggiore rapidità con cui gli operatori le identificano e ne traggono vantaggio. 
+ 
+Nel momento in cui uno o più mercati manifestino una possibilità di arbitraggio, appare 
+evidente il vantaggio insito nel disporre di un sistema ad alta frequenza, il quale offre la possibilità 
+di poter sfruttare completamente l’ampiezza dell’arbitraggio, prima che i trader tradizionali riescano 
+finanche a riconoscerne la presenza.  
+                                                                                                                                                                  
+questo modo il compratore avrà effettuato l’acquisto ad un prezzo migliore (più basso) di quanto avrebbe ottenuto se si 
+fosse comportato da compratore price taker (comprando, quindi, sul primo livello della lettera, cioè ad un prezzo più 
+alto). Il rischio associato al liquidity providing è rappresentato dalla possibilità di non ottenere mai l’esecuzione del 
+proprio ordine in acquisto perché mancano venditori price taker o perché i venditori price taker saranno soddisfatti da 
+compratori liquidity providing disposti a comprare ad un prezzo più alto e, quindi, più conveniente per i venditori.  
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+14 
+ 
+ 
+Infatti, un Hft è in grado di individuare l’opportunità di arbitraggio nel momento stesso in 
+cui essa si verifica e, una volta individuata, riesce a sfruttarne completamente l’ampiezza grazie alla 
+possibilità di battere sul tempo tutti i trader tradizionali, che scontano uno svantaggio sia nella fase 
+identificativa che in quella esecutiva dell’operazione.  
+ 
+Appare chiaro che la presenza di diversi ECN o MTF su cui sono quotati gli stessi strumenti 
+finanziari ha inevitabilmente incrementato le possibilità di effettuare questi arbitraggi, la cui durata 
+risulta essere sempre minore e che necessitano del requisito dell’alta frequenza per essere sfruttati 
+La co-location e la bassa latenza, associate al vantaggio tecnico computazionale - caratteristiche di 
+cui dispongono solo gli Hfts - sono decisive nello sfruttare il maggior numero possibile di tali 
+arbitraggi (nominati, per l’appunto da latenza). 
+ 
+ 
+ 
+4.2    Offerta di liquidità al mercato (Liquidity Providing).  
+ 
+Gli Hfts sono in grado di replicare l’attività dei tradizionali market maker, non dovendo 
+sottostare agli stringenti vincoli che devono essere rispettati da quest’ultimi27. Un Hft infatti può 
+“imparare28” l’operatività attraverso la quale i market maker offrono liquidità al mercato, in modo 
+da poterla replicare. Ma, a differenza del market maker, l’Hft non è tenuto a porsi come controparte 
+di tutti gli ordini in arrivo, potendo scegliere se, come e in che misura operare. 
+ 
+Ciò offre un’opportunità di profitto per tali sistemi; infatti, un Hft può valutare la 
+profittabilità e la rischiosità associata alle diverse situazioni di mercato e, se ritiene conveniente il 
+profilo rischio – rendimento, può decidere di operare tramite i consueti schemi di un market maker, 
+cercando di lucrare il bid ask spread. L’Hft collocherà, quindi, le proprie proposte di negoziazione 
+sui primi livelli in denaro o in lettera dei book di negoziazione29 (bid – ask liquidity providing), 
+aspettando che i partecipanti al mercato (price takers) le incrocino30 con i loro ordini di acquisto o 
+vendita; se il mercato presenta una bassa volatilità, questa strategia consente all’Hft di lucrare il 
+guadagno offerto dal differenziale bid – ask, in quanto riescono a comprare ad un prezzo basso (bid) 
+e rivendere al prezzo più alto rappresentato dall’ask, scontando una rischiosità associata a tale 
+operatività estremamente bassa. 
+ 
+Il vantaggio offerto dall’alta frequenza consente poi di assicurarsi nella maggior parte dei 
+casi la priorità temporale sui book di negoziazione, ottenendo, quindi, che le proprie proposte di 
+acquisto e vendita siano inserite sistematicamente prima e, di conseguenza, eseguite prima di quelle 
+dei trader tradizionali impegnati in analoghe strategie di liquidity providing. 
+ 
+                                                 
+27  
+Gli operatori market maker hanno, ad esempio, obblighi di quotazione relativi a scadenze, quantità minima (di 
+contratti oggetto della quotazione), spread massimo consentito (determinato come differenza massima ammissibile tra il 
+prezzo della proposta in acquisto e il prezzo della proposta in vendita) e tempo (per il ripristino delle quotazioni dopo la 
+conclusione di un contratto o per la risposta a richieste di quotazione). 
+28  
+Ad esempio, tramite una rete neurale. Le reti neurali artificiali sono modelli matematici che imitano le 
+proprietà del sistema di variabili oggetto dell’analisi. Questi modelli possono essere utilizzati per risolvere problemi 
+ingegneristici di intelligenza artificiale come quelli che si pongono in diversi ambiti tecnologici (in elettronica, 
+informatica, simulazione, e altre discipline) 
+29  
+Per primi livelli dei book di negoziazione si intende il primo livello bid e il primo livello ask, cioè, 
+rispettivamente, il più alto prezzo a cui almeno un compratore è disposto a comprare almeno una singola unità di uno 
+strumento finanziario e il più basso prezzo a cui almeno un venditore è disposto a vendere. 
+30 
+ Un ordine in attesa sul book di negoziazione viene incrociato (quindi eseguito) da un ordine di senso contrario 
+“a mercato” o da un “limit order” avente come limite lo stesso prezzo dell’ordine in attesa. , 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+15 
+ 
+ La possibilità di abbandonare rapidamente i book di negoziazione in situazioni ritenute 
+potenzialmente pericolose (prima della pubblicazione di importanti dato macroeconomici o nel 
+momento in cui un headline comunicata improvvisamente cambia lo scenario sottostante) riduce il 
+rischio associato a tale strategia. Infatti, nel momento in cui dovesse esplodere la volatilità31, i 
+sistemi ad alta frequenza sono in grado di cancellare le proprie proposte in un tempo brevissimo, 
+riuscendo quindi a minimizzare le perdite, o addirittura ad evitarle del tutto. 
+ 
+ 
+ 
+4.3   
+Arbitraggio su commissioni di negoziazione (Passive Rebate Arbitrage) 
+ 
+Il passive rebate arbitrage rappresenta un compromesso operativo tra l’arbitraggio statistico 
+(descritto nel paragrafo 4.1) e l’offerta di liquidità (Cfr par 4.2) che ha come principale obiettivo lo 
+sfruttamento delle opportunità di profitto offerte dalle particolari caratteristiche delle nuove 
+strutture commissionali degli ECN. Infatti, la presenza di numerosi sistemi di trading paralleli ai 
+mercati regolamentari causa inevitabilmente un aumento della concorrenza tra ECN e mercati e tra 
+diversi ECN, tutti con l’obiettivo di attrarre il maggior volume possibile di scambi32. La forte 
+concorrenza ha determinato non solo un aumento della qualità tecnologica delle piattaforme di 
+scambio offerte agli operatori33, in termini di caratteristiche tecniche, di stabilità e di velocità di 
+esecuzione degli ordini, ma anche l’ideazione di nuove strutture commissionali offerte al fine di 
+attrarre il maggior numero possibile di partecipanti al mercato. Nel valutare la qualità di un ECN, 
+infatti, i trader considerano anche la capacità che l’ECN presenta nell’offrire un book di 
+negoziazione che presenti il maggior numero di proposte in denaro o lettera e su più livelli di 
+prezzo; book di negoziazione con tali caratteristiche possono assorbire improvvisi flussi anomali di 
+liquidità o ordini caratterizzati da grossi quantitativi. Tali caratteristiche di profondità e robustezza 
+dei book di negoziazione e la quantità di strumenti finanziari che possono essere negoziati in 
+condizioni di liquidità ritenute adeguate influenzano la valutazione sulla qualità stessa dell’ECN, 
+rappresentando, quindi, un vantaggio competitivo rispetto agli altri ECN e ai mercati regolamentati. 
+ 
+Di conseguenza, gli ECN hanno iniziato a proporre ribassi nelle commissioni o addirittura 
+commissioni negative per gli operatori in grado di offrire liquidità all’ECN, cioè quegli operatori 
+liquidity providers34, che danno robustezza e profondità ai book di negoziazione degli strumenti 
+finanziari negoziati sugli ECN. Solitamente la struttura commissionale garantisce dei rebates35 ogni 
+qual volta si offre liquidità al mercato, assorbendo cioè gli ordini degli operatori price takers.  
+ 
+I trader ad alta frequenza sono in questo modo incentivati ad offrire liquidità agli ECN, al 
+solo scopo di accumulare i rebates riconosciuti dal sistema multilaterale. Le caratteristiche tecniche 
+degli Hfts permettono poi di massimizzare i ritorni derivanti da una strategia di passive rebate, 
+riuscendo, al contempo, a minimizzarne i rischi; infatti, a fronte di ordini anomali o di improvvisi 
+                                                 
+31  
+Le strategie di liquidity providing, cercando di lucrare sul differenziale bid – ask, subiscono in maniera piena il 
+rischio associato ad un’esplosione di volatilità; infatti la volatilità comporta sempre un allargamento del bid ask spread 
+e una perdita per gli operatori presenti sui primi livelli di bid o ask. 
+32  
+I mercati e gli ECN ottengono la maggior parte dei loro introiti dalle commissioni richieste agli operatori, 
+quindi dal numero di scambi che vengono effettuati sulle loro piattaforme di negoziazione. 
+33  
+Solitamente gli operatori possono accedere al mercato tramite delle piattaforme di negoziazione offerte loro dai 
+broker abilitati alla contrattazione diretta sul mercato. Il livello tecnologico della piattaforma di negoziazione utilizzata 
+dal mercato influenza positivamente il servizio offerto ai clienti, in quanto una piattaforma più avanzata è in grado di 
+gestire una maggiore quantità di dati, in maniera più stabile e con maggiore velocità. 
+34  
+La presenza di operatori liquidity providers offre profondità ai mercati, in quanto, come visto, tali operatori 
+passivi, dovrebbero garantire la possibilità per il mercato di assorbire senza elevata volatilità flussi anomali di liquidità. 
+35 
+Alcuni ECN offrono delle vere e proprie commissioni negative per ogni operazione di liquidity providing, 
+remunerandolo come un servizio offerto per la qualità complessiva dell’ECN. 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+16 
+ 
+cali/aumenti della liquidità, la capacità di reazione immediata garantita dall’alta frequenza permette 
+di ritirare rapidamente le proposte dai book di negoziazione, offrendo la possibilità di minimizzare i 
+rischi associati alla strategia in questione 
+ 
+ 
+ 
+4.4   
+Trading on News (Momentum Trading) 
+ 
+Un naturale sbocco operativo per i sistemi ad alta frequenza è rappresentato dalla possibilità di 
+sfruttare l’effetto che le notizie e i dati macroeconomici possono esercitare sull’andamento dei 
+prezzi degli strumenti finanziari36. Il requisito fondamentale allo scopo è rappresentato dal poter 
+disporre di sistemi informatici in grado di trarre indicazioni operative dal continuo flusso 
+informativo proveniente dei principali information provider. Tali sistemi sono in grado di associare 
+le strategie di trading a determinati pattern37 di parole presenti nelle notizie, adattando le strategie 
+alla risonanza della notizia (misurata, ad esempio, dal numero di volte che la notizia è riportata). 
+Risulta, quindi, possibile minimizzare il tempo necessario all’interpretazione della notizia, in quanto 
+le strategie sono associate automaticamente e in maniera immediata a determinate configurazioni di 
+parole e di frasi, annullando il tempo necessario alla fase di interpretativa 
+ 
+Sebbene tali strategie possano essere sfruttate tramite il semplice trading algoritmico, l’alta 
+frequenza permette di massimizzare i profitti derivanti dal trading on news, in quanto la velocità 
+degli Hfts consente di sfruttare al meglio i movimenti rapidi e spesso violenti che i mercati 
+manifestano dopo la pubblicazione di dati macro o notizie importanti. 
+ 
+ 
+ 
+4.5 
+Flash trading 
+ 
+Con il flash trading si inizia l’analisi delle strategie più aggressive e controverse usate dagli 
+Hfts; tali strategie rappresentano la tipologia di trading ad alta frequenza che maggiormente ha 
+attirato le critiche della stampa specializzata e di parte della ricerca accademica. 
+ 
+Il flash trading è un servizio offerto da alcuni ECN ai clienti Hft che decidono di usufruirne; 
+il servizio rappresenta una sorta di “prelazione” sugli ordini che arrivano sul mercato e che non 
+possono essere eseguiti; infatti, nel momento in cui un mercato o un ECN riceve un ordine ad un 
+prezzo diverso del “National Best Bid or Offer38”(ordine che dovrebbe essere immediatamente 
+trasferito al mercato su cui è invece presente il NBBO), prima di trasferire l’ordine, lo offre in 
+visibilità39 agli Hft che abbiano sottoscritto il servizio di flash trading40. 
+ 
+                                                 
+36  
+Nei momenti immediatamente precedenti e successivi alla pubblicazione dei dati macroeconomici e in quelli 
+successivi alla divulgazione di notizie importanti si riscontra: i) un aumento del bid – ask spread; ii) una maggiore 
+volatilità di brevissimo periodo; iii) una minore liquidità presente sui book di negoziazione 
+37  
+Per pattern di parole si intende una serie di parole statisticamente associate ad un determinato impatto 
+sull’andamento delle contrattazioni, in termini sia di aumento – diminuzione del valore dei principali indici finanziari, 
+sia di aumento – riduzione della volatilità.  
+38  
+Secondo la regolamentazione della SEC, i broker sono obbligati ad eseguire la transazioni al migliore prezzo 
+presente sul mercato; implicando con ciò anche la ricerca del prezzo migliore su mercati diversi, nel momento in cui 
+uno strumento finanziario presenta più di una quotazione. 
+39  
+La durata della visibilità dell’ordine per gli Hft è minore di 500 millisecondi, un tempo però adeguato affinché 
+questi riescano a processare il dato, analizzare la situazione dellà liquidità del mercato e intraprendere, ove possibile, le 
+strategie in grado di sfruttare profittevolmente l’ordine in arrivo. 
+40  
+Una descrizione dettagliata del funzionamento del Flash Trading è contenuta in: A.J. Sandler (2011). 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+17 
+ 
+Allo scopo di chiarire come i trader ad alta frequenza riescano a trarre vantaggio dal flash 
+trading, si propone il seguente esempio: 
+ 
+i. 
+un investitore invia sul mercato Nasdaq un ordine di acquisto per 5000 azioni XYZ 
+ad un prezzo limite41, pari a  $20,0542;  
+ii. 
+sul Nasdaq sono presenti in vendita solo 1000 azioni XYZ ad un prezzo pari a 
+ 
+$20,00 che rappresenta il NBBO; il miglior prezzo successivo in vendita sul Nasdaq 
+ 
+è per $20,04 (che non rappresenterebbe il successivo NBBO) per 10000 azioni: 
+iii. 
+in questa situazione il Nasdaq può permettere l’esecuzione dei primi 1000 contratti al 
+ 
+prezzo di $20,00 ed è costretto dalla regulation NMS ad inviare l’ordine relativo alle 
+ 
+restanti 4000 azioni (ancora non eseguite) al mercato su cui è presente il NBBO; sul 
+ 
+Bats43, ad esempio, sono presenti in vendita 4000 azioni ad un prezzo pari a $20,03; 
+iv. 
+prima di inviare le 4000 azioni al Bats, il Nasdaq crea un flash order per 4000 azioni 
+in vendita ad un prezzo di un singolo tick migliore del Bats, ad esempio $20,02 e lo 
+“offre in prelazione” agli Hfts per un intervallo inferiore al secondo (dai 300 ai 500 
+millisecondi); 
+v. 
+Un Hft vede l’ordine flash e si pone come controparte. L’Hft, cioè, si pone in vendita 
+sul Nasdaq ad un prezzo pari a $20.02; in questo modo l’ordine di acquisto viene 
+eseguito completamente sul Nasdaq, ad un prezzo medio ponderato parial NBBO. 
+ 
+Le conseguenze di tale strategia sono molteplici; prima di tutto l’acquirente delle 5000 
+azioni XYZ ha pagato un prezzo minore di quanto avrebbe pagato in mancanza del servizio di flash 
+trading. Infatti, il cliente ha pagato per il suo ordine: 1000 a $20,00 + 4000 a $20,02 per un totale di 
+$100080. Senza il flash order l’acquirente avrebbe comprato 1000 azioni a $20,00 e 4000 azioni a 
+$20,03 per un totale di $100120; il servizio, quindi, ha determinato un risparmio di $40 per 
+l’acquirente.  
+ 
+Grazie al flash order, il Nasdaq ha potuto negoziare 4000 azioni che avrebbe invece dovuto 
+trasferire alla piattaforma di negoziazione del mercato che garantiva il NBBO (il Bats 
+nell’esempio). 
+ 
+Più complesso risulta capire perché l’Hft, una volta visto il flash order, abbia deciso di porsi 
+come controparte (in vendita) e, soprattutto, quali sono i vantaggi che può sfruttare dal flash 
+trading. Ci sono diverse motivazioni che possono giustificare tale decisione: 
+ 
+i. 
+l’Hft è già long in azioni XYZ: il flash trading offre, quindi, la possibilità di 
+chiudere la posizione ad un prezzo, prima che tale prezzo diventi disponibile al 
+resto del mercato. Nell’esempio di sopra, l’Hft, tramite il flash order, viene 
+informato della presenza di un ordine di acquisto di 4000 azioni da poter sfruttare 
+per chiudere la propria posizione lunga;  
+ii. 
+L’Hft è flat (non è in posizione né long, né short): il flash order offre una 
+possibilità di arbitraggio, in quanto l’Hft sa, per un intervallo temporale limitato, 
+che vi è pressione sul lato della domanda. A questo punto cercherà di rastrellare 
+                                                 
+41  
+Per prezzo al limite (Limit Order) si intende una particolare categoria di ordine con il quale l’operatore 
+manifesta l’intenzione di acquistare o vendere una determinata quantità solo ad un dato prezzo (o migliore); si 
+differenzia dal Market Order, con il quale l’operatore compra o vende a qualunque prezzo presente sul mercato nel 
+momento in cui l’ordine viene immesso.  
+42  
+L’investitore è quindi disposto a comprare le azioni XYZ a qualsiasi prezzo minore o uguale di $20,05, ma non 
+maggiore. 
+43  
+Uno dei principali ECN statunitensi. 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+18 
+ 
+un quantitativo di azioni, non superiore alle 4000 del flash order, ad un prezzo 
+inferiore al $20,02, consapevole di poterle poi rivendere in profitto a $20,02; 
+iii. 
+L’Hft è short: il flash order rappresenta un vantaggio informativo perché offre un 
+segnale di pressione sul lato della domanda che l’Hft può utilizzare per chiudere 
+la posizione corta prima degli altri trader; 
+iv. 
+L’Hft è presente con delle quantità in vendita su mercati su cui la sua offerta non  
+rappresenta il NBBO: l’Hft può elaborare l’informazione offerta dal flash order 
+e, nel caso ritenesse la pressione della domanda insostenibile, provvedere a 
+togliere le proprie quantità in vendita anche sugli altri ECN (dove è probabile che 
+venga inviato l’ordine di acquisto per l’esecuzione), in modo da evitare di 
+trovarsi corto, in un mercato che presenta una pressione dal lato long. 
+ 
+In questo modo i trader ad alta frequenza, sfruttando un vantaggio informativo di durata 
+inferiore ad un secondo, ottengono un guadagno sostanzialmente privo di rischio (una sorta di “free 
+lunch)”. Nonostante il guadagno su ogni singola operazione possa essere minimo, gli Hft cercano 
+tali opportunità su tutti gli strumenti finanziari e sul maggior numero possibile di mercati; in questo 
+modo, tramite una moltiplicazione e una parcellizzazione delle operazioni, possono ottenere 
+migliaia (anche milioni) di profitti di entità risibile, la cui somma finale risulta, però, considerevole.   
+ 
+Il flash trading può essere considerato come un caso estremo di arbitraggio da latenza; 
+inoltre, è una fonte continua di informazioni che, se elaborata nella maniera migliore, rappresenta 
+per i trader ad alta frequenza un importante vantaggio competitivo. 
+ 
+ 
+ 
+4.6    Ricerca di liquidità (Liquidity Detection)  
+ 
+Per liquidity detection s’intende l’attività attraverso la quale i trader algoritmici (non 
+necessariamente ad alta frequenza) “testano” alcuni livelli chiave44 tramite piccoli ordini, per 
+verificare la presenza di stop loss o take profit45; tali sistemi cercano poi di far scattare gli stop loss 
+e i take profit degli altri partecipanti al mercato in modo da poter accumulare la liquidità offerta 
+(indifferentemente in acquisto e in vendita46) in corrispondenza di tali ordini di chiusura. 
+ 
+Gli ordini condizionati (quali sono SL e TP) presentano il notevole svantaggio di 
+rappresentare ordini di negoziazione latenti, il cui posizionamento è facilmente prevedibile; infatti, 
+tramite l’analisi comportamentale degli altri trader, i sistemi algoritmici sono in grado di 
+identificare i comportamenti ricorrenti degli operatori di tipo tecnico o fondamentale. In questo 
+                                                 
+44  
+Livelli particolarmente importante secondo l’analisi tecnica o prezzi in concomitanza dei quali si sono 
+verificate numerose contrattazioni nel corso della giornata. 
+45  
+Lo stop loss (SL) è un ordine condizionato utilizzato per minimizzare le perdite, chiudendo automaticamente la 
+posizione al verificarsi di un determinato livello di prezzo cui corrisponde la perdita massima che si intende sopportare. 
+Uno stop loss associato ad una posizione long è un’operazione di vendita e viceversa per le operazioni short. Per take 
+profit (TP) si intende un ordine condizionato avente lo scopo di chiudere automaticamente in profitto la posizione al 
+verificarsi di un determinato evento, rappresentato di solito da un livello tecnico particolare o da un livello assoluto di 
+guadagno ottenuto dalla posizione. L’utilizzo di ordini di stop loss o di take profit permette di eliminare la componente 
+comportamentale dalle decisioni di investimento. 
+46  
+I sistemi di liquidity detection sono anche chiamati algo – searcher, in quanto il loro unico scopo è di 
+verificare la presenza di stop loss o di take profit presenti su determinati livelli tecnici; ciò avviene tramite l’immissione 
+di piccoli ordini a mercato (market order) in modo da far risultare come “negoziato” un prezzo ritenuto dagli algoritmi 
+verosimilmente un evento scatenante della condizione alla base degli stop loss o take profit; infatti, tali ordini, nel caso 
+in cui il prezzo impostato come condizione venisse negoziato sul mercato, si attivano, rilasciando meccanicamente sul 
+mercato la propria liquidità. 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+19 
+ 
+modo è possibile inferire il probabile posizionamento degli ordini automatici di chiusura (stop loss 
+o take profit), per poter accumulare la liquidità47 offerta da questi ultimi offerta. 
+ 
+ 
+ 
+4.7    Ignition Momentum 
+ 
+Una delle tecniche più raffinate di liquidity detection è il cosiddetto “ignition momentum”: 
+un trader (di solito ad alta frequenza, ma non necessariamente) prende una posizione aggressiva 
+(indipendentemente long o short), che genera un forte movimento del prezzo e spinge gli altri trader 
+a reagire al movimento; su questa reazione il momentum trader chiude la propria posizione, 
+prendendo profitto. L’ignition momentum è, quindi caratterizzato da: 
+ 
+v. 
+un prezzo inizialmente stabile; 
+vi. 
+un improvviso aumento dei volumi, cui segue un forte movimento del prezzo, in 
+qualsiasi direzione; 
+vii. 
+un rintracciamento dei prezzi sui livelli di partenza. 
+  
+Il grafico n. 3 mostra le fasi che solitamente caratterizzano una strategia di momentum 
+ignition48;. dal grafico si vede che il primo aumento dei volumi (coincidente con l’ingresso in 
+posizione del momentum trader), non si associa a nessun movimento significativo del prezzo, ma 
+corrisponde ad una fase di accumulo della posizione – di tipo short in questo caso - per l’ignitium 
+momentum trader.  Nel momento in cui la fase di accumulo è terminata, il trader manda a mercato 
+un ordine caratterizzato da forti volumi; tale ordine, mandato strategicamente in un momento 
+caratterizzato da scarsa volatilità e bassi volumi di contrattazione, spinge gli altri partecipanti al 
+mercato a reagire ad un’improvvisa modifica dello scenario49 chiudendo le proprie posizioni. In 
+questa situazione, quindi, il trader che ha iniziato la strategia utilizza gli ordini di chiusura degli altri 
+trader per chiudere in profitto la propria strategia (il trader, nel caso analizzato, ha iniziato una 
+strategia short; gli ordini di chiusura degli altri trader sono ordini di vendita a mercato, che vengono 
+utilizzati per coprire – tramite un acquisto – la posizione corta precedentemente accumulata dal 
+momentum trader). 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                 
+47  
+Per accumulo di liquidità si intende l’ingresso in posizione del sistema ad alta frequenza tramite operazioni 
+long o short; si parla di accumulo perché gli Hfts sono indifferenti alla tipologia di operazione (long o short), ma sono 
+interessati solo alla quantità di strumenti finanziari che riescono a movimentare in acquisto o vendita.  
+48  
+Il movimento analizzato nell’esempio è avvenuto il 13 luglio 2012, sull’azione Daimler, quotata sullo XETRA 
+49  
+Solitamente la reazione degli altri trader avviene tramite l’utilizzo di ordini al mercato. 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+20 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Graf. n.3 
+ 
+Source: elaborazione dati Credit Suisse AES Analysis 
+ 
+ 
+ 
+4.8    Pinging/Smoking/Layering/Spoofing 
+ 
+Tramite queste strategie, che differiscono tra loro solo in alcuni minimi aspetti operativi, gli 
+Hfts, inondano il book di negoziazione di Limit Order, modificandoli e cancellandoli 
+continuamente, simulando situazioni di mercato al solo scopo di indurre i trader tradizionali o i 
+trader algoritmici50 ad effettuare operazioni sbagliate come reazione a stimoli non reali. L’Hft si 
+pone, quindi, come controparte di queste operazioni, e, dopo aver accumulato un certo quantitativo 
+di liquidità, inizia a simulare lo stesso schema comportamentale, ma nel verso opposto, spingendo 
+gli operatori a chiudere le posizioni precedentemente accumulate (solitamente in perdita, a causa 
+della falsità degli stimoli che hanno determinato le decisioni alla base delle operazioni), e creando 
+nuovamente le situazioni che potrebbero determinare un aumento degli ordini di negoziazione, 
+grazie ai quali chiudere in profitto le proprie operazioni precedentemente intraprese. 
+ 
+Si ipotizzi, ad esempio, un trader istituzionale (un fondo pensione o un fondo comune di 
+investimento) che segue uno schema di investimento basato su un particolare algoritmo. Un Hft 
+potrebbe inserire rapidamente numerose piccole proposte di vendita tramite limit order su vari 
+livelli di prezzo, cancellandole immediatamente dopo averle inserite. In questo modo può osservare 
+le reazioni del trader algoritmico e, progressivamente, apprenderne lo schema di investimento. A 
+questo punto può iniziare a simulare gli input che spingono l’algoritmo ad entrare in posizione, 
+spingendolo all’acquisto quando l’Hft ha bisogno di liquidità per vendere le sue posizioni 
+precedentemente accumulate. In questo modo, mettendo in piedi operazioni “fantasma”, l’Hft riesce 
+ad utilizzare come “sponda” la liquidità offerta degli ordini di negoziazione del trader tradizionale, 
+in modo sia da aprire le proprie posizioni sia, successivamente, chiuderle in profitto.  
+ 
+In base all’esempio proposto, il pinging risulta controverso sotto due punti di vista: 
+ 
+i.  
+simulando comportamenti ricorrenti, spinge alla negoziazione operatori che, in 
+ 
+assenza di tali finzioni, non entrerebbero sul mercato;  
+                                                 
+50 
+Anche in questa situazione gli Hfts cercano di sfruttare la prevedibilità che contraddistingue tali operatori, i 
+quali spesso operano tramite schemi ricorrenti. 
+Ingresso in posizione del 
+momentum trader 
+(segnalato da un 
+aumento dei volumi) 
+Forte movimento di 
+prezzo associato ad 
+alti volumi 
+Ritracciamento del 
+prezzo sui livelli 
+iniziali e discesa dei 
+volumi. 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+21 
+ 
+ii.  
+genera profitti solo ed esclusivamente grazie alle perdite dei trader tradizionali o 
+ 
+trader algoritmici meno evoluti. 
+ 
+ 
+ 
+4.9    Quote Stuffing 
+ 
+Il quote stuffing è una strategia particolarmente aggressiva volta ad aumentare le possibilità 
+di arbitraggio da latenza, cercando di crearne artificiosamente le condizioni. Infatti, un Hft, 
+consapevole del proprio vantaggio temporale, potrebbe riversare sul mercato una quantità 
+ingestibile di informazioni, tramite immissione e contestuale cancellazione di migliaia di ordini a 
+limite di prezzo, determinando: 
+ 
+i.  
+un rallentamento nel funzionamento degli altri sistemi di trading, che, a differenza 
+ 
+dell’Hft che immette gli ordini, devono processare un’ingente mole di informazioni, 
+ 
+perdendo una parte del vantaggio temporale; 
+ii.  
+un rallentamento del funzionamento del mercato che riceve gli ordini. 
+ 
+La conseguenza dei due punti precedenti è una moltiplicazione delle possibilità di arbitraggi 
+da latenza che possono essere sfruttati solo dall’Hft che ha iniziato il quote stuffing, in quanto la 
+maggior parte degli altri operatori sarà verosimilmente limitata dal punto di vista computazionale a 
+causa della notevole quantità di dati da analizzare51. 
+ 
+I due grafici seguenti, il primo relativo ad un episodio avvenuto il 2 maggio 2012 sul titolo 
+Heineken, quotato all’Euronext, mentre il secondo avvenuto il 10 agosto 2012 e relativo al titolo 
+Telefonica, quotato presso la borsa di Madrid, mostrano situazioni di mercato caratterizzate da 
+quote suffing, tramite immissione e cancellazione di migliaia di limit order sulla sola lettera (ask)52.  
+ 
+ 
+ 
+ 
+ 
+Graf n.4  
+ 
+ 
+ 
+ 
+ 
+Graf n.5 
+ 
+ 
+Source: Credit Suisse AES Analysis 
+                                                 
+51  
+Si segnala che il qoute stuffing e le sue potenziali conseguenze sulla qualità del mercato hanno attirato le 
+attenzioni della SEC che già nel settembre 2009, tramite il chariman Mary Shapiro, aveva proposto la messa al bando 
+del servizio, accusato di “provide a momentary head start in the trading arena that can produce inequities in the 
+markets." 
+Si veda anche l’articolo del Financial Times: “US Bourses to Fine HFT Data-Cloggers” del 7 marzo 2012. 
+52  
+L’utilizzo dei limit order avviene perché tali ordini permettono l’ingolfamento dei book di negoziazione, senza 
+tramutarsi in effettive contrattazioni per chi li inserisce.  
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+22 
+ 
+5. 
+Impatti positivi del trading ad alta frequenza 
+ 
+Dopo aver esaminato le strategie maggiormente utilizzate dai trader ad alta frequenza, si 
+propone un approfondimento sugli effetti che tali sistemi possono avere sul mercato. Dall’analisi 
+delle strategie utilizzate appare evidente che in molti casi queste, pur nella loro estrema 
+aggressività, non presentano profili di rischio per la qualità del mercato e per la redditività dei trader 
+tradizionali, ma per altre sorgono inevitabili dubbi sull’utilizzo (predatorio o meno) del vantaggio 
+sistematico che gli Hfts hanno nei confronti dei trader tradizionali. 
+ 
+L’analisi delle conseguenze che la presenza di trader ad alta frequenza potrebbe esercitare 
+sulla struttura dei mercati è oggetto di un recente filone di ricerca accademica; la maggioranza dei 
+lavori53 appare concorde nell’identificare i seguenti come i principali vantaggi derivanti dalla 
+presenza dell’Hft: 
+ 
+i.  
+aumento della liquidità a disposizione dei partecipanti al mercato; 
+ii.  
+diminuzione del bid - ask spread medio; 
+iii.  
+diminuzione dei costi di transazione; 
+iv.  
+aumento dell’efficienza informativa dei prezzi; 
+v.  
+aumento dei collegamenti intermarket; 
+ 
+ 
+Tra i numerosi studi aventi ad oggetto il fenomeno del trading ad alta frequenza e i possibili 
+impatti sulla microstruttura e sulla qualità del mercato, si segnala la conclusione cui sono giunti 
+Angel, Harris e Spatt (2010). 
+ 
+“Il tempo di esecuzione è crollato, permettendo un miglior controllo dello stato di 
+esecuzione dell’operazione agli investitori retail; le commissioni per i trader retail sono diminuite 
+consistentemente e continuano a diminuire; gli spread bid – ask  si sono stretti in maniera decisa e 
+permangono su livelli bassi, nonostante degli ampliamenti durante i momenti di volatilità della 
+crisi finanziaria; la profondità (liquidità) del mercato è aumentata; studi sui costi operativi per gli 
+investitori istituzionali continuano a suggerire che i costi di transazione sui mercati USA sono tra i 
+più competitivi del mondo” 
+ 
+Le stesse conclusioni sono condivise da uno studio di Credit Suisse (Aprile 2010) che ha 
+analizzato dati relativi a scambi azionari su un periodo temporale di più di 7 anni (2003 – 2010). 
+ 
+Un dettagliato studio di Brogaard (2010) conclude affermando che, dall’analisi dell’impatto 
+sulla qualità del mercato degli Hfts, focalizzando l’attenzione sull’efficienza informativa dei prezzi, 
+sulla liquidità e sulla volatilità, si può affermare che: “i trader ad alta frequenza tendono a 
+migliorare la qualità del mercato”. 
+ 
+Nel caso di operazioni di arbitraggio statistico, infatti, l’impatto dei trader ad alta frequenza 
+sulla qualità dei mercati non può che essere ritenuto positivo, in quanto la loro stessa presenza 
+contribuisce a rimuovere in tempi sempre più rapidi le possibilità di arbitraggio, a rendere il 
+mercato maggiormente efficiente e a migliorare l’efficienza informativa dei prezzi.  
+ 
+Anche alcune delle strategie che hanno maggiormente attirato le critiche di stampa 
+specializzata e comunità accademica, come il flash trading, possono comportare, come visto, un 
+aumento della qualità del mercato, che si traduce in un effettivo miglioramento dei prezzi che i 
+                                                 
+53  
+Si sottolinea che una parte della ricerca accademica tende a considerare trading algoritmico e trading ad alta 
+frequenza come un singolo oggetto di analisi, senza effettuare alcuna distinzione. 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+23 
+ 
+partecipanti al mercato possono ottenere per le proprie contrattazioni rispetto a quanto potrebbero 
+contrattare in assenza dei trader ad alta frequenza. 
+ 
+ 
+ 
+6. 
+Possibili effetti distorsivi sul mercato 
+ 
+La maggior parte della letteratura accademica appare concorde nel raggiungere conclusioni 
+per lo più positive circa l’effetto della presenza degli Hfts sui mercati. Spesso, però, tali conclusioni 
+stridono con gli attacchi della stampa specializzata e degli operatori non Hft, nonché di alcuni 
+accademici54, che ritengono che le pratiche più aggressive utilizzate da molti Hfts si spingono fino a 
+creare artificiosamente situazioni in cui la probabilità di market inefficiency sia alta, in modo da 
+aumentare le opportunità di guadagno. 
+ 
+Di seguito si cercherà di analizzare tutti gli effetti potenzialmente distorsivi della presenza 
+degli Hfts sulla struttura del mercato.  
+ 
+I maggiori impatti negativi che i sistemi ad alta frequenza potrebbero esercitare sono i 
+seguenti: 
+ 
+ 
+i.  
+Asimmetria informativa 
+ii.  
+Selezione avversa 
+iii.  
+Front running 
+iv.  
+Liquidità ombra 
+v.  
+Flash crashes (cascading effect) 
+ 
+ 
+ 
+6.1    Asimmetria informativa 
+ 
+Nel momento in cui gli Hfts eseguono operazioni di flash trading, appare da possibile il 
+verificarsi di situazioni caratterizzate da asimmetria informativa; ciò permetterebbe, quindi, un 
+guadagno possibile solo grazie ad un vantaggio di natura informativa. Infatti, l’avere in prelazione – 
+sebbene per pochi millisecondi - la possibilità di processare un ordine prima che questo venga 
+inviato dagli ECN ai mercati su cui è presente il NBBO offre ad un Hft due opportunità: 
+ 
+i. 
+se l’Hft ritiene di poter processare l’ordine in maniera profittevole, intraprende le 
+ 
+operazioni descritte nel paragrafo dedicato al flash trading (Cfr par 4.5); 
+a. se l’Hft non ritiene conveniente porsi come controparte dell’ordine, può non solo 
+decidere di non processarlo sulla trading venue che gli offre la prelazione derivante 
+dal  flash trading”, ma anche effettuare un secondo, importante passaggio; infatti, 
+sapendo di non poter processare tale ordine, sa che verosimilmente questo verrà 
+inviato automaticamente sul  mercato dove è presente il NBBO. Di conseguenza, 
+l’Hft sa con anticipo che su tale mercato sta arrivando un ordine, del quale conosce 
+le principali caratteristiche in termini di prezzo, quantità e tipologia. l’Hft, prima che 
+l’ordine arrivi sul mercato dove è presente il NBBO, può provvedere a ritirare le 
+proprie proposte di acquisto o vendita. In questo modo l’Hft può operare in discreta 
+tranquillità, consapevole che tale vantaggio informativo fungerà da parziale schermo 
+protettivo da flussi di liquidità non gestibili profittevolmente. 
+                                                 
+54  
+Si veda a proposito: Jarrow e Protter (2011). 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+24 
+ 
+ 
+Sebbene, quindi, tale vantaggio duri pochi millisecondi, l’Hft è in grado di sfruttarlo 
+completamente, avvantaggiandosi di un’asimmetria informativa rispetto agli altri partecipanti al 
+mercato. 
+ 
+ 
+ 
+6.2    Selezione avversa 
+ 
+Gli Hfts che adottano strategie di pinging sono in grado di replicare in maniera pressoché 
+perfetta determinate situazioni di mercato; tramite le continue simulazioni generate dalle strategie 
+del tipo pinging, gli Hfts spingono gli altri partecipanti al mercato ad effettuare operazioni che, in 
+mancanza delle simulazioni, non avrebbero intrapreso. Da ciò appare ipotizzabile l’instaurarsi di un 
+meccanismo di selezione avversa ai danni dei trader meno evoluti; allo scopo di chiarire tale 
+criticità, si propone il seguente esempio: 
+ 
+Si ipotizzi la presenza di un trader tradizionale che implementa una strategia di breve 
+periodo tramite la quale cerca di seguire i microtrend di mercato55. Tale trader è spinto a vendere se 
+le quantità presenti in denaro diminuiscono, in quanto ciò indicherebbe un aumento della probabilità 
+di discesa del prezzo56. Una volta identificata la presenza di un trader di questo tipo, un Hft può 
+iniziare a modificare le proprie quantità presenti sul book, simulando una diminuzione delle quantità 
+in denaro. L’elevato livello tecnico dell’Hft consente di simulare un rapido, ma graduale 
+svuotamento del denaro, come se fosse colpito da reali ordini di vendita. In questo modo il trader 
+tradizionale è spinto erroneamente a vendere. Contestualmente l’Hft si pone come controparte in 
+acquisto (solitamente tramite ordini asteriscati57) degli ordini di vendita inseriti dal trader 
+tradizionale, accumulando in questo modo quantità in acquisto. Successivamente, l’Hft inizierà a 
+simulare una risalita dei prezzi, togliendo le proprie quantità in vendita e riempiendo 
+contestualmente di ordini in acquisto il denaro. In questo modo l’Hft sta simulando una salita del 
+prezzo, mandando in tensione il trader tradizionale (che aveva puntato su una discesa del prezzo). 
+Se qualche altro trader dovesse decidere (vedendo la lettera che progressivamente si svuota, 
+indebolendosi) di comprare, il trader tradizionale andrebbe ulteriormente in difficoltà, in quanto il 
+prezzo, aumentando, genera una perdita. In questo modo l’Hft sta cercando di spingere il trader 
+tradizionale ad inviare ordini di negoziazione (in questo caso in acquisto) come chiusura in stop 
+loss, utilizzando poi tali ordini per chiudere in profitto la propria posizione (di segno contrario 
+rispetto a quella del trader tradizionale). 
+ 
+Tramite un esempio di questo tipo appare evidente l’impatto che la strategia di pinging 
+utilizzata dai sistemi ad alta frequenza può avere sulla qualità del mercato. Tramite un’analisi 
+superficiale, gli effetti derivanti dal pinging potrebbero apparire addirittura positivi per la 
+                                                 
+55  
+Analizzando, ad esempio, l’andamento delle quantità presenti sui book di negoziazione e prendendo decisioni 
+di investimento in base al comportamento degli altri partecipanti al mercato. 
+56  
+La diminuzione delle quantità presenti in denaro è solitamente associata ad una diminuzione del prezzo di uno 
+strumento finanziario, in quanto gli ordini di vendita a mercato cha accompagnano una fase di discesa del prezzo 
+ottengono come primo effetto una diminuzione delle quantità di ordini presenti sul denaro perché: i) le vendite a 
+mercato colpiscono direttamente il denaro; ii) i compratori presenti in denaro tendono a togliere i propri ordini di 
+acquisto in corrispondenza di movimenti in discesa degli indici e di un aumento dei flussi in vendita. Inoltre un denaro 
+meno spesso è meno capace di supportare grossi ordini in vendita, aumentando la probabilità di ulteriore discesa del 
+prezzo. 
+57  
+Per ordine asteriscato o iceberg si intende un ordine che risulta visibile solo per una piccola parte, mentre la 
+reale entità dell’ordine risulta nascosta. Il principale difetto di un ordine asteriscato risiede nel fatto che le quantità 
+proposte vanno sistematicamente in coda agli altri ordini, anche quelli inseriti successivamente. L’esecuzione 
+dell’ordine iceberg avviene quindi solo quando non è presente nessun altro ordine per un determinato livello di prezzo. 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+25 
+ 
+microstruttura del mercato, in quanto tale strategia sembrerebbe determinare un aumento 
+dell’offerta di liquidità e un’apparente maggiore profondità dei book di negoziazione. In realtà, 
+simulando determinate situazioni di mercato e cercando di trarre vantaggio dalle reazioni dei trader 
+tradizionali, il piging determina un guadagno economico per gli Hfts simmetrico alle perdite 
+registrate dai trader tradizionali causate da decisioni da selezione avversa. 
+ 
+ 
+ 
+6.3    Front running 
+ 
+Per front running si intende la possibilità di guadagno sostanzialmente priva di rischio che 
+deriva dalla conoscenza di grossi ordini di acquisto o vendita in arrivo sul mercato58. Un 
+opportunità di front running può essere sfruttata dagli Hfts che si avvalgono del flash trading; 
+infatti, conoscere in anticipo che su un mercato sta per arrivare un grosso ordine di acquisto o di 
+vendita che non rispetta i requisiti di NBBO, offre all’Hft la possibilità di scegliere se processare o 
+meno tale ordine. Nel caso in cui decidesse di non poterlo o volerlo processare, ciò avrebbe 
+l’impatto deleterio di causare una perdita di liquidità per il mercato, proprio nel momento in cui il 
+mercato ha bisogno di liquidità per assorbire il grosso ordine. 
+ 
+Le conseguenze di questo comportamento sono di due tipi: 
+ 
+i. 
+l’operatore tradizionale che immette l’ordine sul mercato, consapevole di trovare 
+ 
+adeguata liquidità, rischia di ottenere un prezzo di esecuzione peggiore di quanto 
+ 
+razionalmente atteso59; 
+ii. 
+il mercato presenta sistematicamente caratteristiche di fragilità, contestualmente ad 
+ 
+un aumento della richiesta di liquidità da parte degli operatori price taker. 
+ 
+ 
+ 
+6.4    Liquidità Ombra 
+ 
+Collegato ai due punti precedenti (adverse selection e front running) è il fenomeno della 
+liquidità ombra. Infatti, la valenza informativa dei book di negoziazione e, contestualmente, della 
+presenza di liquidità su un determinato strumento finanziario60, è diminuita consistentemente dallo 
+sviluppo del trading ad alta frequenza. A causa delle strategie di pinging e flash trading, le proposte 
+                                                 
+58  
+Ad esempio: un dealer che sia a conoscenza della volontà di un grosso cliente di acquistare una certa quantità 
+di un  determinato strumento finanziario, potrebbe comprare lo stesso strumento tramite il proprio portafoglio di trading 
+(proprietario); infatti il dealer è consapevole che la domanda è irrobustita dalla presenza del grosso ordine del cliente; 
+inoltre, nel momento in cui il mercato dovesse manifestare segnali di debolezza, il dealer potrebbe preventivamente 
+scaricare (vendere) le proprie posizioni long, utilizzando l’ordine del cliente come “sponda” per la propria chiusura, nel 
+caso in cui mancasse un adeguato livello di liquidità in denaro sul mercato. 
+59  
+Infatti, nel momento di immissione dell’ordine, il mercato manifesta una liquidità che il trader tradizionale 
+reputa capace di assorbire il proprio ordine; se gli Hfts ritengono di non poter gestire l’ordine, provvedono a rimuovere 
+dai book di negoziazione le loro quantità nel momento che intercorre tra l’immissione dell’ordine sul mercato da parte 
+del trader tradizionale e la trasmissione dell’ordine sul mercato dove è presente il NBBO. In questo modo la liquidità 
+perde spessore e l’ordine rischia di essere eseguito ad un prezzo medio peggiore di quanto razionalmente atteso nel 
+momento iniziale dell’operazione. 
+60  
+Lo spessore e la profondità dei book di negoziazione sono un indicazione del grado di liquidità relativo ad un 
+determinato strumento finanziario; infatti, un book che presenta numerose proposte in acquisto e vendita, su diversi 
+livelli di prezzo, corrisponde ad uno strumento liquido, in grado quindi di assorbire grossi ordini in arrivo sul mercato, 
+senza forti oscillazioni di prezzo. 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+26 
+ 
+di negoziazione (ordini e relative quantità61) presenti sul book sono diventate immediatamente 
+mobili, aumentando la probabilità che la liquidità possa scomparire dai book di negoziazione in 
+corrispondenza di determinati eventi. 
+ 
+Ciò ha esercitato un impatto sulla capacità e sulla qualità informativa dei mercati, dal 
+momento che i prezzi degli strumenti finanziari non possono essere sempre negoziati dai trader 
+tradizionali, in quanto la liquidità potrebbe scomparire da un momento all’altro, costringendo il 
+trader tradizionale ad accettare prezzi peggiori e non preventivati. 
+ 
+Sotto questo punto di vista, quindi, la liquidità offerta dai sistemi ad alta frequenza diverge 
+da quella offerta dai classici partecipanti al mercato, soprattutto dal punto di vista della stabilità in 
+condizioni di elevato stress e di affidabilità per gli operatori price takers (ordini a mercato)62. 
+Infatti, la capacità di scomparire che la liquidità ad alta frequenza manifesta nelle condizioni in cui 
+maggiormente si avverte la necessità di una liquidità stabile63, determina una maggiore incertezza 
+per i partecipanti al mercato e un aumento della probabilità che gli operatori tradizionali utilizzino 
+ordini al mercato per chiudere le proprie posizioni, ottenendo in questo modo un peggior prezzo di 
+esecuzione64.  
+ 
+La velocità con cui la liquidità dei trader ad alta frequenza riesce ad abbandonare il mercato 
+ha fatto nascere il termine di “liquidità ombra”. 
+ 
+ 
+ 
+6.5    Flash Crashes (effetto palla di neve) 
+ 
+Un flash crash è un fenomeno caratterizzato da un’improvvisa, rapida e spesso immotivata 
+discesa dei prezzi di uno o più strumenti finanziari, cui corrisponde solitamente un vigoroso 
+rimbalzo nei minuti immediatamente successivi. I flash crash possono riguardare più titoli e, nei 
+casi più gravi, possono essere tali da influenzare l’andamento anche degli indici più capitalizzati al 
+mondo.   
+ 
+Nonostante improvvisi e violenti crolli di titoli o interi indici siano possibili anche in 
+assenza del trading ad alta frequenza, la  presenza di questi ultimi inevitabilmente comporta una 
+maggiore ampiezza dei movimenti e rapidità delle fasi sia di discesa che di successivo rimbalzo dei 
+prezzi. Per spiegare la serie di eventi che possono portare ad un flash crash si propone il seguente 
+esempio:  
+ 
+Nel momento in cui viene inviato un ordine di vendita particolarmente grosso relativo ad 
+uno strumento finanziario, aumenta la probabilità che il mercato possa diventare più sottile a causa 
+dell’immediata cancellazione degli ordini in acquisto da parte degli Hfts meno capitalizzati e non in 
+                                                 
+61  
+Ci si riferisce ai limit order, gli ordini a limite di prezzo che rimangono in attesa di esecuzione sui book di 
+negoziazione. 
+62  
+Si veda anche Debelle et Al. (2011). 
+63  
+Divulgazione di notizie particolarmente importanti, dati macroeconomici, forti flussi in acquisto o in vendita.   
+64  
+Un operatore che si trovi in una situazione di perdita a causa di un improvviso cambiamento delle condizioni di 
+mercato, può chiudere la propria posizione scegliendo tra un market order, che garantirebbe un’immediata chiusura 
+della posizione, o un limit order che offrirebbe un miglior prezzo, ma senza la garanzia dell’esecuzione. L’estrema 
+velocità con cui la liquidità ad alta frequenza abbandona il mercato spinge gli operatori ad utilizzare gli ordini al 
+mercato, in quanto aumenta la probabilità che un limit order non venga eseguito a causa di una fuga improvvisa e rapida 
+di liquidità 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+27 
+ 
+grado quindi di gestire l’ordine65, determinando una possibile discesa anomala dei prezzi e un 
+aumento della volatilità di brevissimo periodo. Se tale movimento avviene in concomitanza di 
+importanti livelli tecnici, è ragionevole ipotizzare l’attivazione di ordini automatici di stop loss che 
+rafforzano il trend in atto. L’arrivo di ulteriore liquidità, contestualmente a tali ordini di chiusura, 
+può provocare il ritiro degli ordini di negoziazione e la chiusura delle operazioni anche degli Hfts 
+più capitalizzati che precedentemente avevano accumulato posizioni contro il trend. L’uscita di tali 
+Hfts e il tentativo di seguire il trend – in discesa - in atto da parte di altri Hfts spinge il prezzo dello 
+strumento in questione in violenta accelerazione. In una situazione di questo tipo aumenta anche la 
+probabilità che vengano negoziate le cosiddette “Stub Quotes”, con il relativo rischio che i prezzi 
+contrattati possano risultare estremamente bassi66, determinando l’attivazione di altri ordini 
+automatici di stop loss.  
+ 
+Un flash crash, quindi, rappresenta un forte e rapido crollo del valore di uno strumento 
+finanziario, ingiustificato da motivazioni economiche e determinato da un effetto a cascata di natura 
+quasi meccanica, le cui conseguenze vengono sicuramente amplificate dalla presenza del trading ad 
+alta frequenza67. 
+ 
+I costi di un flash crash si scaricano su tutti i partecipanti al mercato, spinti a decisioni di 
+selezione avversa e alla chiusura automatica delle proprie posizioni a causa dell’improvviso 
+aumento della volatilità di breve periodo. 
+ 
+ 
+ 
+6.6 
+Case study sul flash crash del 23/04/2013 
+ 
+La sera del 23 aprile alle 19:07 (ora italiana) i principali indici azionari statunitensi hanno 
+fatto registrare in pochi secondi una perdita maggiore dell’1%, per poi tornare sui livelli iniziali 
+nei successivi 5 minuti. Il movimento presenta tutte le caratteristiche di un flash crash: un crollo 
+rapidissimo e violento delle quotazioni di uno strumento finanziario cui segue un’altrettanta 
+repentina risalita, e può avvenire solo a causa della presenza di trader ad alta frequenza. 
+ 
+Il grafico c.s.1 mostra l’andamento tick by tick dell’indice Dow Jones negli ultimi due giorni 
+di contrattazioni; anche se nei momenti successivi al crollo le quotazioni hanno ripreso il loro 
+                                                 
+65  
+L’arrivo di un grosso ordine può comportare uno sbilanciamento del posizionamento degi Hfts; infatti, 
+solitamente gli Hfts cercano di mantenere un posizionamento bilanciato in cui, al fine di minimizzare la rischiosità, le 
+posizioni long e short tendono a compensarsi. L’arrivo di forti flussi di liquidità monodirezionali può portare uno 
+sbilanciamento del posizionamento degli Hfts, spingendo, quindi, ad un rapido ritiro delle proposte in acquisto o vendita 
+al fine di evitarlo. I primi Hfts a ritirare le proprie proposte sono quelli meno capitalizzati per i quali anche un ordine di 
+medie dimensioni in arrivo sul mercato potrebbe generare uno sbilanciamento del rapporto tra posizioni lunghe e corte.   
+66 Per stub quotes si intendono delle proposte in acquisto e vendita posizionate su livelli estremamente lontani 
+dall’ultimo prezzo contrattato; ad esempio se un azione è stata negoziata a 50$, una proposta di acquisto a 0,01$ e in 
+vendita a 9999$ rappresentano delle stub quotes, la cui negoziazione è altamente improbabile. Nel caso di flash crash, 
+invece, a causa dell’immediata rarefazione dei book di negoziazione, aumenta la probabilità che dei market order in 
+vendita vengano eseguiti al prezzo in denaro della stub quotes. In questo modo si verificano due conseguenze: i) il 
+prezzo contrattato manifesta un crollo verticale in corrispondenza del prezzo basso rappresentato dalla stub quote; ii) il 
+venditore che ha immesso l’ordine di vendita a mercato vede eseguito il suo ordine ad un prezzo eccessivamente 
+svantaggioso (solitamente 1 o 2 centesimi per azione) , mentre il compratore che ha inserito la stub quotes ottiene uno 
+sconto sull’acquisto tale da garantire un enorme profitto.   
+67 L’indagine congiunta di SEC e CFTC sul flash crash del Dow Jones (descritto nel paragrafo iniziale) ha descritto 
+dettagliatamente gli eventi che hanno caratterizzato l’evento: i due organi controllori hanno identificato la causa del 
+crollo in un grosso ordine di vendita; successivamente compratori “fondamentali” hanno ritirato liquidità dal mercato, 
+generando un’immediata reazione dei sistemi ad alta frequenza che hanno a loro volta ritirato tutti gli ordini di vendita, 
+privando il mercato della consueta liquidità e profondità. 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+28 
+ 
+naturale andamento come se non fosse successo nulla, il crash ha avuto conseguenze sul mercato e 
+su diverse categorie di trader che non dovrebbero essere trascurate. Di seguito si analizzeranno le 
+motivazioni alla base del crollo, le reazioni che hanno causato il movimento e le categorie di 
+investitori che ne sono state svantaggiate. 
+ 
+Graf. c.s.1 
+Dow Jones (dati tick by tick)
+14450,00
+14475,00
+14500,00
+14525,00
+14550,00
+14575,00
+14600,00
+14625,00
+14650,00
+14675,00
+14700,00
+14725,00
+14750,00
+1,01%
+5 minuti
+ 
+Elaborazione dati Reuters 
+ 
+Alle 19:07 l’account twitter di Associated Press ha diramato una notizia relativa a delle 
+esplosioni avvenute nella Casa Bianca e al ferimento del Presidente Obama. Di seguito si riporta il 
+tweet: 
+ 
+ 
+ 
+ 
+I sistemi di trading ad alta frequenza hanno immediatamente processato la notizia, in base 
+alla quale hanno provveduto a ritirare le proprie proposte in acquisto e a cercare di sfruttare un 
+probabile trend ribassista (in vista del potenziale impatto risk-off della notizia). Quest’attività ha 
+contribuito ad innescare il flash crash degli indici azionari USA. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+29 
+ 
+Il grafico successivo (cfr. graf c.s.2) mostra nel dettaglio le dinamiche che permettono un 
+flash crash; il grafico (disponibile su Nanex.net68) si riferisce all’andamento dei contratti futures 
+ESM1369 - tra i più liquidi al mondo – nei 15 minuti in cui si è verificato il crollo.  
+ 
+Nella parte superiore del grafico (A) è contenuta un’analisi cromatica della liquidità del 
+book di negoziazione del contratto nell’arco temporale in oggetto. Al book vengono associati 
+diversi colori a seconda della liquidità presente per ogni livello di prezzo; il rosso o il giallo 
+significano numerose proposte in acquisto o vendita su vari livelli di prezzo, quindi molta liquidità 
+presente sul mercato, mentre il verde e il blu caratterizzano un book progressivamente più sottile. 
+La parte centrale (B) del grafico è una rappresentazione della liquidità totale presente sui livelli di 
+bid e ask, dell’ampiezza (profondità) dello differenziale denaro-lettera e della concentrazione delle 
+proposte per livelli di prezzo: un grafico ampio indica una significativa presenza di proposte di 
+contrattazione sui due lati; un grafico stretto caratterizza, invece, momenti di scarsa o nulla 
+liquidità in acquisto e vendita. La parte inferiore (C) del grafico rappresenta infine i volumi 
+scambiati. 
+ 
+Graf. c.s.2 
+ 
+Fonte: elaborazione dati Nanex.net  
+ 
+Da un’attenta analisi del grafico possono essere tratte diverse considerazioni in merito alla 
+microstruttura del mercato e alle conseguenze che l’attività di operatori ad alta frequenza può 
+generare per le altre categorie di trader. 
+ 
+i) 
+Nei momenti immediatamente precedenti alla pubblicazione della notizia, il 
+mercato mostrava condizioni di liquidità che non lasciavano presagire alcun 
+                                                 
+68 sito specializzato nell’analisi di dati ad alta frequenza. 
+69 aventi come sottostante l’indice S&P500 
+ 
+ 
+ 
+ 
+ 
+ 
+A 
+ 
+ 
+B 
+ 
+ 
+C 
+ 
+Tweet AP 
+Fase normale 
+di mercato  
+Normalizzazione 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+30 
+ 
+rischio. Solitamente i book di negoziazione caratterizzati da condizioni di 
+liquidità simili a quelle mostrate dal futures sullo S&P 500 prima del crollo sono 
+considerati in grado di assorbire shock informativi, in quanto la liquidità 
+presente dovrebbe agire come una sorta di cuscino. 
+ii) 
+Il rilascio della notizia tramite Twitter ha indotto - in meno di un secondo - gli 
+operatori ad alta frequenza a ritirare le proprie proposte in acquisto e in vendita 
+dal book di negoziazione, privando in questo modo il mercato della robustezza 
+che lo caratterizzava nei secondi immediatamente precedenti.  
+iii) 
+Contestualmente, tali operatori hanno cercato di sfruttare il verosimile effetto 
+della notizia, vendendo rapidamente. Tali vendite hanno trovato come 
+controparte gli operatori che non sono stati in grado – perché privi della 
+necessaria rapidità operativa – di ritirare le proprie proposte di negoziazione dal 
+denaro. Tale fase è stata caratterizzata da un aumento dei volumi di 
+contrattazione. 
+iv) 
+In questo modo si è innescato un mini-trend ribassista che ha fatto scattare 
+numerosi ordini condizionati di stop loss (per un operatore long, contro trend, 
+tali ordini sono delle vendite) e che hanno contribuito a velocizzare il trend in 
+atto. 
+v) 
+Nella fase di discesa, la liquidità del mercato si è rarefatta, con la conseguenza 
+che il price impact derivante da ogni vendita è stato più ampio, in corrispondenza 
+di una minore capacità del denaro di assorbire tali ordini. 
+vi) 
+La parte finale del trend in discesa è stata caratterizzata da un maggiore 
+differenziale bid-ask e da condizioni di liquidità del book di negoziazione 
+particolarmente basse; ciò si è tradotto in prezzi di contrattazione sempre meno 
+convenienti per gli operatori che avessero deciso (in ritardo rispetto ai primi 
+high frequency traders) di sfruttare il trend al ribasso.    
+vii) 
+Nel momento in cui la notizia non è stata confermata, gli operatori ad alta 
+frequenza, entrati nella fase iniziale del trend ribassista, hanno cercato di 
+chiudere in profitto le proprie posizioni short, comprando dagli operatori che in 
+ritardo stavano cercando di sfruttare il trend ribassista in atto (cfr. punto 
+precedente).  
+viii) 
+In questo modo si è determinata una prima, rapida pressione in acquisto, in un 
+momento in cui anche la lettera era particolarmente rarefatta. In tale situazione 
+gli acquisti hanno esercitato un forte price impact, facendo risalire le quotazioni. 
+Gli operatori entrati in ritardo nel trend al ribasso si sono trovati in perdita e 
+hanno iniziato a ricoprire, dando vigore alla fase di risalta dei prezzi. 
+ix) 
+Il prezzo è tornato su livelli iniziali, grazie alle ricoperture degli operatori in 
+perdita e agli acquisti di quelli in grado di sfruttare il nuovo mini-trend 
+(rialzista); in questa fase la situazione di liquidità del mercato ha iniziato a 
+normalizzarsi. 
+ 
+Da quanto sopra si evince come un flash crash, pur terminando con una variazione 
+percentuale dell’indice pressappoco nulla, eserciti numerosi effetti sui mercati e sui trader non ad 
+alta frequenza.  
+ 
+Infatti, nei momenti immediatamente precedenti alla diffusione della falsa notizia, il mercato 
+appariva solido dal punto di vista della liquidità; la prima reazione dei trader ad alta frequenza è 
+stata quella di ritirare dal mercato le proprie proposte in acquisto e vendita, privando - in meno di 
+un secondo - il mercato della liquidità di cui disponeva. I trader che avessero deciso di vendere, 
+non avrebbero trovato sul mercato (in denaro) la liquidità preventivata, ottenendo in questo modo 
+un prezzo di negoziazione peggiore di quanto ipotizzato solo pochi secondi prima. La liquidità 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+31 
+ 
+offerta dai traders ad alta frequenza, che rappresenta una quota assai elevata di quella totale, 
+viene definita “liquidità ombra”, proprio perché può scomparire nel giro di pochi millisecondi. Di 
+conseguenza, soprattutto nei segmenti dove è significativa la presenza di high frequency traders, 
+valutare la robustezza del mercato in base alla liquidità ha progressivamente perso di significato. 
+ 
+Il cambiamento improvviso dello scenario informativo non è una condizione necessaria ad 
+un flash crash, in quanto questi eventi possono verificarsi anche in concomitanza di livelli tecnici 
+particolarmente importanti o dell’arrivo sul mercato di grossi ordini di acquisto o vendita.  
+ 
+L’utilizzo di ordini di contrattazione al mercato (market order) può rappresentare uno 
+svantaggio, in quanto si rischia di ottenere un prezzo di negoziazione diverso da quanto ipotizzato, 
+a causa delle rapida scomparsa della liquidità. 
+ 
+Infine, l’efficacia degli ordini condizionati di Stop Loss diminuisce in una situazione di flash 
+crash. Tali ordini, rilasciando la liquidità che viene poi sfruttata solo dagli operatori ad alta 
+frequenza, incrementano l’intensità della fase di discesa, determinando poi, l’attivazione di altri 
+Stop Loss (cascading effect). Inoltre, la risalita del prezzo consecutiva a tutti i flash crash rende 
+tale attivazione economicamente dannosa, in quanto i trader che li hanno inseriti sono costretti ad 
+incamerare una perdita che viene immediatamente invalidata dal movimento di prezzo successivo.  
+ 
+Il flash crash del 23 aprile u.s. ha avuto particolare risonanza giornalistica poiché ha 
+interessato gli indici azionari statunitensi, i più liquidi al mondo. Il fenomeno è, però, sempre più 
+diffuso sui mercati finanziari e non interessa solo le azioni o gli indici azionari, ma si sta 
+verificando anche su diversi strumenti, quali futures su titoli governativi e tassi di cambio 
+(impattando quindi anche la negoziazione dei sottostanti a causa della correlazione tra derivato e 
+sottostante). 
+ 
+Il flash crash è un fenomeno complesso di natura quasi meccanica, che nella maggior parte 
+dei casi si conclude con un impatto nullo in termini di variazione percentuale finale, spingendo in 
+questo modo a considerarlo come una trascurabile conseguenza della presenza dei trader ad alta 
+frequenza. Un’analisi dettagliata spinge verso considerazioni meno semplicistiche; infatti un flash 
+crash determina il trasferimento di profitti e perdite tra diverse categorie di investitori, con gli 
+operatori più lenti soggetti a perdite che rappresentano i guadagni di quelli più veloci. Ad esempio, 
+uno degli strumenti finanziari maggiormente contrattati durante il crollo (il futures ESM3 sullo 
+S&P500) ha fatto registrare, nei 15 minuti in cui è avvenuto il flash crash, scambi per un 
+controvalore di circa $30 miliardi, il che significa un trasferimento di perdite e profitti per circa 
+$600 milioni, avvenuto per lo più a scapito degli operatori meno evoluti dal punto di vista 
+tecnologico (non Hft). Considerando che il movimento si è verificato su tutti i principali futures 
+azionari USA, dai quali si è propagato - a causa dei trade di correlazione - anche alla negoziazione 
+degli indici e delle singole azioni, le conseguenze economiche del crollo sono rilevanti. 
+ 
+Inoltre, non bisogna trascurare che la caratteristica di “liquidità ombra” rende i mercati 
+meno affidabili e potenzialmente vulnerabili a episodi di flash crash, anche solo a causa di grossi 
+ordini di vendita in arrivo sul mercato e indipendentemente dal contesto informativo. Si segnala 
+che negli ultimi anni i mercati hanno sperimentato numerosi episodi di flash crash di diversa entità, 
+tra cui si ricorda soprattutto quello avvenuto il 6 maggio 2010 sull’indice Dow Jones. Sono, infatti, 
+numerosi i fenomeni di crollo – fino a valori pari a zero - di azioni a minore capitalizzazione; 
+inoltre, i casi di flash crash non risparmiano neanche le azioni a maggiore capitalizzazione 
+(Google, Apple) e i futures su titoli obbligazionari (ad esempio il contratto JBM3, avente come 
+sottostante il titolo decennale emesso da Governo giapponese).  
+ 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+32 
+ 
+7. 
+Portata del fenomeno  
+ 
+Come visto, il fenomeno del trading ad alta frequenza ha iniziato a svilupparsi 
+parallelamente al progredire dello sviluppo tecnico e alle modifiche all’ambiente normativo, con la 
+fase di maggiore espansione dell’industria che è coincisa con l’emanazione del regolamento NMS 
+nel 2005.  
+ 
+Ad oggi l’industria ad alta frequenza ha assunto proporzioni tali da influenzare il 
+funzionamento e l’infrastruttura tecnologica dei mercati; la massa di volumi scambiati ad alta 
+frequenza è tale da aver finanche rivestito un ruolo nel processo di fusione tra i principali mercati al 
+mondo; ciò si traduce in una dipendenza non trascurabile della redditività dei mercati dalla capacità 
+di attrarre e conservare i volumi dell’alta frequenza. . 
+ 
+ 
+ 
+ 
+7.1   
+ Struttura del mercato 
+ 
+Sebbene i mercati finanziari statunitensi presentino un diverso grado di partecipazione degli 
+Hfts, è comunque ampiamente accettato che una quota importante degli scambi siano di pertinenza 
+di trader ad alta frequenza. Come si vede dalla tavola n.1, il fenomeno negli Stati Uniti é cresciuto 
+progressivamente, fino a raggiungere una quota di circa il 55% del totale dei volumi scambiati 
+sull’intero mercato azionario. Inoltre i tassi di crescita annui dell’industria sono aumentati 
+costantemente, fino a stabilizzarsi intorno al 30% annuo (cfr. graf. 6). 
+ 
+Si evidenzia il ritardo dell’industria dell’alta frequenza in Europa, dovuto principalmente al 
+fatto che una normativa sostanzialmente analoga al NMS è entrata in vigore solo a fine 2007 tramite 
+la MIFID. Nel 2011 la quota di scambi sui mercato azionari effettuata tramite Hft in Europa era pari 
+al 35%, con un incremento annuo pari a circa il 20%. 
+ 
+                                                        Tav 1 
+Quota di scambi Hft sul totale degli scambi azionari 
+ 
+Stati Uniti 
+55% 
+Europa 
+35% 
+Giappone 
+28% 
+Australia 
+20% 
+Canada 
+18% 
+Asia 
+12% 
+Brasile 
+6% 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+33 
+ 
+ 
+ 
+  Graf 6 
+Crescita annua della quota di scambi tramite Hft
+0
+5
+10
+15
+20
+25
+30
+35
+40
+2005
+2006
+2007
+2008
+2009
+2010
+2011
+USA
+Europa
+ 
+   Elaborazione dati Tabb Group 
+ 
+ 
+Dai dati appare, quindi, evidente che il fenomeno dell’alta frequenza non può essere 
+considerato come un aspetto di nicchia nell’ampio mondo dei sistemi di negoziazione, ma ha 
+assunto un’importanza tale da influenzare con le proprie dinamiche l’intero settore degli scambi di 
+prodotti finanziari. 
+ 
+Da una ricerca di Tabb Group del 2010 si evidenzia che il mercato è dominato da tre 
+tipologie di investitori: 
+ 
+i. Indipendent Proprietary Firm (48%) 
+ii. Broker – Dealer Proprietary desk (46%) 
+iii. Hedge Funds (6%) 
+ 
+Infine, da un’analisi del 2009 di Tradeworx si evidenzia che il mercato dell’alta frequenza 
+presenta i seguenti principali players, tutti in grado di negoziare più di 200 milioni di scambi di 
+azioni al giorno: 
+ 
+GetCo, TradeBot, Citadel, Knight capita70l, UBS, ATD, Goldman Sachs, Morgan Stanley, 
+Renaissence Tech, Millenium, SAC, DE Shaw, Tower, Hudson River. 
+ 
+ 
+ 
+7.2   
+Order to Trade Ratio (OTR) 
+ 
+Indagare la presenza dei trader ad alta frequenza risulta particolarmente arduo, in quanto tale 
+tipologia di trader adotta strategie che, come visto, si caratterizzano per un elevato grado di opacità 
+che ne rende difficile l’identificazione. 
+ 
+Un indicatore particolarmente efficace nel verificare la presenza e il livello di diffusione dei 
+trader ad alta frequenza in un determinato mercato è l’order to trade ratio (OTR)71. Il rapporto 
+                                                 
+70  
+Il primo agosto 2012, a causa di un malfunzionamento degli algoritmi proprietari, Knight Capital, uno dei 
+principali market maker sul mercato azionario USA, ha subito una perdita record di circa $400 milioni; in 
+considerazione di tale perdita la società ha necessitato di un aumento di capitale. 
+71  
+Si veda: Friederich e Payne (2012). 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+34 
+ 
+misura il numero di trade realmente effettuati rispetto al numero di ordini immessi ed è capace di 
+identificare quelle tipologie di operatori che, a fronte di numerosi ordini immessi, eseguono 
+relativamente pochi trade. l’OTR è costantemente cresciuto negli ultimi anni in tutti i principali 
+mercati azionari globali, sottolineando un probabile aumento del trading ad alta frequenza72. 
+L’aumento dell’OTR medio si è verificato anche per i mercati dei derivati regolamentati (futures a 
+opzioni) e, in minor misura, anche per i mercati dei titoli a reddito fisso e dei tassi di cambio. 
+ 
+   
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+7.3   
+Profittabilità complessiva dell’industria ad alta frequenza 
+ 
+Un aspetto chiave del trading ad alta frequenza riguarda la profittabilità complessiva del 
+modello di business adottato: poiché ogni singola operazione ad alta frequenza presenta un profitto 
+atteso estremamente ridotto, appare evidente che i profitti complessivi per i trader ad alta frequenza 
+dipendono da: 
+ 
+i. dimensione del mercato su cui si opera (numero di titoli quotati); 
+ii. volumi di scambio giornalieri; 
+iii. ampiezza del bid ask spread. 
+ 
+Infatti, considerando fisso il profitto generato da ogni singola operazione – funzione 
+dell’ampiezza del bid - ask spread - il volume complessivo dei profitti stessi dipende dalla 
+numerosità delle operazioni, che è funzione a sua volta dei volumi scambiati giornalmente sui 
+singoli titoli.  
+ 
+Ad esempio, un titolo molto liquido che presenta un bid - ask spread pari al centesimo di 
+dollaro (come previsto sui mercati azionari statunitensi) presenta una profittabilità elevata, mentre 
+un titolo meno scambiato e con uno spread inferiore73 risulta conseguentemente meno profittevole. 
+Il totale dei profitti generati poi sui singoli mercati dipende dalla numerosità dei titoli trattati, 
+ponderato per i profitti estraibili da ogni titolo. 
+ 
+I trader ad alta frequenza incontrano, quindi, il limite della profittabilità complessiva 
+dell’industria; nella loro sofisticatezza estrema presentano un modello di business simile a quello 
+della grossa distribuzione organizzata, nel quale i margini di profitto sono bassi ed erosi dalla forte 
+concorrenza e i guadagni dipendono direttamente dal fatturato; allo stesso modo l’industria Hft deve 
+affrontare margini operativi bassi, cercando continuamente sbocchi profittevoli di trading74. 
+ 
+Molti autori hanno cercato di delimitare empiricamente la profittabilità dell’industria ad alta 
+frequenza, giungendo a conclusioni simili in termini di profitto massimo generabile sul mercato 
+azionario statunitense; i risultati riportano un business annuo compreso tra i $15 e i $25 miliardi di 
+dollari. La conclusione più restrittiva a tal proposito risulta essere quella ottenuta da Kearns, 
+Kulezsa e Nevmyvaka (2010) che, ipotizzando che gli Hfts siano addirittura onniscienti75, hanno 
+stimato che il limite massimo ai profitti annui per l’industria ad alta frequenza sul mercato azionario 
+statunitense sarebbe di circa $2.1 miliardi. 
+                                                 
+72  
+A tale proposito si veda Caivano et al. (2012).   
+73  
+Ad esempio Borsa Italiana prevede dei bid – ask spread diversi a seconda del valore del titolo quotato; a valori 
+minori corrispondono differenziali più stretti in termini assoluti 
+74  
+Un dettaglio studio sui profitti generati dalle diverse categorie di trader ad alta frequenza è offerta da:. Baron,  
+Brogaard e Kirilenko (2012).  
+75 
+ In grado di sapere con certezza l’andamento futuro del titolo quotato in un intervallo temporale molto piccolo, 
+ma sfruttabile in maniera profittevole tramite alta frequenza. 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+35 
+ 
+ 
+7.4       Fenomeno della “colonizzazione”.  
+ 
+La caratteristica della profittabilità limitata costringe i trader ad alta frequenza a cercare 
+sempre nuove opportunità di business su altri mercati e su altre asset class. Infatti, dato che il livello 
+tecnologico è spinto al massimo e la concorrenza erode i margini di redditività, gli Hfts sono 
+continuamente alla ricerca di mercati che per caratteristiche tecniche e regolamentari possano 
+risultare attraenti. Dalla tavola n.1 appare chiara questa tendenza; infatti, dopo essere nati sui 
+mercati azionari statunitensi, gli Hfts si sono appropriati di quote sempre crescenti degli scambi 
+azionari Usa, fino a diventare il principale attore. Successivamente, hanno iniziato ad esplorare altri 
+mercati e sono entrati fortemente in Europa e poi in Asia, dove hanno assunto proporzioni 
+importanti in termini di volumi scambiati. 
+ 
+Numerosi studi, inoltre, sottolineano che l’alta frequenza sta progressivamente entrando con 
+prepotenza anche su altre asset class quali: futures, opzioni, tassi di cambio e fixed income; dal 
+grafico 7, si evince che l’industria ad alta frequenza sta “colonizzando“ tali asset class, su cui gli 
+Hfts effettuano una quota della propria operatività oramai significativa e, soprattutto, in crescita. 
+ 
+Graf. 7 
+Asset class negoziate dai trader ad alta frequenza 
+(USA 2009)
+0%
+20%
+40%
+60%
+80%
+100%
+Equities
+Futures
+Options
+Fixed Income
+Currencies
+ 
+              Fonte: Advancetrading:com 
+ 
+Negli ultimi anni, infatti, i progressi in campo tecnologico stanno spingendo gli Hfts ad 
+esplorare opportunità di profitto su asset class precedentemente ritenute non attraenti. Ad esempio, 
+il sempre maggiore utilizzo delle piattaforme elettroniche anche per il trading sul fixed income ha 
+attirato l’attenzione dei trader ad alta frequenza, allettati da importanti opportunità di profitto76, fino 
+a poco tempo fa impossibili a causa della natura sostanzialmente over the counter delle transazioni 
+su titoli obbligazionari77. 
+ 
+I prossimi interventi regolamentari previsti in Europa e negli Stati Uniti dovrebbero 
+aumentare ulteriormente le probabilità di colonizzazione delle asset class fino ad ora scarsamente 
+considerate da parte degli Hfts. Il Dodd – Frank Act ad esempio – tramite la Volcker Rule – 
+dovrebbe disincentivare le banche dal detenere nei propri portafogli asset per lunghi periodi, 
+                                                 
+76  
+Si tenga presente che per volumi e importi scambiati il mercato obbligazionario globale è di gran lunga più 
+grande del mercato azionario. 
+77  
+Una delle tipologie di contrattazione maggiormente utilizzata per le transazioni di fixed income è il contatto 
+telefonico, ma nel corso del tempo sono state sviluppate piattaforme elettroniche altamente performanti in grado di 
+sostituire completamente il veicolo telefonico, soprattutto per i mercati obbligazionari maggiormente liquidi. 
+(TradeWeb, MTS, BondVision). 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+36 
+ 
+comportando una diminuzione del tempo medio di giacenza degli asset nei portafogli bancari e, 
+conseguentemente, un aumento delle transazioni. Ciò dovrebbe portare ad un aumento della qualità 
+richiesta per le transazioni stesse78 e ad un progressivo spostamento verso piattaforme di scambio 
+elettronico, sicuramente più performanti da questo punto di vista. 
+ 
+ 
+ 
+7.5      Collusione  
+ 
+Il livello di concorrenza in costante aumento e il limite alla profittabilità massima per gli 
+Hfts79 spingono ad ipotizzare un settore caratterizzato da: 
+ 
+i.  
+un livello tecnologico sempre maggiore richiesto per essere profittevole sui mercati 
+ 
+considerati maggiormente sfruttabili (cash cows); 
+ii.  
+un forte turnover degli Hfts, dove il meno sofisticato è spinto consistentemente fuori 
+ 
+dal mercato; 
+iii. 
+una ricerca continua da parte dei trader di nuovi mercati su cui operare con tecniche     
+di Hft (rising stars). 
+ 
+Queste tre caratteristiche suggeriscono di escludere possibili fenomeni collusivi o 
+oligopolistici all’interno dell’industria ad alta frequenza. Infatti, nonostante le forti barriere 
+all’ingresso di natura tecnologica potrebbero incentivarli, il mondo Hft sembra caratterizzato 
+da un estremo tenore concorrenziale, che verosimilmente riflette gli sforzi degli operatori volti 
+a perseguire limitate opportunità di profitto 
+ 
+ 
+ 
+7.6       Impatto sui mercati di negoziazione  
+ 
+L’industria ad alta frequenza ha avuto un impatto anche sulle principali borse di 
+contrattazione al mondo. L’elevato turnover effettuato quotidianamente dagli Hfts, infatti, genera 
+un corrispondente volume commissionale che per le borse rappresentano parti cospicue dei ricavi e 
+degli utili. 
+ 
+Ciò ha comportato delle conseguenze sulle strutture informatiche e sui modelli di business 
+delle principali piazze di concentrazione al mondo, oltre ad aver esercitato un’influenza nel 
+fenomeno di fusione e acquisizione tra grosse borse in atto negli ultimi anni80. 
+ 
+Allo scopo di attirare la mole di scambi garantita dagli Hfts, i principali mercati hanno 
+effettuato notevoli investimenti tecnologici. Ciò ha, però, avuto un impatto in termini di dipendenza 
+dall’industria stessa ad alta frequenza i cui ingenti volumi commissionali hanno creato un legame 
+asimmetrico tra i mercati e i trader Hft; un mercato, infatti, che non riuscisse ad offrire lo stato 
+dell’arte dal punto di vista tecnologico rischia un drastico calo dei volumi di contrattazione a 
+vantaggio dei mercati maggiormente pronti ad offrire il livello tecnologico richiesto. Ad esempio, il 
+                                                 
+78  
+Un numero maggiore di operazioni necessità di migliori prezzi di aggiudicazione e di minori commissioni per 
+compensare l’holding period più breve. 
+79  
+A tal proposito, si veda anche: Brogaard (settembre 2011) 
+80  
+Fusione CME e CBOT; NYSE e Euronext; LSE e Borsa di Milano, Bovespa e BM&F; Bats e ChiX Europe; 
+Nasdaq Omx e Intercontinental Exchange (Ice) Proposte di fusione tra NYSE – Euronext e Deutsche Borse, tra Tmx e 
+LSE Group e tra Singapore Stock Exchange (SGX) e Australian Stock Exchange (AGX) bloccate o interrotte al 
+momento. 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+37 
+ 
+mercato NYSE – Euronext, nel 201181 presentava delle commissioni di negoziazioni per a $3.162 
+miliardi, pari al 70% del totale dei ricavi generati nell’anno ($4.552 miliardi). Dal momento che, 
+come visto, una percentuale ben al di sopra del 50% del totale degli scambi è effettuato da Hfts, 
+perdere tali scambi per un mercato tra i principali al mondo (se non il più importante) equivale a 
+rinunciare al 50% della propria redditività. 
+ 
+Per poter fronteggiare gli investimenti infrastrutturali necessari a soddisfare i bisogni 
+tecnologici dell’industria ad alta frequenza, quindi, molti mercati negli ultimi anni hanno intrapreso 
+processi di fusione. Tali fusioni grazie alle economie di scala e all’aumento di volumi generati, 
+permettono ai mercati di riuscire a sopravvivere e ad essere profittevoli in un contesto sempre più 
+concorrenziale.  
+ 
+ 
+ 
+8. 
+Conclusioni 
+ 
+L’analisi del trading ad alta frequenza ha mostrato la profondità e la complessità di un 
+fenomeno che potrebbe sempre più pesantemente influenzare i mercati finanziari nei prossimi anni.  
+ 
+Come visto, l’Hft è soprattutto un requisito tecnologico - computazionale che consente di 
+implementare strategie particolarmente evolute. I trader ad alta frequenza cercano di sfruttare le 
+inefficienze del mercato e di trarre profitto da opportunità di trading che gli operatori tradizionali 
+non sono in grado di identificare. L’analisi delle strategie utilizzate dagli Hfts mostra che, nella loro 
+estrema reattività, questi cercano di sfruttare le opportunità di profitto che i mercati offrono, 
+minimizzando la rischiosità attraverso un’estrema parcellizzazione della durata temporale delle 
+operazioni. Alcune di queste strategie però, sembrano spingersi fino a creare artificiosamente tali 
+opportunità, potendo causare perdite agli altri partecipanti al mercato.  
+ 
+Si sottolinea che, dal momento che le strategie sono di proprietà dei singoli trader, è difficile 
+ottenere documenti ufficiali sulla loro operatività; si può però descriverne il funzionamento in base 
+ad un’attenta, approfondita e costante analisi delle variabili sfruttate dagli Hfts (dati di borsa ad alta 
+frequenza, book di negoziazione, analisi dei volumi e della liquidità, comportamenti ricorrenti, 
+quantità proposte e quantità effettivamente scambiate, ordini cancellati e sostituiti); ciò comporta 
+un’analisi inevitabilmente parziale del fenomeno, in quanto non è possibile studiare quelle strategie 
+sicuramente utilizzate dagli Hfts, ma che per caratteristiche di velocità, sofisticatezza tecnologica o 
+opacità non si sia stati in grado di identificare.  
+ 
+Un effetto collaterale all’alta frequenza è che grazie ad essa si sta determinando sui mercati 
+un’importanza sempre maggiore di player fino ad ora sconosciuti al mondo della finanza e che 
+rispondono a logiche di investimento diverse rispetto ai tradizionali operatori. Infatti, l’intervallo 
+temporale minimo che caratterizza le strategie dei trader ad alta frequenza può spingere tali 
+operatori ad ignorare quasi del tutto i fondamentali economici e le prospettive di crescita delle 
+aziende, dando massimo rilievo ai movimenti di brevissimo periodo e alle possibilità di arbitraggio. 
+Data l’elevato volume di scambi di pertinenza dell’alta frequenza, ciò determina modifiche nel 
+comportamento dell’intero mercato, influenzando, di conseguenza, le decisioni della totalità dei 
+partecipanti al mercato stesso. 
+ 
+Una critica spesso mossa all’industria del trading ad alta frequenza riguarda il potenziale 
+abuso che gli Hfts farebbero di una posizione tecnologica privilegiata; l’analisi delle strategie più 
+                                                 
+81  
+Si consulti: http://ir.nyse.com/phoenix.zhtml?c=129145&p=irol-reportsAnnual 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+38 
+ 
+reattive spinge a ritenere che tali critiche non siano prive di fondamento, ma bisogna sottolineare 
+che il flash trading e la co - location sono servizi offerti da diversi ECN/broker – dealer a tutti i 
+partecipanti al mercato che abbiano sviluppato un livello tecnologico tale da sfruttarli in maniera 
+vantaggiosa; i partecipanti al mercato, quindi, sono consapevoli delle possibilità di profitto offerte 
+dal trading ad alta frequenza e, nel decidere di non sfruttarne gli innegabili vantaggi in termini 
+competitivi, effettuano una scelta di investimento.  
+ 
+D’altra parte, per valutare l’impatto della presenza degli Hfts sulla qualità complessiva dei 
+mercati sono necessarie valutazioni particolarmente complesse. Numerosi studi accademici hanno 
+dimostrato che un’analisi di tipo tradizionale sull’impatto del trading ad alta frequenza porta a 
+conclusioni positive in termini di liquidità ed efficienza dei mercati. Le forti differenze che 
+caratterizzano le diverse strategie ad alta frequenza suggeriscono, però, di utilizzare metodi diversi 
+di valutazione per ogni singola strategia. Per ottenere un risultato il più giusto possibile sembra 
+opportuno partire dall’analisi, oltre che delle tradizionale variabili di mercato, anche da quelle 
+variabili che permettano di inferire l’impatto del trading ad alta frequenza non solo sull’efficienza 
+dei mercati ma, soprattutto, sul benessere complessivo di tutti i partecipanti al mercato. 
+ 
+Solo conoscendo gli impatti di ogni singola strategia sulla qualità del mercato, quindi, sarà 
+possibile offrire agli organi regolatori i dati attraverso cui predisporre gli strumenti per minimizzare 
+o annullare le conseguenze di strategie potenzialmente nocive e pericolose per la qualità del 
+mercato, senza impedire l’implementazione di quelle che contribuiscono ad aumentarne la liquidità 
+e l’efficienza. Si ritiene, comunque, necessario un ingente sforzo analitico per potere comprendere 
+la nuova struttura dei mercati che deriva dalla presenza del trading ad alta frequenza.  
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+39 
+ 
+Bibliografia 
+ 
+ 
+CFTC – SEC Advisory Committee, (May 18, 2010), Preliminary Findings Regarding the Market 
+Events of May 6,2010. 
+ 
+Summary report of the joint CFTC-SEC Advisory Committee on Emerging Regulatory Rules 
+(2010), To the Market Events of May 6, 2010. 
+ 
+R. Smith (2010), Is High Frequency Trading Inducing Changes in Market Microstructure and 
+Dynamics” SSRN, consultabile su: http://papers.ssrn.com/sol3/papers.cfm?abstract_id=1632077  
+ 
+T. Hendershott, R. Riordan (2011), High Frequency Trading and Price Discovery, SSRN, 
+consultabile su: http://papers.ssrn.com/sol3/papers.cfm?abstract_id=1938769   
+ 
+J.A. Brogaard (2010), High Frequency Trading and its Impact on Market Quality. 
+ 
+J.A. Brogaard (2011), High Frequency Trading and Volatility. 
+ 
+J.A. Brogaard (settembre 2011), High Frequency Trading, Information and Profits.  
+ 
+M. Baron, J.A. Brogaard, A. Kirilenko (2012): The Trading Profit of High Frequency Traders. 
+ 
+T. Henderrshott, C.M. Jones, A.J. Menkveld (2011), Does Algorithmic Trading Improve Market 
+Liquidity?, in Journal of Finance.  
+ 
+J. Angel, L. Harris e C.S. Spatt (2010), Equity Trading in the 21st Century,. SSRN, consultabile su: 
+http://papers.ssrn.com/sol3/papers.cfm?abstract_id=1584026 
+ 
+J. Tse, X, Lin e D. Vincent (2012), High Frequency Trading – Measurement, Detection and 
+Response; Credit Suisse Trading Strategy. 
+ 
+J. Tse, X, Lin e D. Vincent (2012), High Frequency Trading – The Goog, The Bad and the 
+Regulation; Credit Suisse Trading Strategy.  
+  
+S.F. Fioravanti e M. Gentile (2011), L’Impatto della Frammentazione degli Scambi Azionari sui 
+Mercati Regolamentati Europei,  CONSOB, Quaderni di Finanza Luglio 2011. 
+ 
+D. Sornette e S. von der Becke, (2011), Crashes and High Frequency Trading; an Evaluation of 
+Risks Posed by High-speed Algorithmic Trading. 
+ 
+F.J. Fabozzi, S. M. Focardi e C. Jonas (2010) High Frequency Trading: Methodologies and Market 
+Impact. 
+ 
+D. Leis (2012), High Frequency Trading; Market Manipulation and Systemic Risks From an EU 
+Perspective, SSRN, consultable su: 
+http://papers.ssrn.com/sol3/papers.cfm?abstract_id=2108344&download=yes 
+ 
+M Kearns, A. Kulesza, Y. Nevmyvaka (2010) , Empirical Limitations on High Frequency Trading 
+Profitability, SSRN, consultabile su: http://papers.ssrn.com/sol3/papers.cfm?abstract_id=1678758. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+40 
+ 
+J. Hasbrouk e G. Saar (2010), Low - Latency Trading, SSRN, consultabile su: 
+http://pages.stern.nyu.edu/~jhasbrou/Research/Working%20Papers/HS10-11-10.pdf 
+ 
+M. Ahmed, A. Chai, X. Ding, Y. Jiang, Y Sun (2009), Statistical Arbitrage in High Frequency 
+Trading Based on Limit Order Book Dynamics. 
+ 
+Deutsche Bank Research (febbraio 2011), High Frequency Trading, Better than its reputation?.  
+ 
+R. Jarrow, P. Protter (2011), A Disfunctional Role of High Frequency Trading, SSRN, consultabile 
+su: http://papers.ssrn.com/sol3/papers.cfm?abstract_id=1781124. 
+ 
+Credit Suisse (April 2010), Sizing Up US Equity Microstructure. 
+ 
+P. Gomber, B. Arndt, M. Lutat e T. Uhle (2011), High Frequency Trading. 
+ 
+B. Biais e P. Woolley (2011), High Frequency Trading. 
+ 
+Guy Debelle et Al. (2011) High Frequency Trading in the Foreign Exchenge Market, gruppo di 
+studio presso la Bank for International Settlements.  
+ 
+D. Easley, M.M.L. de Prado, e M. O'Hara (2010). The microstructure of the Fash crash; Flow 
+toxicity, liquidity crashes and the probability of informed trading, Cornell University Working 
+Paper, 2010. 
+ 
+L. Tabb, R. Iata e A. Sussman (2009), US Equity High Frequency Trading: Strategies, Sizing and 
+market Structure.  
+ 
+S. Arnuk e J. Saluzzi, (2009) Latency Arbitrage: The Real Power Behind Predatory High 
+Frequency Trading. 
+ 
+L. Frediani e V. Santoro, (2008) L’Attuazione della Direttiva MIFID, CE.DI.B, Studi di diritto e 
+legislazione Bancaria. 
+ 
+M.J. McGowan (2010), The Rise of Computerized High Frequency Trading: Use and Controversy, 
+Duke University School of Law. 
+ 
+V. Caivano, S. Ciccarelli, G. di Stefano, M. Fratini, G. Gasparri, M. Giliberti, N. Linciano, I. Tarola 
+(2012), Il trading ad Alta Frequenza, Caratteristiche, effetti, questioni di policy, Consob, 
+Discussion papers 
+ 
+Regulation 
+NMS, 
+Securities 
+and 
+Exchange 
+Commission, 
+29/08/2005; 
+http://www.sec.gov/rules/final/34-51808.pdf 
+ 
+Proposal for a directive of the european parliament and of the council on markets in financial 
+instruments repealing Directive 2004/39/EC of the European Parliament and of the Council, 
+consultabile su:  
+http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=COM:2011:0656:FIN:EN:PDF 
+ 
+A. Agarwal (2012), High Frequency Trading: Evolution and the Future, CapGemini Strategic 
+Analysis Group. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2369311
+
+41 
+ 
+A.J. Sandler (2011), The Invisible Power of Machines: Revisiting the Proposed Flash Order Ban in 
+the Wake of Flash Crash; Duke Law and Technology Review. 
+ 
+S. Friederich, R. Payne (2012), Order to Trade Ratios and their Impact on Italian Stock Market 
+Quality;  
+ 
+Advanced trading website: www.advancedtrading.com 
+ 
+Rivista online sul trading ad alta frequenza: www.hftreview.com 
+Electronic copy available at: https://ssrn.com/abstract=2369311

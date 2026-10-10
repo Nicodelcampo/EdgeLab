@@ -1,0 +1,38 @@
+{
+  "doc_id": 319,
+  "titulo": "Statistical Arbitrage within Crypto Markets Using PCA",
+  "resumen_operativo": "Explora la aplicación de PCA en arbitraje estadístico dentro de mercados de criptomonedas. Construye eigenportafolios, estima el proceso Ornstein-Uhlenbeck para reversión a la media de residuos, e implementa walk-forward validation. Incluye universo de trading dinámico con filtros de market cap (EWMA), volumen medio y shocks negativos. Las métricas de desempeño indican que el enfoque puede no ser robusto en cripto, pero existe margen de mejora.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "PCA Eigenportfolio Construction",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Construcción de eigenportafolios usando PCA sobre retornos de criptomonedas para extraer factores estadísticos y aislar el componente idiosincrático (residual) de cada activo. Adaptación del enfoque de Avellaneda y Lee (2008) al mercado cripto.",
+      "relaciones": [{"tipo": "REQUIERE", "objeto": "Dynamic Trading Universe"}, {"tipo": "APLICA_A", "objeto": "Cryptocurrency Returns"}],
+      "cita_textual": "The methodology involves constructing eigenportfolios, estimating the Ornstein-Uhlenbeck process for residual mean reversion, and implementing a walk-forward validation framework."
+    },
+    {
+      "nombre": "Dynamic Crypto Trading Universe",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Universo de trading dinámico con filtros: exclusión de special coins (stablecoins, wrapped tokens), selección por EWMA de market cap, filtro de volumen medio de trading mínimo, y filtro de shocks negativos para evitar activos en distress.",
+      "relaciones": [{"tipo": "REQUIERE", "objeto": "Market Cap Filter"}, {"tipo": "MITIGA", "objeto": "Low Liquidity Assets"}],
+      "cita_textual": "Dynamic trading universe includes special coins exclusion, exponential weighted moving average and market cap filter, median trading volume filter, and negative shock filter."
+    },
+    {
+      "nombre": "OU Closed-Form Discretization",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Discretización exacta (closed-form) del proceso OU para estimación de parámetros, superior al enfoque naive de Euler. Permite estimar correctamente el mean-reversion time y generar señales de trading más precisas que la discretización aproximada.",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Euler Discretization"}, {"tipo": "USA", "objeto": "Signal Generation"}],
+      "cita_textual": "Exact Approach: Closed-Form Discretization and Parameter Estimation for the Ornstein-Uhlenbeck process, used instead of the naive Euler discretization."
+    },
+    {
+      "nombre": "Walk-Forward Validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Framework de validación donde el modelo se re-entrena periódicamente en ventanas móviles y se evalúa out-of-sample en el período siguiente. Evita look-ahead bias y captura la naturaleza no estacionaria de los mercados cripto.",
+      "relaciones": [{"tipo": "MITIGA", "objeto": "Overfitting"}, {"tipo": "APLICA_A", "objeto": "Non-Stationary Crypto Markets"}],
+      "cita_textual": "Walk-forward validation framework implemented for backtesting the PCA-based statistical arbitrage strategy."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "PCA y OU sobre criptoactivos con walk-forward validation; adaptable a frecuencias intradiarias. Mercados cripto operan 24/7 con datos tick."}
+}
