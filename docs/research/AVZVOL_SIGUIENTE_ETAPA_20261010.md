@@ -209,3 +209,10 @@ pseudo histórico no exige ausencia de racimo/igual sesión; reconocimiento del
 racimo y pertenencia final no son el nacimiento de su primera zona. El censo
 nuevo requiere clasificación as-of, snapshot y política entre sesiones aprobados.
 Sin medición de contaminación real ni nuevo contraste; P1/P2 siguen abiertos.
+
+## Uso acotado de datos disponibles, solicitado posteriormente
+
+[Revisión descriptiva de O5 expuesto](AVZVOL_EXPOSED_O5_REVIEW_20261010.md): se reutilizaron los seis
+exports existentes con hashes y faltantes explícitos. No es réplica ciega,
+contraste incremental zone-free, certificación de raw ni promoción. No se
+alteran los gates/pins pendientes de P1–P3; P4 permanece prohibida.

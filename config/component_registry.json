@@ -343,7 +343,9 @@
         "edgelab/kaggle/avzvol_diagnostics.py",
         "docs/research/AVZVOL_CONTROL_CENSUS_DIAGNOSTICS_20261010.md",
         "config/research/avzvol_zone_causal_review_v1.json",
-        "docs/research/AVZVOL_ZONE_CAUSAL_REVIEW_20261010.md"
+        "docs/research/AVZVOL_ZONE_CAUSAL_REVIEW_20261010.md",
+        "tools/review_avzvol_exposed_o5.py",
+        "docs/research/AVZVOL_EXPOSED_O5_REVIEW_20261010.md"
       ],
       "inputs": [
         "spec y catálogo fijados",
@@ -371,7 +373,8 @@
         "QA estructural completada para 18 primarios; NQ preholdout v6/NQ_09-26_ticks.parquet en cuarentena por discrepancia temporal/contenido.",
         "AVZVOL: baseline discovery reproducido desde exports; pares, bins y calidad/lineage upstream requieren revisión. Guards/bins nuevos opt-in, no retrofit automático de legacy.",
         "AVZVOL incremental: sólo covariables declaradas y smoke sintético. Diagnósticos descriptivos pre-anchor preparados; sin loader, benchmark de outcomes contra el censo, inferencia, autoridad ni política de calipers aprobada.",
-        "MNQ metadata QA: concordancia declarada no certifica raw, warmup, calendario/clock ni liquidez causal; exit 0 nunca es autorización."
+        "MNQ metadata QA: concordancia declarada no certifica raw, warmup, calendario/clock ni liquidez causal; exit 0 nunca es autorización.",
+        "O5 expuesto: revisión descriptiva opt-in de exports con faltantes; no controles zone-free, inferencia, raw certificado ni confirmación nueva."
       ],
       "entrypoint": "python tools/audit_kaggle_aggregates.py --help",
       "related_prs": [
