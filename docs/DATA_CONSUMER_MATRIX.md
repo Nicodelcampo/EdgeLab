@@ -27,6 +27,13 @@ Esta matriz describe wiring de código, no certificación de datos ni permisos d
 
 [Estado único y wiring pendiente](ESTADO_Y_PENDIENTES.md).
 
+## AVZVOL: diseño de la próxima comparación
+
+`avzvol_design.plan_covariate_matches` es un API puro de covariables declaradas,
+no un lector ni un firewall de datos. `tools/avzvol_design_smoke.py` usa sólo fixture
+sintético; purpose research devuelve STOP antes de cualquier entrada. Sin inferencia,
+P&L ni autenticación de aprobación. [Protocolo](research/AVZVOL_SIGUIENTE_ETAPA_20261010.md).
+
 ## Responsabilidades
 
 - Auditor independiente: verifica fuente, bytes, calendario, completitud y liquidez; emite evidencia revisada.
