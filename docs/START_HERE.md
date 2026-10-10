@@ -36,7 +36,7 @@ No instalar dependencias ni ejecutar todos los scripts para «ver si funciona».
 
 ## 4. Environments
 
-El catálogo requiere sólo stdlib Python 3.10+. Eso no significa que el motor ni bridge soporten ese rango. `requirements-funnel.txt` y `requirements-funnel-gpu.txt` pertenecen al funnel; los locks de foundation pertenecen a otra base. Instalación unificada, wheel y entorno reproducible siguen pendientes del plan de integración.
+El catálogo requiere sólo stdlib Python 3.10+. Eso no significa que el motor ni bridge soporten ese rango. `requirements-funnel.txt` y `requirements-funnel-gpu.txt` pertenecen al funnel; los locks de foundation pertenecen a otra base. El [entorno de esta base](ENVIRONMENT.md) define Python 3.12, lock CPU e instalación del wheel. La reconciliación de dependencias/suite con foundation sigue pendiente.
 
 ## 5. Reportar trabajo
 

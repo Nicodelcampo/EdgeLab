@@ -6,8 +6,9 @@ Herramientas para investigar edges y regímenes de mercado con contratos de dato
 
 1. [Entrada para humanos y agentes](docs/START_HERE.md).
 2. [Mapa de componentes](docs/COMPONENTS.md): qué hace cada parte, dónde vive y qué falta integrar.
-3. [Plan de integración](docs/INTEGRATION_PLAN.md).
-4. [Contrato de señales y ejecución](CONTRATO_LLM.md), antes de proponer estrategias.
+3. [Entorno e instalación](docs/ENVIRONMENT.md).
+4. [Plan de integración](docs/INTEGRATION_PLAN.md).
+5. [Contrato de señales y ejecución](CONTRATO_LLM.md), antes de proponer estrategias.
 
 ### Consultar el repo sin datos ni credenciales
 

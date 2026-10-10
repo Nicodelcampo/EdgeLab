@@ -17,6 +17,10 @@ Main `ab9a054` y foundation `617064e` tienen ocho y 1.711 commits exclusivos res
 
 Reproducir issue 37 en Python 3.12/Ubuntu; corregir rutas locales, datos faltantes y contratos Arrow sin skips globales. Acreditar instalación/imports fuera del repo y smoke sintético. Los checks del catálogo no sustituyen estos requisitos.
 
+### Avance de entorno en esta base
+
+Se agrega empaquetado de subpaquetes, lock CPU, configuración de rutas sin efectos de import, tests sintéticos y workflow CPU/wheel. La suite de main pasa antes de este lote (19 tests en Python 3.12), pero eso no prueba ni arregla la suite de foundation. La reconciliación sigue pendiente y no se abre ninguna reserva de datos.
+
 ## Fase 3 — Datos y ejecución
 
 Revisar PR 65 (gate no conectado a todos los consumidores), 63 (aislamiento de arrays y parity), y la infraestructura de 64 separada de campañas. Adaptar PR 68 a la base elegida, con preflight, shards por contrato, merge fijo y evidencia verificable. El título/body de 68 está desactualizado respecto de su evidencia final: reconciliarlo antes de usarlo como estado.
