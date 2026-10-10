@@ -115,3 +115,13 @@ verificar clasificación/completitud ni conceder aceptación o autorización.
 
 Validación local de este lote: **580 tests + 25 subtests**, navegación 18 tests;
 PASS de software/fixtures, no certificación ni contraste científico.
+
+## Solicitud de ejecución posterior del usuario
+
+El usuario pidió calcular nuevos efectos **cuando esté listo**. Se registra como
+solicitud condicional para efectos NO económicos: racimos frente a controles
+comparables y controles frente a su propio censo. No aprueba los parámetros
+científicos pendientes ni sustituye evidencia independiente de calidad/pins, censo
+causal, revisión de exposición y protocolo congelado. `research_authorized` sigue
+falso hasta satisfacer esos requisitos; no se abre holdout ni se habilita P4/P&L.
+No lanzar una corrida provisional con defaults sintéticos para cumplir la solicitud.

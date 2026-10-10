@@ -66,5 +66,19 @@
   "user_instruction_no_economic_outcomes": true,
   "economic_scope_requires_new_explicit_user_authorization": true,
   "raw_quality_evidence_ref": "config/research/avzvol_mnq_raw_quality_review_20261010.json",
-  "selection_readiness_evidence_ref": "config/research/avzvol_selection_readiness_review_v1.json"
+  "selection_readiness_evidence_ref": "config/research/avzvol_selection_readiness_review_v1.json",
+  "conditional_non_economic_execution_request": {
+    "requested": true,
+    "scope": "non_economic_zone_incremental_and_control_own_census_effects_only",
+    "timing": "only_after_data_census_and_method_readiness",
+    "requires": [
+      "independently_reviewed_source_quality_and_pins",
+      "reviewed_causal_candidate_census",
+      "frozen_matching_support_balance_endpoints_censoring_family_and_budget",
+      "campaign_permissions_and_exposure_review"
+    ],
+    "clears_runtime_gates": false,
+    "authorizes_holdout_access": false,
+    "authorizes_economic_outcomes": false
+  }
 }

@@ -76,6 +76,11 @@ def test_causal_decisions_stay_unapproved_and_document_links_exist():
     assert s['cross_session_cluster_policy'] is None
     assert s['control_census_selection_rule'] is None
     assert s['research_authorized'] is False and s['pnl_allowed'] is False
+    request=s['conditional_non_economic_execution_request']
+    assert request['requested'] is True
+    assert request['clears_runtime_gates'] is False
+    assert request['authorizes_holdout_access'] is False
+    assert request['authorizes_economic_outcomes'] is False
     assert (ROOT/s['zone_causal_review_ref']).exists()
     doc=ROOT/'docs/research/AVZVOL_ZONE_CAUSAL_REVIEW_20261010.md'
     for link in re.findall(r'\]\(([^)]+)\)',doc.read_text()):
