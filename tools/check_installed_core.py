@@ -10,6 +10,7 @@ MODULES = (
     "edgelab.edge_brain.retrieval", "edgelab.edge_brain.typed_registry",
     "edgelab.edge_brain.schema_validator", "edgelab.edge_brain.triangulation",
     "edgelab.edge_brain.result_lineage",
+    "edgelab.kaggle.avzvol_audit",
 )
 
 
@@ -28,6 +29,8 @@ def main():
     from edgelab.edge_brain.result_lineage import review_result_evidence
     result = review_result_evidence({})
     assert result["status"] == "REQUIRES_REVIEW" and not result["research_authorized"]
+    from edgelab.kaggle.avzvol_audit import assign_frozen_bins
+    assert assign_frozen_bins([1., 1.], [1.]) == [0, 0]
     print(json.dumps({"status": "PASS_CORE_ONLY_IMPORTS", "modules": len(MODULES), "research_authorized": False, "optional_dependencies_present": False}))
 
 if __name__ == "__main__":
