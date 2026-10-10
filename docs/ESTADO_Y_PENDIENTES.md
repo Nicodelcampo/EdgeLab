@@ -246,3 +246,10 @@ racimo; censo as-of y política de sesiones siguen pendientes, sin outcomes nuev
 exports existentes con hashes y faltantes explícitos. No es réplica ciega,
 contraste incremental zone-free, certificación de raw ni promoción. No se
 alteran los gates/pins pendientes de P1–P3; P4 permanece prohibida.
+
+## Cinta causal de clasificación negativa propuesta
+
+[Contrato y helper probado](research/AVZVOL_ZONE_NEGATIVE_TAPE_20261010.md): distingue cero zonas con calibración de
+UNKNOWN por bloques/calibración/as-of faltantes. Sin zona en una ventana no
+acredita ausencia de racimo ni consolidación. Sólo fixtures inventados; el censo
+real, protocolo y calidad siguen pendientes. No libera gates ni P4.
