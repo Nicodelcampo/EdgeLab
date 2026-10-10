@@ -74,3 +74,10 @@ Core: NumPy/Pandas/Pydantic. Proyecciones/Parquet: extra bridge/funnel. Config e
 [Entorno/configuración](ENVIRONMENT.md) · [Mapa](COMPONENTS.md) · [Plan de wiring pendiente](INTEGRATION_PLAN.md).
 
 Gate: stdlib + contract_regime; no Arrow al importar. Lector de shards: extra PyArrow. Pruebas: [fixtures inventados](../tests/data/test_research_data_gate.py); no auditoría de filas reales.
+
+## Evidencia causal D-1 reforzada
+
+El gate exige ahora `selection_review` de competidores completos y conocidos al
+cutoff, no sólo volumen del elegido. [Contrato y límites](infra/AVZVOL_CAUSAL_SELECTION_REVIEW_20261010.md).
+Certificados antiguos sin ese campo fallan intencionalmente; no generar defaults
+ni completar evidencias desde fixtures. Sigue sin autenticar aprobación externa.

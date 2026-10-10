@@ -82,3 +82,8 @@ La [QA física MNQ](infra/AVZVOL_MNQ_RAW_QUALITY_20261010.md) mide ahora seis
 archivos candidatos fijados: SHA/bytes/filas y estructura. No reemplaza discovery,
 no certifica consumo histórico ni liquidez/calendario. `PASS_RAW_STRUCTURE_ONLY`
 no autoriza research. P4 económica permanece bloqueada por pedido del usuario.
+
+La [revisión causal de selección AVZVOL](infra/AVZVOL_CAUSAL_SELECTION_REVIEW_20261010.md)
+refuerza el gate de metadatos: no basta el volumen del elegido; se requieren
+competidores D-1 completos y conocidos al cutoff. Es evidencia externa pendiente,
+no un certificado emitido por el token, catálogo o tests. No se modificó catalog v15.

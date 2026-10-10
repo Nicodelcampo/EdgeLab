@@ -9,6 +9,8 @@ from edgelab.data.contract_regime import build_contract_regime, ContractRegimeEr
 from edgelab.data.research_data_gate import DataEligibilityError, REQUIRED_CHECKS, seal, require_research_eligibility
 from edgelab.data.research_session import read_research_session
 
+from tests.synthetic_selection_evidence import add_selection_review
+
 DAYS = [20260330, 20260331, 20260401]
 
 
@@ -30,6 +32,7 @@ def fixture():
            'MNQ|MNQ_06-26|20260331':{'status':'PASS','complete_session':True}}}
     limits={'root':'MNQ','frozen_before_strategy':True,'min_previous_session_volume':1000,
             'max_previous_session_spread_p99_ticks':2}
+    add_selection_review(c, r, 'MNQ')
     return {'certificate':c,'regime_manifest':r,'root':'MNQ','trade_date':20260331,
             'liquidity_limits':limits}
 
@@ -210,6 +213,8 @@ def test_forward_roll_gate_selects_leader_volume():
           for d,v in zip(days,vs)],calendar_trade_dates=days,
         source_identity=f['certificate']['source_identity'])
     f['regime_manifest']=r
+    quantities={(c,d): v for c,vs in [('MNQ_03-26',[3000,10,10]),('MNQ_06-26',[10,2000,2000])] for d,v in zip(days,vs)}
+    add_selection_review(f['certificate'], r, 'MNQ', quantities)
     assert r['daily_assignments'][-1]['decision']=='ROLL_FORWARD'
     assert require_research_eligibility(**pin(f))['contract']=='MNQ_06-26'
 
