@@ -11,6 +11,7 @@ MODULES = (
     "edgelab.edge_brain.schema_validator", "edgelab.edge_brain.triangulation",
     "edgelab.edge_brain.result_lineage",
     "edgelab.kaggle.avzvol_audit", "edgelab.kaggle.avzvol_design",
+    "edgelab.kaggle.avzvol_diagnostics",
 )
 
 

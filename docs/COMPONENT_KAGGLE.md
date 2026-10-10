@@ -127,3 +127,10 @@ El gate compartido exige `certificate.selection_review` antes de fuentes: todos
 los challengers cubiertos, disponibilidad previa y comparación causal del líder.
 [Requisito y alcance](infra/AVZVOL_CAUSAL_SELECTION_REVIEW_20261010.md). Catálogo v15
 y QA estructural siguen sin certificar este requisito. No hay outcomes económicos.
+
+## AVZVOL: diagnóstico sintético de controles
+
+[Guía y API descriptivos](research/AVZVOL_CONTROL_CENSUS_DIAGNOSTICS_20261010.md):
+`python tools/avzvol_design_smoke.py --report control-census`. Sólo covariables
+inventadas; no autorización, certificación, inferencia ni benchmark de outcomes.
+P2 requiere censo/política/protocolo revisados; P4 permanece prohibida.

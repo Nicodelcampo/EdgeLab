@@ -192,3 +192,11 @@ Este diseño NO implementa un runner ni garantiza bloqueo de scripts legacy.
 el gate exige matriz completa, disponibilidad as-of y comparación causal del
 líder. No certifica datos, warmup ni consumo histórico. P2/P3 conservan sus bloqueos;
 P4 continúa prohibida. Las referencias candidatas no rellenan reviewed_input_pins.
+
+## Diagnósticos descriptivos de P2; no cierre científico
+
+[Control frente a su censo](AVZVOL_CONTROL_CENSUS_DIAGNOSTICS_20261010.md):
+soporte por estrato, reutilización/pesos, diferencias absolutas y ECDF ponderadas
+sobre covariables pre-anchor. Sólo fixtures sintéticos; no SMD/test/ESS, aceptación
+ni benchmark de outcomes. P2 sigue bloqueada por censo real, política y protocolo;
+P4 sigue prohibida. No se ejecutaron nuevos trials ni se ingresó evidencia al ledger.

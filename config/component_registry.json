@@ -339,7 +339,9 @@
         "docs/research/AVZVOL_SIGUIENTE_ETAPA_20261010.md",
         "tools/audit_avzvol_mnq_metadata.py",
         "docs/infra/AVZVOL_MNQ_METADATA_QUALITY_20261010.md",
-        "config/research/avzvol_mnq_metadata_review_20261010.json"
+        "config/research/avzvol_mnq_metadata_review_20261010.json",
+        "edgelab/kaggle/avzvol_diagnostics.py",
+        "docs/research/AVZVOL_CONTROL_CENSUS_DIAGNOSTICS_20261010.md"
       ],
       "inputs": [
         "spec y catálogo fijados",
@@ -366,7 +368,7 @@
         "Cobertura diaria solicitada requiere revisión externa de calendario e intervalos antes de leer precios por el consumidor protegido.",
         "QA estructural completada para 18 primarios; NQ preholdout v6/NQ_09-26_ticks.parquet en cuarentena por discrepancia temporal/contenido.",
         "AVZVOL: baseline discovery reproducido desde exports; pares, bins y calidad/lineage upstream requieren revisión. Guards/bins nuevos opt-in, no retrofit automático de legacy.",
-        "AVZVOL incremental: sólo covariables declaradas y smoke sintético. Sin loader, census benchmark, inferencia, autoridad ni política de calipers aprobada.",
+        "AVZVOL incremental: sólo covariables declaradas y smoke sintético. Diagnósticos descriptivos pre-anchor preparados; sin loader, benchmark de outcomes contra el censo, inferencia, autoridad ni política de calipers aprobada.",
         "MNQ metadata QA: concordancia declarada no certifica raw, warmup, calendario/clock ni liquidez causal; exit 0 nunca es autorización."
       ],
       "entrypoint": "python tools/audit_kaggle_aggregates.py --help",
